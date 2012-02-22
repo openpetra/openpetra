@@ -72,28 +72,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
-            
+
             // Prepare the window title and settings directory (will be used later by TFrmPetraReportingUtils).
             // Normally the settings directory is set earlier but since this is one form that covers two extracts
             // we need to initialize it a second time here with the correct directory.
             if (FCalledForConferences)
             {
-            	this.FindForm().Text = Catalog.GetString("Partner by Conference");
-            	FPetraUtilsObject.InitialiseStoredSettings("Partner by Conference");
+                this.FindForm().Text = Catalog.GetString("Partner by Conference");
+                FPetraUtilsObject.InitialiseStoredSettings("Partner by Conference");
             }
             else
             {
-            	this.FindForm().Text = Catalog.GetString("Partner by Outreach");
-            	FPetraUtilsObject.InitialiseStoredSettings("Partner by Outreach");
+                this.FindForm().Text = Catalog.GetString("Partner by Outreach");
+                FPetraUtilsObject.InitialiseStoredSettings("Partner by Outreach");
             }
 
             // need to load settings again after they have been re-initialized
-			FPetraUtilsObject.LoadDefaultSettings();
+            FPetraUtilsObject.LoadDefaultSettings();
 
             // enable autofind in list for first character (so the user can press character to find list entry)
             this.clbEvent.AutoFindColumn = ((Int16)(1));
             this.clbEvent.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
-            
+
             clbEvent.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
                                                    SourceGrid.GridSpecialKeys.PageDownUp) |
@@ -121,12 +121,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 Table = TRemote.MPartner.Partner.WebConnectors.GetOutreachUnits(AFilter);
             }
-            
+
             DataView view = new DataView(Table);
 
             DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
-            
+
             clbEvent.Columns.Clear();
             clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
@@ -142,14 +142,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
-            
         }
-        
-        private void FilterList (System.Object sender, EventArgs e)
+
+        private void FilterList(System.Object sender, EventArgs e)
         {
-        	LoadListData (txtFilter.Text);
+            LoadListData(txtFilter.Text);
         }
-        
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbEvent.GetCheckedStringList().Length == 0)

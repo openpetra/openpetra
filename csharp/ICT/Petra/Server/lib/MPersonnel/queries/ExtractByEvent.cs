@@ -50,25 +50,28 @@ namespace Ict.Petra.Server.MPersonnel.queries
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
             string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByEvent.sql");
-           
+
             // create a new object of this class and control extract calculation from base class
-        	QueryPartnerByEvent ExtractQuery = new QueryPartnerByEvent();
-        	return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
+            QueryPartnerByEvent ExtractQuery = new QueryPartnerByEvent();
+
+            return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
         }
-        
+
         /// <summary>
         /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters (TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
         {
             // prepare list of selected events
             List <String>param_events = new List <String>();
+
             foreach (TVariant choice in AParameters.Get("param_events").ToComposite())
             {
                 param_events.Add(choice.ToString());
             }
+
             if (param_events.Count == 0)
             {
                 throw new NoNullAllowedException("At least one option must be checked.");
@@ -76,7 +79,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             // now add parameters to sql parameter list
             ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("events", OdbcType.BigInt, param_events));
-            ASQLParameterList.Add(new OdbcParameter("Accepted", OdbcType.Bit) 
+            ASQLParameterList.Add(new OdbcParameter("Accepted", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_status_accepted").ToBool()
                 });
@@ -104,6 +107,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 {
                     Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                 });
-       }
+        }
     }
 }

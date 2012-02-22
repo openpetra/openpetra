@@ -725,22 +725,22 @@ namespace Ict.Petra.Server.MPartner.Extracts
             Int32 APartnerKeyColumn,
             bool AddressFilterAdded)
         {
-        	if (AddressFilterAdded)
-        	{
-	        	// if address filter was added then site key is in third and location in fourth column
-				return CreateExtractFromListOfPartnerKeys (AExtractName, AExtractDescription, out ANewExtractId,
-	        	                                           out AVerificationResults, APartnerKeysTable, 
-	        	                                           APartnerKeyColumn, 2, 3);
-        	}
-        	else
-        	{
-	        	// if no address filter was added (no location keys were added): set location and site key to -1
-				return CreateExtractFromListOfPartnerKeys (AExtractName, AExtractDescription, out ANewExtractId,
-	        	                                           out AVerificationResults, APartnerKeysTable, 
-	        	                                           APartnerKeyColumn, -1, -1);
-        	}
+            if (AddressFilterAdded)
+            {
+                // if address filter was added then site key is in third and location in fourth column
+                return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
+                    out AVerificationResults, APartnerKeysTable,
+                    APartnerKeyColumn, 2, 3);
+            }
+            else
+            {
+                // if no address filter was added (no location keys were added): set location and site key to -1
+                return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
+                    out AVerificationResults, APartnerKeysTable,
+                    APartnerKeyColumn, -1, -1);
+            }
         }
-        
+
         /// <summary>
         /// create an extract from a list of best addresses
         /// </summary>
@@ -791,14 +791,14 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
                     // Location Keys need to be determined as extracts do not only need partner keys but
                     // also Location Keys.
-                    DetermineBestLocationKeys (APartnerKeysTable, APartnerKeyColumn, ASiteKeyColumn,
-                                               ALocationKeyColumn, out PartnerLocationKeysTable, 
-                                               WriteTransaction);
-                    
+                    DetermineBestLocationKeys(APartnerKeysTable, APartnerKeyColumn, ASiteKeyColumn,
+                        ALocationKeyColumn, out PartnerLocationKeysTable,
+                        WriteTransaction);
+
                     // use the returned table which contains partner and location keys to build the extract
                     foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationKeysTable.Rows)
                     {
-                        PartnerKey  = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetPartnerKeyDBName()]);
+                        PartnerKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetPartnerKeyDBName()]);
 
                         RecordCounter += 1;
                         TLogging.Log("Preparing Partner " + PartnerKey.ToString() + " (Record Number " + RecordCounter.ToString() + ")");
@@ -814,7 +814,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
                     if (ExtractTable.Rows.Count > 0)
                     {
-                    	// update field in extract master for quick access to number of partners in extract
+                        // update field in extract master for quick access to number of partners in extract
                         MExtractMasterTable ExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(ANewExtractId, WriteTransaction);
                         ExtractMaster[0].KeyCount = ExtractTable.Rows.Count;
 
@@ -842,7 +842,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             return ResultValue;
         }
-        
+
         /// <summary>
         /// Determine location keys for partners needed for extract, depending on if location information
         /// was retrieved by query or not.
@@ -863,71 +863,69 @@ namespace Ict.Petra.Server.MPartner.Extracts
         {
             Int64 PartnerKey;
             Int64 PreviousPartnerKey;
-            List<TLocationPK> LocationKeyList = new List<TLocationPK>();
+
+            List <TLocationPK>LocationKeyList = new List <TLocationPK>();
 
             APartnerLocationKeysTable = new PPartnerLocationTable();
-            
+
             // don't go further if table is empty
             if (APartnerKeysTable.Rows.Count == 0)
             {
-            	return;
+                return;
             }
-            
-        	// If location column exists then check if there is more than one location key for a partner.
-	     	// If so then determine the best of the found addresses.
-	        if (ALocationKeyColumn >= 0)
-	        {
-	         	PreviousPartnerKey = -1;
 
-				// Rows are sorted by partner key. Create a list of location keys per partner and determine
-				// the best of those addresses.
-	            foreach (DataRow partnerRow in APartnerKeysTable.Rows)
-	            {
-	                PartnerKey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
-					
-	                if (   PartnerKey != PreviousPartnerKey
-	                    && PreviousPartnerKey != -1)
-	                {
-	                	DetermineAndAddBestLocationKey(PreviousPartnerKey, LocationKeyList, 
-	                	                               ref APartnerLocationKeysTable, ATransaction);
+            // If location column exists then check if there is more than one location key for a partner.
+            // If so then determine the best of the found addresses.
+            if (ALocationKeyColumn >= 0)
+            {
+                PreviousPartnerKey = -1;
 
-						// add first location for next partner
-						LocationKeyList.Clear();
-						LocationKeyList.Add(new TLocationPK(Convert.ToInt64(partnerRow[ASiteKeyColumn]), 
-						                                    Convert.ToInt32(partnerRow[ALocationKeyColumn])));
-	                }
-	                else
-	                {
-	                	// add location for this partner
-						LocationKeyList.Add(new TLocationPK(Convert.ToInt64(partnerRow[ASiteKeyColumn]), 
-	                	                                    Convert.ToInt32(partnerRow[ALocationKeyColumn])));
-	                }
-	                
-	                // prepare for next round of loop
-	                PreviousPartnerKey = PartnerKey;
-	            }
+                // Rows are sorted by partner key. Create a list of location keys per partner and determine
+                // the best of those addresses.
+                foreach (DataRow partnerRow in APartnerKeysTable.Rows)
+                {
+                    PartnerKey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
 
-				// process last partner key after loop through all records	            
-            	DetermineAndAddBestLocationKey(PreviousPartnerKey, LocationKeyList, 
-            	                               ref APartnerLocationKeysTable, ATransaction);
+                    if ((PartnerKey != PreviousPartnerKey)
+                        && (PreviousPartnerKey != -1))
+                    {
+                        DetermineAndAddBestLocationKey(PreviousPartnerKey, LocationKeyList,
+                            ref APartnerLocationKeysTable, ATransaction);
 
-	        }
-	        else
-	        {
-	        	// If no location information was retrieved with earlier query then find best address
-	        	// for partner.
-	            foreach (DataRow partnerRow in APartnerKeysTable.Rows)
-	            {
-	                PartnerKey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
+                        // add first location for next partner
+                        LocationKeyList.Clear();
+                        LocationKeyList.Add(new TLocationPK(Convert.ToInt64(partnerRow[ASiteKeyColumn]),
+                                Convert.ToInt32(partnerRow[ALocationKeyColumn])));
+                    }
+                    else
+                    {
+                        // add location for this partner
+                        LocationKeyList.Add(new TLocationPK(Convert.ToInt64(partnerRow[ASiteKeyColumn]),
+                                Convert.ToInt32(partnerRow[ALocationKeyColumn])));
+                    }
 
-	                DetermineAndAddBestLocationKey (PartnerKey, LocationKeyList,
-	                                                ref APartnerLocationKeysTable, ATransaction);
-	            }
-	        	
-	        }
-        	
+                    // prepare for next round of loop
+                    PreviousPartnerKey = PartnerKey;
+                }
+
+                // process last partner key after loop through all records
+                DetermineAndAddBestLocationKey(PreviousPartnerKey, LocationKeyList,
+                    ref APartnerLocationKeysTable, ATransaction);
+            }
+            else
+            {
+                // If no location information was retrieved with earlier query then find best address
+                // for partner.
+                foreach (DataRow partnerRow in APartnerKeysTable.Rows)
+                {
+                    PartnerKey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
+
+                    DetermineAndAddBestLocationKey(PartnerKey, LocationKeyList,
+                        ref APartnerLocationKeysTable, ATransaction);
+                }
+            }
         }
-        
+
         /// <summary>
         /// Determine best location for partner out of a list of possible locations. Or simply find best one
         /// if no suggestion is made.
@@ -937,8 +935,8 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerLocationKeysTable"></param>
         /// <param name="ATransaction"></param>
         private static void DetermineAndAddBestLocationKey(
-        	Int64 APartnerKey,
-            List<TLocationPK> ALocationKeyList,
+            Int64 APartnerKey,
+            List <TLocationPK>ALocationKeyList,
             ref PPartnerLocationTable APartnerLocationKeysTable,
             TDBTransaction ATransaction)
         {
@@ -948,49 +946,48 @@ namespace Ict.Petra.Server.MPartner.Extracts
             PPartnerLocationRow PartnerLocationKeyRow;
             PPartnerLocationRow PartnerLocationRowCopy;
             TLocationPK BestLocationPK;
-        	
+
             if (ALocationKeyList.Count == 0)
             {
-            	// no list suggested: find best address in db for this partner
+                // no list suggested: find best address in db for this partner
                 TVerificationResultCollection LocalVerification;
                 BestLocationPK = TMailing.GetPartnersBestLocation(APartnerKey, out LocalVerification);
             }
-        	else if (ALocationKeyList.Count == 1)
-        	{
-        		// only one location suggested: take this one
-        		BestLocationPK = ALocationKeyList[0];
-        	}
-        	else
-        	{
-				// Process location key list related to partner.
-				// In order to use Calculations.DetermineBestAddress we need to first retrieve full data
-				// for all suggested records from the db. Therefore load all locations for this partner
-				// and then create a table of the ones that are suggested.
-            	AllPartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, ATransaction);
+            else if (ALocationKeyList.Count == 1)
+            {
+                // only one location suggested: take this one
+                BestLocationPK = ALocationKeyList[0];
+            }
+            else
+            {
+                // Process location key list related to partner.
+                // In order to use Calculations.DetermineBestAddress we need to first retrieve full data
+                // for all suggested records from the db. Therefore load all locations for this partner
+                // and then create a table of the ones that are suggested.
+                AllPartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, ATransaction);
 
-            	foreach (PPartnerLocationRow PartnerLocationRow in AllPartnerLocationTable.Rows)
-            	{
-            		LocationPK.SiteKey = PartnerLocationRow.SiteKey;
-            		LocationPK.LocationKey = PartnerLocationRow.LocationKey;
-            		
-            		if (ALocationKeyList.Contains(LocationPK))
-            		{
-						PartnerLocationRowCopy = (PPartnerLocationRow)FilteredPartnerLocationTable.NewRow();
-						DataUtilities.CopyAllColumnValues(PartnerLocationRow, PartnerLocationRowCopy);
-            			FilteredPartnerLocationTable.Rows.Add(PartnerLocationRowCopy);
-            		}
-            	}
-            	
-            	BestLocationPK = Calculations.DetermineBestAddress(FilteredPartnerLocationTable);
-        	}
-        	
-			// create new row, initialize it and add it to the table                    
-			PartnerLocationKeyRow = (PPartnerLocationRow)APartnerLocationKeysTable.NewRow();
-		    PartnerLocationKeyRow[PPartnerLocationTable.GetPartnerKeyDBName()] = APartnerKey;
-		    PartnerLocationKeyRow[PPartnerLocationTable.GetSiteKeyDBName()] = BestLocationPK.SiteKey;
-		    PartnerLocationKeyRow[PPartnerLocationTable.GetLocationKeyDBName()] = BestLocationPK.LocationKey;
-	        APartnerLocationKeysTable.Rows.Add(PartnerLocationKeyRow);
-            
+                foreach (PPartnerLocationRow PartnerLocationRow in AllPartnerLocationTable.Rows)
+                {
+                    LocationPK.SiteKey = PartnerLocationRow.SiteKey;
+                    LocationPK.LocationKey = PartnerLocationRow.LocationKey;
+
+                    if (ALocationKeyList.Contains(LocationPK))
+                    {
+                        PartnerLocationRowCopy = (PPartnerLocationRow)FilteredPartnerLocationTable.NewRow();
+                        DataUtilities.CopyAllColumnValues(PartnerLocationRow, PartnerLocationRowCopy);
+                        FilteredPartnerLocationTable.Rows.Add(PartnerLocationRowCopy);
+                    }
+                }
+
+                BestLocationPK = Calculations.DetermineBestAddress(FilteredPartnerLocationTable);
+            }
+
+            // create new row, initialize it and add it to the table
+            PartnerLocationKeyRow = (PPartnerLocationRow)APartnerLocationKeysTable.NewRow();
+            PartnerLocationKeyRow[PPartnerLocationTable.GetPartnerKeyDBName()] = APartnerKey;
+            PartnerLocationKeyRow[PPartnerLocationTable.GetSiteKeyDBName()] = BestLocationPK.SiteKey;
+            PartnerLocationKeyRow[PPartnerLocationTable.GetLocationKeyDBName()] = BestLocationPK.LocationKey;
+            APartnerLocationKeysTable.Rows.Add(PartnerLocationKeyRow);
         }
     }
 }

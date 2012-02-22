@@ -49,32 +49,33 @@ namespace Ict.Petra.Server.MPartner.queries
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
             string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerCity.sql");
-           
+
             // create a new object of this class and control extract calculation from base class
-        	QueryPartnerByCity ExtractQuery = new QueryPartnerByCity();
-        	return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
+            QueryPartnerByCity ExtractQuery = new QueryPartnerByCity();
+
+            return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
         }
-        
+
         /// <summary>
         /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters (TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
         {
             // now add parameters to sql parameter list
             ASQLParameterList.Add(new OdbcParameter("city", OdbcType.VarChar)
-				{
-	              	Value = AParameters.Get("param_city").ToString()
-				});
+                {
+                    Value = AParameters.Get("param_city").ToString()
+                });
             ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
-				{
-					Value = AParameters.Get("param_today").ToDate()
-				});
+                {
+                    Value = AParameters.Get("param_today").ToDate()
+                });
             ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
-				{
-					Value = AParameters.Get("param_today").ToDate()
-				});
+                {
+                    Value = AParameters.Get("param_today").ToDate()
+                });
         }
     }
 }

@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.clbIncludePublication.AutoFindColumn = ((Int16)(1));
             this.clbIncludePublication.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
         }
-        
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbIncludePublication.GetCheckedStringList().Length == 0)

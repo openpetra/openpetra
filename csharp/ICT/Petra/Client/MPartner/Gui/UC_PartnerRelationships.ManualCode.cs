@@ -380,23 +380,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPreviouslySelectedDetailRow.RelationName), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
-	            int rowIndex = CurrentRowIndex();
-	            FPreviouslySelectedDetailRow.Delete();
-	            FPetraUtilsObject.SetChangedFlag();
-	            SelectByIndex(rowIndex);
-	
-	            // Fire OnRecalculateScreenParts event: reset counter in tab header
-	            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-	            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-	            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
-	
-	            if (grdDetails.Rows.Count <= 1)
-	            {
-	                // hide details part and disable buttons if no record in grid (first row for headings)
-	                btnDelete.Enabled = false;
-	                btnEditOtherPartner.Enabled = false;
-	                MakeDetailsInvisible(true);
-	            }
+                int rowIndex = CurrentRowIndex();
+                FPreviouslySelectedDetailRow.Delete();
+                FPetraUtilsObject.SetChangedFlag();
+                SelectByIndex(rowIndex);
+
+                // Fire OnRecalculateScreenParts event: reset counter in tab header
+                RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
+                RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
+                OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    btnEditOtherPartner.Enabled = false;
+                    MakeDetailsInvisible(true);
+                }
             }
         }
 

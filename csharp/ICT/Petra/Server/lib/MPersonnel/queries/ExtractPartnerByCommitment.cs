@@ -48,33 +48,34 @@ namespace Ict.Petra.Server.MPersonnel.queries
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
             string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByCommitment.sql");
-           
+
             // create a new object of this class and control extract calculation from base class
-        	QueryPartnerByCommitment ExtractQuery = new QueryPartnerByCommitment();
-        	return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
+            QueryPartnerByCommitment ExtractQuery = new QueryPartnerByCommitment();
+
+            return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
         }
-        
+
         /// <summary>
         /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters (TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
         {
             // prepare list of commitment statuses
             List <String>param_commitment_status_choices = new List <String>();
+
             foreach (TVariant choice in AParameters.Get("param_commitment_status_choices").ToComposite())
             {
                 param_commitment_status_choices.Add(choice.ToString());
             }
 
-            
             // now add parameters to sql parameter list
-            ASQLParameterList.Add(new OdbcParameter("param_start_date_from_unset", OdbcType.Bit) 
+            ASQLParameterList.Add(new OdbcParameter("param_start_date_from_unset", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_start_date_from").IsZeroOrNull()
                 });
-            ASQLParameterList.Add(new OdbcParameter("param_start_date_from", OdbcType.Date) 
+            ASQLParameterList.Add(new OdbcParameter("param_start_date_from", OdbcType.Date)
                 {
                     Value = AParameters.Get("param_start_date_from").ToDate()
                 });
@@ -137,8 +138,8 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     Value = !AParameters.Get("param_consider_commitment_status").ToBool()
                 });
             ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_commitment_status_choices",
-                                                                           OdbcType.VarChar,
-                                                                           param_commitment_status_choices));
+                    OdbcType.VarChar,
+                    param_commitment_status_choices));
             ASQLParameterList.Add(new OdbcParameter("param_include_no_commitment_status", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_include_no_commitment_status").ToBool()
@@ -153,8 +154,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 {
                     Value = !AParameters.Get("param_exclude_no_solicitations").ToBool()
                 });
-       	
         }
-        
     }
 }

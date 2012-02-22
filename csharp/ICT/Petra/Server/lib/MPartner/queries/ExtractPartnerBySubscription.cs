@@ -50,10 +50,11 @@ namespace Ict.Petra.Server.MPartner.queries
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
             string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerBySubscription.sql");
-           
+
             // create a new object of this class and control extract calculation from base class
-        	QueryPartnerBySubscription ExtractQuery = new QueryPartnerBySubscription();
-        	return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
+            QueryPartnerBySubscription ExtractQuery = new QueryPartnerBySubscription();
+
+            return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
         }
 
         /// <summary>
@@ -61,10 +62,11 @@ namespace Ict.Petra.Server.MPartner.queries
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters (TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
         {
             // prepare list of selected publications
             List <String>param_explicit_publication = new List <String>();
+
             foreach (TVariant choice in AParameters.Get("param_explicit_publication").ToComposite())
             {
                 param_explicit_publication.Add(choice.ToString());
@@ -72,9 +74,8 @@ namespace Ict.Petra.Server.MPartner.queries
 
             // now add parameters to sql parameter list
             ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_explicit_publication",
-                                                                               OdbcType.VarChar,
-                                                                               param_explicit_publication));
-        	
+                    OdbcType.VarChar,
+                    param_explicit_publication));
         }
     }
 }

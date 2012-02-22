@@ -353,7 +353,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
 
             if (!FSearchTransactions && !FSearchSupplierOrInvoice) // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
-
             {
                 try  // I need an extra column, but it might be already present - I can't really tell without generating an exception!
                 {

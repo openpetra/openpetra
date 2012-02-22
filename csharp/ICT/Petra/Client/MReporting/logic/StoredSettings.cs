@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <returns>void</returns>
         public TStoredSettings(String AReportName, String ASettingsDirectory, String AUserSettingsDirectory)
         {
-        	Initialize (AReportName, ASettingsDirectory, AUserSettingsDirectory);
+            Initialize(AReportName, ASettingsDirectory, AUserSettingsDirectory);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             this.FSettingsDirectory = ASettingsDirectory + System.IO.Path.DirectorySeparatorChar;
             this.FUserSettingsDirectory = AUserSettingsDirectory + System.IO.Path.DirectorySeparatorChar;
         }
-        
+
         /// <summary>
         /// This returns a StringCollection with the names of available settings
         /// for the given report

@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
         }
-        
+
         private void grdCommitmentStatusChoices_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)
         {
             #region Copied from csharp/ICT/Petra/Client/MReporting/Gui/MPersonnel/StartOfCommitmentReport.ManualCode.cs

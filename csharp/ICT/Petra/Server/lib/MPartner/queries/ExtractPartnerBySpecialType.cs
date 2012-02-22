@@ -51,18 +51,19 @@ namespace Ict.Petra.Server.MPartner.queries
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
             string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerSpecialType.sql");
-           
+
             // create a new object of this class and control extract calculation from base class
-        	QueryPartnerBySpecialType ExtractQuery = new QueryPartnerBySpecialType();
-        	return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
+            QueryPartnerBySpecialType ExtractQuery = new QueryPartnerBySpecialType();
+
+            return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
         }
-        
+
         /// <summary>
         /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters (TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
         {
             ICollection <String>param_explicit_specialtypes;
 
@@ -97,5 +98,5 @@ namespace Ict.Petra.Server.MPartner.queries
                     Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                 });
         }
-   }
+    }
 }

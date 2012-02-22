@@ -237,7 +237,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.FCalculator = new TRptCalculator();
 
             FWindowCaption = FWinForm.Text;
-            
+
             InitialiseStoredSettings(FReportName);
 
             FSelectedColumn = -1;
@@ -256,7 +256,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </returns>
         public void InitialiseStoredSettings(String AReportName)
         {
-        	FReportName = AReportName;
+            FReportName = AReportName;
             string SettingsDirectory = TClientSettings.ReportingPathReportSettings +
                                        System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
             string UserSettingsDirectory = TClientSettings.ReportingPathReportUserSettings +
@@ -267,7 +267,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             FWrapColumn = FStoredSettings.GetWrapOption();
             ((IFrmReporting)FTheForm).CheckWrapColumnMenuItem(FWrapColumn);
         }
-        
+
         #endregion
 
 

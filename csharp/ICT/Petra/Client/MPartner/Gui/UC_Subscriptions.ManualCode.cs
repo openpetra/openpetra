@@ -489,21 +489,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPreviouslySelectedDetailRow.PublicationCode), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
-	            int rowIndex = CurrentRowIndex();
-	            FPreviouslySelectedDetailRow.Delete();
-	            FPetraUtilsObject.SetChangedFlag();
-	            SelectByIndex(rowIndex);
-	
-	            // reset counter in tab header
-	            RecalculateTabHeaderCounter();
-	
-	            if (grdDetails.Rows.Count <= 1)
-	            {
-	                // hide details part and disable buttons if no record in grid (first row for headings)
-	                btnDelete.Enabled = false;
-	                btnCancelAllSubscriptions.Enabled = false;
-	                ucoDetails.MakeScreenInvisible(true);
-	            }
+                int rowIndex = CurrentRowIndex();
+                FPreviouslySelectedDetailRow.Delete();
+                FPetraUtilsObject.SetChangedFlag();
+                SelectByIndex(rowIndex);
+
+                // reset counter in tab header
+                RecalculateTabHeaderCounter();
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    btnCancelAllSubscriptions.Enabled = false;
+                    ucoDetails.MakeScreenInvisible(true);
+                }
             }
         }
 
