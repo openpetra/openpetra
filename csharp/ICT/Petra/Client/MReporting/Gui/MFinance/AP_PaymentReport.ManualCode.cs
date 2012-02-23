@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,13 +47,40 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
+        private static void DefineReportColumns(TRptCalculator ACalc)
+        {
+            int ColumnCounter = 0;
+            ACalc.AddParameter("param_calculation", "", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)6.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentNumber", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)5.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentBank", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentRef", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentDate", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentCurrency", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentTotal", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("MaxDisplayColumns", ColumnCounter);
+        }
+
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("MaxDisplayColumns", 7);
+            DefineReportColumns(ACalc);
         }
 
-        public static void CreateReportNoGui(Int32 ALedgerNumber, Int32 APaymentNumber, Form Owner)
+        /// <summary>
+        /// Call this to generate a payment report without showing the UI to the user.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AMinPaymentNumber"></param>
+        /// <param name="AMaxPaymentNumber"></param>
+        /// <param name="Owner"></param>
+        public static void CreateReportNoGui(Int32 ALedgerNumber, Int32 AMinPaymentNumber, Int32 AMaxPaymentNumber, Form Owner)
         {
             TRptCalculator Calculator = new TRptCalculator();
             TFrmPetraReportingUtils.InitialiseCalculator(
@@ -62,14 +89,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 "",
                 "APPaymentReport");
 
-            Calculator.AddParameter("param_payment_num_from_i", APaymentNumber);
-            Calculator.AddParameter("param_payment_num_to_i", APaymentNumber);
+            Calculator.AddParameter("param_payment_num_from_i", AMinPaymentNumber);
+            Calculator.AddParameter("param_payment_num_to_i", AMaxPaymentNumber);
+
 /*
             Calculator.AddParameter("param_payment_date_from_i", DateTime.Now);
             Calculator.AddParameter("param_payment_date_to_i", DateTime.Now);
 */
             Calculator.AddParameter("param_ledger_number_i", ALedgerNumber);
-            Calculator.AddParameter("MaxDisplayColumns", 7);
+            DefineReportColumns(Calculator);
 
             TFrmPetraReportingUtils.GenerateReport(Calculator, Owner, "APPaymentReport", true);
         }

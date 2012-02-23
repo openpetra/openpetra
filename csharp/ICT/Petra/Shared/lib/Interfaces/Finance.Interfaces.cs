@@ -58,18 +58,15 @@ using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
-#region ManualCode
-using System.Xml;
-using System.Collections.Specialized;
-using Ict.Common.Data;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-#endregion ManualCode
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors;
+using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance;
+using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using System.Collections.Specialized;
+
 namespace Ict.Petra.Shared.Interfaces.MFinance
 {
     /// <summary>auto generated</summary>
@@ -271,6 +268,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
         System.Boolean PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
                                       AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                                       DateTime APostingDate,
+                                      out List<Int32> NewPaymentNumbers,
                                       out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,

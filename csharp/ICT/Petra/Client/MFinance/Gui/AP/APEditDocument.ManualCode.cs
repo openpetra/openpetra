@@ -106,6 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     Atds.Merge(new AApAnalAttribTable());
                 }
+
                 foreach (DataRowView rv in Atds.AAnalysisAttribute.DefaultView)
                 {
                     AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
@@ -184,6 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
             AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
+
             txtTotalAmount.CurrencySymbol = SupplierRow.CurrencyCode;
             txtDetailAmount.CurrencySymbol = SupplierRow.CurrencyCode;
 
@@ -245,7 +247,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             CreateAApDocumentDetail(
                 FMainDS.AApDocument[0].LedgerNumber,
-                FMainDS.AApDocument[0].ApNumber,
+                FMainDS.AApDocument[0].ApDocumentId,
                 FMainDS.AApSupplier[0].DefaultExpAccount,
                 FMainDS.AApSupplier[0].DefaultCostCentre,
                 DetailAmount,
@@ -276,10 +278,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // I have to prevent the auto-generated code from attempting to access this deleted row.
             grdDetails.Selection.SelectRow(rowIndex, true);
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
             if (FPreviouslySelectedDetailRow != null)
             {
                 ShowDetails(FPreviouslySelectedDetailRow);
             }
+
             // Then I need to re-draw the grid, and enable controls as appropriate.
             grdDetails.Refresh();
             FPetraUtilsObject.SetChangedFlag();
@@ -368,7 +372,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="AApDocument"></param>
@@ -379,7 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
-                if (Row.ApNumber == AApDocument.ApNumber) // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                if (Row.ApDocumentId == AApDocument.ApDocumentId) // NOTE: When called from elsewhere, the TDS could contain data for several documents.
                 {
                     DocumentBalance -= Row.Amount;
                 }
@@ -407,7 +411,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
-                if (Row.ApNumber == AApDocument.ApNumber)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                if (Row.ApDocumentId == AApDocument.ApDocumentId)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
                 {
                     bool AllPresent = true;
 
@@ -433,9 +437,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="Atds"></param>
         /// <param name="Adocument"></param>
         /// <returns>true if this document seems OK to post.</returns>
-        public static bool ApDocumentCanPost (AccountsPayableTDS Atds, AApDocumentRow Adocument)
+        public static bool ApDocumentCanPost(AccountsPayableTDS Atds, AApDocumentRow Adocument)
         {
-           // If the batch will not balance, or required attributes are missing, I'll stop right here..
+            // If the batch will not balance, or required attributes are missing, I'll stop right here..
             bool CanPost = true;
 
             if (!BatchBalancesOK(Atds, Adocument))
@@ -456,7 +460,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// This static function is called from several places
         /// /// </summary>
         /// <returns>true if everything went OK</returns>
-        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List<int> AApDocumentNumbers)
+        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List <int>AApDocumentIds)
         {
             TVerificationResultCollection Verifications;
 
@@ -474,12 +478,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
-
             if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
-                   ALedgerNumber,
-                   AApDocumentNumbers,
-                   PostingDate,
-                   out Verifications))
+                    ALedgerNumber,
+                    AApDocumentIds,
+                    PostingDate,
+                    out Verifications))
             {
                 return true;
             }
@@ -496,7 +499,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
             }
-                return false;
+
+            return false;
         }
 
         /// <summary>
@@ -510,15 +514,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // TODO: make sure that there are uptodate exchange rates
 
             if (!ApDocumentCanPost(FMainDS, FMainDS.AApDocument[0]))
+            {
                 return;
+            }
 
-            List<Int32> TaggedDocuments = new List<Int32>();
+            List <Int32>TaggedDocuments = new List <Int32>();
 
-            TaggedDocuments.Add(FMainDS.AApDocument[0].ApNumber);
+            TaggedDocuments.Add(FMainDS.AApDocument[0].ApDocumentId);
 
             if (PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments))
             {
-
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP document has been posted successfully!"));
 
@@ -537,9 +542,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void PayDocument(object sender, EventArgs e)
         {
             TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
-            List<int> PayTheseDocs = new List<int>();
 
-            PayTheseDocs.Add(FMainDS.AApDocument[0].ApNumber);
+            List <int>PayTheseDocs = new List <int>();
+
+            PayTheseDocs.Add(FMainDS.AApDocument[0].ApDocumentId);
             PaymentScreen.AddDocumentsToPayment(FMainDS, PayTheseDocs);
             PaymentScreen.Show();
         }

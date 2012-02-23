@@ -1024,10 +1024,11 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         public System.Boolean PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
                                              AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                                              DateTime APostingDate,
+                                             out List<Int32>NewPaymentNumbers,
                                              out TVerificationResultCollection AVerifications)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPPayments", ";ACCOUNTSPAYABLETDSAAPPAYMENTTABLE;ACCOUNTSPAYABLETDSAAPDOCUMENTPAYMENTTABLE;DATETIME;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(APayments, ADocumentPayments, APostingDate, out AVerifications);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPPayments", ";ACCOUNTSPAYABLETDSAAPPAYMENTTABLE;ACCOUNTSPAYABLETDSAAPDOCUMENTPAYMENTTABLE;DATETIME;INT?;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(APayments, ADocumentPayments, APostingDate, out NewPaymentNumbers, out AVerifications);
         }
 
         /// generated method from connector

@@ -144,6 +144,7 @@ OpenPetra:
                     General:
                         MaintainBudget: {ActionOpenScreen=TFrmMaintainBudget}
                         AutoGenerateBudget: {ActionOpenScreen=TFrmAutoGenerateBudget}
+                        ConsolidateBudgets: {ActionClick=TConsolidateBudgets.ConsolidateBudgets}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                     SearchBoxes: [Transaction, Batch]
                     General:

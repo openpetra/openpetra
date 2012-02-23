@@ -14369,10 +14369,18 @@
     <!-- Explicit Indexes on table a_ap_supplier  -->
   </table>
   <table name="a_ap_document"
-         descr="This is either an invoice or a credit note in the Accounts Payable system."
+         descr="Either an invoice or a credit note in the Accounts Payable system."
          area=""
          dumpname="a_apdoc"
          group="ap">
+    <tablefield name="a_ap_document_id_i"
+                type="integer"
+                sequence="seq_ap_document"
+                descr="Unique key for this record"
+                format="&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9"
+                label="Unique Id"
+                notnull="yes"
+                initial="0"/>
     <tablefield name="a_ledger_number_i"
                 type="integer"
                 descr="Reference to the ledger for this invoice."
@@ -14477,7 +14485,7 @@
     <!-- Constraints on table a_ap_document -->
     <primarykey name="a_ap_document_pk"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i"/>
+                thisFields="a_ap_document_id_i"/>
     <foreignkey name="a_ap_document_fk1"
                 descr=""
                 thisFields="a_ledger_number_i"
@@ -14506,13 +14514,13 @@
                 format=""
                 notnull="yes"
                 label="Ledger Number"/>
-    <tablefield name="a_credit_note_number_i"
+    <tablefield name="a_credit_note_document_id_i"
                 type="integer"
                 descr="Reference to the credit note."
                 format=""
                 notnull="yes"
                 label="Credit Note Number"/>
-    <tablefield name="a_invoice_number_i"
+    <tablefield name="a_invoice_document_id_i"
                 type="integer"
                 descr="Reference to the invoice."
                 format=""
@@ -14526,17 +14534,17 @@
     <!-- Constraints on table a_crdt_note_invoice_link -->
     <primarykey name="a_crdt_note_invoice_link_pk"
                 descr=""
-                thisFields="a_ledger_number_i, a_credit_note_number_i, a_invoice_number_i"/>
+                thisFields="a_credit_note_document_id_i, a_invoice_document_id_i"/>
     <foreignkey name="a_crdt_note_invoice_link_fk1"
                 descr=""
-                thisFields="a_ledger_number_i, a_credit_note_number_i"
+                thisFields="a_credit_note_document_id_i"
                 otherTable="a_ap_document"
-                otherFields="a_ledger_number_i, a_ap_number_i"/>
+                otherFields="a_ap_document_id_i"/>
     <foreignkey name="a_crdt_note_invoice_link_fk2"
                 descr=""
-                thisFields="a_ledger_number_i, a_invoice_number_i"
+                thisFields="a_invoice_document_id_i"
                 otherTable="a_ap_document"
-                otherFields="a_ledger_number_i, a_ap_number_i"/>
+                otherFields="a_ap_document_id_i"/>
     <!-- Explicit Indexes on table a_crdt_note_invoice_link  -->
   </table>
   <table name="a_ap_document_detail"
@@ -14550,12 +14558,12 @@
                 format=""
                 notnull="yes"
                 label="Ledger Number"/>
-    <tablefield name="a_ap_number_i"
+    <tablefield name="a_ap_document_id_i"
                 type="integer"
                 descr="Reference to the document"
                 format=""
                 notnull="yes"
-                label="AP Number"/>
+                label="AP Document"/>
     <tablefield name="a_detail_number_i"
                 type="integer"
                 descr="A unique number for this detail for its document."
@@ -14604,7 +14612,7 @@
     <!-- Constraints on table a_ap_document_detail -->
     <primarykey name="a_ap_document_detail_pk"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i, a_detail_number_i"/>
+                thisFields="a_ap_document_id_i, a_detail_number_i"/>
     <foreignkey name="a_ap_document_detail_fk1"
                 descr=""
                 thisFields="a_ledger_number_i"
@@ -14612,9 +14620,9 @@
                 otherFields="a_ledger_number_i"/>
     <foreignkey name="a_ap_document_detail_fk2"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i"
+                thisFields="a_ap_document_id_i"
                 otherTable="a_ap_document"
-                otherFields="a_ledger_number_i, a_ap_number_i"/>
+                otherFields="a_ap_document_id_i"/>
     <foreignkey name="a_ap_document_detail_fk3"
                 descr=""
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"
@@ -14731,12 +14739,12 @@
                 help="Enter the ledger number"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="a_ap_number_i"
+    <tablefield name="a_ap_document_id_i"
                 type="integer"
-                descr="Accounts Payable Sequence Number"
+                descr="AP document ref"
                 format="&gt;&gt;&gt;&gt;9"
-                label="AP Number"
-                columnlabel="AP Number"
+                label="AP Document"
+                columnlabel="AP Document"
                 notnull="yes"
                 initial="0"/>
     <tablefield name="a_payment_number_i"
@@ -14756,7 +14764,7 @@
                 label="Amount"/>
     <primarykey name="a_ap_document_payment_pk"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i, a_payment_number_i"/>
+                thisFields="a_ap_document_id_i"/>
     <foreignkey name="a_ap_document_payment_fk1"
                 descr=""
                 thisFields="a_ledger_number_i"
@@ -14764,9 +14772,9 @@
                 otherFields="a_ledger_number_i"/>
     <foreignkey name="a_ap_document_payment_fk2"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i"
+                thisFields="a_ap_document_id_i"
                 otherTable="a_ap_document"
-                otherFields="a_ledger_number_i, a_ap_number_i"/>
+                otherFields="a_ap_document_id_i"/>
     <foreignkey name="a_ap_document_payment_fk3"
                 descr=""
                 thisFields="a_ledger_number_i, a_payment_number_i"
@@ -14858,12 +14866,12 @@
                 help="Enter the ledger number"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="a_ap_number_i"
+    <tablefield name="a_ap_document_id_i"
                 type="integer"
-                descr="Accounts Payable Sequence Number"
+                descr="AP Document ref"
                 format="&gt;&gt;&gt;&gt;9"
-                label="AP Number"
-                columnlabel="AP Number"
+                label="AP Doc"
+                columnlabel="AP Doc"
                 notnull="yes"
                 initial="0"/>
     <tablefield name="a_payment_number_i"
@@ -14883,7 +14891,7 @@
                 label="Amount"/>
     <primarykey name="a_ep_document_payment_pk"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i, a_payment_number_i"/>
+                thisFields="a_ap_document_id_i"/>
     <foreignkey name="a_ep_document_payment_fk1"
                 descr=""
                 thisFields="a_ledger_number_i"
@@ -14891,9 +14899,9 @@
                 otherFields="a_ledger_number_i"/>
     <foreignkey name="a_ep_document_payment_fk2"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i"
+                thisFields="a_ap_document_id_i"
                 otherTable="a_ap_document"
-                otherFields="a_ledger_number_i, a_ap_number_i"/>
+                otherFields="a_ap_document_id_i"/>
     <foreignkey name="a_ep_document_payment_fk3"
                 descr=""
                 thisFields="a_ledger_number_i, a_payment_number_i"
@@ -14914,7 +14922,7 @@
                 help="Enter the ledger number"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="a_ap_number_i"
+    <tablefield name="a_ap_document_id_i"
                 type="integer"
                 descr="Accounts Payable Sequence Number"
                 format="&gt;&gt;&gt;&gt;9"
@@ -14952,12 +14960,12 @@
     <!-- Constraints on table a_ap_anal_attrib -->
     <primarykey name="a_ap_anal_attrib_pk"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i, a_detail_number_i, a_analysis_type_code_c"/>
+                thisFields="a_ap_document_id_i, a_detail_number_i, a_analysis_type_code_c"/>
     <foreignkey name="a_ap_anal_attrib_fk1"
                 descr=""
-                thisFields="a_ledger_number_i, a_ap_number_i, a_detail_number_i"
+                thisFields="a_ap_document_id_i, a_detail_number_i"
                 otherTable="a_ap_document_detail"
-                otherFields="a_ledger_number_i, a_ap_number_i, a_detail_number_i"/>
+                otherFields="a_ap_document_id_i, a_detail_number_i"/>
     <foreignkey name="a_ap_anal_attrib_fk2"
                 descr=""
                 thisFields="a_ledger_number_i, a_account_code_c, a_analysis_type_code_c"
@@ -26590,6 +26598,14 @@
     <!-- Explicit Indexes on table s_group_file_info  -->
   </table>
   <sequence name="seq_application"
+            descr=""
+            initial="0"
+            increment="1"
+            cycleonlimit="no"
+            minval="0"
+            maxval="999999999"
+            area=""/>
+  <sequence name="seq_ap_document"
             descr=""
             initial="0"
             increment="1"

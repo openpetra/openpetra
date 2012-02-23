@@ -115,7 +115,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <param name="ACriteriaData">HashTable containing non-empty Find parameters</param>
         public void FindSupplier(DataTable ACriteriaData)
         {
-            FSearchTransactions = false; 
+            FSearchTransactions = false;
             FSearchSupplierOrInvoice = true;
             PerformSearch(ACriteriaData);
         }
@@ -126,13 +126,13 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <param name="ACriteriaData">Optional HashTable containing "DaysPlus" for "due by" calculation</param>
         public void FindInvoices(DataTable ACriteriaData)
         {
-            FSearchTransactions = false; 
+            FSearchTransactions = false;
             FSearchSupplierOrInvoice = false;
             PerformSearch(ACriteriaData);
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ASupplierKey"></param>
@@ -160,6 +160,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         public ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
         {
             ALedgerTable Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+
             return Tbl;
         }
 
@@ -184,38 +185,38 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             FAsyncExecProgress.StopAsyncronousExecution += new System.EventHandler(this.StopSearch);
 
             DataRow CriteriaRow = PrepareDataRow(ACriteriaData);
-            FLedgerNumber = (Int32) CriteriaRow["LedgerNumber"];
+            FLedgerNumber = (Int32)CriteriaRow["LedgerNumber"];
+
             if (FSearchTransactions)
             {
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
-                String SqlQuery = "SELECT "
-                    + "PUB_a_ap_document_payment.a_payment_number_i as ApNum, "
-                    + "a_document_code_c||'-Payment' as InvNum, "
-                    + "true as CreditNote, "
-                    + "a_amount_n as Amount, "
-                    + "'' as Status, "
-                    + "0 as DiscountPercent, "
-                    + "0 as DiscountDays, "
-                    + "PUB_a_ap_document_payment.s_date_created_d as Date\n"
-                    + " FROM PUB_a_ap_document_payment LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ledger_number_i=PUB_a_ap_document.a_ledger_number_i"
-                    + " AND PUB_a_ap_document_payment.a_ap_number_i=PUB_a_ap_document.a_ap_number_i\n"
-                    + " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + FLedgerNumber
-                    + " AND p_partner_key_n=" + PartnerKey
-                    + "\nUNION\n"
-                    + " SELECT "
-                    + "a_ap_number_i as ApNum, "
-                    + "a_document_code_c as InvNum, "
-                    + "a_credit_note_flag_l as CreditNote, "
-                    + "a_total_amount_n as Amount, "
-                    + "a_document_status_c as Status, "
-                    + "a_discount_percentage_n as DiscountPercent, "
-                    + "a_discount_days_i as DiscountDays, "
-                    + "a_date_issued_d as Date\n"
-                    + " FROM PUB_a_ap_document\n"
-                    + " WHERE a_ledger_number_i=" + FLedgerNumber
-                    + " AND p_partner_key_n=" + PartnerKey
-                    + " ORDER BY Date DESC"
-                    ;
+                String SqlQuery = "SELECT " +
+                                  "PUB_a_ap_document_payment.a_payment_number_i as ApNum, " +
+                                  "a_document_code_c||'-Payment' as InvNum, " +
+                                  "true as CreditNote, " +
+                                  "a_amount_n as Amount, " +
+                                  "'' as Status, " +
+                                  "0 as DiscountPercent, " +
+                                  "0 as DiscountDays, " +
+                                  "PUB_a_ap_document_payment.s_date_created_d as Date\n" +
+                                  " FROM PUB_a_ap_document_payment LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ap_document_id_i=PUB_a_ap_document.a_ap_document_id_i\n" +
+                                  " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + FLedgerNumber +
+                                  " AND p_partner_key_n=" + PartnerKey +
+                                  "\nUNION\n" +
+                                  " SELECT " +
+                                  "a_ap_number_i as ApNum, " +
+                                  "a_document_code_c as InvNum, " +
+                                  "a_credit_note_flag_l as CreditNote, " +
+                                  "a_total_amount_n as Amount, " +
+                                  "a_document_status_c as Status, " +
+                                  "a_discount_percentage_n as DiscountPercent, " +
+                                  "a_discount_days_i as DiscountDays, " +
+                                  "a_date_issued_d as Date\n" +
+                                  " FROM PUB_a_ap_document\n" +
+                                  " WHERE a_ledger_number_i=" + FLedgerNumber +
+                                  " AND p_partner_key_n=" + PartnerKey +
+                                  " ORDER BY Date DESC"
+                ;
                 FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
             }
             else
@@ -233,14 +234,14 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     WhereClause = WhereClause.Substring(4);
                 }
 
-            Hashtable ColumnNameMapping = new Hashtable();
-            FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(
-                FieldList,
-                FromClause,
-                WhereClause,
-                OrderByClause,
-                ColumnNameMapping,
-                ParametersArray);
+                Hashtable ColumnNameMapping = new Hashtable();
+                FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(
+                    FieldList,
+                    FromClause,
+                    WhereClause,
+                    OrderByClause,
+                    ColumnNameMapping,
+                    ParametersArray);
             }
 
             //
@@ -296,12 +297,11 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// Find out how much has already been paid off this invoice.
         /// (Also called from EditTransaction.)
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ApDocumentRef"></param>
+        /// <param name="ApDocumentId"></param>
         /// <param name="DocPaymntTbl">If this is null, a temporary reference is created.</param>
         /// <returns>Amount already paid</returns>
-         [NoRemoting]
-        public static Decimal GetPartPaidAmount(Int32 ALedgerNumber, Int32 ApDocumentRef, AApDocumentPaymentTable DocPaymntTbl)
+        [NoRemoting]
+        public static Decimal GetPartPaidAmount(Int32 ApDocumentId, AApDocumentPaymentTable DocPaymntTbl)
         {
             if (DocPaymntTbl == null)
             {
@@ -309,12 +309,10 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             }
 
             Decimal PaidAmount = 0m;
-            AApDocumentPaymentRow DocumentPaymentTemplate = DocPaymntTbl.NewRowTyped(false);
-            DocumentPaymentTemplate.LedgerNumber = ALedgerNumber;
-            DocumentPaymentTemplate.ApNumber = ApDocumentRef;
 
             AApDocumentPaymentTable PreviousPayments =
-                AApDocumentPaymentAccess.LoadUsingTemplate(DocumentPaymentTemplate, null);
+                AApDocumentPaymentAccess.LoadByPrimaryKey(ApDocumentId, null);
+
             foreach (AApDocumentPaymentRow PrevPaymentRow in PreviousPayments.Rows)
             {
                 PaidAmount += PrevPaymentRow.Amount;
@@ -348,9 +346,9 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 #endif
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
 
-            if (!FSearchTransactions && !FSearchSupplierOrInvoice)
-            {   // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
+            if (!FSearchTransactions && !FSearchSupplierOrInvoice) // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
 
+            {
                 try  // I need an extra column, but it might be already present - I can't really tell without generating an exception!
                 {
                     DataColumn NewColumn = new DataColumn("OutstandingAmount", typeof(Decimal));
@@ -360,17 +358,20 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 {
                 }
 
-
                 foreach (DataRow Row in ReturnValue.Rows)
                 {
                     Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"];
+
                     if (Row["a_document_status_c"].Equals(MFinanceConstants.AP_DOCUMENT_PAID))
                     {
                         Row["OutstandingAmount"] = 0.0m;
                     }
+
                     if (Row["a_document_status_c"].Equals(MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID))
                     {
-                        Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"] - GetPartPaidAmount(FLedgerNumber, (Int32)Row["a_ap_number_i"], null);
+                        Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"] - GetPartPaidAmount(
+                            (Int32)Row["a_ap_document_id_i"],
+                            null);
                     }
                 }
             }
@@ -429,11 +430,12 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     InternalParameters.Add(Param);
                 }
             }
-            else // I'm looking for a list of outstanding invoices 
+            else // I'm looking for a list of outstanding invoices
             {
                 // search by partner key
                 Int64 SupplierPartnerKey = Convert.ToInt64(ACriteriaRow["PartnerKey"]);
                 OdbcParameter Param;
+
                 if (SupplierPartnerKey > 0)
                 {
                     WhereClause += String.Format(" AND PUB_{0}.{1} = ?", AApSupplierTable.GetTableDBName(), AApSupplierTable.GetPartnerKeyDBName());
@@ -449,6 +451,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
                 WhereClause += String.Format(" AND {0} <> 'CANCELLED' AND {0} <> 'PAID'", AApDocumentTable.GetDocumentStatusDBName());
                 decimal DaysPlus = (decimal)ACriteriaRow["DaysPlus"];
+
                 if (DaysPlus >= 0)
                 {
                     DateTime Deadline = DateTime.Now.AddDays((double)DaysPlus);
@@ -476,7 +479,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 String DocTbl = "PUB_" + AApDocumentTable.GetTableDBName() + ".";
                 // TODO: FSearchSupplierOrInvoice: select invoices
-                return DocTbl + AApDocumentTable.GetApNumberDBName() + "," +
+                return DocTbl + AApDocumentTable.GetApDocumentIdDBName() + "," +
+                       DocTbl + AApDocumentTable.GetApNumberDBName() + "," +
                        DocTbl + AApDocumentTable.GetDocumentCodeDBName() + "," +
                        "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + "," +
                        "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +

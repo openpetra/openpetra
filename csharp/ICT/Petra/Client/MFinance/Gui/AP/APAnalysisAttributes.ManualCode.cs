@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,8 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 object[] RequiredRow = new object[]
                 {
-                    FMainDS.AApDocument[0].LedgerNumber,
-                    FMainDS.AApDocument[0].ApNumber,
+                    FMainDS.AApDocument[0].ApDocumentId,
                     DetailRow.DetailNumber,
                     ((AAnalysisAttributeRow)rv.Row).AnalysisTypeCode
                 };
@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     FoundRow = FMainDS.AApAnalAttrib.NewRowTyped();
                     FoundRow.LedgerNumber = FMainDS.AApDocument[0].LedgerNumber;
-                    FoundRow.ApNumber = FMainDS.AApDocument[0].ApNumber;
+                    FoundRow.ApDocumentId = FMainDS.AApDocument[0].ApDocumentId;
                     FoundRow.DetailNumber = DetailRow.DetailNumber;
                     FoundRow.AccountCode = ((AAnalysisAttributeRow)rv.Row).AccountCode;
                     FoundRow.AnalysisTypeCode = ((AAnalysisAttributeRow)rv.Row).AnalysisTypeCode;
@@ -89,7 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // So now I should see the required rows:
-            FMainDS.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
+            FMainDS.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                AApAnalAttribTable.GetApDocumentIdDBName(), DetailRow.ApDocumentId,
                 AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
                 AApAnalAttribTable.GetAccountCodeDBName(), DetailRow.AccountCode
                 );

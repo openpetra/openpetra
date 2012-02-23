@@ -1165,7 +1165,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                     TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).DataView);
                     TmpRowIndex = grdRecordList.Rows.DataSourceRowToIndex(TmpDataRowView);
 
-//                  MessageBox.Show("TmpRowIndex: " + TmpRowIndex.ToString());
+                    //                  MessageBox.Show("TmpRowIndex: " + TmpRowIndex.ToString());
 
                     // Determine PrimaryKey of the current row in the Grid
                     LocationKey = FLogic.DetermineCurrentKey(TmpRowIndex + 1);
@@ -1199,12 +1199,16 @@ namespace Ict.Petra.Client.MCommon.Gui
                 // 'Done' button must always be enabled when adding an record
                 btnEditRecord.Enabled = true;
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
-#if DEBUGMODE
                 MessageBox.Show("Exception occured in ActionNewRecord: " + Exp.ToString());
-#endif
             }
+#else
+            catch (Exception)
+            {
+            }
+#endif
         }
 
         /// <summary>

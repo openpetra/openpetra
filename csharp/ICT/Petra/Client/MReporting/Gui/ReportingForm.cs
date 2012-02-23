@@ -477,7 +477,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>
         /// This can be used directly by external functions that need to generate
-        /// a report without showing the UI for it.
+        /// a report without first showing the UI for it. See method CreateReportNoGui in AP_PaymentReport.ManualCode.cs
         /// </summary>
         /// <param name="ACalculator">This must be set up already</param>
         /// <param name="ACallerForm">Parent Form</param>
@@ -503,6 +503,21 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        delegate void CrossThreadUpdate ();
+
+        void UpdateParentFormEndOfReport()
+        {
+            if (FWinForm.InvokeRequired)
+            {
+                FWinForm.Invoke(new CrossThreadUpdate(UpdateParentFormEndOfReport));
+            }
+            else
+            {
+                FWinForm.Cursor = Cursors.Default;
+                ((IFrmReporting)this.FTheForm).EnableBusy(false);
+            }
+        }
+
         /// <summary>
         /// This procedure does the calculation of the report and provides error messages. It is called in a new thread, by MI_GenerateReport_Click.
         /// I'm just going to call the static version, above.
@@ -511,9 +526,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private void GenerateReport()
         {
             GenerateReport(FCalculator, FWinForm, FReportName, FWrapColumn);
-            this.FWinForm.Cursor = Cursors.Default;
-            ((IFrmReporting)this.FTheForm).EnableBusy(false);
-
+            UpdateParentFormEndOfReport();
         }
 
         /// <summary>
@@ -536,7 +549,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// This was previously "protected", so that might give me some problem...
+        /// Called at the end of GenerateReport
+        /// (This was previously "protected", so that might give me some problem...)
         /// </summary>
         /// <param name="Calculator"></param>
         /// <param name="ACallerForm"></param>
@@ -565,9 +579,12 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>
         /// Called after the calculation of the report has been finished.
-        /// Converted to static so that it can be called from elsewhere.
+        /// Converted to static so that it can be called from the static GenerateReport
         /// </summary>
-        /// <returns>void</returns>
+        /// <param name="Calculator"></param>
+        /// <param name="ACallerForm"></param>
+        /// <param name="AReportName"></param>
+        /// <param name="AWrapColumn"></param>
         public static void PreviewReport(TRptCalculator Calculator, Form ACallerForm, String AReportName, bool AWrapColumn)
         {
             // Create a print window with all kinds of output options

@@ -47,7 +47,7 @@
               AND PUB_a_ap_payment.a_payment_number_i &gt;= {{param_payment_num_from_i}}
               AND PUB_a_ap_payment.a_payment_number_i &lt;= {{param_payment_num_to_i}}
               AND PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i
-              AND PUB_a_ap_document_payment.a_ap_number_i = PUB_a_ap_document.a_ap_number_i
+              AND PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i
               AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
               AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
             </value>
@@ -148,6 +148,7 @@
             <value>
               SELECT DISTINCT
               PUB_a_ap_document.a_ap_number_i AS ApNumber,
+              PUB_a_ap_document.a_ap_document_id_i AS ApDocumentId,
               PUB_a_ap_document.a_document_code_c AS DocCode,
               PUB_a_ap_document.a_reference_c AS DocRef,
               PUB_a_ap_document.a_date_issued_d AS DocDate,
@@ -158,13 +159,21 @@
               PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_ap_document_payment.a_payment_number_i = {{PaymentNumber}}
-              AND PUB_a_ap_document_payment.a_ap_number_i = PUB_a_ap_document.a_ap_number_i
+              AND PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i
               AND PUB_a_ap_document.p_partner_key_n = {{SupplierKey}}
             </value>
           </queryDetail>
         </query>
       </calculation>
 
+
+      <calculation id="ApDocumentId" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="ApDocumentId"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
       <calculation id="ApNumber" returnsFormat="text" returns="text">
         <query>
@@ -217,8 +226,7 @@
               a_detail_number_i
               FROM PUB_a_ap_document_detail
               WHERE
-              a_ledger_number_i = {{param_ledger_number_i}}
-              AND a_ap_number_i = {{ApNumber}}
+              a_ap_document_id_i = {{ApDocumentId}}
               ORDER BY a_detail_number_i
             </value>
           </queryDetail>

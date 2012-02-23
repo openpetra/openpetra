@@ -54,35 +54,40 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             rbtPayFullOutstandingAmount.CheckedChanged += new EventHandler(EnablePartialPayment);
         }
 
-        private void CreatePaymentTableEntries(AccountsPayableTDS ADataset, List<Int32> ADocumentsToPay)
+        private void CreatePaymentTableEntries(AccountsPayableTDS ADataset, List <Int32>ADocumentsToPay)
         {
-            ADataset.AApDocument.DefaultView.Sort = AApDocumentTable.GetApNumberDBName();
+            ADataset.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
 
-            foreach (Int32 apnumber in ADocumentsToPay)
+            foreach (Int32 ApDocId in ADocumentsToPay)
             {
-                int indexDocument = ADataset.AApDocument.DefaultView.Find(apnumber);
+                int indexDocument = ADataset.AApDocument.DefaultView.Find(ApDocId);
 
                 if (indexDocument != -1)
                 {
-                    AccountsPayableTDSAApDocumentRow apdocument = (AccountsPayableTDSAApDocumentRow)ADataset.AApDocument.DefaultView[indexDocument].Row;
+                    AccountsPayableTDSAApDocumentRow apdocument =
+                        (AccountsPayableTDSAApDocumentRow)ADataset.AApDocument.DefaultView[indexDocument].Row;
 
                     AApSupplierRow supplier = TFrmAPMain.GetSupplier(ADataset.AApSupplier, apdocument.PartnerKey);
 
                     if (supplier == null)
-                        // I need to load the supplier record into the TDS...
                     {
+                        // I need to load the supplier record into the TDS...
                         ADataset.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApSupplier(apdocument.LedgerNumber, apdocument.PartnerKey));
                         supplier = TFrmAPMain.GetSupplier(ADataset.AApSupplier, apdocument.PartnerKey);
                     }
+
                     if (supplier != null)
                     {
                         AccountsPayableTDSAApPaymentRow supplierPaymentsRow = null;
 
                         // My TDS may already have a AApPayment row for this supplier.
-                        ADataset.AApPayment.DefaultView.RowFilter = String.Format("{0}='{1}'", AccountsPayableTDSAApPaymentTable.GetSupplierKeyDBName(), supplier.PartnerKey);
+                        ADataset.AApPayment.DefaultView.RowFilter = String.Format("{0}='{1}'", AccountsPayableTDSAApPaymentTable.GetSupplierKeyDBName(
+                                ), supplier.PartnerKey);
+
                         if (ADataset.AApPayment.DefaultView.Count > 0)
                         {
                             supplierPaymentsRow = (AccountsPayableTDSAApPaymentRow)ADataset.AApPayment.DefaultView[0].Row;
+
                             if (apdocument.CreditNoteFlag)
                             {
                                 supplierPaymentsRow.TotalAmountToPay -= apdocument.OutstandingAmount;
@@ -91,6 +96,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             {
                                 supplierPaymentsRow.TotalAmountToPay += apdocument.OutstandingAmount;
                             }
+
                             supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
                         }
                         else
@@ -119,6 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                                 eShortNameFormat.eReverseWithoutTitle);
 
                             supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.MethodOfPayment + ")";
+
                             if (apdocument.CreditNoteFlag)
                             {
                                 supplierPaymentsRow.TotalAmountToPay = 0 - apdocument.OutstandingAmount;
@@ -127,6 +134,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             {
                                 supplierPaymentsRow.TotalAmountToPay = apdocument.OutstandingAmount;
                             }
+
                             supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
 
                             ADataset.AApPayment.Rows.Add(supplierPaymentsRow);
@@ -135,15 +143,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         AccountsPayableTDSAApDocumentPaymentRow paymentdetails = ADataset.AApDocumentPayment.NewRowTyped();
                         paymentdetails.LedgerNumber = supplierPaymentsRow.LedgerNumber;
                         paymentdetails.PaymentNumber = supplierPaymentsRow.PaymentNumber;
-                        paymentdetails.ApNumber = apnumber;
+                        paymentdetails.ApDocumentId = ApDocId;
                         paymentdetails.CurrencyCode = supplier.CurrencyCode;
                         paymentdetails.Amount = apdocument.TotalAmount;
                         paymentdetails.InvoiceTotal = apdocument.OutstandingAmount;
+
                         if (apdocument.CreditNoteFlag)
                         {
                             paymentdetails.Amount = 0 - paymentdetails.Amount;
                             paymentdetails.InvoiceTotal = 0 - paymentdetails.InvoiceTotal;
                         }
+
                         paymentdetails.PayFullInvoice = true;
 
                         // TODO: discounts
@@ -168,6 +178,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public void AddDocumentsToPayment(AccountsPayableTDS ADataset, List <Int32>ADocumentsToPay)
         {
             FMainDS = ADataset;
+
             if (FMainDS.AApPayment == null)
             {
                 FMainDS.Merge(new AccountsPayableTDSAApPaymentTable()); // Because of these lines, AddDocumentsToPayment may only be called once per payment.
@@ -191,7 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TFinanceControls.InitialiseAccountList(ref cmbBankAccount, FMainDS.AApDocument[0].LedgerNumber, true, false, true, true);
 
-            grdDetails.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber, 50);
+//          grdDetails.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber, 50);
 
             grdDetails.AddTextColumn("Invoice No", FMainDS.AApDocumentPayment.ColumnDocumentCode, 80);
             grdDetails.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
@@ -213,10 +224,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void CalculateTotalPayment()
         {
-            FMainDS.AApDocumentPayment.DefaultView.RowFilter = String.Format("{0}={1}", 
+            FMainDS.AApDocumentPayment.DefaultView.RowFilter = String.Format("{0}={1}",
                 AApDocumentPaymentTable.GetPaymentNumberDBName(), FSelectedPaymentRow.PaymentNumber);
 
             FSelectedPaymentRow.Amount = 0m;
+
             foreach (DataRowView rv in FMainDS.AApDocumentPayment.DefaultView)
             {
                 AccountsPayableTDSAApDocumentPaymentRow DocPaymentRow = (AccountsPayableTDSAApDocumentPaymentRow)rv.Row;
@@ -278,7 +290,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
             }
 
-
             FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
             rbtPayFullOutstandingAmount.Checked = FSelectedDocumentRow.PayFullInvoice;
             rbtPayAPartialAmount.Checked = !rbtPayFullOutstandingAmount.Checked;
@@ -289,20 +300,27 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void MakePayment(object sender, EventArgs e)
         {
             FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
+            AccountsPayableTDSAApPaymentTable AApPayment = FMainDS.AApPayment;
+            AccountsPayableTDSAApDocumentPaymentTable AApDocumentPayment = FMainDS.AApDocumentPayment;
 
             //
             // I want to check whether the user is paying more than the due amount on any of these payments...
             //
-            foreach (AccountsPayableTDSAApPaymentRow PaymentRow in FMainDS.AApPayment.Rows)
+            foreach (AccountsPayableTDSAApPaymentRow PaymentRow in AApPayment.Rows)
             {
-                FMainDS.AApDocumentPayment.DefaultView.RowFilter = String.Format("{0}={1}",AApDocumentPaymentTable.GetPaymentNumberDBName(), PaymentRow.PaymentNumber);
+                FMainDS.AApDocumentPayment.DefaultView.RowFilter = String.Format("{0}={1}",
+                    AApDocumentPaymentTable.GetPaymentNumberDBName(), PaymentRow.PaymentNumber);
+
                 foreach (DataRowView rv in FMainDS.AApDocumentPayment.DefaultView)
                 {
                     AccountsPayableTDSAApDocumentPaymentRow DocPaymentRow = (AccountsPayableTDSAApDocumentPaymentRow)rv.Row;
+
                     if (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal)
                     {
-                        String strMessage = String.Format(Catalog.GetString("Payment of {0:n2} {1} to {2} is more than the due amount.\r\nPress OK to accept this amount."),
-                            DocPaymentRow.Amount, PaymentRow.CurrencyCode, PaymentRow.SupplierName);
+                        String strMessage =
+                            String.Format(Catalog.GetString(
+                                    "Payment of {0:n2} {1} to {2} is more than the due amount.\r\nPress OK to accept this amount."),
+                                DocPaymentRow.Amount, PaymentRow.CurrencyCode, PaymentRow.SupplierName);
 
                         if (System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("OverPayment"), MessageBoxButtons.OKCancel)
                             == DialogResult.Cancel)
@@ -327,10 +345,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             DateTime PaymentDate = dateEffectiveDialog.SelectedDate;
             TVerificationResultCollection Verifications;
+            List<Int32> NewPaymentNumbers;
 
-            if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(FMainDS.AApPayment,
-                    FMainDS.AApDocumentPayment,
-                    PaymentDate, out Verifications))
+            if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
+                    AApPayment,
+                    AApDocumentPayment,
+                    PaymentDate,
+                    out NewPaymentNumbers,
+                    out Verifications))
             {
                 string ErrorMessages = String.Empty;
 
@@ -346,13 +368,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 //
-                // I need to find the payment number, which will have been set by the call to PostAPPayments..
+                // I need to find the min and max payment numbers, which have been returned from PostAPPayments..
                 //
-                Int32 PaymentNumber = FMainDS.AApPayment[0].PaymentNumber;
-                Int32 LedgerNumber = FMainDS.AApPayment[0].LedgerNumber;
+                Int32 MinPaymentNumber = NewPaymentNumbers[0];
+                Int32 MaxPaymentNumber = NewPaymentNumbers[0];
+                foreach (Int32 Num in NewPaymentNumbers)
+                {
+                    if (Num < MinPaymentNumber)
+                        MinPaymentNumber = Num;
+                    if (Num > MaxPaymentNumber)
+                        MaxPaymentNumber = Num;
+                }
+                Int32 LedgerNumber = AApPayment[0].LedgerNumber;
 
                 // Print Payment report..
-                TFrmAP_PaymentReport.CreateReportNoGui(LedgerNumber, PaymentNumber, this);
+                TFrmAP_PaymentReport.CreateReportNoGui(LedgerNumber, MinPaymentNumber, MaxPaymentNumber, this);
 
                 // TODO: show posting register of GL Batch?
 
@@ -364,6 +394,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     ((TFrmAPSupplierTransactions)Opener).Reload();
                 }
+
                 Close();
             }
         }
@@ -371,11 +402,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <summary>
         /// A payment made to a supplier needs to be reversed.
         /// It's done by creating and posting a set of matching "negatives" -
-        /// In the simplest case this is a single credit note matching an invoice 
+        /// In the simplest case this is a single credit note matching an invoice
         /// but it could be more complex. These negative documents are payed using
         /// a standard call to PostAPPayments.
-        /// 
-        /// After the reversal, I'll also create and post new copies of all 
+        ///
+        /// After the reversal, I'll also create and post new copies of all
         /// the invoices / credit notes that made up the original payment.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -383,13 +414,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public void ReversePayment(Int32 ALedgerNumber, Int32 APaymentNumber)
         {
             AccountsPayableTDS TempDS = TRemote.MFinance.AP.WebConnectors.LoadAPPayment(ALedgerNumber, APaymentNumber);
-            if (TempDS.AApPayment.Rows.Count == 0)
-            {  // Invalid Payment number?
+
+            if (TempDS.AApPayment.Rows.Count == 0) // Invalid Payment number?
+            {
                 MessageBox.Show(Catalog.GetString("The referenced payment Connot be loaded."), Catalog.GetString("Error"));
                 return;
             }
 
-            TempDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApNumberDBName();
+            TempDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
 
             //
             // First I'll check that the amounts add up:
@@ -398,7 +430,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             foreach (AApDocumentPaymentRow PaymentRow in TempDS.AApDocumentPayment.Rows)
             {
-                Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApNumber);
+                Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApDocumentId);
                 AApDocumentRow DocumentRow = TempDS.AApDocument[DocIdx];
 
                 if (DocumentRow.CreditNoteFlag)
@@ -416,8 +448,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             //
             if (PaidDocumentsTotal != TempDS.AApPayment[0].Amount)
             {
-                String ErrorMsg = String.Format(Catalog.GetString("This Payment cannot be reversed automatically because the total amount of the referenced documents ({0:n2} {1}) differs from the amount in the payment ({2:n2} {3})."),
-                    PaidDocumentsTotal, TempDS.AApSupplier[0].CurrencyCode, TempDS.AApPayment[0].Amount, TempDS.AApSupplier[0].CurrencyCode);
+                String ErrorMsg =
+                    String.Format(Catalog.GetString(
+                            "This Payment cannot be reversed automatically because the total amount of the referenced documents ({0:n2} {1}) differs from the amount in the payment ({2:n2} {3})."),
+                        PaidDocumentsTotal, TempDS.AApSupplier[0].CurrencyCode, TempDS.AApPayment[0].Amount, TempDS.AApSupplier[0].CurrencyCode);
                 MessageBox.Show(ErrorMsg, "Reverse Payment", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -432,19 +466,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             //
             String PaymentMsg = Catalog.GetString("Do you want to reverse this payment?");
 
-            PaymentMsg += ("\r\n" + String.Format("Payment made {0} to {1}\r\n\r\nRelated invoices:", 
-                TDate.DateTimeToLongDateString2(TempDS.AApPayment[0].PaymentDate.Value),TempDS.PPartner[0].PartnerShortName));
-
+            PaymentMsg += ("\r\n" + String.Format("Payment made {0} to {1}\r\n\r\nRelated invoices:",
+                               TDate.DateTimeToLongDateString2(TempDS.AApPayment[0].PaymentDate.Value), TempDS.PPartner[0].PartnerShortName));
 
             foreach (AApDocumentPaymentRow PaymentRow in TempDS.AApDocumentPayment.Rows)
             {
-                Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApNumber);
+                Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApDocumentId);
                 AApDocumentRow DocumentRow = TempDS.AApDocument[DocIdx];
                 PaymentMsg += ("\r\n" + String.Format("     {2} ({3})  {0:n2} {1}",
-                    DocumentRow.TotalAmount, TempDS.AApSupplier[0].CurrencyCode, DocumentRow.DocumentCode, DocumentRow.Reference));
+                                   DocumentRow.TotalAmount, TempDS.AApSupplier[0].CurrencyCode, DocumentRow.DocumentCode, DocumentRow.Reference));
             }
+
             PaymentMsg += ("\r\n\r\n" + String.Format("Total payment {0:n2} {1}", TempDS.AApPayment[0].Amount, TempDS.AApSupplier[0].CurrencyCode));
-            DialogResult YesNo = MessageBox.Show(PaymentMsg, "Reverse Payment",MessageBoxButtons.YesNo);
+            DialogResult YesNo = MessageBox.Show(PaymentMsg, "Reverse Payment", MessageBoxButtons.YesNo);
+
             if (YesNo == DialogResult.No)
             {
                 return;
@@ -471,17 +506,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AccountsPayableTDS ReverseDs = new AccountsPayableTDS();
             Int32 NewApNum = -1;
             TVerificationResultCollection Verifications;
+            List<Int32> NewPaymentNumbers;
 
             //
             // Then a reversed copy of each referenced document
             //
             foreach (AApDocumentPaymentRow PaymentRow in TempDS.AApDocumentPayment.Rows)
             {
-                Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApNumber);
+                Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApDocumentId);
                 AApDocumentRow OldDocumentRow = TempDS.AApDocument[DocIdx];
                 AApDocumentRow NewDocumentRow = ReverseDs.AApDocument.NewRowTyped();
 
                 DataUtilities.CopyAllColumnValues(OldDocumentRow, NewDocumentRow);
+                NewDocumentRow.ApDocumentId = (Int32)TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_ap_document);
                 NewDocumentRow.CreditNoteFlag = !OldDocumentRow.CreditNoteFlag; // Here's the actual reversal!
                 NewDocumentRow.DocumentCode = "Reversal " + OldDocumentRow.DocumentCode;
                 NewDocumentRow.Reference = "Reversal " + OldDocumentRow.Reference;
@@ -492,27 +529,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 NewDocumentRow.ApNumber = NewApNum;
                 ReverseDs.AApDocument.Rows.Add(NewDocumentRow);
 
-                TempDS.AApDocumentDetail.DefaultView.RowFilter = String.Format("{0}={1}", 
-                    AApDocumentDetailTable.GetApNumberDBName(), OldDocumentRow.ApNumber);
+                TempDS.AApDocumentDetail.DefaultView.RowFilter = String.Format("{0}={1}",
+                    AApDocumentDetailTable.GetApDocumentIdDBName(), OldDocumentRow.ApNumber);
+
                 foreach (DataRowView rv in TempDS.AApDocumentDetail.DefaultView)
                 {
                     AApDocumentDetailRow OldDetailRow = (AApDocumentDetailRow)rv.Row;
                     AApDocumentDetailRow NewDetailRow = ReverseDs.AApDocumentDetail.NewRowTyped();
                     DataUtilities.CopyAllColumnValues(OldDetailRow, NewDetailRow);
-                    NewDetailRow.ApNumber = NewApNum;
+                    NewDetailRow.ApDocumentId = NewDocumentRow.ApDocumentId;
                     ReverseDs.AApDocumentDetail.Rows.Add(NewDetailRow);
                 }
 
                 //
                 // if the invoice had AnalAttrib records attached, I need to copy those over..
                 TempDS.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1}",
-                    AApAnalAttribTable.GetApNumberDBName(), OldDocumentRow.ApNumber);
+                    AApAnalAttribTable.GetApDocumentIdDBName(), OldDocumentRow.ApDocumentId);
+
                 foreach (DataRowView rv in TempDS.AApAnalAttrib.DefaultView)
                 {
                     AApAnalAttribRow OldAttribRow = (AApAnalAttribRow)rv.Row;
                     AApAnalAttribRow NewAttribRow = ReverseDs.AApAnalAttrib.NewRowTyped();
                     DataUtilities.CopyAllColumnValues(OldAttribRow, NewAttribRow);
-                    NewAttribRow.ApNumber = NewApNum;
+                    NewAttribRow.ApDocumentId = NewDocumentRow.ApDocumentId;
                     ReverseDs.AApAnalAttrib.Rows.Add(NewAttribRow);
                 }
 
@@ -542,22 +581,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             //
             // The process of saving those new documents should have given them all shiny new ApNumbers,
             // So finally I need to make a list of those Document numbers, and post them.
-            List<Int32> PostTheseDocs = new List<Int32>();
+            List <Int32>PostTheseDocs = new List <Int32>();
+
             foreach (AApDocumentRow DocumentRow in ReverseDs.AApDocument.Rows)
             {
                 PostTheseDocs.Add(DocumentRow.ApNumber);
             }
-
 
             //
             // Now I can post these new documents, and pay them:
             //
 
             if (!TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
-                   ALedgerNumber,
-                   PostTheseDocs,
-                   PostingDate,
-                   out Verifications))
+                    ALedgerNumber,
+                    PostTheseDocs,
+                    PostingDate,
+                    out Verifications))
             {
                 string ErrorMessages = String.Empty;
 
@@ -574,10 +613,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             CreatePaymentTableEntries(ReverseDs, PostTheseDocs);
+            AccountsPayableTDSAApPaymentTable AApPayment = ReverseDs.AApPayment;
+            AccountsPayableTDSAApDocumentPaymentTable AApDocumentPayment = ReverseDs.AApDocumentPayment;
 
-            if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(ReverseDs.AApPayment,
-                    ReverseDs.AApDocumentPayment,
-                    PostingDate, out Verifications))
+            if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
+                    AApPayment,
+                    AApDocumentPayment,
+                    PostingDate,
+                    out NewPaymentNumbers,
+                    out Verifications))
             {
                 string ErrorMessages = String.Empty;
 
@@ -590,7 +634,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reverse Payment Failed"));
                 //
-                // What to do now? I've created these negative documents, and they're posted, 
+                // What to do now? I've created these negative documents, and they're posted,
                 // but they can't be paid for some reason.
                 //
                 return;
@@ -605,39 +649,42 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             foreach (AApDocumentPaymentRow PaymentRow in TempDS.AApDocumentPayment.Rows)
             {
-                Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApNumber);
+                Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApDocumentId);
                 AApDocumentRow OldDocumentRow = TempDS.AApDocument[DocIdx];
                 AApDocumentRow NewDocumentRow = CreateDs.AApDocument.NewRowTyped();
 
                 DataUtilities.CopyAllColumnValues(OldDocumentRow, NewDocumentRow);
+                NewDocumentRow.ApDocumentId = (Int32)TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_ap_document);
                 NewDocumentRow.DocumentCode = "Duplicate " + OldDocumentRow.DocumentCode;
                 NewDocumentRow.Reference = "Duplicate " + OldDocumentRow.Reference;
                 NewDocumentRow.DateEntered = PostingDate;
                 NewDocumentRow.ApNumber = NewApNum;
                 NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
                 CreateDs.AApDocument.Rows.Add(NewDocumentRow);
+
                 TempDS.AApDocumentDetail.DefaultView.RowFilter = String.Format("{0}={1}",
-                    AApDocumentDetailTable.GetApNumberDBName(), OldDocumentRow.ApNumber);
+                    AApDocumentDetailTable.GetApDocumentIdDBName(), OldDocumentRow.ApDocumentId);
 
                 foreach (DataRowView rv in TempDS.AApDocumentDetail.DefaultView)
                 {
                     AApDocumentDetailRow OldDetailRow = (AApDocumentDetailRow)rv.Row;
                     AApDocumentDetailRow NewDetailRow = CreateDs.AApDocumentDetail.NewRowTyped();
                     DataUtilities.CopyAllColumnValues(OldDetailRow, NewDetailRow);
-                    NewDetailRow.ApNumber = NewApNum;
+                    NewDetailRow.ApDocumentId = NewDocumentRow.ApDocumentId;
                     CreateDs.AApDocumentDetail.Rows.Add(NewDetailRow);
                 }
 
                 //
                 // if the invoice had AnalAttrib records attached, I need to copy those over..
                 TempDS.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1}",
-                    AApAnalAttribTable.GetApNumberDBName(), OldDocumentRow.ApNumber);
+                    AApAnalAttribTable.GetApDocumentIdDBName(), OldDocumentRow.ApDocumentId);
+
                 foreach (DataRowView rv in TempDS.AApAnalAttrib.DefaultView)
                 {
                     AApAnalAttribRow OldAttribRow = (AApAnalAttribRow)rv.Row;
                     AApAnalAttribRow NewAttribRow = CreateDs.AApAnalAttrib.NewRowTyped();
                     DataUtilities.CopyAllColumnValues(OldAttribRow, NewAttribRow);
-                    NewAttribRow.ApNumber = NewApNum;
+                    NewAttribRow.ApDocumentId = NewDocumentRow.ApDocumentId;
                     CreateDs.AApAnalAttrib.Rows.Add(NewAttribRow);
                 }
 
@@ -666,9 +713,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // The process of saving those new documents should have given them all shiny new ApNumbers,
             // So finally I need to make a list of those Document numbers, and post them.
             PostTheseDocs.Clear();
+
             foreach (AApDocumentRow DocumentRow in CreateDs.AApDocument.Rows)
             {
-                PostTheseDocs.Add(DocumentRow.ApNumber);
+                PostTheseDocs.Add(DocumentRow.ApDocumentId);
             }
 
             if (!TRemote.MFinance.AP.WebConnectors.PostAPDocuments(ALedgerNumber, PostTheseDocs, PostingDate, out Verifications))
@@ -697,7 +745,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 ((TFrmAPSupplierTransactions)Opener).Reload();
             }
-
         }
     }
 }

@@ -497,12 +497,24 @@ namespace Ict.Petra.Client.CommonForms
          * @param s the text to be displayed in the StatusBar
          *
          */
+        delegate void WriteCallback (String s);
+
+        /// <summary>
+        /// (Thread safe)
+        /// </summary>
+        /// <param name="s"></param>
         public void WriteToStatusBar(String s)
         {
             if (FStatusBar != null)
             {
-                // StatusBar appears to be threadsafe; otherwise you would need a Invoke(System.Delegate(@myDelegate)); call
-                FStatusBar.ShowMessage(s);
+                if (FStatusBar.InvokeRequired)
+                {
+                    FStatusBar.Invoke(new WriteCallback(WriteToStatusBar), new object[] { s });
+                }
+                else
+                {
+                    FStatusBar.ShowMessage(s);
+                }
             }
         }
 
