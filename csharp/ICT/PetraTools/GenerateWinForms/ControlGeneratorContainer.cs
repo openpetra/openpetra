@@ -763,4 +763,98 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return Controls;
         }
     }
+
+    /// <summary>
+    /// base class for generators for container controls
+    /// </summary>
+    public class ContainerGenerator : TControlGenerator
+    {
+        List <TControlDef>FChildren = new List <TControlDef>();
+        bool FCreateControlsAddStatements = true;
+
+        /// <summary>
+        /// the children of this container, ie. controls that live in this container
+        /// </summary>
+        public List <TControlDef>Children
+        {
+            get
+            {
+                return FChildren;
+            }
+        }
+
+        /// <summary>
+        /// code for creating the controls and adding them to the container
+        /// </summary>
+        public bool CreateControlsAddStatements
+        {
+            get
+            {
+                return FCreateControlsAddStatements;
+            }
+
+            set
+            {
+                FCreateControlsAddStatements = value;
+            }
+        }
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <param name="type"></param>
+        public ContainerGenerator(string prefix, System.Type type)
+            : base(prefix, type)
+        {
+        }
+
+        /// constructor
+        public ContainerGenerator(string prefix, System.String type)
+            : base(prefix, type)
+        {
+        }
+
+        /// <summary>
+        /// declaring the container control
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
+        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
+        {
+            base.GenerateDeclaration(writer, ctrl);
+            writer.AddContainer(ctrl.controlName);
+        }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
+        {
+            FChildren = new List <TControlDef>();
+
+            // add all the children
+            foreach (TControlDef child in container.FCodeStorage.FSortedControlList.Values)
+            {
+                if (child.parentName == container.controlName)
+                {
+                    FChildren.Add(child);
+                }
+            }
+
+            FChildren.Sort(new CtrlItemOrderComparer());
+
+            base.SetControlProperties(writer, container);
+
+            if (FCreateControlsAddStatements)
+            {
+                foreach (TControlDef child in FChildren)
+                {
+                    writer.CallControlFunction(container.controlName,
+                        "Controls.Add(this." +
+                        child.controlName + ")");
+                }
+            }
+
+            return writer.FTemplate;
+        }
+    }
 }

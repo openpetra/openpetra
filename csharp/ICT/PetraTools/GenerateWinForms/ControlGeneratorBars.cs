@@ -126,6 +126,168 @@ namespace Ict.Tools.CodeGeneration.Winforms
     }
 
     /// <summary>
+    /// generator for the toolstrip
+    /// </summary>
+    public class ToolStripGenerator : TControlGenerator
+    {
+        /// <summary>
+        /// where to dock
+        /// </summary>
+        public string FDocking = "Top";
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <param name="AType"></param>
+        public ToolStripGenerator(string prefix, System.Type AType)
+            : base(prefix, AType)
+        {
+            FGenerateLabel = false;
+            FLocation = false;
+            FDefaultHeight = 24;
+            FDefaultWidth = 10;
+        }
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <param name="AType"></param>
+        public ToolStripGenerator(string prefix, string AType)
+            : base(prefix, AType)
+        {
+            FGenerateLabel = false;
+            FLocation = false;
+            FDefaultHeight = 24;
+            FDefaultWidth = 10;
+        }
+
+        /// <summary>
+        /// declare the control
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
+        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
+        {
+            base.GenerateDeclaration(writer, ctrl);
+            writer.AddContainer(ctrl.controlName);
+        }
+
+        /// <summary>
+        /// get the controls that belong to the toolstrip
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        public static string GetListOfChildren(TFormWriter writer, TControlDef container)
+        {
+            // add all the children
+            string addChildren = "";
+
+            // TODO add Container elements in statusbar
+            if (container.controlName.StartsWith("stb"))
+            {
+                return addChildren;
+            }
+
+            List <XmlNode>childrenlist;
+
+            if (TYml2Xml.GetChild(container.xmlNode, "Controls") != null)
+            {
+                // this is for generated toolbar, eg. for the PrintPreviewControl
+                StringCollection childrenNames = TYml2Xml.GetElements(container.xmlNode, "Controls");
+                childrenlist = new List <XmlNode>();
+
+                foreach (string name in childrenNames)
+                {
+                    childrenlist.Add(container.xmlNode.OwnerDocument.CreateElement(name));
+                }
+            }
+            else
+            {
+                // usually, the toolbar buttons are direct children of the toolbar control
+                childrenlist = TYml2Xml.GetChildren(container.xmlNode, true);
+            }
+
+            //Console.WriteLine("Container: " + container.controlName);
+            foreach (XmlNode child in childrenlist)
+            {
+                // Console.WriteLine("Child: " + child.Name);
+                if (addChildren.Length > 0)
+                {
+                    addChildren += "," + Environment.NewLine + "            ";
+                }
+
+                /* Get unique name if we need it
+                 * at the moment we need it only for menu separators
+                 */
+                String UniqueChildName = child.Name;
+                TControlDef ControlDefChild = container.FCodeStorage.GetControl(child.Name);
+
+                if (ControlDefChild == null)
+                {
+                    UniqueChildName = TYml2Xml.GetAttribute(child, "UniqueName");
+                    ControlDefChild = container.FCodeStorage.GetControl(UniqueChildName);
+                }
+
+                addChildren = addChildren + UniqueChildName;                 //child.Name; //controlName;
+
+                if (ControlDefChild != null)
+                {
+                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(ControlDefChild);
+
+                    // add control itself
+                    if (ctrlGenerator != null)
+                    {
+                        ctrlGenerator.GenerateDeclaration(writer, ControlDefChild);
+                        ctrlGenerator.SetControlProperties(writer, ControlDefChild);
+                    }
+                }
+            }
+
+            return addChildren;
+        }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
+        {
+            string controlName = container.controlName;
+
+            // add all the children
+            string addChildren = GetListOfChildren(writer, container);
+
+            container.SetAttribute("Dock", FDocking);
+            base.SetControlProperties(writer, container);
+
+            if (addChildren.Length > 0)
+            {
+                writer.CallControlFunction(controlName,
+                    "Items.AddRange(new System.Windows.Forms.ToolStripItem[] {" + Environment.NewLine +
+                    "               " + addChildren +
+                    "})");
+            }
+
+            // todo: location?
+            // todo: event handler
+
+            /*
+             * this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
+             * this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+             * this.toolStripMenuItem1});
+             * this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+             * this.menuStrip1.Name = "menuStrip1";
+             * this.menuStrip1.Size = new System.Drawing.Size(138, 24);
+             * this.menuStrip1.TabIndex = 1;
+             * this.menuStrip1.Text = "menuStrip1";
+             * this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MenuStrip1ItemClicked);
+             */
+
+            return writer.FTemplate;
+        }
+    }
+
+    /// <summary>
     /// generator for a whole menu
     /// </summary>
     public class MenuGenerator : ToolStripGenerator
@@ -351,18 +513,4 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
     }
-
-#if TODO
-    /// <summary>
-    /// generator for a text box in the statusbar
-    /// </summary>
-    public class StatusBarTextGenerator : ProviderGenerator
-    {
-        /// <summary>constructor</summary>
-        public StatusBarTextGenerator()
-            : base("sbt", typeof(EWSoftware.StatusBarText.StatusBarTextProvider))
-        {
-        }
-    }
-#endif
 }
