@@ -16,10 +16,18 @@ RootNode:
         actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlInfo, sptTransactions]
             Width: 1000
             Height: 700
             Dock: Fill
+        sptTransactions:
+            SplitterOrientation: Horizontal
+            Dock: Fill
+            Panel1: pnlDetailGrid
+            Panel2: pnlDetails1
+        pnlDetails1:
+            Dock: Fill
+            Controls: [pnlDetails]
         pnlInfo:
             Controls:
                 Row0: [txtLedgerNumber, Empty0, txtBatchTotal]
@@ -62,7 +70,8 @@ RootNode:
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
         pnlDetails:
-            Dock: Bottom
+            Dock: Fill
+            Scrollbars: true
             # TODO: split gifts
             Controls: {TabOrder=Horizontal}
                 Row0: [txtDetailDonorKey]

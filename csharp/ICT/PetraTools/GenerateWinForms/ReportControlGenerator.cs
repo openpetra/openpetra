@@ -250,7 +250,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 string rbtName = "rbt" + controlName.Substring(3);
 
-                if (controlName.StartsWith("tableLayoutPanel"))
+                if (controlName.StartsWith("layoutPanel"))
                 {
                     // the table layouts of sub controls for each radio button need to be skipped
                     continue;

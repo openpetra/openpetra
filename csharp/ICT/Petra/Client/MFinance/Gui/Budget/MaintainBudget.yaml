@@ -50,7 +50,6 @@ RootNode:
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Dock: Bottom
             Controls:
                 Row0: [cmbDetailCostCentreCode]
                 Row1: [cmbDetailAccountCode]
@@ -94,7 +93,7 @@ RootNode:
                 Row3: [txtPeriod04Index, txtPeriod10Index]
                 Row4: [txtPeriod05Index, txtPeriod11Index]
                 Row5: [txtPeriod06Index, txtPeriod12Index, lblInflateBaseTotalAmount]
-        grpBudgetDetails: {ColSpan=5, Width:775, Height: 190}
+        grpBudgetDetails: {ColSpan=2, Width:775, Height: 190}
             Align: top-left
             Controls: 
                 Row0: [pnlBudgetTypeAdhoc]

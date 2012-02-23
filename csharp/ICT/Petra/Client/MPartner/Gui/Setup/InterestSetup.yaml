@@ -41,7 +41,6 @@ RootNode:
         pnlDescription:
             Controls:
                 Row0: [txtDetailDescription]
-            ColSpan: 3
         txtDetailInterest: {Label=Interest}
         cmbDetailCategory: {Label=Category, List=InterestCategoryList}
         txtDetailDescription: {Width=357}

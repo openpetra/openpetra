@@ -138,7 +138,7 @@ RootNode:
             ColWidths: [0=Fixed:300, 1=Fixed:115]
             RowHeights: [0=Fixed:28]
             Margin: 0,0,0,0
-            ColSpan: 6
+            ColSpan: 3
             Dock: Fill
             
         cmbFamilyAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}

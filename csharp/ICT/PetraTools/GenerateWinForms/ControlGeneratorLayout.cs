@@ -49,7 +49,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public TableLayoutPanelGenerator()
             : base("tlp", typeof(Panel))
         {
-            FAutoSize = true;
+            FAutoSize = false;
         }
 
         /// <summary>
@@ -82,6 +82,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             ctrl.SetAttribute("Dock", "Fill");
+            ctrl.SetAttribute("AutoScroll", "true");
             return base.SetControlProperties(writer, ctrl);
         }
 
@@ -190,6 +191,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             {
                                 int CurrentSpanWidth = 0;
 
+                                if (columnCounter + ctrl.colSpan > FColumnCount)
+                                {
+                                    throw new Exception("invalid colspan in control " + ctrl.controlName +
+                                        ". There are only " +
+                                        FColumnCount.ToString() + " columns overall");
+                                }
+
                                 for (int columnCounter2 = columnCounter; columnCounter2 < columnCounter + ctrl.colSpan; columnCounter2++)
                                 {
                                     CurrentSpanWidth += ColumnWidth[columnCounter2];
@@ -230,6 +238,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             int CurrentLeftPosition = 0;
+            int Width = 0;
+            int Height = 0;
 
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
@@ -268,10 +278,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
 
                     CurrentTopPosition += RowHeight[rowCounter];
+
+                    if (CurrentTopPosition > Height)
+                    {
+                        Height = CurrentTopPosition;
+                    }
                 }
 
                 CurrentLeftPosition += ColumnWidth[columnCounter];
+
+                if (CurrentLeftPosition > Width)
+                {
+                    Width = CurrentLeftPosition;
+                }
             }
+
+            TControlDef layoutControl = writer.FCodeStorage.GetControl(ctrlname);
+            layoutControl.SetAttribute("Width", Width.ToString());
+            layoutControl.SetAttribute("Height", Height.ToString());
+            writer.SetControlProperty(layoutControl, "Size", String.Format("new System.Drawing.Size({0}, {1})", Width, Height));
 
             // by default, the TabOrder is by column, Vertical
             if (FTabOrder != "Horizontal")
@@ -439,7 +464,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTlpName = CalculateName();
                 TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainerName);
 
-                if (!parentContainerName.StartsWith("tableLayoutPanel"))
+                if (!parentContainerName.StartsWith("layoutPanel"))
                 {
                     TControlDef parentContainer = writer.CodeStorage.GetControl(parentContainerName);
 

@@ -584,6 +584,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "BackColor", ctrl.GetAttribute("BackColor"));
             }
 
+            if (ctrl.HasAttribute("AutoScroll"))
+            {
+                writer.SetControlProperty(ctrl, "AutoScroll", ctrl.GetAttribute("AutoScroll"));
+            }
+
             ctrl.SetAttribute("DefaultWidth", FDefaultWidth.ToString());
 
             if ((ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height")) && (ctrl.GetAttribute("GenerateWithOtherControls") != "yes"))
@@ -615,13 +620,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() == "fill"))
             {
                 if ((ctrl.controlTypePrefix == "pnl") || (ctrl.controlTypePrefix == "grp")
-                    || ctrl.controlName.StartsWith("tableLayoutPanel"))
+                    || ctrl.controlName.StartsWith("layoutPanel"))
                 {
                     // for Mono, no other size information required; AutoSize would make the elements too high
                     // for Windows .Net, we need AutoSize, otherwise the controls have no size at all
-                    if (writer.CodeStorage.FTargetWinforms == "net")
+                    // if (writer.CodeStorage.FTargetWinforms == "net")
                     {
-                        writer.SetControlProperty(ctrl, "AutoSize", "true");
+//                        writer.SetControlProperty(ctrl, "AutoSize", "true");
                     }
                 }
             }

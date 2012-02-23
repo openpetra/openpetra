@@ -42,7 +42,6 @@ RootNode:
             Controls: 
                 Row0: [txtDetailLevelDescriptions, txtDetailLevelRangeLow, txtDetailLevelRangeHigh]
             ColWidths: [3=Fixed:60]
-            ColSpan: 3
         txtDetailCategory: {Label=Category}
         txtDetailDescription: {Label=Description, Width=260}
         txtDetailLevelDescriptions:

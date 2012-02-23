@@ -2170,6 +2170,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public virtual StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
         {
             StringCollection controlNamesCollection;
+            int Width = 0;
+            int Height = 0;
+
             XmlNode controlsNode = TXMLParser.GetChild(curNode, "Controls");
 
             if ((controlsNode != null) && TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
@@ -2180,6 +2183,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
                 {
+                    int RowWidth = 0;
+                    int RowHeight = 0;
                     StringCollection controls = TYml2Xml.GetElements(row);
 
                     foreach (string ctrlname in controls)
@@ -2194,10 +2199,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
 
                         ctrl.rowNumber = countRow;
+                        RowWidth += ctrl.Width;
+
+                        if (RowHeight < ctrl.Height)
+                        {
+                            RowHeight = ctrl.Height;
+                        }
                     }
 
                     result = StringHelper.ConcatCSV(result, StringHelper.StrMerge(controls, ","), ",");
                     countRow++;
+
+                    if (RowWidth > Width)
+                    {
+                        Width = RowWidth;
+                    }
+
+                    Height += RowHeight;
                 }
 
                 controlNamesCollection = StringHelper.StrSplit(result, ",");
@@ -2205,6 +2223,35 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else
             {
                 controlNamesCollection = TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+
+                TableLayoutPanelGenerator.eOrientation orientation = TableLayoutPanelGenerator.eOrientation.Vertical;
+
+                if (TYml2Xml.HasAttribute(curNode, "ControlsOrientation")
+                    && (TYml2Xml.GetAttribute(curNode, "ControlsOrientation").ToLower() == "horizontal"))
+                {
+                    orientation = TableLayoutPanelGenerator.eOrientation.Vertical;
+                }
+
+                foreach (string ctrlname in controlNamesCollection)
+                {
+                    TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+
+                    if ((ctrl == null)
+                        && (!ctrlname.StartsWith("Empty")))
+                    {
+                        throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " +
+                            curNode.Name);
+                    }
+
+                    if (orientation == TableLayoutPanelGenerator.eOrientation.Horizontal)
+                    {
+                        Width += ctrl.Width;
+                    }
+                    else
+                    {
+                        Height += ctrl.Height;
+                    }
+                }
             }
 
             // set the parent control for all children
@@ -2221,6 +2268,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " + curNode.Name);
                 }
             }
+
+            TXMLParser.SetAttribute(curNode, "Height", Height.ToString());
+            TXMLParser.SetAttribute(curNode, "Width", Width.ToString());
 
             return controlNamesCollection;
         }
