@@ -345,13 +345,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             DateTime PaymentDate = dateEffectiveDialog.SelectedDate;
             TVerificationResultCollection Verifications;
-            List<Int32> NewPaymentNumbers;
 
             if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
-                    AApPayment,
+                    ref AApPayment,
                     AApDocumentPayment,
                     PaymentDate,
-                    out NewPaymentNumbers,
                     out Verifications))
             {
                 string ErrorMessages = String.Empty;
@@ -370,14 +368,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 //
                 // I need to find the min and max payment numbers, which have been returned from PostAPPayments..
                 //
-                Int32 MinPaymentNumber = NewPaymentNumbers[0];
-                Int32 MaxPaymentNumber = NewPaymentNumbers[0];
-                foreach (Int32 Num in NewPaymentNumbers)
+                Int32 MinPaymentNumber = AApPayment[0].PaymentNumber;
+                Int32 MaxPaymentNumber = MinPaymentNumber;
+                foreach (AccountsPayableTDSAApDocumentPaymentRow PaymentRow in AApPayment.Rows)
                 {
-                    if (Num < MinPaymentNumber)
-                        MinPaymentNumber = Num;
-                    if (Num > MaxPaymentNumber)
-                        MaxPaymentNumber = Num;
+                    if (PaymentRow.PaymentNumber < MinPaymentNumber)
+                        MinPaymentNumber = PaymentRow.PaymentNumber;
+                    if (PaymentRow.PaymentNumber > MaxPaymentNumber)
+                        MaxPaymentNumber = PaymentRow.PaymentNumber;
                 }
                 Int32 LedgerNumber = AApPayment[0].LedgerNumber;
 
@@ -506,7 +504,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AccountsPayableTDS ReverseDs = new AccountsPayableTDS();
             Int32 NewApNum = -1;
             TVerificationResultCollection Verifications;
-            List<Int32> NewPaymentNumbers;
 
             //
             // Then a reversed copy of each referenced document
@@ -617,10 +614,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AccountsPayableTDSAApDocumentPaymentTable AApDocumentPayment = ReverseDs.AApDocumentPayment;
 
             if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
-                    AApPayment,
+                    ref AApPayment,
                     AApDocumentPayment,
                     PostingDate,
-                    out NewPaymentNumbers,
                     out Verifications))
             {
                 string ErrorMessages = String.Empty;

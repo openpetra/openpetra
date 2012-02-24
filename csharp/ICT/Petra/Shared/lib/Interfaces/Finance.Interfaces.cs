@@ -59,13 +59,18 @@ using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors;
-using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance;
+
+#region ManualCode
+
 using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.AP.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using System.Collections.Specialized;
+
+#endregion ManualCode
 
 namespace Ict.Petra.Shared.Interfaces.MFinance
 {
@@ -234,7 +239,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                            Int64 APartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
-                                           Int32 AAPNumber);
+                                           Int32 AApDocumentId);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber,
                                              Int64 APartnerKey,
@@ -244,7 +249,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                              out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
-                                                   Int32 AApNumber,
+                                                   Int32 AApDocumentId,
                                                    System.String AApSupplier_DefaultExpAccount,
                                                    System.String AApSupplier_DefaultCostCentre,
                                                    System.Decimal AAmount,
@@ -261,14 +266,13 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                          out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean PostAPDocuments(Int32 ALedgerNumber,
-                                       List<Int32> AAPDocumentNumbers,
+                                       List<Int32> AAPDocumentIds,
                                        DateTime APostingDate,
                                        out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
+        System.Boolean PostAPPayments(ref AccountsPayableTDSAApPaymentTable APayments,
                                       AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                                       DateTime APostingDate,
-                                      out List<Int32> NewPaymentNumbers,
                                       out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,

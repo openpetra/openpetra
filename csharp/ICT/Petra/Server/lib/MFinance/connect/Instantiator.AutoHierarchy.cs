@@ -955,10 +955,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
 
         /// generated method from connector
         public AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
-                                                  Int32 AAPNumber)
+                                                  Int32 AApDocumentId)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "LoadAApDocument", ";INT;INT;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.LoadAApDocument(ALedgerNumber, AAPNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.LoadAApDocument(ALedgerNumber, AApDocumentId);
         }
 
         /// generated method from connector
@@ -980,14 +980,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
 
         /// generated method from connector
         public AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
-                                                          Int32 AApNumber,
+                                                          Int32 AApDocumentId,
                                                           System.String AApSupplier_DefaultExpAccount,
                                                           System.String AApSupplier_DefaultCostCentre,
                                                           System.Decimal AAmount,
                                                           Int32 ALastDetailNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "CreateAApDocumentDetail", ";INT;INT;STRING;STRING;DECIMAL;INT;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.CreateAApDocumentDetail(ALedgerNumber, AApNumber, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.CreateAApDocumentDetail(ALedgerNumber, AApDocumentId, AApSupplier_DefaultExpAccount, AApSupplier_DefaultCostCentre, AAmount, ALastDetailNumber);
         }
 
         /// generated method from connector
@@ -1012,23 +1012,22 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
 
         /// generated method from connector
         public System.Boolean PostAPDocuments(Int32 ALedgerNumber,
-                                              List<Int32>AAPDocumentNumbers,
+                                              List<Int32>AAPDocumentIds,
                                               DateTime APostingDate,
                                               out TVerificationResultCollection AVerifications)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;INT?;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentIds, APostingDate, out AVerifications);
         }
 
         /// generated method from connector
-        public System.Boolean PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
+        public System.Boolean PostAPPayments(ref AccountsPayableTDSAApPaymentTable APayments,
                                              AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                                              DateTime APostingDate,
-                                             out List<Int32>NewPaymentNumbers,
                                              out TVerificationResultCollection AVerifications)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPPayments", ";ACCOUNTSPAYABLETDSAAPPAYMENTTABLE;ACCOUNTSPAYABLETDSAAPDOCUMENTPAYMENTTABLE;DATETIME;INT?;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(APayments, ADocumentPayments, APostingDate, out NewPaymentNumbers, out AVerifications);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPPayments", ";ACCOUNTSPAYABLETDSAAPPAYMENTTABLE;ACCOUNTSPAYABLETDSAAPDOCUMENTPAYMENTTABLE;DATETIME;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(ref APayments, ADocumentPayments, APostingDate, out AVerifications);
         }
 
         /// generated method from connector

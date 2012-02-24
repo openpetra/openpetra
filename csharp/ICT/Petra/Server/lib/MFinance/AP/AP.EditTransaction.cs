@@ -281,7 +281,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             ALedgerAccess.SubmitChanges(myLedgerTable, SubmitChangesTransaction, out AVerificationResult);
                         }
 
-                        // This isn't as useful as I'd hoped (since the caller throws this TDS away...)
                         SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
                     }
 
@@ -1045,19 +1044,16 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="APayments"></param>
         /// <param name="ADocumentPayments"></param>
         /// <param name="APostingDate"></param>
-        /// <param name="NewPaymentNumbers"></param>
         /// <param name="AVerifications"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool PostAPPayments(
-            AccountsPayableTDSAApPaymentTable APayments,
+            ref AccountsPayableTDSAApPaymentTable APayments,
             AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
             DateTime APostingDate,
-            out List<Int32> NewPaymentNumbers,
             out TVerificationResultCollection AVerifications)
         {
             AVerifications = null;
-            NewPaymentNumbers = new List<Int32>();
             bool ResultValue = false;
 
             if ((APayments.Rows.Count < 1) || (ADocumentPayments.Rows.Count < 1))
@@ -1140,7 +1136,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
 
                 paymentRow.PaymentNumber = NewPaymentNumber;
-                NewPaymentNumbers.Add(NewPaymentNumber);
             }
 
             TDBTransaction SubmitChangesTransaction = null;
