@@ -32,11 +32,12 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
 
 
-namespace Ict.Petra.Client.MReporting.Gui.MPartner
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     public partial class TFrmPartnerByEvent
     {
@@ -66,29 +67,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// </summary>
         private void RunOnceOnActivationManual()
         {
-            string CheckedMember = "CHECKED";
-            string ValueMember = PUnitTable.GetPartnerKeyDBName();
-            string DisplayMember = PUnitTable.GetUnitNameDBName();
-            string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
-            PUnitTable Table;
+            // no columns tab needed if called from extracts
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+            }
 
-            // The difference between outreach and conference
+            // Prepare the window title and settings directory (will be used later by TFrmPetraReportingUtils).
+            // Normally the settings directory is set earlier but since this is one form that covers two extracts
+            // we need to initialize it a second time here with the correct directory.
             if (FCalledForConferences)
             {
-                Table = TRemote.MPartner.Partner.WebConnectors.GetConferenceUnits("");
+                this.FindForm().Text = Catalog.GetString("Partner by Conference");
+                FPetraUtilsObject.InitialiseStoredSettings("Partner by Conference");
             }
             else
             {
-                Table = TRemote.MPartner.Partner.WebConnectors.GetOutreachUnits("");
+                this.FindForm().Text = Catalog.GetString("Partner by Outreach");
+                FPetraUtilsObject.InitialiseStoredSettings("Partner by Outreach");
             }
 
-            DataView view = new DataView(Table);
+            // need to load settings again after they have been re-initialized
+            FPetraUtilsObject.LoadDefaultSettings();
 
-            // TODO view.RowFilter = only active types?
-            //view.Sort = DisplayMember;
-
-            DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
-            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+            // enable autofind in list for first character (so the user can press character to find list entry)
+            this.clbEvent.AutoFindColumn = ((Int16)(1));
+            this.clbEvent.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
 
             clbEvent.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
@@ -96,6 +100,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                                                   SourceGrid.GridSpecialKeys.Enter) |
                                                  SourceGrid.GridSpecialKeys.Escape) |
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
+
+            // populate list with data to be loaded
+            this.LoadListData("");
+        }
+
+        private void LoadListData(string AFilter)
+        {
+            string CheckedMember = "CHECKED";
+            string ValueMember = PUnitTable.GetPartnerKeyDBName();
+            string DisplayMember = PUnitTable.GetUnitNameDBName();
+            string EventCodeMember = PUnitTable.GetOutreachCodeDBName();
+            PUnitTable Table;
+
+            if (FCalledForConferences)
+            {
+                Table = TRemote.MPartner.Partner.WebConnectors.GetConferenceUnits(AFilter);
+            }
+            else
+            {
+                Table = TRemote.MPartner.Partner.WebConnectors.GetOutreachUnits(AFilter);
+            }
+
+            DataView view = new DataView(Table);
+
+            DataTable NewTable = view.ToTable(true, new string[] { DisplayMember, ValueMember, EventCodeMember });
+            NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
             clbEvent.Columns.Clear();
             clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
@@ -112,11 +142,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
+        }
 
-            if (FCalledFromExtracts)
-            {
-                tpgColumns.Visible = false;
-            }
+        private void FilterList(System.Object sender, EventArgs e)
+        {
+            LoadListData(txtFilter.Text);
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

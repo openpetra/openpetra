@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       wolfgangb
 //
 // Copyright 2004-2011 by OM International
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
@@ -33,12 +34,12 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Extracts;
 
-namespace Ict.Petra.Server.MPartner.queries
+namespace Ict.Petra.Server.MPersonnel.queries
 {
     /// <summary>
     /// this report is quite simple, and should be used as an example for more complex reports and extracts
     /// </summary>
-    public class QueryPartnerByCity : Ict.Petra.Server.MCommon.queries.ExtractQueryBase
+    public class QueryPartnerByEvent : Ict.Petra.Server.MCommon.queries.ExtractQueryBase
     {
         /// <summary>
         /// calculate an extract from a report: all partners living in a given city
@@ -48,10 +49,10 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <returns></returns>
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
-            string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerCity.sql");
+            string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByEvent.sql");
 
             // create a new object of this class and control extract calculation from base class
-            QueryPartnerByCity ExtractQuery = new QueryPartnerByCity();
+            QueryPartnerByEvent ExtractQuery = new QueryPartnerByEvent();
 
             return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
         }
@@ -63,18 +64,48 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <param name="ASQLParameterList"></param>
         protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
         {
+            // prepare list of selected events
+            List <String>param_events = new List <String>();
+
+            foreach (TVariant choice in AParameters.Get("param_events").ToComposite())
+            {
+                param_events.Add(choice.ToString());
+            }
+
+            if (param_events.Count == 0)
+            {
+                throw new NoNullAllowedException("At least one option must be checked.");
+            }
+
             // now add parameters to sql parameter list
-            ASQLParameterList.Add(new OdbcParameter("city", OdbcType.VarChar)
+            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("events", OdbcType.BigInt, param_events));
+            ASQLParameterList.Add(new OdbcParameter("Accepted", OdbcType.Bit)
                 {
-                    Value = AParameters.Get("param_city").ToString()
+                    Value = AParameters.Get("param_status_accepted").ToBool()
                 });
-            ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
+            ASQLParameterList.Add(new OdbcParameter("Hold", OdbcType.Bit)
                 {
-                    Value = AParameters.Get("param_today").ToDate()
+                    Value = AParameters.Get("param_status_hold").ToBool()
                 });
-            ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
+            ASQLParameterList.Add(new OdbcParameter("Enquiry", OdbcType.Bit)
                 {
-                    Value = AParameters.Get("param_today").ToDate()
+                    Value = AParameters.Get("param_status_enquiry").ToBool()
+                });
+            ASQLParameterList.Add(new OdbcParameter("Cancelled", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_status_cancelled").ToBool()
+                });
+            ASQLParameterList.Add(new OdbcParameter("Rejected", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_status_rejected").ToBool()
+                });
+            ASQLParameterList.Add(new OdbcParameter("Active", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_active_partners").ToBool()
+                });
+            ASQLParameterList.Add(new OdbcParameter("Exclude_no_soliciations", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                 });
         }
     }

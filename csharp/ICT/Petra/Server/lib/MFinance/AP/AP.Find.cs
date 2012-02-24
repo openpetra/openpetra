@@ -347,7 +347,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
 
             if (!FSearchTransactions && !FSearchSupplierOrInvoice) // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
-
             {
                 try  // I need an extra column, but it might be already present - I can't really tell without generating an exception!
                 {
@@ -479,8 +478,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 String DocTbl = "PUB_" + AApDocumentTable.GetTableDBName() + ".";
                 // TODO: FSearchSupplierOrInvoice: select invoices
-                return DocTbl + AApDocumentTable.GetApDocumentIdDBName() + "," +
-                       DocTbl + AApDocumentTable.GetApNumberDBName() + "," +
+                return DocTbl + AApDocumentTable.GetApNumberDBName() + "," +
                        DocTbl + AApDocumentTable.GetDocumentCodeDBName() + "," +
                        "PUB_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName() + "," +
                        "PUB_" + AApSupplierTable.GetTableDBName() + "." + AApSupplierTable.GetCurrencyCodeDBName() + "," +
@@ -490,7 +488,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
                        DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName() + "," +
-                       DocTbl + AApDocumentTable.GetCreditNoteFlagDBName();
+                       DocTbl + AApDocumentTable.GetCreditNoteFlagDBName() + "," +
+                       DocTbl + AApDocumentTable.GetApDocumentIdDBName();
             }
             else    // Find Suppliers
             {

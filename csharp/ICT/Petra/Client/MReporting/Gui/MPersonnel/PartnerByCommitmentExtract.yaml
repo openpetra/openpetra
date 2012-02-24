@@ -1,11 +1,11 @@
 RootNode:
-    BaseYaml: PartnerReportingForm.yaml
+    BaseYaml: PersonnelReportingForm.yaml
     FormType: report
     FormTitle: Partner by Commitment
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
 #    UsingNamespaces: 
     TemplateParameters:
-        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByCommitment.CalculateExtract
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPersonnel.queries.QueryPartnerByCommitment.CalculateExtract
         ISOLATIONLEVEL: serializable
         XMLFILES: [Partner\\\\partnerbycommitmentextract.xml]
         REPORTNAME: Partner By Commitment

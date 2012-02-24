@@ -1,13 +1,13 @@
 ﻿RootNode:
-    BaseYaml: PartnerReportingForm.yaml
+    BaseYaml: PersonnelReportingForm.yaml
     FormType: report
     FormTitle: Partner By Event
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     TemplateParameters:
-        #XMLFILES: [Partner\\\\PartnerByEvent]
-        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByEvent.CalculateExtract
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPersonnel.queries.QueryPartnerByEvent.CalculateExtract
         ISOLATIONLEVEL: serializable
-        REPORTNAME: Partner By Event
+        #REPORTNAME: will be set in cs files later on as it covers both 'Partner By Conference' and 'Partner By Outreach'
+        REPORTNAME:
         CURRENTREPORT: Partner By Event 
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
@@ -17,11 +17,16 @@
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [PTNRUSER]
+    Actions:
+        actFilter: {Label=Filter List, ActionClick=FilterList}
     Controls:
         tpgReportSpecific: {ControlsOrientation=vertical}
             Label: Report parameters
-            Controls: [pnlTop, pnlBottom]
-        pnlTop: {ControlsOrientation=horizontal}
+            Controls: [pnlFilter, pnlMiddle, pnlBottom]
+        pnlFilter: {ControlsOrientation=horizontal}
+            Dock: Fill
+            Controls: [txtFilter, btnFilter]
+        pnlMiddle: {ControlsOrientation=horizontal}
             #Dock: Fill
             Controls: [pnlGrid, grpChkBoxs]
         pnlBottom: {ControlsOrientation=horizontal}
@@ -44,6 +49,11 @@
             ParameterName: param_events
             Width: 550
             Height: 200
+        txtFilter:
+            NoLabel: true
+            Width: 300
+        btnFilter:
+            Action: actFilter
         chkCancelled: {Label=Cancelled, CheckBoxAttachedLabel=right, ParameterName=param_status_cancelled}
         chkRejected: {Label=Rejected, CheckBoxAttachedLabel=right, ParameterName=param_status_rejected}
         chkAccepted: {Label=Accepted, CheckBoxAttachedLabel=right, ParameterName=param_status_accepted}
