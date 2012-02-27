@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -139,12 +139,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
 
                 DBAccess.GDBAccessObj.Select(MainDS,
-                    "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement,
+                    "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName(),
                     MainDS.AGiftBatch.TableName,
                     FTransaction,
                     parameters.ToArray());
                 DBAccess.GDBAccessObj.Select(MainDS,
-                    "SELECT DISTINCT PUB_a_gift.* " + sqlStatement,
+                    "SELECT DISTINCT PUB_a_gift.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName() + ", " +
+                    AGiftTable.GetGiftTransactionNumberDBName(),
                     MainDS.AGift.TableName,
                     FTransaction,
                     parameters.ToArray());
@@ -173,21 +174,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                     WriteGiftBatchLine(giftBatch);
                 }
 
-                //foreach (AGiftRow gift in giftDS.AGift.Rows)
                 foreach (AGiftRow gift in MainDS.AGift.Rows)
                 {
                     String mapCurrency;
 
                     if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
                     {
-//                        else
-//                        {
-//                            if (!FTransactionsOnly)
-//                            {
-////                                WriteGiftLine(gift);
-//                            }
-//                        }
-
                         MainDS.AGiftDetail.DefaultView.Sort = AGiftDetailTable.GetDetailNumberDBName();
                         MainDS.AGiftDetail.DefaultView.RowFilter =
                             String.Format("{0}={1} and {2}={3} and {4}={5}",
