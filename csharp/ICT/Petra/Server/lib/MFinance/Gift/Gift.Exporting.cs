@@ -385,7 +385,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(giftDetails.CommentTwoType);
             WriteStringQuoted(giftDetails.GiftCommentThree);
             WriteStringQuoted(giftDetails.CommentThreeType);
-            WriteLineBoolean(giftDetails.TaxDeductable);
+            WriteBoolean(giftDetails.TaxDeductable);
+            WriteLineDate(gift.DateEntered);
         }
 
         private Boolean confidentialMessageGiven = false;

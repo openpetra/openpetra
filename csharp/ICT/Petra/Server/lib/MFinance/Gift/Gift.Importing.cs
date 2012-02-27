@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -217,6 +217,16 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.GiftCommentThree = ImportString(Catalog.GetString("gift comment three"));
                             giftDetails.CommentThreeType = ImportString(Catalog.GetString("comment three type"));
                             giftDetails.TaxDeductable = ImportBoolean(Catalog.GetString("tax deductable"));
+
+                            if (FImportLine.Length > 0)
+                            {
+                                gift.DateEntered = ImportDate(Catalog.GetString("date entered"));
+                            }
+                            else
+                            {
+                                gift.DateEntered = giftBatch.GlEffectiveDate;
+                            }
+
                             FImportMessage = Catalog.GetString("Saving gift");
 
                             if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
