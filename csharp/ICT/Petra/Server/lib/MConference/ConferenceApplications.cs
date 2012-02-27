@@ -1401,7 +1401,6 @@ namespace Ict.Petra.Server.MConference.Applications
 
             GetApplications(ref MainDS, AConferenceKey, AEventCode, "accepted", -1, true, null, true);
 
-            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnDateOfBirth);
             MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnGenAppDate);
             MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnGenApplicationStatus);
             MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnBadgePrint);
