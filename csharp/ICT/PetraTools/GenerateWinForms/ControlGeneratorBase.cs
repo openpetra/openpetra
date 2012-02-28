@@ -782,6 +782,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
                     ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
+                
+                writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
+                writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
             }
             else if (ctrl.HasAttribute("DynamicControlType"))
             {
@@ -815,6 +818,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            if ((ctrl.HasAttribute("Validation"))
+                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "Validated", "ControlValidatedHandler");
+            }
+            
             return writer.Template;
         }
 
@@ -896,6 +905,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         private void LinkControlDataField(TFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
         {
+            ProcessTemplate snippetValidationControlsDictAdd;
+            
             if (AField == null)
             {
                 return;
@@ -994,6 +1005,59 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     helpText.Replace("\"", "\\\"") +  // properly escape double quotation marks
                     "\"));" + Environment.NewLine);
             }
+            
+            // Data Validation
+            if ((ctrl.HasAttribute("Validation"))
+                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
+            {
+                writer.FTemplate.SetCodelet("DATAVALIDATION", "TRUE");
+                
+                string targetCodeletValidation = "ADDCONTROLTOVALIDATIONCONTROLSDICT";
+                
+                if(!ctrl.GetAttribute("Validation").ToLower().StartsWith("pair("))
+                {
+                    snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADD");
+                }
+                else
+                {
+                    snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADDMULTI");
+                    
+                    string PairControlName = ctrl.GetAttribute("Validation").Substring(5, ctrl.GetAttribute("Validation").Length - 6);
+                    TControlDef SecondValidationControl = writer.CodeStorage.GetControl(PairControlName);
+                    
+                    if (SecondValidationControl != null) 
+                    {
+                        snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL2", SecondValidationControl.controlName);
+    
+                        if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(SecondValidationControl.Label)))
+                        {
+                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2", "Catalog.GetString(" + "\"" + SecondValidationControl.Label + "\")");
+                        }
+                        else
+                        {
+                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2", "\"" + SecondValidationControl.Label + "\"");
+                        }                        
+                    }
+                    else
+                    {
+                        throw new ApplicationException("Pair Control for Validation '" + PairControlName + "' does not exist. Please specify a valid control!");
+                    }
+                }                    
+                
+                snippetValidationControlsDictAdd.SetCodelet("COLUMNID", "FMainDS." + tablename + ".Columns[" + tablename + "Table.Column" + fieldname + "Id" + "]");
+                snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL", ctrl.controlName);
+
+                if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(ctrl.Label)))
+                {
+                    snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "Catalog.GetString(" + "\"" + ctrl.Label + "\")");
+                }
+                else
+                {
+                    snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "\"" + ctrl.Label + "\"");
+                }
+                
+                writer.Template.InsertSnippet(targetCodeletValidation, snippetValidationControlsDictAdd);
+            }            
         }
 
         /// <summary>
