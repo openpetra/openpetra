@@ -23,12 +23,15 @@
 //
 using System;
 using System.Data;
+using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -87,14 +90,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         private int standardTabIndex = 0;
+        
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             tabGiftBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null);
+            tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
         }
 
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {   
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+            
+            if(!ValidateAllData(true))
+            {
+                e.Cancel = true;
+                
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }            
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            ucoBatches.Focus();
+            HookupAllInContainer(ucoBatches);
+            HookupAllInContainer(ucoTransactions);               
+        }
+        
         /// <summary>
         /// activate the transactions tab and load the gift transactions of the batch
         /// </summary>
@@ -180,57 +204,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber);
-                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                    if ((FPetraUtilsObject.VerificationResultCollection.FindBy(ucoBatches) == null) 
+                        && (FPetraUtilsObject.VerificationResultCollection.FindBy(this) == null))
+                    {
+                        LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
+                            ucoBatches.GetSelectedDetailRow().BatchNumber);                       
+                        this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                    }
+                    else
+                    {
+                        TDataValidation.ProcessAnyDataValidationErrors(true, FPetraUtilsObject.VerificationResultCollection,
+                            this.GetType());                        
+                    }
                 }
             }
-        }
-
-        private void ValidateDataManual()
-        {
-            AGiftBatchRow InspectRow;
-            AGiftDetailRow InspectRow2;
-            object ValidationContext;
-
-            for (int Counter = 0; Counter < FMainDS.AGiftBatch.Rows.Count; Counter++)
-            {
-                InspectRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows[Counter];
-
-                DataColumn ValidationColumn;
-
-                // 'Batch Description' must not be empty
-                ValidationColumn = InspectRow.Table.Columns[AGiftBatchTable.ColumnBatchDescriptionId];
-				ValidationContext = InspectRow.BatchNumber;
-                FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                    TStringChecks.StringMustNotBeEmpty(InspectRow.BatchDescription,
-                        "Batch Description for Batch Number " + ValidationContext.ToString(),
-                        ValidationContext, ValidationColumn, ucoBatches), ValidationColumn, ValidationContext, true);
-                
-				// 'Exchange Rate' must be greater than 0
-                ValidationColumn = InspectRow.Table.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId];
-				ValidationContext = InspectRow.BatchNumber;
-                FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                    TNumericalChecks.IsPositiveDecimal(InspectRow.ExchangeRateToBase,
-                        "Exchange Rate for Batch Number " + ValidationContext.ToString(),
-                        ValidationContext, ValidationColumn, ucoBatches), ValidationColumn, ValidationContext, true);
-            }
-
-            for (int Counter = 0; Counter < FMainDS.AGiftDetail.Rows.Count; Counter++)
-            {
-                InspectRow2 = (AGiftDetailRow)FMainDS.AGiftDetail.Rows[Counter];
-
-                DataColumn ValidationColumn;
-
-                ValidationColumn = InspectRow2.Table.Columns[AGiftDetailTable.ColumnGiftCommentOneId];
-				ValidationContext = InspectRow2.BatchNumber.ToString() + ";" + InspectRow2.GiftTransactionNumber.ToString();
-                // 'Gift Comment One' must not be empty
-                FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                    TStringChecks.StringMustNotBeEmpty(InspectRow2.GiftCommentOne,
-                        String.Format("Gift Comment One for Batch Number {0}, Gift Transaction Number {1}",
-                	                  InspectRow2.BatchNumber, InspectRow2.GiftTransactionNumber),
-                        ValidationContext, ValidationColumn, ucoTransactions), ValidationColumn, ValidationContext, true);
-            }
-        }
+        }        
     }
 }

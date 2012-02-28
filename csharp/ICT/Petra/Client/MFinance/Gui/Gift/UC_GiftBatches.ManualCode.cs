@@ -32,6 +32,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -395,5 +396,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
         }
+        
+        private void ValidateDataDetailsManual(AGiftBatchRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+        }        
     }
 }
