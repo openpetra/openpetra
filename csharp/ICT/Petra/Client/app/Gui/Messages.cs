@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -376,12 +376,12 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>
         /// This routine has been written for thte TxtPetraDate-Class but it can be used anywhere
-        /// else to point out that a date has underruned a date limit.
+        /// else to point out that a date is before the date limit.
         /// </summary>
         /// <param name="minDate">The minimal date limit</param>
         public static void DateValueMessageMinUnderrun(DateTime minDate)
         {
-            String strMsg = Catalog.GetString("This date has underruned the limit: {0}");
+            String strMsg = Catalog.GetString("This date is earlier than the date limit: {0}");
 
             MessageBox.Show(String.Format(
                     strMsg, StringHelper.DateToLocalizedString(minDate)),

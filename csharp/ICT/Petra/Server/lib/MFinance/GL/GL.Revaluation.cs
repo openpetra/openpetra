@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -143,7 +143,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
         /// <summary>
-        ///
+        /// run the revaluation and set the flag for the ledger
         /// </summary>
         public bool RunRevaluation()
         {
@@ -153,6 +153,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 strBaseCurrencyType = gli.BaseCurrency;
                 strRevaluationAccount = gli.RevaluationAccount;
                 RunRevaluationIntern();
+
+                if (resultSeverity != TResultSeverity.Resv_Critical)
+                {
+                    new TLedgerInitFlagHandler(intLedgerNum,
+                        TLedgerInitFlagEnum.Revaluation).Flag = true;
+                }
             }
             catch (TVerificationException terminate)
             {
@@ -398,7 +404,6 @@ namespace Ict.Petra.Server.MFinance.GL
                     //blnVerificationCollectionContainsData = true;
                 }
 
-                ;
                 blnReturnValue = (GL.WebConnectors.TTransactionWebConnector.PostGLBatch(
                                       batch.LedgerNumber, batch.BatchNumber, out AVerifications));
             }
