@@ -170,7 +170,18 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckIfRevaluationIsDone()
         {
-            // TODO: check if there any foreign currency accounts, and if they have a balance. if not, no revalulation is needed
+            // TODO: could also check for the balance in this month. if balance is zero, no revalulation is needed.
+            string testForForeignKeyAccount =
+                String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
+                    AAccountTable.GetLedgerNumberDBName(),
+                    ledgerInfo.LedgerNumber,
+                    AAccountTable.GetForeignCurrencyFlagDBName());
+
+            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, IsolationLevel.ReadCommitted)) == 0)
+            {
+                // no revaluation is needed
+                return;
+            }
 
             if (!(new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                       TLedgerInitFlagEnum.Revaluation).Flag))

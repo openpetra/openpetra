@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -304,7 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /// </summary>
             public const int DO_NO_REVALUATION = 2;
 
-            private string strMessageNotInitialized = Catalog.GetString("Not initialzed");
+            private string strMessageNotInitialized = Catalog.GetString("Not initialized");
             private string strMessageRunRevaluation = Catalog.GetString("Revaluation");
             private string strMessageRunNoRevaluation = Catalog.GetString("No Revaluation");
 
