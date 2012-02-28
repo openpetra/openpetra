@@ -9,17 +9,20 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
-using SourceGrid;
-using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
-using GNU.Gettext;
+
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Common.Controls;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
+using GNU.Gettext;
+using SourceGrid;
+
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -78,6 +81,10 @@ namespace {#NAMESPACE}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+{#IFDEF DATAVALIDATION}
+
+      BuildValidationControlsDict();
+{#ENDIF DATAVALIDATION}
 
       ShowData();
     }
@@ -87,23 +94,30 @@ namespace {#NAMESPACE}
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     public bool CreateNew{#DETAILTABLE}()
     {
+        if(ValidateAllData(true, true))
+        {
 {#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
-        // we create the table locally, no dataset
-        {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
-        {#INITNEWROWMANUAL}
-        FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
+            // we create the table locally, no dataset
+            {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
+            {#INITNEWROWMANUAL}
+            FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
 {#ENDIFN CANFINDWEBCONNECTOR_CREATEDETAIL}
 {#IFDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
-        FMainDS.Merge({#WEBCONNECTORDETAIL}.Create{#DETAILTABLE}({#CREATEDETAIL_ACTUALPARAMETERS_LOCAL}));
+            FMainDS.Merge({#WEBCONNECTORDETAIL}.Create{#DETAILTABLE}({#CREATEDETAIL_ACTUALPARAMETERS_LOCAL}));
 {#ENDIF CANFINDWEBCONNECTOR_CREATEDETAIL}
 
-        FPetraUtilsObject.SetChangedFlag();
+            FPetraUtilsObject.SetChangedFlag();
 
-        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
-        grdDetails.Refresh();
-        SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
+            grdDetails.Refresh();
+            SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
 
-        return true;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
@@ -193,6 +207,8 @@ namespace {#NAMESPACE}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+        grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+
         if (ARow == null)
         {
             pnlDetails.Enabled = false;
@@ -205,9 +221,32 @@ namespace {#NAMESPACE}
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
         }
         FPetraUtilsObject.EnableDataChangedEvent();
+        grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
     }
 
     private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
+{#IFDEF SAVEDETAILS}
+
+    private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+    {        
+        if (grdDetails.Focused)
+        {
+            if (!ValidateAllData(true, true))
+            {
+                e.Cancel = true;                
+            }
+        }
+        else
+        {
+            // This is needed because of a strange quirk in the Grid: if the user clicks with the Mouse to a different Row
+            // (not when using the keyboard!), then the Method 'FocusRowLeaving' gets called twice, the second time 
+            // grdDetails.Focused is false. We need to Cancel in this case, otherwise the user can leave the Row with a 
+            // mouse click on another Row although it contains invalid data!!!
+            e.Cancel = true;
+        }        
+    }
+{#ENDIF SAVEDETAILS}
+
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
 {#IFDEF SAVEDETAILS}
@@ -238,6 +277,57 @@ namespace {#NAMESPACE}
             {#SAVEDETAILS}
             ARow.EndEdit();
         }
+    }
+
+    /// <summary>
+    /// Performs data validation.
+    /// </summary>
+    /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+    /// the UserControl.</remarks>    
+    /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
+    /// to another record, otherwise set it to false.</param>
+    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+    /// user, otherwise set it to false.</param>
+    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+    {
+        bool ReturnValue = false;
+        {#DETAILTABLETYPE}Row CurrentRow;
+
+        CurrentRow = GetSelectedDetailRow();
+
+        if (CurrentRow != null)
+        {
+            GetDetailsFromControls(CurrentRow);
+            
+            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+{#IFDEF VALIDATEDATADETAILSMANUAL}
+            ValidateDataDetailsManual(CurrentRow);
+{#ENDIF VALIDATEDATADETAILSMANUAL}
+{#IFDEF PERFORMUSERCONTROLVALIDATION}
+
+            // Perform validation in UserControls, too
+            {#USERCONTROLVALIDATION}
+{#ENDIF PERFORMUSERCONTROLVALIDATION}
+
+            if (AProcessAnyDataValidationErrors)
+            {
+                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType());    
+            }
+        }
+        else
+        {
+            ReturnValue = true;
+        }
+
+        if(ReturnValue)
+        {
+            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+            FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        }
+
+        return ReturnValue;
     }
 {#ENDIF SAVEDETAILS}
 
@@ -289,7 +379,48 @@ namespace {#NAMESPACE}
 
 #endregion
 {#ENDIF ACTIONENABLING}
+{#IFDEF DATAVALIDATION}
+
+#region Data Validation
+    
+    private void ControlValidatedHandler(object sender, EventArgs e)
+    {
+        TScreenVerificationResult SingleVerificationResult;
+        
+        ValidateAllData(true, false);
+        
+        FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        
+        if (FPetraUtilsObject.VerificationResultCollection.Count > 0) 
+        {
+            for (int Counter = 0; Counter < FPetraUtilsObject.VerificationResultCollection.Count; Counter++) 
+            {
+                SingleVerificationResult = (TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[Counter];
+                
+                if (SingleVerificationResult.ResultControl == sender) 
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested) 
+                    {
+                        SingleVerificationResult.ResultControl.Focus();    
+                        FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = false;
+                    }                    
+
+                    FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
+                        ((Control)sender).Width / 2, ((Control)sender).Height);
+                }
+            }
+        }
+    }
+
+    private void BuildValidationControlsDict()
+    {
+        {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+    }
+    
+#endregion
+{#ENDIF DATAVALIDATION}
   }
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE validationcontrolsdict.cs}
