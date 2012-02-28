@@ -87,6 +87,16 @@ namespace Ict.Petra.Client.CommonForms
         protected IFrmPetra FTheForm;
 
         /// <summary>
+        /// ToolTip instance which is used to show Data Validation messages.
+        /// </summary>
+        protected ToolTip FValidationToolTip;
+        
+        /// <summary>
+        /// Dictionary that contains Controls on whose data Data Validation should be run.
+        /// </summary>
+        protected TValidationControlsDict FValidationControlsDict = new TValidationControlsDict();
+        
+        /// <summary>
         /// points to the same object as FTheForm, but already casted to a WinForm
         /// </summary>
         protected System.Windows.Forms.Form FWinForm;
@@ -101,7 +111,7 @@ namespace Ict.Petra.Client.CommonForms
 
         /// This will hold a reference to ALL controls on the screen  even if they are buried in groub boxes, panels, or tab pages
         protected ArrayList FAllControls;
-
+        
         /// <summary>
         /// constructor
         /// </summary>
@@ -121,6 +131,15 @@ namespace Ict.Petra.Client.CommonForms
             {
                 TFormsList.GFormsList.NotifyWindowOpened(ACallerForm.Handle, FWinForm.Handle);
             }
+            
+            //
+            // Initialise the Data Validation ToolTip
+            //
+            FValidationToolTip = new System.Windows.Forms.ToolTip();
+            FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+            FValidationToolTip.ToolTipTitle = Catalog.GetString("Incorrect Data");
+            FValidationToolTip.UseAnimation = true;
+            FValidationToolTip.UseFading = true;
 
             // WriteToStatusBar(Catalog.GetString("Ready."));
         }
@@ -297,6 +316,28 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// <summary>
+        /// ToolTip instance which is used to show Data Validation messages.
+        /// </summary>
+        public ToolTip ValidationToolTip
+        {
+            get
+            {
+                return FValidationToolTip;
+            }
+        }
+        
+        /// <summary>
+        /// Dictionary that contains Controls on whose data Data Validation should be run.
+        /// </summary>        
+        public TValidationControlsDict ValidationControlsDict
+        {
+            get
+            {
+                return FValidationControlsDict;
+            }
+        }
+        
         /// useful for initialising actions, eg based on permissions
         virtual public void InitActionState()
         {
