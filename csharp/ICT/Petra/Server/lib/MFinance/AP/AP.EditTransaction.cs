@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
     ///<summary>
     /// This connector provides data for the finance Accounts Payable screens
     ///</summary>
-    public class TTransactionWebConnector
+    public partial class TTransactionWebConnector
     {
         /// <summary>
         /// Passes data as a Typed DataSet to the Transaction Edit Screen
@@ -155,6 +155,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+            
+            bool DetailsaveOK = false;
 
             AVerificationResult = null;
 
@@ -191,9 +194,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     if ((AInspectDS.AApDocument == null) || AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             out AVerificationResult))
                     {
+                        if (AInspectDS.AApDocumentDetail != null)
+                        {
+                            ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
+                            ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
+    
+                            if (AVerificationResult.Count == 0)
+                            {                            
+                                DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
+                                    out AVerificationResult);
+                            }                            
+                        }
+    
                         if ((AInspectDS.AApDocumentDetail == null)
-                            || AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
-                                out AVerificationResult))
+                            || DetailsaveOK)
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
@@ -227,9 +241,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+                        
             return SubmissionResult;
         }
 
+        
         /// <summary>
         /// create a new AP document detail for an existing AP document;
         /// attention: need to modify the LastDetailNumber on the client side!
@@ -881,5 +903,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             return ResultValue;
         }
+
+#region Data Validation
+
+        static partial void ValidateApDocumentDetail(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateApDocumentDetailManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        
+#endregion Data Validation        
     }
 }

@@ -34,6 +34,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -64,14 +65,10 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void ValidateDataDetailsManual(PInternationalPostalTypeRow ARow)
         {
-            DataColumn ValidationColumn;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            // 'Description' must have a value
-            ValidationColumn = ARow.Table.Columns[PInternationalPostalTypeTable.ColumnDescriptionId];
-            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                TStringChecks.StringMustNotBeEmpty(ARow.Description,
-                    lblDetailDescription.Text,
-                    this, ValidationColumn, txtDetailDescription), ValidationColumn);
+            TSharedValidation_CacheableDataTables.ValidateInternationalPostalTypeSetup(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

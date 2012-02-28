@@ -29,12 +29,14 @@ using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -49,7 +51,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
     ///<summary>
     /// This connector provides data for the finance Gift screens
     ///</summary>
-    public class TTransactionWebConnector
+    public partial class TTransactionWebConnector
     {
         /// <summary>
         /// create a new batch with a consecutive batch number in the ledger,
@@ -801,17 +803,53 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-
-            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+            bool AllValidationsOK = true;
+            
+            AVerificationResult = new TVerificationResultCollection();
+            
+            if (AInspectDS.AGiftBatch != null)
             {
-                // TODO: check that gifts are in consecutive numbers?
-                // TODO: check that gift details are in consecutive numbers, no gift without gift details?
-                // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
-                // TODO: calculate hash of saved batch or batch of saved gift
+                ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
+                ValidateGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
+
+                if (AVerificationResult.Count != 0)
+                {                                        
+                    AllValidationsOK = false;
+                }
             }
 
+            if (AInspectDS.AGiftDetail != null)
+            {
+                ValidateGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
+                ValidateGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
+
+                if (AVerificationResult.Count != 0)
+                {                                        
+                    AllValidationsOK = false;
+                }
+            }                
+
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+
+            if (AllValidationsOK) 
+            {
+                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    // TODO: check that gifts are in consecutive numbers?
+                    // TODO: check that gift details are in consecutive numbers, no gift without gift details?
+                    // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
+                    // TODO: calculate hash of saved batch or batch of saved gift
+                }                
+            }
+            
             return SubmissionResult;
         }
 
@@ -1540,5 +1578,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
         }
+
+#region Data Validation
+
+        static partial void ValidateGiftBatch(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateGiftBatchManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateGiftDetail(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateGiftDetailManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        
+#endregion Data Validation    
+        
     }
 }

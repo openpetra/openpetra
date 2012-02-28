@@ -25,7 +25,7 @@ namespace {#NAMESPACE}
     /// and which would be retrieved numerous times from the Server as UI windows
     /// are opened.
     /// </summary>
-    public class {#CACHEABLECLASS} : TCacheableTablesLoader
+    public partial class {#CACHEABLECLASS} : TCacheableTablesLoader
     {
         /// time when this object was instantiated
         private DateTime FStartTime;
@@ -167,6 +167,7 @@ namespace {#NAMESPACE}
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
@@ -184,6 +185,7 @@ namespace {#NAMESPACE}
                     switch (ACacheableTable)
                     {
                         {#SAVETABLE}
+
                         default:
 
                             throw new Exception(
@@ -212,19 +214,31 @@ namespace {#NAMESPACE}
                 }
             }
 
-            /*
-            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
-            /// the next time something in the Client accesses it.
-             */
+
+            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            // the next time something in the Client accesses it.
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow 
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+
             return SubmissionResult;
         }
+        
+#region Data Validation
+
+    {#DATAVALIDATION}    
+
+#endregion Data Validation
 {#ENDIF SAVETABLE}
         {#LEDGERSAVECACHEABLE}
         {#GETCALCULATEDLISTFROMDB}
@@ -373,6 +387,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     TDBTransaction SubmitChangesTransaction;
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     TVerificationResultCollection SingleVerificationResultCollection;
+    TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();    
     string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
     Type TmpType;
 
@@ -391,12 +406,19 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
             switch (ACacheableTable)
             {
                 case TCacheableFinanceTablesEnum.MotivationList:
+                    if (ASubmitTable.Rows.Count > 0) 
+                    { 
+                        ValidateMotivationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                        ValidateMotivationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                    if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                        // Console.WriteLine("Motivation Details changes successfully saved!");
+                        if (AVerificationResult.Count == 0)
+                        {
+                            if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                        }
                     }
 
                     break;
@@ -429,19 +451,30 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
         }
     }
 
-    /*
-     * If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-     * Cache and inform all other Clients that they need to reload this Cacheable DataTable
-     * the next time something in the Client accesses it.
-     */
+    // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+    // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+    // the next time something in the Client accesses it.
     if (SubmissionResult == TSubmitChangesResult.scrOK)
     {
         //FCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
         GetCacheableTable(ACacheableTable, String.Empty, true, ALedgerNumber, out TmpType);
     }
 
+    if (AVerificationResult.Count > 0)
+    {
+        // Downgrade TScreenVerificationResults to TVerificationResults in order to allow 
+        // Serialisation (needed for .NET Remoting).
+        TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+    }
+    
     return SubmissionResult;
 }
+
+#region Data Validation
+
+    {#DATAVALIDATION}    
+
+#endregion Data Validation
 
 
 {##LOADTABLE}
@@ -490,9 +523,26 @@ private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction,
 
 {##SAVETABLE}
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
-    if ({#DATATABLENAME}Access.SubmitChanges(({#DATATABLENAME}Table)ASubmitTable, SubmitChangesTransaction,
-            out SingleVerificationResultCollection))
-    {
-        SubmissionResult = TSubmitChangesResult.scrOK;
+    if (ASubmitTable.Rows.Count > 0) 
+    { 
+        Validate{#ENUMNAME}(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+        Validate{#ENUMNAME}Manual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+        if (AVerificationResult.Count == 0)
+        {
+            if ({#DATATABLENAME}Access.SubmitChanges(({#DATATABLENAME}Table)ASubmitTable, SubmitChangesTransaction,
+                out SingleVerificationResultCollection))
+            {
+                SubmissionResult = TSubmitChangesResult.scrOK;
+            }
+        }
     }
+
     break;
+    
+{##DATAVALIDATION}
+    partial void Validate{#ENUMNAME}(TValidationControlsDict ValidationControlsDict, 
+        ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
+    partial void Validate{#ENUMNAME}Manual(TValidationControlsDict ValidationControlsDict, 
+        ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
+

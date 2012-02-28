@@ -55,7 +55,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
     /// <summary>
     /// setup the account hierarchy, cost centre hierarchy, and other data relevant for a General Ledger
     /// </summary>
-    public class TGLSetupWebConnector
+    public partial class TGLSetupWebConnector
     {
         /// <summary>
         /// returns all account hierarchies available for this ledger
@@ -153,7 +153,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ref GLSetupTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = null;
+            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+            AVerificationResult = new TVerificationResultCollection();
 
             if (AInspectDS == null)
             {
@@ -247,7 +249,25 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
-            TSubmitChangesResult returnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            if (AInspectDS.AAnalysisType != null)
+            {
+                if (AInspectDS.AAnalysisType.Rows.Count > 0)
+                {
+                    ValidateAAnalysisType(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
+                    ValidateAAnalysisTypeManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
+
+                    if (AVerificationResult.Count != 0)
+                    {
+                        ReturnValue = TSubmitChangesResult.scrError;
+                    }
+                }
+            }
+                
+            if (ReturnValue != TSubmitChangesResult.scrError) 
+            {
+                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);    
+            }
+                        
 
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AccountList.ToString());
@@ -256,8 +276,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.CostCentreList.ToString());
 
-            return returnValue;
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+            
+            return ReturnValue;
         }
+
+#region Data Validation
+
+        static partial void ValidateAAnalysisType(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateAAnalysisTypeManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+#endregion Data Validation        
 
         /// <summary>
         /// helper function for ExportAccountHierarchy

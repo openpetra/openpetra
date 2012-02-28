@@ -34,6 +34,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -87,15 +88,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         
         private void ValidateDataDetailsManual(AApDocumentDetailRow ARow)
         {
-            DataColumn ValidationColumn;
-            
-            // 'Detail Amount' must be positive or 0
-            ValidationColumn = ARow.Table.Columns[AApDocumentDetailTable.ColumnAmountId];
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                TNumericalChecks.IsPositiveOrZeroDecimal(ARow.Amount,
-                    lblDetailAmount.Text,
-                    this, ValidationColumn, txtDetailAmount), ValidationColumn);
+            TSharedFinanceValidation_AP.ValidateApDocumentDetailManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);            
         }
 
         private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)

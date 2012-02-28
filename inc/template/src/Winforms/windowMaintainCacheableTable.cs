@@ -77,7 +77,11 @@ namespace {#NAMESPACE}
           FoundCheckBoxes[0].Enabled = false;
       }
       
-      {#LOADDATAONCONSTRUCTORRUN}      
+      {#LOADDATAONCONSTRUCTORRUN}    
+{#IFDEF DATAVALIDATION}
+
+      BuildValidationControlsDict();
+{#ENDIF DATAVALIDATION}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -123,7 +127,7 @@ namespace {#NAMESPACE}
     /// we create the table locally, no dataset
     public bool CreateNew{#DETAILTABLE}()
     {
-        if(ValidateAllData(true))
+        if(ValidateAllData(true, true))
         {
             {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
             {#INITNEWROWMANUAL}
@@ -229,7 +233,7 @@ namespace {#NAMESPACE}
     {        
         if (grdDetails.Focused)
         {
-            if (!ValidateAllData(true))
+            if (!ValidateAllData(true, true))
             {
                 e.Cancel = true;                
             }
@@ -264,8 +268,16 @@ namespace {#NAMESPACE}
             ARow.EndEdit();
         }
     }
-    
-    private bool ValidateAllData(bool ARecordChangeVerification)
+
+    /// <summary>
+    /// Performs data validation.
+    /// </summary>
+    /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
+    /// to another record, otherwise set it to false.</param>
+    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+    /// user, otherwise set it to false.</param>
+    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
+    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
     {
         bool ReturnValue = false;
         {#DETAILTABLE}Row CurrentRow;
@@ -280,13 +292,27 @@ namespace {#NAMESPACE}
 {#IFDEF VALIDATEDATADETAILSMANUAL}
             ValidateDataDetailsManual(CurrentRow);
 {#ENDIF VALIDATEDATADETAILSMANUAL}
+{#IFDEF PERFORMUSERCONTROLVALIDATION}
 
-            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType());
+            // Perform validation in UserControls, too
+            {#USERCONTROLVALIDATION}
+{#ENDIF PERFORMUSERCONTROLVALIDATION}
+
+            if (AProcessAnyDataValidationErrors)
+            {
+                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType());    
+            }
         }
         else
         {
             ReturnValue = true;
+        }
+
+        if(ReturnValue)
+        {
+            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+            FPetraUtilsObject.ValidationToolTip.RemoveAll();
         }
 
         return ReturnValue;
@@ -347,8 +373,11 @@ namespace {#NAMESPACE}
 //TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
-        if (ValidateAllData(false))
-        {
+        // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+        FPetraUtilsObject.VerificationResultCollection.Clear();
+
+        if (ValidateAllData(false, true))
+        {       
             foreach (DataRow InspectDR in FMainDS.{#DETAILTABLE}.Rows)
             {
                 InspectDR.EndEdit();
@@ -442,7 +471,8 @@ namespace {#NAMESPACE}
                         this.Cursor = Cursors.Default;
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));                        
+                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult), 
+                            Catalog.GetString("Data Cannot Be Saved"), MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                         FPetraUtilsObject.SubmitChangesContinue = false;
                         
@@ -500,7 +530,42 @@ namespace {#NAMESPACE}
     {#ACTIONHANDLERS}
 
 #endregion
+{#IFDEF DATAVALIDATION}
+
+#region Data Validation
+    
+    private void ControlValidatedHandler(object sender, EventArgs e)
+    {
+        TScreenVerificationResult SingleVerificationResult;
+        
+        ValidateAllData(true, false);
+        
+        FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        
+        if (FPetraUtilsObject.VerificationResultCollection.Count > 0) 
+        {
+            for (int Counter = 0; Counter < FPetraUtilsObject.VerificationResultCollection.Count; Counter++) 
+            {
+                SingleVerificationResult = (TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[Counter];
+                
+                if (SingleVerificationResult.ResultControl == sender) 
+                {
+                    FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
+                        ((Control)sender).Width / 2, ((Control)sender).Height);
+                }
+            }
+        }
+    }
+
+    private void BuildValidationControlsDict()
+    {
+        {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+    }
+    
+#endregion
+{#ENDIF DATAVALIDATION}
   }
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE validationcontrolsdict.cs}

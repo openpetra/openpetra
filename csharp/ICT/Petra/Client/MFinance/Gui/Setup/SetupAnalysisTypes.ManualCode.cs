@@ -30,6 +30,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 using GNU.Gettext;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -202,15 +203,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ValidateDataDetailsManual(AAnalysisTypeRow ARow)
         {
-            DataColumn ValidationColumn;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            // 'Description' must not be empty
-            ValidationColumn = ARow.Table.Columns[AAnalysisTypeTable.ColumnAnalysisTypeDescriptionId];
-
-            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                TStringChecks.StringMustNotBeEmpty(ARow.AnalysisTypeDescription,
-                    lblDetailAnalysisTypeDescription.Text,
-                    this, ValidationColumn, txtDetailAnalysisTypeDescription), ValidationColumn);
+            TSharedFinanceValidation_GLSetup.ValidateAnalysisTypesSetupManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);                
         }
     }
 }

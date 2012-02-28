@@ -155,8 +155,13 @@ namespace {#NAMESPACE}
         }
     }
 {#ENDIF SAVEDETAILS}
-    
-    
+
+    /// <summary>
+    /// Performs data validation.
+    /// </summary>
+    /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
+    /// to another record, otherwise set it to false.</param>
+    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
     private bool ValidateAllData(bool ARecordChangeVerification)
     {
         bool ReturnValue = false;
@@ -167,9 +172,20 @@ namespace {#NAMESPACE}
 {#IFDEF VALIDATEDATAMANUAL}
         ValidateDataManual();
 {#ENDIF VALIDATEDATAMANUAL}
+{#IFDEF PERFORMUSERCONTROLVALIDATION}
+
+        // Perform validation in UserControls, too
+        {#USERCONTROLVALIDATION}
+{#ENDIF PERFORMUSERCONTROLVALIDATION}
 
         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
             this.GetType());
+
+        if(ReturnValue)
+        {
+            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+            FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        }
 
         return ReturnValue;
     }
@@ -234,6 +250,9 @@ namespace {#NAMESPACE}
 {#IFNDEF MASTERTABLE}
         GetDataFromControls();
 {#ENDIFN MASTERTABLE}
+
+        // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+        FPetraUtilsObject.VerificationResultCollection.Clear();
 
         if (ValidateAllData(false))
         {
@@ -472,6 +491,9 @@ namespace {#NAMESPACE}
                 
                 PreviouslyMergedMenuItems = ItemsToMerge;
             }
+            
+            // Ensure that a Validation ToolTip is removed when the user switches to another Tab
+            FPetraUtilsObject.ValidationToolTip.RemoveAll();
         }
 
     {#DYNAMICTABPAGEBASICS}

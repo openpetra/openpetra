@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
@@ -49,7 +50,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
     /// Performs server-side lookups for the Client in the MCommon DataReader sub-namespace.
     ///
     /// </summary>
-    public class TCommonDataReader
+    public partial class TCommonDataReader
     {
         /// <summary>
         /// simple data reader;
@@ -160,7 +161,8 @@ namespace Ict.Petra.Server.MCommon.DataReader
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+            
             AVerificationResult = null;
 
             // TODO: check write permissions
@@ -251,14 +253,20 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     }
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
-                        if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
+                        ValidateInternationalPostalType(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                        ValidateInternationalPostalTypeManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                        if (AVerificationResult.Count == 0)
+                        {                            
+                            if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            else
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrError;
+                            }
                         }
                     }
                     else if (ATablename == PtApplicationTypeTable.GetTableDBName())
@@ -297,7 +305,23 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 }
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+            
             return SubmissionResult;
         }
+        
+#region Data Validation
+
+        static partial void ValidateInternationalPostalType(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateInternationalPostalTypeManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        
+#endregion Data Validation        
     }
 }

@@ -207,6 +207,18 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                                 {
                                     ServerTemplate.InsertSnippet("SAVETABLE", snippetSaveTable);
                                 }
+                                
+                                ProcessTemplate snippetDataValidation = ServerTemplate.GetSnippet("DATAVALIDATION");
+                                snippetDataValidation.SetCodelet("ENUMNAME", enumName);                                
+                                
+                                if (DependsOnLedger)
+                                {
+                                    snippetLedgerSaveTable.InsertSnippet("DATAVALIDATION", snippetDataValidation);
+                                }
+                                else
+                                {
+                                    ServerTemplate.InsertSnippet("DATAVALIDATION", snippetDataValidation);
+                                }                                                                
                             }
                             else
                             {

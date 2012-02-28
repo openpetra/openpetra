@@ -31,8 +31,10 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -81,35 +83,13 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 txtDetailTimeZoneMaximum.NumberValueDouble = txtDetailTimeZoneMinimum.NumberValueDouble;
             }
         }
-
+                
         private void ValidateDataDetailsManual(PCountryRow ARow)
         {
-            DataColumn ValidationColumn;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-//TLogging.Log("ValidateDataManual:  CountryCode = " + ARow[PCountryTable.ColumnCountryCodeId].ToString() +
-//                         "; InternatTelephoneCode = " + ARow.InternatTelephoneCode.ToString());
-            // 'International Telephone Code' must be positive or 0
-            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatTelephoneCodeId];
-
-            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
-                    lblDetailInternatTelephoneCode.Text,
-                    this, ValidationColumn, txtDetailInternatTelephoneCode), ValidationColumn);
-
-//            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-//                TNumericalChecks.IsPositiveOrZeroInteger(txtDetailInternatTelephoneCode.NumberValueInt,
-//                    lblDetailInternatTelephoneCode.Text,
-//                    this, ValidationColumn, txtDetailInternatTelephoneCode), ValidationColumn);
-
-            // 'Time Zone From' must be <= 'Time Zone To'
-            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnTimeZoneMinimumId];
-            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                TNumericalChecks.FirstLesserOrEqualThanSecondDecimal(
-                    ARow.TimeZoneMinimum, ARow.TimeZoneMaximum,
-                    lblDetailTimeZoneMinimum.Text, lblDetailTimeZoneMaximum.Text,
-                    this, ValidationColumn, txtDetailTimeZoneMinimum), ValidationColumn);
-
-//            FPetraUtilsObject.VerificationResultCollection.Add(new TScreenVerificationResult( "TestContext", ValidationColumn, "test warning", txtDetailTimeZoneMinimum, TResultSeverity.Resv_Noncritical));
+            TSharedValidation_CacheableDataTables.ValidateCountrySetupManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }
