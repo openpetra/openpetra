@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 blnCriticalErrors = true;
             }
 
-            RunPeriodEndCheck(new RunMonthEndChecks(ledgerInfo));
+            RunPeriodEndCheck(new RunMonthEndChecks(ledgerInfo), verificationResults);
 
             // TODO: Admin Fees and
             // TODO: ICH stewardship ...
@@ -170,6 +170,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckIfRevaluationIsDone()
         {
+            // TODO: check if there any foreign currency accounts, and if they have a balance. if not, no revalulation is needed
+
             if (!(new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                       TLedgerInitFlagEnum.Revaluation).Flag))
             {
