@@ -2753,6 +2753,13 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public ExtractTDSMExtractTable GetExtractRowsWithPartnerData(System.Int32 AExtractId)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetExtractRowsWithPartnerData", ";INT;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetExtractRowsWithPartnerData(AExtractId);
+        }
+
+        /// generated method from connector
         public System.Boolean ChangeFamily(Int64 APersonKey,
                                            Int64 AOldFamilyKey,
                                            Int64 ANewFamilyKey,

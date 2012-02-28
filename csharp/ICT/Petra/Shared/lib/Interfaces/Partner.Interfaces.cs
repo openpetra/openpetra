@@ -691,6 +691,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         Boolean DeleteExtract(System.Int32 AExtractId);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean ExtractExists(String AExtractName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        ExtractTDSMExtractTable GetExtractRowsWithPartnerData(System.Int32 AExtractId);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
         System.Boolean ChangeFamily(Int64 APersonKey,
                                     Int64 AOldFamilyKey,

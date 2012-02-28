@@ -114,6 +114,29 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = AAnalysisTypeAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == AGiftBatchTable.GetTableDBName())
+                {
+                    tempTable = AGiftBatchAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == MExtractMasterTable.GetTableDBName())
+                {
+                	if (ASearchCriteria == null)
+                	{
+	                    tempTable = MExtractMasterAccess.LoadAll(ReadTransaction);
+                	}
+                	else
+                	{
+	                    tempTable = MExtractMasterAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                	}
+                }
+                else if (ATablename == MExtractTable.GetTableDBName())
+                {
+                	// it does not make sense to load ALL extract rows for all extract masters so search criteria needs to be set
+                	if (ASearchCriteria != null)
+                	{
+	                    tempTable = MExtractAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                	}
+                }
                 else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                 {
                     tempTable = PInternationalPostalTypeAccess.LoadAll(ReadTransaction);
@@ -121,10 +144,6 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 else if (ATablename == PtApplicationTypeTable.GetTableDBName())
                 {
                     tempTable = PtApplicationTypeAccess.LoadAll(ReadTransaction);
-                }
-                else if (ATablename == AGiftBatchTable.GetTableDBName())
-                {
-                    tempTable = AGiftBatchAccess.LoadAll(ReadTransaction);
                 }
                 else if (ATablename == PMailingTable.GetTableDBName())
                 {
@@ -274,6 +293,30 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                     {
                         if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == MExtractTable.GetTableDBName())
+                    {
+                        if (MExtractAccess.SubmitChanges((MExtractTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == MExtractMasterTable.GetTableDBName())
+                    {
+                        if (MExtractMasterAccess.SubmitChanges((MExtractMasterTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;

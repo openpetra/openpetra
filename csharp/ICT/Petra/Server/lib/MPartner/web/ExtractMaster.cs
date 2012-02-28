@@ -28,6 +28,8 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
@@ -103,6 +105,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DBAccess.GDBAccessObj.CommitTransaction();
 
             return ReturnValue;
+        }
+        
+        /// <summary>
+        /// retrieve extract records and include partner name and class
+        /// </summary>
+        /// <returns>returns table filled with extract rows including partner name and class</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static ExtractTDSMExtractTable GetExtractRowsWithPartnerData(int AExtractId)
+        {
+        	ExtractTDSMExtractTable ExtractDT = new ExtractTDSMExtractTable();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt;
+
+            try
+            {
+				// Use a direct sql statement rather than db access classes to improve performance as otherwise
+				// we would need an extra query for each row of an extract to retrieve partner name and class
+	            SqlStmt = "SELECT pub_" + MExtractTable.GetTableDBName() + ".*"
+	            			+ ", pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerShortNameDBName()
+	            			+ ", pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerClassDBName()
+	            			+ " FROM pub_" + MExtractTable.GetTableDBName() + ", pub_" + PPartnerTable.GetTableDBName()
+	            			+ " WHERE pub_" + MExtractTable.GetTableDBName() + "." + MExtractTable.GetExtractIdDBName()
+	            			+ " = " + AExtractId.ToString()
+	            			+ " AND pub_" + MExtractTable.GetTableDBName() + "." + MExtractTable.GetPartnerKeyDBName()
+	            			+ " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName();
+	            
+	            DBAccess.GDBAccessObj.SelectDT(ExtractDT, SqlStmt, Transaction, null, -1, -1);
+
+	            DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during load of an extract: " + e.Message);
+	            DBAccess.GDBAccessObj.CommitTransaction();
+            }
+
+            return ExtractDT;
         }
     }
 }

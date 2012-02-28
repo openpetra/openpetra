@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,15 +40,28 @@ using Ict.Petra.Client.App.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
-    public partial class TFrmExtractMaster
+    public partial class TFrmExtractMaintain
     {
         /// <summary>holds the DataSet that contains most data that is used on the screen</summary>
         private ExtractTDS FMainDS = null;
 
+        #region Properties
+        /// <summary>
+        /// id of extract displayed in this screen
+        /// </summary>
+        public int ExtractId
+        {
+            set
+            {
+            	ucoExtractMaintain.ExtractId = value;
+            }
+        }
+		#endregion        
+        
         #region Public Methods
 
         /// <summary>
-        /// Loads Partner Types Data from Petra Server into FMainDS.
+        /// Loads Extract Data from Petra Server into FMainDS.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>
         public Boolean LoadData()
@@ -64,7 +77,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <returns></returns>
         public bool SaveChanges()
         {
-        	return ucoExtractMasterList.SaveChanges();
+        	return ucoExtractMaintain.SaveChanges();
         }
 
         /// <summary>
@@ -86,21 +99,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        private void ShowDataManual()
+        private void RunOnceOnActivationManual()
         {
+        	ucoExtractMaintain.InitializeData();
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteRow(System.Object sender, EventArgs e)
+        private void ShowDataManual()
         {
-            ucoExtractMasterList.DeleteRow(sender, e);
         }
 
         #endregion

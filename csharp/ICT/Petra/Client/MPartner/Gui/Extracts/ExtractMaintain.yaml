@@ -1,0 +1,19 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintenance of Extract
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    DetailTable: MExtract
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    FormType: edit
+    Template: window
+    Actions:
+        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+    Controls:
+        pnlExtract:
+            Dock: Fill
+            Controls: [ucoExtractMaintain]
+               
+        ucoExtractMaintain:
+            Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMaintain
+            Dock: Fill

@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MPartner.Extracts.WebConnectors;
@@ -44,18 +45,179 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         #region Public Methods
 
         /// <summary>
-        /// needed for the interface
+        /// save the changes on the screen (code is copied from auto-generated code)
         /// </summary>
         /// <returns></returns>
         public bool SaveChanges()
         {
-            bool ReturnValue = true;
+            FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
+    
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+    
+            // TODO: verification
+    
+            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+            {
+                foreach (DataRow InspectDR in FMainDS.MExtractMaster.Rows)
+                {
+                    InspectDR.EndEdit();
+                }
+    
+                if (!FPetraUtilsObject.HasChanges)
+                {
+                    return true;
+                }
+                else
+                {
+                    FPetraUtilsObject.WriteToStatusBar("Saving data...");
+                    this.Cursor = Cursors.WaitCursor;
+    
+                    TSubmitChangesResult SubmissionResult;
+                    TVerificationResultCollection VerificationResult;
+    
+                    Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.MExtractMaster.GetChangesTyped();
+    
+                    if (SubmitDT == null)
+                    {
+                        // There is nothing to be saved.
+                        // Update UI
+                        FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
+                        this.Cursor = Cursors.Default;
+    
+                        // We don't have unsaved changes anymore
+                        FPetraUtilsObject.DisableSaveButton();
+    
+                        return true;
+                    }
+    
+                    // Submit changes to the PETRAServer
+                    try
+                    {
+                        SubmissionResult = TRemote.MCommon.DataReader.SaveData(MExtractMasterTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
+                    }
+                    catch (System.Net.Sockets.SocketException)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
+                            "No Server response",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        bool ReturnValue = false;
+    
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return ReturnValue;
+                    }
+    /* TODO ESecurityDBTableAccessDeniedException
+    *                  catch (ESecurityDBTableAccessDeniedException Exp)
+    *                  {
+    *                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+    *                      this.Cursor = Cursors.Default;
+    *                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
+    *                      bool ReturnValue = false;
+    *                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+    *                      return ReturnValue;
+    *                  }
+    */
+                    catch (EDBConcurrencyException)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+    
+                        // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
+                        bool ReturnValue = false;
+    
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return ReturnValue;
+                    }
+                    catch (Exception exp)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+                        TLogging.Log(
+                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                            TLoggingType.ToLogfile);
+                        MessageBox.Show(
+                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                            "For details see the log file: " + TLogging.GetLogFileName(),
+                            "Server connection error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+    
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return false;
+                    }
+    
+                    switch (SubmissionResult)
+                    {
+                        case TSubmitChangesResult.scrOK:
+    
+                            // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
+                            FMainDS.MExtractMaster.AcceptChanges();
+    
+                            // Merge back with data from the Server (eg. for getting Sequence values)
+                            FMainDS.MExtractMaster.Merge(SubmitDT, false);
+    
+                            // need to accept the new modification ID
+                            FMainDS.MExtractMaster.AcceptChanges();
+    
+                            // Update UI
+                            FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
+                            this.Cursor = Cursors.Default;
+    
+                            // TODO EnableSave(false);
+    
+                            // We don't have unsaved changes anymore
+                            FPetraUtilsObject.DisableSaveButton();
+    
+                            SetPrimaryKeyReadOnly(true);
+    
+                            // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            return true;
+    
+                        case TSubmitChangesResult.scrError:
+    
+                            // TODO scrError
+                            this.Cursor = Cursors.Default;
+                            break;
+    
+                        case TSubmitChangesResult.scrNothingToBeSaved:
+    
+                            // TODO scrNothingToBeSaved
+                            this.Cursor = Cursors.Default;
+                            return true;
+    
+                        case TSubmitChangesResult.scrInfoNeeded:
+    
+                            // TODO scrInfoNeeded
+                            this.Cursor = Cursors.Default;
+                            break;
+                    }
+                }
+            }
 
-            return ReturnValue;
+            return false;
         }
 
+
         /// <summary>
-        ///
+        /// Open a new screen to show details and maintain the currently selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MaintainExtract(System.Object sender, EventArgs e)
+        {
+            if (GetSelectedDetailRow() != null)
+            {
+                TFrmExtractMaintain frm = new TFrmExtractMaintain(this.FindForm());
+                frm.ExtractId = GetSelectedDetailRow().ExtractId;
+                frm.Show();
+            }
+            
+        }
+        
+        /// <summary>
+        /// Delete the currently selected row
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -85,6 +247,30 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        /// <summary>
+        /// Open a new screen to show details and maintain the currently selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void RefreshExtractList(System.Object sender, EventArgs e)
+        {
+            // Do not allow refresh of the extract list if the user has made changes to any of the records
+            // as otherwise their changes will be overwritten by reloading of the data.
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString(
+                                    "Before refreshing the list you need to save changes made in this screen! " + "\r\n" + "\r\n" 
+                                    + "If you don't want to save changes then please exit and reopen this screen."),
+                                Catalog.GetString("Refresh List"),
+                                MessageBoxButtons.OK);
+                
+            }
+            else
+            {
+                this.LoadData();
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -93,10 +279,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             FMainDS = new ExtractTDS();
             LoadData();
+
+            // enable grid to react to insert and delete keyboard keys
+            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
         }
 
         /// <summary>
-        /// Loads Partner Types Data from Petra Server into FMainDS.
+        /// Loads Extract Master Data from Petra Server into FMainDS.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>
         private Boolean LoadData()
@@ -119,6 +308,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 if (FMainDS.MExtractMaster.Rows.Count > 0)
                 {
                     FMainDS.MExtractMaster.AcceptChanges();
+                    FMainDS.AcceptChanges();
                 }
 
                 if (FMainDS.MExtractMaster.Rows.Count != 0)
@@ -186,6 +376,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            if (e.Row != -1)
+            {
+                this.DeleteRow(this, null);
+            }
+        }
+        
         #endregion
     }
 }
