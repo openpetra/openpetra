@@ -46,6 +46,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MCommon.WebConnectors;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 {
@@ -107,15 +108,16 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            AApDocumentAccess.LoadByPrimaryKey(MainDS, AApDocumentId, Transaction);
+            AccountsPayableTDSAApDocumentRow DocumentRow = (AccountsPayableTDSAApDocumentRow)
+                AApDocumentAccess.LoadByPrimaryKey(MainDS, AApDocumentId, Transaction);
 
             // If the load didn't work, don't bother with anything else..
             if (MainDS.AApDocument.Count > 0)
             {
-                SetOutstandingAmount(MainDS.AApDocument[0], ALedgerNumber, MainDS.AApDocumentPayment);
+                SetOutstandingAmount(DocumentRow, ALedgerNumber, MainDS.AApDocumentPayment);
 
                 AApDocumentDetailAccess.LoadViaAApDocument(MainDS, AApDocumentId, Transaction);
-                AApSupplierAccess.LoadByPrimaryKey(MainDS, MainDS.AApDocument[0].PartnerKey, Transaction);
+                AApSupplierAccess.LoadByPrimaryKey(MainDS, DocumentRow.PartnerKey, Transaction);
 
                 AApAnalAttribAccess.LoadViaAApDocument(MainDS, AApDocumentId, Transaction);
 
@@ -137,7 +139,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
-        /// create a new AP document (invoice or credit note) and fill with default values from the supplier
+        /// Create a new AP document (invoice or credit note) and fill with default values from the supplier
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey">the supplier</param>
@@ -162,15 +164,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // get the supplier defaults
-            AApSupplierTable tempTable;
-            tempTable = AApSupplierAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+            AApSupplierRow Supplier = AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
 
-            if (tempTable.Rows.Count == 1)
+            if (Supplier != null)
             {
-                MainDS.AApSupplier.Merge(tempTable);
-
-                AApSupplierRow Supplier = MainDS.AApSupplier[0];
-
                 if (!Supplier.IsDefaultCreditTermsNull())
                 {
                     NewDocumentRow.CreditTerms = Supplier.DefaultCreditTerms;
@@ -437,8 +434,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
         private static bool DocumentBalanceOK(AccountsPayableTDS AMainDS, int AApDocumentId, TDBTransaction ATransaction)
         {
-            AApDocumentAccess.LoadByPrimaryKey(AMainDS, AApDocumentId, ATransaction);
-            AApDocumentRow DocumentRow = AMainDS.AApDocument[0];
+            AccountsPayableTDSAApDocumentRow DocumentRow = (AccountsPayableTDSAApDocumentRow)
+                AApDocumentAccess.LoadByPrimaryKey(AMainDS, AApDocumentId, ATransaction);
             decimal DocumentBalance = DocumentRow.TotalAmount;
 
             AMainDS.AApDocumentDetail.DefaultView.RowFilter
@@ -603,12 +600,16 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 DataView findSupplier = APDataset.AApSupplier.DefaultView;
                 findSupplier.RowFilter = AApSupplierTable.GetPartnerKeyDBName() + " = " + row.PartnerKey.ToString();
 
+                string CurrencyCode = "";
                 if (findSupplier.Count == 0)
                 {
-                    AApSupplierAccess.LoadByPrimaryKey(APDataset, row.PartnerKey, Transaction);
+                    CurrencyCode = (AApSupplierAccess.LoadByPrimaryKey(APDataset, row.PartnerKey, Transaction)).CurrencyCode;
+                }
+                else
+                {
+                    CurrencyCode = ((AApSupplierRow)findSupplier[0].Row).CurrencyCode;
                 }
 
-                string CurrencyCode = ((AApSupplierRow)findSupplier[0].Row).CurrencyCode;
 
                 if (!DocumentsByCurrency.ContainsKey(CurrencyCode))
                 {
@@ -931,9 +932,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                                               ((AApDocumentPaymentRow)APDataset.AApDocumentPayment.DefaultView[0].Row).ApDocumentId.
                                                               ToString();
                 row.SupplierKey = ((AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row).PartnerKey;
-                AApSupplierAccess.LoadByPrimaryKey(APDataset, row.SupplierKey, Transaction);
-                APDataset.AApSupplier.DefaultView.RowFilter = AApSupplierTable.GetPartnerKeyDBName() + " = " + row.SupplierKey.ToString();
-                string CurrencyCode = ((AApSupplierRow)APDataset.AApSupplier.DefaultView[0].Row).CurrencyCode;
+
+                string CurrencyCode = (AApSupplierAccess.LoadByPrimaryKey(APDataset, row.SupplierKey, Transaction)).CurrencyCode;
 
                 TPartnerClass SupplierPartnerClass;
                 string supplierName;
@@ -1226,13 +1226,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             foreach (AccountsPayableTDSAApDocumentPaymentRow row in MainDS.AApDocumentPayment.Rows)
             {
-                AApDocumentAccess.LoadByPrimaryKey(MainDS, row.ApDocumentId, ReadTransaction);
-
-                // Modify the AP documents and mark as paid or partially paid
-                MainDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
-                Int32 RowIdx = MainDS.AApDocument.DefaultView.Find(row.ApDocumentId);
                 AccountsPayableTDSAApDocumentRow documentRow = (AccountsPayableTDSAApDocumentRow)
-                    MainDS.AApDocument.DefaultView[RowIdx].Row;
+                    AApDocumentAccess.LoadByPrimaryKey(MainDS, row.ApDocumentId, ReadTransaction);
 
                 SetOutstandingAmount(documentRow, documentRow.LedgerNumber, ADocumentPayments);
 
@@ -1376,8 +1371,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             AccountsPayableTDS MainDs = new AccountsPayableTDS();
 
-            AApPaymentAccess.LoadByPrimaryKey(MainDs, ALedgerNumber, APaymentNumber, ReadTransaction);
-            AccountsPayableTDSAApPaymentRow supplierPaymentsRow = MainDs.AApPayment[0];
+            AccountsPayableTDSAApPaymentRow supplierPaymentsRow = (AccountsPayableTDSAApPaymentRow)
+                AApPaymentAccess.LoadByPrimaryKey(MainDs, ALedgerNumber, APaymentNumber, ReadTransaction);
 
             if (MainDs.AApPayment.Rows.Count > 0) // If I can load the referenced payment, I'll also load related documents.
             {
@@ -1385,15 +1380,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 // There may be a batch of several invoices in this payment,
                 // but they should all be to the same supplier.
+                Int64 PartnerKey = 0;
                 foreach (AccountsPayableTDSAApDocumentPaymentRow Row in MainDs.AApDocumentPayment.Rows)
                 {
-                    AApDocumentAccess.LoadByPrimaryKey(MainDs, Row.ApDocumentId, ReadTransaction);
-                    //
-                    // After loading - I need to find that row I just loaded!
-                    MainDs.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
-                    Int32 Idx = MainDs.AApDocument.DefaultView.Find(Row.ApDocumentId);
-                    AApDocumentRow DocumentRow = (AApDocumentRow) MainDs.AApDocument.DefaultView[Idx].Row;
+                    AApDocumentRow DocumentRow =
+                        AApDocumentAccess.LoadByPrimaryKey(MainDs, Row.ApDocumentId, ReadTransaction);
 
+                    PartnerKey = DocumentRow.PartnerKey;
                     Row.InvoiceTotal = DocumentRow.TotalAmount;
                     Row.PayFullInvoice = (MainDs.AApDocumentPayment[0].Amount == DocumentRow.TotalAmount);
                     Row.DocumentCode = DocumentRow.DocumentCode;
@@ -1412,12 +1405,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     }
                 }
 
-                AApSupplierAccess.LoadByPrimaryKey(MainDs, MainDs.AApDocument[0].PartnerKey, ReadTransaction);
+                AApSupplierRow SupplierRow =
+                    AApSupplierAccess.LoadByPrimaryKey(MainDs, PartnerKey, ReadTransaction);
 
-                PPartnerAccess.LoadByPrimaryKey(MainDs, MainDs.AApDocument[0].PartnerKey, ReadTransaction);
-                supplierPaymentsRow.SupplierKey = MainDs.AApDocument[0].PartnerKey;
-                supplierPaymentsRow.SupplierName = MainDs.PPartner[0].PartnerShortName;
-                supplierPaymentsRow.CurrencyCode = MainDs.AApSupplier[0].CurrencyCode;
+                PPartnerRow PartnerRow =
+                    PPartnerAccess.LoadByPrimaryKey(MainDs, PartnerKey, ReadTransaction);
+                supplierPaymentsRow.SupplierKey = PartnerKey;
+                supplierPaymentsRow.SupplierName = PartnerRow.PartnerShortName;
+                supplierPaymentsRow.CurrencyCode = SupplierRow.CurrencyCode;
                 supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.MethodOfPayment + ")";
             }
 
