@@ -59,7 +59,6 @@ using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors;
-
 #region ManualCode
 
 using Ict.Common.Data;
@@ -71,7 +70,6 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using System.Collections.Specialized;
 
 #endregion ManualCode
-
 namespace Ict.Petra.Shared.Interfaces.MFinance
 {
     /// <summary>auto generated</summary>
@@ -270,6 +268,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                        DateTime APostingDate,
                                        out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        System.Boolean CreatePaymentTableEntries(ref AccountsPayableTDS ADataset,
+                                                 List<Int32> ADocumentsToPay);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean PostAPPayments(ref AccountsPayableTDSAApPaymentTable APayments,
                                       AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                                       DateTime APostingDate,
@@ -277,6 +278,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,
                                          Int32 APaymentNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        System.Boolean ReversePayment(Int32 ALedgerNumber,
+                                      Int32 APaymentNumber,
+                                      DateTime APostingDate,
+                                      out TVerificationResultCollection AVerifications);
     }
 
 }

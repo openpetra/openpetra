@@ -1021,6 +1021,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         }
 
         /// generated method from connector
+        public System.Boolean CreatePaymentTableEntries(ref AccountsPayableTDS ADataset,
+                                                        List<Int32>ADocumentsToPay)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "CreatePaymentTableEntries", ";ACCOUNTSPAYABLETDS;INT?;");
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.CreatePaymentTableEntries(ref ADataset, ADocumentsToPay);
+        }
+
+        /// generated method from connector
         public System.Boolean PostAPPayments(ref AccountsPayableTDSAApPaymentTable APayments,
                                              AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                                              DateTime APostingDate,
@@ -1036,6 +1044,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "LoadAPPayment", ";INT;INT;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.LoadAPPayment(ALedgerNumber, APaymentNumber);
+        }
+
+        /// generated method from connector
+        public System.Boolean ReversePayment(Int32 ALedgerNumber,
+                                             Int32 APaymentNumber,
+                                             DateTime APostingDate,
+                                             out TVerificationResultCollection AVerifications)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "ReversePayment", ";INT;INT;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.ReversePayment(ALedgerNumber, APaymentNumber, APostingDate, out AVerifications);
         }
     }
 }

@@ -190,19 +190,21 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             if (FSearchTransactions)
             {
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
-                String SqlQuery = "SELECT " +
-                                  "PUB_a_ap_document_payment.a_payment_number_i as ApNum, " +
-                                  "a_document_code_c||'-Payment' as InvNum, " +
+                String SqlQuery = "SELECT DISTINCT " +
+                                  "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
+                                  "'' as InvNum, " +
                                   "true as CreditNote, " +
-                                  "a_amount_n as Amount, " +
+                                  "PUB_a_ap_payment.a_amount_n as Amount, " +
                                   "'' as Status, " +
                                   "0 as DiscountPercent, " +
                                   "0 as DiscountDays, " +
-                                  "PUB_a_ap_document_payment.s_date_created_d as Date\n" +
-                                  " FROM PUB_a_ap_document_payment LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ap_document_id_i=PUB_a_ap_document.a_ap_document_id_i\n" +
+                                  "PUB_a_ap_payment.s_date_created_d as Date, " +
+                                  "0 as DocumentId\n" +
+                                  " FROM PUB_a_ap_payment LEFT JOIN PUB_a_ap_document_payment on PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i" +
+                                  " LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i\n" +
                                   " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + FLedgerNumber +
                                   " AND p_partner_key_n=" + PartnerKey +
-                                  "\nUNION\n" +
+                                  "\n UNION\n" +
                                   " SELECT " +
                                   "a_ap_number_i as ApNum, " +
                                   "a_document_code_c as InvNum, " +
@@ -211,7 +213,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   "a_document_status_c as Status, " +
                                   "a_discount_percentage_n as DiscountPercent, " +
                                   "a_discount_days_i as DiscountDays, " +
-                                  "a_date_issued_d as Date\n" +
+                                  "a_date_issued_d as Date, " +
+                                  "a_ap_document_id_i as DocumentId\n" +
                                   " FROM PUB_a_ap_document\n" +
                                   " WHERE a_ledger_number_i=" + FLedgerNumber +
                                   " AND p_partner_key_n=" + PartnerKey +

@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -149,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DataTable ResultsTable = new DataTable();
 
             ResultsTable = FFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
-            ResultsTable.Columns.Add("DiscountMsg", typeof(string));
+//          ResultsTable.Columns.Add("DiscountMsg", typeof(string));
             ResultsTable.Columns.Add("Type", typeof(string));
             ResultsTable.Columns.Add("Tagged", typeof(bool));
 
@@ -159,7 +160,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
                 {
-                    Row["DiscountMsg"] = "";
+//                  Row["DiscountMsg"] = "";
 
                     if (Row["Status"].ToString().Length > 0) // Credit notes have Status, but payments don't.
                     {
@@ -174,6 +175,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     Row["Type"] = "Invoice";
 
+/*
                     Int32 DiscountDays = (Int32)Row["DiscountDays"];
 
                     if (DiscountDays > 0)
@@ -187,6 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         Row["DiscountMsg"] = "None";
                     }
+ */
                 }
             }
 
@@ -201,12 +204,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 90);
             grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
             grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
-            grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
+//          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
             grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
 
             grdResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while they're being added. For these currency and date columns,
-            grdResult.Columns[7].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+            grdResult.Columns[6].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
         }
 
         private void UpdateDisplayedBalance()
@@ -456,13 +459,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (SelectedGridRow[0]["Status"].ToString().Length > 0) // invoices have status, and payments don't.
                 {
+                    Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["DocumentId"]);
                     TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
-                    frm.LoadAApDocument(FLedgerNumber, Convert.ToInt32(SelectedGridRow[0]["ApNum"]));
+                    frm.LoadAApDocument(FLedgerNumber, DocumentId);
                     frm.Show();
                 }
                 else
                 {
-                    // TODO: Can I open the payment?
+                    Int32 PaymentNumber = Convert.ToInt32(SelectedGridRow[0]["ApNum"]);
+                    TFrmAPPayment frm = new TFrmAPPayment(this);
+                    frm.ReloadPayment(FLedgerNumber, PaymentNumber);
+                    frm.Show();
                 }
             }
         }
@@ -568,17 +575,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((row["Tagged"].Equals(true)) && (!row["InvNum"].Equals("Payment")))
                 {
                     // TODO: only use tagged rows that can be paid
-                    Int32 ApNum = (Int32)row["ApNum"];
-                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, ApNum));
+                    Int32 DocumentId = (Int32)row["DocumentId"];
+                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
-                    TempDS.AApDocument.DefaultView.Sort = "a_ap_number_i";
-                    Int32 Idx = TempDS.AApDocument.DefaultView.Find(ApNum);
+                    TempDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
+                    Int32 Idx = TempDS.AApDocument.DefaultView.Find(DocumentId);
                     AApDocumentRow DocumentRow = TempDS.AApDocument[Idx];
 
                     if ("|POSTED|PARTPAID|".IndexOf("|" + DocumentRow["a_document_status_c"].ToString()) >= 0)
                     {
-                        TaggedDocuments.Add(ApNum);
+                        TaggedDocuments.Add(DocumentId);
                     }
                 }
             }

@@ -278,8 +278,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
-        /// <param name="AForeignCurrencyName">If a value is defined, only base curreny or the
-        /// defined currency are filtered</param>
+        /// <param name="AForeignCurrencyName">If a value is defined, only base curreny or the defined currency are filtered</param>
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,

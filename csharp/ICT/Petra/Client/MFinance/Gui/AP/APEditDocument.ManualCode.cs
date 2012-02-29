@@ -50,6 +50,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void RunOnceOnActivationManual()
         {
+            lblDiscountDays.Visible = false;
+            nudDiscountDays.Visible = false;        // There's currently no discounting, so this
+            lblDiscountPercentage.Visible = false;  // just hides the associated controls.
+            txtDiscountPercentage.Visible = false;
         }
 
         private void EnableControls()
@@ -88,6 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
             }
+            tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) == 0);
         }
 
         private static bool DetailLineAttributesRequired(ref bool AllPresent, AccountsPayableTDS Atds, AApDocumentDetailRow DetailRow)
