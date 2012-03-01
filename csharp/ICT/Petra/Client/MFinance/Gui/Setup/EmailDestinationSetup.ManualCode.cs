@@ -45,17 +45,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         private void NewRowManual(ref AEmailDestinationRow ARow)
         {
-        	ARow.FileCode = "HOSA";
-        	ARow.PartnerKey = 0;
-        	string newValue = Catalog.GetString("NEWVALUE");
-        	int countNewValue = 1;
+            ARow.FileCode = "HOSA";
+            ARow.PartnerKey = 0;
+            string newValue = Catalog.GetString("NEWVALUE");
+            int countNewValue = 1;
 
             if (FMainDS.AEmailDestination.Rows.Find(new object[] { ARow.FileCode, newValue, ARow.PartnerKey }) != null)
             {
                 while (FMainDS.AEmailDestination.Rows.Find(new object[] {
-            	                                           	ARow.FileCode, 
-            	                                           	newValue + countNewValue.ToString(),
-			            	                                ARow.PartnerKey }) != null)
+                               ARow.FileCode,
+                               newValue + countNewValue.ToString(),
+                               ARow.PartnerKey
+                           }) != null)
                 {
                     countNewValue++;
                 }
@@ -74,46 +75,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ShowDetailsManual(AEmailDestinationRow ARow)
         {
-        	if (ARow != null)
-        	{
-	        	string s = ARow.EmailAddress;
-	        	s = s.Replace(",", Environment.NewLine);
-	        	s = s.Replace(";", Environment.NewLine);
-	        	txtDetailEmailAddress.Text = s;
-        	}
+            if (ARow != null)
+            {
+                string s = ARow.EmailAddress;
+                s = s.Replace(",", Environment.NewLine);
+                s = s.Replace(";", Environment.NewLine);
+                txtDetailEmailAddress.Text = s;
+            }
         }
 
         private void OnFileCodeChange(Object sender, EventArgs e)
         {
-        	switch (cmbDetailFileCode.GetSelectedString())
-        	{
-        		case "AFO":
-        		case "BRANCH":
-        		case "STEWARDSHIP":
-        		case "FUND BALANCE":
-        		case "FUND BALS-AFO":
-					txtDetailConditionalValue.Enabled = false;
-					txtDetailConditionalValue.Text = "";
-					break;
-				case "HOSA":
-				case "ICH":
-					txtDetailConditionalValue.Enabled = true;
-					FPetraUtilsObject.SetStatusBarText(txtDetailConditionalValue, "Enter a Fund Number");
-					break;
-				case "GIFT STATEMENT":
-					txtDetailConditionalValue.Enabled = true;
-					FPetraUtilsObject.SetStatusBarText(txtDetailConditionalValue, "Enter a Motivation Group and Detail, separated by a | character");
-					break;
-				default:
-					txtDetailConditionalValue.Enabled = true;
-					FPetraUtilsObject.SetStatusBarText(txtDetailConditionalValue, "Enter the condition value");
-					break;
-        	}
+            switch (cmbDetailFileCode.GetSelectedString())
+            {
+                case "AFO":
+                case "BRANCH":
+                case "STEWARDSHIP":
+                case "FUND BALANCE":
+                case "FUND BALS-AFO":
+                    txtDetailConditionalValue.Enabled = false;
+                    txtDetailConditionalValue.Text = "";
+                    break;
+
+                case "HOSA":
+                case "ICH":
+                    txtDetailConditionalValue.Enabled = true;
+                    FPetraUtilsObject.SetStatusBarText(txtDetailConditionalValue, "Enter a Fund Number");
+                    break;
+
+                case "GIFT STATEMENT":
+                    txtDetailConditionalValue.Enabled = true;
+                    FPetraUtilsObject.SetStatusBarText(txtDetailConditionalValue, "Enter a Motivation Group and Detail, separated by a | character");
+                    break;
+
+                default:
+                    txtDetailConditionalValue.Enabled = true;
+                    FPetraUtilsObject.SetStatusBarText(txtDetailConditionalValue, "Enter the condition value");
+                    break;
+            }
         }
 
         private void GetDetailDataFromControlsManual(AEmailDestinationRow ARow)
         {
-        	ARow.EmailAddress = txtDetailEmailAddress.Text.Replace(Environment.NewLine, ",");
+            ARow.EmailAddress = txtDetailEmailAddress.Text.Replace(Environment.NewLine, ",");
         }
     }
 }
