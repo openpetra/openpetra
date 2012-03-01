@@ -71,7 +71,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.label2 = new System.Windows.Forms.Label();
             this.pnlLoginControls.SuspendLayout();
             this.SuspendLayout();
-
             //
             // lblUserName
             //
@@ -81,7 +80,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblUserName.TabIndex = 2;
             this.lblUserName.Text = "&User ID:";
             this.lblUserName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-
             //
             // txtUserName
             //
@@ -91,8 +89,8 @@ namespace Ict.Petra.Client.CommonDialogs
             this.txtUserName.Name = "txtUserName";
             this.txtUserName.Size = new System.Drawing.Size(188, 21);
             this.txtUserName.TabIndex = 3;
-            this.txtUserName.Leave += new System.EventHandler(this.TxtUserName_Leave);
-
+            this.txtUserName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtUserNameKeyPress);
+            this.txtUserName.Leave += new System.EventHandler(this.TxtUserNameLeave);
             //
             // lblPassword
             //
@@ -102,7 +100,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblPassword.TabIndex = 4;
             this.lblPassword.Text = "&Password:";
             this.lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-
             //
             // txtPassword
             //
@@ -115,7 +112,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.txtPassword.Size = new System.Drawing.Size(188, 21);
             this.txtPassword.TabIndex = 5;
             this.txtPassword.WordWrap = false;
-
+            this.txtPassword.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtPasswordKeyPress);
             //
             // btnLogin
             //
@@ -129,8 +126,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.btnLogin.TabIndex = 6;
             this.btnLogin.Text = " &Login";
             this.btnLogin.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnLogin.Click += new System.EventHandler(this.BtnLogin_Click);
-
+            this.btnLogin.Click += new System.EventHandler(this.BtnLoginClick);
             //
             // btnCancel
             //
@@ -145,8 +141,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.btnCancel.TabIndex = 7;
             this.btnCancel.Text = " &Cancel";
             this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
-
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancelClick);
             //
             // lblDatabase
             //
@@ -156,7 +151,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblDatabase.TabIndex = 8;
             this.lblDatabase.Text = "Database:";
             this.lblDatabase.Visible = false;
-
             //
             // prbLogin
             //
@@ -168,7 +162,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.prbLogin.Size = new System.Drawing.Size(76, 18);
             this.prbLogin.TabIndex = 10;
             this.prbLogin.Visible = false;
-
             //
             // pnlLoginControls
             //
@@ -179,7 +172,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pnlLoginControls.Name = "pnlLoginControls";
             this.pnlLoginControls.Size = new System.Drawing.Size(105, 66);
             this.pnlLoginControls.TabIndex = 11;
-
             //
             // chkRememberUserName
             //
@@ -210,7 +202,6 @@ namespace Ict.Petra.Client.CommonDialogs
             //
             // TLoginForm
             //
-            this.AcceptButton = this.btnLogin;
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(309, 182);
@@ -231,9 +222,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.Name = "TLoginForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "OpenPetra Login";
-            this.Load += new System.EventHandler(this.TLoginForm_Load);
-            this.Shown += new System.EventHandler(this.TLoginForm_Shown);
-            this.Activated += new EventHandler(TLoginForm_Activated);
+            this.Activated += new System.EventHandler(this.TLoginFormActivated);
+            this.Load += new System.EventHandler(this.TLoginFormLoad);
+            this.Shown += new System.EventHandler(this.TLoginFormShown);
             this.pnlLoginControls.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
