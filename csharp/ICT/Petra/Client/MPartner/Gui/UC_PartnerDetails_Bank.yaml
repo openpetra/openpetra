@@ -32,11 +32,13 @@ RootNode:
                 Row6: [txtContactPartnerKey]
 
         txtBranchCode:
-            Label: Bank/Branch Code      
-            Stretch: horizontally            
+            Label: Bank/Branch Code
+            Stretch: horizontally
+            Validation: true
             
         txtBic:
             Label: BIC/SWIFT Code
+            Validation: true
             
         txtEPFormatFile:
             ReadOnly: true

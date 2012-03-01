@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MPartner.Verification;
 
@@ -66,7 +67,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtContactPartnerKey.PerformDataBinding(FMainDS.PBank.DefaultView, PBankTable.GetContactPartnerKeyDBName());
 
             #region Verification
-            FMainDS.PBank.ColumnChanging += new DataColumnChangeEventHandler(this.OnPBankColumnChanging);
+//            FMainDS.PBank.ColumnChanging += new DataColumnChangeEventHandler(this.OnPBankColumnChanging);
             txtContactPartnerKey.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
             #endregion
         }
@@ -134,5 +135,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+        
+        private void ValidateDataDetailsManual(PBankRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidatePartnerBankDetailsManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+        }        
     }
 }

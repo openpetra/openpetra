@@ -773,6 +773,36 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoUpperPart.PartnerClassMainDataChanged += new TPartnerClassMainDataChangedHandler(this.UcoUpperPart_PartnerClassMainDataChanged);
         }
 
+        private void GetDataFromControls()
+        {
+            ucoUpperPart.GetDataFromControls();
+            ucoLowerPart.GetDataFromControls();
+        }
+        
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        private bool ValidateAllData()
+        {
+            bool ReturnValue = false;
+    
+            // Perform validation in UserControls, too
+            ucoUpperPart.ValidateAllData(false);
+            ucoLowerPart.ValidateAllData(false);
+    
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType());
+    
+            if(ReturnValue)
+            {
+                // Remove a possibly shown Validation ToolTip as the data validation succeeded
+                FPetraUtilsObject.ValidationToolTip.RemoveAll();
+            }
+    
+            return ReturnValue;
+        }
+            
         /// <summary>
         /// needed for the interface
         /// </summary>
@@ -795,7 +825,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if saving of data succeeded, otherwise false.</returns>
         private Boolean SaveChanges(ref PartnerEditTDS AInspectDS)
         {
-            Boolean ReturnValue;
+            Boolean ReturnValue = false;
             PartnerEditTDS SubmitDS;
             TSubmitChangesResult SubmissionResult;
 
@@ -828,13 +858,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Make sure that DataBinding writes the value of the active Control to the underlying DataSource!
             TDataBinding.EnsureDataChangesAreStored(this);
 
-            ucoUpperPart.GetDataFromControls();
-            ucoLowerPart.GetDataFromControls();
-
-            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType());
-
-            if (ReturnValue)
+            GetDataFromControls();
+            
+            // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+    
+            if (ValidateAllData())
             {
                 foreach (DataTable InspectDT in AInspectDS.Tables)
                 {

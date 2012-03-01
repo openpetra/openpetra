@@ -314,6 +314,122 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        {
+            bool ReturnValue = true;
+         
+            switch (GetPartnerDetailsVariableUC())
+            {
+                case TDynamicLoadableUserControls.dlucPartnerDetailsPerson:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsPerson))
+                    {
+                        TUC_PartnerDetails_Person UCPartnerDetailsPerson =
+                            (TUC_PartnerDetails_Person)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsPerson];
+                        if(!UCPartnerDetailsPerson.ValidateAllData(AProcessAnyDataValidationErrors))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsFamily:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsFamily))
+                    {
+                        TUC_PartnerDetails_Family UCPartnerDetailsFamily =
+                            (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsFamily];
+                        if(!UCPartnerDetailsFamily.ValidateAllData(AProcessAnyDataValidationErrors))
+                        {
+                            ReturnValue = false;
+                        }                            
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation))
+                    {
+                        TUC_PartnerDetails_Organisation UCPartnerDetailsOrganisation =
+                            (TUC_PartnerDetails_Organisation)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation];
+                        if(!UCPartnerDetailsOrganisation.ValidateAllData(AProcessAnyDataValidationErrors))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsChurch))
+                    {
+                        TUC_PartnerDetails_Church UCPartnerDetailsChurch =
+                            (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
+                        if(!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors))
+                        {
+                            ReturnValue = false;
+                        }                            
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsUnit:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsUnit))
+                    {
+                        TUC_PartnerDetails_Unit UCPartnerDetailsUnit =
+                            (TUC_PartnerDetails_Unit)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsUnit];
+                        if(!UCPartnerDetailsUnit.ValidateAllData(AProcessAnyDataValidationErrors))
+                        {
+                            ReturnValue = false;
+                        }                            
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsVenue:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsVenue))
+                    {
+                        TUC_PartnerDetails_Venue UCPartnerDetailsVenue =
+                            (TUC_PartnerDetails_Venue)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsVenue];
+                        if(!UCPartnerDetailsVenue.ValidateAllData(AProcessAnyDataValidationErrors))
+                        {
+                            ReturnValue = false;
+                        }                            
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsBank:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsBank))
+                    {
+                        TUC_PartnerDetails_Bank UCPartnerDetailsBank =
+                            (TUC_PartnerDetails_Bank)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsBank];
+                        if(!UCPartnerDetailsBank.ValidateAllData(AProcessAnyDataValidationErrors))
+                        {
+                            ReturnValue = false;
+                        }                            
+                    }
+
+                    break;
+            }
+            
+            return ReturnValue;            
+        }
+        
+        /// <summary>
         /// Gets the data from all controls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
         /// are mapped.
