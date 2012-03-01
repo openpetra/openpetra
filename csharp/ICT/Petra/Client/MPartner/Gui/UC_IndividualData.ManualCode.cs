@@ -231,12 +231,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         (TUC_IndividualData_PersonalData)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalData];
                     UCPersonalData.GetDataFromControls2();
 
-                    if (!FPartnerEditTDS.Tables.Contains(PPersonTable.GetTableName()))
+                    if (!FPartnerEditTDS.Tables.Contains(PmPersonalDataTable.GetTableName()))
                     {
-                        FPartnerEditTDS.Tables.Add(new PPersonTable());
+                        FPartnerEditTDS.Tables.Add(new PmPersonalDataTable());
                     }
 
-                    FPartnerEditTDS.Tables[PPersonTable.GetTableName()].Merge(FMainDS.PPerson);
+                    FPartnerEditTDS.Tables[PmPersonalDataTable.GetTableName()].Merge(FMainDS.PmPersonalData);
                 }
 
                 //Emergency Data

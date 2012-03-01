@@ -3495,19 +3495,6 @@
                 format="X(16)"
                 label="Occupation Code"
                 help="Enter an occupation code"/>
-    <tablefield name="p_believer_since_year_i"
-                type="integer"
-                descr="This is the year the person became a Believer."
-                format="9999"
-                label="Believer since"
-                help="Year the Person became a Believer"
-                initial="?"/>
-    <tablefield name="p_believer_since_comment_c"
-                type="varchar"
-                format="X(500)"
-                descr="Comment about the year or how the person became a believer"
-                label=""
-                help="Comment about the Year or how the Person became a Believer"/>
     <tablefield name="p_family_key_n"
                 type="number"
                 length="10"
@@ -19380,7 +19367,20 @@
                 label="Mother Tongue"
                 columnlabel="Mother Tongue"
                 help="Name of the person&apos;s first language"/>
-    <!-- Constraints on table pm_personal_data -->
+    <tablefield name="p_believer_since_year_i"
+                type="integer"
+                descr="This is the year the person became a Believer."
+                format="9999"
+                label="Believer since"
+                help="Year the Person became a Believer"
+                initial="?"/>
+    <tablefield name="p_believer_since_comment_c"
+                type="varchar"
+                format="X(500)"
+                descr="Comment about the year or how the person became a believer"
+                label=""
+                help="Comment about the Year or how the Person became a Believer"/>
+<!-- Constraints on table pm_personal_data -->
     <primarykey name="pm_personal_data_pk"
                 descr=""
                 thisFields="p_partner_key_n"/>

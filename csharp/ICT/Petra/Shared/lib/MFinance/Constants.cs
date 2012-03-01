@@ -39,6 +39,12 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Currency select: International</summary>
         public const string CURRENCY_INTERNATIONAL = "I";
 
+        /// <summary>Currency select: Base</summary>
+        public const int CURRENCY_BASE_NUM = 1;
+
+        /// <summary>Currency select: International</summary>
+        public const int CURRENCY_INTERNATIONAL_NUM = 2;
+
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";
 
@@ -83,6 +89,15 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_CODE = "STANDARD";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_INCOME = "INCOME";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_EXPENSE = "EXPENSE";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_TRANSFER = "TRANSFER";
 
         /// <summary>Accounts Payable</summary>
         public const String AP_DOCUMENT_OPEN = "OPEN";
@@ -206,11 +221,32 @@ namespace Ict.Petra.Shared.MFinance
         /// standard account summary name
         public const string DIRECT_XFER_ACCT = "5501";
 
-        /// standard account
-        public const string ICH_SETTLEMENT_ACCT = "5601";
+        /// ICH accounts
+        public const string ICH_ACCT_DEPOSITS_WITH_ICH = "8540";
 
-        /// standard account
-        public const string ICH_ACCT = "8500";
+        /// ICH accounts
+        public const string ICH_ACCT_LOCAL_LEDGER = "8520";
+
+        /// ICH accounts
+        public const string ICH_ACCT_ICH = "8500";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SUSPENSE_ACCOUNT = "8200";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SETTLEMENT = "5601";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SETTLEMENT_TRANSFERS = "5600";
+
+        /// ICH accounts
+        public const string ICH_ACCT_FOREIGN_EXPENSES_UNIDENTIFIED = "5400";
+
+        /// ICH accounts
+        public const string ICH_ACCT_FOREIGN_INCOME_UNIDENTIFIED = "1900";
+
+        /// ICH
+        public const string ICH_COST_CENTRE = "0400";
 
         /// standard account
         public const string INTERNAL_XFER_ACCT = "9800";
@@ -283,6 +319,9 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Budget Forecast Types
         public const string FORECAST_TYPE_ACTUALS = "Actuals";
+
+        /// Email File Code Types
+        public const string EMAIL_FILE_CODE_STEWARDSHIP = "STEWARDSHIP";
     }
 
     /// <summary>

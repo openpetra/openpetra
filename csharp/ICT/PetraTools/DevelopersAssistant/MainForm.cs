@@ -534,7 +534,7 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnSaveCurrentDbBuildConfig_Click(object sender, EventArgs e)
         {
-            BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            new BuildConfiguration(txtBranchLocation.Text, _localSettings);
         }
 
         private void chkUseAutoLogon_CheckedChanged(object sender, EventArgs e)
@@ -620,7 +620,7 @@ namespace Ict.Tools.DevelopersAssistant
         {
             try
             {
-                UInt32 i = Convert.ToUInt32(txtFlashAfterSeconds.Text);
+                Convert.ToUInt32(txtFlashAfterSeconds.Text);
                 bHaveAlertedFlashSetting = false;
             }
             catch (Exception)

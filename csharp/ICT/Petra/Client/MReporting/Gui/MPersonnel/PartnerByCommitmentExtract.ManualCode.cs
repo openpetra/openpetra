@@ -34,7 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPartner
+namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
     public partial class TFrmPartnerByCommitmentExtract
     {
@@ -47,6 +47,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         {
             SetControls(new TParameterList());
             ucoChkFilter.ShowFamiliesOnly(false);
+        }
+
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
+        {
+            // no columns tab needed if called from extracts
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+            }
         }
 
         private void grdCommitmentStatusChoices_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)

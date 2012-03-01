@@ -31,6 +31,8 @@ using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Extracts;
 
 namespace Ict.Petra.Server.MPartner.queries
@@ -38,7 +40,7 @@ namespace Ict.Petra.Server.MPartner.queries
     /// <summary>
     /// this creates the query for extracts of partners by special types
     /// </summary>
-    public class QueryPartnerBySpecialType
+    public class QueryPartnerBySpecialType : Ict.Petra.Server.MCommon.queries.ExtractQueryBase
     {
         /// <summary>
         /// calculate an extract from a report: all partners of a given type (or selection of multiple types)
@@ -48,113 +50,53 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <returns></returns>
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
-            // get the partner keys from the database
-            try
+            string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerSpecialType.sql");
+
+            // create a new object of this class and control extract calculation from base class
+            QueryPartnerBySpecialType ExtractQuery = new QueryPartnerBySpecialType();
+
+            return ExtractQuery.CalculateExtractInternal(AParameters, SqlStmt, AResults);
+        }
+
+        /// <summary>
+        /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="ASQLParameterList"></param>
+        protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
+        {
+            ICollection <String>param_explicit_specialtypes;
+
+            // prepare list of special types
+            param_explicit_specialtypes = AParameters.Get("param_explicit_specialtypes").ToString().Split(new Char[] { ',', });
+
+            if (param_explicit_specialtypes.Count == 0)
             {
-//                TLogging.Log( "Name of the SPECIAL TYPE Extract: " + AParameters.Get("nameOfExtract"));
-//                TLogging.Log( "Description of the SPECIAL TYPE Extract: " + AParameters.Get("descriptionOfExtract"));
-//                TLogging.Log( "ARW LOG: Parameters received: \n\t" +
-////                             AParameters.Get("param_city") + "\n\t" +
-////                             AParameters.Get("param_from") + "\n\t" +
-////                             AParameters.Get("param_to") + "\n\t" +
-////                             AParameters.Get("param_region") + "\n\t" +
-////                             AParameters.Get("param_country") + "\n\t" +
-////                             AParameters.Get("param_dateSet") + "\n\t" +
-//                             "param_active: "+ AParameters.Get("param_active").ToString() + ".\n\t" +
-//                             "param_mailingOnly: "+ AParameters.Get("param_mailingAddressesOnly") + ".\n\t" +
-//                             "param_familiesOnly: "+ AParameters.Get("param_familiesOnly") + ".\n\t" +
-//                             "param_excludeNoSolicitations: "+ AParameters.Get("param_excludeNoSolicitations") + ".\n\t" +
-//                             "param_explicit_specialtypes: "+ AParameters.Get("param_explicit_specialtypes"));
-                Boolean ReturnValue = false;
-                Boolean NewTransaction;
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerSpecialType.sql");
-                ICollection <String>param_explicit_specialtypes;
-                bool AddressFilterAdded;
-
-                param_explicit_specialtypes = AParameters.Get("param_explicit_specialtypes").ToString().Split(new Char[] { ',', });
-
-                if (param_explicit_specialtypes.Count == 0)
-                {
-                    throw new NoNullAllowedException("At least one option must be checked.");
-                }
-
-                // add parameters to ArrayList
-                TSelfExpandingArrayList parameterList = new TSelfExpandingArrayList();
-
-                parameterList.Add(TDbListParameterValue.OdbcListParameterValue("specialtype", OdbcType.VarChar, param_explicit_specialtypes));
-                parameterList.Add(new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit)
-                    {
-                        Value = !AParameters.Get("param_date_set").IsZeroOrNull()
-                    });
-                parameterList.Add(new OdbcParameter("Date", OdbcType.Date)
-                    {
-                        Value = AParameters.Get("param_date_set").ToDate()
-                    });
-                parameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
-                    {
-                        Value = AParameters.Get("param_active").ToBool()
-                    });
-                parameterList.Add(new OdbcParameter("param_families_only", OdbcType.Bit)
-                    {
-                        Value = AParameters.Get("param_families_only").ToBool()
-                    });
-                parameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
-                    {
-                        Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
-                    });
-
-                // add address filter information to sql statement and parameter list
-                TExtractHelper.AddAddressFilter(AParameters, ref SqlStmt, ref parameterList, out AddressFilterAdded);
-
-                // now run the database query
-                TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
-                    TExtractHelper.ConvertParameterArrayList(parameterList));
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
-                // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
-                if (AParameters.Get("CancelReportCalculation").ToBool() == true)
-                {
-                    return false;
-                }
-
-                TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
-
-                TVerificationResultCollection VerificationResult;
-                int NewExtractID;
-
-                // create an extract with the given name in the parameters
-                ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-                    AParameters.Get("param_extract_name").ToString(),
-                    AParameters.Get("param_extract_description").ToString(),
-                    out NewExtractID,
-                    out VerificationResult,
-                    partnerkeys,
-                    0);
-
-                if (ReturnValue)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
-                return ReturnValue;
+                throw new NoNullAllowedException("At least one option must be checked.");
             }
-            catch (Exception)
-            {
-//                TLogging.Log(e.ToString());
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return false;
-            }
+
+            // now add parameters to sql parameter list
+            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("specialtype", OdbcType.VarChar, param_explicit_specialtypes));
+            ASQLParameterList.Add(new OdbcParameter("param_dateFieldsIncluded", OdbcType.Bit)
+                {
+                    Value = !AParameters.Get("param_date_set").IsZeroOrNull()
+                });
+            ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
+                {
+                    Value = AParameters.Get("param_date_set").ToDate()
+                });
+            ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_active").ToBool()
+                });
+            ASQLParameterList.Add(new OdbcParameter("param_families_only", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_families_only").ToBool()
+                });
+            ASQLParameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+                });
         }
     }
 }

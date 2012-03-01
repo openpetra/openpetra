@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -390,6 +390,11 @@ namespace Ict.Petra.Client.CommonControls
         /// </returns>
         private Boolean VerifyDate(Boolean AShowVerificationError)
         {
+            if (!this.Enabled)
+            {
+                return true;
+            }
+
             Boolean ReturnValue = true;
             DateTime? DateBeforeChange = FDate;
             DateTime Text2Date;

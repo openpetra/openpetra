@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 blnCriticalErrors = true;
             }
 
-            RunPeriodEndCheck(new RunMonthEndChecks(ledgerInfo));
+            RunPeriodEndCheck(new RunMonthEndChecks(ledgerInfo), verificationResults);
 
             // TODO: Admin Fees and
             // TODO: ICH stewardship ...
@@ -170,6 +170,19 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckIfRevaluationIsDone()
         {
+            // TODO: could also check for the balance in this month. if balance is zero, no revalulation is needed.
+            string testForForeignKeyAccount =
+                String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
+                    AAccountTable.GetLedgerNumberDBName(),
+                    ledgerInfo.LedgerNumber,
+                    AAccountTable.GetForeignCurrencyFlagDBName());
+
+            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, IsolationLevel.ReadCommitted)) == 0)
+            {
+                // no revaluation is needed
+                return;
+            }
+
             if (!(new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                       TLedgerInitFlagEnum.Revaluation).Flag))
             {

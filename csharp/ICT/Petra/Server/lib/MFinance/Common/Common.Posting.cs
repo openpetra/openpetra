@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, morayh
+//       timop, morayh, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -241,15 +241,15 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Critical));
             }
 
-            // calculate the base currency amounts for each transaction, using the exchange rate from the journals.
-            // calculate the credit and debit totals
+            // Calculate the base currency amounts for each transaction, using the exchange rate from the journals.
+            // Calculate the credit and debit totals
             GLRoutines.UpdateTotalsOfBatch(ref ADataSet, Batch);
 
             if (Convert.ToDecimal(Batch.BatchCreditTotal) != Convert.ToDecimal(Batch.BatchDebitTotal))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It does not balance: Debit is {0}, Credit is {1}"), Batch.BatchDebitTotal,
+                        String.Format(Catalog.GetString("It does not balance: Debit is {0:n2}, Credit is {1:n2}"), Batch.BatchDebitTotal,
                             Batch.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
@@ -264,7 +264,8 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("The control total {0} does not fit the Credit/Debit Total {1}."), Batch.BatchControlTotal,
+                        String.Format(Catalog.GetString("The control total {0:n2} does not fit the Credit/Debit Total {1:n2}."),
+                            Batch.BatchControlTotal,
                             Batch.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
@@ -302,7 +303,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1}, Credit is {2}"), journal.JournalNumber,
+                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:n2}, Credit is {2:n2}"),
+                                journal.JournalNumber,
                                 journal.JournalDebitTotal, journal.JournalCreditTotal),
                             TResultSeverity.Resv_Critical));
                 }
@@ -1138,7 +1140,8 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        ///
+        /// create a new batch.
+        /// it is already stored to the database, to avoid problems with LastBatchNumber
         /// </summary>
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber)
         {
@@ -1191,6 +1194,157 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             return MainDS;
+        }
+
+        /// <summary>
+        /// create a new batch.
+        /// it is already stored to the database, to avoid problems with LastBatchNumber
+        /// </summary>
+        public static GLBatchTDS CreateABatch(
+            Int32 ALedgerNumber,
+            string ABatchDescription,
+            decimal ABatchControlTotal,
+            DateTime ADateEffective)
+        {
+            GLBatchTDS MainDS = CreateABatch(ALedgerNumber);
+            ABatchRow NewRow = MainDS.ABatch[0];
+
+            int FinancialYear, FinancialPeriod;
+
+            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod, null, false);
+            NewRow.DateEffective = ADateEffective;
+            NewRow.BatchPeriod = FinancialPeriod;
+            NewRow.BatchYear = FinancialYear;
+            NewRow.BatchDescription = ABatchDescription;
+            NewRow.BatchControlTotal = ABatchControlTotal;
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Create a new journal as per gl1120.i
+        /// </summary>
+        public static bool CreateAJournal(
+            GLBatchTDS AMainDS,
+            Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ALastJournalNumber,
+            string AJournalDescription, string ACurrency, decimal AXRateToBase,
+            DateTime ADateEffective, Int32 APeriodNumber, out Int32 AJournalNumber)
+        {
+            bool CreationSuccessful = false;
+
+            AJournalNumber = 0;
+
+            //Error handling
+            string ErrorContext = "Create a Journal";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
+
+            try
+            {
+                AJournalRow JournalRow = AMainDS.AJournal.NewRowTyped();
+                JournalRow.LedgerNumber = ALedgerNumber;
+                JournalRow.BatchNumber = ABatchNumber;
+                AJournalNumber = ALastJournalNumber + 1;
+                JournalRow.JournalNumber = AJournalNumber;
+                JournalRow.JournalDescription = AJournalDescription;
+                JournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+                JournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+                JournalRow.TransactionCurrency = ACurrency;
+                JournalRow.ExchangeRateToBase = AXRateToBase;
+                JournalRow.DateEffective = ADateEffective;
+                JournalRow.JournalPeriod = APeriodNumber;
+                AMainDS.AJournal.Rows.Add(JournalRow);
+
+                //Update the Last Journal
+                ABatchRow BatchRow = (ABatchRow)AMainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber });
+                BatchRow.LastJournal = AJournalNumber;
+
+                CreationSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+
+            return CreationSuccessful;
+        }
+
+        /// <summary>
+        /// create a record for a_transaction
+        /// </summary>
+        public static bool CreateATransaction(
+            GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            string ANarrative,
+            string AAccountCode,
+            string ACostCentreCode,
+            decimal ATransAmount,
+            DateTime ATransDate,
+            bool ADebCredIndicator,
+            string AReference,
+            bool ASystemGenerated,
+            decimal ABaseAmount,
+            out int ATransactionNumber)
+        {
+            bool CreationSuccessful = false;
+
+            ATransactionNumber = 0;
+
+            //Error handling
+            string ErrorContext = "Create a Transaction";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
+
+            try
+            {
+                AJournalRow JournalRow = (AJournalRow)AMainDS.AJournal.Rows.Find(new object[] { ALedgerNumber, ABatchNumber, AJournalNumber });
+
+                //Increment the LastTransactionNumber
+                JournalRow.LastTransactionNumber++;
+                ATransactionNumber = JournalRow.LastTransactionNumber;
+
+                ATransactionRow TransactionRow = AMainDS.ATransaction.NewRowTyped();
+
+                TransactionRow.LedgerNumber = ALedgerNumber;
+                TransactionRow.BatchNumber = ABatchNumber;
+                TransactionRow.JournalNumber = AJournalNumber;
+                TransactionRow.TransactionNumber = ATransactionNumber;
+                TransactionRow.Narrative = ANarrative;
+                TransactionRow.Reference = AReference;
+                TransactionRow.AccountCode = AAccountCode;
+                TransactionRow.CostCentreCode = ACostCentreCode;
+                TransactionRow.DebitCreditIndicator = ADebCredIndicator;
+                TransactionRow.SystemGenerated = ASystemGenerated;
+                TransactionRow.AmountInBaseCurrency = ABaseAmount;
+                TransactionRow.TransactionAmount = ATransAmount;
+                TransactionRow.TransactionDate = ATransDate;
+
+                AMainDS.ATransaction.Rows.Add(TransactionRow);
+
+                CreationSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage =
+                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                            Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        ALedgerNumber);
+                ErrorType = TResultSeverity.Resv_Critical;
+                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+            }
+
+            return CreationSuccessful;
         }
     }
 }

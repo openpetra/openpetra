@@ -68,6 +68,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbIncludeSpecialTypes.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
 
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
+        {
+            // no columns tab needed if called from extracts
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+                tabReportSettings.Controls.Remove(tpgReportSorting);
+            }
+
+            // enable autofind in list for first character (so the user can press character to find list entry)
+            this.clbIncludeSpecialTypes.AutoFindColumn = ((Int16)(1));
+            this.clbIncludeSpecialTypes.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+        }
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbIncludeSpecialTypes.GetCheckedStringList().Length == 0)

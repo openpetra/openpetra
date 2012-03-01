@@ -472,8 +472,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             int DebitCreditMultiply;             /* needed if the debit credit indicator is not the same */
             string CostCentreCode;
 
-            AAccountTable a_current_account_b = null;                /* Current acct record */
-            AAccountTable a_parent_account_b = null;                 /* Parent acct record */
             AAccountHierarchyDetailTable AccountHierarchyDetailTable = null;
             AAccountHierarchyDetailRow AccountHierarchyDetailRow = null;
 
@@ -488,7 +486,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ALedgerAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, null);     //transaction);
             ALedgerRow LedgerRow = (ALedgerRow)GLBatchDS.ALedger.Rows[0];
 
-            a_current_account_b = GLBatchDS.AAccount;
+            AAccountTable a_current_account_b = GLBatchDS.AAccount;
             AAccountRow AccountRow = (AAccountRow)a_current_account_b.Rows.Find(new object[] { ALedgerNumber, CurrAccountCode });
 
             try
@@ -503,7 +501,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                     if ((AccountCodeToReportTo != null) && (AccountCodeToReportTo != string.Empty))
                     {
-                        a_parent_account_b = GLBatchDS.AAccount;
+                        //AAccountTable a_parent_account_b = GLBatchDS.AAccount;
                         //AAccountRow AccountRowP = (AAccountRow)a_parent_account_b.Rows.Find(new object[] {ALedgerNumber, AccountCodeToReportTo});
 
                         /* Recursively call this procedure. */

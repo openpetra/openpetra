@@ -20,9 +20,9 @@ RootNode:
             # it is necessary to set the RootControl because tabReportSettings is not automatically the first control
             RootControl: true
             # add tpgSorting and tpgOutputDestinations and tpgColumns later
-            #~ Controls: [tpgReportSpecific]
-        #~ tpgReportSpecific:
-            #~ Order: AlwaysFirst
+#~          Controls: [tpgReportSpecific]
+#~          tpgReportSpecific:
+#~          Order: AlwaysFirst
 #        tpgColumns:
 #            Controls: [ucoReportColumns]
 #            Order: AlwaysLast
@@ -38,9 +38,9 @@ RootNode:
 #        ucoReportSorting:
 #            Type: Ict.Petra.Client.MReporting.Gui.UC_Sorting
 #            Dock: Fill
-        #~ ucoReportColumns:
-            #~ Type: Ict.Petra.Client.MReporting.Gui.UC_Columns
-            #~ Dock: Fill
+#~      ucoReportColumns:
+#~          Type: Ict.Petra.Client.MReporting.Gui.UC_Columns
+#~          Dock: Fill
     Menu:
         mniFile:
             mniLoadSettings: {Label=&Load Settings, Order=AlwaysFirst}
