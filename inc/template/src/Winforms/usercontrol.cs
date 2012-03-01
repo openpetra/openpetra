@@ -4,11 +4,11 @@
 //
 {#GPLFILEHEADER}
 using System;
+using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
-using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
@@ -17,6 +17,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 {#USINGNAMESPACES}
@@ -102,8 +103,12 @@ namespace {#NAMESPACE}
 {#IFDEF ACTIONENABLING}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
+{#IFDEF DATAVALIDATION}
 
-        if(   FMainDS != null
+      BuildValidationControlsDict();
+{#ENDIF DATAVALIDATION}
+
+        if(FMainDS != null
 		   && FMainDS.{#MASTERTABLE} != null)
         {
             ShowData(FMainDS.{#MASTERTABLE}[0]);
@@ -111,6 +116,21 @@ namespace {#NAMESPACE}
     }
     
     {#EVENTHANDLERSIMPLEMENTATION}
+{#IFDEF SHOWDETAILS}
+
+    /// return the selected row
+    public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
+    {
+        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (SelectedGridRow.Length >= 1)
+        {
+            return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;
+        }
+
+        return null;
+    }
+{#ENDIF SHOWDETAILS}
 
     /// make sure that the primary key cannot be edited anymore
     public void SetPrimaryKeyReadOnly(bool AReadOnly)
@@ -127,6 +147,69 @@ namespace {#NAMESPACE}
     }
 {#ENDIF SHOWDATA}
 
+    /// <summary>
+    /// Performs data validation.
+    /// </summary>
+    /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+    /// the UserControl.</remarks>    
+    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+    /// user, otherwise set it to false.</param>
+    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+    public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+    {
+        bool ReturnValue = false;
+{#IFDEF SHOWDETAILS}
+        {#DETAILTABLETYPE}Row CurrentRow;
+
+        CurrentRow = GetSelectedDetailRow();
+
+        if (CurrentRow != null)
+        {
+{#ENDIF SHOWDETAILS}        
+{#IFNDEF SHOWDETAILS}
+
+        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIFN SHOWDETAILS}
+{#IFDEF SHOWDETAILS}
+            GetDetailsFromControls(CurrentRow);
+{#ENDIF SHOWDETAILS}
+
+            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+{#IFDEF VALIDATEDATADETAILSMANUAL}
+{#IFDEF SHOWDETAILS}
+            ValidateDataDetailsManual(CurrentRow);
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+            ValidateDataDetailsManual(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIFN SHOWDETAILS}
+{#ENDIF VALIDATEDATADETAILSMANUAL}
+{#IFDEF PERFORMUSERCONTROLVALIDATION}
+
+            // Perform validation in UserControls, too
+            {#USERCONTROLVALIDATION}
+{#ENDIF PERFORMUSERCONTROLVALIDATION}
+
+            if (AProcessAnyDataValidationErrors)
+            {
+                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType());    
+            }
+{#IFDEF SHOWDETAILS}            
+        }
+        else
+        {
+            ReturnValue = true;
+        }
+{#ENDIF SHOWDETAILS}
+
+        if(ReturnValue)
+        {
+            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+            FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        }
+
+        return ReturnValue;
+    }
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
@@ -160,6 +243,7 @@ namespace {#NAMESPACE}
             ARow.EndEdit();
         }
     }
+    
 {#ENDIF SAVEDETAILS}
 
 
@@ -211,7 +295,48 @@ namespace {#NAMESPACE}
 
 #endregion
 {#ENDIF ACTIONENABLING}
+{#IFDEF DATAVALIDATION}
+
+#region Data Validation
+    
+    private void ControlValidatedHandler(object sender, EventArgs e)
+    {
+        TScreenVerificationResult SingleVerificationResult;
+        
+        ValidateAllData(false);
+        
+        FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        
+        if (FPetraUtilsObject.VerificationResultCollection.Count > 0) 
+        {
+            for (int Counter = 0; Counter < FPetraUtilsObject.VerificationResultCollection.Count; Counter++) 
+            {
+                SingleVerificationResult = (TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[Counter];
+                
+                if (SingleVerificationResult.ResultControl == sender) 
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested) 
+                    {
+                        SingleVerificationResult.ResultControl.Focus();    
+                        FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = false;
+                    }                    
+
+                    FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
+                        ((Control)sender).Width / 2, ((Control)sender).Height);
+                }
+            }
+        }
+    }
+
+    private void BuildValidationControlsDict()
+    {
+        {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+    }
+    
+#endregion
+{#ENDIF DATAVALIDATION}
   }
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE validationcontrolsdict.cs}
