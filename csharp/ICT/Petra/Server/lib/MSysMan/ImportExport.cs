@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         }
                         else
                         {
-                            rowNode.SetAttribute(col.ColumnName, row[col].ToString());
+                            rowNode.SetAttribute(col.ColumnName, row[col].ToString().Replace("\"", "&quot;"));
                         }
                     }
                 }
@@ -428,7 +428,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         else if (col.DataType == typeof(String))
                         {
                             OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
-                            p.Value = strValue;
+                            p.Value = strValue.Replace("&quot;", "\"");
                             Parameters.Add(p);
                         }
                         else if (col.DataType == typeof(Int32))

@@ -85,7 +85,9 @@ namespace Ict.Petra.WebServer.MSysMan
                 return;
             }
 
-            if (TMaintenanceWebConnector.SetUserPassword(UserInfo.GUserInfo.UserID, newPassword, oldPassword) == true)
+            TVerificationResultCollection VerificationResult;
+            
+            if (TMaintenanceWebConnector.SetUserPassword(UserInfo.GUserInfo.UserID, newPassword, oldPassword, out VerificationResult) == true)
             {
                 X.Msg.Alert("Success", "Your Password has been changed!", new JFunction { Fn = "HidePasswordWindow" }).Show();
             }

@@ -235,11 +235,16 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
 
+                if (ResultDataset.AEpStatement[0].BankAccountCode.Length == 0)
+                {
+                    throw new Exception("Loading Bank Statement: Bank Account must not be empty");
+                }
+
+                string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
+
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
-                    string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
-
                     // find a match with the same match text, or create a new one
                     if (row.IsMatchTextNull() || (row.MatchText.Length == 0) || !row.MatchText.StartsWith(BankAccountCode))
                     {
@@ -250,6 +255,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     AEpMatchRow tempRow = tempTable.NewRowTyped(false);
                     tempRow.MatchText = row.MatchText;
 
+                    // TODO: do not load from the database so often, and only write once
                     tempTable = AEpMatchAccess.LoadUsingTemplate(tempRow, Transaction);
 
                     if (tempTable.Count > 0)

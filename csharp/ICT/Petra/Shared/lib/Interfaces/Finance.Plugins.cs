@@ -59,7 +59,9 @@ namespace Ict.Petra.Shared.Interfaces.Plugins.MFinance
         /// a_ep_statement and a_ep_transaction in the database
         /// </summary>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
+        /// <param name="ALedgerNumber">the current ledger number</param>
+        /// <param name="ABankAccountCode">the bank account against which the statement should be stored</param>
         /// <returns></returns>
-        bool ImportBankStatement(out Int32 AStatementKey);
+        bool ImportBankStatement(out Int32 AStatementKey, Int32 ALedgerNumber, string ABankAccountCode);
     }
 }

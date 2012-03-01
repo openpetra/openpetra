@@ -28,6 +28,7 @@ using Ict.Testing.NUnitForms;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Testing.NUnitPetraServer;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -35,7 +36,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// TestGLCommonTools
     /// </summary>
     [TestFixture]
-    public class TestGLCommonTools : CommonNUnitFunctions
+    public class TestGLCommonTools
     {
         int LedgerNumber = 43;
         /// <summary>
@@ -243,7 +244,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureSetUp]
         public void Init()
         {
-            InitServerConnection();
+            TPetraServerConnector.Connect();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
@@ -253,7 +254,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [TestFixtureTearDown]
         public void TearDownTest()
         {
-            DisconnectServerConnection();
+            TPetraServerConnector.Disconnect();
             System.Diagnostics.Debug.WriteLine("TearDown: " + this.ToString());
         }
     }

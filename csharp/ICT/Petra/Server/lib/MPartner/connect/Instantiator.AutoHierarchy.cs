@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2709,7 +2709,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                          System.String AMailingCode,
                                          out TVerificationResultCollection AVerificationResults)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "AddContact", ";LIST;DATETIME;STRING;STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "AddContact", ";LONG?;DATETIME;STRING;STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.AddContact(APartnerKeys, AContactDate, AMethodOfContact, AComment, AModuleID, AMailingCode, out AVerificationResults);
         }
 
@@ -2734,6 +2734,27 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public MExtractMasterTable GetAllExtractHeaders()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders();
+        }
+
+        /// generated method from connector
+        public Boolean DeleteExtract(System.Int32 AExtractId)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "DeleteExtract", ";INT;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.DeleteExtract(AExtractId);
+        }
+
+        /// generated method from connector
+        public Boolean ExtractExists(String AExtractName)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "ExtractExists", ";STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.ExtractExists(AExtractName);
+        }
+
+        /// generated method from connector
         public System.Boolean ChangeFamily(Int64 APersonKey,
                                            Int64 AOldFamilyKey,
                                            Int64 ANewFamilyKey,
@@ -2742,6 +2763,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector), "ChangeFamily", ";LONG;LONG;LONG;STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector.ChangeFamily(APersonKey, AOldFamilyKey, ANewFamilyKey, out AProblemMessage, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public PUnitTable GetConferenceUnits(System.String AConferenceName)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader), "GetConferenceUnits", ";STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetConferenceUnits(AConferenceName);
+        }
+
+        /// generated method from connector
+        public PUnitTable GetOutreachUnits(System.String AOutreachName)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader), "GetOutreachUnits", ";STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetOutreachUnits(AOutreachName);
         }
 
         /// generated method from connector

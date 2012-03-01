@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -167,6 +167,19 @@ namespace Ict.Common.Controls
         }
 
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
+        static private Form FLastOpenedScreen = null;
+
+        /// <summary>
+        /// the object of the last opened screen.
+        /// useful for testing
+        /// </summary>
+        static public Form LastOpenedScreen
+        {
+            get
+            {
+                return FLastOpenedScreen;
+            }
+        }
 
         /// <summary>
         /// execute action from the navigation tree
@@ -225,7 +238,51 @@ namespace Ict.Common.Controls
 
                 if (method != null)
                 {
-                    method.Invoke(null, new object[] { AParentWindow });
+                    List <object>parameters = new List <object>();
+                    parameters.Add(AParentWindow);
+
+                    // Check the parameters, if we have such an attribute
+                    foreach (ParameterInfo param in method.GetParameters())
+                    {
+                        // ignore the first letter, A, eg. in ALedgerNumber
+                        if (TYml2Xml.HasAttributeRecursive(node, param.Name.Substring(1)))
+                        {
+                            Object obj = TYml2Xml.GetAttributeRecursive(node, param.Name.Substring(1));
+
+                            if (param.ParameterType == typeof(Int32))
+                            {
+                                obj = Convert.ToInt32(obj);
+                            }
+                            else if (param.ParameterType == typeof(Int64))
+                            {
+                                obj = Convert.ToInt64(obj);
+                            }
+                            else if (param.ParameterType == typeof(bool))
+                            {
+                                obj = Convert.ToBoolean(obj);
+                            }
+                            else if (param.ParameterType == typeof(string))
+                            {
+                                // leave it as string
+                            }
+                            else if (param.ParameterType.IsEnum)
+                            {
+                                obj = Enum.Parse(param.ParameterType, obj.ToString(), true);
+                            }
+                            else
+                            {
+                                // to avoid that Icon is set etc, clear obj
+                                obj = null;
+                            }
+
+                            if (obj != null)
+                            {
+                                parameters.Add(obj);
+                            }
+                        }
+                    }
+
+                    method.Invoke(null, parameters.ToArray());
                 }
                 else
                 {
@@ -296,6 +353,7 @@ namespace Ict.Common.Controls
                 if (method != null)
                 {
                     method.Invoke(screen, null);
+                    FLastOpenedScreen = (Form)screen;
                 }
                 else
                 {

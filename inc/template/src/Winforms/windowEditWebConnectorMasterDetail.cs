@@ -231,7 +231,7 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.EnableDataChangedEvent();
     }
 
-    private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
+    private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
 {#IFDEF SAVEDETAILS}
 
     private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)

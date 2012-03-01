@@ -86,6 +86,8 @@ CachedTables:
                 PtTravelType: {Enum=TransportTypeList, Comment=Contains the codes that indicate the mode of travel being used}
                 PtQualificationArea: {Comment="Contains the areas in which a person may posess a qualification, e.g. computing or accountancy"}
                 PtQualificationLevel: {Comment="Contains the levels to which a qualifications is possessed, e.g. Secondary education, Master's Degree"}
+                PtSkillCategory: {Comment="Contains the categories in which a person may posess a skill, e.g. music or leading small groups"}
+                PtSkillLevel: {Comment="Contains the levels to which a skill is possessed, e.g. beginner or accomplished"}
                 PtValuableItem: {Comment="Contains the item(s) of value a person may possess which need to be accounted for various purposes, e.g. customs, or insurance"}
                 PtVisionArea: {Comment="Contains the areas a person may have vision for, e.g. children's work or a particular country"}
                 PtVisionLevel: {Comment="Contains the levels  to which a vision is possessed, e.g. a possibility, do nothing else"}

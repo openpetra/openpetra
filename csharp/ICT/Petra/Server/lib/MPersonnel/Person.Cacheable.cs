@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -246,6 +246,18 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.QualificationLevelList:
                         {
                             DataTable TmpTable = PtQualificationLevelAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.SkillCategoryList:
+                        {
+                            DataTable TmpTable = PtSkillCategoryAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.SkillLevelList:
+                        {
+                            DataTable TmpTable = PtSkillLevelAccess.LoadAll(ReadTransaction);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -628,6 +640,40 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             }
 
                             break;
+                        case TCacheablePersonTablesEnum.SkillCategoryList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateSkillCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateSkillCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PtSkillCategoryAccess.SubmitChanges((PtSkillCategoryTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
+                        case TCacheablePersonTablesEnum.SkillLevelList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateSkillLevelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateSkillLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PtSkillLevelAccess.SubmitChanges((PtSkillLevelTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
                         case TCacheablePersonTablesEnum.ValuableItemList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
@@ -813,6 +859,14 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
         partial void ValidateQualificationLevelList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateQualificationLevelListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateSkillCategoryList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateSkillCategoryListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateSkillLevelList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateSkillLevelListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateValuableItemList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);

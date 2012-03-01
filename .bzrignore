@@ -24,6 +24,7 @@ app.config
 _bin
 obj
 *.yaml.xml
+*.yml.xml
 *.cs.error
 *.error
 *.new
@@ -59,4 +60,3 @@ csharp/ICT/experimenting/treasurerEmails/obj
 csharp/ICT/Petra/Server/lib/data/*.cs
 csharp/ICT/Petra/Shared/lib/data/*.cs
 *lang-template.js
-i18n/template.pot

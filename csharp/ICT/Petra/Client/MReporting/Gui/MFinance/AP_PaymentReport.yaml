@@ -1,0 +1,30 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: AP Payment Report
+    WindowWidth: 680
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [Finance/AccountsPayable/AP_PaymentReport.xml,Finance/finance.xml,common.xml]
+        REPORTNAME: APPaymentReport
+        CURRENTREPORT: APPaymentReport
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION:BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Finance
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgReportSpecific:
+            Controls: [txtLedgerNumber, txtPaymentNumber, txtSupplierNumber]
+        txtLedgerNumber:
+            ParameterName: param_ledger_number_i
+        txtPaymentNumber:
+            ParameterName: param_payment_number_i
+        txtSupplierNumber:
+            ParameterName: param_supplier_number_i
+            

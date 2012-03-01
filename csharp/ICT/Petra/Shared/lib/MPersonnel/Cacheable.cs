@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -147,6 +147,16 @@ namespace Ict.Petra.Shared.MPersonnel
         /// Contains the levels to which a qualifications is possessed, e.g. Secondary education, Master's Degree
         /// </summary>
         QualificationLevelList,
+
+        /// <summary>
+        /// Contains the categories in which a person may posess a skill, e.g. music or leading small groups
+        /// </summary>
+        SkillCategoryList,
+
+        /// <summary>
+        /// Contains the levels to which a skill is possessed, e.g. beginner or accomplished
+        /// </summary>
+        SkillLevelList,
 
         /// <summary>
         /// Contains the item(s) of value a person may possess which need to be accounted for various purposes, e.g. customs, or insurance

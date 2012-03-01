@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,9 +65,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// This is for all info only routines that means JobSize has no definition
         /// </summary>
-        /// <param name="Apeo"></param>
-        protected void RunPeriodEndCheck(AbstractPeriodEndOperation Apeo)
+        protected void RunPeriodEndCheck(AbstractPeriodEndOperation Apeo, TVerificationResultCollection AVerificationResults)
         {
+            verificationResults = AVerificationResults;
+            Apeo.VerificationResultCollection = AVerificationResults;
             Apeo.IsInInfoMode = blnIsInInfoMode;
             Apeo.RunEndOfPeriodOperation();
 

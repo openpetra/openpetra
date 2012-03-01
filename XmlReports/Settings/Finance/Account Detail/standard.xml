@@ -1,44 +1,44 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Finance\\accountdetail.xml,Finance\\accountdetailcommon.xml,Finance\\finance.xml,common.xml" />
-  <Parameter id="currentReport" value="Account Detail" />
-  <Parameter id="MaxDisplayColumns" value="6" />
-  <Parameter id="param_diff_period_i" value="0" />
-  <Parameter id="param_account_hierarchy_c" value="STANDARD" />
-  <Parameter id="param_currency" value="Base" />
-  <Parameter id="param_quarter" value="false" />
-  <Parameter id="param_period" value="true" />
-  <Parameter id="param_daterange" value="false" />
-  <Parameter id="param_sortby" value="Account" />
-  <Parameter id="param_account_codes" value="*NOTUSED*" />
-  <Parameter id="param_rgrAccounts" value="AccountRange" />
-  <Parameter id="param_cost_centre_codes" value="*NOTUSED*" />
-  <Parameter id="param_rgrCostCentres" value="CostCentreRange" />
-  <Parameter id="param_depth" value="standard" />
-  <Parameter id="ColumnPosition" column="0" value="6" />
-  <Parameter id="ColumnPositionIndented" column="0" value="0" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="ColumnPosition" column="1" value="8" />
-  <Parameter id="ColumnPositionIndented" column="1" value="0" />
-  <Parameter id="ColumnWidth" column="1" value="3" />
-  <Parameter id="ColumnPosition" column="2" value="11" />
-  <Parameter id="ColumnPositionIndented" column="2" value="0" />
-  <Parameter id="ColumnWidth" column="2" value="1" />
-  <Parameter id="ColumnPosition" column="3" value="12" />
-  <Parameter id="ColumnPositionIndented" column="3" value="0" />
-  <Parameter id="ColumnWidth" column="3" value="5" />
-  <Parameter id="ColumnPosition" column="4" value="13" />
-  <Parameter id="ColumnPositionIndented" column="4" value="0" />
-  <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="ColumnPosition" column="5" value="16" />
-  <Parameter id="ColumnPositionIndented" column="5" value="0" />
-  <Parameter id="ColumnWidth" column="5" value="3" />
-  <Parameter id="param_calculation" column="0" value="Debit" />
-  <Parameter id="param_calculation" column="1" value="Credit" />
-  <Parameter id="param_calculation" column="2" value="Transaction Currency" />
-  <Parameter id="param_calculation" column="3" value="Transaction Narrative" />
-  <Parameter id="param_calculation" column="4" value="Start Balance" />
-  <Parameter id="param_calculation" column="5" value="End Balance" />
-  <Parameter id="param_with_analysis_attributes" value="false" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\accountdetail.xml,Finance\\accountdetailcommon.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:Account Detail" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:6" />
+  <Parameter id="param_diff_period_i" value="eInteger:0" />
+  <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_quarter" value="eString:false" />
+  <Parameter id="param_period" value="eString:true" />
+  <Parameter id="param_daterange" value="eString:false" />
+  <Parameter id="param_sortby" value="eString:Account" />
+  <Parameter id="param_account_codes" value="eString:*NOTUSED*" />
+  <Parameter id="param_rgrAccounts" value="eString:AccountRange" />
+  <Parameter id="param_cost_centre_codes" value="eString:*NOTUSED*" />
+  <Parameter id="param_rgrCostCentres" value="eString:CostCentreRange" />
+  <Parameter id="param_depth" value="eString:standard" />
+  <Parameter id="ColumnPosition" column="0" value="eInteger:6" />
+  <Parameter id="ColumnPositionIndented" column="0" value="eInteger:0" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="ColumnPosition" column="1" value="eInteger:8" />
+  <Parameter id="ColumnPositionIndented" column="1" value="eInteger:0" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
+  <Parameter id="ColumnPosition" column="2" value="eInteger:11" />
+  <Parameter id="ColumnPositionIndented" column="2" value="eInteger:0" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:1" />
+  <Parameter id="ColumnPosition" column="3" value="eInteger:12" />
+  <Parameter id="ColumnPositionIndented" column="3" value="eInteger:0" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:5" />
+  <Parameter id="ColumnPosition" column="4" value="eInteger:13" />
+  <Parameter id="ColumnPositionIndented" column="4" value="eInteger:0" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
+  <Parameter id="ColumnPosition" column="5" value="eInteger:16" />
+  <Parameter id="ColumnPositionIndented" column="5" value="eInteger:0" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="0" value="eString:Debit" />
+  <Parameter id="param_calculation" column="1" value="eString:Credit" />
+  <Parameter id="param_calculation" column="2" value="eString:Transaction Currency" />
+  <Parameter id="param_calculation" column="3" value="eString:Transaction Narrative" />
+  <Parameter id="param_calculation" column="4" value="eString:Start Balance" />
+  <Parameter id="param_calculation" column="5" value="eString:End Balance" />
+  <Parameter id="param_with_analysis_attributes" value="eString:false" />
 </Parameters>

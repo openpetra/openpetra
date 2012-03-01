@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -113,9 +113,13 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (accountTable.Rows.Count > 0)
             {
-                for (int i = 0; i < accountTable.Rows.Count; ++i)
+                accountTable.DefaultView.Sort =
+                    AAccountHierarchyDetailTable.GetReportOrderDBName() + ", " +
+                    AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
+
+                foreach (DataRowView rv in accountTable.DefaultView)
                 {
-                    accountRow = (AAccountHierarchyDetailRow)accountTable.Rows[i];
+                    accountRow = (AAccountHierarchyDetailRow)rv.Row;
 
                     if (accountRow.AccountCodeToReportTo.Equals(AAccountCode))
                     {

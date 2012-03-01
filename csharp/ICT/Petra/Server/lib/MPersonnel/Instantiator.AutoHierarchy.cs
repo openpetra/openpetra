@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -478,6 +478,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "HasCurrentCommitmentRecord", ";LONG;");
             return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.HasCurrentCommitmentRecord(APartnerKey);
+        }
+
+        /// generated method from connector
+        public System.Int32 GetOrCreateUmJobKey(Int64 AUnitKey,
+                                                System.String APositionName,
+                                                System.String APositionScope)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "GetOrCreateUmJobKey", ";LONG;STRING;STRING;");
+            return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.GetOrCreateUmJobKey(AUnitKey, APositionName, APositionScope);
         }
     }
 }

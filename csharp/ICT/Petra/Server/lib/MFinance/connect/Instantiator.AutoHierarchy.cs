@@ -7,7 +7,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -946,6 +946,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         }
 
         /// generated method from connector
+        public AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber,
+                                                  Int64 APartnerKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "LoadAApSupplier", ";INT;LONG;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.LoadAApSupplier(ALedgerNumber, APartnerKey);
+        }
+
+        /// generated method from connector
         public AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
                                                   Int32 AAPNumber)
         {
@@ -994,12 +1002,21 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         }
 
         /// generated method from connector
+        public System.Boolean DeleteAPDocuments(Int32 ALedgerNumber,
+                                                List<Int32>ADeleteTheseDocs,
+                                                out TVerificationResultCollection AVerifications)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "DeleteAPDocuments", ";INT;INT?;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.DeleteAPDocuments(ALedgerNumber, ADeleteTheseDocs, out AVerifications);
+        }
+
+        /// generated method from connector
         public System.Boolean PostAPDocuments(Int32 ALedgerNumber,
                                               List<Int32>AAPDocumentNumbers,
                                               DateTime APostingDate,
                                               out TVerificationResultCollection AVerifications)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;LIST;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPDocuments", ";INT;INT?;DATETIME;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPDocuments(ALedgerNumber, AAPDocumentNumbers, APostingDate, out AVerifications);
         }
 
@@ -1011,6 +1028,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPPayments", ";ACCOUNTSPAYABLETDSAAPPAYMENTTABLE;ACCOUNTSPAYABLETDSAAPDOCUMENTPAYMENTTABLE;DATETIME;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(APayments, ADocumentPayments, APostingDate, out AVerifications);
+        }
+
+        /// generated method from connector
+        public AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,
+                                                Int32 APaymentNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "LoadAPPayment", ";INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.LoadAPPayment(ALedgerNumber, APaymentNumber);
         }
     }
 }
@@ -1465,6 +1490,47 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
         }
 
         /// generated method from connector
+        public BudgetTDS LoadBudgetForAutoGenerate(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetAutoGenerateWebConnector), "LoadBudgetForAutoGenerate", ";INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetAutoGenerateWebConnector.LoadBudgetForAutoGenerate(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public System.Boolean GenBudgetForNextYear(System.Int32 ALedgerNumber,
+                                                   System.Int32 ABudgetSeq,
+                                                   System.String AForecastType)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetAutoGenerateWebConnector), "GenBudgetForNextYear", ";INT;INT;STRING;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetAutoGenerateWebConnector.GenBudgetForNextYear(ALedgerNumber, ABudgetSeq, AForecastType);
+        }
+
+        /// generated method from connector
+        public System.Boolean LoadBudgetForConsolidate(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector), "LoadBudgetForConsolidate", ";INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(ALedgerNumber);
+        }
+
+        /// generated method from connector
+        public System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
+                                                 System.Boolean AConsolidateAll,
+                                                 out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector), "ConsolidateBudgets", ";INT;BOOL;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector.ConsolidateBudgets(ALedgerNumber, AConsolidateAll, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Decimal GetBudgetValue(ref DataTable APeriodDataTable,
+                                             System.Int32 AGLMSequence,
+                                             System.Int32 APeriodNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector), "GetBudgetValue", ";DATATABLE;INT;INT;");
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector.GetBudgetValue(ref APeriodDataTable, AGLMSequence, APeriodNumber);
+        }
+
+        /// generated method from connector
         public BudgetTDS LoadBudget(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "LoadBudget", ";INT;", ALedgerNumber);
@@ -1477,6 +1543,55 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "SaveBudget", ";BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.SaveBudget(ref AInspectDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Int32 ImportBudgets(Int32 ALedgerNumber,
+                                          Int32 ACurrentBudgetYear,
+                                          System.String ACSVFileName,
+                                          System.String[] AFdlgSeparator,
+                                          ref BudgetTDS AImportDS,
+                                          out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "ImportBudgets", ";INT;INT;STRING;STRING.ARRAY;BUDGETTDS;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.ImportBudgets(ALedgerNumber, ACurrentBudgetYear, ACSVFileName, AFdlgSeparator, ref AImportDS, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Int32 GetGLMSequenceForBudget(System.Int32 ALedgerNumber,
+                                                    System.String AAccountCode,
+                                                    System.String ACostCentreCode,
+                                                    System.Int32 AYear)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "GetGLMSequenceForBudget", ";INT;STRING;STRING;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AAccountCode, ACostCentreCode, AYear);
+        }
+
+        /// generated method from connector
+        public System.Decimal GetActual(System.Int32 ALedgerNumber,
+                                        System.Int32 AGLMSeqThisYear,
+                                        System.Int32 AGLMSeqNextYear,
+                                        System.Int32 APeriodNumber,
+                                        System.Int32 ANumberAccountingPeriods,
+                                        System.Int32 ACurrentFinancialYear,
+                                        System.Int32 AThisYear,
+                                        System.Boolean AYTD,
+                                        System.String ACurrencySelect)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "GetActual", ";INT;INT;INT;INT;INT;INT;INT;BOOL;STRING;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.GetActual(ALedgerNumber, AGLMSeqThisYear, AGLMSeqNextYear, APeriodNumber, ANumberAccountingPeriods, ACurrentFinancialYear, AThisYear, AYTD, ACurrencySelect);
+        }
+
+        /// generated method from connector
+        public System.Decimal GetBudget(System.Int32 AGLMSeqThisYear,
+                                        System.Int32 AGLMSeqNextYear,
+                                        System.Int32 APeriodNumber,
+                                        System.Int32 ANumberAccountingPeriods,
+                                        System.Boolean AYTD,
+                                        System.String ACurrencySelect)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector), "GetBudget", ";INT;INT;INT;INT;BOOL;STRING;");
+            return Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector.GetBudget(AGLMSeqThisYear, AGLMSeqNextYear, APeriodNumber, ANumberAccountingPeriods, AYTD, ACurrencySelect);
         }
     }
 }

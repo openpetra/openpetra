@@ -357,7 +357,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                             //process expenses
                             if (ExpenseAccounts.Contains(CurrentAccountCode)
                                 && (CurrentAccountCode != MFinanceConstants.DIRECT_XFER_ACCT)
-                                && (CurrentAccountCode != MFinanceConstants.ICH_SETTLEMENT_ACCT))
+                                && (CurrentAccountCode != MFinanceConstants.ICH_ACCT_SETTLEMENT))
                             {
                                 if (TransactionRow.DebitCreditIndicator = ExpenseDrCrIndicator)
                                 {

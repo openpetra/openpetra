@@ -1,32 +1,32 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Partner\\brieffoundationreport.xml" />
-  <Parameter id="currentReport" value="Foundation Report" />
-  <Parameter id="MaxDisplayColumns" value="12" />
-  <Parameter id="param_selection" value="an extract" />
-  <Parameter id="param_calculation" column="0" value="Foundation Key" />
-  <Parameter id="ColumnWidth" column="0" value="2" />
-  <Parameter id="param_calculation" column="1" value="Foundation Name" />
-  <Parameter id="ColumnWidth" column="1" value="4" />
-  <Parameter id="param_calculation" column="2" value="Foundation Owner" />
-  <Parameter id="ColumnWidth" column="2" value="4" />
-  <Parameter id="param_calculation" column="3" value="Foundation Address" />
-  <Parameter id="ColumnWidth" column="3" value="8" />
-  <Parameter id="param_calculation" column="4" value="Contact" />
-  <Parameter id="ColumnWidth" column="4" value="3" />
-  <Parameter id="param_calculation" column="5" value="Submission" />
-  <Parameter id="ColumnWidth" column="5" value="2" />
-  <Parameter id="param_calculation" column="6" value="Submit" />
-  <Parameter id="ColumnWidth" column="6" value="2" />
-  <Parameter id="param_calculation" column="7" value="Review" />
-  <Parameter id="ColumnWidth" column="7" value="2" />
-  <Parameter id="param_calculation" column="8" value="Phone" />
-  <Parameter id="ColumnWidth" column="8" value="3" />
-  <Parameter id="param_calculation" column="9" value="E-Mail Address" />
-  <Parameter id="ColumnWidth" column="9" value="3" />
-  <Parameter id="param_calculation" column="10" value="Last Submit" />
-  <Parameter id="ColumnWidth" column="10" value="2" />
-  <Parameter id="param_calculation" column="11" value="Next Submit" />
-  <Parameter id="ColumnWidth" column="11" value="2" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Partner\\brieffoundationreport.xml" />
+  <Parameter id="currentReport" value="eString:Foundation Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:12" />
+  <Parameter id="param_selection" value="eString:an extract" />
+  <Parameter id="param_calculation" column="0" value="eString:Foundation Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_calculation" column="1" value="eString:Foundation Name" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:4" />
+  <Parameter id="param_calculation" column="2" value="eString:Foundation Owner" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:4" />
+  <Parameter id="param_calculation" column="3" value="eString:Foundation Address" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:8" />
+  <Parameter id="param_calculation" column="4" value="eString:Contact" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
+  <Parameter id="param_calculation" column="5" value="eString:Submission" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_calculation" column="6" value="eString:Submit" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_calculation" column="7" value="eString:Review" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
+  <Parameter id="param_calculation" column="8" value="eString:Phone" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:3" />
+  <Parameter id="param_calculation" column="9" value="eString:E-Mail Address" />
+  <Parameter id="ColumnWidth" column="9" value="eInteger:3" />
+  <Parameter id="param_calculation" column="10" value="eString:Last Submit" />
+  <Parameter id="ColumnWidth" column="10" value="eInteger:2" />
+  <Parameter id="param_calculation" column="11" value="eString:Next Submit" />
+  <Parameter id="ColumnWidth" column="11" value="eInteger:2" />
 </Parameters>

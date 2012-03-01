@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -359,7 +359,7 @@ namespace Ict.Common.Remoting.Server
                 if (RemotingPortInt != -1)
                 {
                     BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
-                    TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
+                    TCPSink.TypeFilterLevel = TypeFilterLevel.Full;
                     IServerChannelSinkProvider EncryptionSink = TCPSink;
 
                     if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
@@ -370,6 +370,8 @@ namespace Ict.Common.Remoting.Server
 
                     Hashtable ChannelProperties = new Hashtable();
                     ChannelProperties.Add("port", RemotingPortInt.ToString());
+                    ChannelProperties.Add("name", "TCP" + RemotingPortInt.ToString());
+                    ChannelProperties.Add("typeFilterLevel", TypeFilterLevel.Full);
 
                     string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
 
@@ -382,9 +384,10 @@ namespace Ict.Common.Remoting.Server
                     ChannelServices.RegisterChannel(FTcpChannel, false);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                throw;
+                TLogging.Log(e.ToString());
+                throw e;
             }
 
 #if DEBUGMODE

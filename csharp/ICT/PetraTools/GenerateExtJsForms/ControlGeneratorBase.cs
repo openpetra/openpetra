@@ -161,11 +161,20 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         {
         }
 
+        private StringCollection FAlreadyInserted = new StringCollection();
+
         /// <summary>
         /// fill in the attributes for the control
         /// </summary>
         public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ACtrl)
         {
+            if (FAlreadyInserted.Contains(ACtrl.controlName))
+            {
+                throw new Exception("Cannot insert control " + ACtrl.controlName + " several times into a form");
+            }
+
+            FAlreadyInserted.Add(ACtrl.controlName);
+
             ProcessTemplate snippetControl = writer.FTemplate.GetSnippet(FControlDefinitionSnippetName);
 
             snippetControl.SetCodelet("ITEMNAME", ACtrl.controlName);
@@ -185,6 +194,11 @@ namespace Ict.Tools.CodeGeneration.ExtJs
             if (ACtrl.HasAttribute("minLength"))
             {
                 snippetControl.SetCodelet("MINLENGTH", ACtrl.GetAttribute("minLength"));
+            }
+
+            if (ACtrl.HasAttribute("regex"))
+            {
+                snippetControl.SetCodelet("REGEX", ACtrl.GetAttribute("regex"));
             }
 
             ((TExtJsFormsWriter)writer).AddResourceString(snippetControl, "LABEL", ACtrl, ACtrl.Label);

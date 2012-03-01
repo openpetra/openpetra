@@ -200,6 +200,55 @@ namespace {#NAMESPACE}
     }
 {#ENDIF SHOWDATA}
 
+    /// <summary>
+    /// Performs data validation.
+    /// </summary>
+    /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
+    /// to another record, otherwise set it to false.</param>
+    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+    /// user, otherwise set it to false.</param>
+    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
+    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+    {
+        bool ReturnValue = false;
+        {#DETAILTABLE}Row CurrentRow;
+
+        CurrentRow = GetSelectedDetailRow();
+
+        if (CurrentRow != null)
+        {
+            GetDetailsFromControls(CurrentRow);
+            
+            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+{#IFDEF VALIDATEDATADETAILSMANUAL}
+            ValidateDataDetailsManual(CurrentRow);
+{#ENDIF VALIDATEDATADETAILSMANUAL}
+{#IFDEF PERFORMUSERCONTROLVALIDATION}
+
+            // Perform validation in UserControls, too
+            {#USERCONTROLVALIDATION}
+{#ENDIF PERFORMUSERCONTROLVALIDATION}
+
+            if (AProcessAnyDataValidationErrors)
+            {
+                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType());    
+            }
+        }
+        else
+        {
+            ReturnValue = true;
+        }
+
+        if(ReturnValue)
+        {
+            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+            FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        }
+
+        return ReturnValue;
+    }
+
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLE}Row ARow)
     {
@@ -267,55 +316,6 @@ namespace {#NAMESPACE}
             {#SAVEDETAILS}
             ARow.EndEdit();
         }
-    }
-
-    /// <summary>
-    /// Performs data validation.
-    /// </summary>
-    /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
-    /// to another record, otherwise set it to false.</param>
-    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-    /// user, otherwise set it to false.</param>
-    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
-    {
-        bool ReturnValue = false;
-        {#DETAILTABLE}Row CurrentRow;
-
-        CurrentRow = GetSelectedDetailRow();
-
-        if (CurrentRow != null)
-        {
-            GetDetailsFromControls(CurrentRow);
-            
-            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
-{#IFDEF VALIDATEDATADETAILSMANUAL}
-            ValidateDataDetailsManual(CurrentRow);
-{#ENDIF VALIDATEDATADETAILSMANUAL}
-{#IFDEF PERFORMUSERCONTROLVALIDATION}
-
-            // Perform validation in UserControls, too
-            {#USERCONTROLVALIDATION}
-{#ENDIF PERFORMUSERCONTROLVALIDATION}
-
-            if (AProcessAnyDataValidationErrors)
-            {
-                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType());    
-            }
-        }
-        else
-        {
-            ReturnValue = true;
-        }
-
-        if(ReturnValue)
-        {
-            // Remove a possibly shown Validation ToolTip as the data validation succeeded
-            FPetraUtilsObject.ValidationToolTip.RemoveAll();
-        }
-
-        return ReturnValue;
     }
 {#ENDIF SAVEDETAILS}
 
@@ -437,7 +437,7 @@ namespace {#NAMESPACE}
                 {
                     FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
                     this.Cursor = Cursors.Default;
-
+                    
                     FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));                    
                     throw;
                 }

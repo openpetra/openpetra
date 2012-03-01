@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Partner\\partnerbysubscription.xml" />
+  <Parameter id="currentReport" value="eString:Partner By Subscription" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:9" />
+  <Parameter id="orderby0" value="eString:Short Name" />
+  <Parameter id="orderby1" value="eString:Address Type" />
+  <Parameter id="orderby2" value="eString:Address valid from" />
+  <Parameter id="param_sortby_readable" value="eString:Short Name, Address Type, Address valid from" />
+  <Parameter id="param_calculation" column="9" value="eString:Address Type" />
+  <Parameter id="param_calculation" column="10" value="eString:Address valid from" />
+  <Parameter id="param_sortby_columns" value="eString:8,9,10" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Class" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:1" />
+  <Parameter id="param_calculation" column="2" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_calculation" column="3" value="eString:Street Name" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
+  <Parameter id="param_calculation" column="4" value="eString:Post Code" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="5" value="eString:City" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
+  <Parameter id="param_calculation" column="6" value="eString:Country" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="7" value="eString:Telephone" />
+  <Parameter id="ColumnWidth" column="7" value="eDecimal:4614613358185178726" />
+  <Parameter id="param_calculation" column="8" value="eString:Field" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
+  <Parameter id="param_explicit_publication" value="eString:" />
+  <Parameter id="param_exclude_publication" value="eString:" />
+</Parameters>

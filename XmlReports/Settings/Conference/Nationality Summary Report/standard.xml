@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="True" />
-  <Parameter id="xmlfiles" value="Conference\\nationalitysummaryreport.xml" />
-  <Parameter id="currentReport" value="Nationality Summary Report" />
-  <Parameter id="MaxDisplayColumns" value="6" />
-  <Parameter id="param_conferenceselection" value="one conference" />
-  <Parameter id="param_attendeeselection" value="all attendees" />
-  <Parameter id="param_partnerkey" value="0" />
-  <Parameter id="param_conferencekey" value="0" />
-  <Parameter id="param_conferencename" value="" />
-  <Parameter id="param_extractname" value="" />
-  <Parameter id="param_calculation" column="0" value="Nationality" />
-  <Parameter id="ColumnWidth" column="0" value="5" />
-  <Parameter id="param_calculation" column="1" value="Total" />
-  <Parameter id="ColumnWidth" column="1" value="1.5" />
-  <Parameter id="param_calculation" column="2" value="Female" />
-  <Parameter id="ColumnWidth" column="2" value="1.5" />
-  <Parameter id="param_calculation" column="3" value="Male" />
-  <Parameter id="ColumnWidth" column="3" value="1.4" />
-  <Parameter id="param_calculation" column="4" value="Other" />
-  <Parameter id="ColumnWidth" column="4" value="1.5" />
-  <Parameter id="param_calculation" column="5" value="Languages" />
-  <Parameter id="ColumnWidth" column="5" value="8" />
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Conference\\nationalitysummaryreport.xml" />
+  <Parameter id="currentReport" value="eString:Nationality Summary Report" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:6" />
+  <Parameter id="param_conferenceselection" value="eString:one conference" />
+  <Parameter id="param_attendeeselection" value="eString:all attendees" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_conferencekey" value="eInteger:0" />
+  <Parameter id="param_conferencename" value="eString:" />
+  <Parameter id="param_extractname" value="eString:" />
+  <Parameter id="param_calculation" column="0" value="eString:Nationality" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:5" />
+  <Parameter id="param_calculation" column="1" value="eString:Total" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="2" value="eString:Female" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="3" value="eString:Male" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4608983858650965606" />
+  <Parameter id="param_calculation" column="4" value="eString:Other" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4609434218613702656" />
+  <Parameter id="param_calculation" column="5" value="eString:Languages" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:8" />
 </Parameters>

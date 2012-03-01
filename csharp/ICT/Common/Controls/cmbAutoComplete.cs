@@ -768,6 +768,11 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void AddItemToDataSource(String ItemString)
         {
+            if (this.DataSource == null)
+            {
+                return;
+            }
+
             DataTable mDataTable = ((DataView) this.DataSource).Table;
 
             if (mDataTable.Columns.Count > 1)

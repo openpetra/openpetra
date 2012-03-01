@@ -32,6 +32,7 @@ namespace Ict.Tools.DevelopersAssistant
     class BuildConfiguration
     {
         private string _branchLocation = String.Empty;
+        private SettingsDictionary _localSettings = null;
 
         // These are the values that are currently in the file
         private string _DBMSType;
@@ -54,13 +55,14 @@ namespace Ict.Tools.DevelopersAssistant
             "<default>", "SQLite", "PostgreSQL", "mySQL"
         };
 
-        public BuildConfiguration(string BranchLocation)
+        public BuildConfiguration(string BranchLocation, SettingsDictionary LocalSettings)
         {
             _branchLocation = BranchLocation;
+            _localSettings = LocalSettings;
 
             // We can work out what our favourite configurations are whatever the branch location
             _storedDbBuildConfig.Clear();
-            string s = Properties.Settings.Default.DbBuildConfigurations;
+            string s = _localSettings.DbBuildConfigurations;
 
             if (s != String.Empty)
             {
@@ -195,7 +197,7 @@ namespace Ict.Tools.DevelopersAssistant
         public void AddConfig(string NewConfig)
         {
             _storedDbBuildConfig.Add(NewConfig);
-            Properties.Settings.Default.DbBuildConfigurations = MakeConfigStringArray();
+            _localSettings.DbBuildConfigurations = MakeConfigStringArray();
         }
 
         /// <summary>
@@ -205,7 +207,7 @@ namespace Ict.Tools.DevelopersAssistant
         public void RemoveConfig(int Index)
         {
             _storedDbBuildConfig.RemoveAt(Index);
-            Properties.Settings.Default.DbBuildConfigurations = MakeConfigStringArray();
+            _localSettings.DbBuildConfigurations = MakeConfigStringArray();
         }
 
         /// <summary>
@@ -216,7 +218,7 @@ namespace Ict.Tools.DevelopersAssistant
         public void EditConfig(int Index, string NewConfig)
         {
             _storedDbBuildConfig[Index] = NewConfig;
-            Properties.Settings.Default.DbBuildConfigurations = MakeConfigStringArray();
+            _localSettings.DbBuildConfigurations = MakeConfigStringArray();
         }
 
         /// <summary>

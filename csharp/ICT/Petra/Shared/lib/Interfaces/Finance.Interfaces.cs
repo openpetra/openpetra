@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -196,6 +196,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void FindInvoices(DataTable ACriteriaData);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
+        void FindSupplierTransactions(Int32 ALedgerNumber,
+                                      Int64 ASupplierKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
+        ALedgerTable GetLedgerInfo(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void PerformSearch(DataTable ACriteriaData);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.UIConnectors.TFindUIConnector)</summary>
         void StopSearch(System.Object ASender,
@@ -228,6 +233,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
     public interface IAPWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber,
+                                           Int64 APartnerKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
                                            Int32 AAPNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
@@ -251,6 +259,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                            System.Boolean IsCreditNoteNotInvoice,
                                            System.Boolean AHideAgedTransactions);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        System.Boolean DeleteAPDocuments(Int32 ALedgerNumber,
+                                         List<Int32> ADeleteTheseDocs,
+                                         out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean PostAPDocuments(Int32 ALedgerNumber,
                                        List<Int32> AAPDocumentNumbers,
                                        DateTime APostingDate,
@@ -260,6 +272,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                       AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
                                       DateTime APostingDate,
                                       out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,
+                                         Int32 APaymentNumber);
     }
 
 }
@@ -328,11 +343,56 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors
     /// <summary>auto generated</summary>
     public interface IBudgetWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetAutoGenerateWebConnector)</summary>
+        BudgetTDS LoadBudgetForAutoGenerate(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetAutoGenerateWebConnector)</summary>
+        System.Boolean GenBudgetForNextYear(System.Int32 ALedgerNumber,
+                                            System.Int32 ABudgetSeq,
+                                            System.String AForecastType);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector)</summary>
+        System.Boolean LoadBudgetForConsolidate(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector)</summary>
+        System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
+                                          System.Boolean AConsolidateAll,
+                                          out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetConsolidateWebConnector)</summary>
+        System.Decimal GetBudgetValue(ref DataTable APeriodDataTable,
+                                      System.Int32 AGLMSequence,
+                                      System.Int32 APeriodNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
         BudgetTDS LoadBudget(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
         TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
                                         out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Int32 ImportBudgets(Int32 ALedgerNumber,
+                                   Int32 ACurrentBudgetYear,
+                                   System.String ACSVFileName,
+                                   System.String[] AFdlgSeparator,
+                                   ref BudgetTDS AImportDS,
+                                   out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Int32 GetGLMSequenceForBudget(System.Int32 ALedgerNumber,
+                                             System.String AAccountCode,
+                                             System.String ACostCentreCode,
+                                             System.Int32 AYear);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Decimal GetActual(System.Int32 ALedgerNumber,
+                                 System.Int32 AGLMSeqThisYear,
+                                 System.Int32 AGLMSeqNextYear,
+                                 System.Int32 APeriodNumber,
+                                 System.Int32 ANumberAccountingPeriods,
+                                 System.Int32 ACurrentFinancialYear,
+                                 System.Int32 AThisYear,
+                                 System.Boolean AYTD,
+                                 System.String ACurrencySelect);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Budget.WebConnectors.TBudgetMaintainWebConnector)</summary>
+        System.Decimal GetBudget(System.Int32 AGLMSeqThisYear,
+                                 System.Int32 AGLMSeqNextYear,
+                                 System.Int32 APeriodNumber,
+                                 System.Int32 ANumberAccountingPeriods,
+                                 System.Boolean AYTD,
+                                 System.String ACurrencySelect);
     }
 
 }

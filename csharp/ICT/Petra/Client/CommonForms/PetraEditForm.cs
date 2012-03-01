@@ -227,6 +227,7 @@ namespace Ict.Petra.Client.CommonForms
         public override void HookupAllInContainer(Control container)
         {
             FAllControls = new ArrayList();
+            FControlsWithChildren = new ArrayList();
             base.EnumerateControls(container);
             HookupSomeControls();
         }
@@ -235,6 +236,7 @@ namespace Ict.Petra.Client.CommonForms
         public override void HookupAllControls()
         {
             FAllControls = new ArrayList();
+            FControlsWithChildren = new ArrayList();
             base.HookupAllControls();
             HookupSomeControls();
         }

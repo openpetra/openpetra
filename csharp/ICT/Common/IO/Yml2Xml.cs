@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2011 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -564,8 +564,6 @@ namespace Ict.Common.IO
 
                         ((XmlElement)newElement).SetAttribute("depth", ADepth.ToString());
 
-                        parent.AppendChild(newElement);
-
                         if (nodeContent.Length > 0)
                         {
                             // there is some content directly in the line
@@ -655,11 +653,17 @@ namespace Ict.Common.IO
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     if (!PrintedOriginalError)
                     {
                         TLogging.Log("Problem in line " + currentLine.ToString() + " " + line);
+
+                        if (TLogging.DebugLevel > 0)
+                        {
+                            TLogging.Log(e.StackTrace);
+                        }
+
                         PrintedOriginalError = true;
                     }
 

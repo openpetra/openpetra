@@ -30,6 +30,21 @@ namespace Ict.Petra.Shared.MFinance
     /// </summary>
     public class MFinanceConstants
     {
+        /// <summary>Maximum no. of periods in the system</summary>
+        public const int MAX_PERIODS = 20;
+
+        /// <summary>Currency select: Base</summary>
+        public const string CURRENCY_BASE = "B";
+
+        /// <summary>Currency select: International</summary>
+        public const string CURRENCY_INTERNATIONAL = "I";
+
+        /// <summary>Currency select: Base</summary>
+        public const int CURRENCY_BASE_NUM = 1;
+
+        /// <summary>Currency select: International</summary>
+        public const int CURRENCY_INTERNATIONAL_NUM = 2;
+
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";
 
@@ -74,6 +89,15 @@ namespace Ict.Petra.Shared.MFinance
 
         /// <summary>General Ledger</summary>
         public const String ACCOUNT_HIERARCHY_CODE = "STANDARD";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_INCOME = "INCOME";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_EXPENSE = "EXPENSE";
+
+        /// <summary>Transaction Types</summary>
+        public const String TRANSACTION_TYPE_TRANSFER = "TRANSFER";
 
         /// <summary>Accounts Payable</summary>
         public const String AP_DOCUMENT_OPEN = "OPEN";
@@ -197,11 +221,32 @@ namespace Ict.Petra.Shared.MFinance
         /// standard account summary name
         public const string DIRECT_XFER_ACCT = "5501";
 
-        /// standard account
-        public const string ICH_SETTLEMENT_ACCT = "5601";
+        /// ICH accounts
+        public const string ICH_ACCT_DEPOSITS_WITH_ICH = "8540";
 
-        /// standard account
-        public const string ICH_ACCT = "8500";
+        /// ICH accounts
+        public const string ICH_ACCT_LOCAL_LEDGER = "8520";
+
+        /// ICH accounts
+        public const string ICH_ACCT_ICH = "8500";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SUSPENSE_ACCOUNT = "8200";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SETTLEMENT = "5601";
+
+        /// ICH accounts
+        public const string ICH_ACCT_SETTLEMENT_TRANSFERS = "5600";
+
+        /// ICH accounts
+        public const string ICH_ACCT_FOREIGN_EXPENSES_UNIDENTIFIED = "5400";
+
+        /// ICH accounts
+        public const string ICH_ACCT_FOREIGN_INCOME_UNIDENTIFIED = "1900";
+
+        /// ICH
+        public const string ICH_COST_CENTRE = "0400";
 
         /// standard account
         public const string INTERNAL_XFER_ACCT = "9800";
@@ -214,6 +259,15 @@ namespace Ict.Petra.Shared.MFinance
 
         /// admin fee accounts.
         public const string FUND_TRANSFER_EXPENSE_ACCT = "4800";
+
+        /// standard root account
+        public const string ACCOUNT_BAL_SHT = "BAL SHT";
+
+        /// standard gift account
+        public const string ACCOUNT_GIFT = "GIFT";
+
+        /// standard creditors account
+        public const string ACCOUNT_CREDITORS = "CRS CTRL";
 
         /// standard account
         public const string CASH_ACCT = "CASH";
@@ -244,6 +298,30 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Budget Types
         public const string BUDGET_INFLATE_N = "Inf. n";
+
+        /// Budget Types
+        public const string BUDGET_SPLIT_U = "SPLIT";
+
+        /// Budget Types
+        public const string BUDGET_ADHOC_U = "ADHOC";
+
+        /// Budget Types
+        public const string BUDGET_SAME_U = "SAME";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_BASE_U = "INF.BASE";
+
+        /// Budget Types
+        public const string BUDGET_INFLATE_N_U = "INF. N";
+
+        /// Budget Forecast Types
+        public const string FORECAST_TYPE_BUDGET = "Budget";
+
+        /// Budget Forecast Types
+        public const string FORECAST_TYPE_ACTUALS = "Actuals";
+
+        /// Email File Code Types
+        public const string EMAIL_FILE_CODE_STEWARDSHIP = "STEWARDSHIP";
     }
 
     /// <summary>

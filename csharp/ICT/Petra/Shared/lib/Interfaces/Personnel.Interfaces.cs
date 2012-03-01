@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,6 +101,10 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.WebConnectors
         PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
         System.Boolean HasCurrentCommitmentRecord(Int64 APartnerKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        System.Int32 GetOrCreateUmJobKey(Int64 AUnitKey,
+                                         System.String APositionName,
+                                         System.String APositionScope);
     }
 
 }

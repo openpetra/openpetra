@@ -42,6 +42,8 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 
 namespace Ict.Petra.Server.MCommon.DataReader
@@ -97,6 +99,10 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = ACorporateExchangeRateAccess.LoadAll(ReadTransaction);
                 }
+                else if (ATablename == ACurrencyLanguageTable.GetTableDBName())
+                {
+                    tempTable = ACurrencyLanguageAccess.LoadAll(ReadTransaction);
+                }
                 else if (ATablename == AFeesPayableTable.GetTableDBName())
                 {
                     tempTable = AFeesPayableAccess.LoadAll(ReadTransaction);
@@ -120,6 +126,22 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 else if (ATablename == AGiftBatchTable.GetTableDBName())
                 {
                     tempTable = AGiftBatchAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == PMailingTable.GetTableDBName())
+                {
+                    tempTable = PMailingAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == PtAppFormTypesTable.GetTableDBName())
+                {
+                    tempTable = PtAppFormTypesAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == PmDocumentTypeTable.GetTableDBName())
+                {
+                    tempTable = PmDocumentTypeAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == SGroupTable.GetTableDBName())
+                {
+                    tempTable = SGroupAccess.LoadAll(ReadTransaction);
                 }
                 else
                 {
@@ -209,6 +231,18 @@ namespace Ict.Petra.Server.MCommon.DataReader
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
                     }
+                    else if (ATablename == ACurrencyLanguageTable.GetTableDBName())
+                    {
+                        if (ACurrencyLanguageAccess.SubmitChanges((ACurrencyLanguageTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
                     else if (ATablename == AFeesPayableTable.GetTableDBName())
                     {
                         if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
@@ -272,6 +306,54 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == PtApplicationTypeTable.GetTableDBName())
                     {
                         if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PMailingTable.GetTableDBName())
+                    {
+                        if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PtAppFormTypesTable.GetTableDBName())
+                    {
+                        if (PtAppFormTypesAccess.SubmitChanges((PtAppFormTypesTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PmDocumentTypeTable.GetTableDBName())
+                    {
+                        if (PmDocumentTypeAccess.SubmitChanges((PmDocumentTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == SGroupTable.GetTableDBName())
+                    {
+                        if (SGroupAccess.SubmitChanges((SGroupTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;
