@@ -15,7 +15,6 @@ RootNode:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
-            Height: 310
             Dock: Fill
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
@@ -28,6 +27,10 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailContactAttrDetailCode, DetailContactAttrDetailDescr, DetailActive]
+            CustomColumns:
+                DetailContactAttrDetailCode: {Label=Detail Code}
+                DetailContactAttrDetailDescr: {Label=Description}
+                DetailActive: {Label=Active, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Height: 85

@@ -38,14 +38,13 @@ RootNode:
                 Row0: [txtDetailContactAttributeCode]
                 Row1: [txtDetailContactAttributeDescr]
                 Row2: [chkDetailActive]
-                Row3: [pnlExtraDetails]
+                Row3: [grpExtraDetails]
         txtDetailContactAttributeCode: {Label=Attribute Code}
         txtDetailContactAttributeDescr: {Label=Description, Width=465}
         chkDetailActive:
-        pnlExtraDetails:
-            Height: 400
-            Margin: 0
-            Padding: 0
+        grpExtraDetails: {Label=Attribute Detail Codes}
+            Height: 315
+            Dock: Fill
             Controls: [ucContactDetail]
         ucContactDetail:
             Type: Ict.Petra.Client.MPartner.Gui.Setup.TUC_ContactAttributeDetail
