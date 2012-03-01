@@ -326,10 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
-                    String importString;
                     TVerificationResultCollection AMessages;
-
-                    importString = File.ReadAllText(dialog.FileName);
 
                     string[] FdlgSeparatorVal = new string[] {
                         FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormatIndex.ToString()
