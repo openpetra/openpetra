@@ -288,6 +288,47 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         }
 
         /// <summary>
+        /// Verifies the existence of a Partner at a given location
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of Partner to be verified</param>
+        /// <param name="ALocationKey">Location Key of Partner to be verified</param>
+        /// <returns>true if Partner was found in DB at given location, otherwise false</returns>
+        public static Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
+            TLocationPK ALocationKey)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            PPartnerLocationTable PartnerLocationTable;
+            Boolean ReturnValue = true;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+            try
+            {
+            	PartnerLocationTable = PPartnerLocationAccess.LoadByPrimaryKey(APartnerKey, ALocationKey.SiteKey, ALocationKey.LocationKey, ReadTransaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+
+            if (PartnerLocationTable.Rows.Count == 0)
+            {
+                ReturnValue = false;
+            }
+            else
+            {
+            	ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+        
+        /// <summary>
         /// Returns information about a Partner that was Merged and about the
         /// Partner it was merged into.
         /// </summary>

@@ -40,6 +40,27 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     public class TPartnerWebConnector
     {
         /// <summary>
+        /// adds partner to list of recently used partners for given use scenario
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="APartnerClass"></param>
+        /// <param name="ANewPartner"></param>
+        /// <param name="ALastPartnerUse"></param>
+        /// <returns>true if action was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass, 
+                                                  Boolean ANewPartner, TLastPartnerUse ALastPartnerUse)
+        {
+            bool ResultValue = false;
+
+            ResultValue = Server.MPartner.Partner.TRecentPartnersHandling.AddRecentlyUsedPartner
+            	(APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse);
+
+            return ResultValue;
+        	
+        }
+        
+        /// <summary>
         /// performs database changes to move person from current (old) family to new family record
         /// </summary>
         /// <param name="APersonKey"></param>
@@ -52,7 +73,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static bool ChangeFamily(Int64 APersonKey, Int64 AOldFamilyKey, Int64 ANewFamilyKey,
             out String AProblemMessage, out TVerificationResultCollection AVerificationResult)
         {
-            Boolean ResultValue = false;
+            bool ResultValue = false;
 
             ResultValue = Server.MPartner.Partner.TFamilyHandling.ChangeFamily(APersonKey,
                 AOldFamilyKey,

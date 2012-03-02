@@ -13,7 +13,7 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeletePartner}
         actEdit: {Label=&Edit, ActionClick=EditPartner}
     Controls:
-        pnlContent:
+        pnlContent: {ControlsOrientation=vertical}
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
@@ -22,13 +22,13 @@ RootNode:
         pnlButtons:
             Dock: Right
             Controls: [btnEdit, btnAdd, btnDelete]
-        btnEdit:
+        btnEdit: {Stretch=horizontally}
             Label: Edit Partner
             Action: actEdit
-        btnAdd:
+        btnAdd: {Stretch=horizontally}
             Label: Add Partner
             Action: actAdd
-        btnDelete:
+        btnDelete: {Stretch=horizontally}
             Label: Delete
             Action: actDelete
         grdDetails:
@@ -37,8 +37,14 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
-#            Controls: [ucoPartnerInfo]
+            Controls:
+                Row0: [ucoPartnerInfo]
+                Row1: [txtCreatedBy]
                
-#        ucoPartnerInfo:
-#            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo
+        txtCreatedBy:
+        
+        ucoPartnerInfo:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo
+            Height: 150
+            
 

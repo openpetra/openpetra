@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
@@ -50,152 +51,150 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <returns></returns>
         public bool SaveChanges()
         {
-            FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
-    
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
-    
-            // TODO: verification
-    
-            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
-            {
-                foreach (DataRow InspectDR in FMainDS.MExtractMaster.Rows)
-                {
-                    InspectDR.EndEdit();
-                }
-    
-                if (!FPetraUtilsObject.HasChanges)
-                {
-                    return true;
-                }
-                else
-                {
-                    FPetraUtilsObject.WriteToStatusBar("Saving data...");
-                    this.Cursor = Cursors.WaitCursor;
-    
-                    TSubmitChangesResult SubmissionResult;
-                    TVerificationResultCollection VerificationResult;
-    
-                    Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.MExtractMaster.GetChangesTyped();
-    
-                    if (SubmitDT == null)
-                    {
-                        // There is nothing to be saved.
-                        // Update UI
-                        FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
-                        this.Cursor = Cursors.Default;
-    
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-    
-                        return true;
-                    }
-    
-                    // Submit changes to the PETRAServer
-                    try
-                    {
-                        SubmissionResult = TRemote.MCommon.DataReader.SaveData(MExtractMasterTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
-                    }
-                    catch (System.Net.Sockets.SocketException)
-                    {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                        this.Cursor = Cursors.Default;
-                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-                            "No Server response",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
-                        bool ReturnValue = false;
-    
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return ReturnValue;
-                    }
-    /* TODO ESecurityDBTableAccessDeniedException
-    *                  catch (ESecurityDBTableAccessDeniedException Exp)
-    *                  {
-    *                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-    *                      this.Cursor = Cursors.Default;
-    *                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
-    *                      bool ReturnValue = false;
-    *                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-    *                      return ReturnValue;
-    *                  }
-    */
-                    catch (EDBConcurrencyException)
-                    {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                        this.Cursor = Cursors.Default;
-    
-                        // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
-                        bool ReturnValue = false;
-    
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return ReturnValue;
-                    }
-                    catch (Exception exp)
-                    {
-                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-                        this.Cursor = Cursors.Default;
-                        TLogging.Log(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
-                            TLoggingType.ToLogfile);
-                        MessageBox.Show(
-                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
-                            "For details see the log file: " + TLogging.GetLogFileName(),
-                            "Server connection error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
-    
-                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                        return false;
-                    }
-    
-                    switch (SubmissionResult)
-                    {
-                        case TSubmitChangesResult.scrOK:
-    
-                            // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                            FMainDS.MExtractMaster.AcceptChanges();
-    
-                            // Merge back with data from the Server (eg. for getting Sequence values)
-                            FMainDS.MExtractMaster.Merge(SubmitDT, false);
-    
-                            // need to accept the new modification ID
-                            FMainDS.MExtractMaster.AcceptChanges();
-    
-                            // Update UI
-                            FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
-                            this.Cursor = Cursors.Default;
-    
-                            // TODO EnableSave(false);
-    
-                            // We don't have unsaved changes anymore
-                            FPetraUtilsObject.DisableSaveButton();
-    
-                            SetPrimaryKeyReadOnly(true);
-    
-                            // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                            return true;
-    
-                        case TSubmitChangesResult.scrError:
-    
-                            // TODO scrError
-                            this.Cursor = Cursors.Default;
-                            break;
-    
-                        case TSubmitChangesResult.scrNothingToBeSaved:
-    
-                            // TODO scrNothingToBeSaved
-                            this.Cursor = Cursors.Default;
-                            return true;
-    
-                        case TSubmitChangesResult.scrInfoNeeded:
-    
-                            // TODO scrInfoNeeded
-                            this.Cursor = Cursors.Default;
-                            break;
-                    }
-                }
-            }
-
+	        FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
+	
+	        if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+	        {
+	            foreach (DataRow InspectDR in FMainDS.MExtractMaster.Rows)
+	            {
+	                InspectDR.EndEdit();
+	            }
+	
+	            if (!FPetraUtilsObject.HasChanges)
+	            {
+	                return true;
+	            }
+	            else
+	            {
+	                FPetraUtilsObject.WriteToStatusBar("Saving data...");
+	                this.Cursor = Cursors.WaitCursor;
+	
+	                TSubmitChangesResult SubmissionResult;
+	                TVerificationResultCollection VerificationResult;
+	
+	                MExtractMasterTable SubmitDT = new MExtractMasterTable();
+	                SubmitDT.Merge(FMainDS.MExtractMaster.GetChangesTyped());
+	
+	                if (SubmitDT == null)
+	                {
+	                    // There is nothing to be saved.
+	                    // Update UI
+	                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
+	                    this.Cursor = Cursors.Default;
+	
+	                    // We don't have unsaved changes anymore
+	                    FPetraUtilsObject.DisableSaveButton();
+	
+	                    return true;
+	                }
+	
+	                // Submit changes to the PETRAServer
+	                try
+	                {
+	                    SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtractMaster
+	                    	(ref SubmitDT, out VerificationResult);
+	                }
+	                catch (System.Net.Sockets.SocketException)
+	                {
+	                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+	                    this.Cursor = Cursors.Default;
+	                    MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
+	                        "No Server response",
+	                        MessageBoxButtons.OK,
+	                        MessageBoxIcon.Stop);
+	                    bool ReturnValue = false;
+	
+	                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+	                    return ReturnValue;
+	                }
+	/* TODO ESecurityDBTableAccessDeniedException
+	*                  catch (ESecurityDBTableAccessDeniedException Exp)
+	*                  {
+	*                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+	*                      this.Cursor = Cursors.Default;
+	*                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
+	*                      bool ReturnValue = false;
+	*                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+	*                      return ReturnValue;
+	*                  }
+	*/
+	                catch (EDBConcurrencyException)
+	                {
+	                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+	                    this.Cursor = Cursors.Default;
+	
+	                    // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
+	                    bool ReturnValue = false;
+	
+	                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+	                    return ReturnValue;
+	                }
+	                catch (Exception exp)
+	                {
+	                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+	                    this.Cursor = Cursors.Default;
+	                    TLogging.Log(
+	                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+	                        TLoggingType.ToLogfile);
+	                    MessageBox.Show(
+	                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+	                        "For details see the log file: " + TLogging.GetLogFileName(),
+	                        "Server connection error",
+	                        MessageBoxButtons.OK,
+	                        MessageBoxIcon.Stop);
+	
+	                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+	                    return false;
+	                }
+	
+	                switch (SubmissionResult)
+	                {
+	                    case TSubmitChangesResult.scrOK:
+	
+	                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
+	                        FMainDS.MExtractMaster.AcceptChanges();
+	
+	                        // Merge back with data from the Server (eg. for getting Sequence values)
+	                        FMainDS.MExtractMaster.Merge(SubmitDT, false);
+	
+	                        // need to accept the new modification ID
+	                        FMainDS.MExtractMaster.AcceptChanges();
+	
+	                        // Update UI
+	                        FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
+	                        this.Cursor = Cursors.Default;
+	
+	                        // TODO EnableSave(false);
+	
+	                        // We don't have unsaved changes anymore
+	                        FPetraUtilsObject.DisableSaveButton();
+	
+	                        SetPrimaryKeyReadOnly(true);
+	
+	                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+	                        return true;
+	
+	                    case TSubmitChangesResult.scrError:
+	
+	                        // TODO scrError
+	                        this.Cursor = Cursors.Default;
+	                        break;
+	
+	                    case TSubmitChangesResult.scrNothingToBeSaved:
+	
+	                        // TODO scrNothingToBeSaved
+	                        this.Cursor = Cursors.Default;
+	                        return true;
+	
+	                    case TSubmitChangesResult.scrInfoNeeded:
+	
+	                        // TODO scrInfoNeeded
+	                        this.Cursor = Cursors.Default;
+	                        break;
+	                }
+	            }
+	        }
+	
             return false;
         }
 
@@ -211,6 +210,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 TFrmExtractMaintain frm = new TFrmExtractMaintain(this.FindForm());
                 frm.ExtractId = GetSelectedDetailRow().ExtractId;
+                frm.ExtractName = GetSelectedDetailRow().ExtractName;
                 frm.Show();
             }
             
@@ -223,28 +223,69 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void DeleteRow(System.Object sender, EventArgs e)
         {
-            if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.ExtractName), Catalog.GetString("Confirm Delete"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+        	int CountRowsToDelete = CountSelectedRows();
+        	
+            if (CountRowsToDelete == 0)
             {
-                int rowIndex = CurrentRowIndex();
-
-                // delete extract on the server (needs cascading delete)
-                TRemote.MPartner.Partner.WebConnectors.DeleteExtract(FPreviouslySelectedDetailRow.ExtractId);
-
-                // now delete it in the grid
-                FPreviouslySelectedDetailRow.Delete();
-
-
-                SelectByIndex(rowIndex);
-
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                }
+            	// nothing to delete
+            	return;
             }
+            
+            // delete single selected record from extract
+            if (CountRowsToDelete == 1)
+            {
+	            if (FPreviouslySelectedDetailRow == null)
+	            {
+	                return;
+	            }
+	
+	            if (MessageBox.Show(String.Format(Catalog.GetString(
+	                            "You have choosen to delete this extract ({0}).\n\nDo you really want to delete it?"),
+	                            FPreviouslySelectedDetailRow.ExtractName), Catalog.GetString("Confirm Delete"),
+	                    MessageBoxButtons.YesNo,
+	                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+	            {
+	                int rowIndex = CurrentRowIndex();
+	                FPreviouslySelectedDetailRow.Delete();
+	                FPetraUtilsObject.SetChangedFlag();
+	                SelectByIndex(rowIndex);
+	            }
+            }
+            // delete single selected record from extract
+            else if (CountRowsToDelete > 1)
+            {
+	            if (MessageBox.Show(Catalog.GetString("Do you want to delete the selected extracts?"),
+	                                Catalog.GetString("Confirm Delete"),
+	                    			MessageBoxButtons.YesNo,
+	                    			MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+	            {
+	                DataRowView RowView;
+	                int rowIndex = CurrentRowIndex();
+	                
+	                // build a collection of objects to be deleted before actually deleting them (as otherwise
+	                // indexes may not be valid any longer)
+	                int[] SelectedRowsIndexes = grdDetails.Selection.GetSelectionRegion().GetRowsIndex();
+	                List<MExtractMasterRow> RowList = new List<MExtractMasterRow>();
+	                foreach (int Index in SelectedRowsIndexes)
+	                {
+	                	RowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(Index);
+	                	RowList.Add((MExtractMasterRow)RowView.Row);
+	                }
+
+	                // now delete the actual rows
+	                foreach (MExtractMasterRow Row in RowList)
+	                {
+	                	Row.Delete();
+	                }
+	                
+	                FPetraUtilsObject.SetChangedFlag();
+	                SelectByIndex(rowIndex);
+	            }
+            }
+            
+            // enable/disable buttons
+            UpdateButtonStatus();
+        	
         }
 
         /// <summary>
@@ -268,6 +309,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             else
             {
                 this.LoadData();
+
+	            // enable/disable buttons
+	            UpdateButtonStatus();
+                
             }
         }
 
@@ -279,6 +324,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             FMainDS = new ExtractTDS();
             LoadData();
+
+            // allow multiselection of list items so several records can be deleted at once
+            grdDetails.Selection.EnableMultiSelection = true;
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
@@ -331,11 +379,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             return ReturnValue;
         }
 
+
         /// <summary>
         ///
         /// </summary>
         private void ShowDataManual()
         {
+            // enable/disable buttons
+            UpdateButtonStatus();
         }
 
         private int CurrentRowIndex()
@@ -376,6 +427,35 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        /// <summary>
+        /// return the number of rows selected in the grid
+        /// </summary>
+        /// <returns></returns>
+        private int CountSelectedRows()
+        {
+         	return grdDetails.Selection.GetSelectionRegion().GetRowsIndex().Length;
+        }
+        
+        /// <summary>
+        /// update button status according to number of list
+        /// </summary>
+        private void UpdateButtonStatus()
+        {
+            if (grdDetails.Rows.Count <= 1)
+            {
+                // hide details part and disable buttons if no record in grid (first row for headings)
+                btnMaintain.Enabled = false;
+                btnDelete.Enabled = false;
+                pnlDetails.Visible = false;
+            }
+            else
+            {
+                btnMaintain.Enabled = true;
+                btnDelete.Enabled = true;
+                pnlDetails.Visible = true;
+            }
+        }
+        
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>

@@ -302,30 +302,6 @@ namespace Ict.Petra.Server.MCommon.DataReader
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
                     }
-                    else if (ATablename == MExtractTable.GetTableDBName())
-                    {
-                        if (MExtractAccess.SubmitChanges((MExtractTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
-                    }
-                    else if (ATablename == MExtractMasterTable.GetTableDBName())
-                    {
-                        if (MExtractMasterAccess.SubmitChanges((MExtractMasterTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
-                    }
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
                         if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,

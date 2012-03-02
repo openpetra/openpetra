@@ -94,15 +94,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
-        ///
+        /// Open screen to maintain contents of an extract
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeleteRow(System.Object sender, EventArgs e)
+        private void MaintainExtract(System.Object sender, EventArgs e)
         {
-            ucoExtractMasterList.DeleteRow(sender, e);
+            ucoExtractMasterList.MaintainExtract(sender, e);
         }
 
+        /// <summary>
+        /// Open screen to maintain contents of an extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
+        {
+            //ucoExtractMasterList.VerifyAndUpdateExtract(sender, e);
+        }
+        
         #endregion
     }
 }

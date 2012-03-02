@@ -61,25 +61,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
-        /// retrieve all extract master records
-        /// </summary>
-        /// <param name="AExtractId"></param>
-        /// <returns>returns true if deletion was successful</returns>
-        [RequireModulePermission("PTNRUSER")]
-        public static Boolean DeleteExtract(int AExtractId)
-        {
-            Boolean ReturnValue = true;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            MExtractMasterCascading.DeleteByPrimaryKey(AExtractId, Transaction, true);
-
-            DBAccess.GDBAccessObj.CommitTransaction();
-
-            return ReturnValue;
-        }
-
-        /// <summary>
         /// check if extract with given name already exists
         /// </summary>
         /// <param name="AExtractName"></param>
@@ -110,6 +91,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// retrieve extract records and include partner name and class
         /// </summary>
+        /// <param name="AExtractId"></param>
         /// <returns>returns table filled with extract rows including partner name and class</returns>
         [RequireModulePermission("PTNRUSER")]
         public static ExtractTDSMExtractTable GetExtractRowsWithPartnerData(int AExtractId)
@@ -142,6 +124,166 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             return ExtractDT;
+        }
+
+        /// <summary>
+        /// save extract master table records (includes cascading delete if record is deleted)
+        /// </summary>
+        /// <param name="AExtractMasterTable"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns>returns table filled with extract rows including partner name and class</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static TSubmitChangesResult SaveExtractMaster(ref MExtractMasterTable AExtractMasterTable,
+			out TVerificationResultCollection AVerificationResult)
+        {
+            TDBTransaction SubmitChangesTransaction;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TVerificationResultCollection SingleVerificationResultCollection;
+            int ExtractId;
+            int CountRecords;
+            MExtractMasterRow Row;
+            
+            AVerificationResult = null;
+            
+            if (AExtractMasterTable != null)
+            {
+                AVerificationResult = new TVerificationResultCollection();
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                try
+                {
+                	/* Cascading delete for deleted rows. Once the cascading delete has been done the row
+                	   needs to be removed from the table with AcceptChanges as otherwise the later call
+                	   to SubmitChanges will complain about those rows that have already been deleted in 
+                	   the database.
+                	   Use a loop to run through the table in reverse Order (Index--) so that the rows
+                	   can actually be removed from the table without affecting the access throug Index. */
+                	CountRecords = AExtractMasterTable.Rows.Count;
+                	for (int Index = CountRecords-1; Index >= 0; Index--)
+                	{
+                		Row = (MExtractMasterRow)AExtractMasterTable.Rows[Index];
+                	     
+                		if (Row.RowState == DataRowState.Deleted)
+                		{
+		                    ExtractId = Convert.ToInt32(Row[MExtractMasterTable.GetExtractIdDBName(), DataRowVersion.Original]);
+		                    MExtractMasterCascading.DeleteByPrimaryKey(ExtractId, SubmitChangesTransaction, true);
+		                    
+		                    // accept changes: this actually removes row from table
+		                    Row.AcceptChanges();
+                		}
+                	}
+                	
+					// now submit all changes to extract master table                	
+                    if (MExtractMasterAccess.SubmitChanges(AExtractMasterTable, SubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+
+		            if (SubmissionResult == TSubmitChangesResult.scrOK)
+		            {
+		                DBAccess.GDBAccessObj.CommitTransaction();
+		            }
+		            else
+		            {
+		                DBAccess.GDBAccessObj.RollbackTransaction();
+		            }
+                }
+                    
+                catch (Exception e)
+                {
+                    TLogging.Log("after submitchanges: exception " + e.Message);
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw new Exception(e.ToString() + " " + e.Message);
+                }
+            }
+
+            return SubmissionResult;
+        }
+        
+        /// <summary>
+        /// save extract table records
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="AExtractTable"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns>returns table filled with extract rows including partner name and class</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static TSubmitChangesResult SaveExtract(int AExtractId, ref MExtractTable AExtractTable,
+			out TVerificationResultCollection AVerificationResult)
+        {
+            TDBTransaction SubmitChangesTransaction;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TVerificationResultCollection SingleVerificationResultCollection;
+            int CountExtractRows;
+            MExtractMasterTable ExtractMasterDT;
+            
+            AVerificationResult = null;
+            
+            if (AExtractTable != null)
+            {
+                AVerificationResult = new TVerificationResultCollection();
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                try
+                {
+                    if (MExtractAccess.SubmitChanges(AExtractTable, SubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
+                    
+                    // update extract master record with the correct number of extract records
+                    if (AExtractTable.Rows.Count > 0
+                        && SubmissionResult != TSubmitChangesResult.scrError)
+                    {
+                    	CountExtractRows = MExtractAccess.CountViaMExtractMaster(AExtractId, SubmitChangesTransaction);
+                    	ExtractMasterDT = MExtractMasterAccess.LoadByPrimaryKey(AExtractId, SubmitChangesTransaction);
+                    	if (ExtractMasterDT.Rows.Count != 0)
+                    	{
+                    		((MExtractMasterRow)ExtractMasterDT.Rows[0]).KeyCount = CountExtractRows;
+                    		
+		                    if (MExtractMasterAccess.SubmitChanges(ExtractMasterDT, SubmitChangesTransaction,
+		                            out SingleVerificationResultCollection))
+		                    {
+		                        SubmissionResult = TSubmitChangesResult.scrOK;
+		                    }
+		                    else
+		                    {
+		                        SubmissionResult = TSubmitChangesResult.scrError;
+		                    }
+                    	}
+                    }
+
+		            if (SubmissionResult == TSubmitChangesResult.scrOK)
+		            {
+		                DBAccess.GDBAccessObj.CommitTransaction();
+		            }
+		            else
+		            {
+		                DBAccess.GDBAccessObj.RollbackTransaction();
+		            }
+                }
+                    
+                catch (Exception e)
+                {
+                    TLogging.Log("after submitchanges: exception " + e.Message);
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw new Exception(e.ToString() + " " + e.Message);
+                }
+            }
+
+            return SubmissionResult;
         }
     }
 }

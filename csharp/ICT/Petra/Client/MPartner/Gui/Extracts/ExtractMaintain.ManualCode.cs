@@ -56,6 +56,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             	ucoExtractMaintain.ExtractId = value;
             }
         }
+
+        /// <summary>
+        /// name of extract displayed in this screen
+        /// </summary>
+        public string ExtractName
+        {
+            set
+            {
+            	ucoExtractMaintain.ExtractName = value;
+            }
+        }
 		#endregion        
         
         #region Public Methods
@@ -88,6 +99,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         	SaveChanges();
         }
 
+        /// <summary>
+        /// Copy partner key of currenly selected partner to clipboard
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void CopyPartnerKeyToClipboard(System.Object sender, EventArgs e)
+        {
+        	ucoExtractMaintain.CopyPartnerKeyToClipboard(sender, e);
+        }
+        	
+        /// <summary>
+        /// mark the selected partner record as the one last worked with in the application
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void SetPartnerLastWorkedWith(System.Object sender, EventArgs e)
+        {
+        	ucoExtractMaintain.SetPartnerLastWorkedWith(sender, e);
+        }
+        
         #endregion
 
         #region Private Methods
@@ -102,6 +133,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void RunOnceOnActivationManual()
         {
         	ucoExtractMaintain.InitializeData();
+        	this.Text = "Maintenance of Extract: " + ucoExtractMaintain.ExtractName;
         }
 
         /// <summary>

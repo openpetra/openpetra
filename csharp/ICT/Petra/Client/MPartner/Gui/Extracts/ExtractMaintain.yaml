@@ -8,7 +8,9 @@ RootNode:
     FormType: edit
     Template: window
     Actions:
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actCopyPartnerKey: {ShortCut=Ctrl+C, ActionClick=CopyPartnerKeyToClipboard}        
+        actSetLastWorkedWith: {ShortCut=Ctrl+S, ActionClick=SetPartnerLastWorkedWith}
+        
     Controls:
         pnlExtract:
             Dock: Fill
@@ -17,3 +19,8 @@ RootNode:
         ucoExtractMaintain:
             Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMaintain
             Dock: Fill
+    Menu:
+        mniEdit:
+            mniCopyPartnerKey: {Label=Copy partner key to clipboard}
+            mniSetLastWorkedWith: {Label=Set this partner as 'last worked with'}
+            
