@@ -114,8 +114,16 @@ namespace Ict.Petra.Shared
         /// <summary>UnitName change undone.</summary>
         public const String ERR_UNITNAMECHANGEUNDONE = "PARTN.00004N";
 
-        /// <summary>Bank Bic/Swift Code is invalid.</summary>
+        /// <summary>BIC (Bank Identifier Code/SWIFT Code) is invalid.</summary>
         public const String ERR_BANKBICSWIFTCODEINVALID = "PARTN.00005V";
+        
+        /// <summary>'Branch Code' format matches the format of a BIC (Bank Identifier Code/SWIFT Code) --- Non-critical.</summary>
+        [ErrCodeAttribute("'Branch Code possibly a BIC/SWIFT Code",
+             ErrorMessageText = "The {0} you entered seems to be a BIC/SWIFT Code!\r\n\r\n" +
+                                "Make sure that you have entered the BIC/SWIFT Code in the {1} field\r\n" +
+                                "and that the information you entered in the {2} field is actually\r\nthe {3}.",
+             ErrorMessageTitle = "{0} seems to be a BIC/SWIFT Code")]
+        public const String ERR_BRANCHCODELIKEBIC = "PARTN.00006N";
 
         #endregion
     }

@@ -53,13 +53,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
             "    BBB  = Branch Code. This code denotes the branch of the bank." + "\r\n" +
             "  BICs have either 8 or 11 characters." + "\r\n");
 
-        /// <summary>todoComment</summary>
-        private static readonly string StrBranchCodeLikeBIC = "The {0} you entered seems to be a BIC/SWIFT Code!\r\n\r\n" +
-                                                              "Make sure that you have entered the BIC/SWIFT Code in the BIC/SWIFT Code field\r\n" +
-                                                              "and that the information you entered in the {1} field is actually\r\nthe {2}";
-
-        /// <summary>todoComment</summary>
-        private static readonly string StrBranchCodeLikeBICTitle = " seems to be a BIC/SWIFT Code";
+//        /// <summary>todoComment</summary>
+//        private static readonly string StrBranchCodeLikeBICTitle = " seems to be a BIC/SWIFT Code";
         
         /// <summary>
         /// Validates the Gift Batch data.
@@ -85,54 +80,48 @@ namespace Ict.Petra.Shared.MPartner.Validation
             {
                 if (CommonRoutines.CheckBIC(ARow.Bic) == false)
                 {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult("",
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                         ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKBICSWIFTCODEINVALID, StrBICSwiftCodeInvalid)), 
                         ValidationColumn, ValidationControlsData.ValidationControl);
-
-//                    VerificationResult = new TVerificationResult("",
-//                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKBICSWIFTCODEINVALID, StrBICSwiftCodeInvalid));
                 }
                 else
                 {
                     VerificationResult = null;
                 }
                 
-                
-//                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
-//                    ValidationControlsData.ValidationControlLabel,
-//                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
             
 
-//            // 'Branch Code' must not have the format of a BIC
-//            ValidationColumn = ARow.Table.Columns[PBankTable.ColumnBranchCodeId];
-//            
-//            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-//            {   
-//                if (CommonRoutines.CheckBIC(ARow.BranchCode) == false)
-//                {
-////                    AVerificationResult = new TVerificationResult("",
-////                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKBICSWIFTCODEINVALID, StrBICSwiftCodeInvalid));
-//
-////                    TMessages.MsgGeneralWarning(String.Format(StrBranchCodeLikeBIC, BranchCodeLocal, BranchCodeLocal, BranchCodeLocal) + "!",
-////                        BranchCodeLocal + StrBranchCodeLikeBICTitle, ERR_BRANCHCODELIKEBIC, null);
-//
-//                }
-//                else
-//                {
-//                    AVerificationResult = null;
-//                }                
-////                VerificationResult = TNumericalChecks.FirstLesserOrEqualThanSecondDecimal(
-////                        ARow.TimeZoneMinimum, ARow.TimeZoneMaximum,
-////                        ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
-////                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-//                
-//                // Handle addition to/removal from TVerificationResultCollection
-//                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-//            }
+            // For information only: 'Branch Code' format matches the format of a BIC
+            ValidationColumn = ARow.Table.Columns[PBankTable.ColumnBranchCodeId];
+            
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {   
+                if ((ARow.BranchCode != null)
+                  && (ARow.BranchCode != String.Empty))
+                {
+                    if (CommonRoutines.CheckBIC(ARow.BranchCode) == true)
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BRANCHCODELIKEBIC, 
+                                APlaceholderTexts: new String[]{
+                                                                 ValidationControlsData.ValidationControlLabel, 
+                                                                 ValidationControlsData.SecondValidationControlLabel, 
+                                                                 ValidationControlsData.ValidationControlLabel, 
+                                                                 ValidationControlsData.ValidationControlLabel})),
+                            ValidationColumn, ValidationControlsData.ValidationControl);                        
+                    }
+                    else
+                    {
+                        VerificationResult = null;
+                    }
+                    
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+            }
         }
     }    
 }

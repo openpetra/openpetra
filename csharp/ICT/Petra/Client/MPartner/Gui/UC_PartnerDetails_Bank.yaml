@@ -34,7 +34,7 @@ RootNode:
         txtBranchCode:
             Label: Bank/Branch Code
             Stretch: horizontally
-            Validation: true
+            Validation: Pair(txtBic)
             
         txtBic:
             Label: BIC/SWIFT Code
