@@ -399,12 +399,13 @@ namespace {#NAMESPACE}
                 
                 if (SingleVerificationResult.ResultControl == sender) 
                 {
-                    if (FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested) 
+                    if (FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested)
                     {
-                        SingleVerificationResult.ResultControl.Focus();    
+                        SingleVerificationResult.ResultControl.Focus();
                         FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = false;
-                    }                    
+                    }
 
+                    FPetraUtilsObject.ValidationToolTipSeverity = SingleVerificationResult.ResultSeverity;
                     FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
                         ((Control)sender).Width / 2, ((Control)sender).Height);
                 }

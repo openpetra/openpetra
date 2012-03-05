@@ -31,12 +31,13 @@ using System.ComponentModel.Design;
 using System.Windows.Forms;
 using System.Resources;
 using System.Threading;
+
+using Ict.Common;
+using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
-using Ict.Common.Controls;
-
 //using Ict.Petra.Client.CommonDialogs;
-using Ict.Common;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -388,6 +389,42 @@ namespace Ict.Petra.Client.CommonForms
             get
             {
                 return FValidationToolTip;
+            }
+        }
+        
+        /// <summary>
+        /// Sets the Validation ToolTip severity. This affects the icon and title of the Validation ToolTip.
+        /// </summary>
+        public TResultSeverity ValidationToolTipSeverity
+        {
+            set
+            {
+                switch(value) 
+                {
+                    case TResultSeverity.Resv_Critical:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Incorrect Data");                    
+                        
+                        break;
+                
+                    case TResultSeverity.Resv_Noncritical:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Warning");
+                        
+                        break;
+                        
+                    case TResultSeverity.Resv_Info:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Information");
+                        
+                        break;
+                        
+                    case TResultSeverity.Resv_Status:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.None;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Note");
+                        
+                        break;
+                }
             }
         }
         
