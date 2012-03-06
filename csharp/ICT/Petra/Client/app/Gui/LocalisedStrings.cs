@@ -71,39 +71,5 @@ namespace Ict.Petra.Client.App.Gui
             AName = ALabelText.Replace("&", "");
             AName = AName.Replace(":", "");
         }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="ALabel"></param>
-        /// <param name="AToolTip"></param>
-        /// <param name="AName"></param>
-        public static void GetLocStrBankBranchCode(out String ALabel, out String AToolTip, out String AName)
-        {
-            String LocalisedBranchCodeAndLabel;
-
-            LocalisedBranchCodeAndLabel = TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_LOCALISEDBRANCHCODEANDLABEL, "");
-
-            if ((LocalisedBranchCodeAndLabel != "") && (LocalisedBranchCodeAndLabel != "|"))
-            {
-                ALabel = LocalisedBranchCodeAndLabel.Split(new Char[] { ('|') })[0];
-
-                if (!ALabel.EndsWith(":"))
-                {
-                    ALabel = ALabel + ':';
-                }
-
-                AToolTip = LocalisedBranchCodeAndLabel.Split(new Char[] { ('|') })[1];
-            }
-            else
-            {
-                ALabel = "Ban&k/Branch Code:";
-                AToolTip = "";
-            }
-
-            // Remove & and : from the LabelText to get the 'Name' of the field
-            AName = ALabel.Replace("&", "");
-            AName = AName.Replace(":", "");
-        }
     }
 }
