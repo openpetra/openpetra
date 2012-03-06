@@ -59,11 +59,11 @@ namespace Ict.Common
         /// Returns an <see cref="ErrCodeInfo" /> object for a specified error code.
         /// </summary>
         /// <param name="AErrorCode">Error Code.</param>
-        /// <param name="APlaceholderTexts">>0..n string Arguments which are placed into placeholders which are found in
-        /// <paramref name="APlaceholderTexts" /> (optional Arguments!)</param>.
+        /// <param name="AErrorMessagePlaceholderTexts">Array whose strings are placed into placeholders 
+        /// which are found in the ErrorCode's ErrorMessageText (optional Argument!)</param>.
         /// <returns>An <see cref="ErrCodeInfo" /> object which holds information about
         /// the specified error code, or null, if the error code was not found.</returns>
-        public static ErrCodeInfo GetErrorInfo(string AErrorCode, params string[] APlaceholderTexts)
+        public static ErrCodeInfo GetErrorInfo(string AErrorCode, string[] AErrorMessagePlaceholderTexts)
         {
             ErrCodeInfo ReturnValue = GetErrorInfo(AErrorCode);
             string ErrorMessageText;
@@ -74,11 +74,11 @@ namespace Ict.Common
             }
             else
             {
-                if ((APlaceholderTexts != null)
-                    && (APlaceholderTexts.Length > 0))
+                if ((AErrorMessagePlaceholderTexts != null)
+                    && (AErrorMessagePlaceholderTexts.Length > 0))
                 {
-                    ErrorMessageText = APlaceholderTexts[0];
-                    APlaceholderTexts = null;
+                    ErrorMessageText = AErrorMessagePlaceholderTexts[0];
+                    AErrorMessagePlaceholderTexts = null;
                 }
                 else
                 {
@@ -87,7 +87,7 @@ namespace Ict.Common
                 }
             }
 
-            return GetErrorInfo(AErrorCode, ErrorMessageText, APlaceholderTexts);
+            return GetErrorInfo(AErrorCode, ErrorMessageText, AErrorMessagePlaceholderTexts);
         }
 
         /// <summary>
@@ -97,26 +97,23 @@ namespace Ict.Common
         /// <param name="AErrorMessageText">Set this to <see cref="String.Empty" /> to use the
         /// <see cref="ErrCodeInfo.ShortDescription" /> of the <see cref="ErrCodeInfo" />, set it to any other string and
         /// this will be displayed instead.</param>
-        /// <param name="APlaceholderTexts">0..n string Arguments which are placed into placeholders which are found in
-        /// <paramref name="AErrorMessageText" /> (optional Arguments!)</param>.
-        /// <returns>An <see cref="ErrCodeInfo" /> object which holds information about
+        /// <param name="AErrorMessagePlaceholderTexts">Array whose strings are placed into placeholders which are found in
+        /// <paramref name="AErrorMessageText" /> (optional Argument!)</param>.
+        /// <param name="AErrorTitlePlaceholderTexts">Array whose strings are placed into placeholders which are found in
+        /// the ErrorCode's ErrorTitle (optional Argument!)</param>.        
+        /// /// <returns>An <see cref="ErrCodeInfo" /> object which holds information about
         /// the specified error code, or null, if the error code was not found.</returns>
-        public static ErrCodeInfo GetErrorInfo(string AErrorCode, string AErrorMessageText, params string[] APlaceholderTexts)
+        public static ErrCodeInfo GetErrorInfo(string AErrorCode, string AErrorMessageText, 
+            string[] AErrorMessagePlaceholderTexts = null, string[] AErrorTitlePlaceholderTexts = null)
         {
             ErrCodeInfo FoundErrInfo;
             ErrCodeInfo ReturnValue = null;
             string ErrorMessageText;
+            string ErrorTitleText = String.Empty;
 
             if (AErrorMessageText == null)
             {
                 throw new ArgumentException("Argument 'AErrorMessageText' must not be null");
-            }
-
-            // C# can't detect the right overload in case APlaceholderTexts is not filled, so we need to help out here!
-            if ((APlaceholderTexts != null)
-                && (APlaceholderTexts.Length == 0))
-            {
-                return GetErrorInfo(AErrorCode, new string[] { AErrorMessageText });
             }
 
             FoundErrInfo = GetErrorInfo(AErrorCode);
@@ -140,16 +137,24 @@ namespace Ict.Common
 
             if ((FoundErrInfo != null))
             {
-                if ((APlaceholderTexts != null)
-                    && (APlaceholderTexts.Length != 0))
+                if ((AErrorMessagePlaceholderTexts != null)
+                    && (AErrorMessagePlaceholderTexts.Length != 0))
                 {
-                    ErrorMessageText = String.Format(ErrorMessageText, APlaceholderTexts);
+                    ErrorMessageText = String.Format(ErrorMessageText, AErrorMessagePlaceholderTexts);
                 }
+                
+                ErrorTitleText = FoundErrInfo.ErrorMessageTitle;
+                
+                if ((AErrorTitlePlaceholderTexts != null)
+                    && (AErrorTitlePlaceholderTexts.Length != 0))
+                {
+                    ErrorTitleText = String.Format(ErrorTitleText, AErrorTitlePlaceholderTexts);
+                }               
             }
 
             ReturnValue = new ErrCodeInfo(FoundErrInfo.ErrorCode, FoundErrInfo.ErrorCodeConstantClass,
                 FoundErrInfo.ErrorCodeConstantName, FoundErrInfo.ShortDescription,
-                FoundErrInfo.FullDescription, ErrorMessageText, FoundErrInfo.ErrorMessageTitle,
+                FoundErrInfo.FullDescription, ErrorMessageText, ErrorTitleText,
                 FoundErrInfo.Category, FoundErrInfo.HelpID);
 
             return ReturnValue;

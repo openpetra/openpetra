@@ -84,7 +84,7 @@ namespace Ict.Common.Verification
 	                ReturnValue = new TVerificationResult(AResultContext,
 	                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
 	                        CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-	                        StrDateMayNotBeEmpty, Description));
+	                        StrDateMayNotBeEmpty, new string[] {Description}));
 	
 	                if (AResultColumn != null)
 	                {
@@ -104,7 +104,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
                         CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                        StrDateMayNotBeEmpty, Description));
+                        StrDateMayNotBeEmpty, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -196,7 +196,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateMayNotBePastDate, Description));
+                            StrDateMayNotBePastDate, new string[] {Description}));
 
                     if (AResultColumn != null)
                     {
@@ -249,7 +249,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
-                        Environment.NewLine + StrDateMayNotBeFutureDate, Description));
+                        Environment.NewLine + StrDateMayNotBeFutureDate, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -308,7 +308,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeLater, FirstDateDescription, SecondDateDescription));
+                            StrDateCannotBeLater, new string[] {FirstDateDescription, SecondDateDescription}));
 
                     if (AResultColumn != null)
                     {
@@ -366,7 +366,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeLaterOrEqual, FirstDateDescription, SecondDateDescription));
+                            StrDateCannotBeLaterOrEqual, new string[] {FirstDateDescription, SecondDateDescription}));
 
                     if (AResultColumn != null)
                     {
@@ -431,7 +431,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeEarlier, FirstDateDescription, SecondDateDescription));
+                            StrDateCannotBeEarlier, new string[] {FirstDateDescription, SecondDateDescription}));
 
                     if (AResultColumn != null)
                     {
@@ -492,7 +492,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeEarlierOrEqual, FirstDateDescription, SecondDateDescription));
+                            StrDateCannotBeEarlierOrEqual, new string[] {FirstDateDescription, SecondDateDescription}));
 
                     if (AResultColumn != null)
                     {
@@ -528,7 +528,7 @@ namespace Ict.Common.Verification
 
             return new TVerificationResult(AResultContext,
                 ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                    StrMustBeDate, Description));
+                    StrMustBeDate, new string[] {Description}));
         }
 
         #endregion

@@ -93,7 +93,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeInteger, Description));
+                        StrNumberMustBeInteger, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -133,7 +133,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeDecimal, Description));
+                        StrNumberMustBeDecimal, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -173,7 +173,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         CommonErrorCodes.ERR_INVALIDNUMBER,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeDecimal, Description));
+                        StrNumberMustBeDecimal, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -217,7 +217,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBePositiveInteger, Description));
+                        StrNumberMustBePositiveInteger, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -256,7 +256,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBePositiveDecimal, Description));
+                        StrNumberMustBePositiveDecimal, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -295,7 +295,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBePositiveDecimal, Description));
+                        StrNumberMustBePositiveDecimal, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -339,7 +339,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBePositiveIntegerOr0, Description));
+                        StrNumberMustBePositiveIntegerOr0, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -378,7 +378,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBePositiveDecimalOr0, Description));
+                        StrNumberMustBePositiveDecimalOr0, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -417,7 +417,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBePositiveDecimalOr0, Description));
+                        StrNumberMustBePositiveDecimalOr0, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -461,7 +461,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeNegativeInteger, Description));
+                        StrNumberMustBeNegativeInteger, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -500,7 +500,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeNegativeDecimal, Description));
+                        StrNumberMustBeNegativeDecimal, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -539,7 +539,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeNegativeDecimal, Description));
+                        StrNumberMustBeNegativeDecimal, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -584,7 +584,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeNegativeIntegerOr0, Description));
+                        StrNumberMustBeNegativeIntegerOr0, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -624,7 +624,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeNegativeDecimalOr0, Description));
+                        StrNumberMustBeNegativeDecimalOr0, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -664,7 +664,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeNegativeDecimalOr0, Description));
+                        StrNumberMustBeNegativeDecimalOr0, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -716,7 +716,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterOrEqualTo, FirstNumberDescription, SecondNumberDescription));
+                        StrNumberCannotBeGreaterOrEqualTo, new string[] {FirstNumberDescription, SecondNumberDescription}));
 
                 if (AResultColumn != null)
                 {
@@ -763,7 +763,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterOrEqualTo, FirstNumberDescription, SecondNumberDescription));
+                        StrNumberCannotBeGreaterOrEqualTo, new string[] {FirstNumberDescription, SecondNumberDescription}));
 
                 if (AResultColumn != null)
                 {
@@ -810,7 +810,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterOrEqualTo, FirstNumberDescription, SecondNumberDescription));
+                        StrNumberCannotBeGreaterOrEqualTo, new string[] {FirstNumberDescription, SecondNumberDescription}));
 
                 if (AResultColumn != null)
                 {
@@ -862,7 +862,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterThan, FirstNumberDescription, SecondNumberDescription));
+                        StrNumberCannotBeGreaterThan, new string[] {FirstNumberDescription, SecondNumberDescription}));
 
                 if (AResultColumn != null)
                 {
@@ -909,7 +909,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterThan, FirstNumberDescription, SecondNumberDescription));
+                        StrNumberCannotBeGreaterThan, new string[] {FirstNumberDescription, SecondNumberDescription}));
 
                 if (AResultColumn != null)
                 {
@@ -956,7 +956,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberCannotBeGreaterThan, FirstNumberDescription, SecondNumberDescription));
+                        StrNumberCannotBeGreaterThan, new string[] {FirstNumberDescription, SecondNumberDescription}));
 
                 if (AResultColumn != null)
                 {

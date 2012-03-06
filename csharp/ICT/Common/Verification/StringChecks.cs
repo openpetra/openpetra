@@ -88,7 +88,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOEMPTYSTRING, CommonResourcestrings.StrInvalidStringEntered + Environment.NewLine +
-                        StrStringMustNotBeEmpty, Description));
+                        StrStringMustNotBeEmpty, new string[] {Description}));
 
                 if (AResultColumn != null)
                 {
@@ -138,7 +138,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSSTRINGS,
-                        StrInvalidStringOrder, FirstDescription, SecondDescription));
+                        StrInvalidStringOrder, new string[] {FirstDescription, SecondDescription}));
 
                 if (AResultColumn != null)
                 {
@@ -249,7 +249,7 @@ namespace Ict.Common.Verification
 
                         ReturnValue = new TVerificationResult(AResultContext,
                             ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddNotValid + SeparatorWarning,
-                                AEmailAddress));
+                                new string[] {AEmailAddress}));
                     }
                     else
                     {
@@ -275,13 +275,13 @@ namespace Ict.Common.Verification
                                 {
                                     ReturnValue = new TVerificationResult(AResultContext,
                                         ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddOrPartNotValid +
-                                            SeparatorWarning, AEmailAddress, EmailAddressPartInfo));
+                                            SeparatorWarning, new string[] {AEmailAddress, EmailAddressPartInfo}));
                                 }
                                 else
                                 {
                                     ReturnValue = new TVerificationResult(AResultContext,
                                         ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddNotValid +
-                                            SeparatorWarning, AEmailAddress));
+                                            SeparatorWarning, new string[] {AEmailAddress}));
                                 }
 
                                 break;
@@ -298,7 +298,7 @@ namespace Ict.Common.Verification
                     else
                     {
                         ReturnValue = new TVerificationResult(AResultContext,
-                            ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddNotValid, AEmailAddress));
+                            ErrorCodes.GetErrorInfo(ERR_EMAILADDRESSINVALID, StrEmailAddNotValid, new string[] {AEmailAddress}));
                     }
                 }
             }
