@@ -692,8 +692,8 @@ namespace Ict.Petra.Server.MPartner.Partner
         /// <param name="ALastPartnerUse">Where is the partner used?</param>
         /// <returns>returns true if handling was successful
         /// </returns>
-        public static bool AddRecentlyUsedPartner(Int64 APartnerKey,  TPartnerClass APartnerClass,
-                                                  bool ANewPartner, TLastPartnerUse ALastPartnerUse)
+        public static bool AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass,
+            bool ANewPartner, TLastPartnerUse ALastPartnerUse)
         {
             Boolean ReturnValue;
             TDBTransaction ReadAndWriteTransaction;

@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>use this property to exclude controls from being hooked up to the automatic value changed event</summary>
         protected bool FCanBeHookedUpForValueChangedEvent = true;
-        
+
         /// <summary>Used for keeping track of data verification errors</summary>
         protected TVerificationResultCollection FVerificationResultCollection;
 
@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        
+
         /// <summary>
         /// Special property to determine whether our code is running in the WinForms Designer.
         /// The result of this property is correct even if InitializeComponent() wasn't run yet

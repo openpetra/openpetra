@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             set
             {
-            	ucoExtractMaintain.ExtractId = value;
+                ucoExtractMaintain.ExtractId = value;
             }
         }
 
@@ -64,11 +64,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             set
             {
-            	ucoExtractMaintain.ExtractName = value;
+                ucoExtractMaintain.ExtractName = value;
             }
         }
-		#endregion        
-        
+        #endregion
+
         #region Public Methods
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <returns></returns>
         public bool SaveChanges()
         {
-        	return ucoExtractMaintain.SaveChanges();
+            return ucoExtractMaintain.SaveChanges();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         public void FileSave(System.Object sender, EventArgs e)
         {
-        	SaveChanges();
+            SaveChanges();
         }
 
         #endregion
@@ -112,8 +112,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void RunOnceOnActivationManual()
         {
-        	ucoExtractMaintain.InitializeData();
-        	this.Text = "Maintenance of Extract: " + ucoExtractMaintain.ExtractName;
+            ucoExtractMaintain.InitializeData();
+            this.Text = "Maintenance of Extract: " + ucoExtractMaintain.ExtractName;
         }
 
         /// <summary>
@@ -130,9 +130,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void CopyPartnerKeyToClipboard(System.Object sender, EventArgs e)
         {
-        	ucoExtractMaintain.CopyPartnerKeyToClipboard(sender, e);
+            ucoExtractMaintain.CopyPartnerKeyToClipboard(sender, e);
         }
-        	
+
         /// <summary>
         /// mark the selected partner record as the one last worked with in the application
         /// </summary>
@@ -140,9 +140,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void SetPartnerLastWorkedWith(System.Object sender, EventArgs e)
         {
-        	ucoExtractMaintain.SetPartnerLastWorkedWith(sender, e);
+            ucoExtractMaintain.SetPartnerLastWorkedWith(sender, e);
         }
-        
+
         /// <summary>
         /// Verify and if necessary update partner data in an extract
         /// </summary>
@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             ucoExtractMaintain.VerifyAndUpdateExtract(sender, e);
         }
-        
+
         #endregion
     }
 }

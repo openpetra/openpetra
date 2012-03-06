@@ -48,18 +48,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ALastPartnerUse"></param>
         /// <returns>true if action was successful</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass, 
-                                                  Boolean ANewPartner, TLastPartnerUse ALastPartnerUse)
+        public static bool AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass,
+            Boolean ANewPartner, TLastPartnerUse ALastPartnerUse)
         {
             bool ResultValue = false;
 
             ResultValue = Server.MPartner.Partner.TRecentPartnersHandling.AddRecentlyUsedPartner
-            	(APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse);
+                              (APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse);
 
             return ResultValue;
-        	
         }
-        
+
         /// <summary>
         /// performs database changes to move person from current (old) family to new family record
         /// </summary>

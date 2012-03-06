@@ -302,7 +302,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             // initialise outout Arguments
             if (APartnerKey != 0)
             {
-
                 ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
@@ -341,7 +340,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Verifies the existence of a Partner at a given location
         /// </summary>
@@ -352,8 +351,8 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         public static Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
             TLocationPK ALocationKey, out bool AAddressNeitherCurrentNorMailing)
         {
-        	AAddressNeitherCurrentNorMailing = true;
-        	
+            AAddressNeitherCurrentNorMailing = true;
+
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             PPartnerLocationTable PartnerLocationTable;
@@ -364,7 +363,10 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
                 out NewTransaction);
             try
             {
-            	PartnerLocationTable = PPartnerLocationAccess.LoadByPrimaryKey(APartnerKey, ALocationKey.SiteKey, ALocationKey.LocationKey, ReadTransaction);
+                PartnerLocationTable = PPartnerLocationAccess.LoadByPrimaryKey(APartnerKey,
+                    ALocationKey.SiteKey,
+                    ALocationKey.LocationKey,
+                    ReadTransaction);
             }
             finally
             {
@@ -380,27 +382,27 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             }
             else
             {
-            	PPartnerLocationRow Row = (PPartnerLocationRow)PartnerLocationTable.Rows[0];
-            	
-            	// check if the partner location is either current or if it is a mailing address
-		        if (   (Row.DateEffective > DateTime.Today)
-		            || (!Row.SendMail)
-		            || (   Row.DateGoodUntil != null
-		                && Row.DateGoodUntil < DateTime.Today))
-	            {
-					AAddressNeitherCurrentNorMailing = true;	            	
-	            }
-            	else
-            	{
-					AAddressNeitherCurrentNorMailing = false;	            	
-            	}
-            	
-            	ReturnValue = true;
+                PPartnerLocationRow Row = (PPartnerLocationRow)PartnerLocationTable.Rows[0];
+
+                // check if the partner location is either current or if it is a mailing address
+                if ((Row.DateEffective > DateTime.Today)
+                    || (!Row.SendMail)
+                    || ((Row.DateGoodUntil != null)
+                        && (Row.DateGoodUntil < DateTime.Today)))
+                {
+                    AAddressNeitherCurrentNorMailing = true;
+                }
+                else
+                {
+                    AAddressNeitherCurrentNorMailing = false;
+                }
+
+                ReturnValue = true;
             }
 
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Returns information about a Partner that was Merged and about the
         /// Partner it was merged into.
