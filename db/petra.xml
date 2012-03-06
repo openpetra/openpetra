@@ -14764,7 +14764,7 @@
                 label="Amount"/>
     <primarykey name="a_ap_document_payment_pk"
                 descr=""
-                thisFields="a_ap_document_id_i"/>
+                thisFields="a_ap_document_id_i,a_payment_number_i"/>
     <foreignkey name="a_ap_document_payment_fk1"
                 descr=""
                 thisFields="a_ledger_number_i"

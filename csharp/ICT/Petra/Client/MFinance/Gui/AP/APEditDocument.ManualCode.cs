@@ -42,6 +42,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {
+        Int32 FLedgerNumber;
         ALedgerRow FLedgerRow = null;
 
         private void InitializeManualCode()
@@ -54,6 +55,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             nudDiscountDays.Visible = false;        // There's currently no discounting, so this
             lblDiscountPercentage.Visible = false;  // just hides the associated controls.
             txtDiscountPercentage.Visible = false;
+        }
+
+        private void LookupExchangeRate(Object sender, EventArgs e)
+        {
+            decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(txtSupplierCurrency.Text, FLedgerRow.BaseCurrency,DateTime.Now);
+            txtExchangeRateToBase.NumberValueDecimal = CurrentRate;
         }
 
         private void EnableControls()
@@ -79,6 +86,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 btnAddDetail.Enabled = false;
                 btnRemoveDetail.Enabled = false;
                 btnAnalysisAttributes.Enabled = false;
+                btnLookupExchangeRate.Enabled = false;
 
                 txtDetailNarrative.Enabled = false;
                 txtDetailItemRef.Enabled = false;
@@ -92,7 +100,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
             }
-            tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) == 0);
+            tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
+            tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
         }
 
         private static bool DetailLineAttributesRequired(ref bool AllPresent, AccountsPayableTDS Atds, AApDocumentDetailRow DetailRow)
@@ -195,9 +204,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDetailAmount.CurrencySymbol = SupplierRow.CurrencyCode;
 
             IAPUIConnectorsFind FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
-            ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(DocumentRow.LedgerNumber);
+            FLedgerNumber = DocumentRow.LedgerNumber;
+            ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(FLedgerNumber);
             FLedgerRow = Tbl[0];
             txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
+            dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
 
             if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
             {
@@ -551,7 +562,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             List <int>PayTheseDocs = new List <int>();
 
             PayTheseDocs.Add(FMainDS.AApDocument[0].ApDocumentId);
-            PaymentScreen.AddDocumentsToPayment(FMainDS, PayTheseDocs);
+            PaymentScreen.AddDocumentsToPayment(FMainDS, FLedgerNumber, PayTheseDocs);
             PaymentScreen.Show();
         }
     }

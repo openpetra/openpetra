@@ -6,6 +6,8 @@ RootNode:
     Template: windowFind
     WindowWidth: 754
     WindowHeight: 623
+    Events:
+        Closed: {class=System.EventHandler, method=Form_Closed}
     Actions:
         cndSelectedSupplier: {InitialValue=false}
         actShowInvoice:

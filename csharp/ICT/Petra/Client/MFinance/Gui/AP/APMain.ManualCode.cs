@@ -49,6 +49,7 @@ using System.Globalization;
 using System.Timers;
 using System.Collections.Generic;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -76,6 +77,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 FLedgerNumber = value;
                 FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
+                // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
+                TEnsureKeepAlive.Register(FSupplierFindObject);
+
                 ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(FLedgerNumber);
                 FLedgerInfo = Tbl[0];
 
@@ -477,14 +481,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return SupplierKey;
         }
 
-        private Int32 GetCurrentlySelectedInvoice()
+        private Int32 GetCurrentlySelectedDocumentId()
         {
             DataRowView[] SelectedGridRow = grdInvoiceResult.SelectedDataRowsAsDataRowView;
             Int32 InvoiceNum = -1;
 
             if (SelectedGridRow.Length >= 1)
             {
-                Object Cell = SelectedGridRow[0]["a_ap_number_i"];
+                Object Cell = SelectedGridRow[0]["a_ap_document_id_i"];
 
                 if (Cell.GetType() == typeof(Int32))
                 {
@@ -516,7 +520,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void ShowInvoice(object sender, EventArgs e)
         {
-            Int32 SelectedInvoice = GetCurrentlySelectedInvoice();
+            Int32 SelectedInvoice = GetCurrentlySelectedDocumentId();
 
             if (SelectedInvoice > 0)
             {
@@ -767,13 +771,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((Row["Selected"].Equals(true)
                      && ("|POSTED|PARTPAID".IndexOf("|" + Row["a_document_status_c"].ToString()) >= 0)))
                 {
-                    PayTheseDocs.Add((int)Row["a_ap_number_i"]);
+                    PayTheseDocs.Add((int)Row["a_ap_document_id_i"]);
                 }
             }
 
             if (PayTheseDocs.Count > 0)
             {
-                PaymentScreen.AddDocumentsToPayment(TempDS, PayTheseDocs);
+                PaymentScreen.AddDocumentsToPayment(TempDS, FLedgerNumber, PayTheseDocs);
                 PaymentScreen.Show();
             }
         }
@@ -788,7 +792,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if ((Row["Selected"].Equals(true) && ("|POSTED|PARTPAID|PAID|".IndexOf(Row["a_document_status_c"].ToString()) < 0)))
                 {
-                    PostTheseDocs.Add((int)Row["a_ap_number_i"]);
+                    PostTheseDocs.Add((int)Row["a_ap_document_id_i"]);
                 }
             }
 
@@ -838,6 +842,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             RefreshSumTagged(null, null);
+        }
+
+        private void Form_Closed(object sender, EventArgs e)
+        {
+            if (FSupplierFindObject != null)
+            {
+                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
+                TEnsureKeepAlive.UnRegister(FSupplierFindObject);
+                FSupplierFindObject = null;
+            }
         }
     }
 }

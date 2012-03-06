@@ -597,7 +597,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TFrmAPPayment frm = new TFrmAPPayment(this);
 
-            frm.AddDocumentsToPayment(TempDS, TaggedDocuments);
+            frm.AddDocumentsToPayment(TempDS, FLedgerNumber, TaggedDocuments);
 
             frm.Show();
         }

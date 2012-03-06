@@ -77,8 +77,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdPayments.Selection.SelectRow(1, true);
             FocusedRowChanged(null, null);
 
-            // if this payment has a payment number, it's because it's already been paid, so I need to display it read-only.
-            if (FMainDS.AApPayment[0].PaymentNumber > 0)
+            // If this payment has a payment number, it's because it's already been paid, so I need to display it read-only.
+            if ((FMainDS.AApPayment.Rows.Count > 0) && (FMainDS.AApPayment[0].PaymentNumber > 0))
             {
                 txtAmountToPay.Enabled = false;
                 txtChequeNumber.Enabled = false;
@@ -107,8 +107,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// Set which payments should be paid; initialises the data of this screen
         /// </summary>
         /// <param name="ADataset"></param>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="ADocumentsToPay"></param>
-        public void AddDocumentsToPayment(AccountsPayableTDS ADataset, List <Int32>ADocumentsToPay)
+        public void AddDocumentsToPayment(AccountsPayableTDS ADataset, Int32 ALedgerNumber, List <Int32>ADocumentsToPay)
         {
             FMainDS = ADataset;
 
@@ -130,7 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FMainDS.AApDocumentPayment.Clear();
             }
 
-            TRemote.MFinance.AP.WebConnectors.CreatePaymentTableEntries(ref FMainDS, ADocumentsToPay);
+            TRemote.MFinance.AP.WebConnectors.CreatePaymentTableEntries(ref FMainDS, ALedgerNumber, ADocumentsToPay);
 
             ShowDataManual();
         }
@@ -283,8 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TVerificationResultCollection Verifications;
 
             if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
-                    ref AApPayment,
-                    AApDocumentPayment,
+                    ref FMainDS,
                     PaymentDate,
                     out Verifications))
             {

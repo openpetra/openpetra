@@ -266,15 +266,15 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
         System.Boolean PostAPDocuments(Int32 ALedgerNumber,
                                        List<Int32> AAPDocumentIds,
                                        DateTime APostingDate,
-                                       out TVerificationResultCollection AVerifications);
+                                       out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean CreatePaymentTableEntries(ref AccountsPayableTDS ADataset,
+                                                 Int32 ALedgerNumber,
                                                  List<Int32> ADocumentsToPay);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean PostAPPayments(ref AccountsPayableTDSAApPaymentTable APayments,
-                                      AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
+        System.Boolean PostAPPayments(ref AccountsPayableTDS PostDs,
                                       DateTime APostingDate,
-                                      out TVerificationResultCollection AVerifications);
+                                      out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,
                                          Int32 APaymentNumber);
