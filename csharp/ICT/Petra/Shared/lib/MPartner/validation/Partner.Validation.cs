@@ -105,12 +105,13 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     if (CommonRoutines.CheckBIC(ARow.BranchCode) == true)
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BRANCHCODELIKEBIC, 
-                                APlaceholderTexts: new String[]{
-                                                                 ValidationControlsData.ValidationControlLabel, 
-                                                                 ValidationControlsData.SecondValidationControlLabel, 
-                                                                 ValidationControlsData.ValidationControlLabel, 
-                                                                 ValidationControlsData.ValidationControlLabel})),
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BRANCHCODELIKEBIC, String.Empty,
+                                new String[]{
+                                             ValidationControlsData.ValidationControlLabel, 
+                                             ValidationControlsData.SecondValidationControlLabel, 
+                                             ValidationControlsData.ValidationControlLabel, 
+                                             ValidationControlsData.ValidationControlLabel},
+                                new String[] {ValidationControlsData.ValidationControlLabel})),
                             ValidationColumn, ValidationControlsData.ValidationControl);                        
                     }
                     else
