@@ -474,8 +474,11 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups
                               out Boolean AIsMergedPartner,
                               out Boolean AUserCanAccessPartner);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
+        Boolean VerifyPartner(Int64 APartnerKey);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
         Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
-                                        TLocationPK ALocationKey);
+                                        TLocationPK ALocationKey,
+                                        out Boolean AAddressNeitherCurrentNorMailing);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
         Boolean MergedPartnerDetails(Int64 AMergedPartnerPartnerKey,
                                      out String AMergedPartnerPartnerShortName,

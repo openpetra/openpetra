@@ -2341,12 +2341,21 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         }
 
         /// generated method from interface
+        public Boolean VerifyPartner(Int64 APartnerKey)
+        {
+            #region ManualCode
+            return TPartnerServerLookups.VerifyPartner(APartnerKey);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
         public Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
-                                               TLocationPK ALocationKey)
+                                               TLocationPK ALocationKey,
+                                               out Boolean AAddressNeitherCurrentNorMailing)
         {
             #region ManualCode
             return TPartnerServerLookups.VerifyPartnerAtLocation(APartnerKey,
-                ALocationKey);
+                ALocationKey, out AAddressNeitherCurrentNorMailing);
             #endregion ManualCode
         }
 

@@ -10,6 +10,7 @@ RootNode:
     Actions:
         actCopyPartnerKey: {ShortCut=Ctrl+C, ActionClick=CopyPartnerKeyToClipboard}        
         actSetLastWorkedWith: {ShortCut=Ctrl+S, ActionClick=SetPartnerLastWorkedWith}
+        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}      
         
     Controls:
         pnlExtract:
@@ -23,4 +24,8 @@ RootNode:
         mniEdit:
             mniCopyPartnerKey: {Label=Copy partner key to clipboard}
             mniSetLastWorkedWith: {Label=Set this partner as 'last worked with'}
+
+        mniMaintain:
+            Label: &Maintain
+            mniVerifyExtract: {Label=Verify and Update Extract, Action=actVerifyAndUpdateExtract}
             

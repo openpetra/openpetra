@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
@@ -206,7 +207,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void MaintainExtract(System.Object sender, EventArgs e)
         {
-            if (GetSelectedDetailRow() != null)
+        	if (   !WarnIfNotSingleSelection(Catalog.GetString("Maintain Extract"))
+        	    && GetSelectedDetailRow() != null)
             {
                 TFrmExtractMaintain frm = new TFrmExtractMaintain(this.FindForm());
                 frm.ExtractId = GetSelectedDetailRow().ExtractId;
@@ -315,7 +317,21 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 
             }
         }
-
+        
+        /// <summary>
+        /// Verify and if necessary update partner data in an extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
+        {
+        	if (   !WarnIfNotSingleSelection(Catalog.GetString("Verify and Update Extract"))
+        	    && GetSelectedDetailRow() != null)
+        	{
+        		TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), GetSelectedDetailRow().ExtractId);
+        	}
+        }
+        
         #endregion
 
         #region Private Methods
@@ -455,6 +471,28 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 pnlDetails.Visible = true;
             }
         }
+        
+		/// <summary>
+		/// show a warning to the user if there is no or more than one item selected
+		/// </summary>
+		/// <returns>true if more or less than one record is selected</returns>
+        private bool WarnIfNotSingleSelection(string AAction)
+		{
+        	if (   grdDetails.Selection.GetSelectionRegion().GetRowsIndex().Length < 1
+        	    || grdDetails.Selection.GetSelectionRegion().GetRowsIndex().Length > 1)
+        	{
+        		MessageBox.Show(Catalog.GetString("Please select the one Extract that you want to use for this action: ") + AAction,
+        		                AAction,
+        		                MessageBoxButtons.OK,
+        		                MessageBoxIcon.Error);
+        		
+        		return true;
+        	}
+        	else
+        	{
+        		return false;
+        	}
+		}
         
         /// <summary>
         /// Event Handler for Grid Event

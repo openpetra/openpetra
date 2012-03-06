@@ -99,26 +99,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         	SaveChanges();
         }
 
-        /// <summary>
-        /// Copy partner key of currenly selected partner to clipboard
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void CopyPartnerKeyToClipboard(System.Object sender, EventArgs e)
-        {
-        	ucoExtractMaintain.CopyPartnerKeyToClipboard(sender, e);
-        }
-        	
-        /// <summary>
-        /// mark the selected partner record as the one last worked with in the application
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void SetPartnerLastWorkedWith(System.Object sender, EventArgs e)
-        {
-        	ucoExtractMaintain.SetPartnerLastWorkedWith(sender, e);
-        }
-        
         #endregion
 
         #region Private Methods
@@ -143,6 +123,36 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
         }
 
+        /// <summary>
+        /// Copy partner key of currenly selected partner to clipboard
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CopyPartnerKeyToClipboard(System.Object sender, EventArgs e)
+        {
+        	ucoExtractMaintain.CopyPartnerKeyToClipboard(sender, e);
+        }
+        	
+        /// <summary>
+        /// mark the selected partner record as the one last worked with in the application
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetPartnerLastWorkedWith(System.Object sender, EventArgs e)
+        {
+        	ucoExtractMaintain.SetPartnerLastWorkedWith(sender, e);
+        }
+        
+        /// <summary>
+        /// Verify and if necessary update partner data in an extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
+        {
+            ucoExtractMaintain.VerifyAndUpdateExtract(sender, e);
+        }
+        
         #endregion
     }
 }

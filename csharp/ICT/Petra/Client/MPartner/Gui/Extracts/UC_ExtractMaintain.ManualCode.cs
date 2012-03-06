@@ -46,12 +46,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <summary>holds the DataSet that contains most data that is used on the screen</summary>
         //private ExtractTDS FMainDS = null;
         
-	    //private MExtractRow FPreviouslySelectedDetailRow = null;
+        //private MExtractRow FPreviouslySelectedDetailRow = null;
         
-	    // id of the extract that is displayed on this screen
+        // id of the extract that is displayed on this screen
         private int FExtractId;
 
-	    // name of the extract that is displayed on this screen
+        // name of the extract that is displayed on this screen
         private string FExtractName;
         
         #region Properties
@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             set
             {
-            	FExtractId = value;
+                FExtractId = value;
             }
         }
         
@@ -73,14 +73,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             set
             {
-            	FExtractName = value;
+                FExtractName = value;
             }
             get
             {
-            	return FExtractName;
+                return FExtractName;
             }
         }
-		#endregion        
+        #endregion        
 
         #region Public Methods
         
@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         public void InitializeData()
         {
-        	// set fixed column widths as otherwise grid will spend a long time recalculating optimal width with big extracts
+            // set fixed column widths as otherwise grid will spend a long time recalculating optimal width with big extracts
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn("Partner Key", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerKeyDBName()], 100);
             grdDetails.AddTextColumn("Class", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerClassDBName()], 100);
@@ -101,17 +101,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // allow multiselection of list items so several records can be deleted at once
             grdDetails.Selection.EnableMultiSelection = true;
 
-			// initialize button state            
+            // initialize button state            
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
             }
             else
             {
-            	btnEdit.Enabled = false;
+                btnEdit.Enabled = false;
                 btnDelete.Enabled = false;
             }
-            
             
         }
         
@@ -121,151 +120,151 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <returns></returns>
         public bool SaveChanges()
         {
-	        FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
-	
-	        if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
-	        {
-	            foreach (DataRow InspectDR in FMainDS.MExtract.Rows)
-	            {
-	                InspectDR.EndEdit();
-	            }
-	
-	            if (!FPetraUtilsObject.HasChanges)
-	            {
-	                return true;
-	            }
-	            else
-	            {
-	                FPetraUtilsObject.WriteToStatusBar("Saving data...");
-	                this.Cursor = Cursors.WaitCursor;
-	
-	                TSubmitChangesResult SubmissionResult;
-	                TVerificationResultCollection VerificationResult;
-	
-	                //Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.MExtract.GetChangesTyped();
-	                MExtractTable SubmitDT = new MExtractTable();
-	                SubmitDT.Merge(FMainDS.MExtract.GetChangesTyped());
-	
-	                if (SubmitDT == null)
-	                {
-	                    // There is nothing to be saved.
-	                    // Update UI
-	                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
-	                    this.Cursor = Cursors.Default;
-	
-	                    // We don't have unsaved changes anymore
-	                    FPetraUtilsObject.DisableSaveButton();
-	
-	                    return true;
-	                }
-	
-	                // Submit changes to the PETRAServer
-	                try
-	                {
-	                    SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtract
-	                    	(FExtractId, ref SubmitDT, out VerificationResult);
-	                }
-	                catch (System.Net.Sockets.SocketException)
-	                {
-	                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-	                    this.Cursor = Cursors.Default;
-	                    MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
-	                        "No Server response",
-	                        MessageBoxButtons.OK,
-	                        MessageBoxIcon.Stop);
-	                    bool ReturnValue = false;
-	
-	                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-	                    return ReturnValue;
-	                }
-	/* TODO ESecurityDBTableAccessDeniedException
-	*                  catch (ESecurityDBTableAccessDeniedException Exp)
-	*                  {
-	*                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-	*                      this.Cursor = Cursors.Default;
-	*                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
-	*                      bool ReturnValue = false;
-	*                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-	*                      return ReturnValue;
-	*                  }
-	*/
-	                catch (EDBConcurrencyException)
-	                {
-	                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-	                    this.Cursor = Cursors.Default;
-	
-	                    // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
-	                    bool ReturnValue = false;
-	
-	                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-	                    return ReturnValue;
-	                }
-	                catch (Exception exp)
-	                {
-	                    FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
-	                    this.Cursor = Cursors.Default;
-	                    TLogging.Log(
-	                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
-	                        TLoggingType.ToLogfile);
-	                    MessageBox.Show(
-	                        "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
-	                        "For details see the log file: " + TLogging.GetLogFileName(),
-	                        "Server connection error",
-	                        MessageBoxButtons.OK,
-	                        MessageBoxIcon.Stop);
-	
-	                    // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-	                    return false;
-	                }
-	
-	                switch (SubmissionResult)
-	                {
-	                    case TSubmitChangesResult.scrOK:
-	
-	                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-	                        FMainDS.MExtract.AcceptChanges();
-	
-	                        // Merge back with data from the Server (eg. for getting Sequence values)
-	                        FMainDS.MExtract.Merge(SubmitDT, false);
-	
-	                        // need to accept the new modification ID
-	                        FMainDS.MExtract.AcceptChanges();
-	
-	                        // Update UI
-	                        FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
-	                        this.Cursor = Cursors.Default;
-	
-	                        // TODO EnableSave(false);
-	
-	                        // We don't have unsaved changes anymore
-	                        FPetraUtilsObject.DisableSaveButton();
-	
-	                        SetPrimaryKeyReadOnly(true);
-	
-	                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-	                        return true;
-	
-	                    case TSubmitChangesResult.scrError:
-	
-	                        // TODO scrError
-	                        this.Cursor = Cursors.Default;
-	                        break;
-	
-	                    case TSubmitChangesResult.scrNothingToBeSaved:
-	
-	                        // TODO scrNothingToBeSaved
-	                        this.Cursor = Cursors.Default;
-	                        return true;
-	
-	                    case TSubmitChangesResult.scrInfoNeeded:
-	
-	                        // TODO scrInfoNeeded
-	                        this.Cursor = Cursors.Default;
-	                        break;
-	                }
-	            }
-	        }
-	
+            FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
+    
+            if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
+            {
+                foreach (DataRow InspectDR in FMainDS.MExtract.Rows)
+                {
+                    InspectDR.EndEdit();
+                }
+    
+                if (!FPetraUtilsObject.HasChanges)
+                {
+                    return true;
+                }
+                else
+                {
+                    FPetraUtilsObject.WriteToStatusBar("Saving data...");
+                    this.Cursor = Cursors.WaitCursor;
+    
+                    TSubmitChangesResult SubmissionResult;
+                    TVerificationResultCollection VerificationResult;
+    
+                    //Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.MExtract.GetChangesTyped();
+                    MExtractTable SubmitDT = new MExtractTable();
+                    SubmitDT.Merge(FMainDS.MExtract.GetChangesTyped());
+    
+                    if (SubmitDT == null)
+                    {
+                        // There is nothing to be saved.
+                        // Update UI
+                        FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("There is nothing to be saved."));
+                        this.Cursor = Cursors.Default;
+    
+                        // We don't have unsaved changes anymore
+                        FPetraUtilsObject.DisableSaveButton();
+    
+                        return true;
+                    }
+    
+                    // Submit changes to the PETRAServer
+                    try
+                    {
+                        SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtract
+                            (FExtractId, ref SubmitDT, out VerificationResult);
+                    }
+                    catch (System.Net.Sockets.SocketException)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+                        MessageBox.Show("The PETRA Server cannot be reached! Data cannot be saved!",
+                            "No Server response",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        bool ReturnValue = false;
+    
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return ReturnValue;
+                    }
+    /* TODO ESecurityDBTableAccessDeniedException
+    *                  catch (ESecurityDBTableAccessDeniedException Exp)
+    *                  {
+    *                      FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+    *                      this.Cursor = Cursors.Default;
+    *                      // TODO TMessages.MsgSecurityException(Exp, this.GetType());
+    *                      bool ReturnValue = false;
+    *                      // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+    *                      return ReturnValue;
+    *                  }
+    */
+                    catch (EDBConcurrencyException)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+    
+                        // TODO TMessages.MsgDBConcurrencyException(Exp, this.GetType());
+                        bool ReturnValue = false;
+    
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return ReturnValue;
+                    }
+                    catch (Exception exp)
+                    {
+                        FPetraUtilsObject.WriteToStatusBar("Data could not be saved!");
+                        this.Cursor = Cursors.Default;
+                        TLogging.Log(
+                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine + exp.ToString(),
+                            TLoggingType.ToLogfile);
+                        MessageBox.Show(
+                            "An error occured while trying to connect to the PETRA Server!" + Environment.NewLine +
+                            "For details see the log file: " + TLogging.GetLogFileName(),
+                            "Server connection error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+    
+                        // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        return false;
+                    }
+    
+                    switch (SubmissionResult)
+                    {
+                        case TSubmitChangesResult.scrOK:
+    
+                            // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
+                            FMainDS.MExtract.AcceptChanges();
+    
+                            // Merge back with data from the Server (eg. for getting Sequence values)
+                            FMainDS.MExtract.Merge(SubmitDT, false);
+    
+                            // need to accept the new modification ID
+                            FMainDS.MExtract.AcceptChanges();
+    
+                            // Update UI
+                            FPetraUtilsObject.WriteToStatusBar("Data successfully saved.");
+                            this.Cursor = Cursors.Default;
+    
+                            // TODO EnableSave(false);
+    
+                            // We don't have unsaved changes anymore
+                            FPetraUtilsObject.DisableSaveButton();
+    
+                            SetPrimaryKeyReadOnly(true);
+    
+                            // TODO OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                            return true;
+    
+                        case TSubmitChangesResult.scrError:
+    
+                            // TODO scrError
+                            this.Cursor = Cursors.Default;
+                            break;
+    
+                        case TSubmitChangesResult.scrNothingToBeSaved:
+    
+                            // TODO scrNothingToBeSaved
+                            this.Cursor = Cursors.Default;
+                            return true;
+    
+                        case TSubmitChangesResult.scrInfoNeeded:
+    
+                            // TODO scrInfoNeeded
+                            this.Cursor = Cursors.Default;
+                            break;
+                    }
+                }
+            }
+    
             return false;
         }
         
@@ -274,7 +273,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         public void FileSave(System.Object sender, EventArgs e)
         {
-        	SaveChanges();
+            SaveChanges();
         }
 
         /// <summary>
@@ -284,10 +283,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void CopyPartnerKeyToClipboard(System.Object sender, EventArgs e)
         {
-        	if (GetSelectedDetailRow() != null)
-        	{
-        		Clipboard.SetDataObject(GetSelectedDetailRow().PartnerKey.ToString());
-        	}
+            if (GetSelectedDetailRow() != null)
+            {
+                Clipboard.SetDataObject(GetSelectedDetailRow().PartnerKey.ToString());
+            }
         }
         
         /// <summary>
@@ -297,19 +296,50 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void SetPartnerLastWorkedWith(System.Object sender, EventArgs e)
         {
-        	ExtractTDSMExtractRow SelectedRow = GetSelectedDetailRow();
+            ExtractTDSMExtractRow SelectedRow = GetSelectedDetailRow();
+            
+            if (SelectedRow != null)
+            {
+                TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(SelectedRow.PartnerKey, 
+                                                                     TLastPartnerUse.lpuMailroomPartner);
+                
+                TRemote.MPartner.Partner.WebConnectors.AddRecentlyUsedPartner
+                    (SelectedRow.PartnerKey,
+                     SharedTypes.PartnerClassStringToEnum(SelectedRow.PartnerClass),
+                     false,
+                     TLastPartnerUse.lpuMailroomPartner);
+            }
+        }
+        
+        /// <summary>
+        /// Verify and if necessary update partner data in an extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
+        {
+        	bool ChangesMade;
+        	ExtractTDSMExtractTable ExtractTable = FMainDS.MExtract;
         	
-        	if (SelectedRow != null)
-        	{
-	        	TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(SelectedRow.PartnerKey, 
-        		                                                     TLastPartnerUse.lpuMailroomPartner);
-        		
-        		TRemote.MPartner.Partner.WebConnectors.AddRecentlyUsedPartner
-        			(SelectedRow.PartnerKey,
-        			 SharedTypes.PartnerClassStringToEnum(SelectedRow.PartnerClass),
-        			 false,
-        		     TLastPartnerUse.lpuMailroomPartner);
-        	}
+			TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), ref ExtractTable, out ChangesMade);
+			
+			if (ChangesMade)
+			{
+				FPetraUtilsObject.SetChangedFlag();
+				
+				MessageBox.Show (String.Format(Catalog.GetString("Verification and Update of Extract {0} was successful. \n\r" +
+				                                                 "Please press the Save button to save the changes."), FExtractName),
+            	                 Catalog.GetString("Verify and Update Extract"),
+            	                 MessageBoxButtons.OK,
+            	                 MessageBoxIcon.Information);
+			}
+			else
+			{
+				MessageBox.Show (String.Format(Catalog.GetString("Extract {0} was already up to date"), FExtractName),
+            	                 Catalog.GetString("Verify and Update Extract"),
+            	                 MessageBoxButtons.OK,
+            	                 MessageBoxIcon.Information);
+			}
         }
         
         #endregion
@@ -326,12 +356,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // hide field for "created by". This was only introduced in the yaml file so the mechanism
             // with the template for controlMaintainTable works as in this case there is no entry fields
             // in pnlDetails that allow changes to the MExtract record
-        	txtCreatedBy.Visible = false;
-        	lblCreatedBy.Visible = false;
-        	
-        	// set this property to false as otherwise save button will get enabled whenever values
-        	// in the partner info control change
-        	ucoPartnerInfo.CanBeHookedUpForValueChangedEvent = false;
+            txtCreatedBy.Visible = false;
+            lblCreatedBy.Visible = false;
+            
+            // set this property to false as otherwise save button will get enabled whenever values
+            // in the partner info control change
+            ucoPartnerInfo.CanBeHookedUpForValueChangedEvent = false;
         }
 
         /// <summary>
@@ -383,79 +413,82 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         
         private void ShowDetailsManual(ExtractTDSMExtractRow ARow)
         {
-        	ucoPartnerInfo.ClearControls();
+            ucoPartnerInfo.ClearControls();
             btnDelete.Enabled = false;
             btnEdit.Enabled = false;
 
-        	if (ARow != null)
-        	{
-	            ucoPartnerInfo.PassPartnerDataNone(ARow.PartnerKey);
+            if (ARow != null)
+            {
+                ucoPartnerInfo.PassPartnerDataNone(ARow.PartnerKey);
                 btnDelete.Enabled = true;
                 btnEdit.Enabled = true;
-        	}
+            }
         }
         
         private void EditPartner(System.Object sender, EventArgs e)
         {
-        	if (CountSelectedRows() > 1)
-        	{
-        		MessageBox.Show(Catalog.GetString("Please select only one partner record that you want to edit"),
-        		                Catalog.GetString("Edit Partner"),
-        		                MessageBoxButtons.OK,
-        		                MessageBoxIcon.Warning);
-        		return;
-        	}
-        	
-        	ExtractTDSMExtractRow SelectedRow = GetSelectedDetailRow();
-        	
-			// TODO: private partners
-			// Check if partner is has "restricted" field set to be private and in that
-			// case only let the owner access that partner.
-			// Make use of SharedConstants.PARTNER_PRIVATE_USER while running the query.
+            if (CountSelectedRows() > 1)
+            {
+                MessageBox.Show(Catalog.GetString("Please select only one partner record that you want to edit"),
+                                Catalog.GetString("Edit Partner"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                return;
+            }
+            
+            ExtractTDSMExtractRow SelectedRow = GetSelectedDetailRow();
+            
+            // TODO: private partners
+            // Check if partner is has "restricted" field set to be private and in that
+            // case only let the owner access that partner.
+            // Make use of SharedConstants.PARTNER_PRIVATE_USER while running the query.
 
-        	// Open Partner Edit Screen for selected partner
+            // Open Partner Edit Screen for selected partner
             if (SelectedRow != null)
             {
-	            this.Cursor = Cursors.WaitCursor;
-	
-	            try
-	            {
-	                TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
-	                
-	            	if (!TRemote.MPartner.Partner.ServerLookups.VerifyPartnerAtLocation(
+                bool CurrentOrMailingAddress;
+                
+                this.Cursor = Cursors.WaitCursor;
+    
+                try
+                {
+                    TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+                    
+                    if (!TRemote.MPartner.Partner.ServerLookups.VerifyPartnerAtLocation(
                             SelectedRow.PartnerKey,
-                            new TLocationPK(SelectedRow.SiteKey, SelectedRow.LocationKey)))
-	            	{
-	            		MessageBox.Show(Catalog.GetString("Cannot find the location that was stored for this partner." 
-	            		                                  + "\r\n" + "Will use any known location for this partner." 
-	            		                                  + "\r\n" + "\r\n" + "(Fix with 'Verify and Update Extract')"),
-	            		                Catalog.GetString("Edit Partner"),
-	            		                MessageBoxButtons.OK,
-	            		                MessageBoxIcon.Warning);
+                            new TLocationPK(SelectedRow.SiteKey, SelectedRow.LocationKey),
+                            out CurrentOrMailingAddress))
+                    {
+                        MessageBox.Show(Catalog.GetString("Cannot find the location that was stored for this partner." 
+                                                          + "\r\n" + "Will use any known location for this partner." 
+                                                          + "\r\n" + "\r\n" + "(Fix with 'Verify and Update Extract')"),
+                                        Catalog.GetString("Edit Partner"),
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Warning);
 
-		                frm.SetParameters(TScreenMode.smEdit, 
-		                                  SelectedRow.PartnerKey);
-	                }
-	            	else
-	            	{
-		                frm.SetParameters(TScreenMode.smEdit, 
-		                                  SelectedRow.PartnerKey, 
-		                                  SelectedRow.SiteKey, 
-		                                  SelectedRow.LocationKey);
-	            	}
+                        frm.SetParameters(TScreenMode.smEdit, 
+                                          SelectedRow.PartnerKey);
+                    }
+                    else
+                    {
+                        frm.SetParameters(TScreenMode.smEdit, 
+                                          SelectedRow.PartnerKey, 
+                                          SelectedRow.SiteKey, 
+                                          SelectedRow.LocationKey);
+                    }
 
-	                frm.Show();
-	            }
-	            finally
-	            {
-	                this.Cursor = Cursors.Default;
-	            }
+                    frm.Show();
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
             }
         }
 
         private void AddPartner(System.Object sender, EventArgs e)
         {
-           	ExtractTDSMExtractRow NewRow;
+            ExtractTDSMExtractRow NewRow;
             System.Int64 PartnerKey = 0;
             string PartnerShortName;
             TPartnerClass PartnerClass;
@@ -480,37 +513,37 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                     if (PartnerKey != -1)
                     {
-                    	ExistingPartnerDataRows = FMainDS.MExtract.Select(ExtractTDSMExtractTable.GetPartnerKeyDBName() + " = " + PartnerKey.ToString());
-                    	if (ExistingPartnerDataRows.Length > 0)
-                    	{
-	                    	// check if partner already exists in extract
+                        ExistingPartnerDataRows = FMainDS.MExtract.Select(ExtractTDSMExtractTable.GetPartnerKeyDBName() + " = " + PartnerKey.ToString());
+                        if (ExistingPartnerDataRows.Length > 0)
+                        {
+                            // check if partner already exists in extract
                             MessageBox.Show(Catalog.GetString("A record for this partner already exists in this extract"),
                                 Catalog.GetString("Add Partner to Extract"),
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Information);
-	                    	
-	                        // select the already existing partner record in the grid so the user can see it
-                    		ExisitingPartnerRow = (ExtractTDSMExtractRow)ExistingPartnerDataRows[0];
-	                        SelectByPartnerKey(PartnerKey,ExisitingPartnerRow.SiteKey);
-	                        
-	                    	return;
-                    	}
+                            
+                            // select the already existing partner record in the grid so the user can see it
+                            ExisitingPartnerRow = (ExtractTDSMExtractRow)ExistingPartnerDataRows[0];
+                            SelectByPartnerKey(PartnerKey,ExisitingPartnerRow.SiteKey);
+                            
+                            return;
+                        }
 
                         TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
                             PartnerKey,
                             out PartnerShortName,
                             out PartnerClass);
-                    	
-                    	// add new record to extract
-                    	NewRow = FMainDS.MExtract.NewRowTyped();
-                    	NewRow.ExtractId = FExtractId;
-                    	NewRow.PartnerKey = PartnerKey;
-                    	NewRow.PartnerShortName = PartnerShortName;
-                    	NewRow.PartnerClass = SharedTypes.PartnerClassEnumToString(PartnerClass);
-                    	NewRow.SiteKey = ResultLocationPK.SiteKey;
-                    	NewRow.LocationKey = ResultLocationPK.LocationKey;
-                    	FMainDS.MExtract.Rows.Add(NewRow);
-                    	
+                        
+                        // add new record to extract
+                        NewRow = FMainDS.MExtract.NewRowTyped();
+                        NewRow.ExtractId = FExtractId;
+                        NewRow.PartnerKey = PartnerKey;
+                        NewRow.PartnerShortName = PartnerShortName;
+                        NewRow.PartnerClass = SharedTypes.PartnerClassEnumToString(PartnerClass);
+                        NewRow.SiteKey = ResultLocationPK.SiteKey;
+                        NewRow.LocationKey = ResultLocationPK.LocationKey;
+                        FMainDS.MExtract.Rows.Add(NewRow);
+                        
                         // Refresh DataGrid to show the added partner record
                         grdDetails.Refresh();
                         
@@ -518,7 +551,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         SelectByPartnerKey(PartnerKey,ResultLocationPK.SiteKey);
 
                         // enable save button on screen
-		                FPetraUtilsObject.SetChangedFlag();
+                        FPetraUtilsObject.SetChangedFlag();
                     }
                 }
                 catch (Exception exp)
@@ -532,64 +565,64 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void DeletePartner(System.Object sender, EventArgs e)
         {
-        	int CountRowsToDelete = CountSelectedRows();
-        	
+            int CountRowsToDelete = CountSelectedRows();
+            
             if (CountRowsToDelete == 0)
             {
-            	// nothing to delete
-            	return;
+                // nothing to delete
+                return;
             }
             
             // delete single selected record from extract
             if (CountRowsToDelete == 1)
             {
-	            if (FPreviouslySelectedDetailRow == null)
-	            {
-	                return;
-	            }
-	
-	            if (MessageBox.Show(String.Format(Catalog.GetString(
-	                            "You have choosen to delete this partner record from the Extract ({0}).\n\nDo you really want to delete it?"),
-	                            FPreviouslySelectedDetailRow.PartnerKey.ToString()), Catalog.GetString("Confirm Delete"),
-	                    MessageBoxButtons.YesNo,
-	                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-	            {
-	                int rowIndex = CurrentRowIndex();
-	                FPreviouslySelectedDetailRow.Delete();
-	                FPetraUtilsObject.SetChangedFlag();
-	                SelectByIndex(rowIndex);
-	            }
+                if (FPreviouslySelectedDetailRow == null)
+                {
+                    return;
+                }
+    
+                if (MessageBox.Show(String.Format(Catalog.GetString(
+                                "You have choosen to delete this partner record from the Extract ({0}).\n\nDo you really want to delete it?"),
+                                FPreviouslySelectedDetailRow.PartnerKey.ToString()), Catalog.GetString("Confirm Delete"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    int rowIndex = CurrentRowIndex();
+                    FPreviouslySelectedDetailRow.Delete();
+                    FPetraUtilsObject.SetChangedFlag();
+                    SelectByIndex(rowIndex);
+                }
             }
             // delete single selected record from extract
             else if (CountRowsToDelete > 1)
             {
-	            if (MessageBox.Show(Catalog.GetString("Do you want to delete the selected partner records from this extract?"),
-	                                Catalog.GetString("Confirm Delete"),
-	                    			MessageBoxButtons.YesNo,
-	                    			MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-	            {
-	                DataRowView RowView;
-	                int rowIndex = CurrentRowIndex();
-	                
-	                // build a collection of objects to be deleted before actually deleting them (as otherwise
-	                // indexes may not be valid any longer)
-	                int[] SelectedRowsIndexes = grdDetails.Selection.GetSelectionRegion().GetRowsIndex();
-	                List<ExtractTDSMExtractRow> RowList = new List<ExtractTDSMExtractRow>();
-	                foreach (int Index in SelectedRowsIndexes)
-	                {
-	                	RowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(Index);
-	                	RowList.Add((ExtractTDSMExtractRow)RowView.Row);
-	                }
+                if (MessageBox.Show(Catalog.GetString("Do you want to delete the selected partner records from this extract?"),
+                                    Catalog.GetString("Confirm Delete"),
+                                    MessageBoxButtons.YesNo,
+                                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    DataRowView RowView;
+                    int rowIndex = CurrentRowIndex();
+                    
+                    // build a collection of objects to be deleted before actually deleting them (as otherwise
+                    // indexes may not be valid any longer)
+                    int[] SelectedRowsIndexes = grdDetails.Selection.GetSelectionRegion().GetRowsIndex();
+                    List<ExtractTDSMExtractRow> RowList = new List<ExtractTDSMExtractRow>();
+                    foreach (int Index in SelectedRowsIndexes)
+                    {
+                        RowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(Index);
+                        RowList.Add((ExtractTDSMExtractRow)RowView.Row);
+                    }
 
-	                // now delete the actual rows
-	                foreach (ExtractTDSMExtractRow Row in RowList)
-	                {
-	                	Row.Delete();
-	                }
-	                
-	                FPetraUtilsObject.SetChangedFlag();
-	                SelectByIndex(rowIndex);
-	            }
+                    // now delete the actual rows
+                    foreach (ExtractTDSMExtractRow Row in RowList)
+                    {
+                        Row.Delete();
+                    }
+                    
+                    FPetraUtilsObject.SetChangedFlag();
+                    SelectByIndex(rowIndex);
+                }
             }
             
 
@@ -635,7 +668,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 ShowDetails(FPreviouslySelectedDetailRow);
                 
                 // scroll to row
-        		grdDetails.ShowCell(new SourceGrid.Position(rowIndex, 0), true);
+                grdDetails.ShowCell(new SourceGrid.Position(rowIndex, 0), true);
             }
             else
             {
@@ -645,32 +678,32 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void SelectByPartnerKey(Int64 APartnerKey, Int64 ASiteKey)
         {
-        	Int32 Index = -1;
-	        int   ExtractIdTemplate;
-	        Int64 PartnerKeyTemplate;
-	        Int64 SiteKeyTemplate;
-	        
-	        for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
-	        {
-	        	// compare key of item in list with key given
-	        	ExtractIdTemplate  = Convert.ToInt32((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][0]);
-	        	PartnerKeyTemplate = Convert.ToInt64((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][1]);
-	        	SiteKeyTemplate    = Convert.ToInt64((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][2]);
+            Int32 Index = -1;
+            int   ExtractIdTemplate;
+            Int64 PartnerKeyTemplate;
+            Int64 SiteKeyTemplate;
+            
+            for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
+            {
+                // compare key of item in list with key given
+                ExtractIdTemplate  = Convert.ToInt32((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][0]);
+                PartnerKeyTemplate = Convert.ToInt64((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][1]);
+                SiteKeyTemplate    = Convert.ToInt64((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][2]);
 
-	        	if (   FExtractId  == ExtractIdTemplate
-	        	    && APartnerKey == PartnerKeyTemplate
-	        	    && ASiteKey    == SiteKeyTemplate)
-	        	{
-	                Index = Counter + 1;
-	                break;
-	        	}
-	        }
-	        
-	        // reset grid selection as it is multiselect so the one record can be selected
-	        grdDetails.Selection.ResetSelection(true);
-	        
-        	// select row with given index
-        	SelectByIndex(Index);
+                if (   FExtractId  == ExtractIdTemplate
+                    && APartnerKey == PartnerKeyTemplate
+                    && ASiteKey    == SiteKeyTemplate)
+                {
+                    Index = Counter + 1;
+                    break;
+                }
+            }
+            
+            // reset grid selection as it is multiselect so the one record can be selected
+            grdDetails.Selection.ResetSelection(true);
+            
+            // select row with given index
+            SelectByIndex(Index);
         }
 
         /// <summary>
@@ -679,7 +712,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <returns></returns>
         private int CountSelectedRows()
         {
-         	return grdDetails.Selection.GetSelectionRegion().GetRowsIndex().Length;
+            return grdDetails.Selection.GetSelectionRegion().GetRowsIndex().Length;
         }
         
         /// <summary>
@@ -694,7 +727,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
  
-		#endregion
+        #endregion
 
     }
 }

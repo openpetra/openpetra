@@ -288,14 +288,72 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         }
 
         /// <summary>
+        /// Verifies the existence of a Partner
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
+        /// <returns>true if Partner was found in DB or Partner key = 0, otherwise false</returns>
+        public static Boolean VerifyPartner(Int64 APartnerKey)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            PPartnerTable PartnerTable;
+            Boolean ReturnValue = true;
+
+            // initialise outout Arguments
+            if (APartnerKey != 0)
+            {
+
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+                try
+                {
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                        if (TLogging.DL >= 7)
+                        {
+                            Console.WriteLine("VerifyPartner: committed own transaction.");
+                        }
+#endif
+                    }
+                }
+
+                if (PartnerTable.Rows.Count == 0)
+                {
+                    ReturnValue = false;
+                }
+                else
+                {
+                    ReturnValue = true;
+                }
+            }
+            else
+            {
+                // Return result as valid if Partner Key is 0.
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+        
+        /// <summary>
         /// Verifies the existence of a Partner at a given location
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to be verified</param>
         /// <param name="ALocationKey">Location Key of Partner to be verified</param>
+        /// <param name="AAddressNeitherCurrentNorMailing"></param>
         /// <returns>true if Partner was found in DB at given location, otherwise false</returns>
         public static Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
-            TLocationPK ALocationKey)
+            TLocationPK ALocationKey, out bool AAddressNeitherCurrentNorMailing)
         {
+        	AAddressNeitherCurrentNorMailing = true;
+        	
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             PPartnerLocationTable PartnerLocationTable;
@@ -322,6 +380,21 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             }
             else
             {
+            	PPartnerLocationRow Row = (PPartnerLocationRow)PartnerLocationTable.Rows[0];
+            	
+            	// check if the partner location is either current or if it is a mailing address
+		        if (   (Row.DateEffective > DateTime.Today)
+		            || (!Row.SendMail)
+		            || (   Row.DateGoodUntil != null
+		                && Row.DateGoodUntil < DateTime.Today))
+	            {
+					AAddressNeitherCurrentNorMailing = true;	            	
+	            }
+            	else
+            	{
+					AAddressNeitherCurrentNorMailing = false;	            	
+            	}
+            	
             	ReturnValue = true;
             }
 
