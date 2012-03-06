@@ -308,7 +308,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (FPreviouslySelectedDetailRow == null)
                 {
-                    ADailyExRateRow.ToCurrencyCode = baseCurrencyOfLedger;
+                    if (baseCurrencyOfLedger == null)
+                    {
+                        ADailyExRateRow.ToCurrencyCode = "USD";
+                    }
+                    else
+                    {
+                        ADailyExRateRow.ToCurrencyCode = baseCurrencyOfLedger;
+                    }
                     ADailyExRateRow.RateOfExchange = 1.0m;
                 }
                 else
