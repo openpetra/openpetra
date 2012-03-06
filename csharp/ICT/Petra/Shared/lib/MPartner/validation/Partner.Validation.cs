@@ -39,10 +39,6 @@ namespace Ict.Petra.Shared.MPartner.Validation
     /// </summary>
     public static partial class TSharedPartnerValidation_Partner
     {
-        /// <summary>BIC/SWIFT Code entered.</summary>
-        [ErrCodeAttribute("BIC/SWIFT Code entered.")]
-        public const String ERR_BRANCHCODELIKEBIC = "PARTN.00005V";
-
         /// <summary>todoComment</summary>
         private static readonly string StrBICSwiftCodeInvalid = Catalog.GetString(
             "The BIC / Swift code you entered for this bank is invalid!" + "\r\n" + "\r\n" +
