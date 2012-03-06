@@ -534,6 +534,12 @@ namespace {#NAMESPACE}
                     }
 
                     FPetraUtilsObject.ValidationToolTipSeverity = SingleVerificationResult.ResultSeverity;
+
+                    if (SingleVerificationResult.ResultTextCaption != String.Empty) 
+                    {
+                        FPetraUtilsObject.ValidationToolTip.ToolTipTitle += ":  " + SingleVerificationResult.ResultTextCaption;    
+                    }
+
                     FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
                         ((Control)sender).Width / 2, ((Control)sender).Height);
                 }
