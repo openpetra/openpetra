@@ -49,9 +49,6 @@ namespace Ict.Petra.Shared.MPartner.Validation
             "    BBB  = Branch Code. This code denotes the branch of the bank." + "\r\n" +
             "  BICs have either 8 or 11 characters." + "\r\n");
 
-//        /// <summary>todoComment</summary>
-//        private static readonly string StrBranchCodeLikeBICTitle = " seems to be a BIC/SWIFT Code";
-        
         /// <summary>
         /// Validates the Gift Batch data.
         /// </summary>
