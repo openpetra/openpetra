@@ -2341,6 +2341,25 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         }
 
         /// generated method from interface
+        public Boolean VerifyPartner(Int64 APartnerKey)
+        {
+            #region ManualCode
+            return TPartnerServerLookups.VerifyPartner(APartnerKey);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
+                                               TLocationPK ALocationKey,
+                                               out Boolean AAddressNeitherCurrentNorMailing)
+        {
+            #region ManualCode
+            return TPartnerServerLookups.VerifyPartnerAtLocation(APartnerKey,
+                ALocationKey, out AAddressNeitherCurrentNorMailing);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
         public Boolean MergedPartnerDetails(Int64 AMergedPartnerPartnerKey,
                                             out String AMergedPartnerPartnerShortName,
                                             out TPartnerClass AMergedPartnerPartnerClass,
@@ -2739,17 +2758,44 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
-        public Boolean DeleteExtract(System.Int32 AExtractId)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "DeleteExtract", ";INT;");
-            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.DeleteExtract(AExtractId);
-        }
-
-        /// generated method from connector
         public Boolean ExtractExists(String AExtractName)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "ExtractExists", ";STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.ExtractExists(AExtractName);
+        }
+
+        /// generated method from connector
+        public ExtractTDSMExtractTable GetExtractRowsWithPartnerData(System.Int32 AExtractId)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetExtractRowsWithPartnerData", ";INT;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetExtractRowsWithPartnerData(AExtractId);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveExtractMaster(ref MExtractMasterTable AExtractMasterTable,
+                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SaveExtractMaster", ";MEXTRACTMASTERTABLE;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SaveExtractMaster(ref AExtractMasterTable, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public TSubmitChangesResult SaveExtract(System.Int32 AExtractId,
+                                                ref MExtractTable AExtractTable,
+                                                out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SaveExtract", ";INT;MEXTRACTTABLE;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SaveExtract(AExtractId, ref AExtractTable, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Boolean AddRecentlyUsedPartner(Int64 APartnerKey,
+                                                     TPartnerClass APartnerClass,
+                                                     Boolean ANewPartner,
+                                                     TLastPartnerUse ALastPartnerUse)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector), "AddRecentlyUsedPartner", ";LONG;TPARTNERCLASS;BOOL;TLASTPARTNERUSE;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector.AddRecentlyUsedPartner(APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse);
         }
 
         /// generated method from connector
