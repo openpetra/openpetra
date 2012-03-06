@@ -50,7 +50,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             "  BICs have either 8 or 11 characters." + "\r\n");
 
         /// <summary>
-        /// Validates the Gift Batch data.
+        /// Validates the Partner Detail data of a Partner of PartnerClass BANK.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
@@ -58,7 +58,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
-        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        /// <returns>void</returns>
         public static void ValidatePartnerBankDetailsManual(object AContext, PBankRow ARow, 
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {            
