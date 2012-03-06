@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 		public static void ConsolidateBudgets(Form AParentWindow, Int32 ALedgerNumber) //, TVerificationResultCollection AVerificationResult = null) 		/// <param name="AVerificationResult"></param>
 
         {
-            string msg = string.Empty;
+			string msg = string.Empty;
 
             //msg = "You can either consolidate all of your budgets";
             //msg += " or just those that have changed since the last consolidation." + "\n\r\n\r";

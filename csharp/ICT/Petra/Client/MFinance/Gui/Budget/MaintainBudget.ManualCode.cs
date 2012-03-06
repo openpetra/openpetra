@@ -811,6 +811,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             TotalAmount = FirstPeriodAmount * InflateAfterPeriod + CurrentPeriodAmount * (12 - InflateAfterPeriod);
                             break;
                         }
+                        else if (i == 12) // and by implication CurrentPeriodAmount == FirstPeriodAmount
+                        {
+                        	//This is an odd case that the user should never implement, but still needs to be covered.
+                        	//  It is equivalent to using BUDGET TYPE: SAME
+                        	InflateAfterPeriod = 0;
+                            InflationRate = 0;
+                            TotalAmount = CurrentPeriodAmount * 12;
+                        }
                     }
                 }
 
