@@ -98,12 +98,16 @@ namespace Ict.Petra.Server.MPartner.Common
                     APartnerLocation = new PPartnerLocationTable();
                     APartnerLocation.ImportRow(row);
 
-                    if (CountryTable.DefaultView.Find(AAddress[0].CountryCode) == -1)
+                    // watch out for empty country codes
+                    if (AAddress[0].CountryCode.Trim().Length > 0)
                     {
-                        CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(AAddress[0].CountryCode, ATransaction));
+	                    if (CountryTable.DefaultView.Find(AAddress[0].CountryCode) == -1)
+	                    {
+	                        CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(AAddress[0].CountryCode, ATransaction));
+	                    }
+	
+	                    ACountryNameLocal = CountryTable[CountryTable.DefaultView.Find(AAddress[0].CountryCode)].CountryNameLocal;
                     }
-
-                    ACountryNameLocal = CountryTable[CountryTable.DefaultView.Find(AAddress[0].CountryCode)].CountryNameLocal;
                 }
             }
 
