@@ -990,6 +990,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     SubmitDS = AInspectDS.GetChangesTyped(true);
 
+                    if (SubmitDS == null)
+                    {
+                        // There is nothing to be saved.
+                        // Update UI
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
+                        this.Cursor = Cursors.Default;
+    
+                        // We don't have unsaved changes anymore
+                        FPetraUtilsObject.DisableSaveButton();
+    
+                        return true;
+                    }
+                    
                     if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
                         || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
                         || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
