@@ -122,6 +122,7 @@ namespace {#NAMESPACE}
             if (found)
             {
                 RowNumberGrid = Counter + 1;
+                break;
             }
         }
         grdDetails.Selection.ResetSelection(false);

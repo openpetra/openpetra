@@ -150,6 +150,7 @@ namespace {#NAMESPACE}
             if (found)
             {
                 RowNumberGrid = Counter + 1;
+                break;
             }
         }
 

@@ -204,6 +204,13 @@ namespace Ict.Petra.Client.CommonForms
         {
             foreach (Control ctrl in c.Controls)
             {
+                // exclude TPetraUserControl objects that should not be hooked up
+                if ((ctrl is TPetraUserControl)
+                    && (!((TPetraUserControl)ctrl).CanBeHookedUpForValueChangedEvent))
+                {
+                    continue;
+                }
+
                 // recurse into children;
                 // but special case for UpDownBase/NumericUpDown, because we don't want the child controls of that
                 if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase) && !(ctrl is TClbVersatile))

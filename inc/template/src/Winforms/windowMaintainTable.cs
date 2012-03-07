@@ -42,6 +42,18 @@ namespace {#NAMESPACE}
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
     {
+        Initialize(AParentForm, null);
+    }
+
+    /// constructor
+    public {#CLASSNAME}(Form AParentForm, TSearchCriteria[] ASearchCriteria) : base()
+    {
+        Initialize(AParentForm, ASearchCriteria);
+    }
+    
+    /// initialize from constructor
+    public void Initialize(Form AParentForm, TSearchCriteria[] ASearchCriteria)
+    {
       Control[] FoundCheckBoxes;
       
       //
@@ -60,7 +72,7 @@ namespace {#NAMESPACE}
       {#INITUSERCONTROLS}
       FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
+      TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), ASearchCriteria, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -143,6 +155,7 @@ namespace {#NAMESPACE}
             if (found)
             {
                 RowNumberGrid = Counter + 1;
+                break;
             }
         }
         grdDetails.Selection.ResetSelection(false);
