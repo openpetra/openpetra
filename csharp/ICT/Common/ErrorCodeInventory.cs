@@ -202,7 +202,7 @@ namespace Ict.Common
                                 {
                                     ErrCodeDetails = new ErrCodeInfo(ErrCodeValue, AErrorCodesType.FullName, FieldInf.Name,
                                         Attr.ShortDescription, Attr.FullDescription,
-                                        Attr.ErrorMessageText, Attr.ErrorMessageTitle, ErrCodeCat, Attr.HelpID);
+                                        Attr.ErrorMessageText, Attr.ErrorMessageTitle, ErrCodeCat, Attr.HelpID, Attr.ControlValueUndoRequested);
                                 }
                             }
                             else

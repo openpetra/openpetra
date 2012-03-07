@@ -262,6 +262,7 @@ namespace Ict.Common
         string FErrorMessageTitle = String.Empty;
         ErrCodeCategory FCategory;
         string FHelpID = String.Empty;
+        bool FControlValueUndoRequested = false;
 
         /// <summary>
         /// Constructor.
@@ -275,6 +276,8 @@ namespace Ict.Common
         /// <param name="AErrorMessageTitle">String that will be displayed as Title of MessageBoxes, etc..</param>
         /// <param name="ACategory">Category of the error code.</param>
         /// <param name="AHelpID">Help ID of the error code.</param>
+        /// <param name="AControlValueUndoRequested">Set this to true if the Error Code requests that the validated 
+        /// Control's value is undone.</param>
         public ErrCodeInfo(string AErrorCode,
             string AErrorCodeConstantClass,
             string AErrorCodeConstantName,
@@ -283,7 +286,8 @@ namespace Ict.Common
             string AErrorMessageText,
             string AErrorMessageTitle,
             ErrCodeCategory ACategory,
-            string AHelpID)
+            string AHelpID,
+            bool AControlValueUndoRequested = false)
         {
             FErrorCode = AErrorCode;
             FErrorCodeConstantClass = AErrorCodeConstantClass;
@@ -294,6 +298,7 @@ namespace Ict.Common
             FErrorMessageTitle = AErrorMessageTitle;
             FCategory = ACategory;
             FHelpID = AHelpID;
+            FControlValueUndoRequested = AControlValueUndoRequested;
         }
 
         /// <summary>
@@ -408,6 +413,18 @@ namespace Ict.Common
                 return FHelpID;
             }
         }
+        
+        /// <summary>
+        /// Is true (or set to true) if the Error Code requests that the validated 
+        /// Control's value is undone.
+        /// </summary>
+        public bool ControlValueUndoRequested
+        {
+            get
+            {
+                return FControlValueUndoRequested;
+            }
+        }        
     }
 
 
@@ -423,6 +440,7 @@ namespace Ict.Common
         string FErrorMessageTitle = String.Empty;
         ErrCodeCategory FCategory;
         string FHelpID = String.Empty;
+        bool FControlValueUndoRequested = false;
 
         /// <summary>
         /// Constructor.
@@ -522,6 +540,23 @@ namespace Ict.Common
             set
             {
                 FHelpID = value;
+            }
+        }
+
+        /// <summary>
+        /// Is true (or set to true) if the Error Code requests that the validated 
+        /// Control's value is undone.
+        /// </summary>
+        public virtual bool ControlValueUndoRequested
+        {
+            get
+            {
+                return FControlValueUndoRequested;
+            }
+            
+            set
+            {
+                FControlValueUndoRequested = value;
             }
         }
     }

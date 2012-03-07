@@ -152,6 +152,13 @@ namespace Ict.Common.Verification
         protected TResultSeverity FResultSeverity;
 
         /// <summary>
+        /// Is true (or set to true) if the data validation code requests that the validated 
+        /// Control's value is undone. This is only useful for <see cref="TScreenVerificationResult" />s
+        /// but needs to be declared in this Class to make the handling easier.
+        /// </summary>
+        protected bool FControlValueUndoRequested = false;
+        
+        /// <summary>
         /// We need this constructor so that inherited Classes can get by not having a default constructor...
         /// </summary>
         protected internal TVerificationResult()
@@ -191,6 +198,8 @@ namespace Ict.Common.Verification
             {
                 FResultSeverity = TResultSeverity.Resv_Noncritical;
             }
+            
+            FControlValueUndoRequested = AErrorCodeInfo.ControlValueUndoRequested;
         }
 
         /// <summary>
@@ -281,7 +290,6 @@ namespace Ict.Common.Verification
             }
         }
 
-
         /// <summary>
         /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
         /// </summary>
@@ -295,7 +303,6 @@ namespace Ict.Common.Verification
                 return FResultTextCaption;
             }
         }
-
 
         /// <summary>
         /// ResultCode of the Verification Result.
@@ -313,7 +320,6 @@ namespace Ict.Common.Verification
             }
         }
 
-
         /// <summary>
         /// Severity of the Verification Result.
         /// </summary>
@@ -322,6 +328,23 @@ namespace Ict.Common.Verification
             get
             {
                 return FResultSeverity;
+            }
+        }
+        
+        /// <summary>
+        /// Is true (or set to true) if the data validation code requests that the validated 
+        /// Control's value is undone.
+        /// </summary>
+        public bool ControlValueUndoRequested
+        {
+            get
+            {
+                return FControlValueUndoRequested;
+            }
+            
+            set
+            {
+                FControlValueUndoRequested = value;
             }
         }
         
@@ -367,7 +390,7 @@ namespace Ict.Common.Verification
         /// specify the control that failed the verification
         /// </summary>
         private Control FResultControl;
-
+        
         /// <summary>
         /// constructor
         /// </summary>
@@ -480,6 +503,7 @@ namespace Ict.Common.Verification
             FResultCode = AVerificationResult.ResultCode;
             FResultControl = AResultControl;
             FResultSeverity = AVerificationResult.ResultSeverity;
+            FControlValueUndoRequested = AVerificationResult.ControlValueUndoRequested;
         }
 
         /// <summary>

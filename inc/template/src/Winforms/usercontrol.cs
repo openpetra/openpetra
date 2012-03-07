@@ -8,6 +8,7 @@ using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows.Forms;
 using Ict.Petra.Shared;
 using System.Resources;
@@ -103,15 +104,17 @@ namespace {#NAMESPACE}
 {#IFDEF ACTIONENABLING}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
-{#IFDEF DATAVALIDATION}
 
-      BuildValidationControlsDict();
-{#ENDIF DATAVALIDATION}
-
-        if(FMainDS != null
-		   && FMainDS.{#MASTERTABLE} != null)
+        if(FMainDS != null)
         {
-            ShowData(FMainDS.{#MASTERTABLE}[0]);
+{#IFDEF DATAVALIDATION}
+            BuildValidationControlsDict();
+
+{#ENDIF DATAVALIDATION}
+		    if(FMainDS.{#MASTERTABLE} != null)
+            {
+                ShowData(FMainDS.{#MASTERTABLE}[0]);
+            }
         }
     }
     
@@ -145,7 +148,15 @@ namespace {#NAMESPACE}
         {#SHOWDATA}
         FPetraUtilsObject.EnableDataChangedEvent();
     }
+
 {#ENDIF SHOWDATA}
+{#IFDEF UNDODATA}
+
+    private void UndoData(DataRow ARow, Control AControl)
+    {
+        {#UNDODATA}
+    }
+{#ENDIF UNDODATA}
 
     /// <summary>
     /// Performs data validation.
@@ -327,6 +338,15 @@ namespace {#NAMESPACE}
                     {
                         FPetraUtilsObject.ValidationToolTip.ToolTipTitle += ":  " + SingleVerificationResult.ResultTextCaption;    
                     }
+{#IFDEF UNDODATA}
+
+                    if(SingleVerificationResult.ControlValueUndoRequested)
+                    {
+                        UndoData(SingleVerificationResult.ResultColumn.Table.Rows[0], SingleVerificationResult.ResultControl);
+                        SingleVerificationResult.OverrideResultText(SingleVerificationResult.ResultText + Environment.NewLine + Environment.NewLine + 
+                            Catalog.GetString("--> The value you entered has been changed back to what it was before! <--"));
+                    }
+{#ENDIF UNDODATA}
 
                     FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
                         ((Control)sender).Width / 2, ((Control)sender).Height);

@@ -463,6 +463,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return ctrl.controlName + ".Date = " + AFieldOrNull + ";";
         }
+        
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return ctrl.controlName + ".Date = (DateTime)" + AFieldOrNull + ";";
+        }        
     }
 
     /// <summary>
@@ -648,6 +656,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "(" + AFieldOrNull + ");";
         }
 
+
+        /// <summary>
+        /// how to assign a value to the control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == "Boolean")
+            {
+                return ctrl.controlName + ".SelectedIndex = (((bool)" + AFieldOrNull + ") ? 1 :0);";
+            }
+
+            if (AFieldTypeDotNet == "String")
+            {
+                return ctrl.controlName + ".SetSelectedString((" + AFieldTypeDotNet + ")" + AFieldOrNull + ", -1);";
+            }
+
+            return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "((" + AFieldTypeDotNet + ")" + AFieldOrNull + ");";
+        }
+        
         /// <summary>
         /// how to get the value from the control
         /// </summary>
@@ -782,6 +809,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Checked = " + AFieldOrNull + ";";
         }
 
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return ctrl.controlName + ".Checked = (bool)" + AFieldOrNull + ";";
+        }
+        
         /// <summary>
         /// how to get the value from the control
         /// </summary>
@@ -1054,6 +1089,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
         }
 
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return ctrl.controlName + ".Value = (decimal)" + AFieldOrNull + ";";
+        }
+        
         /// <summary>
         /// how to get the value from the control
         /// </summary>
@@ -1899,15 +1942,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
                 }
-                else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
-                {
-                    if (AFieldOrNull == null)
-                    {
-                        return ctrl.controlName + ".NumberValueDecimal = null;";
-                    }
-
-                    return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
-                }
                 else
                 {
                     return "?????";
@@ -1915,6 +1949,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet.ToLower() == "int32")
+            {
+                return ctrl.controlName + ".NumberValueInt = (Int32)" + AFieldOrNull + ";";
+            }
+            else if (AFieldTypeDotNet.ToLower() == "int64")
+            {
+                return ctrl.controlName + ".NumberValueLongInt = (Int64)" + AFieldOrNull + ";";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
+            {
+                return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
+            }
+            else
+            {
+                return "?????";
+            }
+        }
+        
         /// <summary>
         /// how to get the value from the control
         /// </summary>

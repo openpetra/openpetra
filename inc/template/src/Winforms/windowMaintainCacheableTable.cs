@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Reflection;
 using System.Data;
 using SourceGrid;
 using Ict.Petra.Shared;
@@ -199,6 +200,13 @@ namespace {#NAMESPACE}
         {#SHOWDATA}
     }
 {#ENDIF SHOWDATA}
+{#IFDEF UNDODATA}
+
+    private void UndoData(DataRow ARow, Control AControl)
+    {
+        {#UNDODATA}
+    }
+{#ENDIF UNDODATA}
 
     /// <summary>
     /// Performs data validation.
@@ -562,6 +570,15 @@ namespace {#NAMESPACE}
                     {
                         FPetraUtilsObject.ValidationToolTip.ToolTipTitle += ":  " + SingleVerificationResult.ResultTextCaption;    
                     }
+{#IFDEF UNDODATA}
+
+                    if(SingleVerificationResult.ControlValueUndoRequested)
+                    {
+                        UndoData(SingleVerificationResult.ResultColumn.Table.Rows[0], SingleVerificationResult.ResultControl);
+                        SingleVerificationResult.OverrideResultText(SingleVerificationResult.ResultText + Environment.NewLine + Environment.NewLine + 
+                            Catalog.GetString("--> The value you entered has been changed back to what it was before! <--"));
+                    }
+{#ENDIF UNDODATA}
 
                     FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
                         ((Control)sender).Width / 2, ((Control)sender).Height);
