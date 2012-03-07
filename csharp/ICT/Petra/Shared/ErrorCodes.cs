@@ -108,8 +108,13 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Invalid Partner entered: PartnerKey 0 is not a valid value.")]
         public const String ERR_PARTNERKEY_INVALID_NOZERO = "PARTN.00002V";        
 
-        /// <summary>Partner Status MERGED change undone.</summary>
-        public const String ERR_PARTNERSTATUSMERGEDCHANGEUNDONE = "PARTN.00003N";
+        /// <summary>Partner Status MERGED must not be assigned.</summary>
+        [ErrCodeAttribute("Partner Status MERGED must not be assigned",
+            ErrorMessageText = "The Partner Status cannot be set to 'MERGED' by the user - this Partner Status\r\n" +
+                "is set only by the Partner Merge function for Partners that have been merged\r\n" +
+                "into another Partner!",
+            ControlValueUndoRequested = true)]
+        public const String ERR_PARTNERSTATUSMERGEDCHANGEUNDONE = "PARTN.00003V";
 
         /// <summary>UnitName change undone.</summary>
         public const String ERR_UNITNAMECHANGEUNDONE = "PARTN.00004N";

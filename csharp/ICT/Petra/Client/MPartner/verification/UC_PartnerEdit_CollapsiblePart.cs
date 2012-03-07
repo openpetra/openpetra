@@ -34,16 +34,11 @@ using Ict.Petra.Shared;
 namespace Ict.Petra.Client.MPartner.Verification
 {
     /// <summary>
-    /// Contains verification logic for the UC_PartnerAddress UserControl.
+    /// Contains verification logic for the UC_PartnerEdit_CollapsiblePart UserControl.
     /// </summary>
     public class TPartnerVerification : System.Object
     {
         #region Resourcetexts
-
-        private static readonly string StrPartnerStatusNotMerged = Catalog.GetString(
-            "The Partner Status cannot be set to 'MERGED' by the user -\r\n" +
-            "this Partner Status is set only by the Partner Merge function\r\n" +
-            "for Partners that have been merged into another Partner!");
 
         private static readonly string StrFundnameChange = Catalog.GetString(
             "This partner is a ledger.\r\n" +
@@ -60,38 +55,6 @@ namespace Ict.Petra.Client.MPartner.Verification
         #endregion
 
         #region TPartnerVerification
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public static Boolean VerifyPartnerData(DataColumnChangeEventArgs e, out TVerificationResult AVerificationResult)
-        {
-            Boolean ReturnValue;
-
-            AVerificationResult = null;
-
-            if (e.Column.ColumnName == PPartnerTable.GetStatusCodeDBName())
-            {
-                VerifyPartnerStatus(e, out AVerificationResult);
-            }
-
-            // any verification errors?
-            if (AVerificationResult == null)
-            {
-                ReturnValue = true;
-            }
-            else
-            {
-                ReturnValue = false;
-
-                // MessageBox.Show('VerifyPartnerData: There was an error!');
-            }
-
-            return ReturnValue;
-        }
 
         /// <summary>
         /// todoComment
@@ -168,27 +131,6 @@ namespace Ict.Petra.Client.MPartner.Verification
             catch (Exception)
             {
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="e"></param>
-        /// <param name="AVerificationResult"></param>
-        public static void VerifyPartnerStatus(DataColumnChangeEventArgs e, out TVerificationResult AVerificationResult)
-        {
-            if (e.ProposedValue.ToString() == SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED))
-            {
-                AVerificationResult = new TVerificationResult("",
-                    StrPartnerStatusNotMerged,
-                    Catalog.GetString("Invalid Data"),
-                    PetraErrorCodes.ERR_PARTNERSTATUSMERGEDCHANGEUNDONE,
-                    TResultSeverity.Resv_Critical);
-            }
-            else
-            {
-                AVerificationResult = null;
             }
         }
 

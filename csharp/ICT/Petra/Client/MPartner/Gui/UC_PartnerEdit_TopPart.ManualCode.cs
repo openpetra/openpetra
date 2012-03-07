@@ -31,6 +31,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MPartner.Verification;
@@ -72,6 +73,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         // <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
         private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
 
+        private bool FIgnorePartnerStatusChange = true;
+        
         #endregion
 
         #region Events
@@ -123,8 +126,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseUserControl()
         {
             FPartnerDefaultView = FMainDS.PPartner.DefaultView;
+            FIgnorePartnerStatusChange = false;
 
-            FMainDS.PPartner.ColumnChanging += new DataColumnChangeEventHandler(OnPartnerDataColumnChanging);
+            BuildValidationControlsDict();
 
             #region Show fields according to Partner Class
 
@@ -483,7 +487,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private Boolean PartnerStatusCodeChangePromotion(DataColumnChangeEventArgs e)
+        private Boolean PartnerStatusCodeChangePromotion(string ANewPartnerStatusCode)
         {
             Boolean ReturnValue;
             String FamilyMembersText;
@@ -517,10 +521,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FamilyMembersResult =
                     MessageBox.Show(
                         String.Format(
-                            Catalog.GetString("Partner Status change from '{0}' to '{1}': \r\n" +
+                            Catalog.GetString("Partner Status change to '{0}': \r\n" +
                                 "Should OpenPetra apply this change to all Family Members of this Family?"),
-                            ((PPartnerRow)e.Row).StatusCode,
-                            e.ProposedValue) + Environment.NewLine + Environment.NewLine +
+                            ANewPartnerStatusCode) + Environment.NewLine + Environment.NewLine +
                         Catalog.GetString("The Family has the following Family Members:") + Environment.NewLine +
                         FamilyMembersText + Environment.NewLine +
                         Catalog.GetString("(Choose 'Cancel' to cancel the change of the Partner Status\r\n" +
@@ -669,88 +672,55 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void OnPartnerDataColumnChanging(System.Object sender, DataColumnChangeEventArgs e)
+
+        private void ValidateDataDetailsManual(PPartnerRow ARow)
         {
-            TVerificationResult VerificationResultReturned;
-            TScreenVerificationResult VerificationResultEntry;
-            Control BoundControl = null;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            // MessageBox.Show('Column ''' + e.Column.ToString + ''' is changing...');
-            try
+            TSharedPartnerValidation_Partner.ValidatePartnerManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+        }  
+        
+        private void PartnerStatusCodeChangePromotion(System.Object sender, EventArgs e)
+        {
+            string PartnerStatus = cmbPartnerStatus.GetSelectedString();
+
+            // Business Rule: if the Partner's StatusCode changes, give the user the
+            // option to promote the change to all Family Members (if the Partner is
+            // a FAMILY and has Family Members).            
+            if ((FMainDS != null)
+                && (!FIgnorePartnerStatusChange)
+                && FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
             {
-                if (TPartnerVerification.VerifyPartnerData(e, out VerificationResultReturned) == false)
+                if (PartnerStatus != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED))
                 {
-                    if (VerificationResultReturned.ResultCode != PetraErrorCodes.ERR_PARTNERSTATUSMERGEDCHANGEUNDONE)
+                    if (PartnerStatusCodeChangePromotion(PartnerStatus))
                     {
-                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
-
-// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FMainDS.PPartner], e.Column);
-
-                        // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-// TODO                        BoundControl.Focus();
-                        VerificationResultEntry = new TScreenVerificationResult(this,
-                            e.Column,
-                            VerificationResultReturned.ResultText,
-                            VerificationResultReturned.ResultTextCaption,
-                            VerificationResultReturned.ResultCode,
-                            BoundControl,
-                            VerificationResultReturned.ResultSeverity);
-                        FPetraUtilsObject.VerificationResultCollection.Add(VerificationResultEntry);
-
-                        // MessageBox.Show('After setting the error: ' + e.ProposedValue.ToString);
+                        // Set the StatusChange date (this would be done on the server side
+                        // automatically, but we want to display it now for immediate user feedback)
+                        FMainDS.PPartner[0].StatusChange = DateTime.Today;
                     }
                     else
                     {
-                        // undo the change in the DataColumn
-                        e.ProposedValue = e.Row[e.Column.ColumnName];
-
-                        // need to assign this to make the change actually visible...
-                        cmbPartnerStatus.SetSelectedString(e.ProposedValue.ToString());
-
-                        TMessages.MsgVerificationError(VerificationResultReturned, this.GetType());
-
-// TODO                        BoundControl = TDataBinding.GetBoundControlForColumn(BindingContext[FPartnerDefaultView], e.Column);
-
-                        // MessageBox.Show('Bound control: ' + BoundControl.ToString);
-// TODO                        BoundControl.Focus();
-                    }
+                        // User wants to cancel the change of the Partner StatusCode
+                        // Undo the change in the DataColumn
+                        FIgnorePartnerStatusChange = true;
+                        
+                        UndoData(FMainDS.PPartner[0], cmbPartnerStatus);
+                        cmbPartnerStatus.SelectNextControl(cmbPartnerStatus, true, true, true, true);
+                        
+                        FIgnorePartnerStatusChange = false;
+                    }                                
                 }
-                else
-                {
-                    if (FPetraUtilsObject.VerificationResultCollection.Contains(e.Column))
-                    {
-                        FPetraUtilsObject.VerificationResultCollection.Remove(e.Column);
-                    }
-
-                    // Business Rule: if the Partner's StatusCode changes, give the user the
-                    // option to promote the change to all Family Members (if the Partner is
-                    // a FAMILY and has Family Members).
-                    if (e.Column.ColumnName == PPartnerTable.GetStatusCodeDBName())
-                    {
-                        if (PartnerStatusCodeChangePromotion(e))
-                        {
-                            // Set the StatusChange date (this would be done on the server side
-                            // automatically, but we want to display it now for immediate user feedback)
-                            FMainDS.PPartner[0].StatusChange = DateTime.Today;
-                        }
-                        else
-                        {
-                            // User wants to cancel the change of the Partner StatusCode
-                            // Undo the change in the DataColumn
-                            e.ProposedValue = e.Row[e.Column.ColumnName];
-
-                            // Need to assign this to make the change actually visible...
-                            cmbPartnerStatus.SetSelectedString(e.ProposedValue.ToString());
-                        }
-                    }
-                }
-            }
-            catch (Exception Exp)
-            {
-                MessageBox.Show(Exp.ToString());
             }
         }
 
+        /// <summary>
+        /// TODO: Replace this with the Data Validation Framework - once it supports user interaction as needed
+        /// in this case (=asking the user to make a decision).
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnUnitDataColumnChanging(System.Object sender, DataColumnChangeEventArgs e)
         {
             TVerificationResult VerificationResultReturned;
