@@ -326,10 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
-                    String importString;
                     TVerificationResultCollection AMessages;
-
-                    importString = File.ReadAllText(dialog.FileName);
 
                     string[] FdlgSeparatorVal = new string[] {
                         FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormatIndex.ToString()
@@ -468,13 +465,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void NewBudgetType(System.Object sender, EventArgs e)
         {
-            ClearBudgetPeriodTextboxes();
+            //ClearBudgetPeriodTextboxes();
 
             pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
             pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
             pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
             pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
+
+            if (LoadCompleted && !FPetraUtilsObject.HasChanges)
+            {
+                if (rbtAdHoc.Checked)
+                {
+                    DisplayBudgetTypeAdhoc();
+                }
+                else if (rbtSame.Checked)
+                {
+                    DisplayBudgetTypeSame();
+                }
+                else if (rbtSplit.Checked)
+                {
+                    DisplayBudgetTypeSplit();
+                }
+                else if (rbtInflateN.Checked)
+                {
+                    DisplayBudgetTypeInflateN();
+                }
+                else      //rbtInflateBase.Checked
+                {
+                    DisplayBudgetTypeInflateBase();
+                }
+            }
         }
 
         private void ProcessBudgetTypeAdhoc(System.Object sender, EventArgs e)
@@ -814,6 +835,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             TotalAmount = FirstPeriodAmount * InflateAfterPeriod + CurrentPeriodAmount * (12 - InflateAfterPeriod);
                             break;
                         }
+                        else if (i == 12) // and by implication CurrentPeriodAmount == FirstPeriodAmount
+                        {
+                            //This is an odd case that the user should never implement, but still needs to be covered.
+                            //  It is equivalent to using BUDGET TYPE: SAME
+                            InflateAfterPeriod = 0;
+                            InflationRate = 0;
+                            TotalAmount = CurrentPeriodAmount * 12;
+                        }
                     }
                 }
 
@@ -901,7 +930,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod12AmountPlus.NumberValueDecimal = 0;
             //Inflate N controls
             txtFirstPeriodAmount.NumberValueDecimal = 0;
-            txtInflateAfterPeriod.Text = "1";
+            txtInflateAfterPeriod.NumberValueInt = 0;
             txtInflationRate.NumberValueDecimal = 0;
             lblInflateNTotalAmount.Text = "    Total: 0";
             //Inflate Base controls
@@ -949,6 +978,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ShowDetailsManual(ABudgetRow ARow)
         {
+            ClearBudgetPeriodTextboxes();
+
             if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SPLIT)
             {
                 rbtSplit.Checked = true;

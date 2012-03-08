@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 BudgetRow = null;
 
                 // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
-                ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
+                //ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
 
                 DataView view = new DataView(ABdgTable);
                 DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
