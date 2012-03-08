@@ -184,7 +184,9 @@ namespace Ict.Tools.DevelopersAssistant
                             bIsValid =
                                 (_verboseOutput.Substring(p + lookFor.Length, 3).CompareTo("(s)") != 0
                                  && _verboseOutput.Substring(p + lookFor.Length, 1).CompareTo("s") != 0
-                                 && _verboseOutput.Substring(p - 2, 8).CompareTo("s_error_") != 0);
+                                 && _verboseOutput.Substring(p - 2, 8).CompareTo("s_error_") != 0
+                                 && _verboseOutput.Substring(p - 1, 12).CompareTo("\\ErrorLog.cs") != 0
+                                 && _verboseOutput.Substring(p - 1, 14).CompareTo("\\ErrorCodes.cs") != 0);
                         }
                         else if (itemID == 3)
                         {
