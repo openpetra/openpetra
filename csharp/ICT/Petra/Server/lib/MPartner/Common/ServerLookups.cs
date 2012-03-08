@@ -157,7 +157,10 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             Boolean ReturnValue;
             TStdPartnerStatusCode PartnerStatus;
 
-            ReturnValue = APartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
+            ReturnValue = APartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
+                out APartnerShortName,
+                out APartnerClass,
+                out PartnerStatus);
 #if DEBUGMODE
             if (TLogging.DL >= 7)
             {

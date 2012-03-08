@@ -63,10 +63,9 @@ namespace Ict.Common.Testing
         }
 
         static Int16 tstNr;
-        
+
         /// create a name for a test
         private static string FormatTestName(string s)
-
         {
             string ReturnValue;
 
@@ -789,8 +788,8 @@ namespace Ict.Common.Testing
         [ErrCodeAttribute("Value is no longer assignable.",
              ErrorMessageText = "The code '{0}' is no longer active.\r\nDo you still want to use it?",
              ErrorMessageTitle = "Invalid {0} Entered")]
-        public const String ERR_TESTONLY7 = "TEST.99994V";        
-        
+        public const String ERR_TESTONLY7 = "TEST.99994V";
+
         /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
         [ErrCodeAttribute("Value is no longer assignable.",
              ErrorMessageText = "The code '{0}' is no longer active.\r\nDo you still want to use it?",
@@ -805,8 +804,6 @@ namespace Ict.Common.Testing
 
         /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
         public const String ERR_TESTONLY6 = "TEST.99995x";     // Duplicate of ERR_TESTONLY5!!!
-        
-
 
 
         /// <summary>
@@ -821,7 +818,7 @@ namespace Ict.Common.Testing
             string VerificationProblemListing;
 
             #region GetErrorInfo
-            
+
             TLogging.Log("Before checking for EDuplicateErrorCodeException...");
             EDuplicateErrorCodeException TestException1 = Assert.Throws <EDuplicateErrorCodeException>(
                 delegate { ErrorCodes.GetErrorInfo("TEST.99995x", new string[] { }); });
@@ -898,7 +895,7 @@ namespace Ict.Common.Testing
             VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
 
-            
+
             Testname = "AErrorTitlePlaceholderTexts Array with one value";
             TestResult = ErrorCodes.GetErrorInfo("TEST.99994V", String.Empty, new string[] { "My Testcode" }, new string[] { "TestCode" });
             ExpectedResult = new ErrCodeInfo("TEST.99994V", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY7",
@@ -908,14 +905,14 @@ namespace Ict.Common.Testing
             VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
 
-            
+
             Testname = "No AErrorMessageText and AErrorMessagePlaceholderTexts Array with one value";
             TestResult = ErrorCodes.GetErrorInfo("TEST.99994V", new string[] { "blabla" });
             ExpectedResult = ErrorCodes.GetErrorInfo("TEST.99994V", "The code 'blabla' is no longer active.\r\nDo you still want to use it?");
             VerificationProblemListing = EvaluateErrCodeInfoResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "GetErrorInfo: " + Testname);
 
-            
+
             Testname = "ErrorCode without Attributes (ErrCodeCategory.NonCriticalError)";
             TestResult = ErrorCodes.GetErrorInfo("TEST.99996N", new string[] { "test only" });
             ExpectedResult = new ErrCodeInfo("TEST.99996N", "Ict.Common.Testing.TTestCommon", "ERR_TESTONLY4",

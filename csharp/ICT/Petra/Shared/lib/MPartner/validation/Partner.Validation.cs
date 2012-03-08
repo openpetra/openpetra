@@ -54,108 +54,108 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if 
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>void</returns>
-        public static void ValidatePartnerBankDetailsManual(object AContext, PBankRow ARow, 
+        public static void ValidatePartnerBankDetailsManual(object AContext, PBankRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
-        {            
+        {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
-            
+
             // 'BIC' (Bank Identifier Code) must be valid
             ValidationColumn = ARow.Table.Columns[PBankTable.ColumnBicId];
-            
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 if (CommonRoutines.CheckBIC(ARow.Bic) == false)
                 {
                     VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKBICSWIFTCODEINVALID, StrBICSwiftCodeInvalid)), 
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKBICSWIFTCODEINVALID, StrBICSwiftCodeInvalid)),
                         ValidationColumn, ValidationControlsData.ValidationControl);
                 }
                 else
                 {
                     VerificationResult = null;
                 }
-                
+
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
 
             // For information only: 'Branch Code' format matches the format of a BIC
             ValidationColumn = ARow.Table.Columns[PBankTable.ColumnBranchCodeId];
-            
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {   
+            {
                 if ((ARow.BranchCode != null)
-                  && (ARow.BranchCode != String.Empty))
+                    && (ARow.BranchCode != String.Empty))
                 {
                     if (CommonRoutines.CheckBIC(ARow.BranchCode) == true)
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BRANCHCODELIKEBIC, String.Empty,
-                                new String[]{
-                                             ValidationControlsData.ValidationControlLabel, 
-                                             ValidationControlsData.SecondValidationControlLabel, 
-                                             ValidationControlsData.ValidationControlLabel, 
-                                             ValidationControlsData.ValidationControlLabel},
-                                new String[] {ValidationControlsData.ValidationControlLabel})),
-                            ValidationColumn, ValidationControlsData.ValidationControl); 
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BRANCHCODELIKEBIC, String.Empty,
+                                    new String[] {
+                                        ValidationControlsData.ValidationControlLabel,
+                                        ValidationControlsData.SecondValidationControlLabel,
+                                        ValidationControlsData.ValidationControlLabel,
+                                        ValidationControlsData.ValidationControlLabel
+                                    },
+                                    new String[] { ValidationControlsData.ValidationControlLabel })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                     else
                     {
                         VerificationResult = null;
                     }
-                    
+
                     // Handle addition/removal to/from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
-        }        
+        }
 
         /// <summary>
         /// Validates the Partner data of a Partner.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if 
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>void</returns>
-        public static void ValidatePartnerManual(object AContext, PPartnerRow ARow, 
+        public static void ValidatePartnerManual(object AContext, PPartnerRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
-        {            
+        {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult;
-            
+
             // 'PartnerStatus' must not be set to MERGED
             ValidationColumn = ARow.Table.Columns[PPartnerTable.ColumnStatusCodeId];
-            
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 if (ARow.StatusCode == SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED))
                 {
                     VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PARTNERSTATUSMERGEDCHANGEUNDONE)),
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PARTNERSTATUSMERGEDCHANGEUNDONE)),
                         ValidationColumn, ValidationControlsData.ValidationControl);
-                                           
+
                     // Note: The error code 'ERR_PARTNERSTATUSMERGEDCHANGEUNDONE' sets VerificationResult.ControlValueUndoRequested = true!
                 }
                 else
                 {
                     VerificationResult = null;
                 }
-                
+
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }            
-        }        
+            }
+        }
     }
 }

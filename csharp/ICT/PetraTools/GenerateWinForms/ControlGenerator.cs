@@ -463,14 +463,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return ctrl.controlName + ".Date = " + AFieldOrNull + ";";
         }
-        
+
         /// <summary>
         /// how to undo the change of a value of a control
         /// </summary>
         protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
         {
             return ctrl.controlName + ".Date = (DateTime)" + AFieldOrNull + ";";
-        }        
+        }
     }
 
     /// <summary>
@@ -656,7 +656,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "(" + AFieldOrNull + ");";
         }
 
-
         /// <summary>
         /// how to assign a value to the control
         /// </summary>
@@ -674,7 +673,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "((" + AFieldTypeDotNet + ")" + AFieldOrNull + ");";
         }
-        
+
         /// <summary>
         /// how to get the value from the control
         /// </summary>
@@ -816,7 +815,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             return ctrl.controlName + ".Checked = (bool)" + AFieldOrNull + ";";
         }
-        
+
         /// <summary>
         /// how to get the value from the control
         /// </summary>
@@ -1096,7 +1095,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             return ctrl.controlName + ".Value = (decimal)" + AFieldOrNull + ";";
         }
-        
+
         /// <summary>
         /// how to get the value from the control
         /// </summary>
@@ -1971,7 +1970,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return "?????";
             }
         }
-        
+
         /// <summary>
         /// how to get the value from the control
         /// </summary>

@@ -66,7 +66,7 @@ namespace Ict.Common.Verification
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem.</returns>
         public static TVerificationResult IsNotUndefinedDateTime(DateTime? ADate, String ADescription,
-            bool ATreatNullAsInvalid = false, object AResultContext = null, System.Data.DataColumn AResultColumn = null, 
+            bool ATreatNullAsInvalid = false, object AResultContext = null, System.Data.DataColumn AResultColumn = null,
             System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
@@ -75,21 +75,21 @@ namespace Ict.Common.Verification
 
             if (!ADate.HasValue)
             {
-            	if (!ATreatNullAsInvalid) 
-            	{
-            		return null;	
-            	}
+                if (!ATreatNullAsInvalid)
+                {
+                    return null;
+                }
                 else
                 {
-	                ReturnValue = new TVerificationResult(AResultContext,
-	                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
-	                        CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-	                        StrDateMayNotBeEmpty, new string[] {Description}));
-	
-	                if (AResultColumn != null)
-	                {
-	                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
-	                }                	
+                    ReturnValue = new TVerificationResult(AResultContext,
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
+                            CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            StrDateMayNotBeEmpty, new string[] { Description }));
+
+                    if (AResultColumn != null)
+                    {
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    }
                 }
             }
 
@@ -104,7 +104,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
                         CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                        StrDateMayNotBeEmpty, new string[] {Description}));
+                        StrDateMayNotBeEmpty, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {
@@ -196,7 +196,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateMayNotBePastDate, new string[] {Description}));
+                            StrDateMayNotBePastDate, new string[] { Description }));
 
                     if (AResultColumn != null)
                     {
@@ -249,7 +249,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
-                        Environment.NewLine + StrDateMayNotBeFutureDate, new string[] {Description}));
+                        Environment.NewLine + StrDateMayNotBeFutureDate, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {
@@ -308,7 +308,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeLater, new string[] {FirstDateDescription, SecondDateDescription}));
+                            StrDateCannotBeLater, new string[] { FirstDateDescription, SecondDateDescription }));
 
                     if (AResultColumn != null)
                     {
@@ -347,7 +347,6 @@ namespace Ict.Common.Verification
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
             String SecondDateDescription = THelper.NiceValueDescription(ASecondDateDescription);
-            
 
             if ((!ADate1.HasValue) || (!ADate2.HasValue))
             {
@@ -366,7 +365,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeLaterOrEqual, new string[] {FirstDateDescription, SecondDateDescription}));
+                            StrDateCannotBeLaterOrEqual, new string[] { FirstDateDescription, SecondDateDescription }));
 
                     if (AResultColumn != null)
                     {
@@ -410,9 +409,8 @@ namespace Ict.Common.Verification
             object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
-			String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
+            String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
             String SecondDateDescription = THelper.NiceValueDescription(ASecondDateDescription);
-
 
             if ((!ADate1.HasValue) || (!ADate2.HasValue))
             {
@@ -431,7 +429,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeEarlier, new string[] {FirstDateDescription, SecondDateDescription}));
+                            StrDateCannotBeEarlier, new string[] { FirstDateDescription, SecondDateDescription }));
 
                     if (AResultColumn != null)
                     {
@@ -472,7 +470,7 @@ namespace Ict.Common.Verification
             object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
-			String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
+            String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
             String SecondDateDescription = THelper.NiceValueDescription(ASecondDateDescription);
 
             if ((!ADate1.HasValue) || (!ADate2.HasValue))
@@ -492,7 +490,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateCannotBeEarlierOrEqual, new string[] {FirstDateDescription, SecondDateDescription}));
+                            StrDateCannotBeEarlierOrEqual, new string[] { FirstDateDescription, SecondDateDescription }));
 
                     if (AResultColumn != null)
                     {
@@ -528,7 +526,7 @@ namespace Ict.Common.Verification
 
             return new TVerificationResult(AResultContext,
                 ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                    StrMustBeDate, new string[] {Description}));
+                    StrMustBeDate, new string[] { Description }));
         }
 
         #endregion

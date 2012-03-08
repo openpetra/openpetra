@@ -32,8 +32,8 @@ namespace Ict.Petra.Shared
     /// Holds Controls who are involved in Data Validation.
     /// </summary>
     /// <remarks>In situations in which two Controls' values are compared in a
-    /// Data Validation situation the <see cref="SecondValidationControl" /> and 
-    /// <see cref="SecondValidationControlLabel" /> Properties need to be set to 
+    /// Data Validation situation the <see cref="SecondValidationControl" /> and
+    /// <see cref="SecondValidationControlLabel" /> Properties need to be set to
     /// the second of the two Controls and its Label, respectively.</remarks>
     public struct TValidationControlsData
     {
@@ -41,23 +41,23 @@ namespace Ict.Petra.Shared
         private Control FValidationControl;
         private string FSecondValidationControlLabel;
         private Control FSecondValidationControl;
-        
+
         /// <summary>
         /// Label text of the Windows Forms Control on which the validation is run.
-        /// </summary>       
+        /// </summary>
         public string ValidationControlLabel
         {
             get
             {
                 return FValidationControlLabel;
             }
-            
+
             set
             {
                 FValidationControlLabel = value;
             }
         }
-        
+
         /// <summary>
         /// Windows Forms Control on which the validation is run.
         /// </summary>
@@ -67,29 +67,29 @@ namespace Ict.Petra.Shared
             {
                 return FValidationControl;
             }
-            
+
             set
             {
                 FValidationControl = value;
             }
         }
-        
+
         /// <summary>
         /// Label text of the Second Windows Forms Control on which the validation is run.
-        /// </summary>       
+        /// </summary>
         public string SecondValidationControlLabel
         {
             get
             {
                 return FSecondValidationControlLabel;
             }
-            
+
             set
             {
                 FSecondValidationControlLabel = value;
             }
         }
-        
+
         /// <summary>
         /// Second Windows Forms Control on which the validation is run.
         /// </summary>
@@ -99,13 +99,13 @@ namespace Ict.Petra.Shared
             {
                 return FSecondValidationControl;
             }
-            
+
             set
             {
                 FSecondValidationControl = value;
             }
-        }       
-        
+        }
+
         /// <summary>
         /// Constructor for Data Validation situations in which the value of one Control is validated.
         /// </summary>
@@ -118,7 +118,7 @@ namespace Ict.Petra.Shared
             FSecondValidationControl = null;
             FSecondValidationControlLabel = String.Empty;
         }
-        
+
         /// <summary>
         /// Constructor for Data Validation situations in which two Controls' values are compared.
         /// </summary>
@@ -127,7 +127,7 @@ namespace Ict.Petra.Shared
         /// <param name="ASecondValidationControl">Second Windows Forms Control on which the validation is run.</param>
         /// <param name="ASecondValidationControlLabel">Label text of the Second Windows Forms Control on which the validation is run.</param>
         public TValidationControlsData(Control AValidationControl, string AValidationControlLabel,
-                                      Control ASecondValidationControl, string ASecondValidationControlLabel)
+            Control ASecondValidationControl, string ASecondValidationControlLabel)
         {
             FValidationControl = AValidationControl;
             FValidationControlLabel = AValidationControlLabel;
@@ -135,14 +135,13 @@ namespace Ict.Petra.Shared
             FSecondValidationControlLabel = ASecondValidationControlLabel;
         }
     }
-    
+
     /// <summary>
     /// Dictionary for storing Controls whose values are getting validated.
     /// </summary>
-    /// <remarks>The Keys of this Dictionary are of Type <see cref="DataColumn" /> and the Values 
+    /// <remarks>The Keys of this Dictionary are of Type <see cref="DataColumn" /> and the Values
     /// of this Dictionary are of Type <see cref="TValidationControlsData" />.</remarks>
-    public class TValidationControlsDict : Dictionary<DataColumn, TValidationControlsData>
+    public class TValidationControlsDict : Dictionary <DataColumn, TValidationControlsData>
     {
-        
     }
 }

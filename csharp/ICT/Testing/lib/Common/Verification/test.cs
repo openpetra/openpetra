@@ -544,7 +544,7 @@ namespace Ict.Common.Verification.Testing
 
             #endregion
 
-            
+
             #region IsNegative...
 
             #region IsNegativeInteger
@@ -642,19 +642,19 @@ namespace Ict.Common.Verification.Testing
             ExpectedErrorText = "'{0}' must be a negative decimal number (= a number that has a fraction).";
 
             Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal)-5.1, Testname);
+            TestResult = TNumericalChecks.IsNegativeDecimal((decimal) - 5.1, Testname);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
 
             Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal)-5.1, Testname, TestContext, TestColumn, TestControl);
+            TestResult = TNumericalChecks.IsNegativeDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
 
             Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal)-5.1, Testname, TestContext, TestColumn, TestControl);
+            TestResult = TNumericalChecks.IsNegativeDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
@@ -667,21 +667,21 @@ namespace Ict.Common.Verification.Testing
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
 
             Testname = "Test with -0.1";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal) 0.1, Testname);
+            TestResult = TNumericalChecks.IsNegativeDecimal((decimal)0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
 
             Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal) 0.1, Testname, TestContext, TestColumn, TestControl);
+            TestResult = TNumericalChecks.IsNegativeDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeDecimal: " + Testname);
 
             Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeDecimal((decimal) 0.1, Testname, TestContext, TestColumn, TestControl);
+            TestResult = TNumericalChecks.IsNegativeDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
@@ -793,19 +793,19 @@ namespace Ict.Common.Verification.Testing
             ExpectedErrorText = "'{0}' must be a negative decimal number (= a number that has a fraction), or 0.";
 
             Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)-5.1, Testname);
+            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal) - 5.1, Testname);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
 
             Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)-5.1, Testname, TestContext, TestColumn, TestControl);
+            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
 
             Testname = "Test with 5.1";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)-5.1, Testname, TestContext, TestColumn, TestControl);
+            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = null;
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
@@ -817,21 +817,21 @@ namespace Ict.Common.Verification.Testing
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
 
             Testname = "Test with -0.1";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal) 0.1, Testname);
+            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)0.1, Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
 
             Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal) 0.1, Testname, TestContext, TestColumn, TestControl);
+            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsNegativeOrZeroDecimal: " + Testname);
 
             Testname = "Test with -0.1 (TScreenVerificationResult)";
-            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal) 0.1, Testname, TestContext, TestColumn, TestControl);
+            TestResult = TNumericalChecks.IsNegativeOrZeroDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
@@ -846,8 +846,7 @@ namespace Ict.Common.Verification.Testing
             #endregion
 
             #endregion
-            
-            
+
 
             #region FirstLesserThanSecond...
 
@@ -1291,7 +1290,7 @@ namespace Ict.Common.Verification.Testing
 
             #endregion
         }
-       
+
         /// <summary>
         /// Test for string verifications.
         /// </summary>
@@ -1585,7 +1584,7 @@ namespace Ict.Common.Verification.Testing
             ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid date entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00002V", TestControl, TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
-            Assert.IsEmpty(VerificationProblemListing, "IsNotUndefinedDateTime: " + Testname);            
+            Assert.IsEmpty(VerificationProblemListing, "IsNotUndefinedDateTime: " + Testname);
             #endregion
 
 
@@ -2083,7 +2082,8 @@ namespace Ict.Common.Verification.Testing
             Assert.IsTrue(String.Compare(
                     VerificationProblemListing,
                     "ResultContext: ResultContext2, ResultText: ErrorMessageText, ResultTextCaption: ErrorMessageTitle, ResultCode TEST.00001V, ResultSeverity: Resv_Critical."
-                    + Environment.NewLine +
+                    +
+                    Environment.NewLine +
                     "ResultContext: ResultContext, ResultText: ErrorMessageText, ResultTextCaption: ErrorMessageTitle, ResultCode TEST.00001V, ResultSeverity: Resv_Critical.")
                 == 0,
                 "EvaluateVerificationResults: " + Testname);

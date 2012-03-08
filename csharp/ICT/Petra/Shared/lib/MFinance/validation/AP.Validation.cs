@@ -42,20 +42,20 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if 
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
-        public static void ValidateApDocumentDetailManual(object AContext, AApDocumentDetailRow ARow, 
+        public static void ValidateApDocumentDetailManual(object AContext, AApDocumentDetailRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
-            
+
             // 'Detail Amount' must be positive or 0
-            ValidationColumn = ARow.Table.Columns[AApDocumentDetailTable.ColumnAmountId];           
-            
+            ValidationColumn = ARow.Table.Columns[AApDocumentDetailTable.ColumnAmountId];
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TNumericalChecks.IsPositiveOrZeroDecimal(ARow.Amount,

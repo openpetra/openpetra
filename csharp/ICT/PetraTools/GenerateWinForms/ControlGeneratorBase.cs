@@ -216,7 +216,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             return AssignValue(ctrl, AFieldOrNull + ".ToString()", AFieldTypeDotNet);
         }
-        
+
         /// <summary>
         /// for coding the transfer of the value from control to dataset
         /// </summary>
@@ -338,7 +338,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
-                                         "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
+                "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
 
             if (FLocation && !ctrl.HasAttribute("Dock"))
             {
@@ -357,53 +357,53 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (ctrl.GetAttribute("Align").ToLower() == "top-right"))
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Anchor",
-                                              "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)))");
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)))");
                 }
                 else if (ctrl.GetAttribute("Align").ToLower() == "middle-right")
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Anchor",
-                                              "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Right))");
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Right))");
                 }
                 else if (ctrl.GetAttribute("Align").ToLower() == "bottom-right")
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Anchor",
-                                              "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)))");
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)))");
                 }
                 else if ((ctrl.GetAttribute("Align").ToLower() == "center")
                          || (ctrl.GetAttribute("Align").ToLower() == "top-center"))
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Anchor",
-                                              "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top))");
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top))");
                 }
                 else if (ctrl.GetAttribute("Align").ToLower() == "middle-center")
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Anchor",
-                                              "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.None))");
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.None))");
                 }
                 else if (ctrl.GetAttribute("Align").ToLower() == "bottom-center")
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Anchor",
-                                              "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom))");
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Bottom))");
                 }
                 else if ((ctrl.GetAttribute("Align").ToLower() == "bottom")
                          || (ctrl.GetAttribute("Align").ToLower() == "bottom-left"))
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Anchor",
-                                              "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Bottom)))");
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Bottom)))");
                 }
                 else if ((ctrl.GetAttribute("Align").ToLower() == "middle")
                          || (ctrl.GetAttribute("Align").ToLower() == "middle-left"))
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Anchor",
-                                              "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Left))");
+                        "Anchor",
+                        "((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Left))");
                 }
                 else if ((ctrl.GetAttribute("Align").ToLower() == "left")
                          || (ctrl.GetAttribute("Align").ToLower() == "top")
@@ -418,8 +418,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 else
                 {
                     throw new Exception("Invalid value for Attribute 'Align' of Control '" + ctrl.controlName + "': '" + ctrl.GetAttribute(
-                        "Align") +
-                                        "'. Supported values are: Simple: left, right, center; top, middle, bottom; Combined: top-left, middle-left, bottom-left, top-center, middle-center, bottom-center, top-right, middle-right, bottom-right.");
+                            "Align") +
+                        "'. Supported values are: Simple: left, right, center; top, middle, bottom; Combined: top-left, middle-left, bottom-left, top-center, middle-center, bottom-center, top-right, middle-right, bottom-right.");
                 }
             }
 
@@ -457,10 +457,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         else
                         {
                             throw new Exception("Invalid value '" + ctrl.GetAttribute(
-                                "Align") + "' for Attribute 'Align' of Control '" + ctrl.controlName +
-                                                "' whose Attribute 'Stretch' is set to '" +
-                                                ctrl.GetAttribute("Stretch") +
-                                                "'. Supported values are: top, middle, bottom.");
+                                    "Align") + "' for Attribute 'Align' of Control '" + ctrl.controlName +
+                                "' whose Attribute 'Stretch' is set to '" +
+                                ctrl.GetAttribute("Stretch") +
+                                "'. Supported values are: top, middle, bottom.");
                         }
                     }
                 }
@@ -496,10 +496,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         else
                         {
                             throw new Exception("Invalid value '" + ctrl.GetAttribute(
-                                "Align") + "' for Attribute 'Align' of Control '" + ctrl.controlName +
-                                                "' whose Attribute 'Stretch' is set to  '" +
-                                                ctrl.GetAttribute("Stretch") +
-                                                "'. Supported values are: left, center, right.");
+                                    "Align") + "' for Attribute 'Align' of Control '" + ctrl.controlName +
+                                "' whose Attribute 'Stretch' is set to  '" +
+                                ctrl.GetAttribute("Stretch") +
+                                "'. Supported values are: left, center, right.");
                         }
                     }
                 }
@@ -528,7 +528,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 else
                 {
                     throw new Exception("Invalid value for Attribute 'Stretch' of Control '" + ctrl.controlName + "': '" +
-                                        ctrl.GetAttribute("Stretch") + "'. Supported values are: horizontally, vertically, fully, none.");
+                        ctrl.GetAttribute("Stretch") + "'. Supported values are: horizontally, vertically, fully, none.");
                 }
             }
 
@@ -615,7 +615,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
                 {
                     writer.SetControlProperty(ctrl, "Size", "new System.Drawing.Size(" +
-                                              ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
+                        ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
                 }
             }
             else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() == "fill"))
@@ -642,7 +642,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else
             {
                 writer.SetControlProperty(ctrl, "Size",
-                                          "new System.Drawing.Size(" + FDefaultWidth.ToString() + ", " + FDefaultHeight.ToString() + ")");
+                    "new System.Drawing.Size(" + FDefaultWidth.ToString() + ", " + FDefaultHeight.ToString() + ")");
             }
 
             if (ctrl.HasAttribute("SuppressChangeDetection") && (ctrl.GetAttribute("SuppressChangeDetection").ToLower() == "true"))
@@ -676,7 +676,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (FCodeStorage.ManualFileExistsAndContains(" " + ActionHandler.actionName.Substring(3) + "(Form AParentForm)"))
                 {
                     writer.SetEventHandlerFunction(ActionHandler.actionName.Substring(3), "", ActionHandler.actionName.Substring(
-                        3) + "(this);");
+                            3) + "(this);");
                 }
             }
             else if (ctrl.HasAttribute("ActionClick"))
@@ -698,7 +698,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 string ActionOpenScreen = ctrl.GetAttribute("ActionOpenScreen");
                 ActionHandler += "    " + ActionOpenScreen + " frm = new " + ActionOpenScreen +
-                    "(this);" + Environment.NewLine;
+                                 "(this);" + Environment.NewLine;
 
                 if (ActionOpenScreen.Contains("."))
                 {
@@ -736,33 +736,33 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.HasAttribute("OnChange"))
             {
                 AssignEventHandlerToControl(writer, ctrl,
-                                            GetEventNameForChangeEvent(),
-                                            GetEventHandlerTypeForChangeEvent(),
-                                            ctrl.GetAttribute("OnChange"));
+                    GetEventNameForChangeEvent(),
+                    GetEventHandlerTypeForChangeEvent(),
+                    ctrl.GetAttribute("OnChange"));
             }
 
             if (ctrl.HasAttribute("OnEnter"))
             {
                 AssignEventHandlerToControl(writer, ctrl,
-                                            "Enter",
-                                            "System.EventHandler",
-                                            ctrl.GetAttribute("OnEnter"));
+                    "Enter",
+                    "System.EventHandler",
+                    ctrl.GetAttribute("OnEnter"));
             }
 
             if (ctrl.HasAttribute("OnLeave"))
             {
                 AssignEventHandlerToControl(writer, ctrl,
-                                            "Leave",
-                                            "System.EventHandler",
-                                            ctrl.GetAttribute("OnLeave"));
+                    "Leave",
+                    "System.EventHandler",
+                    ctrl.GetAttribute("OnLeave"));
             }
 
             if (ctrl.HasAttribute("Tooltip"))
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
-                                             ", Catalog.GetString(\"" +
-                                             ctrl.GetAttribute("Tooltip") +
-                                             "\"));" + Environment.NewLine);
+                    ", Catalog.GetString(\"" +
+                    ctrl.GetAttribute("Tooltip") +
+                    "\"));" + Environment.NewLine);
             }
 
             if (ctrl.HasAttribute("PartnerShortNameLookup"))
@@ -786,7 +786,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     bool IsDetailNotMaster;
                     TTableField field = TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
-                        ctrl.controlTypePrefix.Length), out IsDetailNotMaster, false);
+                            ctrl.controlTypePrefix.Length), out IsDetailNotMaster, false);
 
                     if (field != null)
                     {
@@ -799,20 +799,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
-                                             ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
-                
+                    ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
+
                 writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
                 writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
             }
             else if (ctrl.HasAttribute("DynamicControlType"))
             {
                 writer.Template.AddToCodelet("SAVEDATA", "if(FUco" + ctrl.controlName.Substring(
-                    3) + " != null)" + Environment.NewLine + "{" + Environment.NewLine +
-                                             "    FUco" + ctrl.controlName.Substring(3) + ".GetDataFromControls();" + Environment.NewLine + "}" + Environment.NewLine);
+                        3) + " != null)" + Environment.NewLine + "{" + Environment.NewLine +
+                    "    FUco" + ctrl.controlName.Substring(3) + ".GetDataFromControls();" + Environment.NewLine + "}" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "if(FUco" + ctrl.controlName.Substring(
-                    3) + " != null)" + Environment.NewLine + "{" + Environment.NewLine +
-                                             "    FUco" + ctrl.controlName.Substring(
-                                                 3) + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine + "}" + Environment.NewLine);
+                        3) + " != null)" + Environment.NewLine + "{" + Environment.NewLine +
+                    "    FUco" + ctrl.controlName.Substring(
+                        3) + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine + "}" + Environment.NewLine);
             }
 
             // the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
@@ -822,17 +822,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (FHasReadOnlyProperty)
                 {
                     writer.SetControlProperty(ctrl,
-                                              "ReadOnly",
-                                              "true");
+                        "ReadOnly",
+                        "true");
                     writer.SetControlProperty(ctrl,
-                                              "TabStop",
-                                              "false");
+                        "TabStop",
+                        "false");
                 }
                 else
                 {
                     writer.SetControlProperty(ctrl,
-                                              "Enabled",
-                                              "false");
+                        "Enabled",
+                        "false");
                 }
             }
 
@@ -841,7 +841,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 AssignEventHandlerToControl(writer, ctrl, "Validated", "ControlValidatedHandler");
             }
-            
+
             return writer.Template;
         }
 
@@ -913,7 +913,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             showData += "string partnerShortName;" + Environment.NewLine;
             showData += "TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(" + Environment.NewLine;
             showData += "    " + RowName + "." + TTable.NiceFieldName(field.strName) + "," +
-                Environment.NewLine;
+                        Environment.NewLine;
             showData += "    out partnerShortName," + Environment.NewLine;
             showData += "    out partnerClass);" + Environment.NewLine;
             showData += ctrl.controlName + ".Text = partnerShortName;" + Environment.NewLine;
@@ -938,16 +938,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             string targetCodelet = "UNDODATA";
-            
+
             ProcessTemplate snippetShowData = GenerateUndoDataSnippetCode(ref tablename, ref fieldname, ref TestForNullTable, writer, ctrl, AField);
-            
-            writer.Template.InsertSnippet(targetCodelet, snippetShowData);            
+
+            writer.Template.InsertSnippet(targetCodelet, snippetShowData);
         }
-        
+
         private void LinkControlDataField(TFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
         {
             ProcessTemplate snippetValidationControlsDictAdd;
-            
+
             if (AField == null)
             {
                 return;
@@ -972,16 +972,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             ProcessTemplate snippetShowData = GenerateShowDataSnippetCode(ref fieldname, ref RowName, ref TestForNullTable, writer, ctrl, AField);
-            
+
             writer.Template.InsertSnippet(targetCodelet, snippetShowData);
 
             if (AField.bPartOfPrimKey)
             {
                 // check if the current row is new; then allow changing the primary key; otherwise make the control readonly
                 writer.Template.AddToCodelet(targetCodelet, ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = " +
-                                             "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine);
+                    "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
-                                             ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = AReadOnly;" + Environment.NewLine);
+                    ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = AReadOnly;" + Environment.NewLine);
             }
 
             if (ctrl.GetAttribute("ReadOnly").ToLower() != "true")
@@ -1022,37 +1022,38 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (helpText.Length > 0)
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
-                                             ", Catalog.GetString(\"" +
-                                             helpText.Replace("\"", "\\\"") +  // properly escape double quotation marks
-                                             "\"));" + Environment.NewLine);
+                    ", Catalog.GetString(\"" +
+                    helpText.Replace("\"", "\\\"") +                           // properly escape double quotation marks
+                    "\"));" + Environment.NewLine);
             }
-            
+
             // Data Validation
             if ((ctrl.HasAttribute("Validation"))
                 && (ctrl.GetAttribute("Validation").ToLower() != "false"))
             {
                 writer.FTemplate.SetCodelet("DATAVALIDATION", "TRUE");
-                
+
                 string targetCodeletValidation = "ADDCONTROLTOVALIDATIONCONTROLSDICT";
-                
-                if(!ctrl.GetAttribute("Validation").ToLower().StartsWith("pair("))
+
+                if (!ctrl.GetAttribute("Validation").ToLower().StartsWith("pair("))
                 {
                     snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADD");
                 }
                 else
                 {
                     snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADDMULTI");
-                    
+
                     string PairControlName = ctrl.GetAttribute("Validation").Substring(5, ctrl.GetAttribute("Validation").Length - 6);
                     TControlDef SecondValidationControl = writer.CodeStorage.GetControl(PairControlName);
-                    
+
                     if (SecondValidationControl != null)
                     {
                         snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL2", SecondValidationControl.controlName);
-                        
+
                         if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(SecondValidationControl.Label)))
                         {
-                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2", "Catalog.GetString(" + "\"" + SecondValidationControl.Label + "\")");
+                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2",
+                                "Catalog.GetString(" + "\"" + SecondValidationControl.Label + "\")");
                         }
                         else
                         {
@@ -1061,11 +1062,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                     else
                     {
-                        throw new ApplicationException("Pair Control for Validation '" + PairControlName + "' does not exist. Please specify a valid control!");
+                        throw new ApplicationException(
+                            "Pair Control for Validation '" + PairControlName + "' does not exist. Please specify a valid control!");
                     }
                 }
-                
-                snippetValidationControlsDictAdd.SetCodelet("COLUMNID", "FMainDS." + tablename + ".Columns[" + tablename + "Table.Column" + fieldname + "Id" + "]");
+
+                snippetValidationControlsDictAdd.SetCodelet("COLUMNID",
+                    "FMainDS." + tablename + ".Columns[" + tablename + "Table.Column" + fieldname + "Id" + "]");
                 snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL", ctrl.controlName);
 
                 if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(ctrl.Label)))
@@ -1076,7 +1079,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "\"" + ctrl.Label + "\"");
                 }
-                
+
                 writer.Template.InsertSnippet(targetCodeletValidation, snippetValidationControlsDictAdd);
             }
         }
@@ -1091,16 +1094,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="ctrl">TControlDef instance.</param>
         /// <param name="AField">TTableField instance.</param>
         /// <returns>A <see cref="ProcessTemplate"></see>.</returns>
-        ProcessTemplate GenerateShowDataSnippetCode(ref string fieldname, ref string RowName, ref string TestForNullTable, TFormWriter writer, TControlDef ctrl, TTableField AField)
+        ProcessTemplate GenerateShowDataSnippetCode(ref string fieldname,
+            ref string RowName,
+            ref string TestForNullTable,
+            TFormWriter writer,
+            TControlDef ctrl,
+            TTableField AField)
         {
             ProcessTemplate snippetShowData = writer.Template.GetSnippet("SHOWDATAFORCOLUMN");
-            if (AField.GetDotNetType().ToLower().Contains("string")) {
+
+            if (AField.GetDotNetType().ToLower().Contains("string"))
+            {
                 snippetShowData.SetCodelet("SETVALUEORNULL", "{#SETCONTROLVALUE}");
                 snippetShowData.SetCodelet("SETROWVALUEORNULL", "{#SETROWVALUE}");
-            } else {
+            }
+            else
+            {
                 snippetShowData.InsertSnippet("SETVALUEORNULL", writer.Template.GetSnippet("SETVALUEORNULL"));
                 snippetShowData.InsertSnippet("SETROWVALUEORNULL", writer.Template.GetSnippet("SETROWVALUEORNULL"));
             }
+
             snippetShowData.SetCodelet("CANBENULL", !AField.bNotNull ? "yes" : "");
             snippetShowData.SetCodelet("DETERMINECONTROLISNULL", this.GetControlValue(ctrl, null));
             snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
@@ -1123,20 +1136,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="ctrl">TControlDef instance.</param>
         /// <param name="AField">TTableField instance.</param>
         /// <returns>A <see cref="ProcessTemplate"></see>.</returns>
-        ProcessTemplate GenerateUndoDataSnippetCode(ref string tablename, ref string fieldname, ref string TestForNullTable, TFormWriter writer, TControlDef ctrl, TTableField AField)
+        ProcessTemplate GenerateUndoDataSnippetCode(ref string tablename,
+            ref string fieldname,
+            ref string TestForNullTable,
+            TFormWriter writer,
+            TControlDef ctrl,
+            TTableField AField)
         {
             ProcessTemplate snippetShowData = writer.Template.GetSnippet("UNDODATAFORCOLUMN");
 
             snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
 
-            snippetShowData.SetCodelet("UNDOCONTROLVALUE", this.UndoValue(ctrl, "ARow[FMainDS." + tablename + ".Columns[(short)FMainDS." + tablename + ".GetType().GetField(\"Column" + fieldname + "Id\", BindingFlags.Public | BindingFlags.Static).GetValue(FMainDS." + tablename + ".GetType())], DataRowVersion.Original]", AField.GetDotNetType()));
+            snippetShowData.SetCodelet("UNDOCONTROLVALUE",
+                this.UndoValue(ctrl, "ARow[FMainDS." + tablename + ".Columns[(short)FMainDS." + tablename + ".GetType().GetField(\"Column" +
+                    fieldname +
+                    "Id\", BindingFlags.Public | BindingFlags.Static).GetValue(FMainDS." + tablename + ".GetType())], DataRowVersion.Original]",
+                    AField.GetDotNetType()));
             snippetShowData.InsertSnippet("UNDOROWVALUE", writer.Template.GetSnippet("UNDOROWVALUE"));
-            
-            snippetShowData.SetCodelet("CONTROLNAME", ctrl.controlName);    
+
+            snippetShowData.SetCodelet("CONTROLNAME", ctrl.controlName);
 
             return snippetShowData;
         }
-        
+
         /// <summary>
         /// Sets the properties of a control which are defined under "Actions:" in the .yaml file
         /// </summary>
@@ -1152,7 +1174,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                  * The images must be in the directory specified by the ResourceDir command line parameter
                  */
                 writer.SetControlProperty(ctrl, "Image",
-                                          "((System.Drawing.Bitmap)resources" + ctrl.controlType + ".GetObject(\"" + ctrl.controlName + ".Glyph\"))");
+                    "((System.Drawing.Bitmap)resources" + ctrl.controlType + ".GetObject(\"" + ctrl.controlName + ".Glyph\"))");
                 writer.AddImageToResource(ctrl.controlName, AActionHandler.actionImage, "Bitmap");
             }
 
@@ -1179,26 +1201,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (TYml2Xml.HasAttribute(curNode, "OnChangeDataType"))
             {
                 writer.Template.AddToCodelet("CONTROLINITIALISATION",
-                                             "this." + controlName + ".Leave += new EventHandler(this." + StringHelper.UpperCamelCase(controlName,
-                                                                                                                                      ",",
-                                                                                                                                      false,
-                                                                                                                                      false) + "_SelectionChangeCommitted);" + Environment.NewLine +
-                                             "this." + controlName + ".SelectionChangeCommitted += new EventHandler(this." +
-                                             StringHelper.UpperCamelCase(controlName, ",", false, false) + "_SelectionChangeCommitted);" + Environment.NewLine);
+                    "this." + controlName + ".Leave += new EventHandler(this." + StringHelper.UpperCamelCase(controlName,
+                        ",",
+                        false,
+                        false) + "_SelectionChangeCommitted);" + Environment.NewLine +
+                    "this." + controlName + ".SelectionChangeCommitted += new EventHandler(this." +
+                    StringHelper.UpperCamelCase(controlName, ",", false, false) + "_SelectionChangeCommitted);" + Environment.NewLine);
                 writer.CodeStorage.FEventHandlersImplementation +=
                     "private void " +
                     StringHelper.UpperCamelCase(controlName, ",", false,
-                                                false) + "_SelectionChangeCommitted(System.Object sender, System.EventArgs e)" + Environment.NewLine +
+                        false) + "_SelectionChangeCommitted(System.Object sender, System.EventArgs e)" + Environment.NewLine +
                     "{" + Environment.NewLine +
                     "  " +
                     StringHelper.UpperCamelCase(controlName, ",", false,
-                                                false) + "_Initialise(" + controlName + ".GetSelected" + TYml2Xml.GetAttribute(
-                    curNode,
-                    "OnChangeDataType") + "());" + Environment.NewLine +
+                        false) + "_Initialise(" + controlName + ".GetSelected" + TYml2Xml.GetAttribute(
+                        curNode,
+                        "OnChangeDataType") + "());" + Environment.NewLine +
                     "}" + Environment.NewLine + Environment.NewLine;
                 writer.CodeStorage.FEventHandlersImplementation +=
                     "private void " + StringHelper.UpperCamelCase(controlName, ",", false, false) + "_Initialise(" + TYml2Xml.GetAttribute(curNode,
-                                                                                                                                           "OnChangeDataType") + " AParam)" + Environment.NewLine +
+                        "OnChangeDataType") + " AParam)" + Environment.NewLine +
                     "{" + Environment.NewLine +
                     "  Int32 Index;" + Environment.NewLine +
                     "  Index = this." + controlName + ".Find" +
@@ -1242,7 +1264,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             // don't call base, because it should not have size, location, or name
             writer.Template.AddToCodelet("CONTROLINITIALISATION",
-                                         "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
+                "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
 
             return writer.FTemplate;
         }
@@ -1333,8 +1355,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 foreach (TControlDef child in FChildren)
                 {
                     writer.CallControlFunction(container.controlName,
-                                               "Controls.Add(this." +
-                                               child.controlName + ")");
+                        "Controls.Add(this." +
+                        child.controlName + ")");
                 }
             }
 
@@ -1480,9 +1502,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (addChildren.Length > 0)
             {
                 writer.CallControlFunction(controlName,
-                                           "Items.AddRange(new System.Windows.Forms.ToolStripItem[] {" + Environment.NewLine +
-                                           "               " + addChildren +
-                                           "})");
+                    "Items.AddRange(new System.Windows.Forms.ToolStripItem[] {" + Environment.NewLine +
+                    "               " + addChildren +
+                    "})");
             }
 
             // todo: location?

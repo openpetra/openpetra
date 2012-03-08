@@ -42,97 +42,96 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if 
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateGiftBatchManual(object AContext, AGiftBatchRow ARow, 
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
-        {            
-            DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
-            object ValidationContext;            
-            int VerifResultCollAddedCount = 0;
-            
-            // 'Batch Description' must not be empty
-            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBatchDescriptionId];
-			ValidationContext = ARow.BatchNumber;
-            
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.BatchDescription,
-                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                
-                // Handle addition/removal to/from TVerificationResultCollection
-                if(AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-                {
-                    VerifResultCollAddedCount++;
-                }
-            }
-			
-            
-			// 'Exchange Rate' must be greater than 0
-            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId];            
-			ValidationContext = ARow.BatchNumber;
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {			
-                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
-                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                
-                // Handle addition/removal to/from TVerificationResultCollection
-                if(AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-                {
-                    VerifResultCollAddedCount++;
-                }                
-            }
-            
-            return VerifResultCollAddedCount == 0;
-        }
-        
-        /// <summary>
-        /// Validates the Gift Detail data.
-        /// </summary>
-        /// <param name="AContext">Context that describes where the data validation failed.</param>
-        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if 
-        /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
-        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateGiftDetailManual(object AContext, AGiftDetailRow ARow, 
+        public static bool ValidateGiftBatchManual(object AContext, AGiftBatchRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
-            object ValidationContext;           
-            int VerifResultCollAddedCount = 0;           
+            object ValidationContext;
+            int VerifResultCollAddedCount = 0;
 
-            // 'Gift Comment One' must not be empty
-            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnGiftCommentOneId];
-			ValidationContext = ARow.BatchNumber.ToString() + ";" + ARow.GiftTransactionNumber.ToString();
-            
+            // 'Batch Description' must not be empty
+            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBatchDescriptionId];
+            ValidationContext = ARow.BatchNumber;
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {			
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.GiftCommentOne,
-                    String.Format("{0} of Batch Number {1}, Gift Transaction Number {2}, Gift Detail {3}",
-                    ValidationControlsData.ValidationControlLabel,
-                    ARow.BatchNumber, ARow.GiftTransactionNumber, ARow.DetailNumber),
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.BatchDescription,
+                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                
+
                 // Handle addition/removal to/from TVerificationResultCollection
-                if(AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
                 }
             }
-            
+
+            // 'Exchange Rate' must be greater than 0
+            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId];
+            ValidationContext = ARow.BatchNumber;
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
+                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
             return VerifResultCollAddedCount == 0;
-        }        
-    }    
+        }
+
+        /// <summary>
+        /// Validates the Gift Detail data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        public static bool ValidateGiftDetailManual(object AContext, AGiftDetailRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+            object ValidationContext;
+            int VerifResultCollAddedCount = 0;
+
+            // 'Gift Comment One' must not be empty
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnGiftCommentOneId];
+            ValidationContext = ARow.BatchNumber.ToString() + ";" + ARow.GiftTransactionNumber.ToString();
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.GiftCommentOne,
+                    String.Format("{0} of Batch Number {1}, Gift Transaction Number {2}, Gift Detail {3}",
+                        ValidationControlsData.ValidationControlLabel,
+                        ARow.BatchNumber, ARow.GiftTransactionNumber, ARow.DetailNumber),
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            return VerifResultCollAddedCount == 0;
+        }
+    }
 }

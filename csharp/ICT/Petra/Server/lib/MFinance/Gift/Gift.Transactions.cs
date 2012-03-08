@@ -805,16 +805,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             bool AllValidationsOK = true;
-            
+
             AVerificationResult = new TVerificationResultCollection();
-            
+
             if (AInspectDS.AGiftBatch != null)
             {
                 ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
                 ValidateGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
 
                 if (AVerificationResult.Count != 0)
-                {                                        
+                {
                     AllValidationsOK = false;
                 }
             }
@@ -825,10 +825,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
 
                 if (AVerificationResult.Count != 0)
-                {                                        
+                {
                     AllValidationsOK = false;
                 }
-            }                
+            }
 
             if (AVerificationResult.Count > 0)
             {
@@ -837,19 +837,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
 
-            if (AllValidationsOK) 
+            if (AllValidationsOK)
             {
                 SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-                
+
                 if (SubmissionResult == TSubmitChangesResult.scrOK)
                 {
                     // TODO: check that gifts are in consecutive numbers?
                     // TODO: check that gift details are in consecutive numbers, no gift without gift details?
                     // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
                     // TODO: calculate hash of saved batch or batch of saved gift
-                }                
+                }
             }
-            
+
             return SubmissionResult;
         }
 
@@ -1579,7 +1579,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-#region Data Validation
+        #region Data Validation
 
         static partial void ValidateGiftBatch(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
@@ -1589,8 +1589,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         static partial void ValidateGiftDetailManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        
-#endregion Data Validation    
-        
+
+        #endregion Data Validation
     }
 }

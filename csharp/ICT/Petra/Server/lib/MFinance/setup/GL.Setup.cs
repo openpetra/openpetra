@@ -155,6 +155,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
             AVerificationResult = new TVerificationResultCollection();
 
             if (AInspectDS == null)
@@ -262,12 +263,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     }
                 }
             }
-                
-            if (ReturnValue != TSubmitChangesResult.scrError) 
+
+            if (ReturnValue != TSubmitChangesResult.scrError)
             {
-                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);    
+                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
             }
-                        
 
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AccountList.ToString());
@@ -282,18 +282,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // Serialisation (needed for .NET Remoting).
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
-            
+
             return ReturnValue;
         }
 
-#region Data Validation
+        #region Data Validation
 
         static partial void ValidateAAnalysisType(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         static partial void ValidateAAnalysisTypeManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
-#endregion Data Validation        
+        #endregion Data Validation
 
         /// <summary>
         /// helper function for ExportAccountHierarchy

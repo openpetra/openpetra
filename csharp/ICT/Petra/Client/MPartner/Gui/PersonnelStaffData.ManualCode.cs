@@ -171,65 +171,66 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ValidateDataDetailsManual(PmStaffDataRow ARow)
         {
             DataColumn ValidationColumn;
-        	TVerificationResult VerificationResult;
-        	
-        	// 'Receiving Field' must be a Partner of Class 'UNIT' and must not be 0
+            TVerificationResult VerificationResult;
+
+            // 'Receiving Field' must be a Partner of Class 'UNIT' and must not be 0
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnReceivingFieldId];
             VerificationResult = TAppCoreVerification.IsValidUNITPartner(
-            	ARow.ReceivingField, false, THelper.NiceValueDescription(lblDetailReceivingField.Text) + " must be set correctly.", this, ValidationColumn, txtDetailReceivingField);
-            
-			// Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to 
-			// FPetraUtilsObject.VerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different 
-			// ResultText!
-			FPetraUtilsObject.VerificationResultCollection.Remove(ValidationColumn);
+                ARow.ReceivingField, false, THelper.NiceValueDescription(
+                    lblDetailReceivingField.Text) + " must be set correctly.", this, ValidationColumn, txtDetailReceivingField);
+
+            // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+            // FPetraUtilsObject.VerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+            // ResultText!
+            FPetraUtilsObject.VerificationResultCollection.Remove(ValidationColumn);
             FPetraUtilsObject.VerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
-            
+
             // 'Home Office' must be a Partner of Class 'UNIT'
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnHomeOfficeId];
-            VerificationResult = TAppCoreVerification.IsValidUNITPartner(ARow.HomeOffice, true, 
-        	     THelper.NiceValueDescription(lblDetailHomeOffice.Text) + " must be set correctly.", 
-        	     this, ValidationColumn, txtDetailHomeOffice);            
-            
-			// Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to 
-			// FPetraUtilsObject.VerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different 
-			// ResultText!
-			FPetraUtilsObject.VerificationResultCollection.Remove(ValidationColumn);
+            VerificationResult = TAppCoreVerification.IsValidUNITPartner(ARow.HomeOffice, true,
+                THelper.NiceValueDescription(lblDetailHomeOffice.Text) + " must be set correctly.",
+                this, ValidationColumn, txtDetailHomeOffice);
+
+            // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+            // FPetraUtilsObject.VerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+            // ResultText!
+            FPetraUtilsObject.VerificationResultCollection.Remove(ValidationColumn);
             FPetraUtilsObject.VerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
 
             // 'Recruiting Office' must be a Partner of Class 'UNIT'
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnOfficeRecruitedById];
-            VerificationResult = TAppCoreVerification.IsValidUNITPartner(ARow.OfficeRecruitedBy, true, 
-        	     THelper.NiceValueDescription(lblDetailOfficeRecruitedBy.Text) + " must be set correctly.", 
-        	     this, ValidationColumn, txtDetailOfficeRecruitedBy);            
-                        
-			// Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to 
-			// FPetraUtilsObject.VerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different 
-			// ResultText!
-			FPetraUtilsObject.VerificationResultCollection.Remove(ValidationColumn);
+            VerificationResult = TAppCoreVerification.IsValidUNITPartner(ARow.OfficeRecruitedBy, true,
+                THelper.NiceValueDescription(lblDetailOfficeRecruitedBy.Text) + " must be set correctly.",
+                this, ValidationColumn, txtDetailOfficeRecruitedBy);
+
+            // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+            // FPetraUtilsObject.VerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+            // ResultText!
+            FPetraUtilsObject.VerificationResultCollection.Remove(ValidationColumn);
             FPetraUtilsObject.VerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
-            
+
             // 'Start of Commitment' must be defined
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnStartOfCommitmentId];
             FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
                 TDateChecks.IsNotUndefinedDateTime(ARow.StartOfCommitment,
-                    lblDetailStartOfCommitment.Text, true, this, ValidationColumn, dtpDetailStartOfCommitment), 
-            	ValidationColumn);
-            
+                    lblDetailStartOfCommitment.Text, true, this, ValidationColumn, dtpDetailStartOfCommitment),
+                ValidationColumn);
+
             // 'End of Commitment' must be later than 'Start of Commitment'
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnEndOfCommitmentId];
             FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                TDateChecks.FirstGreaterThanSecondDate(ARow.EndOfCommitment,ARow.StartOfCommitment, 
-                    lblDetailEndOfCommitment.Text, lblDetailStartOfCommitment.Text, 
+                TDateChecks.FirstGreaterThanSecondDate(ARow.EndOfCommitment, ARow.StartOfCommitment,
+                    lblDetailEndOfCommitment.Text, lblDetailStartOfCommitment.Text,
                     this, ValidationColumn, dtpDetailEndOfCommitment),
-            	ValidationColumn);      
+                ValidationColumn);
 
             // 'Status' must not be empty
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnStatusCodeId];
             FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
                 TStringChecks.StringMustNotBeEmpty(ARow.StatusCode, lblDetailStatusCode.Text,
-                    this, ValidationColumn, cmbDetailStatusCode), ValidationColumn);            
+                    this, ValidationColumn, cmbDetailStatusCode), ValidationColumn);
         }
-        
+
         private void GetDetailDataFromControlsManual(PmStaffDataRow ARow)
         {
             //TODO THis is a workaround, where is the input of ReceivingFieldOffice?

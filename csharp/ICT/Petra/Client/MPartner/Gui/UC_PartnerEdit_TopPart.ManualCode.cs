@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
 
         private bool FIgnorePartnerStatusChange = true;
-        
+
         #endregion
 
         #region Events
@@ -672,25 +672,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-
         private void ValidateDataDetailsManual(PPartnerRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPartnerValidation_Partner.ValidatePartnerManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
-        }  
-        
+        }
+
         private void PartnerStatusCodeChangePromotion(System.Object sender, EventArgs e)
         {
             string PartnerStatus = cmbPartnerStatus.GetSelectedString();
 
             // Business Rule: if the Partner's StatusCode changes, give the user the
             // option to promote the change to all Family Members (if the Partner is
-            // a FAMILY and has Family Members).            
+            // a FAMILY and has Family Members).
             if ((FMainDS != null)
                 && (!FIgnorePartnerStatusChange)
-                && FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+                && (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY)))
             {
                 if (PartnerStatus != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED))
                 {
@@ -705,12 +704,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // User wants to cancel the change of the Partner StatusCode
                         // Undo the change in the DataColumn
                         FIgnorePartnerStatusChange = true;
-                        
+
                         UndoData(FMainDS.PPartner[0], cmbPartnerStatus);
                         cmbPartnerStatus.SelectNextControl(cmbPartnerStatus, true, true, true, true);
-                        
+
                         FIgnorePartnerStatusChange = false;
-                    }                                
+                    }
                 }
             }
         }
