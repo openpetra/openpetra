@@ -252,6 +252,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // Calculate the base currency amounts for each transaction, using the exchange rate from the journals.
+               // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
+
             // Calculate the credit and debit totals
             GLRoutines.UpdateTotalsOfBatch(ref ADataSet, Batch);
 

@@ -702,11 +702,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             string SqlStmt = TDataBase.ReadSqlFile("GL.Setup.CheckAccountReferences.sql");
 
             OdbcParameter[] parameters = new OdbcParameter[2];
-            parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Date);
+            parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
             parameters[0].Value = ALedgerNumber;
             parameters[1] = new OdbcParameter("AccountCode", OdbcType.VarChar);
             parameters[1].Value = AAccountCode;
-            return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(SqlStmt, null, false, parameters)) == 0;
+            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(SqlStmt, null, false, parameters);
+            return Convert.ToInt32(SqlResult) == 0;
         }
 
         /// import a new Account hierarchy into an empty new ledger

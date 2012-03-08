@@ -55,6 +55,19 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
     ///</summary>
     public class TTransactionWebConnector
     {
+        /// <summary>
+        /// Retrieve all the information for the current Ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>ALedgerTable</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
+        {
+            ALedgerTable Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+
+            return Tbl;
+        }
+
         private static void LoadAnalysisAttributes(AccountsPayableTDS AMainDS, Int32 ALedgerNumber, TDBTransaction ATransaction)
         {
             {   // Load via template...
@@ -618,16 +631,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             ABatchRow batch = GLDataset.ABatch[0];
 
-            batch.BatchDescription = Catalog.GetString("Accounts Payable Batch");
+            batch.BatchDescription = Catalog.GetString("Accounts Payable");
             batch.DateEffective = APostingDate;
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
-            // since the AP documents can be for several suppliers, the currency might be different; group by currency first
+            // since the list of documents can be for several suppliers, the currency might be different; group by currency first
             SortedList <string, List <AApDocumentRow>>DocumentsByCurrency = new SortedList <string, List <AApDocumentRow>>();
 
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+
+            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
             foreach (AApDocumentRow row in APDataset.AApDocument.Rows)
             {
@@ -643,7 +658,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     CurrencyCode = ((AApSupplierRow)findSupplier[0].Row).CurrencyCode;
                 }
-
+                CurrencyCode += ("|" + row.ExchangeRateToBase.ToString());  // If douments with the same currency are using different 
+                                                                            // exchange rates, I'm going to handle them separately.
 
                 if (!DocumentsByCurrency.ContainsKey(CurrencyCode))
                 {
@@ -655,7 +671,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             Int32 CounterJournals = 1;
 
-            // Add journal for each currency and the transactions
+            // Add journal for each currency / Exchange Rate and the transactions
             foreach (string CurrencyCode in DocumentsByCurrency.Keys)
             {
                 AJournalRow journal = GLDataset.AJournal.NewRowTyped();
@@ -663,16 +679,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.BatchNumber = batch.BatchNumber;
                 journal.JournalNumber = CounterJournals++;
                 journal.DateEffective = batch.DateEffective;
-                journal.TransactionCurrency = CurrencyCode;
+                journal.TransactionCurrency = CurrencyCode.Substring(0,CurrencyCode.IndexOf("|"));
                 journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
                 journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
                 journal.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
                 journal.DateOfEntry = DateTime.Now;
+//
+//              I'm not using the Daily Exchange Rate, since the exchange rate has been specified by the user in the document.
+//              So the Journal exchange rate is set below (in a loop, but it works OK!)
 
-                // TODO journal.ExchangeRateToBase
-                journal.ExchangeRateToBase = 1.0M;
-
-                // TODO journal.ExchangeRateTime
+//              journal.ExchangeRateToBase =  TExchangeRateTools.GetDailyExchangeRate(CurrencyCode, LedgerTbl[0].BaseCurrency, DateTime.Now);
+                journal.ExchangeRateTime = (Int32)DateTime.Now.ToFileTimeUtc();
                 GLDataset.AJournal.Rows.Add(journal);
 
                 Int32 TransactionCounter = 1;
@@ -680,6 +697,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 foreach (AApDocumentRow document in DocumentsByCurrency[CurrencyCode])
                 {
                     ATransactionRow transaction = null;
+                    journal.ExchangeRateToBase = document.ExchangeRateToBase; // This sets the same thing n times..
                     DataView DocumentDetails = APDataset.AApDocumentDetail.DefaultView;
                     DocumentDetails.RowFilter = AApDocumentDetailTable.GetApDocumentIdDBName() + " = " + document.ApDocumentId.ToString();
 
@@ -735,15 +753,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
-                        // TODO: support foreign currencies
-                        transaction.AmountInBaseCurrency = transaction.TransactionAmount;
+                        transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
                         transaction.Narrative = "AP:" + document.ApNumber.ToString() + " - " + documentDetail.Narrative + " - " + SupplierShortName;
                         transaction.Reference = documentDetail.ItemRef;
-
-                        // TODO transaction.DetailNumber
+                        transaction.DetailNumber = documentDetail.DetailNumber;
 
                         GLDataset.ATransaction.Rows.Add(transaction);
                     }
@@ -768,20 +784,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionAmount *= -1;
                     }
 
-                    // TODO: support foreign currencies
-                    transaction.AmountInBaseCurrency = transaction.TransactionAmount;
+                    transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
-                    // This seems to be wrong here? (Tim, Feb 2012)
-                    // transaction.DebitCreditIndicator = false;
-
-                    // TODO: if document.ApAccount is empty, look for supplier default ap account?
                     transaction.AccountCode = document.ApAccount;
                     transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
                         ALedgerNumber);
                     transaction.Narrative = "AP:" + document.ApNumber.ToString() + " - " + document.DocumentCode + " - " + SupplierShortName;
                     transaction.Reference = "AP" + document.ApNumber.ToString();
-
-                    // TODO transaction.DetailNumber
+                    transaction.DetailNumber = 0;
 
                     GLDataset.ATransaction.Rows.Add(transaction);
                 }
@@ -964,20 +974,22 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             ABatchRow batch = GLDataset.ABatch[0];
 
-            batch.BatchDescription = Catalog.GetString("Accounts Payable Payment Batch");
+            batch.BatchDescription = Catalog.GetString("Accounts Payable Payment");
             batch.DateEffective = APostingDate;
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
-            // since the AP documents can be for several suppliers, the currency might be different; group by currency first
+            // since the list of documents can be for several suppliers, there could be more than one currency; group by currency first
             SortedList <string,
                         List <AccountsPayableTDSAApPaymentRow>>DocumentsByCurrency = new SortedList <string, List <AccountsPayableTDSAApPaymentRow>>();
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
+            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
             foreach (AccountsPayableTDSAApPaymentRow row in APDataset.AApPayment.Rows)
             {
-                // get the currency from the supplier, from the first documentpayment of this payment; we need the currency
+                // Get the currency from the supplier, from the first documentpayment of this payment; we need the currency
                 APDataset.AApDocumentPayment.DefaultView.RowFilter = AApDocumentPaymentTable.GetPaymentNumberDBName() + " = " +
                                                                      row.PaymentNumber.ToString();
                 APDataset.AApDocument.DefaultView.RowFilter = AApDocumentTable.GetApDocumentIdDBName() + " = " +
@@ -1016,10 +1028,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
                 journal.DateOfEntry = DateTime.Now;
 
-                // TODO journal.ExchangeRateToBase
-                journal.ExchangeRateToBase = 1.0M;
-
-                // TODO journal.ExchangeRateTime
+                journal.ExchangeRateToBase = TExchangeRateTools.GetDailyExchangeRate(CurrencyCode, LedgerTbl[0].BaseCurrency, DateTime.Now);
+                journal.ExchangeRateTime = (Int32)DateTime.Now.ToFileTimeUtc();
                 GLDataset.AJournal.Rows.Add(journal);
 
                 Int32 TransactionCounter = 1;
@@ -1054,8 +1064,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
-                        // TODO: support foreign currencies
-                        transaction.AmountInBaseCurrency = transaction.TransactionAmount;
+                        transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
                         transaction.AccountCode = payment.BankAccount;
                         transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
@@ -1069,7 +1078,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         GLDataset.ATransaction.Rows.Add(transaction);
 
-                        // at the moment: no summarising of documents with same AP account etc
+                        // At the moment: no summarising of documents with same AP account etc
                         // create one transaction for the AP account
                         ATransactionRow transactionAPAccount = GLDataset.ATransaction.NewRowTyped();
                         transactionAPAccount.LedgerNumber = journal.LedgerNumber;
@@ -1089,6 +1098,49 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         // TODO transactionAPAccount.DetailNumber
 
                         GLDataset.ATransaction.Rows.Add(transactionAPAccount);
+
+                        if (CurrencyCode != LedgerTbl[0].BaseCurrency)
+                        {
+                            // This invoice is in a non-base currency, and the value of it in my base currency 
+                            // may have changed since it was first posted. To keep the ledger balanced,
+                            // an adjusting entry is made to the the ForexGainsLossesAccount account.
+
+                            Decimal OriginalBaseAmount = document.TotalAmount * document.ExchangeRateToBase;
+                            Decimal ForexGain = transaction.AmountInBaseCurrency - OriginalBaseAmount;
+                            
+                            if (ForexGain != 0)
+                            {
+                                ATransactionRow transactionReval = GLDataset.ATransaction.NewRowTyped();
+                                transactionReval.LedgerNumber = journal.LedgerNumber;
+                                transactionReval.BatchNumber = journal.BatchNumber;
+                                transactionReval.JournalNumber = journal.JournalNumber;
+                                transactionReval.TransactionNumber = TransactionCounter++;
+                                transactionReval.Narrative = "AP expense reval";
+                                transactionReval.Reference = payment.Reference;
+                                transactionReval.AccountCode = LedgerTbl[0].ForexGainsLossesAccount;
+                                transactionReval.CostCentreCode = transaction.CostCentreCode;
+                                transactionReval.TransactionAmount = 0; // This represents no actual cash - only perceived value!
+                                transactionReval.DebitCreditIndicator = (ForexGain > 0);
+                                transactionReval.AmountInBaseCurrency = Math.Abs(ForexGain);
+
+                                GLDataset.ATransaction.Rows.Add(transactionReval);
+
+                                ATransactionRow transactionApReval= GLDataset.ATransaction.NewRowTyped();
+                                transactionApReval.LedgerNumber = journal.LedgerNumber;
+                                transactionApReval.BatchNumber = journal.BatchNumber;
+                                transactionApReval.JournalNumber = journal.JournalNumber;
+                                transactionApReval.TransactionNumber = TransactionCounter++;
+                                transactionApReval.Narrative = "AP expense reval";
+                                transactionApReval.Reference = payment.Reference;
+                                transactionApReval.AccountCode = document.ApAccount;
+                                transactionApReval.CostCentreCode = transaction.CostCentreCode;
+                                transactionApReval.TransactionAmount = 0; // This represents no actual cash - only perceived value!
+                                transactionApReval.DebitCreditIndicator = !transactionReval.DebitCreditIndicator;
+                                transactionApReval.AmountInBaseCurrency = Math.Abs(ForexGain);
+
+                                GLDataset.ATransaction.Rows.Add(transactionApReval);
+                            }
+                        }
 
                         // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c (AP REVAL)
                     }

@@ -233,6 +233,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
     public interface IAPWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        ALedgerTable GetLedgerInfo(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber,
                                            Int64 APartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
@@ -272,7 +274,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                                  Int32 ALedgerNumber,
                                                  List<Int32> ADocumentsToPay);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean PostAPPayments(ref AccountsPayableTDS PostDs,
+        System.Boolean PostAPPayments(ref AccountsPayableTDS MainDS,
                                       DateTime APostingDate,
                                       out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>

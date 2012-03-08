@@ -64,28 +64,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                          TCacheableFinanceTablesEnum.LedgerDetails, value))[0];
                 baseCurrencyOfLedger = ledger.BaseCurrency;
 
-
-                this.txtDetailRateOfExchange.Validated +=
-                    new System.EventHandler(this.ValidatedExchangeRate);
-
-                this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
-                    new System.EventHandler(this.ValueChangedCurrencyCode);
-                this.cmbDetailToCurrencyCode.SelectedValueChanged +=
-                    new System.EventHandler(this.ValueChangedCurrencyCode);
-
-                this.tbbSave.Click +=
-                    new System.EventHandler(this.SetTheFocusToTheGrid);
-
-                this.btnInvertExchangeRate.Click +=
-                    new System.EventHandler(this.InvertExchangeRate);
-
-                FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
-                                                                  ACorporateExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
-                FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = "";
-
                 mniImport.Enabled = true;
                 tbbImport.Enabled = true;
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            this.txtDetailRateOfExchange.Validated +=
+                new System.EventHandler(this.ValidatedExchangeRate);
+
+            this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
+                new System.EventHandler(this.ValueChangedCurrencyCode);
+            this.cmbDetailToCurrencyCode.SelectedValueChanged +=
+                new System.EventHandler(this.ValueChangedCurrencyCode);
+
+            this.tbbSave.Click +=
+                new System.EventHandler(this.SetTheFocusToTheGrid);
+
+            this.btnInvertExchangeRate.Click +=
+                new System.EventHandler(this.InvertExchangeRate);
+
+            FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+                                                              ACorporateExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+            FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = "";
         }
 
         /// <summary>

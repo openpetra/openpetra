@@ -55,8 +55,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             nudDiscountDays.Visible = false;        // There's currently no discounting, so this
             lblDiscountPercentage.Visible = false;  // just hides the associated controls.
             txtDiscountPercentage.Visible = false;
+            txtDetailAmount.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtExchangeRateToBase.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
         }
-
+        
         private void LookupExchangeRate(Object sender, EventArgs e)
         {
             decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(txtSupplierCurrency.Text, FLedgerRow.BaseCurrency,DateTime.Now);
@@ -203,9 +205,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtTotalAmount.CurrencySymbol = SupplierRow.CurrencyCode;
             txtDetailAmount.CurrencySymbol = SupplierRow.CurrencyCode;
 
-            IAPUIConnectorsFind FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
             FLedgerNumber = DocumentRow.LedgerNumber;
-            ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(FLedgerNumber);
+            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
             FLedgerRow = Tbl[0];
             txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
             dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
@@ -360,10 +361,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             UpdateCreditTerms(sender, null);
         }
 
+        private void UpdateDetailBaseAmount(object sender, EventArgs e)
+        {
+            if ((txtExchangeRateToBase.NumberValueDecimal.HasValue)
+            && (txtDetailAmount.NumberValueDecimal.HasValue))
+            {
+                txtDetailBaseAmount.NumberValueDecimal =
+                    txtDetailAmount.NumberValueDecimal * txtExchangeRateToBase.NumberValueDecimal.Value;
+            }
+        }
+
         /// initialise some comboboxes
         private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
         {
-            grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;      // It doesn't really work having these here -
+            grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;   // It doesn't really work having these here -
             grdDetails.Columns[0].Width = 90;                          // there's something else that overrides these settings.
             grdDetails.Columns[2].Width = 200;
             grdDetails.Columns[3].Width = 90;
@@ -375,14 +386,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
             EnableControls();
 
-            if (ARow.IsAmountNull() || (FMainDS.AApDocument[0].IsExchangeRateToBaseNull() || (FMainDS.AApDocument[0].ExchangeRateToBase == 0)))
+            Decimal ExchangeRateToBase = 0;
+            if (txtExchangeRateToBase.NumberValueDecimal.HasValue)
+            {
+                ExchangeRateToBase = txtExchangeRateToBase.NumberValueDecimal.Value;
+            }
+
+            if (ARow.IsAmountNull() || ExchangeRateToBase == 0)
             {
                 txtDetailBaseAmount.NumberValueDecimal = null;
             }
             else
             {
                 decimal DetailAmount = Convert.ToDecimal(ARow.Amount);
-                DetailAmount *= FMainDS.AApDocument[0].ExchangeRateToBase;
+                DetailAmount *= ExchangeRateToBase;
                 txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
             }
         }

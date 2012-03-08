@@ -946,6 +946,13 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         }
 
         /// generated method from connector
+        public ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "GetLedgerInfo", ";INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.GetLedgerInfo(ALedgerNumber);
+        }
+
+        /// generated method from connector
         public AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber,
                                                   Int64 APartnerKey)
         {
@@ -1030,12 +1037,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean PostAPPayments(ref AccountsPayableTDS PostDs,
+        public System.Boolean PostAPPayments(ref AccountsPayableTDS MainDS,
                                              DateTime APostingDate,
                                              out TVerificationResultCollection AVerificationResult)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "PostAPPayments", ";ACCOUNTSPAYABLETDS;DATETIME;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(ref PostDs, APostingDate, out AVerificationResult);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.PostAPPayments(ref MainDS, APostingDate, out AVerificationResult);
         }
 
         /// generated method from connector
