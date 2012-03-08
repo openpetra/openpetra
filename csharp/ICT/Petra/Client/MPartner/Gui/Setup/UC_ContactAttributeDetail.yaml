@@ -39,7 +39,7 @@ RootNode:
                 Row0: [txtDetailContactAttrDetailCode]
                 Row1: [txtDetailContactAttrDetailDescr]
                 Row2: [chkDetailActive]
-        txtDetailContactAttrDetailCode: {Label=Detail Code}
+        txtDetailContactAttrDetailCode: {Label=Detail Code, CharacterCasing=Upper}
         txtDetailContactAttrDetailDescr: {Label=Description, Width=475}
         chkDetailActive: {Label=Active}
     Menu:

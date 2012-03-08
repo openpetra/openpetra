@@ -32,12 +32,15 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -118,6 +121,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void GetDetailDataFromControlsManual(AEmailDestinationRow ARow)
         {
             ARow.EmailAddress = txtDetailEmailAddress.Text.Replace(Environment.NewLine, ",");
+        }
+        
+        private void PartnerKeyChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
+        {
+        	string newAddresses = String.Empty;
+        	PartnerInfoTDS partnerInfo;
+        	if (TServerLookup.TMPartner.PartnerInfo(APartnerKey, TPartnerInfoScopeEnum.pisFull, out partnerInfo))
+        	{
+        		// This will return either 0 or 1 rows.  If 1, then the email information needs to be displayed
+        		// Otherwise the email information will be cleared
+        		if (partnerInfo.PPartnerLocation.Rows.Count > 0)
+        		{
+        			string addressData = ((PPartnerLocationRow)partnerInfo.PPartnerLocation.Rows[0]).EmailAddress;
+        			if (addressData != String.Empty)
+        			{
+        				// There can be multiple addresses, separated by comma or semicolon
+        				string[] addresses = addressData.Split(",;".ToCharArray());
+        				for (int i=0; i<addresses.Length; i++)
+        				{
+        					if (newAddresses.Length > 0) newAddresses += Environment.NewLine;
+        					newAddresses += addresses[i].Trim();
+        				}
+        			}
+        		}
+        	}
+        	txtDetailEmailAddress.Text = newAddresses;
         }
     }
 }

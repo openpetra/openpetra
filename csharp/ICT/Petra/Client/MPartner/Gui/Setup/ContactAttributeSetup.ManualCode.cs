@@ -128,7 +128,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (MessageBox.Show(Catalog.GetString(
                         "Are you sure that you want to delete the current Contact Attribute?  If you choose 'Yes', all the detail attributes for this Contact Attribute will be deleted as well."),
                     Catalog.GetString("Delete Row"),
-                    MessageBoxButtons.YesNo) == DialogResult.No)
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == DialogResult.No)
             {
                 return;
             }
@@ -209,8 +210,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 // It is the same as an existing code.
                 // On most screens this would normally get trapped later but we want to
                 // trap it now so we don't change the detail attributes unnecessarily
-                MessageBox.Show(String.Format(Catalog.GetString(
-                            "'{0}' has already been used for a Contact Attribute Code."), newCode), Catalog.GetString("Contact Attribute"));
+                MessageBox.Show(String.Format(
+                			Catalog.GetString("'{0}' has already been used for a Contact Attribute Code."), newCode), 
+                			Catalog.GetString("Contact Attribute"),
+                			MessageBoxButtons.OK,
+                			MessageBoxIcon.Exclamation);
                 txtDetailContactAttributeCode.Text = FPreviouslySelectedDetailRow.ContactAttributeCode;
                 txtDetailContactAttributeCode.Focus();
                 txtDetailContactAttributeCode.SelectAll();
@@ -250,7 +254,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             if (bFoundError)
             {
-                MessageBox.Show(msg, Catalog.GetString("Error Saving Data"), MessageBoxButtons.OK);
+                MessageBox.Show(msg, Catalog.GetString("Error Saving Data"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 

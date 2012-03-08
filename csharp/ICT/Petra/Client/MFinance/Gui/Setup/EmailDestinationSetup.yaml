@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: AEmailDestination
     CacheableTable: EmailDestinationList
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MPartner]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
@@ -46,8 +46,7 @@ RootNode:
             ColSpan: 4
             Margin: 0
             Padding: 0,0,0,0
-        txtDetailPartnerKey:
-            Type: PartnerKey
+        txtDetailPartnerKey: {Label=Partner Key, Type=PartnerKey, ColSpan=3, OnChange=PartnerKeyChanged}
         txtDetailEmailAddress: {Label=Email address(es) (one per line), Multiline=true, ScrollBars=Vertical, Height=80, Width=400}
 
     Toolbar:

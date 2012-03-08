@@ -39,7 +39,7 @@ RootNode:
                 Row1: [txtDetailContactAttributeDescr]
                 Row2: [chkDetailActive]
                 Row3: [grpExtraDetails]
-        txtDetailContactAttributeCode: {Label=Attribute Code}
+        txtDetailContactAttributeCode: {Label=Attribute Code, CharacterCasing=Upper}
         txtDetailContactAttributeDescr: {Label=Description, Width=465}
         chkDetailActive:
         grpExtraDetails: {Label=Attribute Detail Codes}
