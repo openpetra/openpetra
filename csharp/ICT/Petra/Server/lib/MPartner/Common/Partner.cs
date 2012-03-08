@@ -692,7 +692,8 @@ namespace Ict.Petra.Server.MPartner.Partner
         /// <param name="ALastPartnerUse">Where is the partner used?</param>
         /// <returns>returns true if handling was successful
         /// </returns>
-        public Boolean AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass, Boolean ANewPartner, TLastPartnerUse ALastPartnerUse)
+        public static bool AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass,
+            bool ANewPartner, TLastPartnerUse ALastPartnerUse)
         {
             Boolean ReturnValue;
             TDBTransaction ReadAndWriteTransaction;
@@ -849,7 +850,7 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                     if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
                     {
-                        Console.WriteLine(this.GetType().FullName + ".GetAvailableFamilyID: committed own transaction.");
+                        Console.WriteLine("TRecentPartnersHandling.GetAvailableFamilyID: committed own transaction.");
                     }
                 }
             }

@@ -44,9 +44,9 @@ OpenPetra:
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                     GenerateExtracts: {Label=Generate Extract}
-                        PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by City, ActionClick=TFrmPartnerMain.PartnerByCityExtract}
-                        PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Subscription, ActionClick=TFrmPartnerMain.PartnerBySubscriptionExtract}
-                        PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui, Label=Partner by Special Type, ActionClick=TFrmPartnerMain.PartnerBySpecialTypeExtract}
+                        PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by City, ActionClick=TPartnerExtractsMain.PartnerByCityExtract}
+                        PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Subscription, ActionClick=TPartnerExtractsMain.PartnerBySubscriptionExtract}
+                        PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Special Type, ActionClick=TPartnerExtractsMain.PartnerBySpecialTypeExtract}
                         PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TFrmPersonnelMain.PartnerByConferenceExtract}
                         PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TFrmPersonnelMain.PartnerByOutreachExtract}
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TFrmPersonnelMain.PartnerByCommitmentExtract}

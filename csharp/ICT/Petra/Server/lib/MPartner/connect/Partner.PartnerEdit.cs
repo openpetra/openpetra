@@ -407,7 +407,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             String LastGiftInfo;
             TLocationPK LocationPK;
             Boolean OfficeSpecificDataLabelsAvailable = false;
-            TRecentPartnersHandling RecentPartnersHandling;
             Int32 ItemsCountAddresses = 0;
             Int32 ItemsCountAddressesActive = 0;
             Int32 ItemsCountSubscriptions = 0;
@@ -835,8 +834,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     #endregion
 
                     // Add this partner key to the list of recently used partners.
-                    RecentPartnersHandling = new TRecentPartnersHandling();
-                    RecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
+                    TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
                 }
                 catch (EPartnerLocationNotExistantException Exp)
                 {
@@ -1948,7 +1946,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TSubmitChangesResult SubmissionResult;
             PartnerAddressAggregateTDS TmpResponseDS = null;
-            TRecentPartnersHandling RecentPartnersHandling;
 
             AVerificationResult = null;
 
@@ -2139,8 +2136,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             // Partner is new Partner > add to list of recent partners. (If the
                             // Partner was not new then this was already done in LoadData.)
-                            RecentPartnersHandling = new TRecentPartnersHandling();
-                            RecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true, TLastPartnerUse.lpuMailroomPartner);
+                            TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true, TLastPartnerUse.lpuMailroomPartner);
 #if DEBUGMODE
                             if (TLogging.DL >= 6)
                             {

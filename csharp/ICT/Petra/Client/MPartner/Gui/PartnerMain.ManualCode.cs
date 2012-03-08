@@ -34,7 +34,6 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 //using Ict.Petra.Client.MReporting.Gui.MPersonnel;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Client.MPartner.Gui.Extracts;
 using System.Collections.Specialized;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -112,72 +111,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             frm.SetParameters(false, -1);
             frm.Show();
-        }
-
-        /// <summary>
-        /// open screen to create Publication Extract
-        /// </summary>
-        public static void PartnerBySubscriptionExtract(Form AParentForm)
-        {
-            TFrmPartnerBySubscription frm = new TFrmPartnerBySubscription(AParentForm);
-
-            frm.CalledFromExtracts = true;
-            frm.Show();
-        }
-
-        /// <summary>
-        /// open screen to create "Partner by City" Extract
-        /// </summary>
-        public static void PartnerByCityExtract(Form AParentForm)
-        {
-            TFrmPartnerByCity frm = new TFrmPartnerByCity(AParentForm);
-
-            frm.CalledFromExtracts = true;
-            frm.Show();
-        }
-
-        /// <summary>
-        /// open screen to create "Conferece" Extract
-        /// </summary>
-        public static void PartnerByConferenceExtract(Form AParentForm)
-        {
-            //TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
-
-            //frm.CalledFromExtracts = true;
-            //frm.CalledForConferences = true;
-            //frm.Show();
-        }
-
-        /// <summary>
-        /// open screen to create "Conferece" Extract
-        /// </summary>
-        public static void PartnerByOutreachExtract(Form AParentForm)
-        {
-            //TFrmPartnerByEvent frm = new TFrmPartnerByEvent(AParentForm);
-
-            //frm.CalledFromExtracts = true;
-            //frm.CalledForConferences = false;
-            //frm.Show();
-        }
-
-        /// <summary>
-        /// open screen to create "Partner by Special Type" Extract
-        /// </summary>
-        public static void PartnerBySpecialTypeExtract(Form AParentForm)
-        {
-            TFrmPartnerBySpecialType frm = new TFrmPartnerBySpecialType(AParentForm);
-
-            frm.CalledFromExtracts = true;
-            frm.Show();
-        }
-
-        /// Open screen for creating "Partner by Commitment" Extract
-        public static void PartnerByCommitmentExtract(Form AParentForm)
-        {
-            //TFrmPartnerByCommitmentExtract frm = new TFrmPartnerByCommitmentExtract(AParentForm);
-
-            //frm.CalledFromExtracts = true;
-            //frm.Show();
         }
     }
 }
