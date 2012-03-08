@@ -512,11 +512,15 @@ namespace Ict.Tools.DevelopersAssistant
             // Optionally run initConfigFiles to get everything matched up
             msg = "Do you want to run the 'InitConfigFiles' task to initialize the other configuration files?";
 
-            if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+            if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
-                return;
+                RunInitConfigFiles();
             }
+        }
 
+        private bool RunInitConfigFiles()
+        {
+            bool ret = true;
             int NumFailures = 0;
             int NumWarnings = 0;
             RunSimpleNantTarget(new NantTask(NantTask.TaskItem.initConfigFiles), ref NumFailures, ref NumWarnings);
@@ -527,9 +531,11 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 tabControl.SelectedTab = OutputPage;
                 chkVerbose.Checked = true;
+                ret = false;
             }
 
             PrepareWarnings();
+            return ret;
         }
 
         private void btnSaveCurrentDbBuildConfig_Click(object sender, EventArgs e)
@@ -586,7 +592,16 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (calo.UpdateConfig(chkUseAutoLogon.Checked, txtAutoLogonUser.Text, txtAutoLogonPW.Text, s))
             {
-                MessageBox.Show("The update was applied successfully.", Program.APP_TITLE);
+                // Now we will run the InitConfigFiles task, which copies the new file ready for running the client
+                // By doing it here users will see the effect of their changes if they run direct from the IDE as opposed to using this app to start the client
+                if (RunInitConfigFiles())
+                {
+                    MessageBox.Show("The update was applied successfully.", Program.APP_TITLE);
+                }
+                else
+                {
+                    MessageBox.Show(@"The update was applied successfully to \inc\Template\etc\Client.config.my, but an error occurred in running the InitConfigFiles task.", Program.APP_TITLE);
+                }
             }
         }
 
@@ -613,6 +628,13 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             SetBranchDependencies();
+
+            if (!RunInitConfigFiles())
+            {
+                msg = @"Your configuration was reset successfully in \inc\Template\etc\Client.config.my, but an error occurred in running the InitConfigFiles task.  ";
+                msg += "This will mean that the Open Petra Client may not rspond correctly to your changes.";
+                MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
         }
 
         private bool bHaveAlertedFlashSetting = false;
