@@ -60,6 +60,11 @@ namespace Ict.Petra.Shared.MFinance
         CostCentreTypesList,
 
         /// <summary>
+        /// Where Petra supports it a cross reference between a file and destination can be established for automatic distribution.
+        /// </summary>
+        EmailDestinationList,
+
+        /// <summary>
         /// Special payment programs the donor may give money through. (ie, Gift Aid in the UK)
         /// </summary>
         MethodOfGivingList,

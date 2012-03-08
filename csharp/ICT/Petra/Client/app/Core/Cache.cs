@@ -1252,6 +1252,7 @@ namespace Ict.Petra.Client.App.Core
             TCacheableFinanceTablesEnum CacheableMFinanceTable;
             TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
             TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
+            TCacheableMailingTablesEnum CacheableMPartnerMailingTable;
             TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
             TCacheableUnitTablesEnum CacheableMPersonnelUnitTable;
             TCacheableSysManTablesEnum CacheableMSysManTable;
@@ -1286,6 +1287,16 @@ namespace Ict.Petra.Client.App.Core
 
                 // PetraServer method call
                 ReturnValue = TRemote.MFinance.Cacheable.SaveChangedStandardCacheableTable(CacheableMFinanceTable,
+                    ref AChangedCacheableDT,
+                    out AVerificationResult);
+            }
+            else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableMailingTablesEnum)), ACacheableTableName) != -1)
+            {
+                // MPartner.Mailing Namespace
+                CacheableMPartnerMailingTable = (TCacheableMailingTablesEnum)Enum.Parse(typeof(TCacheableMailingTablesEnum), ACacheableTableName);
+
+                // PetraServer method call
+                ReturnValue = TRemote.MPartner.Mailing.Cacheable.SaveChangedStandardCacheableTable(CacheableMPartnerMailingTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }

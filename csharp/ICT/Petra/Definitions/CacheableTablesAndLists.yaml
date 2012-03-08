@@ -101,6 +101,7 @@ CachedTables:
                 AAnalysisAttribute: {Comment=Relationsship between account and analysis type }
                 ABudgetType:
                 ACostCentreTypes:
+                AEmailDestination:
                 AMethodOfGiving: {Comment="Special payment programs the donor may give money through. (ie, Gift Aid in the UK)"}
                 AMethodOfPayment:
                 AMotivationGroup: {Comment="This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes"}
