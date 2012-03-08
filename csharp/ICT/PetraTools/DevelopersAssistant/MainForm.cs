@@ -523,6 +523,7 @@ namespace Ict.Tools.DevelopersAssistant
             bool ret = true;
             int NumFailures = 0;
             int NumWarnings = 0;
+
             RunSimpleNantTarget(new NantTask(NantTask.TaskItem.initConfigFiles), ref NumFailures, ref NumWarnings);
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
@@ -600,7 +601,9 @@ namespace Ict.Tools.DevelopersAssistant
                 }
                 else
                 {
-                    MessageBox.Show(@"The update was applied successfully to \inc\Template\etc\Client.config.my, but an error occurred in running the InitConfigFiles task.", Program.APP_TITLE);
+                    MessageBox.Show(
+                        @"The update was applied successfully to \inc\Template\etc\Client.config.my, but an error occurred in running the InitConfigFiles task.",
+                        Program.APP_TITLE);
                 }
             }
         }
@@ -631,7 +634,8 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (!RunInitConfigFiles())
             {
-                msg = @"Your configuration was reset successfully in \inc\Template\etc\Client.config.my, but an error occurred in running the InitConfigFiles task.  ";
+                msg =
+                    @"Your configuration was reset successfully in \inc\Template\etc\Client.config.my, but an error occurred in running the InitConfigFiles task.  ";
                 msg += "This will mean that the Open Petra Client may not rspond correctly to your changes.";
                 MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }

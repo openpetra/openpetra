@@ -211,10 +211,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 // On most screens this would normally get trapped later but we want to
                 // trap it now so we don't change the detail attributes unnecessarily
                 MessageBox.Show(String.Format(
-                			Catalog.GetString("'{0}' has already been used for a Contact Attribute Code."), newCode), 
-                			Catalog.GetString("Contact Attribute"),
-                			MessageBoxButtons.OK,
-                			MessageBoxIcon.Exclamation);
+                        Catalog.GetString("'{0}' has already been used for a Contact Attribute Code."), newCode),
+                    Catalog.GetString("Contact Attribute"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
                 txtDetailContactAttributeCode.Text = FPreviouslySelectedDetailRow.ContactAttributeCode;
                 txtDetailContactAttributeCode.Focus();
                 txtDetailContactAttributeCode.SelectAll();

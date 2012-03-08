@@ -103,13 +103,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void InitializeManualCode()
         {
-        	// Before we start we set the defaultView RowFilter property to something unlikely.
-        	// The manual code gets a chance to populate the grid before we get our chance to set the correct rowFilter.
-        	// So this ensures that the grid does not flicker with the wrong rows before we put the right ones in.
-        	string filter = String.Format("{0}='@#~?!()'", FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.ColumnName);
-        	FMainDS.PContactAttributeDetail.DefaultView.RowFilter = filter;
+            // Before we start we set the defaultView RowFilter property to something unlikely.
+            // The manual code gets a chance to populate the grid before we get our chance to set the correct rowFilter.
+            // So this ensures that the grid does not flicker with the wrong rows before we put the right ones in.
+            string filter = String.Format("{0}='@#~?!()'", FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.ColumnName);
+
+            FMainDS.PContactAttributeDetail.DefaultView.RowFilter = filter;
         }
-        
+
         private void NewRowManual(ref PContactAttributeDetailRow ARow)
         {
             string newCode = Catalog.GetString("NEWCODE");

@@ -122,33 +122,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             ARow.EmailAddress = txtDetailEmailAddress.Text.Replace(Environment.NewLine, ",");
         }
-        
+
         private void PartnerKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection)
         {
-        	string newAddresses = String.Empty;
-        	PartnerInfoTDS partnerInfo;
-        	if (TServerLookup.TMPartner.PartnerInfo(APartnerKey, TPartnerInfoScopeEnum.pisFull, out partnerInfo))
-        	{
-        		// This will return either 0 or 1 rows.  If 1, then the email information needs to be displayed
-        		// Otherwise the email information will be cleared
-        		if (partnerInfo.PPartnerLocation.Rows.Count > 0)
-        		{
-        			string addressData = ((PPartnerLocationRow)partnerInfo.PPartnerLocation.Rows[0]).EmailAddress;
-        			if (addressData != String.Empty)
-        			{
-        				// There can be multiple addresses, separated by comma or semicolon
-        				string[] addresses = addressData.Split(",;".ToCharArray());
-        				for (int i=0; i<addresses.Length; i++)
-        				{
-        					if (newAddresses.Length > 0) newAddresses += Environment.NewLine;
-        					newAddresses += addresses[i].Trim();
-        				}
-        			}
-        		}
-        	}
-        	txtDetailEmailAddress.Text = newAddresses;
+            string newAddresses = String.Empty;
+            PartnerInfoTDS partnerInfo;
+
+            if (TServerLookup.TMPartner.PartnerInfo(APartnerKey, TPartnerInfoScopeEnum.pisFull, out partnerInfo))
+            {
+                // This will return either 0 or 1 rows.  If 1, then the email information needs to be displayed
+                // Otherwise the email information will be cleared
+                if (partnerInfo.PPartnerLocation.Rows.Count > 0)
+                {
+                    string addressData = ((PPartnerLocationRow)partnerInfo.PPartnerLocation.Rows[0]).EmailAddress;
+
+                    if (addressData != String.Empty)
+                    {
+                        // There can be multiple addresses, separated by comma or semicolon
+                        string[] addresses = addressData.Split(",;".ToCharArray());
+
+                        for (int i = 0; i < addresses.Length; i++)
+                        {
+                            if (newAddresses.Length > 0)
+                            {
+                                newAddresses += Environment.NewLine;
+                            }
+
+                            newAddresses += addresses[i].Trim();
+                        }
+                    }
+                }
+            }
+
+            txtDetailEmailAddress.Text = newAddresses;
         }
     }
 }

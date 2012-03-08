@@ -279,7 +279,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             pnlCurrencyCode.Visible = false;
             pnlCategoryCode.Visible = false;
             txtDetailNumDecimalPlaces.Visible = false;
-            
+
             // We can prevent screen 'flicker' by setting the DefaultView RowFilter to some stupid setting that finds no rows
             // This stops the auto-genertaed code populating the list with incorrect data before we get it right in our code
             //  that runs later (RunOnceOnActivationManual)
