@@ -640,7 +640,7 @@ namespace Ict.Common.Data
         ///
         /// </summary>
         /// <returns>void</returns>
-        public void EnableRelation(TTypedRelation ARelation)
+        protected void EnableRelation(TTypedRelation ARelation)
         {
             DataTable Table1;
             DataTable Table2;

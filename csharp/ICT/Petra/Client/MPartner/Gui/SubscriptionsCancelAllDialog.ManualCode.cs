@@ -91,6 +91,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             dtpPSubscriptionDateCancelled.Date = DateEnded;
+            
+        	// show this dialog in center of screen
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)

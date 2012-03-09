@@ -124,5 +124,8 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         public const String StrPartnerReActivationTitle = "Partner Gets Re-activated!";
+
+        /// <summary>todoComment</summary>
+        public const String StrCtrlSuppressChangeDetection = "SuppressChangeDetection";
     }
 }

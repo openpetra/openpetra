@@ -103,6 +103,10 @@
             childTable="PPartnerInterest" childFields="Interest"
             parentTable="PInterest" parentFields="Interest"
             createConstraints="false"/>
+    <CustomRelation name="PartnerRelation"
+            parentTable="PRelation" parentFields="RelationName"
+            childTable="PPartnerRelationship" childFields="RelationName"
+            createConstraints="false"/>
   </DataSet>
 
   <DataSet name="PartnerAddressAggregateTDS">

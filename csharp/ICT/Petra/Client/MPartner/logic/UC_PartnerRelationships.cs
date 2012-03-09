@@ -115,17 +115,17 @@ namespace Ict.Petra.Client.MPartner
                 }
 
                 // Add relation table to data set
-                FMainDS.Tables.Add(new PRelationTable());
+                if (FMainDS.PRelation == null)
+                {
+	                FMainDS.Tables.Add(new PRelationTable());
+                }
                 relationTable = (PRelationTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationList);
                 // rename data table as otherwise the merge with the data set won't work; tables need to have same name
                 relationTable.TableName = "PRelation";
                 FMainDS.Merge(relationTable);
-                FMainDS.EnableRelation(new TTypedRelation("PartnerRelation",
-                        PRelationTable.GetTableName(),
-                        new string[] { PRelationTable.GetRelationNameDBName() },
-                        PPartnerRelationshipTable.GetTableName(),
-                        new string[] { PPartnerRelationshipTable.GetRelationNameDBName() },
-                        false));
+                
+                // Relations are not automatically enabled. Need to enable them here in order to use for columns.
+                FMainDS.EnableRelations();
 
                 // add column to display the other partner key depending on direction of relationship
                 ForeignTableColumn = new DataColumn();
