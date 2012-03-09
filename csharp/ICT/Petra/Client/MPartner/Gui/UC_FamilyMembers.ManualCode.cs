@@ -274,6 +274,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void SpecialInitUserControl()
         {
+        	// disable change event while controls are being initialized as otherwise save button might get enabled
+	        FPetraUtilsObject.DisableDataChangedEvent();
+	        
             /* Show/hide parts of the UserControl according to Partner Class of the Partner */
             if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
             {
@@ -344,6 +347,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* this.btnAddNewPersonThisFamily.enabled := false; */
             }
 
+        	// now changes to controls can trigger enabling of save button again
+	        FPetraUtilsObject.EnableDataChangedEvent();
+            
             ApplySecurity();
         }
 
