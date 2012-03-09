@@ -438,7 +438,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
             {
                 // For any invoices that are partly paid, find out how much is outstanding.
-                Row.OutstandingAmount -= UIConnectors.TFindUIConnector.GetPartPaidAmount(Row.ApDocumentId, DocPaymentTbl);
+                Row.OutstandingAmount -= UIConnectors.TFindUIConnector.GetPartPaidAmount(Row.ApDocumentId);
             }
         }
 
@@ -541,11 +541,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAPDocumentIds"></param>
         /// <param name="APostingDate"></param>
+        /// <param name="Reversal"></param>
         /// <param name="AVerifications"></param>
         /// <returns> The TDS for posting</returns>
         private static AccountsPayableTDS LoadDocumentsAndCheck(Int32 ALedgerNumber,
             List <Int32>AAPDocumentIds,
             DateTime APostingDate,
+            Boolean Reversal, 
             out TVerificationResultCollection AVerifications)
         {
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
@@ -563,14 +565,27 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             // do some checks on state of AP documents
-            foreach (AApDocumentRow row in MainDS.AApDocument.Rows)
+            foreach (AApDocumentRow document in MainDS.AApDocument.Rows)
             {
-                if (row.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)
+                if (Reversal)
                 {
-                    AVerifications.Add(new TVerificationResult(
-                            Catalog.GetString("Error during posting of AP document"),
-                            String.Format(Catalog.GetString("Document with Number {0} cannot be posted since the status is {1}."),
-                                row.ApNumber, row.DocumentStatus), TResultSeverity.Resv_Critical));
+                    if (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_POSTED)
+                    {
+                        AVerifications.Add(new TVerificationResult(
+                                Catalog.GetString("Error during reversal of posted AP document"),
+                                String.Format(Catalog.GetString("Document Number {0} cannot be reversed since the status is {1}."),
+                                    document.ApNumber, document.DocumentStatus), TResultSeverity.Resv_Critical));
+                    }
+                }
+                else
+                {
+                    if (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)
+                    {
+                        AVerifications.Add(new TVerificationResult(
+                                Catalog.GetString("Error during posting of AP document"),
+                                String.Format(Catalog.GetString("Document Number {0} cannot be posted since the status is {1}."),
+                                    document.ApNumber, document.DocumentStatus), TResultSeverity.Resv_Critical));
+                    }
                 }
 
                 // TODO: also check if details are filled, and they each have a costcentre and account?
@@ -578,23 +593,24 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // TODO: check for document.apaccount, if not set, get the default apaccount from the supplier, and save the ap document
 
                 // Check that the amount of the document equals the totals of details
-                if (!DocumentBalanceOK(MainDS, row.ApDocumentId, Transaction))
+                if (!DocumentBalanceOK(MainDS, document.ApDocumentId, Transaction))
                 {
                     AVerifications.Add(new TVerificationResult(
-                            String.Format(Catalog.GetString("Cannot post the AP document {0} in Ledger {1}"), row.ApNumber, ALedgerNumber),
+                            String.Format(Catalog.GetString("Cannot post the AP document {0} in Ledger {1}"), document.ApNumber, ALedgerNumber),
                             String.Format(Catalog.GetString("The value does not match the sum of the details.")),
                             TResultSeverity.Resv_Critical));
                 }
 
                 // Load Analysis Attributes and check they're all present.
-                if (!AttributesAllOK(MainDS, ALedgerNumber, row.ApDocumentId, Transaction))
+                if (!AttributesAllOK(MainDS, ALedgerNumber, document.ApDocumentId, Transaction))
                 {
                     AVerifications.Add(new TVerificationResult(
-                            String.Format(Catalog.GetString("Cannot post the AP document {0} in Ledger {1}"), row.ApNumber, ALedgerNumber),
+                            String.Format(Catalog.GetString("Cannot post the AP document {0} in Ledger {1}"), document.ApNumber, ALedgerNumber),
                             String.Format(Catalog.GetString("Analysis Attributes are required.")),
                             TResultSeverity.Resv_Critical));
                 }
-            }
+
+            }  //foreach
 
             // is APostingDate inside the valid posting periods?
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
@@ -622,9 +638,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APostingDate"></param>
+        /// <param name="Reversal"></param>
         /// <param name="APDataset"></param>
-        /// <returns></returns>
-        private static GLBatchTDS CreateGLBatchAndTransactionsForPosting(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
+        /// <returns>Batch for posting</returns>
+        private static GLBatchTDS CreateGLBatchAndTransactionsForPosting(
+            Int32 ALedgerNumber, 
+            DateTime APostingDate, 
+            Boolean Reversal,
+            ref AccountsPayableTDS APDataset)
         {
             // create one GL batch
             GLBatchTDS GLDataset = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
@@ -632,6 +653,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ABatchRow batch = GLDataset.ABatch[0];
 
             batch.BatchDescription = Catalog.GetString("Accounts Payable");
+            if (Reversal)
+            {
+                batch.BatchDescription = Catalog.GetString("Reversal: ") + batch.BatchDescription;
+            }
             batch.DateEffective = APostingDate;
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
@@ -680,7 +705,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.JournalNumber = CounterJournals++;
                 journal.DateEffective = batch.DateEffective;
                 journal.TransactionCurrency = CurrencyCode.Substring(0,CurrencyCode.IndexOf("|"));
-                journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
+                journal.JournalDescription = "AP"; // TODO: journal description for posting AP documents
+                if (Reversal)
+                {
+                    journal.JournalDescription = "Reversal: AP";
+                }
+
                 journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
                 journal.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
                 journal.DateOfEntry = DateTime.Now;
@@ -746,6 +776,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
+                        if (Reversal)
+                        {
+                            transaction.TransactionAmount *= -1; // this is going to post everything backwards for me.
+                        }
+
                         transaction.DebitCreditIndicator = (transaction.TransactionAmount > 0);
 
                         if (transaction.TransactionAmount < 0)
@@ -757,7 +792,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
-                        transaction.Narrative = "AP:" + document.ApNumber.ToString() + " - " + documentDetail.Narrative + " - " + SupplierShortName;
+                        transaction.Narrative = "AP" + document.ApNumber.ToString() + " - " + documentDetail.Narrative + " - " + SupplierShortName;
+                        if (Reversal)
+                        {
+                            transaction.Narrative = "Reversal: " + transaction.Narrative;
+                        }
                         transaction.Reference = documentDetail.ItemRef;
                         transaction.DetailNumber = documentDetail.DetailNumber;
 
@@ -777,6 +816,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionAmount *= -1;
                     }
 
+                    if (Reversal)
+                    {
+                        transaction.TransactionAmount *= -1; // this is going to post everything backwards for me.
+                    }
+
                     transaction.DebitCreditIndicator = (transaction.TransactionAmount > 0);
 
                     if (transaction.TransactionAmount < 0)
@@ -789,7 +833,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     transaction.AccountCode = document.ApAccount;
                     transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
                         ALedgerNumber);
-                    transaction.Narrative = "AP:" + document.ApNumber.ToString() + " - " + document.DocumentCode + " - " + SupplierShortName;
+                    transaction.Narrative = "AP" + document.ApNumber.ToString() + " - " + document.DocumentCode + " - " + SupplierShortName;
+                    if (Reversal)
+                    {
+                        transaction.Narrative = "Reversal: " + transaction.Narrative;
+                    }
                     transaction.Reference = "AP" + document.ApNumber.ToString();
                     transaction.DetailNumber = 0;
 
@@ -872,28 +920,32 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// creates GL transactions for the selected AP documents,
         /// and posts those GL transactions,
         /// and marks the AP documents as Posted
+        /// Also used to "un-post" posted documents.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAPDocumentIds"></param>
         /// <param name="APostingDate"></param>
+        /// <param name="Reversal"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool PostAPDocuments(Int32 ALedgerNumber,
             List <Int32>AAPDocumentIds,
             DateTime APostingDate,
+            Boolean Reversal,
             out TVerificationResultCollection AVerificationResult)
         {
-            AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, out AVerificationResult);
+            AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, out AVerificationResult);
 
             if (AVerificationResult.HasCriticalError())
             {
                 return false;
             }
 
-            GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, ref MainDS);
+            GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS);
 
             ABatchRow batch = GLDataset.ABatch[0];
+
 
             // save the batch
             if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
@@ -913,7 +965,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             // change status of AP documents and save to database
             foreach (AApDocumentRow row in MainDS.AApDocument.Rows)
             {
-                row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_POSTED;
+                if (Reversal)
+                {
+                    row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+                }
+                else
+                {
+                    row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_POSTED;
+                }
             }
 
             TDBTransaction SubmitChangesTransaction;
@@ -1649,6 +1708,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         ALedgerNumber,
                         PostTheseDocs,
                         APostingDate,
+                        false,
                         out AVerifications))
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
@@ -1735,7 +1795,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     PostTheseDocs.Add(DocumentRow.ApDocumentId);
                 }
 
-                if (!PostAPDocuments(ALedgerNumber, PostTheseDocs, APostingDate, out AVerifications))
+                if (!PostAPDocuments(ALedgerNumber, PostTheseDocs, APostingDate, false, out AVerifications))
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     return false;

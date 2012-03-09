@@ -230,7 +230,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             // If this is a foreign currency supplier, it must be linked to accounts in that currency.
             // (And if it's not, it mustn't be!)
-
             if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultBankAccount, "Bank"))
             {
                 return false;

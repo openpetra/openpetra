@@ -304,17 +304,13 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <param name="DocPaymntTbl">If this is null, a temporary reference is created.</param>
         /// <returns>Amount already paid</returns>
         [NoRemoting]
-        public static Decimal GetPartPaidAmount(Int32 ApDocumentId, AApDocumentPaymentTable DocPaymntTbl)
+        public static Decimal GetPartPaidAmount(Int32 ApDocumentId)
         {
-            if (DocPaymntTbl == null)
-            {
-                DocPaymntTbl = new AApDocumentPaymentTable();
-            }
 
             Decimal PaidAmount = 0m;
 
             AApDocumentPaymentTable PreviousPayments =
-                AApDocumentPaymentAccess.LoadByPrimaryKey(ApDocumentId, null);
+                AApDocumentPaymentAccess.LoadViaAApDocument (ApDocumentId, null);
 
             foreach (AApDocumentPaymentRow PrevPaymentRow in PreviousPayments.Rows)
             {
@@ -371,9 +367,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
                     if (Row["a_document_status_c"].Equals(MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID))
                     {
-                        Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"] - GetPartPaidAmount(
-                            (Int32)Row["a_ap_document_id_i"],
-                            null);
+                        Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"] - GetPartPaidAmount((Int32)Row["a_ap_document_id_i"]);
                     }
                 }
             }

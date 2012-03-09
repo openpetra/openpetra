@@ -268,6 +268,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
         System.Boolean PostAPDocuments(Int32 ALedgerNumber,
                                        List<Int32> AAPDocumentIds,
                                        DateTime APostingDate,
+                                       Boolean Reversal,
                                        out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean CreatePaymentTableEntries(ref AccountsPayableTDS ADataset,

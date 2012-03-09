@@ -515,6 +515,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     ALedgerNumber,
                     AApDocumentIds,
                     PostingDate,
+                    false,
                     out Verifications))
             {
                 return true;

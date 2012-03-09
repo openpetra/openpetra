@@ -50,6 +50,7 @@ using System.Timers;
 using System.Collections.Generic;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.MFinance.Gui.GL;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -710,6 +711,70 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return LoadDs;
         }
 
+        private void ReverseAllTagged(object sender, EventArgs e)
+        {
+            // I can only reverse invoices that are POSTED.
+            List <int>ReverseTheseDocs = new List <int>();
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    if ("POSTED" == Row["a_document_status_c"].ToString())
+                    {
+                        ReverseTheseDocs.Add((int)Row["a_ap_document_id_i"]);
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show(Catalog.GetString("Only posted documents can be reversed."),
+                            Catalog.GetString("Document reversal failed"));
+                    }
+                }
+            }
+
+            if (ReverseTheseDocs.Count > 0)
+            {
+                TVerificationResultCollection Verifications;
+                TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
+                    FLedgerNumber,
+                    Catalog.GetString("Select reversal date"),
+                    Catalog.GetString("The date effective for this reversal") + ":");
+
+                if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
+                {
+                    MessageBox.Show(Catalog.GetString("Reversal was cancelled."), Catalog.GetString(
+                            "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                DateTime PostingDate = dateEffectiveDialog.SelectedDate;
+
+                if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
+                        FLedgerNumber,
+                        ReverseTheseDocs,
+                        PostingDate,
+                        true,
+                        out Verifications))
+                {
+                    System.Windows.Forms.MessageBox.Show("Ivoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                    return;
+                }
+                else
+                {
+                    string ErrorMessages = String.Empty;
+
+                    foreach (TVerificationResult verif in Verifications)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal"));
+                }
+
+            }
+        }
+
         private void DeleteAllTagged(object sender, EventArgs e)
         {
             // I can only delete invoices that are not posted already.
@@ -725,7 +790,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     }
                     else
                     {
-                        System.Windows.Forms.MessageBox.Show(Catalog.GetString("Can't delete posted invoices."),
+                        System.Windows.Forms.MessageBox.Show(Catalog.GetString("Can't delete posted documents. Reverse the document first."),
                             Catalog.GetString("Document Deletion failed"));
                     }
                 }

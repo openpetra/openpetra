@@ -481,7 +481,60 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedGridRow.Length >= 1)
             {
                 if (SelectedGridRow[0]["Status"].ToString().Length > 0) // invoices have status, and payments don't.
-                {  // Reverse invoice to a previous (unpaid?) state
+                {  // Reverse invoice to a previous (unposted) state
+                    string barstatus = "|" + SelectedGridRow[0]["Status"].ToString();
+                    if (barstatus == "|POSTED")
+                    {
+                        TVerificationResultCollection Verifications;
+                        Int32 DocumentId = (Int32)SelectedGridRow[0]["DocumentId"];
+                        List<Int32> ApDocumentIds = new List<Int32>();
+                        ApDocumentIds.Add(DocumentId);
+
+                        TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
+                            FLedgerNumber,
+                            Catalog.GetString("Select reversal date"),
+                            Catalog.GetString("The date effective for this reversal") + ":");
+
+                        if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
+                        {
+                            MessageBox.Show(Catalog.GetString("Reversal was cancelled."), Catalog.GetString(
+                                    "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        DateTime PostingDate = dateEffectiveDialog.SelectedDate;
+
+                        if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
+                                FLedgerNumber,
+                                ApDocumentIds,
+                                PostingDate,
+                                true,
+                                out Verifications))
+                        {
+                            System.Windows.Forms.MessageBox.Show("Ivoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                            return;
+                        }
+                        else
+                        {
+                            string ErrorMessages = String.Empty;
+
+                            foreach (TVerificationResult verif in Verifications)
+                            {
+                                ErrorMessages += "[" + verif.ResultContext + "] " +
+                                                 verif.ResultTextCaption + ": " +
+                                                 verif.ResultText + Environment.NewLine;
+                            }
+
+                            System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal"));
+                        }
+
+                        return;
+                    } // reverse posted invoice
+
+                    if ("|PAID|PARTPAID".IndexOf(barstatus) >= 0)
+                    {
+                        MessageBox.Show("Can't reverse paid a invoice. Reverse the payment instead.", "Reverse");
+                    }
                 }
                 else // Reverse payment
                 {
@@ -532,17 +585,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((row["Tagged"].Equals(true)) && (row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
                     && ("|POSTED|PARTPAID|PAID".IndexOf("|" + row["Status"].ToString()) < 0))
                 {
-                    Int32 ApNum = (Int32)row["ApNum"];
-                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, ApNum));
+                    Int32 DocumentId = (Int32)row["DocumentId"];
+                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
-                    TempDS.AApDocument.DefaultView.Sort = "a_ap_number_i";
-                    Int32 Idx = TempDS.AApDocument.DefaultView.Find(ApNum);
+                    TempDS.AApDocument.DefaultView.Sort = "a_ap_document_id_i";
+                    Int32 Idx = TempDS.AApDocument.DefaultView.Find(DocumentId);
                     AApDocumentRow DocumentRow = TempDS.AApDocument[Idx];
 
                     if (TFrmAPEditDocument.ApDocumentCanPost(TempDS, DocumentRow))
                     {
-                        TaggedDocuments.Add(ApNum);
+                        TaggedDocuments.Add(DocumentId);
                     }
                 }
             }
@@ -552,7 +605,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            // TODO: make sure that there are uptodate exchange rates
             if (TFrmAPEditDocument.PostApDocumentList(TempDS, FLedgerNumber, TaggedDocuments))
             {
                 // TODO: print reports on successfully posted batch
