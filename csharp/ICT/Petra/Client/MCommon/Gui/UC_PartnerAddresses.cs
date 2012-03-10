@@ -976,7 +976,8 @@ namespace Ict.Petra.Client.MCommon.Gui
             }
 
             // Check security for Delete record operations
-            if (FLogic.CheckDeleteSecurityGeneral(false))
+            // do not allow deletion of record, if this is location 0 (this is done in DataGrid_FocusRowEntered)
+            if (FLogic.CheckDeleteSecurityGeneral(false) && btnDeleteRecord.Enabled)
             {
                 btnDeleteRecord.Enabled = true;
 
