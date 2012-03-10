@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1396,6 +1396,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                                 ApplySecurity();
                             }
                         }
+
+                        FPetraUtilsObject.SetChangedFlag();
 
                         // Fire OnRecalculateScreenParts event
                         RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
