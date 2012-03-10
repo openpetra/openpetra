@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -640,97 +640,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 // Set the Focus on the clicked control (it is stored in the senders (=Label's) Tag Property...)
                 ((Control)((Control)sender).Tag).Focus();
-            }
-        }
-
-        /// <summary>
-        /// Revert all changes made since BeginEdit was called on a DataRow. This
-        /// affects the data in the DataTables to which the Controls are DataBound to
-        /// and the displayed information in the DataBound Controls.
-        ///
-        /// Based on the two parameters the procedure also determines whether it needs to
-        /// delete the affected DataRows as well.
-        ///
-        /// </summary>
-        /// <param name="ANewFromLocation0">Set to true if a new record was just created when
-        /// there was only the Location0 record in the Grid</param>
-        /// <param name="ARecordAdded">Set to true if a new there was just created
-        /// </param>
-        /// <returns>void</returns>
-        public void CancelEditing(Boolean ANewFromLocation0, Boolean ARecordAdded)
-        {
-            System.Windows.Forms.CurrencyManager LocationCurrencyManager;
-            System.Windows.Forms.CurrencyManager PartnerLocationCurrencyManager;
-            DataRow FPartnerLocationDR;
-            DataRow FLocationsDR;
-            Boolean DeleteRows;
-
-            // Get CurrencyManager that is associated with the DataTables to which the
-            // Controls are DataBound.
-            LocationCurrencyManager = (System.Windows.Forms.CurrencyManager)BindingContext[FLocationDV];
-            PartnerLocationCurrencyManager = (System.Windows.Forms.CurrencyManager)BindingContext[FPartnerLocationDV];
-
-            // Revert all changes made since BeginEdit was called on a DataRow. This
-            // affects the data in the DataTables to which the Controls are DataBound to
-            // and the displayed information in the DataBound Controls.
-            LocationCurrencyManager.CancelCurrentEdit();
-            PartnerLocationCurrencyManager.CancelCurrentEdit();
-            DeleteRows = false;
-
-            // Determine whether we need to delete the affected DataRows as well
-            if (FPartnerLocationDV[0].Row.RowState == DataRowState.Added)
-            {
-                if (!FMainDS.PPartner[0].HasVersion(DataRowVersion.Original))
-                {
-                    // Cancelling Editing with a New Partner
-                    // MessageBox.Show('Cancelling Editing with a New Partner...');
-                    if (((new DataView(FMainDS.PPartnerLocation, "", "",
-                              DataViewRowState.CurrentRows).Count > 1) || (ANewFromLocation0)) && ARecordAdded)
-                    {
-                        /*
-                         * Both Location and PartnerLocation Rows will be deleted since the
-                         * Address is new and it is not the last Address or the new Address was
-                         * created when there was only Location 0
-                         */
-
-                        // MessageBox.Show('Location and PartnerLocation Rows will be deleted since the Address is new and it' + "\r\n" + 'is not the last Address or the new Address was created when there was only Location 0!');
-                        DeleteRows = true;
-                    }
-                    else
-                    {
-                    }
-
-                    /*
-                     * Both Location and PartnerLocation Rows won't be deleted since the
-                     * Address is either not new or it is the last Address
-                     */
-
-                    // MessageBox.Show('Location and PartnerLocation Rows won''t be deleted since the Address is either' + "\r\n" + 'not new or it is the last Address!');
-                }
-                else
-                {
-                    // Cancelling Editing with an existing Partner
-                    // MessageBox.Show('Cancelling Editing with an existing Partner...');
-                    if (ARecordAdded)
-                    {
-                        /*
-                         * Both Location and PartnerLocation Rows will be deleted since the
-                         * Address is new
-                         */
-
-                        // MessageBox.Show('Location and PartnerLocation Rows will be deleted since the Address is new!');
-                        DeleteRows = true;
-                    }
-                }
-
-                if (DeleteRows)
-                {
-                    // In addition to cancelling the Edit, we also delete the DataRows
-                    FPartnerLocationDR = FPartnerLocationDV[0].Row;
-                    FLocationsDR = FLocationDV[0].Row;
-                    FPartnerLocationDV.Table.Rows.Remove(FPartnerLocationDR);
-                    FLocationDV.Table.Rows.Remove(FLocationsDR);
-                }
             }
         }
     }
