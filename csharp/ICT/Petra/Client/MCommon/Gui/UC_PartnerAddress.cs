@@ -199,6 +199,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             set
             {
                 FPetraUtilsObject = value;
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(DataSavingStartedHandler);
             }
         }
 
@@ -569,6 +570,11 @@ namespace Ict.Petra.Client.MCommon.Gui
                     cmbCountry.SelectedValue = ((PLocationRow)FLocationDV[0].Row).CountryCode;
                 }
             }
+        }
+
+        private void DataSavingStartedHandler(System.Object obj, EventArgs e)
+        {
+            SaveUnboundControlData();
         }
 
         /// <summary>
