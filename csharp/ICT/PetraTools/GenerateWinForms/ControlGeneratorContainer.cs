@@ -438,6 +438,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                 curNode.Name);
                         }
 
+                        // add control itself
+                        if (!ctrl.controlName.StartsWith("Empty"))
+                        {
+                            IControlGenerator ctrlGenerator = writer.FindControlGenerator(ctrl);
+                            ctrlGenerator.GenerateDeclaration(writer, ctrl);
+                            ctrlGenerator.ProcessChildren(writer, ctrl);
+                            ctrlGenerator.SetControlProperties(writer, ctrl);
+                            ctrlGenerator.OnChangeDataType(writer, ctrl.xmlNode, ctrl.controlName);
+                            writer.InitialiseDataSource(ctrl.xmlNode, ctrl.controlName);
+                            writer.ApplyDerivedFunctionality(ctrlGenerator, ctrl.xmlNode);
+                        }
+
                         ctrl.rowNumber = countRow;
                         RowWidth += ctrl.Width;
 
@@ -483,6 +495,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             curNode.Name);
                     }
 
+                    // process the control itself
+                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(ctrl);
+                    ctrlGenerator.GenerateDeclaration(writer, ctrl);
+                    ctrlGenerator.ProcessChildren(writer, ctrl);
+                    ctrlGenerator.SetControlProperties(writer, ctrl);
+                    writer.ApplyDerivedFunctionality(ctrlGenerator, ctrl.xmlNode);
+
                     if (orientation == TableLayoutPanelGenerator.eOrientation.Horizontal)
                     {
                         Width += ctrl.Width;
@@ -509,39 +528,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            TXMLParser.SetAttribute(curNode, "Height", Height.ToString());
-            TXMLParser.SetAttribute(curNode, "Width", Width.ToString());
+            TControlDef container = writer.CodeStorage.GetControl(curNode.Name);
+
+            container.SetAttribute("Height", Height.ToString());
+            container.SetAttribute("Width", Width.ToString());
 
             return controlNamesCollection;
         }
 
-        /// <summary>write the code for the designer file where the properties of the control are written</summary>
-        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        /// <summary>
+        /// generate the children
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
         {
-            if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
-            {
-                FAutoSize = false;
-            }
-            else if (ctrl.HasAttribute("Height"))
-            {
-                // assume width of parent control
-                ctrl.SetAttribute("Width", (FCodeStorage.FWidth - 10).ToString());
-                FAutoSize = false;
-            }
-            else if (ctrl.HasAttribute("Width") && (ctrl.GetAttribute("Dock") != "Left")
-                     && (ctrl.GetAttribute("Dock") != "Right"))
-            {
-                throw new Exception(
-                    "Control " + ctrl.controlName +
-                    " must have both Width and Height attributes, or just Height, but not Width alone");
-            }
-
-            StringCollection Controls = FindContainedControls(writer, ctrl.xmlNode);
-
-            base.CreateControlsAddStatements = false;
-            base.SetControlProperties(writer, ctrl);
+            base.ProcessChildren(writer, ctrl);
 
             string ControlName = ctrl.controlName;
+
+            StringCollection Controls = FindContainedControls(writer, ctrl.xmlNode);
 
             bool UseTableLayout = false;
 
@@ -594,18 +600,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             ChildControlName + ")");
                     }
                 }
-
-                foreach (string ChildControlName in Controls)
-                {
-                    TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
-                    XmlNode curNode = ChildControl.xmlNode;
-                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(ChildControl);
-
-                    // add control itself
-                    ctrlGenerator.GenerateDeclaration(writer, ChildControl);
-                    ctrlGenerator.SetControlProperties(writer, ChildControl);
-                    writer.ApplyDerivedFunctionality(ctrlGenerator, curNode);
-                }
             }
             else
             {
@@ -624,6 +618,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 TlpGenerator.WriteTableLayout(writer, tlpControlName);
             }
+        }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
+            {
+                FAutoSize = false;
+            }
+            else if (ctrl.HasAttribute("Height"))
+            {
+                // assume width of parent control
+                ctrl.SetAttribute("Width", (FCodeStorage.FWidth - 10).ToString());
+                FAutoSize = false;
+            }
+            else if (ctrl.HasAttribute("Width") && (ctrl.GetAttribute("Dock") != "Left")
+                     && (ctrl.GetAttribute("Dock") != "Right"))
+            {
+                throw new Exception(
+                    "Control " + ctrl.controlName +
+                    " must have both Width and Height attributes, or just Height, but not Width alone");
+            }
+
+            base.CreateControlsAddStatements = false;
+            base.SetControlProperties(writer, ctrl);
 
             if ((base.FPrefix == "grp") || (base.FPrefix == "rgr") || (base.FPrefix == "tpg"))
             {
@@ -706,12 +725,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ChildCtrl.parentName = ctrl.controlName;
             IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
+            ChildGenerator.ProcessChildren(writer, ChildCtrl);
             ChildGenerator.SetControlProperties(writer, ChildCtrl);
 
             ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel2"));
             ChildCtrl.parentName = ctrl.controlName;
             ChildGenerator = writer.FindControlGenerator(ChildCtrl);
             ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
+            ChildGenerator.ProcessChildren(writer, ChildCtrl);
             ChildGenerator.SetControlProperties(writer, ChildCtrl);
 
             return writer.FTemplate;
@@ -826,8 +847,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.AddContainer(ctrl.controlName);
         }
 
-        /// <summary>write the code for the designer file where the properties of the control are written</summary>
-        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
+        /// <summary>
+        /// generate the children, and calculate their size
+        /// </summary>
+        public override void ProcessChildren(TFormWriter writer, TControlDef container)
         {
             FChildren = new List <TControlDef>();
 
@@ -841,7 +864,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             FChildren.Sort(new CtrlItemOrderComparer());
+        }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
+        {
             base.SetControlProperties(writer, container);
 
             if (FCreateControlsAddStatements)

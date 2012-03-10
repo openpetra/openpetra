@@ -136,6 +136,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 Controls.Add(radioButtonName);
                 this.Children.Add(newCtrl);
+
+                IControlGenerator ctrlGenerator = writer.FindControlGenerator(newCtrl);
+                ctrlGenerator.GenerateDeclaration(writer, newCtrl);
+                ctrlGenerator.SetControlProperties(writer, newCtrl);
             }
 
             return Controls;
@@ -302,6 +306,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             foreach (string controlName in Controls)
             {
                 TControlDef radioButton = writer.CodeStorage.GetControl(controlName);
+
+                IControlGenerator ctrlGenerator = writer.FindControlGenerator(radioButton);
+                ctrlGenerator.ProcessChildren(writer, radioButton);
+                ctrlGenerator.GenerateDeclaration(writer, radioButton);
+                ctrlGenerator.SetControlProperties(writer, radioButton);
 
                 if (StringHelper.IsSame(DefaultValue, controlName))
                 {

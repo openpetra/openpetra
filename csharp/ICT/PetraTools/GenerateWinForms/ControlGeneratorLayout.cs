@@ -558,6 +558,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public void CreateCode(TFormWriter writer, TControlDef ctrl)
         {
             XmlNode curNode = ctrl.xmlNode;
+
             IControlGenerator ctrlGenerator = writer.FindControlGenerator(ctrl);
 
             string controlName = ctrl.controlName;
@@ -569,17 +570,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FCurrentColumn = 0;
                     FCurrentRow = ctrl.rowNumber;
                 }
-            }
-
-            // add control itself
-            if (!ctrl.controlName.StartsWith("Empty"))
-            {
-                ctrlGenerator.GenerateDeclaration(writer, ctrl);
-                ctrlGenerator.SetControlProperties(writer, ctrl);
-                ctrlGenerator.OnChangeDataType(writer, curNode, controlName);
-                writer.InitialiseDataSource(curNode, controlName);
-
-                writer.ApplyDerivedFunctionality(ctrlGenerator, curNode);
             }
 
 /* this does not work yet; creates endless loop/recursion
@@ -683,6 +673,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ChildCtrl.SetAttribute("DependsOnRadioButton", "true");
                     IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
                     ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
+                    ChildGenerator.ProcessChildren(writer, ChildCtrl);
                     ChildGenerator.SetControlProperties(writer, ChildCtrl);
 
                     if (FOrientation == eOrientation.Vertical)

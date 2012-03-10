@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,8 @@ namespace Ict.Tools.CodeGeneration
     {
         /// <summary>for implementing some functions specific to the control</summary>
         void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode);
+        /// <summary>generate the code of the contained controls</summary>
+        void ProcessChildren(TFormWriter writer, TControlDef ctrl);
         /// <summary>write the code for the designer file where the control is declared</summary>
         void GenerateDeclaration(TFormWriter writer, TControlDef ctrl);
         /// <summary>write the code for the designer file where the properties of the control are written</summary>

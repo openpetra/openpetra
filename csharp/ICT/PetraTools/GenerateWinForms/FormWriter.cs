@@ -653,6 +653,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             generator.GenerateDeclaration(this, ctrl);
+            generator.ProcessChildren(this, ctrl);
             generator.SetControlProperties(this, ctrl);
 
             if (generator.AddControlToContainer)

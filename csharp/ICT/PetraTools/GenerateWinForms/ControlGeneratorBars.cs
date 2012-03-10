@@ -241,6 +241,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (ctrlGenerator != null)
                     {
                         ctrlGenerator.GenerateDeclaration(writer, ControlDefChild);
+                        ctrlGenerator.ProcessChildren(writer, ControlDefChild);
                         ctrlGenerator.SetControlProperties(writer, ControlDefChild);
                     }
                 }

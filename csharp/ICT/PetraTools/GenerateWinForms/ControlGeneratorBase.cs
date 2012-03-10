@@ -197,6 +197,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// generate the children, and write the size of this control
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
+        public virtual void ProcessChildren(TFormWriter writer, TControlDef ctrl)
+        {
+        }
+
+        /// <summary>
         /// how to assign a value to the control
         /// </summary>
         protected virtual string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
