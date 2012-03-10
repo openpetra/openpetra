@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -644,7 +644,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (ctrl != null)
                     {
                         FFindCriteriaDataTable.Rows[0].BeginEdit();
-                        TLogging.Log("Running SetMatchButtonValues for " + ctrl.Name + ".");
+
+                        if (TLogging.DebugLevel >= 4)
+                        {
+                            TLogging.Log("Running SetMatchButtonValues for " + ctrl.Name + ".");
+                        }
+
                         ((SplitButton)ctrl).SelectedValue = ctrlValue;
                         FFindCriteriaDataTable.Rows[0].EndEdit();
 
