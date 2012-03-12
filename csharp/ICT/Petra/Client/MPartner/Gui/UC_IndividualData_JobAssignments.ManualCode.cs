@@ -32,6 +32,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
@@ -126,8 +127,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.PositionName), Catalog.GetString("Confirm Delete"),
+                            "You have choosen to delete this record ({0} at {1} started {2}).\n\nDo you really want to delete it?"),
+                        	FPreviouslySelectedDetailRow.PositionName,
+                        	FPreviouslySelectedDetailRow.UnitKey.ToString(),
+                        	DataBinding.DateTimeToLongDateString2(FPreviouslySelectedDetailRow.FromDate)), 
+                        Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = CurrentRowIndex();

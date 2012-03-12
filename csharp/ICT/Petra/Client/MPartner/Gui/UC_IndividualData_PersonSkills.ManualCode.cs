@@ -121,8 +121,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.PersonSkillKey), Catalog.GetString("Confirm Delete"),
+                        "You have choosen to delete this record ({0} - {1}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.SkillCategoryCode,
+                        FPreviouslySelectedDetailRow.DescriptionEnglish), 
+                    Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = CurrentRowIndex();
