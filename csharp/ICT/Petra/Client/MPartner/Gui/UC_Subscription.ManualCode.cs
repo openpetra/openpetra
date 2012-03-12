@@ -388,7 +388,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                             MessageBoxDefaultButton.Button2) == DialogResult.No)
                     {
                         /* If user selects not to use the publication, the recent publication code is selected. */
-                        this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue = FSelectedPublicationCode;
+                        if (FSelectedPublicationCode != null)
+                        {
+	                        this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue = FSelectedPublicationCode;
+                        }
+                        else
+                        {
+	                        this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedIndex = -1;
+                        }
                     }
                     else
                     {

@@ -26,7 +26,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PmPassportDetails
-            Columns: [PassportNumber, PassportDetailsType, CountryOfIssue, DateOfExpiration, DateOfIssue]
+            Columns: []
             CustomColumns:
                 PassportNumber: {Label=Passport Number}
                 PassportDetailsType: {Label=Type}

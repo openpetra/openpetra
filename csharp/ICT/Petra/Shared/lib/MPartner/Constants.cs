@@ -46,6 +46,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Addressmanagement</summary>
         public const String ADDRESSCHANGEPROMOTIONPARAMETERS_TABLENAME = "ChangePromotionParameters";
 
+        /// <summary>Publication Valid</summary>
+        public const String PUBLICATION_VALID_TEXT_COLUMNNAME = "PublicationValidText";
+        
         /// <summary>Subscription Statuses</summary>
         public const String SUBSCRIPTIONS_STATUS_PERMANENT = "PERMANENT";
 

@@ -729,6 +729,8 @@ namespace Ict.Petra.Client.CommonControls
                     PPublicationTable.GetPublicationCodeDBName(),
                     PPublicationTable.GetPublicationDescriptionDBName(),
                     null);
+                    // add extra column to show user if Publication is valid or not
+                    cmbCombobox.DisplayInColumn3 = MPartnerConstants.PUBLICATION_VALID_TEXT_COLUMNNAME;
                     break;
 
                 case TListTableEnum.SubscriptionStatus:
@@ -1135,6 +1137,7 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.PublicationList:
                     this.ColumnWidthCol1 = 110;
                     this.ColumnWidthCol2 = 350;
+                    this.ColumnWidthCol3 = 80;
                     break;
 
                 case TListTableEnum.SubscriptionStatus:
