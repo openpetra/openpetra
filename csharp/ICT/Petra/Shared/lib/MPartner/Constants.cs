@@ -48,7 +48,7 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>Publication Valid</summary>
         public const String PUBLICATION_VALID_TEXT_COLUMNNAME = "PublicationValidText";
-        
+
         /// <summary>Subscription Statuses</summary>
         public const String SUBSCRIPTIONS_STATUS_PERMANENT = "PERMANENT";
 

@@ -91,8 +91,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             dtpPSubscriptionDateCancelled.Date = DateEnded;
-            
-        	// show this dialog in center of screen
+
+            // show this dialog in center of screen
             this.StartPosition = FormStartPosition.CenterScreen;
         }
 

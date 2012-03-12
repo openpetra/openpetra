@@ -236,7 +236,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
             {
-	        	FMainDS.Tables.Add(new PSubscriptionTable());
+                FMainDS.Tables.Add(new PSubscriptionTable());
             }
 
             FMainDS.InitVars();
@@ -319,9 +319,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         private void NewRowManual(ref PSubscriptionRow ARow)
         {
-        	// apply changes from previous record
+            // apply changes from previous record
             GetDetailsFromControls(GetSelectedDetailRow());
-        	
+
             // Initialize subscription
             ARow.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
             ARow.PublicationCode = "";

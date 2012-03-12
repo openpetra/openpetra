@@ -128,10 +128,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "You have choosen to delete this record ({0} at {1} started {2}).\n\nDo you really want to delete it?"),
-                        	FPreviouslySelectedDetailRow.PositionName,
-                        	FPreviouslySelectedDetailRow.UnitKey.ToString(),
-                        	DataBinding.DateTimeToLongDateString2(FPreviouslySelectedDetailRow.FromDate)), 
-                        Catalog.GetString("Confirm Delete"),
+                        FPreviouslySelectedDetailRow.PositionName,
+                        FPreviouslySelectedDetailRow.UnitKey.ToString(),
+                        DataBinding.DateTimeToLongDateString2(FPreviouslySelectedDetailRow.FromDate)),
+                    Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = CurrentRowIndex();

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -780,11 +780,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns></returns>
         public bool SaveChanges()
         {
-            bool ReturnValue;
-
-            ReturnValue = SaveChanges(ref FMainDS);
-
-            return ReturnValue;
+            return SaveChanges(ref FMainDS);
         }
 
         /// <summary>
@@ -967,12 +963,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     if (SubmitDS != null)
                     {
-	                    if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
-	                        || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-	                        || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
-	                    {
-	                        AddressesOrRelationsChanged = true;
-	                    }
+                        if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
+                            || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                            || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
+                        {
+                            AddressesOrRelationsChanged = true;
+                        }
                     }
 
                     // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
@@ -1222,9 +1218,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         case TSubmitChangesResult.scrNothingToBeSaved:
 
-		                    /* if there were no changes discovered then still need to call AcceptChanges to get rid now of 
-	 						   any deleted columns */
-	                        AInspectDS.AcceptChanges();
+                            /* if there were no changes discovered then still need to call AcceptChanges to get rid now of
+                             *                     any deleted columns */
+                            AInspectDS.AcceptChanges();
 
                             // Update UI
                             FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataNothingToSave);

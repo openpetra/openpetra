@@ -117,13 +117,14 @@ namespace Ict.Petra.Client.MPartner
                 // Add relation table to data set
                 if (FMainDS.PRelation == null)
                 {
-	                FMainDS.Tables.Add(new PRelationTable());
+                    FMainDS.Tables.Add(new PRelationTable());
                 }
+
                 relationTable = (PRelationTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationList);
                 // rename data table as otherwise the merge with the data set won't work; tables need to have same name
                 relationTable.TableName = "PRelation";
                 FMainDS.Merge(relationTable);
-                
+
                 // Relations are not automatically enabled. Need to enable them here in order to use for columns.
                 FMainDS.EnableRelations();
 

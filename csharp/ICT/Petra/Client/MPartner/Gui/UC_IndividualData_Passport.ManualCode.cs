@@ -82,14 +82,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             LoadDataOnDemand();
 
             grdDetails.Columns.Clear();
-			grdDetails.AddTextColumn("Passport Number", FMainDS.PmPassportDetails.ColumnPassportNumber);
-			grdDetails.AddTextColumn("Type", FMainDS.PmPassportDetails.ColumnPassportDetailsType);
+            grdDetails.AddTextColumn("Passport Number", FMainDS.PmPassportDetails.ColumnPassportNumber);
+            grdDetails.AddTextColumn("Type", FMainDS.PmPassportDetails.ColumnPassportDetailsType);
             grdDetails.AddTextColumn("Passport Nationality",
                 FMainDS.PmPassportDetails.Columns["Parent_" + PCountryTable.GetCountryNameDBName()]);
-			grdDetails.AddDateColumn("Expiration Date", FMainDS.PmPassportDetails.ColumnDateOfExpiration);
-			grdDetails.AddDateColumn("Issue Date", FMainDS.PmPassportDetails.ColumnDateOfIssue);
-            
-            
+            grdDetails.AddDateColumn("Expiration Date", FMainDS.PmPassportDetails.ColumnDateOfExpiration);
+            grdDetails.AddDateColumn("Issue Date", FMainDS.PmPassportDetails.ColumnDateOfIssue);
+
+
             FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
 
             // enable grid to react to insert and delete keyboard keys
@@ -290,13 +290,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Add relation table to data set
                 if (FMainDS.PCountry == null)
                 {
-	                FMainDS.Tables.Add(new PCountryTable());
+                    FMainDS.Tables.Add(new PCountryTable());
                 }
+
                 CountryTable = (PCountryTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
                 // rename data table as otherwise the merge with the data set won't work; tables need to have same name
                 CountryTable.TableName = PCountryTable.GetTableName();
                 FMainDS.Merge(CountryTable);
-                
+
                 // Relations are not automatically enabled. Need to enable them here in order to use for columns.
                 FMainDS.EnableRelations();
 
@@ -306,7 +307,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ForeignTableColumn.ColumnName = "Parent_" + PCountryTable.GetCountryNameDBName();
                 ForeignTableColumn.Expression = "Parent." + PCountryTable.GetCountryNameDBName();
                 FMainDS.PmPassportDetails.Columns.Add(ForeignTableColumn);
-                
+
                 if (FMainDS.PmPassportDetails.Rows.Count != 0)
                 {
                     ReturnValue = true;

@@ -161,8 +161,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!FMainDS.Tables.Contains(PartnerEditTDSPPartnerRelationshipTable.GetTableName()))
             {
-	            FMainDS.Tables.Add(new PartnerEditTDSPPartnerRelationshipTable());
+                FMainDS.Tables.Add(new PartnerEditTDSPPartnerRelationshipTable());
             }
+
             FMainDS.InitVars();
         }
 

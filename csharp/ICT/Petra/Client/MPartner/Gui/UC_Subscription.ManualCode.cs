@@ -390,11 +390,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         /* If user selects not to use the publication, the recent publication code is selected. */
                         if (FSelectedPublicationCode != null)
                         {
-	                        this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue = FSelectedPublicationCode;
+                            this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue = FSelectedPublicationCode;
                         }
                         else
                         {
-	                        this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedIndex = -1;
+                            this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedIndex = -1;
                         }
                     }
                     else

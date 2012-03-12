@@ -95,11 +95,12 @@ namespace Ict.Petra.Client.CommonControls
         {
             get
             {
-            	if(!ValidDate(false))
-            	{
-            		FDate = null;
-            		this.Clear();
-            	}
+                if (!ValidDate(false))
+                {
+                    FDate = null;
+                    this.Clear();
+                }
+
                 return FDate;
             }
 
@@ -492,9 +493,9 @@ namespace Ict.Petra.Client.CommonControls
                     FDate = null;
                 }
 
-				// set tag to "SuppressChangeDetection" so text change is not detected by TFrmPetraEditUtils.MultiEventHandler
+                // set tag to "SuppressChangeDetection" so text change is not detected by TFrmPetraEditUtils.MultiEventHandler
                 object OriginalTag = this.Tag;
-				this.Tag = CommonResourcestrings.StrCtrlSuppressChangeDetection;
+                this.Tag = CommonResourcestrings.StrCtrlSuppressChangeDetection;
                 FSuppressTextChangeEvent = true;
 
                 // Now update the TextBox's Text with the newly formatted date

@@ -132,10 +132,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                return;
 //            }
 
-            if (MessageBox.Show(String.Format(Catalog.GetString("You have choosen to delete this record ({0} at {1} started {2}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.StatusCode, 
-                            FPreviouslySelectedDetailRow.ReceivingField.ToString(),
-                            DataBinding.DateTimeToLongDateString2(FPreviouslySelectedDetailRow.StartOfCommitment)),
+            if (MessageBox.Show(String.Format(Catalog.GetString(
+                            "You have choosen to delete this record ({0} at {1} started {2}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.StatusCode,
+                        FPreviouslySelectedDetailRow.ReceivingField.ToString(),
+                        DataBinding.DateTimeToLongDateString2(FPreviouslySelectedDetailRow.StartOfCommitment)),
                     Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {

@@ -101,12 +101,12 @@ namespace Ict.Petra.Server.MPartner.Common
                     // watch out for empty country codes
                     if (AAddress[0].CountryCode.Trim().Length > 0)
                     {
-	                    if (CountryTable.DefaultView.Find(AAddress[0].CountryCode) == -1)
-	                    {
-	                        CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(AAddress[0].CountryCode, ATransaction));
-	                    }
-	
-	                    ACountryNameLocal = CountryTable[CountryTable.DefaultView.Find(AAddress[0].CountryCode)].CountryNameLocal;
+                        if (CountryTable.DefaultView.Find(AAddress[0].CountryCode) == -1)
+                        {
+                            CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(AAddress[0].CountryCode, ATransaction));
+                        }
+
+                        ACountryNameLocal = CountryTable[CountryTable.DefaultView.Find(AAddress[0].CountryCode)].CountryNameLocal;
                     }
                 }
             }
