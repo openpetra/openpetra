@@ -260,6 +260,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
                                        Boolean ANoFamily,
                                        StringCollection ASpecificBuildingInfo);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        String ExportAllPartnersExt();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         Boolean ImportDataExt(System.String[] ALinesToImport,
                               System.String ALimitToOption,
                               System.Boolean ADoNotOverwrite,

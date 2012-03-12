@@ -247,6 +247,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             bool TaggedInvoicesPostable = false;
             bool TaggedInvoicesPayable = false;
+            bool TaggedInvoicesReversable = false;
+            bool TaggedInvoicesDeletable = false;
             Decimal TotalSelected = 0;
             bool ListHasItems = false;
 
@@ -273,17 +275,24 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             }
                         }
 
+                        String BarStatus = "|" + Row[AApDocumentTable.GetDocumentStatusDBName()].ToString();
                         //
-                        // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
+                        // While I'm in this loop, I'll also check whether to enable the "Pay", "Post", "Reverse" and "Delete" buttons.
                         //
-                        if ("|POSTED|PARTPAID|".IndexOf("|" + Row[AApDocumentTable.GetDocumentStatusDBName()].ToString()) >= 0)
+                        if ("|POSTED|PARTPAID|".IndexOf(BarStatus) >= 0)
                         {
                             TaggedInvoicesPayable = true;
                         }
 
-                        if ("|POSTED|PARTPAID|PAID|".IndexOf(Row[AApDocumentTable.GetDocumentStatusDBName()].ToString()) < 0)
+                        if ("|POSTED|PARTPAID|PAID|".IndexOf(BarStatus) < 0)
                         {
                             TaggedInvoicesPostable = true;
+                            TaggedInvoicesDeletable = true;
+                        }
+
+                        if ("|POSTED" == BarStatus)
+                        {
+                            TaggedInvoicesReversable = true;
                         }
                     }
                 }
@@ -293,6 +302,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             ActionEnabledEvent(null, new ActionEventArgs("actPaySelected", TaggedInvoicesPayable));
             ActionEnabledEvent(null, new ActionEventArgs("actPostSelected", TaggedInvoicesPostable));
+            ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", TaggedInvoicesReversable));
+            ActionEnabledEvent(null, new ActionEventArgs("actDeleteSelected", TaggedInvoicesDeletable));
             ActionEnabledEvent(null, new ActionEventArgs("actTagAllPostable", ListHasItems));
             ActionEnabledEvent(null, new ActionEventArgs("actTagAllPayable", ListHasItems));
             ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", ListHasItems));

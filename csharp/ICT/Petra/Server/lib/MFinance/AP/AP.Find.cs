@@ -301,7 +301,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// (Also called from EditTransaction.)
         /// </summary>
         /// <param name="ApDocumentId"></param>
-        /// <param name="DocPaymntTbl">If this is null, a temporary reference is created.</param>
         /// <returns>Amount already paid</returns>
         [NoRemoting]
         public static Decimal GetPartPaidAmount(Int32 ApDocumentId)
