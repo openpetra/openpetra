@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -240,7 +240,7 @@ public class TSQLiteWriter
 
                 if (File.Exists(filename + ".local"))
                 {
-                    filename += filename + ".local";
+                    filename += ".local";
                 }
 
                 StreamReader reader = new StreamReader(filename);
