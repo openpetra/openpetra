@@ -178,6 +178,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedGridRow.Length >= 1)
             {
                 FSelectedPaymentRow = (AccountsPayableTDSAApPaymentRow)SelectedGridRow[0].Row;
+
                 if (!FSelectedPaymentRow.IsSupplierKeyNull())
                 {
                     AApSupplierRow supplier = TFrmAPMain.GetSupplier(FMainDS.AApSupplier, FSelectedPaymentRow.SupplierKey);
@@ -220,20 +221,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             //
             Int32 MinPaymentNumber = FMainDS.AApPayment[0].PaymentNumber;
             Int32 MaxPaymentNumber = MinPaymentNumber;
+
             foreach (AccountsPayableTDSAApPaymentRow PaymentRow in FMainDS.AApPayment.Rows)
             {
                 if (PaymentRow.PaymentNumber < MinPaymentNumber)
+                {
                     MinPaymentNumber = PaymentRow.PaymentNumber;
+                }
+
                 if (PaymentRow.PaymentNumber > MaxPaymentNumber)
+                {
                     MaxPaymentNumber = PaymentRow.PaymentNumber;
+                }
             }
+
             Int32 LedgerNumber = FMainDS.AApPayment[0].LedgerNumber;
 
             // Print Payment report..
             TFrmAP_PaymentReport.CreateReportNoGui(LedgerNumber, MinPaymentNumber, MaxPaymentNumber, this);
-
         }
-    
+
         private void MakePayment(object sender, EventArgs e)
         {
             FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
@@ -317,7 +324,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APaymentNumber"></param>

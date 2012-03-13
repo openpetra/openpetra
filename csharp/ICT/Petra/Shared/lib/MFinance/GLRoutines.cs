@@ -68,18 +68,19 @@ namespace Ict.Petra.Shared.MFinance
                 ATransactionRow r = (ATransactionRow)v.Row;
 
                 // recalculate the amount in base currency
+
 /*
-                // I don't want to do this here -
-                // I have "forex reval" transactions that deliberately have different amounts in Base,
-                // to revalue the foreign transactions.
-                //      CSharp\ICT\Petra\Server\lib\MFinance\AP\AP.EditTransaction.cs 
-                //      CreateGLBatchAndTransactionsForPaying (line 1111)
-                //                                                                   Tim Ingham March 2012
- 
-                // BUT - if this is not calculated here, it needs to be calculated by the caller prior to calling this.
- 
-                r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
-*/
+ *              // I don't want to do this here -
+ *              // I have "forex reval" transactions that deliberately have different amounts in Base,
+ *              // to revalue the foreign transactions.
+ *              //      CSharp\ICT\Petra\Server\lib\MFinance\AP\AP.EditTransaction.cs
+ *              //      CreateGLBatchAndTransactionsForPaying (line 1111)
+ *              //                                                                   Tim Ingham March 2012
+ *
+ *              // BUT - if this is not calculated here, it needs to be calculated by the caller prior to calling this.
+ *
+ *              r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
+ */
                 if (r.DebitCreditIndicator)
                 {
                     ACurrentJournal.JournalDebitTotal += r.TransactionAmount;
