@@ -236,7 +236,14 @@ public class TSQLiteWriter
                 cmd.CommandText = stmt;
 
                 // load the data from the text file
-                StreamReader reader = new StreamReader(APath + Path.DirectorySeparatorChar + ATablename + ".csv");
+                string filename = APath + Path.DirectorySeparatorChar + ATablename + ".csv";
+
+                if (File.Exists(filename + ".local"))
+                {
+                    filename += filename + ".local";
+                }
+
+                StreamReader reader = new StreamReader(filename);
                 string line;
 
                 while ((line = reader.ReadLine()) != null)
