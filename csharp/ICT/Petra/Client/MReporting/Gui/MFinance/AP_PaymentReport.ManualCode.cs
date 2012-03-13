@@ -28,6 +28,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -43,29 +44,62 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
-                txtLedgerNumber.Text = FLedgerNumber.ToString();
             }
+        }
+
+        private static void DefineReportColumns(TRptCalculator ACalc)
+        {
+            int ColumnCounter = 0;
+            ACalc.AddParameter("param_calculation", "", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)6.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentNumber", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)5.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentBank", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentRef", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentDate", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentCurrency", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "PaymentTotal", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("MaxDisplayColumns", ColumnCounter);
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("MaxDisplayColumns", 7);
-            int ColumnCounter = 0;
-            ACalc.AddParameter("param_calculation", "Payment", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
-            ACalc.AddParameter("param_calculation", "PaymentNumber", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
-            ACalc.AddParameter("param_calculation", "PaymentBank", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
-            ACalc.AddParameter("param_calculation", "PaymentRef", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
-            ACalc.AddParameter("param_calculation", "PaymentDate", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter++);
-            ACalc.AddParameter("param_calculation", "PaymentTotal", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
-            ACalc.AddParameter("param_calculation", "PaymentTotal", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            DefineReportColumns(ACalc);
+        }
+
+        /// <summary>
+        /// Call this to generate a payment report without showing the UI to the user.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AMinPaymentNumber"></param>
+        /// <param name="AMaxPaymentNumber"></param>
+        /// <param name="Owner"></param>
+        public static void CreateReportNoGui(Int32 ALedgerNumber, Int32 AMinPaymentNumber, Int32 AMaxPaymentNumber, Form Owner)
+        {
+            TRptCalculator Calculator = new TRptCalculator();
+            TFrmPetraReportingUtils.InitialiseCalculator(
+                Calculator, 
+                "Finance/AccountsPayable/AP_PaymentReport.xml,Finance/finance.xml,common.xml", 
+                "",
+                "APPaymentReport");
+
+            Calculator.AddParameter("param_payment_num_from_i", AMinPaymentNumber);
+            Calculator.AddParameter("param_payment_num_to_i", AMaxPaymentNumber);
+
+/*
+            Calculator.AddParameter("param_payment_date_from_i", DateTime.Now);
+            Calculator.AddParameter("param_payment_date_to_i", DateTime.Now);
+*/
+            Calculator.AddParameter("param_ledger_number_i", ALedgerNumber);
+            DefineReportColumns(Calculator);
+
+            TFrmPetraReportingUtils.GenerateReport(Calculator, Owner, "APPaymentReport", true);
         }
     }
 }

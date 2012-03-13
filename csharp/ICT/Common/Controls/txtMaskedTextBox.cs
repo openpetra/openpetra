@@ -177,6 +177,11 @@ namespace Ict.Common.Controls
         /// <param name="value"></param>
         private void ProcessChangedText(string value)
         {
+            if (value == null) // null value can occur during form initialisation
+            {
+                base.Text = "";
+                return;
+            }
             string CurrentText;
 
 //                  MessageBox.Show("set_Text: value=" + value);
@@ -213,7 +218,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    // trim string to maximum lenght
+                    // trim string to maximum length
                     value = value.Substring(0, 10);
                 }
 

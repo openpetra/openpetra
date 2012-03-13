@@ -52,34 +52,34 @@ namespace Ict.Common
         /// <returns>void</returns>
         public TFileVersionInfo(String ARPMStyleVersion)
         {
-            Int32 pos;
+            // 2.2.35-99: major.minor.build-private
+            String[] VersionParts = ARPMStyleVersion.Split(new char[]{'.'});
 
-            // 2.2.35: major.minor.buildprivate
+            FileMajorPart = 0;
+            FileMinorPart = 0;
+            FileBuildPart = 0;
+            FilePrivatePart = 0;
 
-            pos = ARPMStyleVersion.IndexOf('.');
-            FileMajorPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-            ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-            pos = ARPMStyleVersion.IndexOf('.');
-            FileMinorPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-            ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-            pos = ARPMStyleVersion.IndexOf('-');
-
-            if (pos == -1)
+            if (VersionParts.Length > 0)
             {
-                pos = ARPMStyleVersion.IndexOf('.');
+                FileMajorPart = System.Convert.ToUInt16(VersionParts[0]);
             }
 
-            if (pos == -1)
+            if (VersionParts.Length > 1)
             {
-                FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion);
-                FilePrivatePart = 0;
+                FileMinorPart = System.Convert.ToUInt16(VersionParts[1]);
             }
-            else
+
+            if (VersionParts.Length > 2)
             {
-                FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-                ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-                FilePrivatePart = System.Convert.ToUInt16(ARPMStyleVersion);
+                String[] BuildParts = VersionParts[2].Split(new char[] { '-' });
+                FileBuildPart = System.Convert.ToUInt16(BuildParts[0]);
+                if (BuildParts.Length > 1)
+                {
+                    FilePrivatePart = System.Convert.ToUInt16(BuildParts[1]);
+                }
             }
+
         }
 
         /// <summary>

@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 DateFormat = "mdy";
             }
 
-            String PetraVersion = "3";  // TODO: I should be able to get this out of the system somewhere!
+            String PetraVersion = "3.0.0";  // TODO: I should be able to get this out of the system somewhere!
             long MySiteKey = DomainManager.GSiteKey;
             String SubVersion = "0";
 

@@ -18,6 +18,7 @@ RootNode:
         actPostDocument: {Label=Post, ActionClick=PostDocument}
         actPayDocument: {Label=Pay, ActionClick=PayDocument}
         actUseTaxAccount: {ActionClick=UseTaxAccount}
+        actLookupExchangeRate: {ActionClick=LookupExchangeRate}
     Controls:
         pnlContent:
             Controls: [pnlSupplierInfo, grpDocumentInfo, grpDetails]
@@ -35,7 +36,7 @@ RootNode:
                 Row1: [txtReference]
                 Row2: [dtpDateIssued, dtpDateDue, nudCreditTerms]
                 Row3: [nudDiscountDays, txtDiscountPercentage]
-                Row4: [txtTotalAmount, txtExchangeRateToBase]
+                Row4: [txtTotalAmount, txtExchangeRateToBase, btnLookupExchangeRate]
             Dock: Top
         txtDocumentCode: {Label=Invoice &Number}
         cmbDocumentType:
@@ -59,8 +60,8 @@ RootNode:
             Format: Currency(2)
         txtExchangeRateToBase:
             Label: E&xchange Rate
-            Format: Decimal
-            # TODO: default value from daily exchange rate? update daily exchange rate?
+            Format: Decimal(5)
+        btnLookupExchangeRate: {Label=Lookup}
         grpDetails:
             Label: Details
             Dock: Fill
