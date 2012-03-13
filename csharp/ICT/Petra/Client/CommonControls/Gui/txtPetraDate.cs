@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean FAllowPastDate;
         private Boolean FLeavingOnFailedValidationOK;
         private String FDateDescription;
+        private Boolean FAllowVerification = true;
 
         private DateTime minimalDateValue;
         private DateTime maximalDateValue;
@@ -222,6 +223,22 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// This property determines whether verification of date is allowed. (Default: true)
+        /// </summary>
+        public Boolean AllowVerification
+        {
+            get
+            {
+                return FAllowVerification;
+            }
+
+            set
+            {
+                FAllowVerification = value;
+            }
+        }
+        
+        /// <summary>
         /// This property determines whether the user will be allowed to leave the Date
         /// TextBox if it contains an invalid date. (Default: true)
         ///
@@ -256,6 +273,7 @@ namespace Ict.Petra.Client.CommonControls
             FAllowFutureDate = true;
             FAllowPastDate = true;
             FAllowEmpty = true;
+            FAllowVerification = true;
 
             minimalDateValue = DateTime.MinValue;
             maximalDateValue = DateTime.MaxValue;
@@ -397,7 +415,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </returns>
         private Boolean VerifyDate(Boolean AShowVerificationError)
         {
-            if (!this.Enabled)
+            if (!FAllowVerification)
             {
                 return true;
             }
