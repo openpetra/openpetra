@@ -190,21 +190,21 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             if (FSearchTransactions)
             {
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
-                String SqlQuery = "SELECT " +
-                                  "PUB_a_ap_document_payment.a_payment_number_i as ApNum, " +
-                                  "a_document_code_c||'-Payment' as InvNum, " +
+                String SqlQuery = "SELECT DISTINCT " +
+                                  "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
+                                  "'' as InvNum, " +
                                   "true as CreditNote, " +
-                                  "a_amount_n as Amount, " +
+                                  "PUB_a_ap_payment.a_amount_n as Amount, " +
                                   "'' as Status, " +
                                   "0 as DiscountPercent, " +
                                   "0 as DiscountDays, " +
-                                  "PUB_a_ap_document_payment.s_date_created_d as Date\n" +
-                                  " FROM PUB_a_ap_document_payment LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ledger_number_i=PUB_a_ap_document.a_ledger_number_i"
-                                  +
-                                  " AND PUB_a_ap_document_payment.a_ap_number_i=PUB_a_ap_document.a_ap_number_i\n" +
+                                  "PUB_a_ap_payment.s_date_created_d as Date, " +
+                                  "0 as DocumentId\n" +
+                                  " FROM PUB_a_ap_payment LEFT JOIN PUB_a_ap_document_payment on PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i" +
+                                  " LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i\n" +
                                   " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + FLedgerNumber +
                                   " AND p_partner_key_n=" + PartnerKey +
-                                  "\nUNION\n" +
+                                  "\n UNION\n" +
                                   " SELECT " +
                                   "a_ap_number_i as ApNum, " +
                                   "a_document_code_c as InvNum, " +
@@ -213,7 +213,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   "a_document_status_c as Status, " +
                                   "a_discount_percentage_n as DiscountPercent, " +
                                   "a_discount_days_i as DiscountDays, " +
-                                  "a_date_issued_d as Date\n" +
+                                  "a_date_issued_d as Date, " +
+                                  "a_ap_document_id_i as DocumentId\n" +
                                   " FROM PUB_a_ap_document\n" +
                                   " WHERE a_ledger_number_i=" + FLedgerNumber +
                                   " AND p_partner_key_n=" + PartnerKey +
@@ -299,25 +300,16 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// Find out how much has already been paid off this invoice.
         /// (Also called from EditTransaction.)
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ApDocumentRef"></param>
-        /// <param name="DocPaymntTbl">If this is null, a temporary reference is created.</param>
+        /// <param name="ApDocumentId"></param>
         /// <returns>Amount already paid</returns>
         [NoRemoting]
-        public static Decimal GetPartPaidAmount(Int32 ALedgerNumber, Int32 ApDocumentRef, AApDocumentPaymentTable DocPaymntTbl)
+        public static Decimal GetPartPaidAmount(Int32 ApDocumentId)
         {
-            if (DocPaymntTbl == null)
-            {
-                DocPaymntTbl = new AApDocumentPaymentTable();
-            }
 
             Decimal PaidAmount = 0m;
-            AApDocumentPaymentRow DocumentPaymentTemplate = DocPaymntTbl.NewRowTyped(false);
-            DocumentPaymentTemplate.LedgerNumber = ALedgerNumber;
-            DocumentPaymentTemplate.ApNumber = ApDocumentRef;
 
             AApDocumentPaymentTable PreviousPayments =
-                AApDocumentPaymentAccess.LoadUsingTemplate(DocumentPaymentTemplate, null);
+                AApDocumentPaymentAccess.LoadViaAApDocument (ApDocumentId, null);
 
             foreach (AApDocumentPaymentRow PrevPaymentRow in PreviousPayments.Rows)
             {
@@ -374,9 +366,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
                     if (Row["a_document_status_c"].Equals(MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID))
                     {
-                        Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"] - GetPartPaidAmount(FLedgerNumber,
-                            (Int32)Row["a_ap_number_i"],
-                            null);
+                        Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"] - GetPartPaidAmount((Int32)Row["a_ap_document_id_i"]);
                     }
                 }
             }
@@ -494,7 +484,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
                        DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName() + "," +
-                       DocTbl + AApDocumentTable.GetCreditNoteFlagDBName();
+                       DocTbl + AApDocumentTable.GetCreditNoteFlagDBName() + "," +
+                       DocTbl + AApDocumentTable.GetApDocumentIdDBName();
             }
             else    // Find Suppliers
             {

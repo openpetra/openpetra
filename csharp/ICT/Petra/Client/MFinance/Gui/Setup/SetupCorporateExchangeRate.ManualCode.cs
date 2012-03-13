@@ -64,28 +64,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                          TCacheableFinanceTablesEnum.LedgerDetails, value))[0];
                 baseCurrencyOfLedger = ledger.BaseCurrency;
 
-
-                this.txtDetailRateOfExchange.Validated +=
-                    new System.EventHandler(this.ValidatedExchangeRate);
-
-                this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
-                    new System.EventHandler(this.ValueChangedCurrencyCode);
-                this.cmbDetailToCurrencyCode.SelectedValueChanged +=
-                    new System.EventHandler(this.ValueChangedCurrencyCode);
-
-                this.tbbSave.Click +=
-                    new System.EventHandler(this.SetTheFocusToTheGrid);
-
-                this.btnInvertExchangeRate.Click +=
-                    new System.EventHandler(this.InvertExchangeRate);
-
-                FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
-                                                                  ACorporateExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
-                FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = "";
-
                 mniImport.Enabled = true;
                 tbbImport.Enabled = true;
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            this.txtDetailRateOfExchange.Validated +=
+                new System.EventHandler(this.ValidatedExchangeRate);
+
+            this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
+                new System.EventHandler(this.ValueChangedCurrencyCode);
+            this.cmbDetailToCurrencyCode.SelectedValueChanged +=
+                new System.EventHandler(this.ValueChangedCurrencyCode);
+
+            this.tbbSave.Click +=
+                new System.EventHandler(this.SetTheFocusToTheGrid);
+
+            this.btnInvertExchangeRate.Click +=
+                new System.EventHandler(this.InvertExchangeRate);
+
+            FMainDS.ACorporateExchangeRate.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+                                                              ACorporateExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+            FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = "";
         }
 
         /// <summary>
@@ -108,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             DateTime NewDateEffectiveFrom;
 
-            // Calculate the Date from which the Exchange Rate will be effective from. It needs to be preset to the first day of the current month.
+            // Calculate the Date from which the Exchange Rate will be effective. It needs to be preset to the first day of the current month.
             NewDateEffectiveFrom = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             string NewToCurrencyCode;
 
@@ -117,7 +119,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                NewToCurrencyCode = baseCurrencyOfLedger;
+                if (baseCurrencyOfLedger != null)
+                {
+                    NewToCurrencyCode = baseCurrencyOfLedger; // Corporate Exchange rates are not part of any ledger, so this may not be set...
+                }
+                else
+                {
+                    NewToCurrencyCode = "USD";
+                }
+
                 ACorporateExRateRow.RateOfExchange = 1.0m;
             }
             else
@@ -143,8 +153,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ACorporateExRateRow.DateEffectiveFrom = NewDateEffectiveFrom;
+/*
+ // It seems weird to set the date as the first of this month, but the time as now?
             ACorporateExRateRow.TimeEffectiveFrom =
                 (DateTime.Now.Hour * 60 + DateTime.Now.Minute) * 60 + DateTime.Now.Second;
+ */
+            ACorporateExRateRow.TimeEffectiveFrom = 0;
 
             FMainDS.ACorporateExchangeRate.Rows.Add(ACorporateExRateRow);
             grdDetails.Refresh();

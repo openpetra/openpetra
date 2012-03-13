@@ -100,13 +100,17 @@ namespace Ict.Petra.Client.App.Core
 
                 // messagebox.show('Finished executing Client Task #' + FClientTaskDataRow['TaskID'].ToString + ' in Thread.');
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
-#if DEBUGMODE
                 MessageBox.Show("Exception occured in TClientTaskInstance.Execute: \r\n" + Exp.ToString());
                 TLogging.Log("Exception occured in TClientTaskInstance.Execute: \r\n" + Exp.ToString());
-#endif
             }
+#else
+            catch (Exception)
+            {
+            }
+#endif
         }
     }
 }

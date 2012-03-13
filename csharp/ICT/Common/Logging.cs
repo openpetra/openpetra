@@ -104,7 +104,7 @@ namespace Ict.Common
         private static String Context;
 
         /// <summary>
-        /// This is a procedure that is called with the text as an parameter. It can be used to update a status bar.
+        /// This is a procedure that is called with the text as a parameter. It can be used to update a status bar.
         /// </summary>
         private static TStatusCallbackProcedure StatusBarProcedure;
 
