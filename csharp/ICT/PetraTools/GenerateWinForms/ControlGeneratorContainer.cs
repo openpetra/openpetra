@@ -461,7 +461,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
-                StringCollection controlNamesCollection = TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "Controls"));
+                if ((controlsNode != null) && (ctrl.Children.Count == 0))
+                {
+                    StringCollection controlNamesCollection = TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "Controls"));
+
+                    foreach (string childCtrlName in controlNamesCollection)
+                    {
+                        TControlDef childCtrl = writer.CodeStorage.GetControl(childCtrlName);
+
+                        if (!childCtrlName.StartsWith("Empty"))
+                        {
+                            if (childCtrl == null)
+                            {
+                                throw new Exception("cannot find control with name " + childCtrlName + "; it belongs to " +
+                                    ctrl.controlName);
+                            }
+
+                            ctrl.Children.Add(childCtrl);
+                        }
+                    }
+                }
 
                 PanelLayoutGenerator.eOrientation orientation = PanelLayoutGenerator.eOrientation.Vertical;
 
@@ -471,19 +490,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     orientation = PanelLayoutGenerator.eOrientation.Vertical;
                 }
 
-                foreach (string childCtrlName in controlNamesCollection)
+                foreach (TControlDef childCtrl in ctrl.Children)
                 {
-                    TControlDef childCtrl = writer.CodeStorage.GetControl(childCtrlName);
-
-                    if ((childCtrl == null)
-                        && (!childCtrlName.StartsWith("Empty")))
-                    {
-                        throw new Exception("cannot find control with name " + childCtrlName + "; it belongs to " +
-                            ctrl.controlName);
-                    }
-
-                    ctrl.Children.Add(childCtrl);
-
                     // process the control itself
                     IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
                     ctrlGenerator.GenerateControl(writer, childCtrl);
@@ -518,23 +526,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 PanelLayoutGenerator TlpGenerator = new PanelLayoutGenerator();
                 TlpGenerator.SetOrientation(ctrl);
-                string tlpControlName = TlpGenerator.CreateLayout(writer, ctrl, -1, -1);
+                TControlDef tlpControl = TlpGenerator.CreateLayout(writer, ctrl, -1, -1);
                 writer.CallControlFunction(ctrl.controlName,
                     "Controls.Add(this." +
-                    tlpControlName + ")");
+                    tlpControl.controlName + ")");
 
                 foreach (TControlDef ChildControl in ctrl.Children)
                 {
                     TlpGenerator.InsertControl(writer, ChildControl);
                 }
 
-                TlpGenerator.WriteTableLayout(writer, tlpControlName);
+                TlpGenerator.WriteTableLayout(writer, tlpControl);
+
+                Width = Convert.ToInt32(tlpControl.GetAttribute("Width")) + 5;
+                Height = Convert.ToInt32(tlpControl.GetAttribute("Height")) + 5;
             }
 
-            TControlDef container = writer.CodeStorage.GetControl(ctrl.controlName);
+            if (!ctrl.HasAttribute("Width"))
+            {
+                ctrl.SetAttribute("Width", Width.ToString());
+            }
 
-            container.SetAttribute("Height", Height.ToString());
-            container.SetAttribute("Width", Width.ToString());
+            if (!ctrl.HasAttribute("Height"))
+            {
+                ctrl.SetAttribute("Height", Height.ToString());
+            }
 
             return;
         }
@@ -801,11 +817,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override void ProcessChildren(TFormWriter writer, TControlDef container)
         {
             // add all the children
-            foreach (TControlDef child in container.FCodeStorage.FSortedControlList.Values)
+            if (container.Children.Count == 0)
             {
-                if (child.parentName == container.controlName)
+                foreach (TControlDef child in container.FCodeStorage.FSortedControlList.Values)
                 {
-                    container.Children.Add(child);
+                    if (child.parentName == container.controlName)
+                    {
+                        container.Children.Add(child);
+                    }
                 }
             }
 

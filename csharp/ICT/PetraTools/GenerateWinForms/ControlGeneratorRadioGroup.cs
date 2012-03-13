@@ -134,10 +134,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 ctrl.Children.Add(newCtrl);
-
-                IControlGenerator ctrlGenerator = writer.FindControlGenerator(newCtrl);
-                ctrlGenerator.GenerateControl(writer, newCtrl);
             }
+
+            base.ProcessChildren(writer, ctrl);
         }
 
         /// <summary>

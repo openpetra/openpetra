@@ -138,7 +138,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>
         /// optimise the table layout, and write it;
         /// </summary>
-        public void WriteTableLayout(TFormWriter writer, string ctrlname)
+        public void WriteTableLayout(TFormWriter writer, TControlDef LayoutCtrl)
         {
             // calculate the width and height for the columns and rows
             int[] ColumnWidth = new int[FColumnCount];
@@ -261,7 +261,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             childCtrlName = (string)FGrid[columnCounter, rowCounter];
                         }
 
-                        writer.CallControlFunction(ctrlname,
+                        writer.CallControlFunction(LayoutCtrl.controlName,
                             "Controls.Add(this." + childCtrlName + ")");
                         writer.SetControlProperty(childCtrlName,
                             "Location",
@@ -293,10 +293,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            TControlDef layoutControl = writer.FCodeStorage.GetControl(ctrlname);
-            layoutControl.SetAttribute("Width", Width.ToString());
-            layoutControl.SetAttribute("Height", Height.ToString());
-            writer.SetControlProperty(layoutControl, "Size", String.Format("new System.Drawing.Size({0}, {1})", Width, Height));
+            LayoutCtrl.SetAttribute("Width", Width.ToString());
+            LayoutCtrl.SetAttribute("Height", Height.ToString());
+            writer.SetControlProperty(LayoutCtrl, "Size", String.Format("new System.Drawing.Size({0}, {1})", Width, Height));
 
             // by default, the TabOrder is by column, Vertical
             if (FTabOrder != "Horizontal")
@@ -386,9 +385,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>
         /// this function should be used for any collection of controls: on a TabPage, in a table, in a groupbox, radio button list etc.
         /// </summary>
-        /// <returns>the name of the table layout control that still needs to be added to the parent</returns>
-        public string CreateLayout(TFormWriter writer, TControlDef parentContainer, Int32 ANewWidth, Int32 ANewHeight)
+        /// <returns>the layout control that still needs to be added to the parent</returns>
+        public TControlDef CreateLayout(TFormWriter writer, TControlDef parentContainer, Int32 ANewWidth, Int32 ANewHeight)
         {
+            TControlDef result = null;
+
             // first check if the table layout has already been defined in the container with sets of rows?
             XmlNode containerNode = parentContainer.xmlNode;
             XmlNode controlsNode = TXMLParser.GetChild(containerNode, "Controls");
@@ -433,6 +434,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     childctrl.parentName = FTlpName;
                 }
+
+                result = newTableLayoutPanel;
             }
             else
             {
@@ -484,8 +487,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (TControlDef childControl in parentContainer.Children)
                 {
-                    childControl.parentName = FTlpName;
+                    childControl.parentName = newTableLayoutPanel.controlName;
                 }
+
+                result = newTableLayoutPanel;
             }
 
             #region Custom Column Widths and custom Row Heights
@@ -536,7 +541,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             #endregion
 
-            return FTlpName;
+            return result;
         }
 
         /// <summary>
@@ -629,7 +634,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ctrl.ClearAttribute("Width");
                     }
 
-                    string subTlpControlName = TlpGenerator.CreateLayout(writer, ctrl, NewWidth, NewHeight);
+                    TControlDef subTlpControl = TlpGenerator.CreateLayout(writer, ctrl, NewWidth, NewHeight);
 
                     foreach (string ChildControlName in childControls)
                     {
@@ -638,19 +643,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         TlpGenerator.InsertControl(writer, ChildControl);
                     }
 
-                    TlpGenerator.WriteTableLayout(writer, subTlpControlName);
+                    TlpGenerator.WriteTableLayout(writer, subTlpControl);
 
                     if (FOrientation == eOrientation.Vertical)
                     {
-                        AddControl(subTlpControlName, 1, FCurrentRow);
+                        AddControl(subTlpControl.controlName, 1, FCurrentRow);
                     }
                     else if (FOrientation == eOrientation.Horizontal)
                     {
-                        AddControl(subTlpControlName, FCurrentColumn * 2 + 1, 0);
+                        AddControl(subTlpControl.controlName, FCurrentColumn * 2 + 1, 0);
                     }
                     else if (FOrientation == eOrientation.TableLayout)
                     {
-                        AddControl(subTlpControlName, FCurrentColumn + 1, FCurrentRow);
+                        AddControl(subTlpControl.controlName, FCurrentColumn + 1, FCurrentRow);
                     }
                 }
                 else if (childControls.Count == 1)
