@@ -178,7 +178,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
@@ -219,18 +218,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "UseSystemPasswordChar", "true");
             }
 
-            return writer.FTemplate;
-        }
-
-        /// <summary>
-        /// generate the control
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="ATextControl"></param>
-        protected void CreateCode(TFormWriter writer, TControlDef ATextControl)
-        {
             writer.Template.AddToCodelet("ASSIGNFONTATTRIBUTES",
-                "this." + ATextControl.controlName + ".Font = TAppSettingsManager.GetDefaultBoldFont();" + Environment.NewLine);
+                "this." + ctrl.controlName + ".Font = TAppSettingsManager.GetDefaultBoldFont();" + Environment.NewLine);
+
+            return writer.FTemplate;
         }
     }
 

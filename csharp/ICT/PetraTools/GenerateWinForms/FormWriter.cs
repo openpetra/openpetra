@@ -623,7 +623,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FSuspendLayout = "";
             FResumePerformLayout = "";
             FControlDataTypes = new SortedList();
-            TableLayoutPanelGenerator.countTableLayoutPanel = 0;
+            PanelLayoutGenerator.countTableLayoutPanel = 0;
         }
 
         /// <summary>
@@ -652,9 +652,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            generator.GenerateDeclaration(this, ctrl);
-            generator.ProcessChildren(this, ctrl);
-            generator.SetControlProperties(this, ctrl);
+            generator.GenerateControl(this, ctrl);
 
             if (generator.AddControlToContainer)
             {

@@ -72,14 +72,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>
         /// get the radio buttons
         /// </summary>
-        public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
         {
             StringCollection optionalValues =
-                TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "OptionalValues"));
+                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
             string DefaultValue;
 
-            if ((TXMLParser.HasAttribute(curNode, "NoDefaultValue")
-                 && ((TXMLParser.GetAttribute(curNode, "NoDefaultValue")) == "true")))
+            if ((TXMLParser.HasAttribute(ctrl.xmlNode, "NoDefaultValue")
+                 && ((TXMLParser.GetAttribute(ctrl.xmlNode, "NoDefaultValue")) == "true")))
             {
                 DefaultValue = String.Empty;
                 FNoDefaultValue = true;
@@ -89,9 +89,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 DefaultValue = optionalValues[0];
             }
 
-            if (TXMLParser.HasAttribute(curNode, "DefaultValue"))
+            if (TXMLParser.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {
-                DefaultValue = TXMLParser.GetAttribute(curNode, "DefaultValue");
+                DefaultValue = TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue");
             }
             else
             {
@@ -107,7 +107,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             // add the radiobuttons on the fly
-            StringCollection Controls = new StringCollection();
 
             foreach (string optionalValue in optionalValues)
             {
@@ -115,7 +114,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                          StringHelper.UpperCamelCase(optionalValue.Replace("'", "").Replace(" ",
                         "_").Replace("&",
                         ""), false, false);
-                TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, curNode.Name);
+                TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, ctrl.controlName);
                 newCtrl.Label = optionalValue;
 
                 if (StringHelper.IsSame(DefaultValue, optionalValue))
@@ -124,25 +123,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FDefaultValueRadioButton = radioButtonName;
                 }
 
-                if (TYml2Xml.HasAttribute(curNode, "SuppressChangeDetection"))
+                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SuppressChangeDetection"))
                 {
-                    newCtrl.SetAttribute("SuppressChangeDetection", TYml2Xml.GetAttribute(curNode, "SuppressChangeDetection"));
+                    newCtrl.SetAttribute("SuppressChangeDetection", TYml2Xml.GetAttribute(ctrl.xmlNode, "SuppressChangeDetection"));
                 }
 
-                if (TYml2Xml.HasAttribute(curNode, "OnChange"))
+                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "OnChange"))
                 {
-                    newCtrl.SetAttribute("OnChange", TYml2Xml.GetAttribute(curNode, "OnChange"));
+                    newCtrl.SetAttribute("OnChange", TYml2Xml.GetAttribute(ctrl.xmlNode, "OnChange"));
                 }
 
-                Controls.Add(radioButtonName);
-                this.Children.Add(newCtrl);
+                ctrl.Children.Add(newCtrl);
 
                 IControlGenerator ctrlGenerator = writer.FindControlGenerator(newCtrl);
-                ctrlGenerator.GenerateDeclaration(writer, newCtrl);
-                ctrlGenerator.SetControlProperties(writer, newCtrl);
+                ctrlGenerator.GenerateControl(writer, newCtrl);
             }
-
-            return Controls;
         }
 
         /// <summary>
@@ -159,7 +154,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     IfStatement += "if(ARow.RowState == DataRowState.Added)" + Environment.NewLine + "{" + Environment.NewLine;
 
-                    foreach (TControlDef optBtn in this.Children)
+                    foreach (TControlDef optBtn in ctrl.Children)
                     {
                         IfStatement += "    " + optBtn.controlName + ".Checked = ";
                         IfStatement += optBtn.controlName == FDefaultValueRadioButton ? "true" : "false";
@@ -168,7 +163,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     IfStatement += "}" + Environment.NewLine + "else" + Environment.NewLine + "{" + Environment.NewLine;
 
-                    foreach (TControlDef optBtn in this.Children)
+                    foreach (TControlDef optBtn in ctrl.Children)
                     {
                         IfStatement += "    " + optBtn.controlName + ".Checked = false;" + Environment.NewLine;
                     }
@@ -177,7 +172,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    foreach (TControlDef optBtn in this.Children)
+                    foreach (TControlDef optBtn in ctrl.Children)
                     {
                         IfStatement += optBtn.controlName + ".Checked = false;" + Environment.NewLine;
                     }
@@ -186,7 +181,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return IfStatement;
             }
 
-            foreach (TControlDef optBtn in this.Children)
+            foreach (TControlDef optBtn in ctrl.Children)
             {
                 if (!FirstIfStatement)
                 {
@@ -195,7 +190,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 IfStatement += "if(" + AFieldOrNull + " == \"" + optBtn.Label + "\")" + Environment.NewLine + "{" + Environment.NewLine;
 
-                foreach (TControlDef optBtnInner in this.Children)
+                foreach (TControlDef optBtnInner in ctrl.Children)
                 {
                     IfStatement += "    " + optBtnInner.controlName + ".Checked = ";
                     IfStatement += optBtnInner.controlName == optBtn.controlName ? "true" : "false";
@@ -223,7 +218,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return null;
             }
 
-            foreach (TControlDef optBtn in this.Children)
+            foreach (TControlDef optBtn in ctrl.Children)
             {
                 if (!FirstIfStatement)
                 {
@@ -292,15 +287,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>
         /// get the radio buttons
         /// </summary>
-        public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
         {
             StringCollection Controls =
-                TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "Controls"));
             string DefaultValue = Controls[0];
 
-            if (TXMLParser.HasAttribute(curNode, "DefaultValue"))
+            if (TXMLParser.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {
-                DefaultValue = TXMLParser.GetAttribute(curNode, "DefaultValue");
+                DefaultValue = TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue");
             }
 
             foreach (string controlName in Controls)
@@ -308,17 +303,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TControlDef radioButton = writer.CodeStorage.GetControl(controlName);
 
                 IControlGenerator ctrlGenerator = writer.FindControlGenerator(radioButton);
-                ctrlGenerator.ProcessChildren(writer, radioButton);
-                ctrlGenerator.GenerateDeclaration(writer, radioButton);
-                ctrlGenerator.SetControlProperties(writer, radioButton);
+                ctrlGenerator.GenerateControl(writer, radioButton);
 
                 if (StringHelper.IsSame(DefaultValue, controlName))
                 {
                     radioButton.SetAttribute("RadioChecked", "true");
                 }
-            }
 
-            return Controls;
+                ctrl.Children.Add(radioButton);
+            }
         }
     }
 }

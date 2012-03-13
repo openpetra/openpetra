@@ -65,23 +65,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        /// <summary>write the code for the designer file where the properties of the control are written</summary>
-        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        /// <summary>
+        /// add children to the control
+        /// </summary>
+        public override void AddChildren(TFormWriter writer, TControlDef container)
         {
-            string controlName = base.FPrefix + ctrl.controlName.Substring(3);
-
-            // add all the children
-            string addChildren = ToolStripGenerator.GetListOfChildren(writer, ctrl);
-
-            base.SetControlProperties(writer, ctrl);
-
-            if (addChildren.Length > 0)
+            if (container.Children.Count > 0)
             {
-                writer.CallControlFunction(controlName,
+                string addChildren = string.Empty;
+
+                foreach (TControlDef child in container.Children)
+                {
+                    if (addChildren.Length > 0)
+                    {
+                        addChildren += "," + Environment.NewLine + "            ";
+                    }
+
+                    addChildren += child.controlName;
+                }
+
+                writer.CallControlFunction(container.controlName,
                     "DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {" + Environment.NewLine +
                     "               " + addChildren +
                     "})");
             }
+        }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
 
             // deactivate menu items that have no action assigned yet.
             if ((ctrl.GetAction() == null) && !ctrl.HasAttribute("ActionClick") && !ctrl.HasAttribute("ActionOpenScreen")
@@ -177,18 +190,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>
         /// get the controls that belong to the toolstrip
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="container"></param>
-        /// <returns></returns>
-        public static string GetListOfChildren(TFormWriter writer, TControlDef container)
+        public override void ProcessChildren(TFormWriter writer, TControlDef container)
         {
             // add all the children
-            string addChildren = "";
 
             // TODO add Container elements in statusbar
             if (container.controlName.StartsWith("stb"))
             {
-                return addChildren;
+                return;
             }
 
             List <XmlNode>childrenlist;
@@ -214,10 +223,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             foreach (XmlNode child in childrenlist)
             {
                 // Console.WriteLine("Child: " + child.Name);
-                if (addChildren.Length > 0)
-                {
-                    addChildren += "," + Environment.NewLine + "            ";
-                }
 
                 /* Get unique name if we need it
                  * at the moment we need it only for menu separators
@@ -231,7 +236,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ControlDefChild = container.FCodeStorage.GetControl(UniqueChildName);
                 }
 
-                addChildren = addChildren + UniqueChildName;                 //child.Name; //controlName;
+                container.Children.Add(ControlDefChild);
 
                 if (ControlDefChild != null)
                 {
@@ -240,34 +245,43 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // add control itself
                     if (ctrlGenerator != null)
                     {
-                        ctrlGenerator.GenerateDeclaration(writer, ControlDefChild);
-                        ctrlGenerator.ProcessChildren(writer, ControlDefChild);
-                        ctrlGenerator.SetControlProperties(writer, ControlDefChild);
+                        ctrlGenerator.GenerateControl(writer, ControlDefChild);
                     }
                 }
             }
+        }
 
-            return addChildren;
+        /// <summary>
+        /// add children to the control
+        /// </summary>
+        public override void AddChildren(TFormWriter writer, TControlDef container)
+        {
+            if (container.Children.Count > 0)
+            {
+                string addChildren = string.Empty;
+
+                foreach (TControlDef child in container.Children)
+                {
+                    if (addChildren.Length > 0)
+                    {
+                        addChildren += "," + Environment.NewLine + "            ";
+                    }
+
+                    addChildren += child.controlName;
+                }
+
+                writer.CallControlFunction(container.controlName,
+                    "Items.AddRange(new System.Windows.Forms.ToolStripItem[] {" + Environment.NewLine +
+                    "               " + addChildren +
+                    "})");
+            }
         }
 
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
         {
-            string controlName = container.controlName;
-
-            // add all the children
-            string addChildren = GetListOfChildren(writer, container);
-
             container.SetAttribute("Dock", FDocking);
             base.SetControlProperties(writer, container);
-
-            if (addChildren.Length > 0)
-            {
-                writer.CallControlFunction(controlName,
-                    "Items.AddRange(new System.Windows.Forms.ToolStripItem[] {" + Environment.NewLine +
-                    "               " + addChildren +
-                    "})");
-            }
 
             // todo: location?
             // todo: event handler

@@ -743,6 +743,8 @@ namespace Ict.Tools.CodeGeneration
         public XmlNode xmlNode = null;
         /// <summary>control belongs to this storage</summary>
         public TCodeStorage FCodeStorage = null;
+        /// <summary>the children of this control</summary>
+        public List <TControlDef>Children = new List <TControlDef>();
         /// <summary>in the grid layout, the row number where this control appears</summary>
         public int rowNumber = -1;
         /// <summary>if this controls spans several columns in the grid layout</summary>

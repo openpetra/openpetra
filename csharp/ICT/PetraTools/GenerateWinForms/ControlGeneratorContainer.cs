@@ -265,7 +265,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ProcessTemplate snippetTabPageSelectionChanged = null;
             string IgnoreFirstTabSel = String.Empty;
 
-            CreateCode(writer, ctrl);
             base.SetControlProperties(writer, ctrl);
 
             writer.SetControlProperty(ctrl, "DrawMode", "System.Windows.Forms.TabDrawMode.OwnerDrawFixed");
@@ -344,14 +343,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
-        /// generate the code
+        /// process the tab pages
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="ATabControl"></param>
-        protected void CreateCode(TFormWriter writer, TControlDef ATabControl)
+        public override void ProcessChildren(TFormWriter writer, TControlDef ATabControl)
         {
-            ArrayList tabPages = new ArrayList();
-
             FTabControlName = ATabControl.controlName;
 
             // need to save tab pages in a temporary list,
@@ -360,16 +355,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 if (ctrl.controlTypePrefix == "tpg")
                 {
-                    tabPages.Add(ctrl);
+                    ATabControl.Children.Add(ctrl);
                     ctrl.parentName = ATabControl.controlName;
                 }
             }
 
-            foreach (TControlDef ctrl in tabPages)
+            foreach (TControlDef ctrl in ATabControl.Children)
             {
                 TabPageGenerator tabGenerator = new TabPageGenerator();
-                tabGenerator.GenerateDeclaration(writer, ctrl);
-                tabGenerator.SetControlProperties(writer, ctrl);
+                tabGenerator.GenerateControl(writer, ctrl);
             }
         }
     }
@@ -405,20 +399,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
-        /// get the children in this group box
+        /// generate the children
         /// </summary>
-        public virtual StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
         {
-            StringCollection controlNamesCollection;
+            base.ProcessChildren(writer, ctrl);
+
             int Width = 0;
             int Height = 0;
 
-            XmlNode controlsNode = TXMLParser.GetChild(curNode, "Controls");
+            XmlNode controlsNode = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
 
             if ((controlsNode != null) && TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
             {
                 // this defines the layout with several rows with several controls per row
-                string result = "";
                 Int32 countRow = 0;
 
                 foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
@@ -429,37 +423,32 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     foreach (string ctrlname in controls)
                     {
-                        TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+                        TControlDef childCtrl = writer.CodeStorage.GetControl(ctrlname);
 
-                        if ((ctrl == null)
+                        if ((childCtrl == null)
                             && (!ctrlname.StartsWith("Empty")))
                         {
                             throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " +
-                                curNode.Name);
+                                ctrl.controlName);
                         }
 
                         // add control itself
-                        if (!ctrl.controlName.StartsWith("Empty"))
+                        if (!childCtrl.controlName.StartsWith("Empty"))
                         {
-                            IControlGenerator ctrlGenerator = writer.FindControlGenerator(ctrl);
-                            ctrlGenerator.GenerateDeclaration(writer, ctrl);
-                            ctrlGenerator.ProcessChildren(writer, ctrl);
-                            ctrlGenerator.SetControlProperties(writer, ctrl);
-                            ctrlGenerator.OnChangeDataType(writer, ctrl.xmlNode, ctrl.controlName);
-                            writer.InitialiseDataSource(ctrl.xmlNode, ctrl.controlName);
-                            writer.ApplyDerivedFunctionality(ctrlGenerator, ctrl.xmlNode);
+                            ctrl.Children.Add(childCtrl);
+                            IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
+                            ctrlGenerator.GenerateControl(writer, childCtrl);
                         }
 
-                        ctrl.rowNumber = countRow;
-                        RowWidth += ctrl.Width;
+                        childCtrl.rowNumber = countRow;
+                        RowWidth += childCtrl.Width;
 
-                        if (RowHeight < ctrl.Height)
+                        if (RowHeight < childCtrl.Height)
                         {
-                            RowHeight = ctrl.Height;
+                            RowHeight = childCtrl.Height;
                         }
                     }
 
-                    result = StringHelper.ConcatCSV(result, StringHelper.StrMerge(controls, ","), ",");
                     countRow++;
 
                     if (RowWidth > Width)
@@ -469,154 +458,121 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     Height += RowHeight;
                 }
-
-                controlNamesCollection = StringHelper.StrSplit(result, ",");
             }
             else
             {
-                controlNamesCollection = TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+                StringCollection controlNamesCollection = TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "Controls"));
 
-                TableLayoutPanelGenerator.eOrientation orientation = TableLayoutPanelGenerator.eOrientation.Vertical;
+                PanelLayoutGenerator.eOrientation orientation = PanelLayoutGenerator.eOrientation.Vertical;
 
-                if (TYml2Xml.HasAttribute(curNode, "ControlsOrientation")
-                    && (TYml2Xml.GetAttribute(curNode, "ControlsOrientation").ToLower() == "horizontal"))
+                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ControlsOrientation")
+                    && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ControlsOrientation").ToLower() == "horizontal"))
                 {
-                    orientation = TableLayoutPanelGenerator.eOrientation.Vertical;
+                    orientation = PanelLayoutGenerator.eOrientation.Vertical;
                 }
 
-                foreach (string ctrlname in controlNamesCollection)
+                foreach (string childCtrlName in controlNamesCollection)
                 {
-                    TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+                    TControlDef childCtrl = writer.CodeStorage.GetControl(childCtrlName);
 
-                    if ((ctrl == null)
-                        && (!ctrlname.StartsWith("Empty")))
+                    if ((childCtrl == null)
+                        && (!childCtrlName.StartsWith("Empty")))
                     {
-                        throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " +
-                            curNode.Name);
+                        throw new Exception("cannot find control with name " + childCtrlName + "; it belongs to " +
+                            ctrl.controlName);
                     }
 
-                    // process the control itself
-                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(ctrl);
-                    ctrlGenerator.GenerateDeclaration(writer, ctrl);
-                    ctrlGenerator.ProcessChildren(writer, ctrl);
-                    ctrlGenerator.SetControlProperties(writer, ctrl);
-                    writer.ApplyDerivedFunctionality(ctrlGenerator, ctrl.xmlNode);
+                    ctrl.Children.Add(childCtrl);
 
-                    if (orientation == TableLayoutPanelGenerator.eOrientation.Horizontal)
+                    // process the control itself
+                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
+                    ctrlGenerator.GenerateControl(writer, childCtrl);
+
+                    if (orientation == PanelLayoutGenerator.eOrientation.Horizontal)
                     {
-                        Width += ctrl.Width;
+                        Width += childCtrl.Width;
                     }
                     else
                     {
-                        Height += ctrl.Height;
+                        Height += childCtrl.Height;
                     }
                 }
             }
 
             // set the parent control for all children
-            foreach (string ctrlname in controlNamesCollection)
+            foreach (TControlDef childCtrl in ctrl.Children)
             {
-                TControlDef ctrl = writer.CodeStorage.GetControl(ctrlname);
+                childCtrl.parentName = ctrl.controlName;
+            }
 
-                if (ctrl != null)
+            // don't use a tablelayout for controls where all children have the Dock property set
+            foreach (TControlDef ChildControl in ctrl.Children)
+            {
+                if (!ChildControl.HasAttribute("Dock"))
                 {
-                    ctrl.parentName = curNode.Name;
-                }
-                else if (!ctrlname.StartsWith("Empty"))
-                {
-                    throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " + curNode.Name);
+                    ctrl.SetAttribute("UseTableLayout", "true");
                 }
             }
 
-            TControlDef container = writer.CodeStorage.GetControl(curNode.Name);
+            if (ctrl.GetAttribute("UseTableLayout") == "true")
+            {
+                PanelLayoutGenerator TlpGenerator = new PanelLayoutGenerator();
+                TlpGenerator.SetOrientation(ctrl);
+                string tlpControlName = TlpGenerator.CreateLayout(writer, ctrl, -1, -1);
+                writer.CallControlFunction(ctrl.controlName,
+                    "Controls.Add(this." +
+                    tlpControlName + ")");
+
+                foreach (TControlDef ChildControl in ctrl.Children)
+                {
+                    TlpGenerator.InsertControl(writer, ChildControl);
+                }
+
+                TlpGenerator.WriteTableLayout(writer, tlpControlName);
+            }
+
+            TControlDef container = writer.CodeStorage.GetControl(ctrl.controlName);
 
             container.SetAttribute("Height", Height.ToString());
             container.SetAttribute("Width", Width.ToString());
 
-            return controlNamesCollection;
+            return;
         }
 
         /// <summary>
-        /// generate the children
+        /// add the children
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="ctrl"></param>
-        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
+        public override void AddChildren(TFormWriter writer, TControlDef ctrl)
         {
-            base.ProcessChildren(writer, ctrl);
-
-            string ControlName = ctrl.controlName;
-
-            StringCollection Controls = FindContainedControls(writer, ctrl.xmlNode);
-
-            bool UseTableLayout = false;
-
-            // don't use a tablelayout for controls where all children have the Dock property set
-            foreach (string ChildControlName in Controls)
-            {
-                TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
-
-                if (ChildControl == null)
-                {
-                    throw new Exception("cannot find definition of child control " + ChildControlName);
-                }
-
-                if (!ChildControl.HasAttribute("Dock"))
-                {
-                    UseTableLayout = true;
-                }
-            }
-
-            if (!UseTableLayout)
+            if (ctrl.GetAttribute("UseTableLayout") != "true")
             {
                 // first add the control that has Dock=Fill, then the others
-                foreach (string ChildControlName in Controls)
+                foreach (TControlDef ChildControl in ctrl.Children)
                 {
-                    TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
-
                     if (ChildControl.GetAttribute("Dock") == "Fill")
                     {
                         writer.CallControlFunction(ctrl.controlName,
                             "Controls.Add(this." +
-                            ChildControlName + ")");
+                            ChildControl.controlName + ")");
                     }
                 }
 
-                StringCollection ControlsReverse = new StringCollection();
+                List <TControlDef>ControlsReverse = new List <TControlDef>();
 
-                foreach (string ChildControlName in Controls)
+                foreach (TControlDef ChildControl in ctrl.Children)
                 {
-                    ControlsReverse.Insert(0, ChildControlName);
+                    ControlsReverse.Insert(0, ChildControl);
                 }
 
-                foreach (string ChildControlName in ControlsReverse)
+                foreach (TControlDef ChildControl in ControlsReverse)
                 {
-                    TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
-
                     if (ChildControl.GetAttribute("Dock") != "Fill")
                     {
                         writer.CallControlFunction(ctrl.controlName,
                             "Controls.Add(this." +
-                            ChildControlName + ")");
+                            ChildControl.controlName + ")");
                     }
                 }
-            }
-            else
-            {
-                TableLayoutPanelGenerator TlpGenerator = new TableLayoutPanelGenerator();
-                TlpGenerator.SetOrientation(ctrl);
-                string tlpControlName = TlpGenerator.CreateLayout(writer, ControlName, Controls, -1, -1);
-                writer.CallControlFunction(ControlName,
-                    "Controls.Add(this." +
-                    tlpControlName + ")");
-
-                foreach (string ChildControlName in Controls)
-                {
-                    TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
-                    TlpGenerator.CreateCode(writer, ChildControl);
-                }
-
-                TlpGenerator.WriteTableLayout(writer, tlpControlName);
             }
         }
 
@@ -693,6 +649,40 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
+        /// <summary>
+        /// create the two panels
+        /// </summary>
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
+        {
+            TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel1"));
+
+            ctrl.Children.Add(ChildCtrl);
+            ChildCtrl.parentName = ctrl.controlName;
+            IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
+            ChildGenerator.GenerateControl(writer, ChildCtrl);
+
+            ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel2"));
+            ctrl.Children.Add(ChildCtrl);
+            ChildCtrl.parentName = ctrl.controlName;
+            ChildGenerator = writer.FindControlGenerator(ChildCtrl);
+            ChildGenerator.GenerateControl(writer, ChildCtrl);
+        }
+
+        /// <summary>
+        /// add the children to the control
+        /// </summary>
+        public override void AddChildren(TFormWriter writer, TControlDef ctrl)
+        {
+            // add one control for panel1, and one other control for panel2
+            // at the moment, only one control is supported per panel of the splitcontainer
+            writer.CallControlFunction(ctrl.controlName,
+                "Panel1.Controls.Add(this." +
+                ctrl.GetAttribute("Panel1") + ")");
+            writer.CallControlFunction(ctrl.controlName,
+                "Panel2.Controls.Add(this." +
+                ctrl.GetAttribute("Panel2") + ")");
+        }
+
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
@@ -712,29 +702,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     StringHelper.UpperCamelCase(ctrl.GetAttribute("SplitterOrientation")));
             }
 
-            // add one control for panel1, and one other control for panel2
-            // at the moment, only one control is supported per panel of the splitcontainer
-            writer.CallControlFunction(ctrl.controlName,
-                "Panel1.Controls.Add(this." +
-                ctrl.GetAttribute("Panel1") + ")");
-            writer.CallControlFunction(ctrl.controlName,
-                "Panel2.Controls.Add(this." +
-                ctrl.GetAttribute("Panel2") + ")");
-
-            TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel1"));
-            ChildCtrl.parentName = ctrl.controlName;
-            IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
-            ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
-            ChildGenerator.ProcessChildren(writer, ChildCtrl);
-            ChildGenerator.SetControlProperties(writer, ChildCtrl);
-
-            ChildCtrl = ctrl.FCodeStorage.GetControl(ctrl.GetAttribute("Panel2"));
-            ChildCtrl.parentName = ctrl.controlName;
-            ChildGenerator = writer.FindControlGenerator(ChildCtrl);
-            ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
-            ChildGenerator.ProcessChildren(writer, ChildCtrl);
-            ChildGenerator.SetControlProperties(writer, ChildCtrl);
-
             return writer.FTemplate;
         }
     }
@@ -751,14 +718,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>
         /// add adhoc controls for the print preview
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="curNode"></param>
-        /// <returns></returns>
-        public override StringCollection FindContainedControls(TFormWriter writer, XmlNode curNode)
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
         {
             // add the toolbar and the print preview control
-            TControlDef ctrl = writer.CodeStorage.FindOrCreateControl(curNode.Name, null);
-
             TControlDef toolbar = writer.CodeStorage.FindOrCreateControl("tbr" + ctrl.controlName.Substring(
                     ctrl.controlTypePrefix.Length), ctrl.controlName);
             TControlDef ttxCurrentPage = writer.CodeStorage.FindOrCreateControl("ttxCurrentPage", toolbar.controlName);
@@ -778,10 +740,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.controlTypePrefix.Length), ctrl.controlName);
             printPreview.SetAttribute("Dock", "Fill");
 
-            StringCollection Controls = new StringCollection();
-            Controls.Add(toolbar.controlName);
-            Controls.Add(printPreview.controlName);
-            return Controls;
+            ctrl.Children.Add(toolbar);
+            ctrl.Children.Add(printPreview);
         }
     }
 
@@ -790,19 +750,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     /// </summary>
     public class ContainerGenerator : TControlGenerator
     {
-        List <TControlDef>FChildren = new List <TControlDef>();
         bool FCreateControlsAddStatements = true;
-
-        /// <summary>
-        /// the children of this container, ie. controls that live in this container
-        /// </summary>
-        public List <TControlDef>Children
-        {
-            get
-            {
-                return FChildren;
-            }
-        }
 
         /// <summary>
         /// code for creating the controls and adding them to the container
@@ -852,18 +800,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// </summary>
         public override void ProcessChildren(TFormWriter writer, TControlDef container)
         {
-            FChildren = new List <TControlDef>();
-
             // add all the children
             foreach (TControlDef child in container.FCodeStorage.FSortedControlList.Values)
             {
                 if (child.parentName == container.controlName)
                 {
-                    FChildren.Add(child);
+                    container.Children.Add(child);
                 }
             }
 
-            FChildren.Sort(new CtrlItemOrderComparer());
+            container.Children.Sort(new CtrlItemOrderComparer());
         }
 
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
@@ -873,7 +819,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCreateControlsAddStatements)
             {
-                foreach (TControlDef child in FChildren)
+                foreach (TControlDef child in container.Children)
                 {
                     writer.CallControlFunction(container.controlName,
                         "Controls.Add(this." +

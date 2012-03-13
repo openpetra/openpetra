@@ -177,6 +177,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// generate all code for the control
+        /// </summary>
+        public void GenerateControl(TFormWriter writer, TControlDef ctrl)
+        {
+            GenerateDeclaration(writer, ctrl);
+            ProcessChildren(writer, ctrl);
+            SetControlProperties(writer, ctrl);
+            OnChangeDataType(writer, ctrl.xmlNode, ctrl.controlName);
+            writer.InitialiseDataSource(ctrl.xmlNode, ctrl.controlName);
+            writer.ApplyDerivedFunctionality(this, ctrl.xmlNode);
+            AddChildren(writer, ctrl);
+        }
+
+        /// <summary>
         /// declaration and code creation in the designer file
         /// </summary>
         /// <param name="writer"></param>
@@ -197,10 +211,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// add the children to this control
+        /// </summary>
+        public virtual void AddChildren(TFormWriter writer, TControlDef ctrl)
+        {
+        }
+
+        /// <summary>
         /// generate the children, and write the size of this control
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="ctrl"></param>
         public virtual void ProcessChildren(TFormWriter writer, TControlDef ctrl)
         {
         }
@@ -835,49 +854,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
-        /// this is useful for radiobuttons or checkboxes which have other controls that depend on them
-        /// </summary>
-        /// <param name="ctrl"></param>
-        protected void CheckForOtherControls(TControlDef ctrl)
-        {
-            XmlNode Controls = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
-
-            if (Controls != null)
-            {
-                StringCollection childControls = TYml2Xml.GetElements(Controls);
-
-                // this is a checkbox that enables another control or a group of controls
-                ctrl.SetAttribute("GenerateWithOtherControls", "yes");
-
-                if (childControls.Count == 1)
-                {
-                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
-                    ChildCtrl.parentName = ctrl.controlName;
-
-                    // use the label of the child control
-                    if (ChildCtrl.HasAttribute("Label"))
-                    {
-                        ctrl.Label = ChildCtrl.Label;
-                    }
-                }
-                else
-                {
-                    foreach (string child in childControls)
-                    {
-                        TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(child);
-
-                        if (ChildCtrl == null)
-                        {
-                            throw new Exception("cannot find control " + child + " which should belong to " + ctrl.controlName);
-                        }
-
-                        ChildCtrl.parentName = ctrl.controlName;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// fetch the partner short name from the server;
         /// this control is readonly, therefore we don't need statusbar help
         /// </summary>
@@ -1091,6 +1067,93 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// e.g. used for controls on Reports (readparameter, etc)
         public virtual void ApplyDerivedFunctionality(TFormWriter writer, XmlNode curNode)
         {
+        }
+    }
+
+    /// <summary>
+    /// this is used for checkboxes and radio button which have other controls dependant on them
+    /// </summary>
+    public class TControlWithDependantControlsGenerator : TControlGenerator
+    {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TControlWithDependantControlsGenerator(string APrefix, Type AControlType)
+            : base(APrefix, AControlType)
+        {
+        }
+
+        /// <summary>
+        /// generate the children, and write the size of this control
+        /// </summary>
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
+        {
+            XmlNode Controls = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
+
+            if (Controls != null)
+            {
+                StringCollection childControls = TYml2Xml.GetElements(Controls);
+
+                // this is a checkbox that enables another control or a group of controls
+                ctrl.SetAttribute("GenerateWithOtherControls", "yes");
+
+                if (childControls.Count == 1)
+                {
+                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
+                    ChildCtrl.parentName = ctrl.controlName;
+                    ctrl.Children.Add(ChildCtrl);
+
+                    // use the label of the child control
+                    if (ChildCtrl.HasAttribute("Label"))
+                    {
+                        ctrl.Label = ChildCtrl.Label;
+                    }
+                }
+                else
+                {
+                    foreach (string child in childControls)
+                    {
+                        TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(child);
+
+                        if (ChildCtrl == null)
+                        {
+                            throw new Exception("cannot find control " + child + " which should belong to " + ctrl.controlName);
+                        }
+
+                        ChildCtrl.parentName = ctrl.controlName;
+                        ctrl.Children.Add(ChildCtrl);
+                    }
+                }
+            }
+        }
+
+        /// add and install event handler for change of selection
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+
+            writer.Template.AddToCodelet("CHECKEDCHANGED_" + ctrl.controlName, string.Empty);
+
+            foreach (TControlDef ChildCtrl in ctrl.Children)
+            {
+                // make sure the control is enabled/disabled depending on the selection of the radiobutton
+                writer.Template.AddToCodelet("CHECKEDCHANGED_" + ctrl.controlName,
+                    ChildCtrl.controlName + ".Enabled = " + ctrl.controlName + ".Checked;" + Environment.NewLine);
+            }
+
+            writer.CodeStorage.FEventHandlersImplementation += "void " + ctrl.controlName + "CheckedChanged(object sender, System.EventArgs e)" +
+                                                               Environment.NewLine + "{" + Environment.NewLine + "  {#CHECKEDCHANGED_" +
+                                                               ctrl.controlName + "}" + Environment.NewLine +
+                                                               "}" + Environment.NewLine + Environment.NewLine;
+            writer.Template.AddToCodelet("INITIALISESCREEN", ctrl.controlName + "CheckedChanged(null, null);" + Environment.NewLine);
+            writer.Template.AddToCodelet("CONTROLINITIALISATION",
+                "this." + ctrl.controlName +
+                ".CheckedChanged += new System.EventHandler(this." +
+                ctrl.controlName +
+                "CheckedChanged);" + Environment.NewLine);
+            writer.Template.AddToCodelet("INITACTIONSTATE", ctrl.controlName + "CheckedChanged(null, null);" + Environment.NewLine);
+
+            return writer.Template;
         }
     }
 }

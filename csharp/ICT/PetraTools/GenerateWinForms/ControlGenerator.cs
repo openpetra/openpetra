@@ -181,7 +181,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     /// <summary>
     /// generator for a single radio button
     /// </summary>
-    public class RadioButtonGenerator : TControlGenerator
+    public class RadioButtonGenerator : TControlWithDependantControlsGenerator
     {
         /// <summary>constructor</summary>
         public RadioButtonGenerator()
@@ -195,8 +195,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            CheckForOtherControls(ctrl);
-
             base.SetControlProperties(writer, ctrl);
 
             // Support NoLabel=true
@@ -235,7 +233,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     /// <summary>
     /// generator for a checkbox
     /// </summary>
-    public class CheckBoxGenerator : TControlGenerator
+    public class CheckBoxGenerator : TControlWithDependantControlsGenerator
     {
         /// <summary>constructor</summary>
         public CheckBoxGenerator()
@@ -247,8 +245,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            CheckForOtherControls(ctrl);
-
             if ((ctrl.HasAttribute("CheckBoxAttachedLabel"))
                 && ((ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "left")
                     || (ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "right")))
