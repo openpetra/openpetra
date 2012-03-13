@@ -104,6 +104,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             row.PartnerKey = APartnerKey;
 
             row.CurrencyCode = FLedgerRow.BaseCurrency;
+            row.DefaultApAccount = "9100";      // If the user doesn't want this, she should have a good reason..
+            row.DefaultCreditTerms = 28;        // 28 credit might not be universal, but it's better than 0.
+            row.PreferredScreenDisplay = 36;    // show my invoices for 36 months
             FMainDS.AApSupplier.Rows.Add(row);
 
             ShowData(row);
@@ -168,9 +171,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     MessageBox.Show(String.Format(Catalog.GetString("The {0} must be a {1} currency account."), 
                         AccountType, FMainDS.AApSupplier[0].CurrencyCode), "Validation");
                     FMainDS.AApSupplier.Rows[0].EndEdit();
-                    TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList); // scrub the cache so that I'll notice if the user makes a change
-                }
 
+                    // This call isn't really useful, because although the user may go and create the required account, 
+                    // she won't have done so yet...
+                    TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber); // scrub the cache so that I'll notice if the user makes a change
+                }
             }
             else
             {

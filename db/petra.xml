@@ -14352,6 +14352,11 @@
                 descr="Reference to the default cost centre to use for invoice details."
                 format="X(8)"
                 label="Default Cost Centre"/>
+    <tablefield name="a_our_reference_c"
+                type="varchar"
+                descr="This reference identifies us to the supplier"
+                format="X(50)"
+                label="Our Ref"/>
     <!-- Constraints on table a_ap_supplier -->
     <primarykey name="a_ap_supplier_pk"
                 descr=""

@@ -82,18 +82,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (FileName.EndsWith("ext"))
                 {
                     String doc = TRemote.MPartner.ImportExport.WebConnectors.ExportAllPartnersExt();
-/*
-                    Int64 PartnerKey = 10000026;
-                    StringCollection ASpecificBuildingInfo = null;
-                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader();
-                    Int32 SiteKey = 0;
-                    Int32 LocationKey = 0;
-
-                    doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
-                        PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
-
-                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
- */
                     TImportExportDialogs.ExportTofile(doc, FileName);
                 }
                 else

@@ -238,7 +238,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
             AccountsPayableTDSAApPaymentTable AApPayment = FMainDS.AApPayment;
-            AccountsPayableTDSAApDocumentPaymentTable AApDocumentPayment = FMainDS.AApDocumentPayment;
 
             //
             // I want to check whether the user is paying more than the due amount on any of these payments...

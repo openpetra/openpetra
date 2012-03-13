@@ -667,8 +667,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
-            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
             foreach (AApDocumentRow row in APDataset.AApDocument.Rows)
             {
                 DataView findSupplier = APDataset.AApSupplier.DefaultView;
@@ -695,6 +693,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             Int32 CounterJournals = 1;
+
+            // ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
             // Add journal for each currency / Exchange Rate and the transactions
             foreach (string CurrencyCode in DocumentsByCurrency.Keys)
