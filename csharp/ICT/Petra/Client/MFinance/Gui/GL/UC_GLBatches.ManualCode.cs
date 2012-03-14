@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
 
                 dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
-                
+
                 ((TFrmGLBatch)ParentForm).LoadJournals(
                     ARow.LedgerNumber,
                     ARow.BatchNumber);
