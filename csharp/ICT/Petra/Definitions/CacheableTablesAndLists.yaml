@@ -47,9 +47,10 @@ CachedTables:
         Subscriptions:
             DatabaseTables:
                 PPublicationCost:
-                PPublication: {Comment=available publications}
                 PReasonSubscriptionGiven:
                 PReasonSubscriptionCancelled:
+            CalculatedLists:
+                PublicationList: {Comment=available publications}
     Common:
         Common:
             DatabaseTables:

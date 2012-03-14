@@ -1131,6 +1131,13 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
+        public String ExportAllPartnersExt()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ExportAllPartnersExt", ";");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportAllPartnersExt();
+        }
+
+        /// generated method from connector
         public Boolean ImportDataExt(System.String[] ALinesToImport,
                                      System.String ALimitToOption,
                                      System.Boolean ADoNotOverwrite,

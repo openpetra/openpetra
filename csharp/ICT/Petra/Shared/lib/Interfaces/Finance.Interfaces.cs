@@ -58,18 +58,18 @@ using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors;
 #region ManualCode
-using System.Xml;
-using System.Collections.Specialized;
+
 using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
+using System.Collections.Specialized;
+
 #endregion ManualCode
-using Ict.Petra.Shared.Interfaces.MFinance.Setup.WebConnectors;
 namespace Ict.Petra.Shared.Interfaces.MFinance
 {
     /// <summary>auto generated</summary>
@@ -233,11 +233,13 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
     public interface IAPWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        ALedgerTable GetLedgerInfo(Int32 ALedgerNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber,
                                            Int64 APartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
-                                           Int32 AAPNumber);
+                                           Int32 AApDocumentId);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber,
                                              Int64 APartnerKey,
@@ -247,7 +249,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                              out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
-                                                   Int32 AApNumber,
+                                                   Int32 AApDocumentId,
                                                    System.String AApSupplier_DefaultExpAccount,
                                                    System.String AApSupplier_DefaultCostCentre,
                                                    System.Decimal AAmount,
@@ -264,17 +266,26 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                          out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean PostAPDocuments(Int32 ALedgerNumber,
-                                       List<Int32> AAPDocumentNumbers,
+                                       List<Int32> AAPDocumentIds,
                                        DateTime APostingDate,
-                                       out TVerificationResultCollection AVerifications);
+                                       Boolean Reversal,
+                                       out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean PostAPPayments(AccountsPayableTDSAApPaymentTable APayments,
-                                      AccountsPayableTDSAApDocumentPaymentTable ADocumentPayments,
+        System.Boolean CreatePaymentTableEntries(ref AccountsPayableTDS ADataset,
+                                                 Int32 ALedgerNumber,
+                                                 List<Int32> ADocumentsToPay);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        System.Boolean PostAPPayments(ref AccountsPayableTDS MainDS,
                                       DateTime APostingDate,
-                                      out TVerificationResultCollection AVerifications);
+                                      out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,
                                          Int32 APaymentNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        System.Boolean ReversePayment(Int32 ALedgerNumber,
+                                      Int32 APaymentNumber,
+                                      DateTime APostingDate,
+                                      out TVerificationResultCollection AVerifications);
     }
 
 }

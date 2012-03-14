@@ -278,7 +278,8 @@ namespace Ict.Petra.Client.CommonForms
                 }
                 else if (ctrl.GetType() == typeof(TtxtPetraDate))
                 {
-                    ((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                    //((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                    ((TtxtPetraDate)ctrl).TextChanged += new EventHandler(MultiEventHandler);
                 }
                 else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
                 {
@@ -364,7 +365,8 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             if ((this.SuppressChangeDetection == false)
-                && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string)) || !((string)ctrl.Tag).Contains("SuppressChangeDetection"))
+                && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string))
+                    || !((string)ctrl.Tag).Contains(CommonResourcestrings.StrCtrlSuppressChangeDetection))
                 && ((Control)sender).Visible
                 && ((Control)sender).Enabled)
             {

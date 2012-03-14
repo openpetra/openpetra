@@ -247,7 +247,9 @@ namespace Ict.Petra.Shared
         /// <summary>see petra.xml</summary>
         seq_match_number,
         /// <summary>see petra.xml</summary>
-        seq_statement_number
+        seq_statement_number,
+        /// <summary>AP Document Reference</summary>
+        seq_ap_document
     }
 
     /// <summary>

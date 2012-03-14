@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.MCommon;
 using GNU.Gettext;
 
 namespace Ict.Petra.Client.CommonControls
@@ -60,6 +61,7 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean FAllowPastDate;
         private Boolean FLeavingOnFailedValidationOK;
         private String FDateDescription;
+        private Boolean FAllowVerification = true;
 
         private DateTime minimalDateValue;
         private DateTime maximalDateValue;
@@ -94,6 +96,12 @@ namespace Ict.Petra.Client.CommonControls
         {
             get
             {
+                if (!ValidDate(false))
+                {
+                    FDate = null;
+                    this.Clear();
+                }
+
                 return FDate;
             }
 
@@ -215,6 +223,22 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// This property determines whether verification of date is allowed. (Default: true)
+        /// </summary>
+        public Boolean AllowVerification
+        {
+            get
+            {
+                return FAllowVerification;
+            }
+
+            set
+            {
+                FAllowVerification = value;
+            }
+        }
+
+        /// <summary>
         /// This property determines whether the user will be allowed to leave the Date
         /// TextBox if it contains an invalid date. (Default: true)
         ///
@@ -249,6 +273,7 @@ namespace Ict.Petra.Client.CommonControls
             FAllowFutureDate = true;
             FAllowPastDate = true;
             FAllowEmpty = true;
+            FAllowVerification = true;
 
             minimalDateValue = DateTime.MinValue;
             maximalDateValue = DateTime.MaxValue;
@@ -390,7 +415,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </returns>
         private Boolean VerifyDate(Boolean AShowVerificationError)
         {
-            if (!this.Enabled)
+            if (!FAllowVerification)
             {
                 return true;
             }
@@ -486,9 +511,12 @@ namespace Ict.Petra.Client.CommonControls
                     FDate = null;
                 }
 
-                // Now update the TextBox's Text with the newly formatted date
+                // set tag to "SuppressChangeDetection" so text change is not detected by TFrmPetraEditUtils.MultiEventHandler
+                object OriginalTag = this.Tag;
+                this.Tag = CommonResourcestrings.StrCtrlSuppressChangeDetection;
                 FSuppressTextChangeEvent = true;
 
+                // Now update the TextBox's Text with the newly formatted date
                 if (FDate != null)
                 {
                     if (DateTime.Compare(minimalDateValue, FDate.Value) > 0)
@@ -508,6 +536,8 @@ namespace Ict.Petra.Client.CommonControls
                     this.Text = "";
                 }
 
+                // reset tag to original state
+                this.Tag = OriginalTag;
                 FSuppressTextChangeEvent = false;
                 ReturnValue = true;
             }

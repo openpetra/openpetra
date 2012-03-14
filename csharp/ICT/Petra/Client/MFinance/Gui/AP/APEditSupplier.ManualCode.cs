@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +43,8 @@ using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -49,6 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     {
         AccountsPayableTDS FMainDS;
         Int32 FLedgerNumber;
+        ALedgerRow FLedgerRow = null;
 
         /// <summary>
         /// todoComment
@@ -66,6 +70,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             set
             {
                 FLedgerNumber = value;
+                ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+                FLedgerRow = Tbl[0];
 
                 TFinanceControls.InitialiseAccountList(ref cmbAPAccount, FLedgerNumber, true, false, false, false);
                 TFinanceControls.InitialiseAccountList(ref cmbDefaultBankAccount, FLedgerNumber, true, false, false, true);
@@ -97,9 +103,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AApSupplierRow row = FMainDS.AApSupplier.NewRowTyped();
             row.PartnerKey = APartnerKey;
 
-            // TODO: use currency code from ledger
-            // TODO: verification: don't store with currency NULL value
-            row.CurrencyCode = "EUR";
+            row.CurrencyCode = FLedgerRow.BaseCurrency;
+            row.DefaultApAccount = "9100";      // If the user doesn't want this, she should have a good reason..
+            row.DefaultCreditTerms = 28;        // 28 credit might not be universal, but it's better than 0.
+            row.PreferredScreenDisplay = 36;    // show my invoices for 36 months
             FMainDS.AApSupplier.Rows.Add(row);
 
             ShowData(row);
@@ -139,6 +146,52 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+        private bool ValidateAccountCurrency(string AccountRef, string AccountType)
+        {
+            bool CurrencyIsOk = true;
+            AAccountTable AccountList = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                FLedgerNumber);
+
+            AccountList.DefaultView.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
+                FLedgerNumber, AccountRef);
+
+            if (AccountList.DefaultView.Count == 1)
+            {
+                AAccountRow AccountDetail = (AAccountRow)AccountList.DefaultView[0].Row;
+
+                if (FMainDS.AApSupplier[0].CurrencyCode == FLedgerRow.BaseCurrency)
+                {
+                    CurrencyIsOk = (AccountDetail.ForeignCurrencyFlag == false);
+                }
+                else
+                {
+                    CurrencyIsOk =
+                        ((AccountDetail.ForeignCurrencyFlag == true) && (AccountDetail.ForeignCurrencyCode == FMainDS.AApSupplier[0].CurrencyCode));
+                }
+
+                if (!CurrencyIsOk)
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("The {0} must be a {1} currency account."),
+                            AccountType, FMainDS.AApSupplier[0].CurrencyCode), "Validation");
+                    FMainDS.AApSupplier.Rows[0].EndEdit();
+
+                    // This call isn't really useful, because although the user may go and create the required account,
+                    // she won't have done so yet...
+                    TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber); // scrub the cache so that I'll notice if the user makes a change
+                }
+            }
+            else
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Unable to access {0} account {1}"),
+                        AccountType, AccountRef), "Error");
+                FMainDS.AApSupplier.Rows[0].EndEdit();
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList); // scrub the cache - perhaps I'll get a different answer next time!
+                CurrencyIsOk = false;
+            }
+
+            return CurrencyIsOk;
+        }
+
         /// <summary>
         /// save the changes on the screen
         /// </summary>
@@ -156,13 +209,48 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FMainDS.AApSupplier.Rows[0].BeginEdit();
             GetDataFromControls(FMainDS.AApSupplier[0]);
 
-            // TODO: enforce AP account
             if (FMainDS.AApSupplier[0].IsDefaultApAccountNull())
             {
                 MessageBox.Show(Catalog.GetString("Please select an AP account (eg. 9100)"));
                 FMainDS.AApSupplier.Rows[0].EndEdit();
                 return false;
             }
+
+            // The account would usually be 9100-AP account.
+            if (FMainDS.AApSupplier[0].DefaultApAccount != "9100")
+            {
+                if (MessageBox.Show(Catalog.GetString("You are not using the standard AP account (9100) - is this OK?"),
+                        "Verification", MessageBoxButtons.YesNo)
+                    != System.Windows.Forms.DialogResult.Yes)
+                {
+                    FMainDS.AApSupplier.Rows[0].EndEdit();
+                    return false;
+                }
+            }
+
+            // Don't store with invalid currency value.
+            //
+            if (FMainDS.AApSupplier[0].CurrencyCode == "")
+            {
+                FMainDS.AApSupplier[0].CurrencyCode = FLedgerRow.BaseCurrency;
+            }
+
+            // If this is a foreign currency supplier, it must be linked to accounts in that currency.
+            // (And if it's not, it mustn't be!)
+            if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultBankAccount, "Bank"))
+            {
+                return false;
+            }
+
+/*
+ * If we wanted to have only expense accounts in a single currency, we could have this,
+ * but that's probably not what we want...
+ *
+ *          if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultExpAccount, "Expense"))
+ *          {
+ *              return false;
+ *          }
+ */
 
             if (FPetraUtilsObject.VerificationResultCollection.Count == 0)
             {

@@ -11,6 +11,7 @@ RootNode:
     WindowHeight: 600
     Actions:
         actMakePayment: {Label=&Make Payment, ActionClick=MakePayment}
+        actPrintReport: {Label=Reprint report, ActionClick=PrintPaymentReport}
         actPayPartial:
             ActionClick: EnablePartialPayment
     Controls:
@@ -80,3 +81,4 @@ RootNode:
             ReadOnly: true
     Toolbar:
         tbbMakePayment:
+        tbbPrintReport:

@@ -97,8 +97,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MessageBox.Show("FMainDS.SummaryData holds NO ROWS!", DEV_FIX);
             }
 
-            dtpDateOfBirth.Enabled = true;
-
             // Show note about multiple Churches/Pastors, if applicable
             SetupMultipleRecordsInfoText();
 

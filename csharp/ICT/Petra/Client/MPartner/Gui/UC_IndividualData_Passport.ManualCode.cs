@@ -33,6 +33,7 @@ using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -79,6 +80,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
+
+            grdDetails.Columns.Clear();
+            grdDetails.AddTextColumn("Passport Number", FMainDS.PmPassportDetails.ColumnPassportNumber);
+            grdDetails.AddTextColumn("Type", FMainDS.PmPassportDetails.ColumnPassportDetailsType);
+            grdDetails.AddTextColumn("Passport Nationality",
+                FMainDS.PmPassportDetails.Columns["Parent_" + PCountryTable.GetCountryNameDBName()]);
+            grdDetails.AddDateColumn("Expiration Date", FMainDS.PmPassportDetails.ColumnDateOfExpiration);
+            grdDetails.AddDateColumn("Issue Date", FMainDS.PmPassportDetails.ColumnDateOfIssue);
+
 
             FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
 
@@ -131,7 +141,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                            "You have choosen to delete this record ({0}).\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.PassportNumber), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
@@ -250,6 +260,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
+            DataColumn ForeignTableColumn;
+            PCountryTable CountryTable;
 
             try
             {
@@ -274,6 +286,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
+
+                // Add relation table to data set
+                if (FMainDS.PCountry == null)
+                {
+                    FMainDS.Tables.Add(new PCountryTable());
+                }
+
+                CountryTable = (PCountryTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
+                // rename data table as otherwise the merge with the data set won't work; tables need to have same name
+                CountryTable.TableName = PCountryTable.GetTableName();
+                FMainDS.Merge(CountryTable);
+
+                // Relations are not automatically enabled. Need to enable them here in order to use for columns.
+                FMainDS.EnableRelations();
+
+                // add column for passport nationality name
+                ForeignTableColumn = new DataColumn();
+                ForeignTableColumn.DataType = System.Type.GetType("System.String");
+                ForeignTableColumn.ColumnName = "Parent_" + PCountryTable.GetCountryNameDBName();
+                ForeignTableColumn.Expression = "Parent." + PCountryTable.GetCountryNameDBName();
+                FMainDS.PmPassportDetails.Columns.Add(ForeignTableColumn);
 
                 if (FMainDS.PmPassportDetails.Rows.Count != 0)
                 {

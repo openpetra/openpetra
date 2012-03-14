@@ -80,6 +80,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             LoadDataOnDemand();
 
+            grdDetails.Columns.Clear();
+            grdDetails.AddTextColumn("Language",
+                FMainDS.PmPersonLanguage.Columns["Parent_" + PLanguageTable.GetLanguageDescriptionDBName()]);
+            grdDetails.AddTextColumn("Language Level", FMainDS.PmPersonLanguage.ColumnLanguageLevel);
+            grdDetails.AddTextColumn("Years Of Experience", FMainDS.PmPersonLanguage.ColumnYearsOfExperience);
+            grdDetails.AddDateColumn("as of", FMainDS.PmPersonLanguage.ColumnYearsOfExperienceAsOf);
+
             FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
 
             // enable grid to react to insert and delete keyboard keys
@@ -131,7 +138,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                            "You have choosen to delete this record ({0}).\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.LanguageCode), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
@@ -263,6 +270,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
+            DataColumn ForeignTableColumn;
+            PLanguageTable LanguageTable;
 
             try
             {
@@ -287,6 +296,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
+
+                // Add relation table to data set
+                if (FMainDS.PLanguage == null)
+                {
+                    FMainDS.Tables.Add(new PLanguageTable());
+                }
+
+                LanguageTable = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
+                // rename data table as otherwise the merge with the data set won't work; tables need to have same name
+                LanguageTable.TableName = PLanguageTable.GetTableName();
+                FMainDS.Merge(LanguageTable);
+
+                // Relations are not automatically enabled. Need to enable them here in order to use for columns.
+                FMainDS.EnableRelations();
+
+                // add column for passport nationality name
+                ForeignTableColumn = new DataColumn();
+                ForeignTableColumn.DataType = System.Type.GetType("System.String");
+                ForeignTableColumn.ColumnName = "Parent_" + PLanguageTable.GetLanguageDescriptionDBName();
+                ForeignTableColumn.Expression = "Parent." + PLanguageTable.GetLanguageDescriptionDBName();
+                FMainDS.PmPersonLanguage.Columns.Add(ForeignTableColumn);
 
                 if (FMainDS.PmPersonLanguage.Rows.Count != 0)
                 {

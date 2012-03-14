@@ -961,11 +961,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     SubmitDS = AInspectDS.GetChangesTyped(true);
 
-                    if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
-                        || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
-                        || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
+                    if (SubmitDS != null)
                     {
-                        AddressesOrRelationsChanged = true;
+                        if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
+                            || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                            || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
+                        {
+                            AddressesOrRelationsChanged = true;
+                        }
                     }
 
                     // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
@@ -1215,12 +1218,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         case TSubmitChangesResult.scrNothingToBeSaved:
 
+                            /* if there were no changes discovered then still need to call AcceptChanges to get rid now of
+                             *                     any deleted columns */
+                            AInspectDS.AcceptChanges();
+
                             // Update UI
                             FPetraUtilsObject.WriteToStatusBar(CommonResourcestrings.StrSavingDataNothingToSave);
                             this.Cursor = Cursors.Default;
                             EnableSave(false);
 
                             // We don't have unsaved changes anymore
+                            FPetraUtilsObject.DisableSaveButton();
                             FPetraUtilsObject.HasChanges = false;
                             ReturnValue = true;
                             OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
