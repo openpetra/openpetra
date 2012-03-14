@@ -43,10 +43,10 @@ RootNode:
                 Row0: [txtDetailPartnerKey]
                 Row1: [txtDetailEmailAddress]
             ColWidths: [0=Fixed:135]
-            ColSpan: 4
+            ColSpan: 2
             Margin: 0
             Padding: 0,0,0,0
-        txtDetailPartnerKey: {Label=Partner Key, Type=PartnerKey, ColSpan=3, OnChange=PartnerKeyChanged}
+        txtDetailPartnerKey: {Label=Partner Key, Type=PartnerKey, OnChange=PartnerKeyChanged}
         txtDetailEmailAddress: {Label=Email address(es) (one per line), Multiline=true, ScrollBars=Vertical, Height=80, Width=400}
 
     Toolbar:

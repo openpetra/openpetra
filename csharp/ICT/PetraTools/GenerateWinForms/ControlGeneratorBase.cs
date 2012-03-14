@@ -1130,6 +1130,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         ChildCtrl.parentName = ctrl.controlName;
                         ctrl.Children.Add(ChildCtrl);
+
+                        IControlGenerator ctrlGenerator = writer.FindControlGenerator(ChildCtrl);
+                        ctrlGenerator.GenerateControl(writer, ChildCtrl);
                     }
                 }
             }

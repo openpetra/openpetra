@@ -90,8 +90,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            ctrl.SetAttribute("Dock", "Fill");
-            ctrl.SetAttribute("AutoScroll", "true");
             return base.SetControlProperties(writer, ctrl);
         }
 

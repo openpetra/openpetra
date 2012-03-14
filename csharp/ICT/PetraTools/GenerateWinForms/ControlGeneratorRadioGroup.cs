@@ -301,16 +301,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 TControlDef radioButton = writer.CodeStorage.GetControl(controlName);
 
-                IControlGenerator ctrlGenerator = writer.FindControlGenerator(radioButton);
-                ctrlGenerator.GenerateControl(writer, radioButton);
-
                 if (StringHelper.IsSame(DefaultValue, controlName))
                 {
                     radioButton.SetAttribute("RadioChecked", "true");
                 }
-
-                ctrl.Children.Add(radioButton);
             }
+
+            base.ProcessChildren(writer, ctrl);
         }
     }
 }

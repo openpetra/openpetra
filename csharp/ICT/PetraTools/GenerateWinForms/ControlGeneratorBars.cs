@@ -66,6 +66,34 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// process the children
+        /// </summary>
+        public override void ProcessChildren(TFormWriter writer, TControlDef container)
+        {
+            // usually, the toolbar buttons are direct children of the toolbar control
+            List <XmlNode>childrenlist = TYml2Xml.GetChildren(container.xmlNode, true);
+
+            foreach (XmlNode childNode in childrenlist)
+            {
+                /* Get unique name if we need it
+                 * at the moment we need it only for menu separators
+                 */
+                String UniqueChildName = childNode.Name;
+                TControlDef childCtrl = container.FCodeStorage.GetControl(childNode.Name);
+
+                if (childCtrl == null)
+                {
+                    UniqueChildName = TYml2Xml.GetAttribute(childNode, "UniqueName");
+                    childCtrl = container.FCodeStorage.GetControl(UniqueChildName);
+                }
+
+                container.Children.Add(childCtrl);
+                IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
+                ctrlGenerator.GenerateControl(writer, childCtrl);
+            }
+        }
+
+        /// <summary>
         /// add children to the control
         /// </summary>
         public override void AddChildren(TFormWriter writer, TControlDef container)

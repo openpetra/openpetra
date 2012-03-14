@@ -230,7 +230,7 @@ namespace Ict.Tools.CodeGeneration
                     {
                         // root control has no parent
                     }
-                    else
+                    else if (!ctrl.controlName.StartsWith("Empty"))
                     {
                         result.Add(ctrl);
                     }

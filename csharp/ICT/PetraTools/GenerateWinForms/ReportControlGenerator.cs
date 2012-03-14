@@ -271,6 +271,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     foreach (string childName in childControlNames)
                     {
+                        if (childName.StartsWith("layoutPanel"))
+                        {
+                            continue;
+                        }
+
                         TControlDef childCtrl = writer.CodeStorage.GetControl(childName);
                         IControlGenerator generator = writer.FindControlGenerator(childCtrl);
 
@@ -301,6 +306,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     foreach (string childName in childControlNames)
                     {
+                        if (childName.StartsWith("layoutPanel"))
+                        {
+                            continue;
+                        }
+
                         TControlDef childCtrl = writer.CodeStorage.GetControl(childName);
                         IControlGenerator generator = writer.FindControlGenerator(childCtrl);
 

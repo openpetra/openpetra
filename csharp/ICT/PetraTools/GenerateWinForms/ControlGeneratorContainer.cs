@@ -538,6 +538,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 TlpGenerator.WriteTableLayout(writer, tlpControl);
 
+                if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock") != "none"))
+                {
+                    writer.SetControlProperty(tlpControl.controlName, "Dock", "Fill", false);
+                    writer.SetControlProperty(tlpControl.controlName, "AutoScroll", "true", false);
+                }
+
                 // the MARGIN is needed so that the radio groupbox does show the bottom and right border
                 Width = Convert.ToInt32(tlpControl.GetAttribute("Width")) + PanelLayoutGenerator.MARGIN_LEFT * 2;
                 Height = Convert.ToInt32(tlpControl.GetAttribute("Height")) + PanelLayoutGenerator.MARGIN_TOP * 2;
@@ -759,6 +765,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             ctrl.Children.Add(toolbar);
             ctrl.Children.Add(printPreview);
+
+            IControlGenerator ctrlGenerator = writer.FindControlGenerator(toolbar);
+            ctrlGenerator.GenerateControl(writer, toolbar);
+            ctrlGenerator = writer.FindControlGenerator(printPreview);
+            ctrlGenerator.GenerateControl(writer, printPreview);
         }
     }
 
