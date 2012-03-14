@@ -441,7 +441,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
 
                         childCtrl.rowNumber = countRow;
-                        RowWidth += childCtrl.Width;
+                        RowWidth += childCtrl.Width + PanelLayoutGenerator.VERTICAL_SPACE;
 
                         if (RowHeight < childCtrl.Height)
                         {
@@ -456,7 +456,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         Width = RowWidth;
                     }
 
-                    Height += RowHeight;
+                    Height += RowHeight + PanelLayoutGenerator.HORIZONTAL_SPACE;
                 }
             }
             else
@@ -538,8 +538,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 TlpGenerator.WriteTableLayout(writer, tlpControl);
 
-                Width = Convert.ToInt32(tlpControl.GetAttribute("Width")) + 5;
-                Height = Convert.ToInt32(tlpControl.GetAttribute("Height")) + 5;
+                // the MARGIN is needed so that the radio groupbox does show the bottom and right border
+                Width = Convert.ToInt32(tlpControl.GetAttribute("Width")) + PanelLayoutGenerator.MARGIN_LEFT * 2;
+                Height = Convert.ToInt32(tlpControl.GetAttribute("Height")) + PanelLayoutGenerator.MARGIN_TOP * 2;
             }
 
             if (!ctrl.HasAttribute("Width"))

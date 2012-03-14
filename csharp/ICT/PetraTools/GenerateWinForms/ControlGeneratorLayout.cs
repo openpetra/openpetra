@@ -41,6 +41,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
     /// </summary>
     public class PanelLayoutGenerator : TControlGenerator
     {
+        /// <summary>the space between two controls, that are beside each other</summary>
+        public static Int32 HORIZONTAL_SPACE = 5;
+        /// <summary>the space between two controls, that are above each other</summary>
+        public static Int32 VERTICAL_SPACE = 5;
+        /// <summary>the space from the top of a panel</summary>
+        public static Int32 MARGIN_TOP = 7;
+        /// <summary>the space from the left of a panel</summary>
+        public static Int32 MARGIN_LEFT = 5;
+
         private Int32 FColumnCount = -1, FRowCount = -1;
 
         /// <summary>
@@ -237,13 +246,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            int CurrentLeftPosition = 0;
+            int CurrentLeftPosition = MARGIN_LEFT;
             int Width = 0;
             int Height = 0;
 
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
-                int CurrentTopPosition = 0;
+                int CurrentTopPosition = MARGIN_TOP;
 
                 for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
                 {
@@ -277,7 +286,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
                     }
 
-                    CurrentTopPosition += RowHeight[rowCounter];
+                    CurrentTopPosition += RowHeight[rowCounter] + VERTICAL_SPACE;
 
                     if (CurrentTopPosition > Height)
                     {
@@ -285,7 +294,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
 
-                CurrentLeftPosition += ColumnWidth[columnCounter];
+                CurrentLeftPosition += ColumnWidth[columnCounter] + HORIZONTAL_SPACE;
 
                 if (CurrentLeftPosition > Width)
                 {
@@ -293,8 +302,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            Height += MARGIN_TOP * 2;
+
             LayoutCtrl.SetAttribute("Width", Width.ToString());
             LayoutCtrl.SetAttribute("Height", Height.ToString());
+            writer.SetControlProperty(LayoutCtrl, "Location", String.Format("new System.Drawing.Point({0}, {1})", MARGIN_LEFT, MARGIN_TOP));
             writer.SetControlProperty(LayoutCtrl, "Size", String.Format("new System.Drawing.Size({0}, {1})", Width, Height));
 
             // by default, the TabOrder is by column, Vertical
