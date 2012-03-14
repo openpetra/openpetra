@@ -34,9 +34,9 @@ compat:
   resetDatabase: just resets the data, resets the permissions
   patchDatabase: update the database to the latest development version
   dumpDatabase: dump the database to a db specific format.
-        nant dumpDatabase -D:OutputDB.file=test.sql
+        nant dumpDatabase -D:file=test.sql
   loadDatabase: load the database from a db specific dump
-        nant loadDatabase -D:LoadDB.file=test.sql
+        nant loadDatabase -D:file=test.sql
   generateORM: generates Object Relational Mapping routines from petra.xml
     sub items: generateORMCachedTables, generateORMData, generateORMAccess
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
@@ -50,7 +50,7 @@ compat:
   buildTranslationTemplate: extracts string in winforms, creates and updates the .po files
 
 releases:
-  buildWindowsStandalone: will build the standalone installer for Windows. Using NSIS
+  buildWindowsStandalone: will build the standalone installer for Windows. Only works on Windows with InnoSetup.
   buildLinuxSourceforgeRelease: will build the linux files that we upload to Sourceforge. creates tar files for local server and client
   buildRemoteInstallers -D:ReleaseID=0.0.2.0 -D:OrgName=&quot;Your Organisation&quot; -D:PublisherUrl=www.ProviderWebsite.com -D:HostedServer=app.Provider.com -D:HostedPort=9000 -D:WithLinuxClient=false
 

@@ -115,10 +115,11 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
                         TLogging.Log("report \"" + Parameters.Get("currentReport").ToString() + "\" could not be found. XML file missing?");
                         return false;
                     }
+
+                    InitColumns();
+                    InitColumnsFormat();
                 }
 
-                InitColumns();
-                InitColumnsFormat();
                 InitParameterLedgers();
 
                 if (Parameters.Get("param_multiperiod").ToBool())
@@ -144,6 +145,8 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
                     {
                         Parameters.Save(Path.GetDirectoryName(
                                 TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogParamAfterCalculation.xml", true);
+                        Results.WriteCSV(Parameters, Path.GetDirectoryName(
+                                TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "ReportResults.xml", ",", true, false);
                     }
 
                     ReturnValue = true;
@@ -420,7 +423,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
 
         /// <summary>
         /// If this report was started with an incomplete (or new) settings file,
-        /// add all available calculations as columns where strReturns &lt;&gt; 'row'.
+        /// add all available calculations as columns where strReturns not equals 'row'.
         ///
         /// </summary>
         /// <returns>void</returns>

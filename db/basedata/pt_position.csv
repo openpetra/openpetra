@@ -1,0 +1,64 @@
+CM-AREA-COMM-FACIL,O,Area Communications Facilitator,false,?,false,?,?,?,?,?
+CM-FIELD-COMM-FACIL,O,Field Communications Facilitator,false,?,false,?,?,?,?,?
+CM-FIELD-WEBMASTER,O,Field Webmaster,false,?,false,?,?,?,?,?
+CM-INT-COMM-FACIL,O,International Communications Facilitator,false,?,false,?,?,?,?,?
+CM-INT-INTR-WEBMASTR,O,International Intranet Webmaster,false,?,false,?,?,?,?,?
+CM-INT-WEBMASTER,O,International Webmaster,false,?,false,?,?,?,?,?
+COM-DATA-ENTRY,O,Data Entry Clerk,false,?,false,?,?,?,?,?
+COM-PROGRAMMER,O,Computer Programmer,false,?,false,?,?,?,?,?
+FD-AREA-FD-FACIL,O,Area Financial Development Facilitator,false,?,false,?,?,?,?,?
+FD-FIELD-FD-FACIL,O,Field Financial Development Facilitator,false,?,false,?,?,?,?,?
+FD-INT-FD-FACIL,O,International FD Facilitator,false,?,false,?,?,?,?,?
+FIN-AREA-FIN-OFF,O,Area Finance Officer,false,?,false,?,?,?,?,?
+FIN-AUDITOR,O,Auditor,false,?,false,?,?,?,?,?
+FIN-BOOKKEEPER,O,Bookkeeper,false,?,false,?,?,?,?,?
+FIN-FIELD-ACCOUNTANT,O,Field Accountant,false,?,false,?,?,?,?,?
+FIN-INT-FIN-OFF,O,International Finance Officer,false,?,false,?,?,?,?,?
+FIN-MANAGER,O,Financial Manager,false,?,false,?,?,?,?,?
+IT-AREA-IT-ADMIN,O,Area IT Administrator,false,?,false,?,?,?,?,?
+IT-FIELD-IT-SYSADMIN,O,Field IT System Administrator,false,?,false,?,?,?,?,?
+IT-INT-IT-MANAGER,O,International IT Manager,false,?,false,?,?,?,?,?
+IT-INT-POSTMASTER,O,International Postmaster,false,?,false,?,?,?,?,?
+LDR-AREA-LEADER,O,Area Leader,false,?,false,?,?,?,?,?
+LDR-COUNTRY-LEADER,O,Country Leader,false,?,false,?,?,?,?,?
+LDR-FIELD-LEADER,O,Field Leader,false,?,false,?,?,?,?,?
+LDR-TEAM-LEADER,O,Team Leader,false,?,false,?,?,?,?,?
+MC-AREA-MC-PERS,O,Area Member Care Person,false,?,false,?,?,?,?,?
+MC-FIELD-MC-PERS,O,Field Member Care Person,false,?,false,?,?,?,?,?
+MC-INT-MC-ADMIN,O,International Member Care Administrator,false,?,false,?,?,?,?,?
+MC-INT-MC-PERS,O,International Member Care Person,false,?,false,?,?,?,?,?
+MIN-MUSICIAN,O,Musician,false,?,false,?,?,?,?,?
+MIN-YOUTH-WORK,O,Youth Worker,false,?,false,?,?,?,?,?
+OFF-MANAGER,O,Office Manager,false,?,false,?,?,?,?,?
+OFF-RECEPTIONIST,O,Receptionist,false,?,false,?,?,?,?,?
+OFF-SECRETARY,O,Secretary,false,?,false,?,?,?,?,?
+OM-INT-DIRECTOR,O,International Director,false,?,false,?,?,?,?,?
+PEO-DENTIST,O,Dentist,false,?,false,?,?,?,?,?
+PEO-MED-DOCTOR,O,Medical Doctor,false,?,false,?,?,?,?,?
+PEO-NURSE,O,Nurse,false,?,false,?,?,?,?,?
+PEO-RELIEF-WORK,O,Relief Worker,false,?,false,?,?,?,?,?
+PEO-TEACH-ELEMEN,O,Primary/Elementary teacher,false,?,false,?,?,?,?,?
+PEO-TEACH-INFANT,O,Nursery Teacher,false,?,false,?,?,?,?,?
+PEO-TEACH-SECOND,O,Secondary teacher,false,?,false,?,?,?,?,?
+PER-ADMINISTRATO,O,Personnel Administrator,false,?,false,?,?,?,?,?
+PER-AREA-PERS-OFF,O,Area Personnel Officer,false,?,false,?,?,?,?,?
+PER-FIELD-PERS-OFF,O,Field Personnel Officer,false,?,false,?,?,?,?,?
+PER-INT-PERS-OFF,O,International Personnel Officer,false,?,false,?,?,?,?,?
+PRAC-AV-TECHNIC,O,Audio/Visual Technician,false,?,false,?,?,?,?,?
+PRAC-BAKER,O,Baker,false,?,false,?,?,?,?,?
+PRAC-CARPENTER,O,Carpenter,false,?,false,?,?,?,?,?
+PRAC-COOK,O,Cook,false,?,false,?,?,?,?,?
+PRAC-DRIVER,O,Driver,false,?,false,?,?,?,?,?
+PRAC-ELEC-TECH,O,Electronic Technician,false,?,false,?,?,?,?,?
+PRAC-ELECTRICIAN,O,Electrician,false,?,false,?,?,?,?,?
+PRAC-GARDENER,O,Gardener,false,?,false,?,?,?,?,?
+PRAC-HOSPITALITY,O,Hospitality Person,false,?,false,?,?,?,?,?
+PRAC-HOUSEKEEPER,O,Housekeeper,false,?,false,?,?,?,?,?
+PRAC-MECHANIC,O,Auto-mechanic,false,?,false,?,?,?,?,?
+PRAC-WELDER,O,Welder,false,?,false,?,?,?,?,?
+REC-AREA-REC-CO,O,Area Recruiting Coordinator,false,?,false,?,?,?,?,?
+REC-FIELD-REC-CO,O,Field Recruiting Coordinator,false,?,false,?,?,?,?,?
+REC-INT-REC-CO,O,International Recruiting Coordinator,false,?,false,?,?,?,?,?
+TRA-AREA-TRA-OFF,O,Area Training Officer,false,?,false,?,?,?,?,?
+TRA-FIELD-TRA-OFF,O,Field Training Officer,false,?,false,?,?,?,?,?
+TRA-INT-TRA-CONSULT,O,International Training Consultant,false,?,false,?,?,?,?,?

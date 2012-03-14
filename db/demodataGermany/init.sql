@@ -63,6 +63,7 @@ INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1
 
 INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,43000000);
 
+COPY um_job FROM '{#ABSOLUTEBASEDATAPATH}/um_job.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 -- setup special funds
 INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(4000000, 'International Clearing House', 'UNIT', 'ACTIVE'); 
@@ -99,7 +100,7 @@ COPY a_account_property_code FROM '{#ABSOLUTEBASEDATAPATH}/a_account_property_co
 COPY a_account_property FROM '{#ABSOLUTEBASEDATAPATH}/a_account_property.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_hierarchy FROM '{#ABSOLUTEBASEDATAPATH}/a_account_hierarchy.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_account_hierarchy_detail FROM '{#ABSOLUTEBASEDATAPATH}/a_account_hierarchy_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
-COPY a_accounting_period FROM '{#ABSOLUTEBASEDATAPATH}/a_accounting_period.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_accounting_period FROM '{#ABSOLUTEBASEDATAPATH}/a_accounting_period.csv.local' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_accounting_system_parameter FROM '{#ABSOLUTEBASEDATAPATH}/a_accounting_system_parameter.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_system_interface FROM '{#ABSOLUTEBASEDATAPATH}/a_system_interface.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_transaction_type FROM '{#ABSOLUTEBASEDATAPATH}/a_transaction_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

@@ -57,8 +57,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private Int32 FLedgerNumber;
 
         private Int32 CurrentBudgetYear;
+
         private bool LoadCompleted = false;
+        private bool RejectYearChange = false;
+
         private TDlgSelectCSVSeparator FdlgSeparator;
+
 
         /// <summary>
         /// AP is opened in this ledger
@@ -100,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     EnableBudgetEntry(false);
                 }
+
+                LoadCompleted = true;
             }
         }
 
@@ -110,40 +116,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 EnableBudgetEntry(true);
             }
 
-            int newSequence = -1;
-
-            if (FMainDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
-            {
-                while (FMainDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
-                {
-                    newSequence--;
-                }
-            }
-
-            ARow.BudgetSequence = newSequence;
+            ARow.BudgetSequence = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_budget));;
             ARow.LedgerNumber = FLedgerNumber;
-            //TODO replace line below
-            ARow.Revision = 0; //Math.Abs(newSequence);
+            ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, CurrentBudgetYear);
             ARow.Year = CurrentBudgetYear;
-
-            //Add the budget revision entry. Not implementing versioning at this point;
-            int BdgRevision = 0;
-
-            //Find if Revision row already exists
-            ABudgetRevisionRow BudgetRevisionRow =
-                (ABudgetRevisionRow)FMainDS.ABudgetRevision.Rows.Find(new object[] { FLedgerNumber, CurrentBudgetYear,
-                                                                                     BdgRevision });
-
-            if (BudgetRevisionRow == null)
-            {
-                //Add a new row
-                BudgetRevisionRow = (ABudgetRevisionRow)FMainDS.ABudgetRevision.NewRowTyped();
-                BudgetRevisionRow.LedgerNumber = FLedgerNumber;
-                BudgetRevisionRow.Year = CurrentBudgetYear;
-                BudgetRevisionRow.Revision = BdgRevision;
-                BudgetRevisionRow.Description = "New Budget Entry";
-                FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
-            }
 
             //Add the budget period values
             for (int i = 1; i <= 12; i++)
@@ -185,11 +161,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             if (LoadCompleted)
             {
+                //MessageBox.Show(RejectYearChange.ToString());
+                if (RejectYearChange)
+                {
+                    return;
+                }
+
+                //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    RejectYearChange = true;
+                    MessageBox.Show("Please save changes before attempting to change year.");
+                    cmbSelectBudgetYear.SetSelectedInt32(CurrentBudgetYear);
+                    return;
+                }
+
                 if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out CurrentBudgetYear))
                 {
-                    FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
-                    grdDetails.Refresh();
-                    SelectByIndex(0);
+                    //MessageBox.Show(cmbSelectBudgetYear.GetSelectedString() + " - " + CurrentBudgetYear.ToString());
+                    DataView myDataView = FMainDS.ABudget.DefaultView;
+                    myDataView.AllowNew = false;
+                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+                    if (grdDetails.Rows.Count > 0)
+                    {
+                        SelectByIndex(0);
+                    }
+
+//                      FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+//                    grdDetails.Refresh();
+//                    SelectByIndex(0);
 
                     //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                     if (FMainDS.ABudget.DefaultView.Count == 0)
@@ -214,6 +216,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
+            //Reset this flag
+            RejectYearChange = false;
+
             TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
 
             return TSCR;
@@ -285,7 +290,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ImportBudget(System.Object sender, EventArgs e)
         {
-            bool ok = false;
+            int NumRecsImported = 0;
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -321,37 +326,67 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
-                    String importString;
                     TVerificationResultCollection AMessages;
-
-                    importString = File.ReadAllText(dialog.FileName);
 
                     string[] FdlgSeparatorVal = new string[] {
                         FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormatIndex.ToString()
                     };
 
-                    MessageBox.Show(importString);
-                    ok = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
+                    //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
+                    //MessageBox.Show(importString);
+                    //TODO return the budget from the year, and -99 for fail
+                    NumRecsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
+                        CurrentBudgetYear,
                         dialog.FileName,
                         FdlgSeparatorVal,
                         ref FMainDS,
                         out AMessages);
                     //ShowMessages(AMessages);
+                    //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
                 }
 
-                if (ok)
+                if (NumRecsImported > 0)
                 {
-                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                    MessageBox.Show(String.Format(Catalog.GetString("{0} budget records imported successfully!"), NumRecsImported),
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
-                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABudget.DefaultView);
-                    grdDetails.Refresh();
+
+                    //DataView myView = FMainDS.ABudget.DefaultView;
+                    //myView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+
+                    //FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    //grdDetails.Refresh();
+                    //MessageBox.Show(String.Format("Current Year is {0}", CurrentBudgetYear));
+                    DataView myDataView = FMainDS.ABudget.DefaultView;
+                    myDataView.AllowNew = false;
+                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+                    if (grdDetails.Rows.Count > 0)
+                    {
+                        SelectByIndex(0);
+                    }
+
                     //SelectDetailRowByDataTableIndex(FMainDS.ABudget.Rows.Count - 1);
                     //SaveUserDefaults(dialog, impOptions);
                     //FLoadedData = TFinanceBatchFilterEnum.fbfNone;
                     //LoadBatches(FLedgerNumber);
                     FPetraUtilsObject.SetChangedFlag();
+                }
+                else if (NumRecsImported == -1)
+                {
+                    MessageBox.Show("The year contained in the import file is different to the current selected year.");
+
+                    //grdDetails.Refresh();
+                    if (grdDetails.Rows.Count > 0)
+                    {
+                        SelectByIndex(0);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No records found to import");
                 }
             }
         }
@@ -366,6 +401,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 return;
             }
 
+            //TODO: Complete the budget export code
+            MessageBox.Show("Not yet implemented.");
             //exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
             //exportForm.LedgerNumber = FLedgerNumber;
             //exportForm.Show();
@@ -428,13 +465,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void NewBudgetType(System.Object sender, EventArgs e)
         {
-            ClearBudgetPeriodTextboxes();
+            //ClearBudgetPeriodTextboxes();
 
             pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
             pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
             pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
             pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
+
+            if (LoadCompleted && !FPetraUtilsObject.HasChanges)
+            {
+                if (rbtAdHoc.Checked)
+                {
+                    DisplayBudgetTypeAdhoc();
+                }
+                else if (rbtSame.Checked)
+                {
+                    DisplayBudgetTypeSame();
+                }
+                else if (rbtSplit.Checked)
+                {
+                    DisplayBudgetTypeSplit();
+                }
+                else if (rbtInflateN.Checked)
+                {
+                    DisplayBudgetTypeInflateN();
+                }
+                else      //rbtInflateBase.Checked
+                {
+                    DisplayBudgetTypeInflateBase();
+                }
+            }
         }
 
         private void ProcessBudgetTypeAdhoc(System.Object sender, EventArgs e)
@@ -774,6 +835,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             TotalAmount = FirstPeriodAmount * InflateAfterPeriod + CurrentPeriodAmount * (12 - InflateAfterPeriod);
                             break;
                         }
+                        else if (i == 12) // and by implication CurrentPeriodAmount == FirstPeriodAmount
+                        {
+                            //This is an odd case that the user should never implement, but still needs to be covered.
+                            //  It is equivalent to using BUDGET TYPE: SAME
+                            InflateAfterPeriod = 0;
+                            InflationRate = 0;
+                            TotalAmount = CurrentPeriodAmount * 12;
+                        }
                     }
                 }
 
@@ -861,7 +930,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod12AmountPlus.NumberValueDecimal = 0;
             //Inflate N controls
             txtFirstPeriodAmount.NumberValueDecimal = 0;
-            txtInflateAfterPeriod.Text = "1";
+            txtInflateAfterPeriod.NumberValueInt = 0;
             txtInflationRate.NumberValueDecimal = 0;
             lblInflateNTotalAmount.Text = "    Total: 0";
             //Inflate Base controls
@@ -909,6 +978,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ShowDetailsManual(ABudgetRow ARow)
         {
+            ClearBudgetPeriodTextboxes();
+
             if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SPLIT)
             {
                 rbtSplit.Checked = true;

@@ -4,6 +4,8 @@ RootNode:
     FormTitle: Partner By Special Type
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerBySpecialType.CalculateExtract
+        ISOLATIONLEVEL: serializable
         XMLFILES: [Partner\\\\partnerbyspecialtype.xml]
         REPORTNAME: Partner By Special Type
         CURRENTREPORT: Partner By Special Type
@@ -23,14 +25,28 @@ RootNode:
             Controls: 
                 Row0: [lblIncludeSpecialTypes]
                 Row1: [clbIncludeSpecialTypes]
+                Row2: [pnlSpecialTypeOptionsBottom]
             Order: AlwaysFirst
+        pnlSpecialTypeOptionsBottom:
+            Controls: 
+                Row0: [ucoAddress, ucoChkFilter]
+                Row1: [txtDateSet]
         lblIncludeSpecialTypes:
             Label: Report on all partners that have one of these special types
         clbIncludeSpecialTypes:
             NoLabel: true 
             ParameterName: param_explicit_specialtypes
-            Width: 400
+            Width: 500
             Height: 200
+        ucoAddress:
+            Dock: Left
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+        ucoChkFilter:
+            Dock: Left
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+        txtDateSet:
+            Label: Date Set
+            ParameterName: param_date_set
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
@@ -107,3 +123,4 @@ RootNode:
         Para23:
             Name: URL
             Parameter: 3.0
+            

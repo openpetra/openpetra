@@ -218,11 +218,6 @@ namespace Ict.Petra.Shared.MPartner
         PublicationCostList,
 
         /// <summary>
-        /// available publications
-        /// </summary>
-        PublicationList,
-
-        /// <summary>
         /// List of reasons for giving a subscription
         /// </summary>
         ReasonSubscriptionGivenList,
@@ -230,6 +225,10 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// List of reasons for cancelling a subscription
         /// </summary>
-        ReasonSubscriptionCancelledList
+        ReasonSubscriptionCancelledList,
+        /// <summary>
+        /// available publications
+        /// </summary>
+        PublicationList
     };
 }

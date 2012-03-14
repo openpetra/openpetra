@@ -52,12 +52,15 @@ using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.Interfaces.MCommon.Cacheable;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MCommon.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 using Ict.Petra.Server.MCommon.Instantiator.Cacheable;
 using Ict.Petra.Server.MCommon.Instantiator.UIConnectors;
+using Ict.Petra.Server.MCommon.Instantiator.WebConnectors;
 using Ict.Petra.Server.MCommon.Instantiator.DataReader;
 using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Server.MCommon.WebConnectors;
 using Ict.Petra.Server.MCommon.DataReader;
 
 #region ManualCode
@@ -164,6 +167,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
 #endif
         private TCacheableNamespace FCacheableSubNamespace;
         private TUIConnectorsNamespace FUIConnectorsSubNamespace;
+        private TWebConnectorsNamespace FWebConnectorsSubNamespace;
         private TDataReaderNamespace FDataReaderSubNamespace;
 
         /// <summary>Constructor</summary>
@@ -282,6 +286,35 @@ namespace Ict.Petra.Server.MCommon.Instantiator
                 }
 
                 return FUIConnectorsSubNamespace;
+            }
+
+        }
+
+        /// <summary>The 'WebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'MCommon.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'MCommon.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.MCommon.Instantiator.WebConnectors') should be automatically contructable.
+                    FWebConnectorsSubNamespace = new TWebConnectorsNamespace();
+                }
+
+                return FWebConnectorsSubNamespace;
             }
 
         }
@@ -667,6 +700,84 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 
 #endif
             return ReturnValue;
+        }
+    }
+}
+
+namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
+{
+    /// <summary>auto generated class </summary>
+    public class TWebConnectorsNamespace : MarshalByRefObject, IWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public Int64 GetNextSequence(TSequenceNames ASequence)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TSequenceWebConnector), "GetNextSequence", ";TSEQUENCENAMES;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(ASequence);
         }
     }
 }

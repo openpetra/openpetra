@@ -99,7 +99,7 @@ namespace Ict.Testing.NUnitTools
             //nant("stopPetraServer", true);
             // csharp\\ICT\\Testing\\...\\filename.sql"
             //  + " >C:\\report.txt"
-            nant("loadDatabaseIncrement -D:LoadDB.file=" + strSqlFilePathFromCSharpName, false);
+            nant("loadDatabaseIncrement -D:file=" + strSqlFilePathFromCSharpName, false);
             //nant("startPetraServer", true);
         }
 

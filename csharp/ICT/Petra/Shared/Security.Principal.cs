@@ -341,6 +341,19 @@ namespace Ict.Petra.Shared.Security
             return (FModuleAccess != null) && (System.Array.BinarySearch(FModuleAccess, AModuleName) >= 0);
         }
 
+        /// <summary>
+        /// diagnostic string to show which modules a user has been given access to (separated by newlines)
+        /// </summary>
+        /// <returns>
+        /// string permissions
+        /// </returns>
+        public string GetPermissions()
+        {
+            string permissions = string.Join(Environment.NewLine, FModuleAccess);
+
+            return permissions;
+        }
+
         #endregion
     }
 

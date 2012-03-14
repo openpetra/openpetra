@@ -36,7 +36,8 @@ namespace Ict.Petra.Shared.MFinance
     public class GLRoutines
     {
         /// <summary>
-        /// calculate the base amount for the transactions, and update the totals for the current journal
+        /// Calculate the base amount for the transactions, and update the totals for the current journal
+        /// NOTE this no longer calculates AmountInBaseCurrency
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
@@ -67,8 +68,19 @@ namespace Ict.Petra.Shared.MFinance
                 ATransactionRow r = (ATransactionRow)v.Row;
 
                 // recalculate the amount in base currency
-                r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
 
+/*
+ *              // I don't want to do this here -
+ *              // I have "forex reval" transactions that deliberately have different amounts in Base,
+ *              // to revalue the foreign transactions.
+ *              //      CSharp\ICT\Petra\Server\lib\MFinance\AP\AP.EditTransaction.cs
+ *              //      CreateGLBatchAndTransactionsForPaying (line 1111)
+ *              //                                                                   Tim Ingham March 2012
+ *
+ *              // BUT - if this is not calculated here, it needs to be calculated by the caller prior to calling this.
+ *
+ *              r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
+ */
                 if (r.DebitCreditIndicator)
                 {
                     ACurrentJournal.JournalDebitTotal += r.TransactionAmount;
@@ -83,7 +95,7 @@ namespace Ict.Petra.Shared.MFinance
         }
 
         /// <summary>
-        /// calculate the base amount for the transactions, and update the totals for the journals and the current batch
+        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="ACurrentBatch"></param>

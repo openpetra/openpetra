@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
@@ -79,7 +80,24 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             LoadDataOnDemand();
 
+            grdDetails.Columns.Clear();
+            grdDetails.AddTextColumn("Language",
+                FMainDS.PmPersonLanguage.Columns["Parent_" + PLanguageTable.GetLanguageDescriptionDBName()]);
+            grdDetails.AddTextColumn("Language Level", FMainDS.PmPersonLanguage.ColumnLanguageLevel);
+            grdDetails.AddTextColumn("Years Of Experience", FMainDS.PmPersonLanguage.ColumnYearsOfExperience);
+            grdDetails.AddDateColumn("as of", FMainDS.PmPersonLanguage.ColumnYearsOfExperienceAsOf);
+
             FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
+
+            // enable grid to react to insert and delete keyboard keys
+            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
+            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
+
+            if (grdDetails.Rows.Count <= 1)
+            {
+                pnlDetails.Visible = false;
+                btnDelete.Enabled = false;
+            }
         }
 
         /// <summary>
@@ -119,20 +137,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-// TODO: perform a check if the value is already referenced somewhere (similar to what the commented-out code does)
-//            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-//                FPreviouslySelectedDetailRow.AnalysisTypeCode,
-//                FPreviouslySelectedDetailRow.AnalysisValue);
-//
-//            if (num > 0)
-//            {
-//                MessageBox.Show(Catalog.GetString(
-//                        "This value is already referenced and cannot be deleted."));
-//                return;
-//            }
-
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                            "You have choosen to delete this record ({0}).\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.LanguageCode), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
@@ -142,6 +148,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SelectByIndex(rowIndex);
 
                 DoRecalculateScreenParts();
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    pnlDetails.Visible = false;
+                }
             }
         }
 
@@ -154,6 +167,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDetailsManual(PmPersonLanguageRow ARow)
         {
+            if (ARow != null)
+            {
+                btnDelete.Enabled = true;
+                pnlDetails.Visible = true;
+            }
+
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -237,12 +256,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.Selection.SelectRow(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
-
-                pnlDetails.Visible = true;
             }
             else
             {
-                pnlDetails.Visible = false;
+                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -253,6 +270,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
+            DataColumn ForeignTableColumn;
+            PLanguageTable LanguageTable;
 
             try
             {
@@ -277,6 +296,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
+
+                // Add relation table to data set
+                if (FMainDS.PLanguage == null)
+                {
+                    FMainDS.Tables.Add(new PLanguageTable());
+                }
+
+                LanguageTable = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
+                // rename data table as otherwise the merge with the data set won't work; tables need to have same name
+                LanguageTable.TableName = PLanguageTable.GetTableName();
+                FMainDS.Merge(LanguageTable);
+
+                // Relations are not automatically enabled. Need to enable them here in order to use for columns.
+                FMainDS.EnableRelations();
+
+                // add column for passport nationality name
+                ForeignTableColumn = new DataColumn();
+                ForeignTableColumn.DataType = System.Type.GetType("System.String");
+                ForeignTableColumn.ColumnName = "Parent_" + PLanguageTable.GetLanguageDescriptionDBName();
+                ForeignTableColumn.Expression = "Parent." + PLanguageTable.GetLanguageDescriptionDBName();
+                FMainDS.PmPersonLanguage.Columns.Add(ForeignTableColumn);
 
                 if (FMainDS.PmPersonLanguage.Rows.Count != 0)
                 {
@@ -304,6 +344,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            NewRow(this, null);
+        }
+
+        /// <summary>
+        /// Event Handler for Grid Event
+        /// </summary>
+        /// <returns>void</returns>
+        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        {
+            if (e.Row != -1)
+            {
+                this.DeleteRow(this, null);
             }
         }
     }

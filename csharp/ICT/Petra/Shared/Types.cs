@@ -192,6 +192,67 @@ namespace Ict.Petra.Shared
     };
 
     /// <summary>
+    /// sequences that can be used with the MCommon WebConnector TSequenceWebConnector
+    /// </summary>
+    public enum TSequenceNames
+    {
+        /// <summary>see petra.xml</summary>
+        seq_application,
+        /// <summary>see petra.xml</summary>
+        seq_contact,
+        /// <summary>see petra.xml</summary>
+        seq_extract_number,
+        /// <summary>see petra.xml</summary>
+        seq_location_number,
+        /// <summary>see petra.xml</summary>
+        seq_pe_evaluation_number,
+        /// <summary>see petra.xml</summary>
+        seq_report_number,
+        /// <summary>see petra.xml</summary>
+        seq_general_ledger_master,
+        /// <summary>see petra.xml</summary>
+        seq_budget,
+        /// <summary>see petra.xml</summary>
+        seq_bank_details,
+        /// <summary>see petra.xml</summary>
+        seq_document,
+        /// <summary>see petra.xml</summary>
+        seq_past_experience,
+        /// <summary>see petra.xml</summary>
+        seq_staff_data,
+        /// <summary>see petra.xml</summary>
+        seq_job,
+        /// <summary>see petra.xml</summary>
+        seq_job_assignment,
+        /// <summary>see petra.xml</summary>
+        seq_data_label,
+        /// <summary>see petra.xml</summary>
+        seq_foundation_proposal,
+        /// <summary>see petra.xml</summary>
+        seq_proposal_detail,
+        /// <summary>see petra.xml</summary>
+        seq_form_letter_insert,
+        /// <summary>see petra.xml</summary>
+        seq_workflow,
+        /// <summary>see petra.xml</summary>
+        seq_file_info,
+        /// <summary>see petra.xml</summary>
+        seq_person_skill,
+        /// <summary>see petra.xml</summary>
+        seq_booking,
+        /// <summary>see petra.xml</summary>
+        seq_room_alloc,
+        /// <summary>see petra.xml</summary>
+        seq_ar_invoice,
+        /// <summary>see petra.xml</summary>
+        seq_match_number,
+        /// <summary>see petra.xml</summary>
+        seq_statement_number,
+        /// <summary>AP Document Reference</summary>
+        seq_ap_document
+    }
+
+    /// <summary>
     /// provides useful functions for shared types
     /// </summary>
     public class SharedTypes

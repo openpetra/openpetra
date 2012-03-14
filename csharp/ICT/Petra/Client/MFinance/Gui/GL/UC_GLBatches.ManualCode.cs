@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,9 +129,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (ARow != null)
             {
                 FPetraUtilsObject.DetailProtectedMode =
-                    (ARow.BatchRunningTotal.Equals(MFinanceConstants.BATCH_POSTED)
+                    (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
                      || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
 
+                dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
+                
                 ((TFrmGLBatch)ParentForm).LoadJournals(
                     ARow.LedgerNumber,
                     ARow.BatchNumber);
@@ -142,7 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         /// <summary>
         /// This routine is called by a double click on a batch row, which means: Open the
-        /// Jounal Tab of this batch.
+        /// Journal Tab of this batch.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

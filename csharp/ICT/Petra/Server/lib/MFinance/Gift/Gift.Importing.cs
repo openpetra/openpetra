@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -110,6 +110,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, FTransaction);
+                AGiftRow previousGift = null;
 
                 while ((FImportLine = sr.ReadLine()) != null)
                 {
@@ -122,6 +123,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         if (RowType == "B")
                         {
+                            previousGift = null;
                             giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref FMainDS,
                                 ref FTransaction,
                                 ref LedgerTable,
@@ -157,18 +159,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                             }
 
                             AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
-                            gift.LedgerNumber = giftBatch.LedgerNumber;
-                            gift.BatchNumber = giftBatch.BatchNumber;
-                            gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
-                            giftBatch.LastGiftNumber++;
-                            gift.LastDetailNumber = 1;
-                            FMainDS.AGift.Rows.Add(gift);
-                            AGiftDetailRow giftDetails = FMainDS.AGiftDetail.NewRowTyped(true);
-                            giftDetails.DetailNumber = 1;
-                            giftDetails.LedgerNumber = gift.LedgerNumber;
-                            giftDetails.BatchNumber = giftBatch.BatchNumber;
-                            giftDetails.GiftTransactionNumber = gift.GiftTransactionNumber;
-                            FMainDS.AGiftDetail.Rows.Add(giftDetails);
 
                             gift.DonorKey = ImportInt64(Catalog.GetString("donor key"));
                             ImportString(Catalog.GetString("short name of donor (unused)")); // unused
@@ -184,6 +174,39 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 gift.FirstTimeGift = ImportBoolean(Catalog.GetString("first time gift"));
                                 gift.ReceiptPrinted = ImportBoolean(Catalog.GetString("receipt printed"));
                             }
+
+                            AGiftDetailRow giftDetails = FMainDS.AGiftDetail.NewRowTyped(true);
+
+                            if ((previousGift != null) && (gift.DonorKey == previousGift.DonorKey)
+                                && (gift.MethodOfGivingCode == previousGift.MethodOfGivingCode)
+                                && (gift.MethodOfPaymentCode == previousGift.MethodOfPaymentCode)
+                                && (gift.Reference == previousGift.Reference)
+                                && (gift.ReceiptLetterCode == previousGift.ReceiptLetterCode)
+                                && (gift.ReceiptNumber == previousGift.ReceiptNumber)
+                                && (gift.FirstTimeGift == previousGift.FirstTimeGift)
+                                && (gift.ReceiptPrinted == previousGift.ReceiptPrinted))
+                            {
+                                // this row is a new detail for the previousGift
+                                gift = previousGift;
+                                gift.LastDetailNumber++;
+                                giftDetails.DetailNumber = gift.LastDetailNumber;
+                            }
+                            else
+                            {
+                                previousGift = gift;
+                                gift.LedgerNumber = giftBatch.LedgerNumber;
+                                gift.BatchNumber = giftBatch.BatchNumber;
+                                gift.GiftTransactionNumber = giftBatch.LastGiftNumber + 1;
+                                giftBatch.LastGiftNumber++;
+                                gift.LastDetailNumber = 1;
+                                FMainDS.AGift.Rows.Add(gift);
+                                giftDetails.DetailNumber = 1;
+                            }
+
+                            giftDetails.LedgerNumber = gift.LedgerNumber;
+                            giftDetails.BatchNumber = giftBatch.BatchNumber;
+                            giftDetails.GiftTransactionNumber = gift.GiftTransactionNumber;
+                            FMainDS.AGiftDetail.Rows.Add(giftDetails);
 
                             giftDetails.RecipientKey = ImportInt64(Catalog.GetString("recipient key"));
                             ImportString(Catalog.GetString("short name of recipient (unused)")); // unused
@@ -217,6 +240,16 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.GiftCommentThree = ImportString(Catalog.GetString("gift comment three"));
                             giftDetails.CommentThreeType = ImportString(Catalog.GetString("comment three type"));
                             giftDetails.TaxDeductable = ImportBoolean(Catalog.GetString("tax deductable"));
+
+                            if (FImportLine.Length > 0)
+                            {
+                                gift.DateEntered = ImportDate(Catalog.GetString("date entered"));
+                            }
+                            else
+                            {
+                                gift.DateEntered = giftBatch.GlEffectiveDate;
+                            }
+
                             FImportMessage = Catalog.GetString("Saving gift");
 
                             if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))

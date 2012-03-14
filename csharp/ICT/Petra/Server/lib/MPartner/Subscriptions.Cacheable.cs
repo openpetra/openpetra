@@ -150,12 +150,6 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
-                        case TCacheableSubscriptionsTablesEnum.PublicationList:
-                        {
-                            DataTable TmpTable = PPublicationAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
                         {
                             DataTable TmpTable = PReasonSubscriptionGivenAccess.LoadAll(ReadTransaction);
@@ -165,6 +159,12 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
                         {
                             DataTable TmpTable = PReasonSubscriptionCancelledAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableSubscriptionsTablesEnum.PublicationList:
+                        {
+                            DataTable TmpTable = GetPublicationListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -240,13 +240,6 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
                             break;
-                        case TCacheableSubscriptionsTablesEnum.PublicationList:
-                            if (PPublicationAccess.SubmitChanges((PPublicationTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                            break;
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
                             if (PReasonSubscriptionGivenAccess.SubmitChanges((PReasonSubscriptionGivenTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
@@ -301,6 +294,26 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
             }
 
             return SubmissionResult;
+        }
+
+        private DataTable GetPublicationListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+			DataColumn ValidityColumn;
+            DataTable TmpTable = PPublicationAccess.LoadAll(AReadTransaction);
+            string ValidText = "";
+            string InvalidText = Catalog.GetString("Invalid");
+
+	        // add column to display the other partner key depending on direction of relationship
+	        ValidityColumn = new DataColumn();
+	        ValidityColumn.DataType = System.Type.GetType("System.String");
+	        ValidityColumn.ColumnName = MPartnerConstants.PUBLICATION_VALID_TEXT_COLUMNNAME;
+	        ValidityColumn.Expression = "IIF(" + PPublicationTable.GetValidPublicationDBName()
+	        								+ ",'" + ValidText + "','" + InvalidText + "')";
+	        TmpTable.Columns.Add(ValidityColumn);
+            
+            return TmpTable;
+#endregion ManualCode
         }
     }
 }

@@ -72,24 +72,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 baseCurrencyOfLedger = ledger.BaseCurrency;
 
 
-                this.txtDetailRateOfExchange.Validated +=
-                    new System.EventHandler(this.ValidatedExchangeRate);
-
-                this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
-                    new System.EventHandler(this.ValueChangedCurrencyCode);
-                this.cmbDetailToCurrencyCode.SelectedValueChanged +=
-                    new System.EventHandler(this.ValueChangedCurrencyCode);
-
-                this.tbbSave.Click +=
-                    new System.EventHandler(this.SetTheFocusToTheGrid);
-
-                this.btnInvertExchangeRate.Click +=
-                    new System.EventHandler(this.InvertExchangeRate);
-
-                FMainDS.ADailyExchangeRate.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
-                                                              ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
-                FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
-
                 btnClose.Visible = false;
                 btnCancel.Visible = false;
                 mniImport.Enabled = true;
@@ -99,6 +81,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private void RunOnceOnActivationManual()
+        {
+            this.txtDetailRateOfExchange.Validated +=
+                new System.EventHandler(this.ValidatedExchangeRate);
+
+            this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
+                new System.EventHandler(this.ValueChangedCurrencyCode);
+            this.cmbDetailToCurrencyCode.SelectedValueChanged +=
+                new System.EventHandler(this.ValueChangedCurrencyCode);
+
+            this.tbbSave.Click +=
+                new System.EventHandler(this.SetTheFocusToTheGrid);
+
+            this.btnInvertExchangeRate.Click +=
+                new System.EventHandler(this.InvertExchangeRate);
+
+            FMainDS.ADailyExchangeRate.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+                                                          ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+            FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
+        }
 
         /// <summary>
         /// In oder to run the dialog in the modal form you have to invoke this routine.
@@ -302,13 +304,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             ADailyExchangeRateRow ADailyExRateRow = FMainDS.ADailyExchangeRate.NewRowTyped();
 
-            ADailyExRateRow.FromCurrencyCode = baseCurrencyOfLedger;
+            if (baseCurrencyOfLedger == null)
+            {
+                ADailyExRateRow.FromCurrencyCode = "USD";
+            }
+            else
+            {
+                ADailyExRateRow.FromCurrencyCode = baseCurrencyOfLedger;
+            }
 
             if (strCurrencyToDefault == null)
             {
                 if (FPreviouslySelectedDetailRow == null)
                 {
-                    ADailyExRateRow.ToCurrencyCode = baseCurrencyOfLedger;
+                    if (baseCurrencyOfLedger == null)
+                    {
+                        ADailyExRateRow.ToCurrencyCode = "USD";
+                    }
+                    else
+                    {
+                        ADailyExRateRow.ToCurrencyCode = baseCurrencyOfLedger;
+                    }
+
                     ADailyExRateRow.RateOfExchange = 1.0m;
                 }
                 else

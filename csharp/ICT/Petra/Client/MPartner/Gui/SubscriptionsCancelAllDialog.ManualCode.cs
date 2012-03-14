@@ -68,6 +68,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             DateTime DateEnded;
 
+            lblExplanationText.Text = Catalog.GetString(
+                "Select the 'Reason ended' and enter the 'Date ended'." + "\r\n" +
+                "On clicking OK these will be applied to all active Subscriptions." + "\r\n" +
+                "The Partner will be left with no active Subscriptions!");
+
             if (FDateEndedPreset == DateTime.MinValue)
             {
                 DateEnded = DateTime.Today;
@@ -86,6 +91,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             dtpPSubscriptionDateCancelled.Date = DateEnded;
+
+            // show this dialog in center of screen
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)

@@ -61,9 +61,10 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         /// <param name="BranchLocation">The path to the active branch</param>
         /// <param name="Index">The index of the favourite to be edited</param>
-        public void InitializeDialog(string BranchLocation, int Index)
+        /// <param name="LocalSettings">A reference to the local settings object used to persist personal preferences</param>
+        public void InitializeDialog(string BranchLocation, int Index, SettingsDictionary LocalSettings)
         {
-            BuildConfiguration dbCfg = new BuildConfiguration(BranchLocation);
+            BuildConfiguration dbCfg = new BuildConfiguration(BranchLocation, LocalSettings);
             string dbms, dbName, port, password, location;
             bool isBlank;
 

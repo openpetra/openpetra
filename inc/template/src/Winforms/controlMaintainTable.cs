@@ -124,6 +124,7 @@ namespace {#NAMESPACE}
             if (found)
             {
                 RowNumberGrid = Counter + 1;
+                break;
             }
         }
         grdDetails.Selection.ResetSelection(false);
@@ -225,19 +226,22 @@ namespace {#NAMESPACE}
     
 {#IFDEF SAVEDETAILS}
     /// get the data from the controls and store in the currently selected detail row
-    public void GetDataFromControls()
+    public bool GetDataFromControls()
     {
-        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        return GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
+    private bool GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
     {
         if (ARow != null && !pnlDetailsProtected)
         {
+            {#VALIDATEDETAILS}
             ARow.BeginEdit();
             {#SAVEDETAILS}
             ARow.EndEdit();
         }
+
+        return true;
     }
 {#ENDIF SAVEDETAILS}
 
@@ -293,3 +297,11 @@ namespace {#NAMESPACE}
 }
 
 {#INCLUDE copyvalues.cs}
+
+{##VALIDATEDETAILS}
+TVerificationResultCollection VerificationResults;
+if (!ValidateDetailsManual(ARow, out VerificationResults))
+{
+    MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Please fix the errors"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+    return false;
+}

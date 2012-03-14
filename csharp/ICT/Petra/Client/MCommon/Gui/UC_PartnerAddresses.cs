@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -190,9 +190,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             }
         }
 
-        /// <summary>Custom Event for enabling/disabling of other parts of the screen</summary>
-        public event TEnableDisableScreenPartsEventHandler EnableDisableOtherScreenParts;
-
         /// <summary>Custom Event for recalculation of the Tab Header</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
@@ -218,7 +215,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.btnDeleteRecord.Text = Catalog.GetString("      &Delete");
-            this.btnEditRecord.Text = Catalog.GetString("       Edi&t");
             this.btnNewRecord.Text = Catalog.GetString("       &New");
             #endregion
 
@@ -250,7 +246,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                 FPetraUtilsObject.SetStatusBarText(this.btnMaximiseMinimiseGrid, Catalog.GetString("List expand button"));
                 FPetraUtilsObject.SetStatusBarText(this.grdRecordList, Catalog.GetString("Address list"));
                 FPetraUtilsObject.SetStatusBarText(this.btnDeleteRecord, Catalog.GetString("Delete currently selected Address"));
-                FPetraUtilsObject.SetStatusBarText(this.btnEditRecord, Catalog.GetString("Edit currently selected Address"));
                 FPetraUtilsObject.SetStatusBarText(this.btnNewRecord, Catalog.GetString("Create new address"));
             }
         }
@@ -429,21 +424,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// Raises Event EnableDisableOtherScreenParts.
-        ///
-        /// </summary>
-        /// <param name="e">Event parameters
-        /// </param>
-        /// <returns>void</returns>
-        protected void OnEnableDisableOtherScreenParts(TEnableDisableEventArgs e)
-        {
-            if (EnableDisableOtherScreenParts != null)
-            {
-                EnableDisableOtherScreenParts(this, e);
-            }
-        }
-
-        /// <summary>
         /// Raises Event HookupDataChange.
         ///
         /// </summary>
@@ -552,9 +532,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             OnHookupDataChange(new System.EventArgs());
 
             // initial state of buttons. show edit and delete button
-            btnEditRecord.Text = "       " + CommonResourcestrings.StrBtnTextEdit;
             btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextDelete;
-            btnEditRecord.ImageIndex = 1;
             btnDeleteRecord.ImageIndex = 2;
         }
 
@@ -948,7 +926,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         /// <summary>
         /// Applies Petra Security to restrict functionality, if needed.
-        ///
         /// </summary>
         /// <returns>void</returns>
         protected void ApplySecurity()
@@ -972,11 +949,12 @@ namespace Ict.Petra.Client.MCommon.Gui
                 || (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PPartnerTable.GetTableDBName())))
             {
                 // needed for setting p_partner.s_date_modified_d = TODAY
-                btnEditRecord.Enabled = false;
+                btnDeleteRecord.Enabled = false;
             }
 
             // Check security for Delete record operations
-            if (FLogic.CheckDeleteSecurityGeneral(false))
+            // do not allow deletion of record, if this is location 0 (this is done in DataGrid_FocusRowEntered)
+            if (FLogic.CheckDeleteSecurityGeneral(false) && btnDeleteRecord.Enabled)
             {
                 btnDeleteRecord.Enabled = true;
 
@@ -996,7 +974,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (this.PartnerLocationDataRowOfCurrentlySelectedRecord.LocationType.EndsWith(SharedConstants.SECURITY_CAN_LOCATIONTYPE)
                     && (!UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_ADDRESSCAN)))
                 {
-                    btnEditRecord.Enabled = false;
                     btnDeleteRecord.Enabled = false;
                 }
             }
@@ -1015,6 +992,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// and the three Buttons next to the Grid are set up to perform Done and Cancel
         /// operations.
         ///
+        /// Only location 0 is read only!!!
         /// </summary>
         /// <param name="ASelectCurrentRow">Set this to true to select the DataRow that is deemed
         /// to be the 'current' one in FLogic in the Grid and to DataBind the Details
@@ -1031,23 +1009,11 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 FIsEditingRecord = true;
                 ucoDetails.SetMode(TDataModeEnum.dmEdit);
-                btnNewRecord.Enabled = false;
-                btnEditRecord.Text = "      " + CommonResourcestrings.StrBtnTextDone;
-                btnEditRecord.ImageIndex = 3;
-                btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextCancel;
-                btnDeleteRecord.ImageIndex = 4;
-                grdRecordList.Enabled = false;
             }
             else
             {
                 FIsEditingRecord = false;
                 ucoDetails.SetMode(TDataModeEnum.dmBrowse);
-                btnNewRecord.Enabled = true;
-                btnEditRecord.Text = "       " + CommonResourcestrings.StrBtnTextEdit;
-                btnDeleteRecord.Text = "     " + CommonResourcestrings.StrBtnTextDelete;
-                btnEditRecord.ImageIndex = 1;
-                btnDeleteRecord.ImageIndex = 2;
-                grdRecordList.Enabled = true;
             }
 
             if (ASelectCurrentRow)
@@ -1150,7 +1116,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         protected void ActionNewRecord()
         {
             Int32 AddedLocationsRowKey;
-            TEnableDisableEventArgs CustomEventArgs;
             DataRowView TmpDataRowView;
             Int32 TmpRowIndex;
             Int64 SiteKey;
@@ -1165,7 +1130,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                     TmpDataRowView = FLogic.DetermineRecordToSelect((grdRecordList.DataSource as DevAge.ComponentModel.BoundDataView).DataView);
                     TmpRowIndex = grdRecordList.Rows.DataSourceRowToIndex(TmpDataRowView);
 
-//                  MessageBox.Show("TmpRowIndex: " + TmpRowIndex.ToString());
+                    //                  MessageBox.Show("TmpRowIndex: " + TmpRowIndex.ToString());
 
                     // Determine PrimaryKey of the current row in the Grid
                     LocationKey = FLogic.DetermineCurrentKey(TmpRowIndex + 1);
@@ -1186,25 +1151,21 @@ namespace Ict.Petra.Client.MCommon.Gui
                     ucoDetails.SetAddressFieldOrder();
                     ucoDetails.Focus();
 
-                    // Fire OnEnableDisableOtherScreenParts event
-                    CustomEventArgs = new TEnableDisableEventArgs();
-                    CustomEventArgs.Enable = false;
-                    OnEnableDisableOtherScreenParts(CustomEventArgs);
-                    btnEditRecord.Enabled = true;
                     btnDeleteRecord.Enabled = true;
                 }
 
                 ApplySecurity();
-
-                // 'Done' button must always be enabled when adding an record
-                btnEditRecord.Enabled = true;
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
-#if DEBUGMODE
                 MessageBox.Show("Exception occured in ActionNewRecord: " + Exp.ToString());
-#endif
             }
+#else
+            catch (Exception)
+            {
+            }
+#endif
         }
 
         /// <summary>
@@ -1227,10 +1188,10 @@ namespace Ict.Petra.Client.MCommon.Gui
             PartnerEditTDSPPartnerLocationRow ErroneousRow;
             String ErrorMessages;
             Control FirstErrorControl;
-            TEnableDisableEventArgs EnableDisableEventArgs;
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
 
-            if (btnEditRecord.Enabled)
+            // only allow edit if deletion is allowed
+            if (btnDeleteRecord.Enabled)
             {
                 // MessageBox.Show('Running ActionEditRecord...');
                 if (!FIsEditingRecord)
@@ -1246,11 +1207,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                     // MessageBox.Show('SwitchDetailReadOnlyModeOrEditMode(false).');
                     ucoDetails.SetAddressFieldOrder();
                     ucoDetails.Focus();
-
-                    // Fire OnEnableDisableOtherScreenParts event
-                    EnableDisableEventArgs = new TEnableDisableEventArgs();
-                    EnableDisableEventArgs.Enable = false;
-                    OnEnableDisableOtherScreenParts(EnableDisableEventArgs);
 
                     // MessageBox.Show('Finished running ActionEditRecord.');
                     return;
@@ -1295,11 +1251,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 SwitchDetailReadOnlyModeOrEditMode(true);
 
-                // Fire OnEnableDisableOtherScreenParts event
-                EnableDisableEventArgs = new TEnableDisableEventArgs();
-                EnableDisableEventArgs.Enable = true;
-                OnEnableDisableOtherScreenParts(EnableDisableEventArgs);
-
                 // Fire OnRecalculateScreenParts event
                 RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
                 RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
@@ -1343,109 +1294,63 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             Int32 NewlySelectedRow;
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-            TEnableDisableEventArgs EnableDisableEventArgs;
 
             // MessageBox.Show('btnDeleteRecord_Click');
             if (btnDeleteRecord.Enabled)
             {
-                if (!FIsEditingRecord)
+                if (FLogic.DeleteRecord())
                 {
-                    if (FLogic.DeleteRecord())
+                    // Ensure that following Selection.ActivePosition inquiries will work!
+                    grdRecordList.Focus();
+
+                    // Update the details section to show the details of the now selected row
+                    if (grdRecordList.Selection.ActivePosition != Position.Empty)
                     {
-                        // Ensure that following Selection.ActivePosition inquiries will work!
-                        grdRecordList.Focus();
-
-                        // Update the details section to show the details of the now selected row
-                        if (grdRecordList.Selection.ActivePosition != Position.Empty)
-                        {
-                            NewlySelectedRow = grdRecordList.Selection.ActivePosition.Row;
-                        }
-                        else
-                        {
-                            NewlySelectedRow = grdRecordList.Rows.Count - 1;
-                        }
-
-//                      MessageBox.Show("NewlySelectedRow: " + NewlySelectedRow.ToString());
-                        if (grdRecordList.Rows.Count > 1)
-                        {
-                            // Deleted any row but the last one
-
-                            grdRecordList.Selection.SelectRow(NewlySelectedRow, true);
-                            grdRecordList.ShowCell(new Position(NewlySelectedRow - 1, 0), true);
-
-                            // Make the Grid respond on updown keys
-                            grdRecordList.Selection.Focus(new Position(NewlySelectedRow, 1), true);
-                            DataGrid_FocusRowEntered(this, new RowEventArgs(NewlySelectedRow));
-                        }
-                        else
-                        {
-                            // Deleted last row, adding default one
-                            FLogic.AddDefaultRecord();
-                            grdRecordList.Selection.SelectRow(1, true);
-                            grdRecordList.ShowCell(new Position(1, 0), true);
-
-                            // Make the Grid respond on updown keys
-                            grdRecordList.Selection.Focus(new Position(1, 1), true);
-                            DataGrid_FocusRowEntered(this, new RowEventArgs(1));
-
-                            // Enable 'New' Address Button if it was initially disabled
-                            if (FDisabledNewButtonOnAutoCreatedAddress)
-                            {
-                                FDisabledNewButtonOnAutoCreatedAddress = false;
-                                btnNewRecord.Enabled = true;
-                                ApplySecurity();
-                            }
-                        }
-
-                        // Fire OnRecalculateScreenParts event
-                        RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-                        RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-                        OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
-                    }
-                }
-                else
-                {
-                    ucoDetails.CancelEditing(FLogic.NewRecordFromRecordKey == 0, FLogic.IsRecordBeingAdded);
-
-                    // Clear any errors that might have been set
-                    FPetraUtilsObject.VerificationResultCollection.Remove(ucoDetails);
-
-                    if (FLogic.IsRecordBeingAdded)
-                    {
-                        /*
-                         * FLogic's LocationKey is no longer valid since the Row got deleted
-                         * --> reset FLogic's LocationKey to the LocationKey that we were on
-                         * when 'New' was chosen
-                         */
-                        FLogic.LocationKey = FLogic.NewRecordFromRecordKey;
+                        NewlySelectedRow = grdRecordList.Selection.ActivePosition.Row;
                     }
                     else
                     {
-                        if (FLogic.RecordKeyBeforeFinding != null)
-                        {
-                            // MessageBox.Show('btnDeleteRecord_Click: FLogic.RecordKeyBeforeFinding.LocationKey: ' + FLogic.RecordKeyBeforeFinding.LocationKey.ToString);
-                            FLogic.LocationKey = FLogic.RecordKeyBeforeFinding.LocationKey;
-                            FLogic.RecordKeyBeforeFinding = null;
-                        }
-
-                        // MessageBox.Show('btnDeleteRecord_Click: FLogic.LocationKey: ' + FLogic.LocationKey.ToString);
+                        NewlySelectedRow = grdRecordList.Rows.Count - 1;
                     }
 
-                    // Tell FLogic that we are no longer adding a Location
-                    FLogic.IsRecordBeingAdded = false;
+//                      MessageBox.Show("NewlySelectedRow: " + NewlySelectedRow.ToString());
+                    if (grdRecordList.Rows.Count > 1)
+                    {
+                        // Deleted any row but the last one
 
-                    // MessageBox.Show('btnDeleteRecord_Click:  FLogic.IsRecordBeingAdded: ' + FLogic.IsRecordBeingAdded.ToString);
-                    FLogic.EnsureDefaultRecordIsPresentIfNeeded();
+                        grdRecordList.Selection.SelectRow(NewlySelectedRow, true);
+                        grdRecordList.ShowCell(new Position(NewlySelectedRow - 1, 0), true);
 
-                    // Fire OnEnableDisableOtherScreenParts event
-                    EnableDisableEventArgs = new TEnableDisableEventArgs();
-                    EnableDisableEventArgs.Enable = true;
-                    OnEnableDisableOtherScreenParts(EnableDisableEventArgs);
-                    grdRecordList.Refresh();
-                    SwitchDetailReadOnlyModeOrEditMode(!FLogic.IsRecordBeingAdded);
+                        // Make the Grid respond on updown keys
+                        grdRecordList.Selection.Focus(new Position(NewlySelectedRow, 1), true);
+                        DataGrid_FocusRowEntered(this, new RowEventArgs(NewlySelectedRow));
+                    }
+                    else
+                    {
+                        // Deleted last row, adding default one
+                        FLogic.AddDefaultRecord();
+                        grdRecordList.Selection.SelectRow(1, true);
+                        grdRecordList.ShowCell(new Position(1, 0), true);
 
-                    // Make the Grid respond on updown keys
-                    grdRecordList.Focus();
+                        // Make the Grid respond on updown keys
+                        grdRecordList.Selection.Focus(new Position(1, 1), true);
+                        DataGrid_FocusRowEntered(this, new RowEventArgs(1));
+
+                        // Enable 'New' Address Button if it was initially disabled
+                        if (FDisabledNewButtonOnAutoCreatedAddress)
+                        {
+                            FDisabledNewButtonOnAutoCreatedAddress = false;
+                            btnNewRecord.Enabled = true;
+                            ApplySecurity();
+                        }
+                    }
+
+                    FPetraUtilsObject.SetChangedFlag();
+
+                    // Fire OnRecalculateScreenParts event
+                    RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
+                    RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
+                    OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
                 }
             }
         }
@@ -1468,16 +1373,20 @@ namespace Ict.Petra.Client.MCommon.Gui
             // Determine current Location Key and enable/disable buttons
             if (FLogic.DetermineCurrentKey(AEventArgs.Row) == 0)
             {
-                btnEditRecord.Enabled = false;
                 btnDeleteRecord.Enabled = false;
             }
             else
             {
-                btnEditRecord.Enabled = true;
                 btnDeleteRecord.Enabled = true;
             }
 
             ApplySecurity();
+
+            if (btnDeleteRecord.Enabled == true)
+            {
+                FIsEditingRecord = false;
+                ActionEditRecord();
+            }
 
             // Update detail section only if user actually changed to a different record
             // (this Event also fires if the user just (double)clicks on the same record again)

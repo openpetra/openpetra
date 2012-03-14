@@ -36,31 +36,12 @@ Ext.onReady(function() {
         {
             if (!this.checked) 
             {
-                Ext.form.Field.prototype.markInvalid.call(this, {#FORMNAME}.strErrorCheckboxRequired); 
+                this.markInvalid({#FORMNAME}.strErrorCheckboxRequired); 
                 return false;
             }
             else 
             {
-                Ext.form.Field.prototype.clearInvalid.call(this);
-            }
-        }
-
-        return true;
-    };
-
-    /// it seems we need this for checkboxes in the assistant
-    Ext.form.Checkbox.prototype.isValid = function()
-    {
-        if (this.vtype == "forcetick")
-        {
-            if (!this.checked) 
-            {
-                Ext.form.Field.prototype.markInvalid.call(this, {#FORMNAME}.strErrorCheckboxRequired); 
-                return false;
-            }
-            else 
-            {
-                Ext.form.Field.prototype.clearInvalid.call(this);
+                this.clearInvalid();
             }
         }
 
@@ -76,7 +57,7 @@ function XmlExtractJSONResponse(response)
     var stringDataNode = xml.getElementsByTagName('string')[0];
     if(stringDataNode){
         jsonString = stringDataNode.firstChild.data;
-        jsonData = Ext.util.JSON.decode(jsonString);
+        jsonData = Ext.JSON.decode(jsonString);
         return jsonData;
     }
 }

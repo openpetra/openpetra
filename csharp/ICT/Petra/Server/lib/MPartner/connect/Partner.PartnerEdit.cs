@@ -407,7 +407,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             String LastGiftInfo;
             TLocationPK LocationPK;
             Boolean OfficeSpecificDataLabelsAvailable = false;
-            TRecentPartnersHandling RecentPartnersHandling;
             Int32 ItemsCountAddresses = 0;
             Int32 ItemsCountAddressesActive = 0;
             Int32 ItemsCountSubscriptions = 0;
@@ -835,8 +834,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     #endregion
 
                     // Add this partner key to the list of recently used partners.
-                    RecentPartnersHandling = new TRecentPartnersHandling();
-                    RecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
+                    TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
                 }
                 catch (EPartnerLocationNotExistantException Exp)
                 {
@@ -1948,7 +1946,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TSubmitChangesResult SubmissionResult;
             PartnerAddressAggregateTDS TmpResponseDS = null;
-            TRecentPartnersHandling RecentPartnersHandling;
 
             AVerificationResult = null;
 
@@ -2107,7 +2104,25 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         // those tables need to have run AcceptChanges
                         SubmissionResult = PartnerEditTDSAccess.SubmitChanges(AInspectDS, out SingleVerificationResultCollection);
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                    }
 
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        // Save data from the Personnel Data part (needs to be done here towards the end of saving
+                        // as p_person record needs to be saved earlier in the process and is referenced from data saved here.
+                        if (SubmitChangesPersonnelData(ref FSubmissionDS, SubmitChangesTransaction, out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                        }
+                    }
+
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
 #if DEBUGMODE
                         if (TLogging.DL >= 6)
                         {
@@ -2121,8 +2136,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             // Partner is new Partner > add to list of recent partners. (If the
                             // Partner was not new then this was already done in LoadData.)
-                            RecentPartnersHandling = new TRecentPartnersHandling();
-                            RecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true, TLastPartnerUse.lpuMailroomPartner);
+                            TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true, TLastPartnerUse.lpuMailroomPartner);
 #if DEBUGMODE
                             if (TLogging.DL >= 6)
                             {
@@ -2520,11 +2534,63 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 #endregion
 
+                // Note: Locations and PartnerLocations are done sepearately in SubmitChangesAddresses!
+#if DEBUGMODE
+                if (TLogging.DL >= 9)
+                {
+                    if (AllSubmissionsOK == false)
+                    {
+                        Console.WriteLine(Messages.BuildMessageFromVerificationResult("TPartnerEditUIConnector.SubmitChanges AVerificationResult: ",
+                                AVerificationResult));
+                    }
+                }
+#endif
+            }
+            else
+            {
+#if DEBUGMODE
+                if (TLogging.DL >= 8)
+                {
+                    Console.WriteLine("AInspectDS = nil!");
+                }
+#endif
+                AllSubmissionsOK = false;
+            }
+
+            return AllSubmissionsOK;
+        }
+
+        private bool SubmitChangesPersonnelData(ref PartnerEditTDS AInspectDS,
+            TDBTransaction ASubmitChangesTransaction,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            TVerificationResultCollection SingleVerificationResultCollection;
+
+            AVerificationResult = null;
+
+#if DEBUGMODE
+            if (TLogging.DL >= 7)
+            {
+                Console.WriteLine(this.GetType().FullName + ".SubmitChangesPersonnelData: Instance hash is " + this.GetHashCode().ToString());
+            }
+#endif
+            bool AllSubmissionsOK = true;
+
+            if (AInspectDS != null)
+            {
+                AVerificationResult = new TVerificationResultCollection();
+
+                // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ASubmitChangesTransaction.IsolationLevel: ' + Enum(ASubmitChangesTransaction.IsolationLevel).ToString("G")) $ENDIF;
+
                 #region Individual Data (Personnel Tab)
 
                 IndividualDataTDS TempDS = new IndividualDataTDS();
                 TempDS.Merge(AInspectDS);
                 TSubmitChangesResult IndividualDataResult;
+
+                // can remove table PPerson here as this is part of both PartnerEditTDS and IndividualDataTDS and
+                // so the relevant data was already saved when PartnerEditTDS was saved
+                TempDS.RemoveTable("PPerson");
 
                 IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction,
                     out SingleVerificationResultCollection);
@@ -2544,7 +2610,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     if (AllSubmissionsOK == false)
                     {
-                        Console.WriteLine(Messages.BuildMessageFromVerificationResult("TPartnerEditUIConnector.SubmitChanges AVerificationResult: ",
+                        Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                "TPartnerEditUIConnector.SubmitChangesPersonnelData AVerificationResult: ",
                                 AVerificationResult));
                     }
                 }

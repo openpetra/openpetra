@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}
         actShowLanguageLevelExplanation: {Label=&Explanation..., ActionClick=ShowLanguageLevelExplanation}
     Controls:
@@ -26,7 +26,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PmPersonLanguage
-            Columns: [LanguageCode, LanguageLevel, YearsOfExperience, YearsOfExperienceAsOf]
+            Columns: []
             CustomColumns:
                 LanguageCode: {Label=Language}
                 LanguageLevel: {Label=Language Level}

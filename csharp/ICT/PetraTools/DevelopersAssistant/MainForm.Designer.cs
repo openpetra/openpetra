@@ -52,9 +52,11 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.TaskPage = new System.Windows.Forms.TabPage();
+            this.chkTreatWarningsAsErrors = new System.Windows.Forms.CheckBox();
             this.linkLabelBazaar = new System.Windows.Forms.LinkLabel();
             this.linkLabelBranchLocation = new System.Windows.Forms.LinkLabel();
             this.txtBranchLocation = new System.Windows.Forms.TextBox();
@@ -134,6 +136,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkMinimizeServer = new System.Windows.Forms.CheckBox();
             this.chkAutoStopServer = new System.Windows.Forms.CheckBox();
             this.chkAutoStartServer = new System.Windows.Forms.CheckBox();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl.SuspendLayout();
             this.TaskPage.SuspendLayout();
             this.grpMultiple.SuspendLayout();
@@ -161,6 +164,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // TaskPage
             //
+            this.TaskPage.Controls.Add(this.chkTreatWarningsAsErrors);
             this.TaskPage.Controls.Add(this.linkLabelBazaar);
             this.TaskPage.Controls.Add(this.linkLabelBranchLocation);
             this.TaskPage.Controls.Add(this.txtBranchLocation);
@@ -175,6 +179,19 @@ namespace Ict.Tools.DevelopersAssistant
             this.TaskPage.Text = "Tasks";
             this.TaskPage.UseVisualStyleBackColor = true;
             //
+            // chkTreatWarningsAsErrors
+            //
+            this.chkTreatWarningsAsErrors.AutoSize = true;
+            this.chkTreatWarningsAsErrors.Location = new System.Drawing.Point(15, 433);
+            this.chkTreatWarningsAsErrors.Name = "chkTreatWarningsAsErrors";
+            this.chkTreatWarningsAsErrors.Size = new System.Drawing.Size(196, 17);
+            this.chkTreatWarningsAsErrors.TabIndex = 22;
+            this.chkTreatWarningsAsErrors.Text = "Treat errors and warnings as failures";
+            this.toolTip.SetToolTip(this.chkTreatWarningsAsErrors,
+                "Check this to be alerted when warnings or errors occur.  Un-check to be alerted t" +
+                "o errors only.");
+            this.chkTreatWarningsAsErrors.UseVisualStyleBackColor = true;
+            //
             // linkLabelBazaar
             //
             this.linkLabelBazaar.AutoSize = true;
@@ -185,6 +202,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelBazaar.TabIndex = 5;
             this.linkLabelBazaar.TabStop = true;
             this.linkLabelBazaar.Text = "Open Bazaar Explorer here";
+            this.toolTip.SetToolTip(this.linkLabelBazaar, "Bazaar is the source code control system used by Open Petra developers.");
             this.linkLabelBazaar.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelBazaar_LinkClicked);
             //
             // linkLabelBranchLocation
@@ -196,6 +214,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelBranchLocation.TabIndex = 2;
             this.linkLabelBranchLocation.TabStop = true;
             this.linkLabelBranchLocation.Text = "Change the branch location";
+            this.toolTip.SetToolTip(this.linkLabelBranchLocation, "Set the location of you woking branch on the local file system.");
             this.linkLabelBranchLocation.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
                 this.linkLabelBranchLocation_LinkClicked);
             //
@@ -235,36 +254,38 @@ namespace Ict.Tools.DevelopersAssistant
             this.grpMultiple.Controls.Add(this.label9);
             this.grpMultiple.Location = new System.Drawing.Point(405, 52);
             this.grpMultiple.Name = "grpMultiple";
-            this.grpMultiple.Size = new System.Drawing.Size(322, 391);
+            this.grpMultiple.Size = new System.Drawing.Size(322, 398);
             this.grpMultiple.TabIndex = 4;
             this.grpMultiple.TabStop = false;
             this.grpMultiple.Text = "Multiple Tasks";
             //
             // btnRunAltSequence
             //
-            this.btnRunAltSequence.Location = new System.Drawing.Point(203, 349);
+            this.btnRunAltSequence.Location = new System.Drawing.Point(203, 353);
             this.btnRunAltSequence.Name = "btnRunAltSequence";
             this.btnRunAltSequence.Size = new System.Drawing.Size(100, 23);
             this.btnRunAltSequence.TabIndex = 7;
             this.btnRunAltSequence.Text = "Run Sequence";
+            this.toolTip.SetToolTip(this.btnRunAltSequence, "Run the alternate sequence listed above.");
             this.btnRunAltSequence.UseVisualStyleBackColor = true;
             this.btnRunAltSequence.Click += new System.EventHandler(this.btnRunAltSequence_Click);
             //
             // linkModifyAltSequence
             //
             this.linkModifyAltSequence.AutoSize = true;
-            this.linkModifyAltSequence.Location = new System.Drawing.Point(32, 354);
+            this.linkModifyAltSequence.Location = new System.Drawing.Point(32, 358);
             this.linkModifyAltSequence.Name = "linkModifyAltSequence";
             this.linkModifyAltSequence.Size = new System.Drawing.Size(88, 13);
             this.linkModifyAltSequence.TabIndex = 6;
             this.linkModifyAltSequence.TabStop = true;
             this.linkModifyAltSequence.Text = "Modify sequence";
+            this.toolTip.SetToolTip(this.linkModifyAltSequence, "Open a dialog to modify the alternate sequence above.");
             this.linkModifyAltSequence.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
                 this.linkModifyAltSequence_LinkClicked);
             //
             // txtAltSequence
             //
-            this.txtAltSequence.Location = new System.Drawing.Point(17, 228);
+            this.txtAltSequence.Location = new System.Drawing.Point(17, 232);
             this.txtAltSequence.Multiline = true;
             this.txtAltSequence.Name = "txtAltSequence";
             this.txtAltSequence.ReadOnly = true;
@@ -275,7 +296,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label10
             //
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(14, 212);
+            this.label10.Location = new System.Drawing.Point(14, 216);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(140, 13);
             this.label10.TabIndex = 4;
@@ -288,6 +309,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnRunSequence.Size = new System.Drawing.Size(100, 23);
             this.btnRunSequence.TabIndex = 3;
             this.btnRunSequence.Text = "Run Sequence";
+            this.toolTip.SetToolTip(this.btnRunSequence, "Run the standard sequence listed above.");
             this.btnRunSequence.UseVisualStyleBackColor = true;
             this.btnRunSequence.Click += new System.EventHandler(this.btnRunSequence_Click);
             //
@@ -300,6 +322,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkModifySequence.TabIndex = 2;
             this.linkModifySequence.TabStop = true;
             this.linkModifySequence.Text = "Modify sequence";
+            this.toolTip.SetToolTip(this.linkModifySequence, "Open a dialog to modify the standard sequence above.");
             this.linkModifySequence.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkModifySequence_LinkClicked);
             //
             // txtSequence
@@ -323,10 +346,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // grpSingle
             //
-            this.grpSingle.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
-                                                      System.Windows.Forms.AnchorStyles.Left)));
-            this.grpSingle.AutoSize = true;
+            this.grpSingle.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.grpSingle.Controls.Add(this.chkStartClientAfterGenerateWinform);
             this.grpSingle.Controls.Add(this.chkCompileWinform);
             this.grpSingle.Controls.Add(this.btnCompilation);
@@ -355,7 +375,7 @@ namespace Ict.Tools.DevelopersAssistant
                 ((byte)(0)));
             this.grpSingle.Location = new System.Drawing.Point(6, 52);
             this.grpSingle.Name = "grpSingle";
-            this.grpSingle.Size = new System.Drawing.Size(390, 391);
+            this.grpSingle.Size = new System.Drawing.Size(390, 375);
             this.grpSingle.TabIndex = 3;
             this.grpSingle.TabStop = false;
             this.grpSingle.Text = "Individual Tasks";
@@ -370,6 +390,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkStartClientAfterGenerateWinform.Size = new System.Drawing.Size(156, 17);
             this.chkStartClientAfterGenerateWinform.TabIndex = 8;
             this.chkStartClientAfterGenerateWinform.Text = "Start client after compilation";
+            this.toolTip.SetToolTip(this.chkStartClientAfterGenerateWinform, "Start the Open Petra client application on successful compilation.");
             this.chkStartClientAfterGenerateWinform.UseVisualStyleBackColor = true;
             //
             // chkCompileWinform
@@ -382,26 +403,30 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkCompileWinform.Size = new System.Drawing.Size(181, 17);
             this.chkCompileWinform.TabIndex = 7;
             this.chkCompileWinform.Text = "Compile after generating the form";
+            this.toolTip.SetToolTip(this.chkCompileWinform, "Compile the c# code that was generated from the YAML (assuming no errors occurred" +
+                ").");
             this.chkCompileWinform.UseVisualStyleBackColor = true;
             this.chkCompileWinform.CheckedChanged += new System.EventHandler(this.chkCompileWinform_CheckedChanged);
             //
             // btnCompilation
             //
-            this.btnCompilation.Location = new System.Drawing.Point(352, 249);
+            this.btnCompilation.Location = new System.Drawing.Point(352, 242);
             this.btnCompilation.Name = "btnCompilation";
             this.btnCompilation.Size = new System.Drawing.Size(32, 23);
             this.btnCompilation.TabIndex = 15;
             this.btnCompilation.Text = "Go";
+            this.toolTip.SetToolTip(this.btnCompilation, "Run the compilation task specified in the adjacent list.");
             this.btnCompilation.UseVisualStyleBackColor = true;
             this.btnCompilation.Click += new System.EventHandler(this.btnCompilation_Click);
             //
             // btnCodeGeneration
             //
-            this.btnCodeGeneration.Location = new System.Drawing.Point(352, 199);
+            this.btnCodeGeneration.Location = new System.Drawing.Point(352, 192);
             this.btnCodeGeneration.Name = "btnCodeGeneration";
             this.btnCodeGeneration.Size = new System.Drawing.Size(32, 23);
             this.btnCodeGeneration.TabIndex = 12;
             this.btnCodeGeneration.Text = "Go";
+            this.toolTip.SetToolTip(this.btnCodeGeneration, "Run the code generation task specified in the adjacent list.");
             this.btnCodeGeneration.UseVisualStyleBackColor = true;
             this.btnCodeGeneration.Click += new System.EventHandler(this.btnCodeGeneration_Click);
             //
@@ -409,7 +434,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.cboCompilation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboCompilation.FormattingEnabled = true;
-            this.cboCompilation.Location = new System.Drawing.Point(97, 250);
+            this.cboCompilation.Location = new System.Drawing.Point(97, 244);
             this.cboCompilation.Name = "cboCompilation";
             this.cboCompilation.Size = new System.Drawing.Size(249, 21);
             this.cboCompilation.TabIndex = 14;
@@ -418,7 +443,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.cboCodeGeneration.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboCodeGeneration.FormattingEnabled = true;
-            this.cboCodeGeneration.Location = new System.Drawing.Point(97, 200);
+            this.cboCodeGeneration.Location = new System.Drawing.Point(97, 194);
             this.cboCodeGeneration.Name = "cboCodeGeneration";
             this.cboCodeGeneration.Size = new System.Drawing.Size(249, 21);
             this.cboCodeGeneration.TabIndex = 11;
@@ -426,7 +451,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label8
             //
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 253);
+            this.label8.Location = new System.Drawing.Point(6, 247);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(61, 13);
             this.label8.TabIndex = 13;
@@ -435,7 +460,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label5
             //
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 203);
+            this.label5.Location = new System.Drawing.Point(6, 197);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(85, 13);
             this.label5.TabIndex = 10;
@@ -450,6 +475,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelRestartServer.TabIndex = 3;
             this.linkLabelRestartServer.TabStop = true;
             this.linkLabelRestartServer.Text = "Re-start server";
+            this.toolTip.SetToolTip(this.linkLabelRestartServer, "Restart the Open Petra server (and refresh all tables).");
             this.linkLabelRestartServer.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
                 this.linkLabelRestartServer_LinkClicked);
             //
@@ -462,6 +488,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelStopServer.TabIndex = 2;
             this.linkLabelStopServer.TabStop = true;
             this.linkLabelStopServer.Text = "Stop server";
+            this.toolTip.SetToolTip(this.linkLabelStopServer, "Stop the Open Petra server.");
             this.linkLabelStopServer.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelStopServer_LinkClicked);
             //
             // linkLabelStartServer
@@ -473,6 +500,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelStartServer.TabIndex = 1;
             this.linkLabelStartServer.TabStop = true;
             this.linkLabelStartServer.Text = "Start server";
+            this.toolTip.SetToolTip(this.linkLabelStartServer, "Start the Open Petra server application.");
             this.linkLabelStartServer.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelStartServer_LinkClicked);
             //
             // linkLabelYamlFile
@@ -484,17 +512,19 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkLabelYamlFile.TabIndex = 6;
             this.linkLabelYamlFile.TabStop = true;
             this.linkLabelYamlFile.Text = "Change the filename";
+            this.toolTip.SetToolTip(this.linkLabelYamlFile, "Select the working YAML file from which to generate Windows Forms code");
             this.linkLabelYamlFile.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelYamlFile_LinkClicked);
             //
             // btnMiscellaneous
             //
             this.btnMiscellaneous.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMiscellaneous.Location = new System.Drawing.Point(352, 299);
+            this.btnMiscellaneous.Location = new System.Drawing.Point(352, 292);
             this.btnMiscellaneous.Name = "btnMiscellaneous";
             this.btnMiscellaneous.Size = new System.Drawing.Size(32, 23);
             this.btnMiscellaneous.TabIndex = 18;
             this.btnMiscellaneous.Text = "Go";
+            this.toolTip.SetToolTip(this.btnMiscellaneous, "Run the miscellaneous task specified in the adjacent list.");
             this.btnMiscellaneous.UseVisualStyleBackColor = true;
             this.btnMiscellaneous.Click += new System.EventHandler(this.btnMiscellaneous_Click);
             //
@@ -505,7 +535,7 @@ namespace Ict.Tools.DevelopersAssistant
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.cboMiscellaneous.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboMiscellaneous.FormattingEnabled = true;
-            this.cboMiscellaneous.Location = new System.Drawing.Point(97, 300);
+            this.cboMiscellaneous.Location = new System.Drawing.Point(97, 294);
             this.cboMiscellaneous.Name = "cboMiscellaneous";
             this.cboMiscellaneous.Size = new System.Drawing.Size(249, 21);
             this.cboMiscellaneous.TabIndex = 17;
@@ -513,7 +543,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label6
             //
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 303);
+            this.label6.Location = new System.Drawing.Point(6, 297);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(74, 13);
             this.label6.TabIndex = 16;
@@ -523,22 +553,23 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.btnStartClient.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnStartClient.Location = new System.Drawing.Point(352, 349);
+            this.btnStartClient.Location = new System.Drawing.Point(352, 342);
             this.btnStartClient.Name = "btnStartClient";
             this.btnStartClient.Size = new System.Drawing.Size(32, 23);
             this.btnStartClient.TabIndex = 20;
             this.btnStartClient.Text = "Go";
+            this.toolTip.SetToolTip(this.btnStartClient, "Start the Open Petra client application.");
             this.btnStartClient.UseVisualStyleBackColor = true;
             this.btnStartClient.Click += new System.EventHandler(this.btnStartClient_Click);
             //
             // label4
             //
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(94, 354);
+            this.label4.Location = new System.Drawing.Point(94, 347);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(86, 13);
+            this.label4.Size = new System.Drawing.Size(115, 13);
             this.label4.TabIndex = 19;
-            this.label4.Text = "Start Petra Client";
+            this.label4.Text = "Start Open Petra Client";
             //
             // label3
             //
@@ -564,6 +595,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnGenerateWinform.Size = new System.Drawing.Size(32, 23);
             this.btnGenerateWinform.TabIndex = 9;
             this.btnGenerateWinform.Text = "Go";
+            this.toolTip.SetToolTip(this.btnGenerateWinform, "Generate the Windows form code using the specified YAML file as the source.");
             this.btnGenerateWinform.UseVisualStyleBackColor = true;
             this.btnGenerateWinform.Click += new System.EventHandler(this.btnGenerateWinform_Click);
             //
@@ -644,6 +676,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnEditDbBuildConfig.Size = new System.Drawing.Size(75, 23);
             this.btnEditDbBuildConfig.TabIndex = 5;
             this.btnEditDbBuildConfig.Text = "Edit";
+            this.toolTip.SetToolTip(this.btnEditDbBuildConfig, "Edit the highlighted database build configuration.");
             this.btnEditDbBuildConfig.UseVisualStyleBackColor = true;
             this.btnEditDbBuildConfig.Click += new System.EventHandler(this.btnEditDbBuildConfig_Click);
             //
@@ -663,6 +696,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnRemoveDbBuildConfig.Size = new System.Drawing.Size(75, 23);
             this.btnRemoveDbBuildConfig.TabIndex = 6;
             this.btnRemoveDbBuildConfig.Text = "Remove";
+            this.toolTip.SetToolTip(this.btnRemoveDbBuildConfig, "Remove the highlighted database build configuration.");
             this.btnRemoveDbBuildConfig.UseVisualStyleBackColor = true;
             this.btnRemoveDbBuildConfig.Click += new System.EventHandler(this.btnRemoveDbBuildConfig_Click);
             //
@@ -673,6 +707,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnAddDbBuildConfig.Size = new System.Drawing.Size(75, 23);
             this.btnAddDbBuildConfig.TabIndex = 4;
             this.btnAddDbBuildConfig.Text = "Add";
+            this.toolTip.SetToolTip(this.btnAddDbBuildConfig, "Add a new database build configuration");
             this.btnAddDbBuildConfig.UseVisualStyleBackColor = true;
             this.btnAddDbBuildConfig.Click += new System.EventHandler(this.btnAddDbBuildConfig_Click);
             //
@@ -709,6 +744,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnSaveDbBuildConfig.Size = new System.Drawing.Size(215, 23);
             this.btnSaveDbBuildConfig.TabIndex = 7;
             this.btnSaveDbBuildConfig.Text = "Save As Current Build Configuration";
+            this.toolTip.SetToolTip(this.btnSaveDbBuildConfig, "Save the highlighted database build configuration as the default for this compute" +
+                "r.");
             this.btnSaveDbBuildConfig.UseVisualStyleBackColor = true;
             this.btnSaveDbBuildConfig.Click += new System.EventHandler(this.btnSaveDbBuildConfig_Click);
             //
@@ -721,6 +758,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnDatabase.Size = new System.Drawing.Size(32, 23);
             this.btnDatabase.TabIndex = 5;
             this.btnDatabase.Text = "Go";
+            this.toolTip.SetToolTip(this.btnDatabase, "Run the database task specified in the adjacent list.");
             this.btnDatabase.UseVisualStyleBackColor = true;
             this.btnDatabase.Click += new System.EventHandler(this.btnDatabase_Click);
             //
@@ -781,9 +819,9 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // lblWarnings
             //
-            this.lblWarnings.Location = new System.Drawing.Point(418, 14);
+            this.lblWarnings.Location = new System.Drawing.Point(344, 14);
             this.lblWarnings.Name = "lblWarnings";
-            this.lblWarnings.Size = new System.Drawing.Size(197, 16);
+            this.lblWarnings.Size = new System.Drawing.Size(271, 16);
             this.lblWarnings.TabIndex = 1;
             this.lblWarnings.Text = "Warnings/Errors";
             this.lblWarnings.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -919,6 +957,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnResetClientConfig.Size = new System.Drawing.Size(75, 23);
             this.btnResetClientConfig.TabIndex = 7;
             this.btnResetClientConfig.Text = "Reset";
+            this.toolTip.SetToolTip(this.btnResetClientConfig, "Click to reset you client configuration to the latest Open Petra default settings" +
+                " .");
             this.btnResetClientConfig.UseVisualStyleBackColor = true;
             this.btnResetClientConfig.Click += new System.EventHandler(this.btnResetClientConfig_Click);
             //
@@ -940,6 +980,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnUpdateMyClientConfig.Size = new System.Drawing.Size(75, 23);
             this.btnUpdateMyClientConfig.TabIndex = 8;
             this.btnUpdateMyClientConfig.Text = "Update";
+            this.toolTip.SetToolTip(this.btnUpdateMyClientConfig,
+                "Click to update you client configuration to contain the specified auto-logon and " +
+                "developer test actions.");
             this.btnUpdateMyClientConfig.UseVisualStyleBackColor = true;
             this.btnUpdateMyClientConfig.Click += new System.EventHandler(this.btnUpdateMyClientConfig_Click);
             //
@@ -1170,5 +1213,7 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Button btnBrowseBazaar;
         private System.Windows.Forms.TextBox txtBazaarPath;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.CheckBox chkTreatWarningsAsErrors;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

@@ -71,6 +71,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             dtpDateOfSendingCopy.Date = DateTime.Now;
         }
 
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
+        {
+            // no columns tab needed if called from extracts
+            if (CalledFromExtracts)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+                tabReportSettings.Controls.Remove(tpgReportSorting);
+            }
+
+            // enable autofind in list for first character (so the user can press character to find list entry)
+            this.clbIncludePublication.AutoFindColumn = ((Int16)(1));
+            this.clbIncludePublication.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+        }
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbIncludePublication.GetCheckedStringList().Length == 0)

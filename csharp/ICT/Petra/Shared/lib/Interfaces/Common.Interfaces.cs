@@ -35,12 +35,14 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MCommon.Cacheable;
 using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MCommon.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 #region ManualCode
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 #endregion ManualCode
 namespace Ict.Petra.Shared.Interfaces.MCommon
 {
@@ -55,6 +57,12 @@ namespace Ict.Petra.Shared.Interfaces.MCommon
 
         /// <summary>access to sub namespace</summary>
         IUIConnectorsNamespace UIConnectors
+        {
+            get;
+        }
+
+        /// <summary>access to sub namespace</summary>
+        IWebConnectorsNamespace WebConnectors
         {
             get;
         }
@@ -134,6 +142,11 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.UIConnectors
         Boolean GetPartnerShortName(Int64 APartnerKey,
                                     out String APartnerShortName,
                                     out TPartnerClass APartnerClass);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.UIConnectors.TOfficeSpecificDataLabelsUIConnector)</summary>
+        PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey,
+                                                                  out Boolean ALabelsAvailable,
+                                                                  Boolean ACountOnly,
+                                                                  TDBTransaction AReadTransaction);
     }
 
     /// <summary>auto generated</summary>
@@ -144,6 +157,18 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.UIConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.UIConnectors.TFieldOfServiceUIConnector)</summary>
         TSubmitChangesResult SubmitChanges(ref FieldOfServiceTDS AInspectDS,
                                            out TVerificationResultCollection AVerificationResult);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MCommon.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TSequenceWebConnector)</summary>
+        Int64 GetNextSequence(TSequenceNames ASequence);
     }
 
 }

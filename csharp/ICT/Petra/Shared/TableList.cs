@@ -401,6 +401,7 @@ namespace Ict.Petra.Shared
             List<string> list = new List<string>();
             #region DBSequenceNames
             list.Add("seq_application");
+            list.Add("seq_ap_document");
             list.Add("seq_contact");
             list.Add("seq_extract_number");
             list.Add("seq_location_number");

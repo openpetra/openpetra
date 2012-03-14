@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowEditWebConnectorMasterDetail
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template inc\template\src\Winforms\windowEditWebConnectorMasterDetail
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -136,6 +136,7 @@ namespace {#NAMESPACE}
             if (found)
             {
                 RowNumberGrid = Counter + 1;
+                break;
             }
         }
 

@@ -6,7 +6,7 @@
     WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
-        XMLFILES: [Finance\\\\AP_agedsupplierlist.xml,Finance\\\\finance.xml,common.xml]
+        XMLFILES: [Finance/AccountsPayable/AP_agedsupplierlist.xml,Finance/finance.xml,common.xml]
         REPORTNAME: APAgedSupplierList
         CURRENTREPORT: APAgedSupplierList
         SETAVAILABLEFUNCTIONS:
