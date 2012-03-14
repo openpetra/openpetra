@@ -156,7 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
-            
+
             UpdateChangeableStatus();
         }
 
