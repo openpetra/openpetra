@@ -151,7 +151,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnPrintArrivalRegistration.Visible = ConferenceOrganisingOffice;
                 btnExcelRolesPerCountry.Visible = ConferenceOrganisingOffice;
                 btnFixArrivalDepartureDates.Visible = ConferenceOrganisingOffice;
-                btnManualRegistration.Visible = ConferenceOrganisingOffice;
+                // btnManualRegistration.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
@@ -1632,7 +1632,7 @@ namespace Ict.Petra.WebServer.MConference
                                         .ID("dtpDate" + ARow.ID.ToString())
                                         .Width(300)
                                         .Value(ARow.Date)
-                                        .Format("dd-MMM-yyyy")
+                                        .Format("dd-MM-yyyy")
                                         .FieldLabel("Date");
 
             Ext.Net.Cell cDate = new Cell();
