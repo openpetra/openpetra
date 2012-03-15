@@ -27,6 +27,7 @@
 //
 using System;
 using System.Windows.Forms;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -58,10 +59,36 @@ namespace Ict.Petra.Client.App.Core
         {
             Clipboard.SetDataObject(FErrorDetails);
         }
+        
+        private void btnShowServerLog_Click(System.Object sender, System.EventArgs e)
+        {
+            OpenExtendedMessageBox("Server.log");
+
+            
+            //Clipboard.SetDataObject("btnShowServerLog_Click was clicked");
+        }
+                
+        private void btnShowClientLog_Click(System.Object sender, System.EventArgs e)
+        {
+            OpenExtendedMessageBox("PetraClient.log");
+            //Clipboard.SetDataObject("btnShowClientLog_Click was clicked");
+        }
 
         private void Form_Load(System.Object sender, System.EventArgs e)
         {
             txtErrorDetails.Text = FErrorDetails;
-        }        
+        }   
+        private void OpenExtendedMessageBox(string whatToOpen)
+        {
+            TFrmExtendedMessageBox MsgBox = new TFrmExtendedMessageBox(AParentForm);
+            MsgBox.ShowDialog(String.Format("The {0}: \n\r\n\r" +
+                    ")", whatToOpen),
+                Catalog.GetString("Verify and Update Extract"),
+                Catalog.GetString("Don't show this message again"),
+                TFrmExtendedMessageBox.TButtons.embbOK,
+                TFrmExtendedMessageBox.TIcon.embiInformation);
+            
+            //MsgBoxResult = MsgBox.GetResult(out DontShowPartnerRemovePartnerKeyNonExistent);
+        }
     }
 }
