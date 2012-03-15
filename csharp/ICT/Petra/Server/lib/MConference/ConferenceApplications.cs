@@ -952,7 +952,7 @@ namespace Ict.Petra.Server.MConference.Applications
                                 DuplicateApplication.GenApplicationStatus = "I";
                             }
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             // some problem with Invalid escape sequence: '\"'.
                         }
