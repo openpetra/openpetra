@@ -28,14 +28,14 @@ namespace Ict.Petra.Client.App.Core
 {
     partial class TFrmUnhandledExceptionDetailsDialog
     {
-        private String FErrorDetails;        
-        
+        private String FErrorDetails;
+
         /// <summary>Error Details shown on this screen.</summary>
         public String ErrorDetails
         {
             get
             {
-                return FErrorDetails;                
+                return FErrorDetails;
             }
 
             set
@@ -47,20 +47,20 @@ namespace Ict.Petra.Client.App.Core
 
         private void btnOK_Click(System.Object sender, System.EventArgs e)
         {
-            this.Close();            
+            this.Close();
         }
-        
+
         private void btnCopyToClipboard_Click(System.Object sender, System.EventArgs e)
         {
             Clipboard.SetDataObject(FErrorDetails);
         }
-        
+
         private void btnShowServerLog_Click(System.Object sender, System.EventArgs e)
         {
             OpenExtendedMessageBox("Server.log");
             Clipboard.SetDataObject("btnShowServerLog_Click was clicked");
         }
-                
+
         private void btnShowClientLog_Click(System.Object sender, System.EventArgs e)
         {
             OpenExtendedMessageBox("PetraClient.log");
@@ -70,7 +70,8 @@ namespace Ict.Petra.Client.App.Core
         private void Form_Load(System.Object sender, System.EventArgs e)
         {
             txtErrorDetails.Text = FErrorDetails;
-        }   
+        }
+
         private void OpenExtendedMessageBox(string FWhatToOpen)
         {
             TFrmUnhandledExceptionLogFileDialog UHELFDialogue;
