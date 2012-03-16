@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private PtPassportTypeTable FPassportTypeDT;
-		private DataColumn FPassportCountryNameColumn;
+        private DataColumn FPassportCountryNameColumn;
 
         #region Properties
 
@@ -132,32 +132,32 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void AddSpecialColumns()
         {
-        	if (FPassportCountryNameColumn == null)
-        	{
+            if (FPassportCountryNameColumn == null)
+            {
                 FPassportCountryNameColumn = new DataColumn();
                 FPassportCountryNameColumn.DataType = System.Type.GetType("System.String");
                 FPassportCountryNameColumn.ColumnName = "Parent_" + PCountryTable.GetCountryNameDBName();
                 FPassportCountryNameColumn.Expression = "Parent." + PCountryTable.GetCountryNameDBName();
-        	}
-        	
-        	if (!FMainDS.PmPassportDetails.Columns.Contains(FPassportCountryNameColumn.ColumnName))
-        	{
-		      	FMainDS.PmPassportDetails.Columns.Add(FPassportCountryNameColumn);
-        	}
+            }
+
+            if (!FMainDS.PmPassportDetails.Columns.Contains(FPassportCountryNameColumn.ColumnName))
+            {
+                FMainDS.PmPassportDetails.Columns.Add(FPassportCountryNameColumn);
+            }
         }
 
         /// <summary>
         /// Remove columns that were created and are not part of the normal PmPassportDetails.
-        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS passport 
+        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS passport
         /// table that does not contain extra columns
         /// </summary>
         public void RemoveSpecialColumns()
         {
-        	if (   FPassportCountryNameColumn != null
-        	    && FMainDS.PmPassportDetails.Columns.Contains(FPassportCountryNameColumn.ColumnName))
-       		{
-	        	FMainDS.PmPassportDetails.Columns.Remove(FPassportCountryNameColumn);
-        	}
+            if ((FPassportCountryNameColumn != null)
+                && FMainDS.PmPassportDetails.Columns.Contains(FPassportCountryNameColumn.ColumnName))
+            {
+                FMainDS.PmPassportDetails.Columns.Remove(FPassportCountryNameColumn);
+            }
         }
 
         /// <summary>

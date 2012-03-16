@@ -45,8 +45,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private PLanguageTable FLanguageCodeDT;
         private PtLanguageLevelTable FLanguageLevelDT;
-		private DataColumn FLanguageNameColumn;
-        
+        private DataColumn FLanguageNameColumn;
+
         #region Properties
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -129,34 +129,34 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void AddSpecialColumns()
         {
-        	if (FLanguageNameColumn == null)
-        	{
+            if (FLanguageNameColumn == null)
+            {
                 FLanguageNameColumn = new DataColumn();
                 FLanguageNameColumn.DataType = System.Type.GetType("System.String");
                 FLanguageNameColumn.ColumnName = "Parent_" + PLanguageTable.GetLanguageDescriptionDBName();
                 FLanguageNameColumn.Expression = "Parent." + PLanguageTable.GetLanguageDescriptionDBName();
-        	}
+            }
 
-        	if (!FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
-        	{
-	        	FMainDS.PmPersonLanguage.Columns.Add(FLanguageNameColumn);
-        	}
+            if (!FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
+            {
+                FMainDS.PmPersonLanguage.Columns.Add(FLanguageNameColumn);
+            }
         }
 
         /// <summary>
         /// Remove columns that were created and are not part of the normal PmPersonalLanguageTable.
-        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS language 
+        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS language
         /// table that does not contain extra columns
         /// </summary>
         public void RemoveSpecialColumns()
         {
-        	if (   FLanguageNameColumn != null
-        	    && FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
-        	{
-	        	FMainDS.PmPersonLanguage.Columns.Remove(FLanguageNameColumn);
-        	}
+            if ((FLanguageNameColumn != null)
+                && FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
+            {
+                FMainDS.PmPersonLanguage.Columns.Remove(FLanguageNameColumn);
+            }
         }
-        
+
         /// <summary>
         /// add a new batch
         /// </summary>
