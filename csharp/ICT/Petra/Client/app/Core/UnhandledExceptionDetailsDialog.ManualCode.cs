@@ -1,12 +1,7 @@
-﻿// auto generated with nant generateWinforms from UnhandledExceptionDetailsDialog.yaml
-//
-// DO NOT edit manually, DO NOT edit with the designer
-//
-//
-// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+﻿// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       auto generated
+//       christiank
 //
 // Copyright 2004-2011 by OM International
 //
@@ -27,7 +22,7 @@
 //
 using System;
 using System.Windows.Forms;
-using Ict.Petra.Client.CommonForms;
+
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -63,32 +58,29 @@ namespace Ict.Petra.Client.App.Core
         private void btnShowServerLog_Click(System.Object sender, System.EventArgs e)
         {
             OpenExtendedMessageBox("Server.log");
-
-            
-            //Clipboard.SetDataObject("btnShowServerLog_Click was clicked");
+            Clipboard.SetDataObject("btnShowServerLog_Click was clicked");
         }
                 
         private void btnShowClientLog_Click(System.Object sender, System.EventArgs e)
         {
             OpenExtendedMessageBox("PetraClient.log");
-            //Clipboard.SetDataObject("btnShowClientLog_Click was clicked");
+            Clipboard.SetDataObject("btnShowClientLog_Click was clicked");
         }
 
         private void Form_Load(System.Object sender, System.EventArgs e)
         {
             txtErrorDetails.Text = FErrorDetails;
         }   
-        private void OpenExtendedMessageBox(string whatToOpen)
+        private void OpenExtendedMessageBox(string FWhatToOpen)
         {
-            TFrmExtendedMessageBox MsgBox = new TFrmExtendedMessageBox(AParentForm);
-            MsgBox.ShowDialog(String.Format("The {0}: \n\r\n\r" +
-                    ")", whatToOpen),
-                Catalog.GetString("Verify and Update Extract"),
-                Catalog.GetString("Don't show this message again"),
-                TFrmExtendedMessageBox.TButtons.embbOK,
-                TFrmExtendedMessageBox.TIcon.embiInformation);
-            
-            //MsgBoxResult = MsgBox.GetResult(out DontShowPartnerRemovePartnerKeyNonExistent);
+            TFrmUnhandledExceptionLogFileDialog UHELFDialogue;
+
+            UHELFDialogue = new TFrmUnhandledExceptionLogFileDialog(this);
+            UHELFDialogue.WhatToOpen = FWhatToOpen;
+            UHELFDialogue.ShowDialog();
+
+            /* get UnhandledExceptionLogFile Dialogue out of memory */
+            UHELFDialogue.Dispose();
         }
     }
 }
