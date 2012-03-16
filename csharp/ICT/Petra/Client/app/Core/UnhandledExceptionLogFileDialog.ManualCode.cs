@@ -66,20 +66,22 @@ namespace Ict.Petra.Client.App.Core
             if(FWhatToOpen.Equals("Server.log"))
             {
               
-                //FLogFileLocation = TServerSettings.ServerLogFile;
-                FLogFileLocation = TLogging.GetLogFileName();
-
+                //the client doen't know the serverlog file - unless in standalone use and development environment
+                //-> check if there is a Server.log in the same location where the client log is and then display it
+                
+                FLogFileLocation = TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "Server.log";
+                
                 Clipboard.SetDataObject(FLogFileLocation);
                 try
                 {
-                    /*StreamReader TLogFileReader = new StreamReader(FLogFileLocation);
+                    StreamReader TLogFileReader = new StreamReader(FLogFileLocation);
                     FLogFileContent = TLogFileReader.ReadToEnd();
-                    TLogFileReader.Close();*/
-                    txtLogFileContent.Text = Catalog.GetString("The Server log file:") + "\r\n " + FLogFileLocation;// + "\r\n\r\n" + FLogFileContent;
+                    TLogFileReader.Close();
+                    txtLogFileContent.Text = Catalog.GetString("The Server log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent;
                 }
                 catch (Exception exp) 
                 {
-                    txtLogFileContent.Text = Catalog.GetString("Problem on opening logfile");
+                    txtLogFileContent.Text = Catalog.GetString("Problem on opening logfile. The server log can (at the moment) only be displayed in this window if you are using the standalone version or the development environment.");
                 }
                 
             }
