@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private PtPassportTypeTable FPassportTypeDT;
+		private DataColumn FPassportCountryNameColumn;
 
         #region Properties
 
@@ -101,6 +102,62 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlDetails.Visible = false;
                 btnDelete.Enabled = false;
             }
+        }
+
+        /// <summary>
+        /// Gets the data from all controls on this UserControl.
+        /// The data is stored in the DataTables/DataColumns to which the Controls
+        /// are mapped.
+        /// </summary>
+        public void GetDataFromControls2()
+        {
+            // Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
+            if (grdDetails.Rows.Count > 1)
+            {
+                GetDataFromControls();
+            }
+        }
+
+        /// <summary>
+        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// Since we don't have controls on this UserControl that need adjusting after resizing
+        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
+        /// </summary>
+        public void AdjustAfterResizing()
+        {
+        }
+
+        /// <summary>
+        /// Add columns that were created and are not part of the normal PmPassportDetails
+        /// </summary>
+        public void AddSpecialColumns()
+        {
+        	if (FPassportCountryNameColumn == null)
+        	{
+                FPassportCountryNameColumn = new DataColumn();
+                FPassportCountryNameColumn.DataType = System.Type.GetType("System.String");
+                FPassportCountryNameColumn.ColumnName = "Parent_" + PCountryTable.GetCountryNameDBName();
+                FPassportCountryNameColumn.Expression = "Parent." + PCountryTable.GetCountryNameDBName();
+        	}
+        	
+        	if (!FMainDS.PmPassportDetails.Columns.Contains(FPassportCountryNameColumn.ColumnName))
+        	{
+		      	FMainDS.PmPassportDetails.Columns.Add(FPassportCountryNameColumn);
+        	}
+        }
+
+        /// <summary>
+        /// Remove columns that were created and are not part of the normal PmPassportDetails.
+        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS passport 
+        /// table that does not contain extra columns
+        /// </summary>
+        public void RemoveSpecialColumns()
+        {
+        	if (   FPassportCountryNameColumn != null
+        	    && FMainDS.PmPassportDetails.Columns.Contains(FPassportCountryNameColumn.ColumnName))
+       		{
+	        	FMainDS.PmPassportDetails.Columns.Remove(FPassportCountryNameColumn);
+        	}
         }
 
         /// <summary>
@@ -192,29 +249,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             DoRecalculateScreenParts();
         }
 
-        /// <summary>
-        /// Gets the data from all controls on this UserControl.
-        /// The data is stored in the DataTables/DataColumns to which the Controls
-        /// are mapped.
-        /// </summary>
-        public void GetDataFromControls2()
-        {
-            // Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
-            if (grdDetails.Rows.Count > 1)
-            {
-                GetDataFromControls();
-            }
-        }
-
-        /// <summary>
-        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
-        /// Since we don't have controls on this UserControl that need adjusting after resizing
-        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
-        /// </summary>
-        public void AdjustAfterResizing()
-        {
-        }
-
         private int CurrentRowIndex()
         {
             int rowIndex = -1;
@@ -260,7 +294,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
-            DataColumn ForeignTableColumn;
             PCountryTable CountryTable;
 
             try
@@ -302,11 +335,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.EnableRelations();
 
                 // add column for passport nationality name
-                ForeignTableColumn = new DataColumn();
-                ForeignTableColumn.DataType = System.Type.GetType("System.String");
-                ForeignTableColumn.ColumnName = "Parent_" + PCountryTable.GetCountryNameDBName();
-                ForeignTableColumn.Expression = "Parent." + PCountryTable.GetCountryNameDBName();
-                FMainDS.PmPassportDetails.Columns.Add(ForeignTableColumn);
+                AddSpecialColumns();
 
                 if (FMainDS.PmPassportDetails.Rows.Count != 0)
                 {
