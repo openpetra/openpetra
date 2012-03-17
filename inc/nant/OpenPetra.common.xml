@@ -239,7 +239,7 @@
           
 <!-- logdir -->
 <property name="dir.log" value="${path::combine(dir.root, 'log')}" overwrite="false" />
-<property name="dir.petraclient.log" value="${path::combine(dir.log, 'PetraClient')}" overwrite="false" />
+<property name="dir.petraclient.log" value="${dir.log}" overwrite="false" />
 <property name="dir.petraclient.definitions" value="${path::combine(dir.csharp, 'ICT/Petra/Definitions/UINavigation.yml')}" overwrite="false" />
 
 
