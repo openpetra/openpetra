@@ -47,8 +47,6 @@
   <property name="configFile" value="${ServerAdminConfigFile}"/>
   <call target="initConfigFiles-internal"/>
   
-  <mkdir dir="${dir.log}/PetraClient" />
-
   <property name="templateFile" value="${dir.incdir.template.etc}/Client.config"/>
   <property name="configFile" value="${ClientConfigFile}"/>
   <call target="initConfigFiles-internal"/>
@@ -125,7 +123,6 @@
   <if test="${platform::is-windows()}">
     <exec program="cmd.exe" 
           workingdir="${dir.bin}"
-          commandline="-RunWithoutMenu:false -C:${ServerConfigFile}"
           spawn="true">
        <environment>
           <variable name="LANGUAGE" value="${SelectedLanguage}"/>
