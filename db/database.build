@@ -213,7 +213,7 @@
          <property name="DemoData.Dir" value="${OpenPetraRoot.dir}/db/${SelectedDemo}"/>
 
          <copy file="${DemoData.Dir}/a_accounting_period.csv"
-            tofile="${DemoData.Dir}/a_accounting_period.csv.local" overwrite="true">
+            tofile="${DemoData.Dir}/a_accounting_period.csv.local" overwrite="true" outputencoding="latin1">
             <filterchain>
               <expandproperties />
             </filterchain>

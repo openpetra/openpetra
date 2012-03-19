@@ -3,7 +3,7 @@ RootNode:
     DesignerTemplate: designerBasic
     Template: windowBasic
     FormType: edit
-    FormTitle: Error Details - OpenPetra
+    FormTitle: Log Files - OpenPetra
     Namespace: Ict.Petra.Client.App.Core
     WindowWidth: 600
     WindowHeight: 430
@@ -14,20 +14,19 @@ RootNode:
     Actions:
         actOK: {ActionClick=btnOK_Click}
         actCopyToClipboard: {ActionClick=btnCopyToClipboard_Click}
-        actShowServerLog: {ActionClick=btnShowServerLog_Click}
-        actShowClientLog: {ActionClick=btnShowClientLog_Click}
+
         
     Controls:
         pnlContent:
-            Controls: [pnlErrorDetails, pnlButtons]
+            Controls: [pnlLogFileContent, pnlButtons]
             Dock: Fill
             RootControl: true
 
-        pnlErrorDetails:
+        pnlLogFileContent:
             Dock: Fill
-            Controls: [txtErrorDetails]
+            Controls: [txtLogFileContent]
             
-        txtErrorDetails:            
+        txtLogFileContent:            
             Dock: Fill
             Width: 540
             Height: 374
@@ -40,10 +39,9 @@ RootNode:
         pnlButtons:
             Dock: Bottom
             Controls:
-                Row0: [btnCopyToClipboard, btnOK, btnShowServerLog, btnShowClientLog]
-            ColWidths: [0=Percent:33, 1=Percent:25, 2=Percent:20, 3=Percent:20]
+                Row0: [btnCopyToClipboard, btnOK]
+            ColWidths: [0=Percent:25, 1=Percent:33]
             
         btnCopyToClipboard:
+            
         btnOK:
-        btnShowServerLog:
-        btnShowClientLog:
