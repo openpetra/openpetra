@@ -66,7 +66,7 @@ namespace {#NAMESPACE}
         }
     }
     {#IFDEF DATASETTYPE}
-	    /// dataset for the whole screen
+        /// dataset for the whole screen
     public {#DATASETTYPE} MainDS
     {
         set
@@ -76,7 +76,7 @@ namespace {#NAMESPACE}
     }
     {#ENDIF DATASETTYPE}
     {#IFNDEF DATASETTYPE}
-	    /// dataset for the whole screen
+        /// dataset for the whole screen
     public TTypedDataSet MainDS
     {
         set
@@ -153,6 +153,7 @@ namespace {#NAMESPACE}
             if (found)
             {
                 RowNumberGrid = Counter + 1;
+                break;
             }
         }
         grdDetails.Selection.ResetSelection(false);

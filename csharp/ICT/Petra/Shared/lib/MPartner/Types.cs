@@ -218,6 +218,31 @@ namespace Ict.Petra.Shared.MPartner
             FSiteKey = ASiteKey;
             FLocationKey = ALocationKey;
         }
+
+        /// <summary>
+        /// returns true if objects are the same
+        /// </summary>
+        /// <param name="AObject"></param>
+        /// <returns></returns>
+        public override bool Equals(object AObject)
+        {
+            if ((AObject == null) || !(AObject is TLocationPK))
+            {
+                return false;
+            }
+
+            return ((TLocationPK)AObject).LocationKey == this.LocationKey
+                   && ((TLocationPK)AObject).SiteKey == this.SiteKey;
+        }
+
+        /// <summary>
+        /// returns a unique hash code for this object
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return (int)FSiteKey + FLocationKey;
+        }
     }
     #endregion
 }

@@ -30,6 +30,9 @@
         <Table sqltable="pm_person_skill"/>               <!-- Person Skills -->
         <Table sqltable="p_data_label_value_application"/><!-- Local Application Data -->
         <Table sqltable="p_data_label_value_partner"/>    <!-- Local Personnel Data -->
+
+        <Table sqltable="p_language"/>   <!-- Not filled on server but used from cached table. Needed for retrieval of Language Name in Language Grid -->
+        <Table sqltable="p_country"/>    <!-- Not filled on server but used from cached table. Needed for retrieval of Country Name in Passport Grid -->
           
         <CustomTable name="SummaryData">
             <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
@@ -76,6 +79,16 @@
             <CustomField name="ItemsCountPersonSkills" type="Int32"/>
             <PrimaryKey thisFields="PartnerKey"/>
         </CustomTable>                    
+        
+        <CustomRelation name="PersonLanguage"
+                childTable="PmPersonLanguage" childFields="LanguageCode"
+                parentTable="PLanguage" parentFields="LanguageCode"
+                createConstraints="false"/>
+        <CustomRelation name="PersonPassportCountry"
+                childTable="PmPassportDetails" childFields="PassportNationalityCode"
+                parentTable="PCountry" parentFields="CountryCode"
+                createConstraints="false"/>
+        
    </DataSet>    
    
 </PetraDataSets>

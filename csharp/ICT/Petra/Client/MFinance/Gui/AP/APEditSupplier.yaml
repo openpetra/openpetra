@@ -21,13 +21,16 @@ RootNode:
             ControlsOrientation: horizontal
             Dock:Top
         btnEditPartner: {Label=&Edit Partner info of Supplier, ActionClick=EditPartner}
+        txtOurReference:
+            Label: Our Ref
+            DataField: AApSupplier.OurReference
         pnlDefaults:
             Controls: [grpGeneralInformation, grpMiscDefaults]
             ControlsOrientation: horizontal
             Dock:Top
         grpGeneralInformation:
             Label: General Information
-            Controls: [cmbCurrency, cmbSupplierType]
+            Controls: [cmbCurrency, cmbSupplierType, txtOurReference]
         grpMiscDefaults:
             Label: Misc Defaults
             ColWidths: [1=Fixed:95]
@@ -52,4 +55,4 @@ RootNode:
             DataField: AApSupplier.PaymentType
             OptionalValues: [CASH, CHEQUE, TRANSFER]
         nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays, PositiveValueActivates=cndDiscountEnabled}
-        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled}
+        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled, Format=PercentDecimal(2)}

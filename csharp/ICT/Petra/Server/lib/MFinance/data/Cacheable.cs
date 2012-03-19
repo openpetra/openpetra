@@ -180,6 +180,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableFinanceTablesEnum.EmailDestinationList:
+                        {
+                            DataTable TmpTable = AEmailDestinationAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.MethodOfGivingList:
                         {
                             DataTable TmpTable = AMethodOfGivingAccess.LoadAll(ReadTransaction);
@@ -458,6 +464,13 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             break;
                         case TCacheableFinanceTablesEnum.CostCentreTypesList:
                             if (ACostCentreTypesAccess.SubmitChanges((ACostCentreTypesTable)ASubmitTable, SubmitChangesTransaction,
+                                    out SingleVerificationResultCollection))
+                            {
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+                            }
+                            break;
+                        case TCacheableFinanceTablesEnum.EmailDestinationList:
+                            if (AEmailDestinationAccess.SubmitChanges((AEmailDestinationTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;

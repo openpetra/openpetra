@@ -61,6 +61,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 "Select 'Cancel' to ignore any changes you have made." + "\r\n" +
                 "The Family Name must be put in brackets." + "\r\n" +
                 "For example: Mike (Miller)" + "\r\n");
+
+            // show this dialog in center of screen
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)

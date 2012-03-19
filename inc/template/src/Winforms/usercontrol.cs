@@ -104,7 +104,8 @@ namespace {#NAMESPACE}
 {#ENDIF ACTIONENABLING}
 
         if(   FMainDS != null
-		   && FMainDS.{#MASTERTABLE} != null)
+		   && FMainDS.{#MASTERTABLE} != null
+           && FMainDS.{#MASTERTABLE}.Count > 0)
         {
             ShowData(FMainDS.{#MASTERTABLE}[0]);
         }

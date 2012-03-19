@@ -75,21 +75,21 @@ public class {#TABLENAME}Access : TTypedDataAccess
 {#IFDEF FORMALPARAMETERSPRIMARYKEY}
 
     /// this method is called by all overloads
-    public static void LoadByPrimaryKey(DataSet ADataSet, {#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
+    public static {#TABLENAME}Row LoadByPrimaryKey(DataSet ADataSet, {#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
     {
-        LoadByPrimaryKey({#TABLENAME}Table.TableId, ADataSet, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        return ({#TABLENAME}Row)LoadByPrimaryKey({#TABLENAME}Table.TableId, ADataSet, new System.Object[{#PRIMARYKEYNUMBERCOLUMNS}]{{#ACTUALPARAMETERSPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     }
 
     /// auto generated
-    public static void LoadByPrimaryKey(DataSet AData, {#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction)
+    public static {#TABLENAME}Row LoadByPrimaryKey(DataSet AData, {#FORMALPARAMETERSPRIMARYKEY}, TDBTransaction ATransaction)
     {
-        LoadByPrimaryKey(AData, {#ACTUALPARAMETERSPRIMARYKEY}, null, ATransaction, null, 0, 0);
+        return ({#TABLENAME}Row)LoadByPrimaryKey(AData, {#ACTUALPARAMETERSPRIMARYKEY}, null, ATransaction, null, 0, 0);
     }
     
     /// auto generated
-    public static void LoadByPrimaryKey(DataSet AData, {#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
+    public static {#TABLENAME}Row LoadByPrimaryKey(DataSet AData, {#FORMALPARAMETERSPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction)
     {
-        LoadByPrimaryKey(AData, {#ACTUALPARAMETERSPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
+        return ({#TABLENAME}Row)LoadByPrimaryKey(AData, {#ACTUALPARAMETERSPRIMARYKEY}, AFieldList, ATransaction, null, 0, 0);
     }
 
     /// auto generated

@@ -36,7 +36,7 @@ RootNode:
         clbIncludeSpecialTypes:
             NoLabel: true 
             ParameterName: param_explicit_specialtypes
-            Width: 400
+            Width: 500
             Height: 200
         ucoAddress:
             Dock: Left

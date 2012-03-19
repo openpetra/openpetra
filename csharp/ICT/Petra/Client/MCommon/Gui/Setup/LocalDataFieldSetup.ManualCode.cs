@@ -36,25 +36,21 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-/****************************************************************************************************
- *
- * The TFrmLocalDataFieldSetup class acts as a base class for three derived classes.
- * This is because this screen (and the database table behind it) is used by three different parts
- *   of the application.
- * 1.  The Partner module
- * 2.  The personnel module application tables (short-term and long-term)
- * 3.  The personnel module general tables
- *
- * We define the three sub-classes so the the main menu system can use each form in turn for
- *    its ActionOpenScreen.
- *
- * The 'InitializeManualCode' method allows us to set up the screen differently for each launch.
- * But this code runs in the form constructor.  I did try having a public property called 'Context'
- *    that the launcher would set, and it did get set - but not until after the constructor code runs.
- *
- * So this way we use reflection to work out which class wa were launched as ....
- *
- * *************************************************************************************************/
+// The TFrmLocalDataFieldSetup class acts as a base class for three derived classes.
+// This is because this screen (and the database table behind it) is used by three different parts
+//   of the application.
+// 1.  The Partner module
+// 2.  The personnel module application tables (short-term and long-term)
+// 3.  The personnel module general tables
+//
+// We define the three sub-classes so the the main menu system can use each form in turn for
+//    its ActionOpenScreen.
+//
+// The 'InitializeManualCode' method allows us to set up the screen differently for each launch.
+// But this code runs in the form constructor.  I did try having a public property called 'Context'
+//    that the launcher would set, and it did get set - but not until after the constructor code runs.
+//
+// So this way we use reflection to work out which class wa were launched as ....
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -283,6 +279,13 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             pnlCurrencyCode.Visible = false;
             pnlCategoryCode.Visible = false;
             txtDetailNumDecimalPlaces.Visible = false;
+
+            // We can prevent screen 'flicker' by setting the DefaultView RowFilter to some stupid setting that finds no rows
+            // This stops the auto-genertaed code populating the list with incorrect data before we get it right in our code
+            //  that runs later (RunOnceOnActivationManual)
+            // Actually this line was added after completing the rest of the code.  Having added it I could probably
+            //   remove a few lines elsewhere, but I am not going to because I don't want to break anything!
+            FMainDS.PDataLabel.DefaultView.RowFilter = "Context=0";
 
             // We need to capture the 'DataSaved' event, so we can save our Extra DataSet
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);

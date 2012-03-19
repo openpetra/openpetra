@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -28,8 +28,11 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -101,7 +104,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void NewRowManual(ref PmStaffDataRow ARow)
         {
-            ARow.Key = -1;   // TODO: fix this.  Need to get a real unique key.
+            ARow.Key = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_staff_data));
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
             ARow.ReceivingField = 0;
             ARow.OfficeRecruitedBy = 0;
@@ -130,8 +133,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 //            }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.StatusCode), Catalog.GetString("Confirm Delete"),
+                            "You have choosen to delete this record ({0} at {1} started {2}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.StatusCode,
+                        FPreviouslySelectedDetailRow.ReceivingField.ToString(),
+                        DataBinding.DateTimeToLongDateString2(FPreviouslySelectedDetailRow.StartOfCommitment)),
+                    Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = CurrentRowIndex();

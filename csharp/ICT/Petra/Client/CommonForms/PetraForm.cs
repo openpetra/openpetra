@@ -184,6 +184,13 @@ namespace Ict.Petra.Client.CommonForms
         {
             foreach (Control ctrl in c.Controls)
             {
+                // exclude TPetraUserControl objects that should not be hooked up
+                if ((ctrl is TPetraUserControl)
+                    && (!((TPetraUserControl)ctrl).CanBeHookedUpForValueChangedEvent))
+                {
+                    continue;
+                }
+
                 // recurse into children;
                 // but special case for UpDownBase/NumericUpDown, because we don't want the child controls of that
                 if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase) && !(ctrl is TClbVersatile))
@@ -497,12 +504,24 @@ namespace Ict.Petra.Client.CommonForms
          * @param s the text to be displayed in the StatusBar
          *
          */
+        delegate void WriteCallback (String s);
+
+        /// <summary>
+        /// (Thread safe)
+        /// </summary>
+        /// <param name="s"></param>
         public void WriteToStatusBar(String s)
         {
             if (FStatusBar != null)
             {
-                // StatusBar appears to be threadsafe; otherwise you would need a Invoke(System.Delegate(@myDelegate)); call
-                FStatusBar.ShowMessage(s);
+                if (FStatusBar.InvokeRequired)
+                {
+                    FStatusBar.Invoke(new WriteCallback(WriteToStatusBar), new object[] { s });
+                }
+                else
+                {
+                    FStatusBar.ShowMessage(s);
+                }
             }
         }
 

@@ -29,11 +29,13 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -186,8 +188,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPartnerEditTDS.Tables.Add(new PmPersonLanguageTable());
                     }
 
+                    // remove columns before merging (and re-add them afterwards) as otherwise merging raises exception
+                    UCPersonalLanguage.RemoveSpecialColumns();
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(FMainDS.PmPersonLanguage);
+                    UCPersonalLanguage.AddSpecialColumns();
                 }
 
                 // Abilities
@@ -218,8 +223,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPartnerEditTDS.Tables.Add(new PmPassportDetailsTable());
                     }
 
+                    // remove columns before merging (and re-add them afterwards) as otherwise merging raises exception
+                    UCPassport.RemoveSpecialColumns();
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(FMainDS.PmPassportDetails);
+                    UCPassport.AddSpecialColumns();
                 }
 
                 //Personal Data
@@ -229,12 +237,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         (TUC_IndividualData_PersonalData)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalData];
                     UCPersonalData.GetDataFromControls2();
 
-                    if (!FPartnerEditTDS.Tables.Contains(PPersonTable.GetTableName()))
+                    if (!FPartnerEditTDS.Tables.Contains(PmPersonalDataTable.GetTableName()))
                     {
-                        FPartnerEditTDS.Tables.Add(new PPersonTable());
+                        FPartnerEditTDS.Tables.Add(new PmPersonalDataTable());
                     }
 
-                    FPartnerEditTDS.Tables[PPersonTable.GetTableName()].Merge(FMainDS.PPerson);
+                    FPartnerEditTDS.Tables[PmPersonalDataTable.GetTableName()].Merge(FMainDS.PmPersonalData);
                 }
 
                 //Emergency Data
@@ -344,6 +352,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!FPartnerEditTDS.Tables.Contains(PmJobAssignmentTable.GetTableName()))
                     {
                         FPartnerEditTDS.Tables.Add(new PmJobAssignmentTable());
+                    }
+
+                    // Set the job key before data sets are merged so the primary key of job assignment record
+                    // does not have to be changed later. If UmJob record does not exist yet new key is set
+                    // here but UmJob record still has to be created on server side.
+                    foreach (PmJobAssignmentRow JobAssignmentRow in FMainDS.PmJobAssignment.Rows)
+                    {
+                        if ((JobAssignmentRow.RowState != DataRowState.Deleted)
+                            && (JobAssignmentRow.JobKey < 0))
+                        {
+                            JobAssignmentRow.JobKey
+                                = TRemote.MPersonnel.WebConnectors.GetOrCreateUmJobKey
+                                      (JobAssignmentRow.PartnerKey,
+                                      JobAssignmentRow.PositionName,
+                                      JobAssignmentRow.PositionScope);
+                        }
                     }
 
                     FPartnerEditTDS.Tables[PmJobAssignmentTable.GetTableName()].Rows.Clear();

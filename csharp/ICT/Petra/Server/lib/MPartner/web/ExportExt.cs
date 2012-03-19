@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 DateFormat = "mdy";
             }
 
-            String PetraVersion = "3";  // TODO: I should be able to get this out of the system somewhere!
+            String PetraVersion = "3.0.0";  // TODO: I should be able to get this out of the system somewhere!
             long MySiteKey = DomainManager.GSiteKey;
             String SubVersion = "0";
 
@@ -429,6 +429,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             foreach (PmPersonalDataRow PersonalDataRow in AMainDS.PmPersonalData.Rows)
             {
                 Write("PERSONAL");
+                WriteLine();
+                Write(PersonalDataRow.IsBelieverSinceYearNull() ? 0 : PersonalDataRow.BelieverSinceYear);
+                Write(PersonalDataRow.IsBelieverSinceCommentNull() ? "" : PersonalDataRow.BelieverSinceComment);
                 WriteLine();
                 // Write(PersonalDataRow.IsDriverStatusNull()? "" : PersonalDataRow.DriverStatus);
                 // Write(PersonalDataRow.IsGenDriverLicenseNull()? false : PersonalDataRow.GenDriverLicense);
@@ -911,8 +914,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PersonRow.IsMaritalStatusNull() ? "" : PersonRow.MaritalStatus);
                 Write(PersonRow.IsMaritalStatusSinceNull() ? "?" : PersonRow.MaritalStatusSince.Value.ToString(DATEFORMAT));
                 Write(PersonRow.IsMaritalStatusCommentNull() ? "" : PersonRow.MaritalStatusComment);
-                Write(PersonRow.IsBelieverSinceYearNull() ? 0 : PersonRow.BelieverSinceYear);
-                Write(PersonRow.IsBelieverSinceCommentNull() ? "" : PersonRow.BelieverSinceComment);
                 Write(PersonRow.IsOccupationCodeNull() ? "" : PersonRow.OccupationCode);
                 Write(PersonRow.IsFieldKeyNull() ? 0 : PersonRow.FieldKey);
                 Write(PersonRow.IsFamilyKeyNull() ? 0 : PersonRow.FamilyKey);

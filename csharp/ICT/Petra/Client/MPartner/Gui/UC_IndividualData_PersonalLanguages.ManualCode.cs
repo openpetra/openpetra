@@ -45,6 +45,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private PLanguageTable FLanguageCodeDT;
         private PtLanguageLevelTable FLanguageLevelDT;
+        private DataColumn FLanguageNameColumn;
 
         #region Properties
 
@@ -80,6 +81,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             LoadDataOnDemand();
 
+            grdDetails.Columns.Clear();
+            grdDetails.AddTextColumn("Language",
+                FMainDS.PmPersonLanguage.Columns["Parent_" + PLanguageTable.GetLanguageDescriptionDBName()]);
+            grdDetails.AddTextColumn("Language Level", FMainDS.PmPersonLanguage.ColumnLanguageLevel);
+            grdDetails.AddTextColumn("Years Of Experience", FMainDS.PmPersonLanguage.ColumnYearsOfExperience);
+            grdDetails.AddDateColumn("as of", FMainDS.PmPersonLanguage.ColumnYearsOfExperienceAsOf);
+
             FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
 
             // enable grid to react to insert and delete keyboard keys
@@ -90,6 +98,62 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 pnlDetails.Visible = false;
                 btnDelete.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the data from all controls on this UserControl.
+        /// The data is stored in the DataTables/DataColumns to which the Controls
+        /// are mapped.
+        /// </summary>
+        public void GetDataFromControls2()
+        {
+            // Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
+            if (grdDetails.Rows.Count > 1)
+            {
+                GetDataFromControls();
+            }
+        }
+
+        /// <summary>
+        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// Since we don't have controls on this UserControl that need adjusting after resizing
+        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
+        /// </summary>
+        public void AdjustAfterResizing()
+        {
+        }
+
+        /// <summary>
+        /// Add columns that were created and are not part of the normal PmPersonalLanguageTable
+        /// </summary>
+        public void AddSpecialColumns()
+        {
+            if (FLanguageNameColumn == null)
+            {
+                FLanguageNameColumn = new DataColumn();
+                FLanguageNameColumn.DataType = System.Type.GetType("System.String");
+                FLanguageNameColumn.ColumnName = "Parent_" + PLanguageTable.GetLanguageDescriptionDBName();
+                FLanguageNameColumn.Expression = "Parent." + PLanguageTable.GetLanguageDescriptionDBName();
+            }
+
+            if (!FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
+            {
+                FMainDS.PmPersonLanguage.Columns.Add(FLanguageNameColumn);
+            }
+        }
+
+        /// <summary>
+        /// Remove columns that were created and are not part of the normal PmPersonalLanguageTable.
+        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS language
+        /// table that does not contain extra columns
+        /// </summary>
+        public void RemoveSpecialColumns()
+        {
+            if ((FLanguageNameColumn != null)
+                && FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
+            {
+                FMainDS.PmPersonLanguage.Columns.Remove(FLanguageNameColumn);
             }
         }
 
@@ -131,7 +195,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                            "You have choosen to delete this record ({0}).\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.LanguageCode), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
@@ -195,29 +259,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        /// <summary>
-        /// Gets the data from all controls on this UserControl.
-        /// The data is stored in the DataTables/DataColumns to which the Controls
-        /// are mapped.
-        /// </summary>
-        public void GetDataFromControls2()
-        {
-            // Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
-            if (grdDetails.Rows.Count > 1)
-            {
-                GetDataFromControls();
-            }
-        }
-
-        /// <summary>
-        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
-        /// Since we don't have controls on this UserControl that need adjusting after resizing
-        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
-        /// </summary>
-        public void AdjustAfterResizing()
-        {
-        }
-
         private int CurrentRowIndex()
         {
             int rowIndex = -1;
@@ -263,6 +304,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
+            PLanguageTable LanguageTable;
 
             try
             {
@@ -287,6 +329,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
+
+                // Add relation table to data set
+                if (FMainDS.PLanguage == null)
+                {
+                    FMainDS.Tables.Add(new PLanguageTable());
+                }
+
+                LanguageTable = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
+                // rename data table as otherwise the merge with the data set won't work; tables need to have same name
+                LanguageTable.TableName = PLanguageTable.GetTableName();
+                FMainDS.Merge(LanguageTable);
+
+                // Relations are not automatically enabled. Need to enable them here in order to use for columns.
+                FMainDS.EnableRelations();
+
+                // add column for language name
+                AddSpecialColumns();
 
                 if (FMainDS.PmPersonLanguage.Rows.Count != 0)
                 {

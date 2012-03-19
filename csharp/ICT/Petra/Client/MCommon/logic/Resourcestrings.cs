@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -113,9 +113,6 @@ namespace Ict.Petra.Client.MCommon
         public const String StrBtnTextDelete = "&Delete";
 
         /// <summary>todoComment</summary>
-        public const String StrBtnTextCancel = "&Cancel";
-
-        /// <summary>todoComment</summary>
         public const String StrBtnTextDone = "D&one";
 
         /// <summary>todoComment</summary>
@@ -124,5 +121,8 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         public const String StrPartnerReActivationTitle = "Partner Gets Re-activated!";
+
+        /// <summary>todoComment</summary>
+        public const String StrCtrlSuppressChangeDetection = "SuppressChangeDetection";
     }
 }

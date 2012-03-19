@@ -15,8 +15,10 @@ RootNode:
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
         actRemoveDetail:  {Label=&Remove Detail, ActionClick=RemoveDetail}
         actAnalyse: {ActionClick=Analyse}
-        actPostDocument: {Label=Post Document, ActionClick=PostDocument}
+        actPostDocument: {Label=Post, ActionClick=PostDocument}
+        actPayDocument: {Label=Pay, ActionClick=PayDocument}
         actUseTaxAccount: {ActionClick=UseTaxAccount}
+        actLookupExchangeRate: {ActionClick=LookupExchangeRate}
     Controls:
         pnlContent:
             Controls: [pnlSupplierInfo, grpDocumentInfo, grpDetails]
@@ -34,7 +36,7 @@ RootNode:
                 Row1: [txtReference]
                 Row2: [dtpDateIssued, dtpDateDue, nudCreditTerms]
                 Row3: [nudDiscountDays, txtDiscountPercentage]
-                Row4: [txtTotalAmount, txtExchangeRateToBase]
+                Row4: [txtTotalAmount, txtExchangeRateToBase, btnLookupExchangeRate]
             Dock: Top
         txtDocumentCode: {Label=Invoice &Number}
         cmbDocumentType:
@@ -51,14 +53,15 @@ RootNode:
             Label: Date D&ue
             Tooltip: Credit Terms is the number of days between date issued and due date
             OnChange: UpdateCreditTerms
-        nudDiscountDays: {Label=Discount &Days, PositiveValueActivates=cndDiscountEnabled}
-        txtDiscountPercentage: {Label=Discount &Value (%), Enabled=cndDiscountEnabled}
+        nudDiscountDays: {Label=Discount &Days, PositiveValueActivates=cndDiscountEnabled, Format: Integer}
+        txtDiscountPercentage: {Label=Discount, Enabled=cndDiscountEnabled, Format: PercentDecimal(1)}
         txtTotalAmount:
             Label: &Amount
-            Format: Currency
+            Format: Currency(2)
         txtExchangeRateToBase:
             Label: E&xchange Rate
-            # TODO: default value from daily exchange rate? update daily exchange rate?
+            Format: Decimal(5)
+        btnLookupExchangeRate: {Label=Lookup}
         grpDetails:
             Label: Details
             Dock: Fill
@@ -89,11 +92,11 @@ RootNode:
             Width: 350
             Label: Detail &Ref
         txtDetailAmount:
-            Format: Currency
+            Format: Currency(2)
             Label: A&mount
         txtDetailBaseAmount:
             Label: Base
-            Format: Currency
+            Format: Currency(2)
             ReadOnly: true
             #TODO: calculate using exchange rate from document
         Empty1:
@@ -128,3 +131,6 @@ RootNode:
 #            Enabled: false
     Toolbar:
         tbbPostDocument:
+            Action: actPostDocument
+        tbbPayDocument:
+            Action: actPayDocument
