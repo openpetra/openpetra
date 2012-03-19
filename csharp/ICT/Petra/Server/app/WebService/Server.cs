@@ -25,6 +25,9 @@ using System;
 using System.IO;
 using System.Web;
 using System.Web.Services;
+using System.Web.Script.Services;
+using System.ServiceModel.Web;
+using System.ServiceModel;
 using System.Data;
 using System.Collections;
 using System.Collections.Generic;
@@ -60,7 +63,8 @@ namespace PetraWebService
 ///
 /// TODO: generate soap functions with nant generateGlue from interfaces/instantiators?
 /// </summary>
-[WebService]
+[WebService(Namespace="http://www.openpetra.org/webservices/")]
+[ScriptService]
 public class TOpenPetraOrg : WebService
 {
     /// <summary>
@@ -148,11 +152,11 @@ public class TOpenPetraOrg : WebService
 
     /// <summary>Login a user</summary>
     [WebMethod(EnableSession = true)]
-    public string Login(string username, string password)
+    public bool Login(string username, string password)
     {
         bool loggedIn = LoginInternal(username, password);
 
-        return Jayrock.Json.Conversion.JsonConvert.ExportToString(loggedIn);
+        return loggedIn;
     }
 
     /// <summary>check if the user has logged in successfully</summary>
@@ -174,7 +178,7 @@ public class TOpenPetraOrg : WebService
 
     /// <summary>log the user out</summary>
     [WebMethod(EnableSession = true)]
-    public void Logout()
+    public bool Logout()
     {
         TLogging.Log("Logout from a session", TLoggingType.ToLogfile | TLoggingType.ToConsole);
 
@@ -186,6 +190,8 @@ public class TOpenPetraOrg : WebService
         // Session Abandon causes problems in Mono 2.10.x see https://bugzilla.novell.com/show_bug.cgi?id=669807
         // TODO Session.Abandon();
         Session.Clear();
+
+        return true;
     }
 
     /// <summary>

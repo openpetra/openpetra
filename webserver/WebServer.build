@@ -201,7 +201,6 @@ list of available commands:
       <copy file="${path::combine(dir.root, 'setup/tools/SimpleASPHost/SimpleHost.exe')}"
           tofile="${path::combine(dir.webserver, 'SimpleHost.exe')}" 
           overwrite="false"/>
-      <!-- SimpleHost.exe.config auch? -->
 
       <!-- create batch script -->
 <echo file="${dir.delivery}/startWebServer1.bat">@echo OFF
