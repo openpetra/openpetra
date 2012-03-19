@@ -20,7 +20,7 @@
             // Do some Authentication...
             Session ["UserName"] = this.txtUsername.Text;
             TOpenPetraOrg myServer = new TOpenPetraOrg();
-            string message = myServer.Login(this.txtUsername.Text, this.txtPassword.Text);
+            myServer.Login(this.txtUsername.Text, this.txtPassword.Text);
 
             if (myServer.IsUserLoggedIn())
             {
