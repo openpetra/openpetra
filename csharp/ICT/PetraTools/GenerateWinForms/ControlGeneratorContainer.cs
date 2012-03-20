@@ -526,27 +526,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 PanelLayoutGenerator TlpGenerator = new PanelLayoutGenerator();
                 TlpGenerator.SetOrientation(ctrl);
-                TControlDef tlpControl = TlpGenerator.CreateLayout(writer, ctrl, -1, -1);
-                writer.CallControlFunction(ctrl.controlName,
-                    "Controls.Add(this." +
-                    tlpControl.controlName + ")");
+                TlpGenerator.CreateLayout(writer, ctrl, null, -1, -1);
 
                 foreach (TControlDef ChildControl in ctrl.Children)
                 {
                     TlpGenerator.InsertControl(writer, ChildControl);
                 }
 
-                TlpGenerator.WriteTableLayout(writer, tlpControl);
+                TlpGenerator.WriteTableLayout(writer, ctrl);
 
-                if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock") != "none"))
+                if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock") == "Fill"))
                 {
-                    writer.SetControlProperty(tlpControl.controlName, "Dock", "Fill", false);
-                    writer.SetControlProperty(tlpControl.controlName, "AutoScroll", "true", false);
+                    writer.SetControlProperty(ctrl.controlName, "Dock", "Fill", false);
+                    writer.SetControlProperty(ctrl.controlName, "AutoScroll", "true", false);
                 }
 
                 // the MARGIN is needed so that the radio groupbox does show the bottom and right border
-                Width = Convert.ToInt32(tlpControl.GetAttribute("Width")) + PanelLayoutGenerator.MARGIN_LEFT * 2;
-                Height = Convert.ToInt32(tlpControl.GetAttribute("Height")) + PanelLayoutGenerator.MARGIN_TOP * 2;
+                Width = Convert.ToInt32(ctrl.GetAttribute("Width")) + PanelLayoutGenerator.MARGIN_LEFT * 2;
+                Height = Convert.ToInt32(ctrl.GetAttribute("Height")) + PanelLayoutGenerator.MARGIN_TOP * 2;
             }
 
             if (!ctrl.HasAttribute("Width"))

@@ -361,10 +361,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// cursor to determine the current column
         /// </summary>
         protected Int32 FCurrentColumn = 0;
-        /// <summary>
-        /// name of the current table layout panel
-        /// </summary>
-        protected string FTlpName = "";
 
         /// <summary>
         /// Holds definitions for custom ColumnStyles which influence the width of the Columns.
@@ -393,12 +389,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// create a new panel for the layout. eg. needed for radio buttons with depending controls
+        /// </summary>
+        public TControlDef CreateNewPanel(TFormWriter writer, TControlDef parentContainer)
+        {
+            TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(CalculateName(), parentContainer.controlName);
+
+            GenerateControl(writer, newTableLayoutPanel);
+            return newTableLayoutPanel;
+        }
+
+        /// <summary>
         /// this function should be used for any collection of controls: on a TabPage, in a table, in a groupbox, radio button list etc.
         /// </summary>
         /// <returns>the layout control that still needs to be added to the parent</returns>
-        public TControlDef CreateLayout(TFormWriter writer, TControlDef parentContainer, Int32 ANewWidth, Int32 ANewHeight)
+        public void CreateLayout(TFormWriter writer, TControlDef parentContainer, TControlDef layoutPanel, Int32 ANewWidth, Int32 ANewHeight)
         {
-            TControlDef result = null;
+            if (layoutPanel == null)
+            {
+                layoutPanel = parentContainer;
+            }
 
             // first check if the table layout has already been defined in the container with sets of rows?
             XmlNode containerNode = parentContainer.xmlNode;
@@ -436,16 +446,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 InitTableLayoutGrid();
 
-                FTlpName = CalculateName();
-                TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainer.controlName);
-                GenerateControl(writer, newTableLayoutPanel);
-
                 foreach (TControlDef childctrl in parentContainer.Children)
                 {
-                    childctrl.parentName = FTlpName;
+                    childctrl.parentName = layoutPanel.controlName;
                 }
-
-                result = newTableLayoutPanel;
             }
             else
             {
@@ -467,40 +471,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 InitTableLayoutGrid();
 
-                FTlpName = CalculateName();
-                TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainer.controlName);
-
-                if (!parentContainer.controlName.StartsWith("layoutPanel"))
-                {
-                    if (parentContainer.HasAttribute("Height"))
-                    {
-                        newTableLayoutPanel.SetAttribute("Height", parentContainer.GetAttribute("Height"));
-                    }
-
-                    if (parentContainer.HasAttribute("Width") && (parentContainer.controlTypePrefix != "tlp"))
-                    {
-                        newTableLayoutPanel.SetAttribute("Width", parentContainer.GetAttribute("Width"));
-                    }
-                }
-
-                if (ANewWidth != -1)
-                {
-                    newTableLayoutPanel.SetAttribute("Width", ANewWidth.ToString());
-                }
-
-                if (ANewHeight != -1)
-                {
-                    newTableLayoutPanel.SetAttribute("Height", ANewHeight.ToString());
-                }
-
-                GenerateControl(writer, newTableLayoutPanel);
-
                 foreach (TControlDef childControl in parentContainer.Children)
                 {
-                    childControl.parentName = newTableLayoutPanel.controlName;
+                    childControl.parentName = layoutPanel.controlName;
                 }
-
-                result = newTableLayoutPanel;
             }
 
             #region Custom Column Widths and custom Row Heights
@@ -550,8 +524,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             #endregion
-
-            return result;
         }
 
         /// <summary>
@@ -644,7 +616,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ctrl.ClearAttribute("Width");
                     }
 
-                    TControlDef subTlpControl = TlpGenerator.CreateLayout(writer, ctrl, NewWidth, NewHeight);
+                    TControlDef subTlpControl = TlpGenerator.CreateNewPanel(writer, ctrl);
+                    TlpGenerator.CreateLayout(writer, ctrl, subTlpControl, NewWidth, NewHeight);
 
                     foreach (string ChildControlName in childControls)
                     {
@@ -699,7 +672,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // add label
                 LabelGenerator lblGenerator = new LabelGenerator();
                 string lblName = lblGenerator.CalculateName(controlName);
-                TControlDef newLabel = writer.CodeStorage.FindOrCreateControl(lblName, FTlpName);
+                TControlDef newLabel = writer.CodeStorage.FindOrCreateControl(lblName, ctrl.controlName);
                 newLabel.Label = ctrl.Label;
 
                 if (ctrl.HasAttribute("LabelUnit"))
