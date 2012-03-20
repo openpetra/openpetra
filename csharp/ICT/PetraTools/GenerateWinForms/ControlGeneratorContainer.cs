@@ -538,7 +538,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock") == "Fill"))
                 {
                     writer.SetControlProperty(ctrl.controlName, "Dock", "Fill", false);
-                    writer.SetControlProperty(ctrl.controlName, "AutoScroll", "true", false);
+
+                    if (this.FPrefix != "grp")
+                    {
+                        writer.SetControlProperty(ctrl.controlName, "AutoScroll", "true", false);
+                    }
                 }
 
                 // the MARGIN is needed so that the radio groupbox does show the bottom and right border
