@@ -112,18 +112,28 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var
     ResultCode: Integer;
     Dirname: String;
+    SlashPosition: Integer;
 begin
   if CurStep=ssPostInstall then
   begin
     Dirname := ExpandConstant('{app}');
+    
     StringChangeEx(Dirname, ExpandConstant('{pf}') + '\', '', true);
+
+    { this includes c:\myownprog\openpetra, if c:\myownprog is not the default directory for program files in windows }
+    SlashPosition := Pos('\', DirName);
+    while (SlashPosition <> 0)
+    do begin
+      { Remove the old text that was found }
+      Delete(DirName, 1, SlashPosition);
+      SlashPosition := Pos('\', DirName);
+    end;
+
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../db30/petra.db', '{userappdata}/' + Dirname + '\db30\petra.db', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../db30/demo.db', ExpandConstant('{app}\db30\demo.db'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../reports30', ExpandConstant('{app}\reports30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../sql30', ExpandConstant('{app}\sql30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../tmp30', '{userappdata}/' + Dirname + '\tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerConsole.exe.config', ExpandConstant('{app}\PetraServerConsole-3.0.config'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), 'PetraServerAdminConsole.exe.config', ExpandConstant('{app}\PetraServerAdminConsole-3.0.config'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '../tmp30', '{userappdata}/' + Dirname + '\tmp30', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '<add key="Reporting.PathReportSettings" value="../reports30/Settings" />', ExpandConstant('<add key="Reporting.PathReportSettings" value="{app}\reports30\Settings" />'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '<add key="Reporting.PathReportUserSettings" value="../reports30/Settings" />', '<add key="Reporting.PathReportUserSettings" value="{userappdata}\' + Dirname + '\reports30\Settings" />', true);
