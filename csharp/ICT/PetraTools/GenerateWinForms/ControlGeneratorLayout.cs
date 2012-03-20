@@ -250,7 +250,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
-                int CurrentTopPosition = MARGIN_TOP;
+                int CurrentTopPosition = MARGIN_TOP + 7;
+
+                // only twice the margin for groupboxes
+                if (LayoutCtrl.controlTypePrefix == "grp")
+                {
+                    CurrentTopPosition += MARGIN_TOP;
+                }
 
                 for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
                 {
@@ -268,14 +274,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             childCtrlName = (string)FGrid[columnCounter, rowCounter];
                         }
 
-                        writer.CallControlFunction(LayoutCtrl.controlName,
-                            "Controls.Add(this." + childCtrlName + ")");
                         writer.SetControlProperty(childCtrlName,
                             "Location",
                             String.Format("new System.Drawing.Point({0},{1})",
                                 CurrentLeftPosition.ToString(),
                                 CurrentTopPosition.ToString()),
                             false);
+                        writer.CallControlFunction(LayoutCtrl.controlName,
+                            "Controls.Add(this." + childCtrlName + ")");
 
                         if (FTabOrder == "Horizontal")
                         {
