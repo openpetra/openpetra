@@ -81,6 +81,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             base.SetControlProperties(writer, ctrl);
+
             string labelText = "";
 
             if (TXMLParser.HasAttribute(ctrl.xmlNode, "Text"))
@@ -92,12 +93,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ctrl.Label + ":";
             }
 
+            ctrl.SetAttribute("Width", (labelText.Length * PanelLayoutGenerator.LETTER_WIDTH).ToString());
+
             writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");
             writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
 
             if (FRightAlign)
             {
-                writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
+// TextAlign does not work anymore, since we cannot use Docking anymore. Or we would need panels for each label
+//                writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
             }
 
             return writer.FTemplate;
@@ -189,21 +193,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FAutoSize = true;
             FGenerateLabel = false;
+            FDefaultHeight = 25;
             FChangeEventName = "CheckedChanged";
         }
 
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            base.SetControlProperties(writer, ctrl);
-
             // Support NoLabel=true
             FGenerateLabel = true;
 
             if (GenerateLabel(ctrl))
             {
                 writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+                ctrl.SetAttribute("Width", (ctrl.Label.Length * PanelLayoutGenerator.LETTER_WIDTH + 30).ToString());
             }
+
+            base.SetControlProperties(writer, ctrl);
 
             FGenerateLabel = false;
 

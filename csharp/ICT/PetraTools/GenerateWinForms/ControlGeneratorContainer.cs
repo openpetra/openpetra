@@ -405,9 +405,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.ProcessChildren(writer, ctrl);
 
-            int Width = 0;
-            int Height = 0;
-
             XmlNode controlsNode = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
 
             if ((controlsNode != null) && TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
@@ -417,8 +414,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
                 {
-                    int RowWidth = 0;
-                    int RowHeight = 0;
                     StringCollection controls = TYml2Xml.GetElements(row);
 
                     foreach (string ctrlname in controls)
@@ -441,22 +436,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
 
                         childCtrl.rowNumber = countRow;
-                        RowWidth += childCtrl.Width + PanelLayoutGenerator.VERTICAL_SPACE;
-
-                        if (RowHeight < childCtrl.Height)
-                        {
-                            RowHeight = childCtrl.Height;
-                        }
                     }
 
                     countRow++;
-
-                    if (RowWidth > Width)
-                    {
-                        Width = RowWidth;
-                    }
-
-                    Height += RowHeight + PanelLayoutGenerator.HORIZONTAL_SPACE;
                 }
             }
             else
@@ -482,28 +464,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
 
-                PanelLayoutGenerator.eOrientation orientation = PanelLayoutGenerator.eOrientation.Vertical;
-
-                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ControlsOrientation")
-                    && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ControlsOrientation").ToLower() == "horizontal"))
-                {
-                    orientation = PanelLayoutGenerator.eOrientation.Vertical;
-                }
-
                 foreach (TControlDef childCtrl in ctrl.Children)
                 {
                     // process the control itself
                     IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
                     ctrlGenerator.GenerateControl(writer, childCtrl);
-
-                    if (orientation == PanelLayoutGenerator.eOrientation.Horizontal)
-                    {
-                        Width += childCtrl.Width;
-                    }
-                    else
-                    {
-                        Height += childCtrl.Height;
-                    }
                 }
             }
 
@@ -544,20 +509,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         writer.SetControlProperty(ctrl.controlName, "AutoScroll", "true", false);
                     }
                 }
-
-                // the MARGIN is needed so that the radio groupbox does show the bottom and right border
-                Width = Convert.ToInt32(ctrl.GetAttribute("Width")) + PanelLayoutGenerator.MARGIN_LEFT * 2;
-                Height = Convert.ToInt32(ctrl.GetAttribute("Height")) + PanelLayoutGenerator.MARGIN_TOP * 2;
-            }
-
-            if (!ctrl.HasAttribute("Width"))
-            {
-                ctrl.SetAttribute("Width", Width.ToString());
-            }
-
-            if (!ctrl.HasAttribute("Height"))
-            {
-                ctrl.SetAttribute("Height", Height.ToString());
             }
 
             return;

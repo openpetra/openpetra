@@ -47,8 +47,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public static Int32 VERTICAL_SPACE = 5;
         /// <summary>the space from the top of a panel</summary>
         public static Int32 MARGIN_TOP = 7;
+        /// <summary>the space from the bottom of a panel</summary>
+        public static Int32 MARGIN_BOTTOM = 5;
         /// <summary>the space from the left of a panel</summary>
         public static Int32 MARGIN_LEFT = 5;
+        /// <summary>pixel per letter</summary>
+        public static Int32 LETTER_WIDTH = 7;
 
         private Int32 FColumnCount = -1, FRowCount = -1;
 
@@ -250,10 +254,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
-                int CurrentTopPosition = MARGIN_TOP + 7;
+                int CurrentTopPosition = MARGIN_TOP;
 
                 // only twice the margin for groupboxes
-                if (LayoutCtrl.controlTypePrefix == "grp")
+                if ((LayoutCtrl.controlTypePrefix == "grp") || (LayoutCtrl.controlTypePrefix == "rgr"))
                 {
                     CurrentTopPosition += MARGIN_TOP;
                 }
@@ -306,7 +310,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            Height += MARGIN_TOP * 2;
+            Height += MARGIN_BOTTOM - VERTICAL_SPACE;
 
             LayoutCtrl.SetAttribute("Width", Width.ToString());
             LayoutCtrl.SetAttribute("Height", Height.ToString());
