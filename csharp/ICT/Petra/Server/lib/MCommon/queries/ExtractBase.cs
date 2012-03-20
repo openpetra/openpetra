@@ -105,9 +105,9 @@ namespace Ict.Petra.Server.MCommon.queries
 
                 return ReturnValue;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-//                TLogging.Log(e.ToString());
+                TLogging.Log(e.ToString());
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return false;
             }

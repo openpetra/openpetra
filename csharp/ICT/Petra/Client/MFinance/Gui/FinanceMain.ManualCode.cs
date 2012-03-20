@@ -29,6 +29,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Gui.AP;
 using Ict.Petra.Client.MFinance.Gui.Common;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
@@ -73,5 +74,15 @@ namespace Ict.Petra.Client.MFinance.Gui
             // todo: load ledger details, display on the main finance screen, etc.
             // MessageBox.Show("selected ledger: " + FLedgerNumber.ToString());
         }
+        
+        /// Open screen for creating "Recipient by Field" Extract
+        public static void RecipientByFieldExtract(Form AParentForm)
+        {
+            TFrmRecipientByField frm = new TFrmRecipientByField(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+        
     }
 }

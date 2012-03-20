@@ -1181,7 +1181,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ColumnType = "CheckBox";
                 }
             }
-
+            else if (AColumnType.Contains("PartnerKey"))
+            {
+                ColumnType = "PartnerKey";
+            }
+            
+            
             if (ColumnType == "Boolean")
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
@@ -1192,6 +1197,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if ((ColumnType != "Currency")
                      || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    "FMainDS." +
+                    ATableName + ".Column" +
+                    AColumnName + ");" + Environment.NewLine);
+            }
+            else if (ColumnType == "PartnerKey")
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
                     AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +

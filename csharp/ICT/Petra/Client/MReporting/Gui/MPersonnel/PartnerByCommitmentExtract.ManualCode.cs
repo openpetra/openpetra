@@ -46,7 +46,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private void InitializeManualCode()
         {
             SetControls(new TParameterList());
-            ucoChkFilter.ShowFamiliesOnly(false);
         }
 
         /// <summary>
@@ -59,6 +58,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
+            
+            ucoChkFilter.ShowFamiliesOnly(false);
         }
 
         private void grdCommitmentStatusChoices_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)

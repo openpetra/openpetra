@@ -970,6 +970,71 @@ namespace Ict.Common.Controls
             AddTextColumn(AColumnTitle, ADataColumn, -1, null, BooleanEditor, null, null, null);
         }
 
+        class PartnerKeyConverter : System.ComponentModel.TypeConverter
+        {
+            /// <summary>
+            /// constructor
+            /// </summary>
+            public PartnerKeyConverter()
+            {
+            }
+
+            /// <summary>
+            /// we don't need conversions to PartnerKey, but somehow we need to return true so that the conversion works the other way
+            /// </summary>
+            public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context,
+                Type sourceType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// allow all conversions from PartnerKey
+            /// </summary>
+            public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                Type destinationType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// convert PartnerKey to string, the destinationType is ignored
+            /// </summary>
+            public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                System.Globalization.CultureInfo culture,
+                object value,
+                Type destinationType)
+            {
+				return String.Format("{0:0000000000}", (Int64)value);
+            }
+        }
+
+        /// <summary>
+        /// add a column that shows a PartnerKey value (include leading zeros to display a 10 digit number)
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+        	AddPartnerKeyColumn(AColumnTitle, ADataColumn, -1);
+        }
+        
+        /// <summary>
+        /// add a column that shows a PartnerKey value (include leading zeros to display a 10 digit number)
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
+        {
+            SourceGrid.Cells.Editors.TextBox PartnerKeyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(Int64));
+            PartnerKeyEditor.TypeConverter = new PartnerKeyConverter();
+
+            PartnerKeyEditor.EditableMode = EditableMode.None;
+
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, PartnerKeyEditor, null, null, null);
+        }
+        
         #endregion
 
         #region Overridden Events

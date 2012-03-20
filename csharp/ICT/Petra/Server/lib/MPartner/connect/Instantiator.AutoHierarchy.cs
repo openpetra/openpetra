@@ -2841,6 +2841,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public PUnitTable GetActiveFieldUnits(System.String AFieldName)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader), "GetActiveFieldUnits", ";STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetActiveFieldUnits(AFieldName);
+        }
+
+        /// generated method from connector
+        public PUnitTable GetLedgerUnits(System.String ALedgerName)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader), "GetLedgerUnits", ";STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetLedgerUnits(ALedgerName);
+        }
+
+        /// generated method from connector
         public Int64 NewPartnerKey(Int64 AFieldPartnerKey)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector), "NewPartnerKey", ";LONG;");

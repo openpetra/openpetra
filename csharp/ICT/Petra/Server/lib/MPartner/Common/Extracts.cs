@@ -800,16 +800,19 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     {
                         PartnerKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetPartnerKeyDBName()]);
 
-                        RecordCounter += 1;
-                        TLogging.Log("Preparing Partner " + PartnerKey.ToString() + " (Record Number " + RecordCounter.ToString() + ")");
-
-                        // add row for partner to extract and fill with contents
-                        MExtractRow NewRow = ExtractTable.NewRowTyped(false);
-                        NewRow.ExtractId = ANewExtractId;
-                        NewRow.PartnerKey = PartnerKey;
-                        NewRow.SiteKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetSiteKeyDBName()]);
-                        NewRow.LocationKey = Convert.ToInt32(PartnerLocationRow[PPartnerLocationTable.GetLocationKeyDBName()]);
-                        ExtractTable.Rows.Add(NewRow);
+                        if (PartnerKey > 0)
+                        {
+	                        RecordCounter += 1;
+	                        TLogging.Log("Preparing Partner " + PartnerKey.ToString() + " (Record Number " + RecordCounter.ToString() + ")");
+	
+	                        // add row for partner to extract and fill with contents
+	                        MExtractRow NewRow = ExtractTable.NewRowTyped(false);
+	                        NewRow.ExtractId = ANewExtractId;
+	                        NewRow.PartnerKey = PartnerKey;
+	                        NewRow.SiteKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetSiteKeyDBName()]);
+	                        NewRow.LocationKey = Convert.ToInt32(PartnerLocationRow[PPartnerLocationTable.GetLocationKeyDBName()]);
+	                        ExtractTable.Rows.Add(NewRow);
+                        }
                     }
 
                     if (ExtractTable.Rows.Count > 0)

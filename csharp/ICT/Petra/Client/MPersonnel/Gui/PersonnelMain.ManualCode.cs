@@ -72,5 +72,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             frm.CalledFromExtracts = true;
             frm.Show();
         }
+
+        /// Open screen for creating "Partner by Field" Extract
+        public static void PartnerByFieldExtract(Form AParentForm)
+        {
+            TFrmPartnerByField frm = new TFrmPartnerByField(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
     }
 }

@@ -43,13 +43,17 @@ OpenPetra:
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
-                    GenerateExtracts: {Label=Generate Extract}
+                    GenerateExtracts: {Label=Generate Partner Extract}
                         PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by City, ActionClick=TPartnerExtractsMain.PartnerByCityExtract}
                         PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Subscription, ActionClick=TPartnerExtractsMain.PartnerBySubscriptionExtract}
                         PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Special Type, ActionClick=TPartnerExtractsMain.PartnerBySpecialTypeExtract}
+                    GeneratePersonnelExtracts: {Label=Generate Personnel Extract}
                         PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TFrmPersonnelMain.PartnerByConferenceExtract}
                         PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TFrmPersonnelMain.PartnerByOutreachExtract}
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TFrmPersonnelMain.PartnerByCommitmentExtract}
+                        PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TFrmPersonnelMain.PartnerByFieldExtract}
+                    GenerateFinanceExtracts: {Label=Generate Finance Extract}
+                        RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFrmFinanceMain.RecipientByFieldExtract}
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
@@ -186,6 +190,9 @@ OpenPetra:
                     #YearEnd:
                     ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
                         ICHStewardshipCalculation: {ActionOpenScreen=TFrmReportingPeriodSelectionDialog, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
+                    Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
+                        ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
+                        RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Recipient by Field, ActionClick=TFrmFinanceMain.RecipientByFieldExtract}
                 #Budgets:
                 #ICH:
                 #Reports:
@@ -243,6 +250,7 @@ OpenPetra:
                         PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TFrmPersonnelMain.PartnerByConferenceExtract}
                         PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TFrmPersonnelMain.PartnerByOutreachExtract}
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TFrmPersonnelMain.PartnerByCommitmentExtract}
+                        PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TFrmPersonnelMain.PartnerByFieldExtract}
 
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}
                     PersonnelReports:

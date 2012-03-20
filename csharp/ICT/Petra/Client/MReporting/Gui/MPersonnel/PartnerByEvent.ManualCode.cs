@@ -59,7 +59,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         private void InitializeManualCode()
         {
-            ucoChkFilter.ShowFamiliesOnly(false);
         }
 
         /// <summary>
@@ -72,24 +71,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
+            
+            ucoChkFilter.ShowFamiliesOnly(false);
 
             // Prepare the window title and settings directory (will be used later by TFrmPetraReportingUtils).
             // Normally the settings directory is set earlier but since this is one form that covers two extracts
             // we need to initialize it a second time here with the correct directory.
             if (FCalledForConferences)
             {
-                this.FindForm().Text = Catalog.GetString("Partner by Conference");
-                FPetraUtilsObject.InitialiseStoredSettings("Partner by Conference");
+	            FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Conference");
             }
             else
             {
-                this.FindForm().Text = Catalog.GetString("Partner by Outreach");
-                FPetraUtilsObject.InitialiseStoredSettings("Partner by Outreach");
+	            FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Outreach");
             }
-
-            // need to load settings again after they have been re-initialized
-            FPetraUtilsObject.LoadDefaultSettings();
-
+            
             // enable autofind in list for first character (so the user can press character to find list entry)
             this.clbEvent.AutoFindColumn = ((Int16)(1));
             this.clbEvent.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
@@ -103,6 +99,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             // populate list with data to be loaded
             this.LoadListData("");
+            
+		    FPetraUtilsObject.LoadDefaultSettings();
+
         }
 
         private void LoadListData(string AFilter)
@@ -130,7 +129,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             clbEvent.Columns.Clear();
             clbEvent.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbEvent.AddTextColumn(Catalog.GetString("Event Name"), NewTable.Columns[DisplayMember], 240);
-            clbEvent.AddTextColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 80);
+            clbEvent.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
 
             // outreach/event code column only needed in case of displaying Outreaches
             if (!FCalledForConferences)

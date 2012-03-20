@@ -30,8 +30,8 @@ RootNode:
                 StatusCode: {Label=Commitment Status}
                 StartOfCommitment: {Label=Start Date, Type=DateTime}
                 EndOfCommitment: {Label=End Date, Type=DateTime}
-                ReceivingField: {Label=Receiving Field}
-                HomeOffice: {Label=Sending Field}
+                ReceivingField: {Label=Receiving Field, Type=PartnerKey}
+                HomeOffice: {Label=Sending Field, Type=PartnerKey}
             ActionFocusRow: FocusedRowChanged
             SortOrder: StatusCode ASC
             

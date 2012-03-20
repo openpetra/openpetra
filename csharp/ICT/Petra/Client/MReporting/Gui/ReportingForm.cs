@@ -135,6 +135,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             FDontResizeForm = false;
         }
 
+        /// set caption of window, used to build window title
+        public string WindowCaption
+        {
+            set
+            {
+                FWindowCaption = value;
+            }
+        }
+        
         /// <summary>
         /// returns the string that is to be displayed in the menuitem
         /// that is mainly used for dynamically loaded nrr reports
@@ -585,9 +594,13 @@ namespace Ict.Petra.Client.MReporting.Gui
                 Calculator.GetResults().WriteCSV(Calculator.GetParameters(), Calculator.GetParameters().Get("SaveCSVFilename").ToString());
             }
 
-            if (Calculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == false)
+            if (!Calculator.CalculatesExtract)
             {
-                PreviewReport(Calculator, ACallerForm, AReportName, AWrapColumn);
+            	// this only needs to be considered when running reports
+	            if (Calculator.GetParameters().GetOrDefault("OnlySaveCSV", -1, new TVariant(false)).ToBool() == false)
+	            {
+	                PreviewReport(Calculator, ACallerForm, AReportName, AWrapColumn);
+	            }
             }
         }
 
