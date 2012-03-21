@@ -248,6 +248,47 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            // now apply settings about the column width and row height
+            if (FColWidths != null)
+            {
+                for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                {
+                    if (FColWidths.ContainsKey(columnCounter))
+                    {
+                        string[] ColWidthSpec = FColWidths[columnCounter].Split(':');
+
+                        if (ColWidthSpec[0].ToLower() == "fixed")
+                        {
+                            ColumnWidth[columnCounter] = Convert.ToInt32(ColWidthSpec[1]);
+                        }
+                        else if (ColWidthSpec[0].ToLower() == "percent")
+                        {
+                            // TODO
+                        }
+                    }
+                }
+            }
+
+            if (FRowHeights != null)
+            {
+                for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                {
+                    if (FRowHeights.ContainsKey(rowCounter))
+                    {
+                        string[] RowHeightSpec = FRowHeights[rowCounter].Split(':');
+
+                        if (RowHeightSpec[0].ToLower() == "fixed")
+                        {
+                            RowHeight[rowCounter] = Convert.ToInt32(RowHeightSpec[1]);
+                        }
+                        else if (RowHeightSpec[0].ToLower() == "percent")
+                        {
+                            // TODO
+                        }
+                    }
+                }
+            }
+
             int CurrentLeftPosition = MARGIN_LEFT;
             int Width = 0;
             int Height = 0;
@@ -312,8 +353,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             Height += MARGIN_BOTTOM - VERTICAL_SPACE;
 
-            LayoutCtrl.SetAttribute("Width", Width.ToString());
-            LayoutCtrl.SetAttribute("Height", Height.ToString());
+            if (!LayoutCtrl.HasAttribute("Width"))
+            {
+                LayoutCtrl.SetAttribute("Width", Width.ToString());
+            }
+            else
+            {
+                Width = Convert.ToInt32(LayoutCtrl.GetAttribute("Width"));
+            }
+
+            if (!LayoutCtrl.HasAttribute("Height"))
+            {
+                LayoutCtrl.SetAttribute("Height", Height.ToString());
+            }
+            else
+            {
+                Height = Convert.ToInt32(LayoutCtrl.GetAttribute("Height"));
+            }
+
             writer.SetControlProperty(LayoutCtrl, "Location", String.Format("new System.Drawing.Point({0}, {1})", MARGIN_LEFT, MARGIN_TOP));
             writer.SetControlProperty(LayoutCtrl, "Size", String.Format("new System.Drawing.Size({0}, {1})", Width, Height));
 

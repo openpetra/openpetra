@@ -46,11 +46,9 @@ RootNode:
         btnWorkerField:
             Action: actMaintainWorkerField
             Width: 100
-            Align: right
         txtWorkerField:
             ReadOnly: true
             NoLabel: true
-            Dock: Top
             BorderStyle: None
             
         pnlSpacer:
@@ -125,11 +123,9 @@ RootNode:
         txtFamilyFirstName:
             NoLabel: true
             Width: 160
-            Dock: Top
             DataField: PFamily.FirstName            
         txtFamilyFamilyName:
             NoLabel: true
-            Dock: Top
             DataField: PFamily.FamilyName
 
         pnlFamily2ndLine:        
@@ -138,8 +134,7 @@ RootNode:
             ColWidths: [0=Fixed:300, 1=Fixed:115]
             RowHeights: [0=Fixed:28]
             Margin: 0,0,0,0
-            ColSpan: 3
-            Dock: Fill
+            ColSpan: 4
             
         cmbFamilyAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
         chkFamilyNoSolicitations:
@@ -166,7 +161,6 @@ RootNode:
             Width: 88
         txtPersonFirstName:
             NoLabel: true
-            Dock: Top
             DataField: PPerson.FirstName
             Width: 124
         txtPersonMiddleName:
@@ -175,7 +169,6 @@ RootNode:
             Width: 30
         txtPersonFamilyName:
             NoLabel: true
-            Dock: Top
             DataField: PPerson.FamilyName
 
         pnlPerson2ndLine:        
@@ -185,7 +178,6 @@ RootNode:
             RowHeights: [0=Fixed:28]
             Margin: 0,0,0,0
             ColSpan: 6
-            Dock: Fill
 
         cmbPersonGender: {Label=&Gender, DataField=PPerson.Gender, List=GenderList, Width=88}
         cmbPersonAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105, Dock: Right}
