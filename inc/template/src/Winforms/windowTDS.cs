@@ -49,7 +49,6 @@ namespace {#NAMESPACE}
     {#IFDEF DYNAMICTABPAGEUSERCONTROLDECLARATION}
     private event TTabPageEventHandler FTabPageEvent;
     {#ENDIF DYNAMICTABPAGEUSERCONTROLDECLARATION}
-    private UserControl FCurrentUserControl;
     {#DYNAMICTABPAGEUSERCONTROLDECLARATION}
     
     /// <summary>
