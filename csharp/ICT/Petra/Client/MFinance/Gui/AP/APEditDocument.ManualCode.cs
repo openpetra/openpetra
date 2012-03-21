@@ -43,6 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPEditDocument
     {
+        Int32 FLedgerNumber;
         ALedgerRow FLedgerRow = null;
 
         private void InitializeManualCode()
@@ -51,6 +52,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void RunOnceOnActivationManual()
         {
+            lblDiscountDays.Visible = false;
+            nudDiscountDays.Visible = false;        // There's currently no discounting, so this
+            lblDiscountPercentage.Visible = false;  // just hides the associated controls.
+            txtDiscountPercentage.Visible = false;
+            txtDetailAmount.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtExchangeRateToBase.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
+        }
+
+        private void LookupExchangeRate(Object sender, EventArgs e)
+        {
+            decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(txtSupplierCurrency.Text, FLedgerRow.BaseCurrency, DateTime.Now);
+
+            txtExchangeRateToBase.NumberValueDecimal = CurrentRate;
         }
 
         private void EnableControls()
@@ -76,6 +90,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 btnAddDetail.Enabled = false;
                 btnRemoveDetail.Enabled = false;
                 btnAnalysisAttributes.Enabled = false;
+                btnLookupExchangeRate.Enabled = false;
 
                 txtDetailNarrative.Enabled = false;
                 txtDetailItemRef.Enabled = false;
@@ -89,6 +104,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
             }
+
+            tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
+            tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
         }
 
         private static bool DetailLineAttributesRequired(ref bool AllPresent, AccountsPayableTDS Atds, AApDocumentDetailRow DetailRow)
@@ -190,10 +208,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtTotalAmount.CurrencySymbol = SupplierRow.CurrencyCode;
             txtDetailAmount.CurrencySymbol = SupplierRow.CurrencyCode;
 
-            IAPUIConnectorsFind FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
-            ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(DocumentRow.LedgerNumber);
+            FLedgerNumber = DocumentRow.LedgerNumber;
+            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
             FLedgerRow = Tbl[0];
             txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
+            dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
 
             if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
             {
@@ -248,7 +267,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             CreateAApDocumentDetail(
                 FMainDS.AApDocument[0].LedgerNumber,
-                FMainDS.AApDocument[0].ApNumber,
+                FMainDS.AApDocument[0].ApDocumentId,
                 FMainDS.AApSupplier[0].DefaultExpAccount,
                 FMainDS.AApSupplier[0].DefaultCostCentre,
                 DetailAmount,
@@ -366,10 +385,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             UpdateCreditTerms(sender, null);
         }
 
+        private void UpdateDetailBaseAmount(object sender, EventArgs e)
+        {
+            if ((txtExchangeRateToBase.NumberValueDecimal.HasValue)
+                && (txtDetailAmount.NumberValueDecimal.HasValue))
+            {
+                txtDetailBaseAmount.NumberValueDecimal =
+                    txtDetailAmount.NumberValueDecimal * txtExchangeRateToBase.NumberValueDecimal.Value;
+            }
+        }
+
         /// initialise some comboboxes
         private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
         {
-            grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;      // It doesn't really work having these here -
+            grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;   // It doesn't really work having these here -
             grdDetails.Columns[0].Width = 90;                          // there's something else that overrides these settings.
             grdDetails.Columns[2].Width = 200;
             grdDetails.Columns[3].Width = 90;
@@ -381,14 +410,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
             EnableControls();
 
-            if (ARow.IsAmountNull() || (FMainDS.AApDocument[0].IsExchangeRateToBaseNull() || (FMainDS.AApDocument[0].ExchangeRateToBase == 0)))
+            Decimal ExchangeRateToBase = 0;
+
+            if (txtExchangeRateToBase.NumberValueDecimal.HasValue)
+            {
+                ExchangeRateToBase = txtExchangeRateToBase.NumberValueDecimal.Value;
+            }
+
+            if (ARow.IsAmountNull() || (ExchangeRateToBase == 0))
             {
                 txtDetailBaseAmount.NumberValueDecimal = null;
             }
             else
             {
                 decimal DetailAmount = Convert.ToDecimal(ARow.Amount);
-                DetailAmount *= FMainDS.AApDocument[0].ExchangeRateToBase;
+                DetailAmount *= ExchangeRateToBase;
                 txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
             }
         }
@@ -405,7 +441,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
-                if (Row.ApNumber == AApDocument.ApNumber) // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                if (Row.ApDocumentId == AApDocument.ApDocumentId) // NOTE: When called from elsewhere, the TDS could contain data for several documents.
                 {
                     DocumentBalance -= Row.Amount;
                 }
@@ -433,7 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
-                if (Row.ApNumber == AApDocument.ApNumber)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                if (Row.ApDocumentId == AApDocument.ApDocumentId)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
                 {
                     bool AllPresent = true;
 
@@ -482,7 +518,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// This static function is called from several places
         /// /// </summary>
         /// <returns>true if everything went OK</returns>
-        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List <int>AApDocumentNumbers)
+        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List <int>AApDocumentIds)
         {
             TVerificationResultCollection Verifications;
 
@@ -502,8 +538,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                     ALedgerNumber,
-                    AApDocumentNumbers,
+                    AApDocumentIds,
                     PostingDate,
+                    false,
                     out Verifications))
             {
                 return true;
@@ -542,7 +579,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             List <Int32>TaggedDocuments = new List <Int32>();
 
-            TaggedDocuments.Add(FMainDS.AApDocument[0].ApNumber);
+            TaggedDocuments.Add(FMainDS.AApDocument[0].ApDocumentId);
 
             if (PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments))
             {
@@ -567,8 +604,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             List <int>PayTheseDocs = new List <int>();
 
-            PayTheseDocs.Add(FMainDS.AApDocument[0].ApNumber);
-            PaymentScreen.AddDocumentsToPayment(FMainDS, PayTheseDocs);
+            PayTheseDocs.Add(FMainDS.AApDocument[0].ApDocumentId);
+            PaymentScreen.AddDocumentsToPayment(FMainDS, FLedgerNumber, PayTheseDocs);
             PaymentScreen.Show();
         }
     }

@@ -260,6 +260,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
                                        Boolean ANoFamily,
                                        StringCollection ASpecificBuildingInfo);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        String ExportAllPartnersExt();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         Boolean ImportDataExt(System.String[] ALinesToImport,
                               System.String ALimitToOption,
                               System.Boolean ADoNotOverwrite,
@@ -311,6 +313,10 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Mailing.Cacheable
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable.Class)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableMailingTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable.Class)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }

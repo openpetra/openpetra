@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -773,6 +773,16 @@ namespace Ict.Common.Testing
             Thread.CurrentThread.CurrentCulture = oldCulture;
         }
 
+        /// test parsing file versions
+        [Test]
+        public void TestFileVersion()
+        {
+            Assert.AreEqual("2.2.35.0", (new TFileVersionInfo("2.2.35")).ToString(), "without private part");
+            Assert.AreEqual("2.2.35.1", (new TFileVersionInfo("2.2.35.1")).ToString(), "with dot and private part");
+            Assert.AreEqual("2.2.35.1", (new TFileVersionInfo("2.2.35-1")).ToString(), "with hyphen and private part");
+        }
+
+                
         /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
         [ErrCodeAttribute("Invalid date.",
              ErrorMessageText = "Invalid date entered.",

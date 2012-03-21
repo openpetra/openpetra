@@ -112,7 +112,10 @@ namespace {#NAMESPACE}
             BuildValidationControlsDict();
 
 {#ENDIF DATAVALIDATION}
-            ShowData(FMainDS.{#MASTERTABLE}[0]);
+            if(FMainDS.{#MASTERTABLE}.Count > 0)
+            {
+                ShowData(FMainDS.{#MASTERTABLE}[0]);
+            }
         }
     }
     

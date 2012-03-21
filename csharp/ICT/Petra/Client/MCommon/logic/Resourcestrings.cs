@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -113,10 +113,7 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         public static readonly string StrBtnTextDelete = Catalog.GetString("&Delete");
-
-        /// <summary>todoComment</summary>
-        public static readonly string StrBtnTextCancel = Catalog.GetString("&Cancel");
-
+ 
         /// <summary>todoComment</summary>
         public static readonly string StrBtnTextDone = Catalog.GetString("D&one");
 
@@ -129,5 +126,8 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         public static readonly string StrValueUnassignable = Catalog.GetString("Unassignable Value");
+
+        /// <summary>todoComment</summary>
+        public const String StrCtrlSuppressChangeDetection = "SuppressChangeDetection";
     }
 }

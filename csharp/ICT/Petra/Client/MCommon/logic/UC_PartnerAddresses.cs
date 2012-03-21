@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1191,6 +1191,9 @@ namespace Ict.Petra.Client.MCommon
                 NewLocationsRow.County = "";
                 NewLocationsRow.CountryCode = "99";
                 FMainDS.PLocation.Rows.Add(NewLocationsRow);
+
+                // the location is already in the database
+                NewLocationsRow.AcceptChanges();
 
                 // Add new PartnerLocations row
                 NewPartnerLocationRow = (PartnerEditTDSPPartnerLocationRow)FMainDS.PPartnerLocation.NewRow();

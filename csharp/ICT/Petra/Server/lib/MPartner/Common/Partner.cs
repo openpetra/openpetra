@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MPartner.Partner
                             Counter = 0;
                             FamilyIDExists = false;
 
-                            while ((Counter < PersonDT.Rows.Count) || ((!FamilyIDExists)))
+                            while ((Counter < PersonDT.Rows.Count) && ((!FamilyIDExists)))
                             {
                                 if (PersonDT[Counter].FamilyId == APreferredFamilyID)
                                 {

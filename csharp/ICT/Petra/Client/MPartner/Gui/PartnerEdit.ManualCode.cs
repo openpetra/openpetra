@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -809,11 +809,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns></returns>
         public bool SaveChanges()
         {
-            bool ReturnValue;
-
-            ReturnValue = SaveChanges(ref FMainDS);
-
-            return ReturnValue;
+            return SaveChanges(ref FMainDS);
         }
 
         /// <summary>
@@ -1201,6 +1197,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // Update UI
                             FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
                             this.Cursor = Cursors.Default;
+                            EnableSave(false);
 
                             // If Screen Title was for a NEW Partner, remove the 'NEW' indicator
                             if (this.Text.StartsWith(TFrmPetraEditUtils.StrFormCaptionPrefixNew))
@@ -1247,6 +1244,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                             break;
 
                         case TSubmitChangesResult.scrNothingToBeSaved:
+                            /* if there were no changes discovered then still need to call AcceptChanges to get rid now of
+                             *                     any deleted columns */
+                            AInspectDS.AcceptChanges();
+
+                            // Update UI
                             this.Cursor = Cursors.Default;
                             FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
 

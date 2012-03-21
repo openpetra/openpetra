@@ -180,6 +180,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableFinanceTablesEnum.EmailDestinationList:
+                        {
+                            DataTable TmpTable = AEmailDestinationAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.MethodOfGivingList:
                         {
                             DataTable TmpTable = AMethodOfGivingAccess.LoadAll(ReadTransaction);
@@ -514,6 +520,23 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             }
 
                             break;
+                        case TCacheableFinanceTablesEnum.EmailDestinationList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateEmailDestinationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateEmailDestinationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (AEmailDestinationAccess.SubmitChanges((AEmailDestinationTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
                         case TCacheableFinanceTablesEnum.MethodOfGivingList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
@@ -634,6 +657,10 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         partial void ValidateCostCentreTypesList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateCostCentreTypesListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateEmailDestinationList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateEmailDestinationListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfGivingList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);

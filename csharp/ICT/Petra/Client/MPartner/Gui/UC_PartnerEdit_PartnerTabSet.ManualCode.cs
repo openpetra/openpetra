@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -768,10 +768,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
 
-                    // Hook up EnableDisableOtherScreenParts Event that is fired by UserControls on Tabs
-                    FUcoAddresses.EnableDisableOtherScreenParts += new TEnableDisableScreenPartsEventHandler(
-                        UcoTab_EnableDisableOtherScreenParts);
-
                     // Hook up RecalculateScreenParts Event
                     FUcoAddresses.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
@@ -1110,16 +1106,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 HookupPartnerEditDataChange(this, e);
             }
-        }
-
-        private void UcoTab_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)
-        {
-            // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.ucoTab_EnableDisableOtherScreenParts(' + e.Enable.ToString + ')');
-            // Simply fire OnEnableDisableOtherScreenParts event again so that the PartnerEdit screen can catch it
-            OnEnableDisableOtherScreenParts(e);
-
-            // Disable all TabPages except the current one (and reverse that)
-            tabPartners.EnableDisableAllOtherTabPages(e.Enable);
         }
 
         private void OnEnableDisableOtherScreenParts(TEnableDisableEventArgs e)

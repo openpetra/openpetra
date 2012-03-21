@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,7 +68,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.grdRecordList = new Ict.Common.Controls.TSgrdDataGrid();
             this.pnlRecordList = new System.Windows.Forms.Panel();
             this.btnDeleteRecord = new System.Windows.Forms.Button();
-            this.btnEditRecord = new System.Windows.Forms.Button();
             this.btnNewRecord = new System.Windows.Forms.Button();
             this.splListSectionDetailsSection = new System.Windows.Forms.Splitter();
             this.ucoDetails = new Ict.Petra.Client.MCommon.Gui.TUC_PartnerAddress();
@@ -151,7 +150,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.pnlRecordList.Controls.Add(this.grdRecordList);
             this.pnlRecordList.Controls.Add(this.btnMaximiseMinimiseGrid);
             this.pnlRecordList.Controls.Add(this.btnDeleteRecord);
-            this.pnlRecordList.Controls.Add(this.btnEditRecord);
             this.pnlRecordList.Controls.Add(this.btnNewRecord);
             this.pnlRecordList.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlRecordList.Location = new System.Drawing.Point(0, 0);
@@ -169,29 +167,13 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.btnDeleteRecord.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.btnDeleteRecord.ImageIndex = 2;
             this.btnDeleteRecord.ImageList = this.imlButtonIcons;
-            this.btnDeleteRecord.Location = new System.Drawing.Point(664, 58);
+            this.btnDeleteRecord.Location = new System.Drawing.Point(664, 34);
             this.btnDeleteRecord.Name = "btnDeleteRecord";
             this.btnDeleteRecord.Size = new System.Drawing.Size(76, 23);
             this.btnDeleteRecord.TabIndex = 4;
             this.btnDeleteRecord.Text = "      &Delete";
             this.btnDeleteRecord.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnDeleteRecord.Click += new System.EventHandler(this.BtnDeleteRecord_Click);
-
-            //
-            // btnEditRecord
-            //
-            this.btnEditRecord.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right));
-            this.btnEditRecord.ImageAlign = System.Drawing.ContentAlignment.BottomLeft;
-            this.btnEditRecord.ImageIndex = 1;
-            this.btnEditRecord.ImageList = this.imlButtonIcons;
-            this.btnEditRecord.Location = new System.Drawing.Point(664, 34);
-            this.btnEditRecord.Name = "btnEditRecord";
-            this.btnEditRecord.Size = new System.Drawing.Size(76, 23);
-            this.btnEditRecord.TabIndex = 3;
-            this.btnEditRecord.Text = "       Edi&t";
-            this.btnEditRecord.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEditRecord.Click += new System.EventHandler(this.BtnEditRecord_Click);
 
             //
             // btnNewRecord
@@ -263,7 +245,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         private System.Windows.Forms.Panel pnlRecordList;
         private System.Windows.Forms.Button btnMaximiseMinimiseGrid;
         private System.Windows.Forms.Button btnDeleteRecord;
-        private System.Windows.Forms.Button btnEditRecord;
         private System.Windows.Forms.Button btnNewRecord;
         private System.Windows.Forms.ImageList imlRecordIcons;
         private System.Windows.Forms.ToolTip tipMain;

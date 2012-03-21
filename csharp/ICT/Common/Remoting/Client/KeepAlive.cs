@@ -179,12 +179,16 @@ namespace Ict.Common.Remoting.Client
                         "DEVELOPER DEBUGGING INFORMATION");
 #endif
                 }
+#if DEBUGMODE
                 catch (Exception Exp)
                 {
-#if DEBUGMODE
                     TLogging.Log("TEnsureKeepAlive.UnRegister: Exception: " + Exp.ToString(), TLoggingType.ToLogfile);
-#endif
                 }
+#else
+                catch (Exception)
+                {
+                }
+#endif
 
                 if (ObjectHashCode != "")
                 {
@@ -288,14 +292,18 @@ namespace Ict.Common.Remoting.Client
 
                                     // TLogging.Log("KeepAliveThread: Kept Object " + ObjectEnum.Value.ToString() + " alive", TLoggingType.ToLogfile);
                                 }
+#if DEBUGMODE
                                 catch (Exception Exp)
                                 {
-#if DEBUGMODE
                                     TLogging.Log(
                                         "KeepAliveThread: " + ObjectEnum.Key.ToString() + " Could not contact OpenPetra Server!\r\n" + Exp.ToString(),
                                         TLoggingType.ToLogfile);
-#endif
                                 }
+#else
+                                catch (Exception)
+                                {
+                                }
+#endif
                             }
                         }
                     }

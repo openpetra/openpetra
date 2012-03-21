@@ -1131,6 +1131,13 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
+        public String ExportAllPartnersExt()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector), "ExportAllPartnersExt", ";");
+            return Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector.ExportAllPartnersExt();
+        }
+
+        /// generated method from connector
         public Boolean ImportDataExt(System.String[] ALinesToImport,
                                      System.String ALimitToOption,
                                      System.Boolean ADoNotOverwrite,
@@ -1450,6 +1457,16 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
             System.Type TmpType;
             ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
             #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            #region ManualCode
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+            #endregion ManualCode                                    
         }
     }
 }

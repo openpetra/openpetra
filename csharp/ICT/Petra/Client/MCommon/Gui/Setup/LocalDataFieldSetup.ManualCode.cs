@@ -280,6 +280,13 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             pnlCategoryCode.Visible = false;
             txtDetailNumDecimalPlaces.Visible = false;
 
+            // We can prevent screen 'flicker' by setting the DefaultView RowFilter to some stupid setting that finds no rows
+            // This stops the auto-genertaed code populating the list with incorrect data before we get it right in our code
+            //  that runs later (RunOnceOnActivationManual)
+            // Actually this line was added after completing the rest of the code.  Having added it I could probably
+            //   remove a few lines elsewhere, but I am not going to because I don't want to break anything!
+            FMainDS.PDataLabel.DefaultView.RowFilter = "Context=0";
+
             // We need to capture the 'DataSaved' event, so we can save our Extra DataSet
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
         }

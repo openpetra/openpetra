@@ -159,7 +159,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FLogic = new TUCPartnerRelationshipsLogic();
 
-            FMainDS.Tables.Add(new PartnerEditTDSPPartnerRelationshipTable());
+            if (!FMainDS.Tables.Contains(PartnerEditTDSPPartnerRelationshipTable.GetTableName()))
+            {
+                FMainDS.Tables.Add(new PartnerEditTDSPPartnerRelationshipTable());
+            }
+
             FMainDS.InitVars();
         }
 
