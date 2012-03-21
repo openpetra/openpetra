@@ -88,10 +88,6 @@ namespace Ict.Tools.CodeGeneration
         public string FActionHandlers = "";
         /// <summary>store code in this variable for the report parameters</summary>
         public string FReportParametersImplementation = "";
-
-        /// can be net for Windows .net, or mono for Mono; mainly to resolve issues with TableLayoutPanel and AutoSize etc
-        public string FTargetWinforms = "net";
-
         /// <summary>height of the generate window</summary>
         public Int32 FHeight = 500;
         /// <summary>width of the generate window</summary>

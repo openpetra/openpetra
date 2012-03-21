@@ -11,7 +11,7 @@
 <target name="custdepend">
   <!-- Generate winforms --> 
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatformGUI:${TargetPlatformGUI}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
   <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Client"/>
   <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymldir:${ClientPath} ${generateWinformsParameters}"/>
 </target>
@@ -19,7 +19,7 @@
 <target name="generateWinform">
   <!-- Generate winforms -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatformGUI:${TargetPlatformGUI}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
   <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymlfile:${file} ${generateWinformsParameters}"/>
   
   <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Client"/>
