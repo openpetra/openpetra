@@ -235,10 +235,10 @@ namespace Ict.Tools.GenerateWinForms
 
             if (path1 == path2)
             {
-                return 0;
+                return node1.CompareTo(node2);
             }
 
-            return -1;
+            return path1.CompareTo(path2);
         }
     }
 }
