@@ -306,6 +306,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ControlsUtilities.HideTabs(tabPartners, TabsToHide);
             FUserControlInitialised = true;
 
+            tabPartners.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            
             SelectTabPage(FInitiallySelectedTabPage);
 
             CalculateTabHeaderCounters(this);
@@ -320,8 +322,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// the UserControl.</remarks>
         /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
         /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
+        /// specific Control for which Data Validation errors might have been recorded. (Default=null).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
 
@@ -334,7 +344,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Person UCPartnerDetailsPerson =
                             (TUC_PartnerDetails_Person)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsPerson];
 
-                        if (!UCPartnerDetailsPerson.ValidateAllData(AProcessAnyDataValidationErrors))
+                        if (!UCPartnerDetailsPerson.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -349,7 +359,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Family UCPartnerDetailsFamily =
                             (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsFamily];
 
-                        if (!UCPartnerDetailsFamily.ValidateAllData(AProcessAnyDataValidationErrors))
+                        if (!UCPartnerDetailsFamily.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -364,7 +374,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Organisation UCPartnerDetailsOrganisation =
                             (TUC_PartnerDetails_Organisation)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation];
 
-                        if (!UCPartnerDetailsOrganisation.ValidateAllData(AProcessAnyDataValidationErrors))
+                        if (!UCPartnerDetailsOrganisation.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -379,7 +389,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Church UCPartnerDetailsChurch =
                             (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
 
-                        if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors))
+                        if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -394,7 +404,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Unit UCPartnerDetailsUnit =
                             (TUC_PartnerDetails_Unit)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsUnit];
 
-                        if (!UCPartnerDetailsUnit.ValidateAllData(AProcessAnyDataValidationErrors))
+                        if (!UCPartnerDetailsUnit.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -409,7 +419,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Venue UCPartnerDetailsVenue =
                             (TUC_PartnerDetails_Venue)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsVenue];
 
-                        if (!UCPartnerDetailsVenue.ValidateAllData(AProcessAnyDataValidationErrors))
+                        if (!UCPartnerDetailsVenue.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
@@ -424,13 +434,90 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUC_PartnerDetails_Bank UCPartnerDetailsBank =
                             (TUC_PartnerDetails_Bank)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsBank];
 
-                        if (!UCPartnerDetailsBank.ValidateAllData(AProcessAnyDataValidationErrors))
+                        if (!UCPartnerDetailsBank.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                         {
                             ReturnValue = false;
                         }
                     }
 
                     break;
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                TUCPartnerAddresses UCPartnerAddresses =
+                    (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+
+                if (!UCPartnerAddresses.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucSubscriptions))
+            {
+                TUC_Subscriptions UCSubscriptions =
+                    (TUC_Subscriptions)FTabSetup[TDynamicLoadableUserControls.dlucSubscriptions];
+
+                if (!UCSubscriptions.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerTypes))
+            {
+                TUCPartnerTypes UCPartnerTypes =
+                    (TUCPartnerTypes)FTabSetup[TDynamicLoadableUserControls.dlucPartnerTypes];
+
+                if (!UCPartnerTypes.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerRelationships))
+            {
+                TUC_PartnerRelationships UCRelationships =
+                    (TUC_PartnerRelationships)FTabSetup[TDynamicLoadableUserControls.dlucPartnerRelationships];
+
+                if (!UCRelationships.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFamilyMembers))
+            {
+                TUC_FamilyMembers UCFamilyMembers =
+                    (TUC_FamilyMembers)FTabSetup[TDynamicLoadableUserControls.dlucFamilyMembers];
+
+                if (!UCFamilyMembers.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucNotes))
+            {
+                TUC_PartnerNotes UCNotes =
+                    (TUC_PartnerNotes)FTabSetup[TDynamicLoadableUserControls.dlucNotes];
+
+                if (!UCNotes.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucOfficeSpecific))
+            {
+                TUC_LocalPartnerData UCLocalPartnerData =
+                    (TUC_LocalPartnerData)FTabSetup[TDynamicLoadableUserControls.dlucOfficeSpecific];
+
+                if (!UCLocalPartnerData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
             }
 
             return ReturnValue;
@@ -1043,6 +1130,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {   
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+            
+            if(!ValidateAllData(true, FCurrentUserControl))
+            {
+                e.Cancel = true;
+                
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }            
+        }
+        
         private Boolean CheckSecurityOKToAccessNotesTab()
         {
             Boolean ReturnValue;

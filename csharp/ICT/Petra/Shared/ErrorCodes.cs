@@ -130,6 +130,16 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "{0} seems to be a BIC/SWIFT Code")]
         public const String ERR_BRANCHCODELIKEBIC = "PARTN.00006N";
 
+        #region Subscriptions
+        
+        /// <summary>Subscription Status Mandatory.</summary>
+        [ErrCodeAttribute("Subscription Status Mandatory",
+             ErrorMessageText = "A valid Subscription Status must be selected.",
+             ErrorMessageTitle = "Subscription Status Mandatory")]
+        public const String ERR_SUBSCRIPTION_STATUSMANDATORY = "PARTN.00007V";
+        
+        #endregion
+        
         #endregion
     }
 }
