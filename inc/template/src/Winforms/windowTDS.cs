@@ -49,6 +49,7 @@ namespace {#NAMESPACE}
     {#IFDEF DYNAMICTABPAGEUSERCONTROLDECLARATION}
     private event TTabPageEventHandler FTabPageEvent;
     {#ENDIF DYNAMICTABPAGEUSERCONTROLDECLARATION}
+    private UserControl FCurrentUserControl;
     {#DYNAMICTABPAGEUSERCONTROLDECLARATION}
     
     /// <summary>
@@ -161,12 +162,30 @@ namespace {#NAMESPACE}
     /// </summary>
     /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
     /// to another record, otherwise set it to false.</param>
+    /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
+    /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+    /// <para>
+    /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+    /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+    /// this Argument.
+    /// </para>    
+    /// </param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification)
+    private bool ValidateAllData(bool ARecordChangeVerification, Control AValidateSpecificControl = null)
     {
         bool ReturnValue = false;
-
+        Control ControlToValidate;
+        
         GetDataFromControls();
+
+        if (AValidateSpecificControl != null) 
+        {
+            ControlToValidate = AValidateSpecificControl;
+        }
+        else
+        {
+            ControlToValidate = this.ActiveControl;
+        }
 
         // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
 {#IFDEF VALIDATEDATAMANUAL}
@@ -179,7 +198,7 @@ namespace {#NAMESPACE}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-            this.GetType());
+            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
 
         if(ReturnValue)
         {

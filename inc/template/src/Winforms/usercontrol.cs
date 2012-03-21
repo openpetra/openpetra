@@ -105,16 +105,14 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
 
-        if(FMainDS != null)
+        if((FMainDS != null)
+          && (FMainDS.{#MASTERTABLE} != null))
         {
 {#IFDEF DATAVALIDATION}
             BuildValidationControlsDict();
 
 {#ENDIF DATAVALIDATION}
-		    if(FMainDS.{#MASTERTABLE} != null)
-            {
-                ShowData(FMainDS.{#MASTERTABLE}[0]);
-            }
+            ShowData(FMainDS.{#MASTERTABLE}[0]);
         }
     }
     
@@ -165,10 +163,19 @@ namespace {#NAMESPACE}
     /// the UserControl.</remarks>    
     /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
     /// user, otherwise set it to false.</param>
+    /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
+    /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+    /// <para>
+    /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+    /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+    /// this Argument.
+    /// </para>
+    /// </param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-    public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+    public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
     {
         bool ReturnValue = false;
+        Control ControlToValidate;
 {#IFDEF SHOWDETAILS}
         {#DETAILTABLETYPE}Row CurrentRow;
 
@@ -178,6 +185,14 @@ namespace {#NAMESPACE}
         {
 {#ENDIF SHOWDETAILS}        
 {#IFNDEF SHOWDETAILS}
+        if (AValidateSpecificControl != null) 
+        {
+            ControlToValidate = AValidateSpecificControl;
+        }
+        else
+        {
+            ControlToValidate = this.ActiveControl;
+        }
 
         GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
 {#ENDIFN SHOWDETAILS}
@@ -202,8 +217,27 @@ namespace {#NAMESPACE}
 
             if (AProcessAnyDataValidationErrors)
             {
-                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType());    
+                // Only process the Data Validations here if ControlToValidate is not null.
+                // It can be null if this.ActiveControl yields null - this would happen if no Control
+                // on this UserControl has got the Focus.
+                if (ControlToValidate != null) 
+                {
+                    if(ControlToValidate.FindUserControlOrForm(true) == this)
+                    {
+{#IFDEF SHOWDETAILS}
+                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+{#ENDIFN SHOWDETAILS}
+                    }
+                    else
+                    {
+                        ReturnValue = true;
+                    }
+                }
             }
 {#IFDEF SHOWDETAILS}            
         }
@@ -314,7 +348,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(false);
+        ValidateAllData(false, (Control)sender);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         
