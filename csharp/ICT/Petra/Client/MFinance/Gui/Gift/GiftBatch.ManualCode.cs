@@ -39,6 +39,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
+        private UserControl FCurrentUserControl;
+        
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
             get
@@ -104,7 +106,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {   
             FPetraUtilsObject.VerificationResultCollection.Clear();
             
-            if(!ValidateAllData(true))
+            if (tabGiftBatch.SelectedIndex == 0) 
+            {
+                FCurrentUserControl = ucoTransactions;
+            }
+            else
+            {
+                FCurrentUserControl = ucoBatches;
+            }
+            
+            if(!ValidateAllData(true, FCurrentUserControl))
             {
                 e.Cancel = true;
                 
@@ -204,18 +215,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    if ((FPetraUtilsObject.VerificationResultCollection.FindBy(ucoBatches) == null) 
-                        && (FPetraUtilsObject.VerificationResultCollection.FindBy(this) == null))
-                    {
-                        LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                            ucoBatches.GetSelectedDetailRow().BatchNumber);                       
-                        this.tabGiftBatch.SelectedTab = this.tpgTransactions;
-                    }
-                    else
-                    {
-                        TDataValidation.ProcessAnyDataValidationErrors(true, FPetraUtilsObject.VerificationResultCollection,
-                            this.GetType());                        
-                    }
+                    LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
+                        ucoBatches.GetSelectedDetailRow().BatchNumber);                       
+                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }
             }
         }        
