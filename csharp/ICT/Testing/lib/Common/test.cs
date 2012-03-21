@@ -782,7 +782,6 @@ namespace Ict.Common.Testing
             Assert.AreEqual("2.2.35.1", (new TFileVersionInfo("2.2.35-1")).ToString(), "with hyphen and private part");
         }
 
-                
         /// <summary>Test-only Error Code for TestErrorCodes Method.</summary>
         [ErrCodeAttribute("Invalid date.",
              ErrorMessageText = "Invalid date entered.",

@@ -97,7 +97,7 @@ namespace Ict.Petra.Shared
         #endregion
 
         #region Partner Module-specific error codes
-        
+
         /// <summary>Partner Key is invalid.</summary>
         [ErrCodeAttribute("Invalid Partner.",
              ErrorMessageText = "Invalid Partner entered: The Partner specified with PartnerKey {0} is not valid.")]
@@ -106,14 +106,14 @@ namespace Ict.Petra.Shared
         /// <summary>Partner Key is invalid (must be non-zero).</summary>
         [ErrCodeAttribute("Invalid Partner.",
              ErrorMessageText = "Invalid Partner entered: PartnerKey 0 is not a valid value.")]
-        public const String ERR_PARTNERKEY_INVALID_NOZERO = "PARTN.00002V";        
+        public const String ERR_PARTNERKEY_INVALID_NOZERO = "PARTN.00002V";
 
         /// <summary>Partner Status MERGED must not be assigned.</summary>
         [ErrCodeAttribute("Partner Status MERGED must not be assigned",
-            ErrorMessageText = "The Partner Status cannot be set to 'MERGED' by the user - this Partner Status\r\n" +
-                "is set only by the Partner Merge function for Partners that have been merged\r\n" +
-                "into another Partner!",
-            ControlValueUndoRequested = true)]
+             ErrorMessageText = "The Partner Status cannot be set to 'MERGED' by the user - this Partner Status\r\n" +
+                                "is set only by the Partner Merge function for Partners that have been merged\r\n" +
+                                "into another Partner!",
+             ControlValueUndoRequested = true)]
         public const String ERR_PARTNERSTATUSMERGEDCHANGEUNDONE = "PARTN.00003V";
 
         /// <summary>UnitName change undone.</summary>
@@ -121,7 +121,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>BIC (Bank Identifier Code/SWIFT Code) is invalid.</summary>
         public const String ERR_BANKBICSWIFTCODEINVALID = "PARTN.00005V";
-        
+
         /// <summary>'Branch Code' format matches the format of a BIC (Bank Identifier Code/SWIFT Code) --- Non-critical.</summary>
         [ErrCodeAttribute("'Branch Code possibly a BIC/SWIFT Code",
              ErrorMessageText = "The {0} you entered seems to be a BIC/SWIFT Code!\r\n\r\n" +
@@ -131,15 +131,15 @@ namespace Ict.Petra.Shared
         public const String ERR_BRANCHCODELIKEBIC = "PARTN.00006N";
 
         #region Subscriptions
-        
+
         /// <summary>Subscription Status Mandatory.</summary>
         [ErrCodeAttribute("Subscription Status Mandatory",
              ErrorMessageText = "A valid Subscription Status must be selected.",
              ErrorMessageTitle = "Subscription Status Mandatory")]
         public const String ERR_SUBSCRIPTION_STATUSMANDATORY = "PARTN.00007V";
-        
+
         #endregion
-        
+
         #endregion
     }
 }

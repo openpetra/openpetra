@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_GLSetup.ValidateAnalysisTypesSetupManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);                
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

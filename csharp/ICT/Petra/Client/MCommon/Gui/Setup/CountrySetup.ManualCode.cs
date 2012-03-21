@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 txtDetailTimeZoneMaximum.NumberValueDouble = txtDetailTimeZoneMinimum.NumberValueDouble;
             }
         }
-                
+
         private void ValidateDataDetailsManual(PCountryRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;

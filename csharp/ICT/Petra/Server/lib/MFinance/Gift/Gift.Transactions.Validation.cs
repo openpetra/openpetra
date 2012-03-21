@@ -38,41 +38,41 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         //
         // Put Methods for the validation of Gift Transactions in this code file.
         //
-        
-        static partial void ValidateGiftBatchManual(TValidationControlsDict AValidationControlsDict, 
+
+        static partial void ValidateGiftBatchManual(TValidationControlsDict AValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();    
-            
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
             ValidationControlsDict.Add(ASubmitTable.Columns[AGiftBatchTable.ColumnBatchDescriptionId],
                 new TValidationControlsData(null, AGiftBatchTable.GetBatchDescriptionDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId],
                 new TValidationControlsData(null, AGiftBatchTable.GetExchangeRateToBaseDBName()));
-            
+
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedFinanceValidation_Gift.ValidateGiftBatchManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (AGiftBatchRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);                                                        
-            }                               
+                    ValidationControlsDict);
+            }
         }
-        
-        static partial void ValidateGiftDetailManual(TValidationControlsDict AValidationControlsDict, 
+
+        static partial void ValidateGiftDetailManual(TValidationControlsDict AValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();    
-            
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
             ValidationControlsDict.Add(ASubmitTable.Columns[AGiftDetailTable.ColumnGiftCommentOneId],
                 new TValidationControlsData(null, AGiftDetailTable.GetGiftCommentOneDBName()));
-            
+
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedFinanceValidation_Gift.ValidateGiftDetailManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (AGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);                                                        
-            }                               
-        }        
-     }
+                    ValidationControlsDict);
+            }
+        }
+    }
 }

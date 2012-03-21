@@ -778,7 +778,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoUpperPart.GetDataFromControls();
             ucoLowerPart.GetDataFromControls();
         }
-        
+
         /// <summary>
         /// Performs data validation.
         /// </summary>
@@ -786,23 +786,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool ValidateAllData()
         {
             bool ReturnValue = false;
-    
+
             // Perform validation in UserControls, too
             ucoUpperPart.ValidateAllData(false);
             ucoLowerPart.ValidateAllData(false);
-    
+
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
                 this.GetType());
-    
-            if(ReturnValue)
+
+            if (ReturnValue)
             {
                 // Remove a possibly shown Validation ToolTip as the data validation succeeded
                 FPetraUtilsObject.ValidationToolTip.RemoveAll();
             }
-    
+
             return ReturnValue;
         }
-            
+
         /// <summary>
         /// needed for the interface
         /// </summary>
@@ -855,10 +855,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             TDataBinding.EnsureDataChangesAreStored(this);
 
             GetDataFromControls();
-            
+
             // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
             FPetraUtilsObject.VerificationResultCollection.Clear();
-    
+
             if (ValidateAllData())
             {
                 foreach (DataTable InspectDT in AInspectDS.Tables)
@@ -992,13 +992,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Update UI
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
                         this.Cursor = Cursors.Default;
-    
+
                         // We don't have unsaved changes anymore
                         FPetraUtilsObject.DisableSaveButton();
-    
+
                         return true;
                     }
-                    
+
                     if ((SubmitDS.Tables.Contains(PLocationTable.GetTableName()))
                         || (SubmitDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
                         || (SubmitDS.Tables.Contains(PPartnerRelationshipTable.GetTableName())))
@@ -1244,6 +1244,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             break;
 
                         case TSubmitChangesResult.scrNothingToBeSaved:
+
                             /* if there were no changes discovered then still need to call AcceptChanges to get rid now of
                              *                     any deleted columns */
                             AInspectDS.AcceptChanges();

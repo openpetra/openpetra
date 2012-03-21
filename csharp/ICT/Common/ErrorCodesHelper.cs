@@ -59,7 +59,7 @@ namespace Ict.Common
         /// Returns an <see cref="ErrCodeInfo" /> object for a specified error code.
         /// </summary>
         /// <param name="AErrorCode">Error Code.</param>
-        /// <param name="AErrorMessagePlaceholderTexts">Array whose strings are placed into placeholders 
+        /// <param name="AErrorMessagePlaceholderTexts">Array whose strings are placed into placeholders
         /// which are found in the ErrorCode's ErrorMessageText (optional Argument!)</param>.
         /// <returns>An <see cref="ErrCodeInfo" /> object which holds information about
         /// the specified error code, or null, if the error code was not found.</returns>
@@ -100,10 +100,10 @@ namespace Ict.Common
         /// <param name="AErrorMessagePlaceholderTexts">Array whose strings are placed into placeholders which are found in
         /// <paramref name="AErrorMessageText" /> (optional Argument!)</param>.
         /// <param name="AErrorTitlePlaceholderTexts">Array whose strings are placed into placeholders which are found in
-        /// the ErrorCode's ErrorTitle (optional Argument!)</param>.        
+        /// the ErrorCode's ErrorTitle (optional Argument!)</param>.
         /// /// <returns>An <see cref="ErrCodeInfo" /> object which holds information about
         /// the specified error code, or null, if the error code was not found.</returns>
-        public static ErrCodeInfo GetErrorInfo(string AErrorCode, string AErrorMessageText, 
+        public static ErrCodeInfo GetErrorInfo(string AErrorCode, string AErrorMessageText,
             string[] AErrorMessagePlaceholderTexts = null, string[] AErrorTitlePlaceholderTexts = null)
         {
             ErrCodeInfo FoundErrInfo;
@@ -142,14 +142,14 @@ namespace Ict.Common
                 {
                     ErrorMessageText = String.Format(ErrorMessageText, AErrorMessagePlaceholderTexts);
                 }
-                
+
                 ErrorTitleText = FoundErrInfo.ErrorMessageTitle;
-                
+
                 if ((AErrorTitlePlaceholderTexts != null)
                     && (AErrorTitlePlaceholderTexts.Length != 0))
                 {
                     ErrorTitleText = String.Format(ErrorTitleText, AErrorTitlePlaceholderTexts);
-                }               
+                }
             }
 
             ReturnValue = new ErrCodeInfo(FoundErrInfo.ErrorCode, FoundErrInfo.ErrorCodeConstantClass,
@@ -276,7 +276,7 @@ namespace Ict.Common
         /// <param name="AErrorMessageTitle">String that will be displayed as Title of MessageBoxes, etc..</param>
         /// <param name="ACategory">Category of the error code.</param>
         /// <param name="AHelpID">Help ID of the error code.</param>
-        /// <param name="AControlValueUndoRequested">Set this to true if the Error Code requests that the validated 
+        /// <param name="AControlValueUndoRequested">Set this to true if the Error Code requests that the validated
         /// Control's value is undone.</param>
         public ErrCodeInfo(string AErrorCode,
             string AErrorCodeConstantClass,
@@ -413,9 +413,9 @@ namespace Ict.Common
                 return FHelpID;
             }
         }
-        
+
         /// <summary>
-        /// Is true (or set to true) if the Error Code requests that the validated 
+        /// Is true (or set to true) if the Error Code requests that the validated
         /// Control's value is undone.
         /// </summary>
         public bool ControlValueUndoRequested
@@ -424,7 +424,7 @@ namespace Ict.Common
             {
                 return FControlValueUndoRequested;
             }
-        }        
+        }
     }
 
 
@@ -544,7 +544,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// Is true (or set to true) if the Error Code requests that the validated 
+        /// Is true (or set to true) if the Error Code requests that the validated
         /// Control's value is undone.
         /// </summary>
         public virtual bool ControlValueUndoRequested
@@ -553,7 +553,7 @@ namespace Ict.Common
             {
                 return FControlValueUndoRequested;
             }
-            
+
             set
             {
                 FControlValueUndoRequested = value;

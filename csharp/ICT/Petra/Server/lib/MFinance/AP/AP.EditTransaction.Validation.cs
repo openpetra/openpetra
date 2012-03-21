@@ -38,22 +38,22 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         //
         // Put Methods for the validation of AP EditTransaction in this code file.
         //
-        
-        static partial void ValidateApDocumentDetailManual(TValidationControlsDict AValidationControlsDict, 
+
+        static partial void ValidateApDocumentDetailManual(TValidationControlsDict AValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();    
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             ValidationControlsDict.Add(ASubmitTable.Columns[AApDocumentDetailTable.ColumnAmountId],
-                 new TValidationControlsData(null, AApDocumentDetailTable.GetAmountDBName()));
-                        
+                new TValidationControlsData(null, AApDocumentDetailTable.GetAmountDBName()));
+
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedFinanceValidation_AP.ValidateApDocumentDetailManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (AApDocumentDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);                                                        
-            }                               
+                    ValidationControlsDict);
+            }
         }
-     }
+    }
 }

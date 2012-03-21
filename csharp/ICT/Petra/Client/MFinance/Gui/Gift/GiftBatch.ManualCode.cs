@@ -40,7 +40,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
         private UserControl FCurrentUserControl;
-        
+
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
             get
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         private int standardTabIndex = 0;
-        
+
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
@@ -103,10 +103,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
-        {   
+        {
             FPetraUtilsObject.VerificationResultCollection.Clear();
-            
-            if (tabGiftBatch.SelectedIndex == 0) 
+
+            if (tabGiftBatch.SelectedIndex == 0)
             {
                 FCurrentUserControl = ucoTransactions;
             }
@@ -114,22 +114,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FCurrentUserControl = ucoBatches;
             }
-            
-            if(!ValidateAllData(true, FCurrentUserControl))
+
+            if (!ValidateAllData(true, FCurrentUserControl))
             {
                 e.Cancel = true;
-                
+
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
-            }            
+            }
         }
 
         private void RunOnceOnActivationManual()
         {
             ucoBatches.Focus();
             HookupAllInContainer(ucoBatches);
-            HookupAllInContainer(ucoTransactions);               
+            HookupAllInContainer(ucoTransactions);
         }
-        
+
         /// <summary>
         /// activate the transactions tab and load the gift transactions of the batch
         /// </summary>
@@ -216,10 +216,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (this.tpgTransactions.Enabled)
                 {
                     LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber);                       
+                        ucoBatches.GetSelectedDetailRow().BatchNumber);
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                 }
             }
-        }        
+        }
     }
 }

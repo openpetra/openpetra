@@ -54,9 +54,9 @@ namespace Ict.Petra.Shared
             while (VerificationResultEnum.MoveNext())
             {
                 VerificationResultEntry = ((TVerificationResult)VerificationResultEnum.Current);
-                
+
                 ReturnValue += "  * ";
-                
+
                 if (VerificationResultEntry.ResultContext != null)
                 {
                     ReturnValue += "[" + VerificationResultEntry.ResultContext.ToString() + "] ";
@@ -68,7 +68,7 @@ namespace Ict.Petra.Shared
                 {
                     ReturnValue += "  [" + VerificationResultEntry.ResultCode + "]";
                 }
-                
+
                 ReturnValue += Environment.NewLine + Environment.NewLine;
             }
 

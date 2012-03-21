@@ -242,7 +242,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FMainDS.InitVars();
-            
+
             ucoDetails.SpecialInitUserControl();
         }
 
@@ -578,13 +578,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-        
+
         private void ValidateDataDetailsManual(PSubscriptionRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPartnerValidation_Partner.ValidateSubscriptionManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);        
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         #endregion

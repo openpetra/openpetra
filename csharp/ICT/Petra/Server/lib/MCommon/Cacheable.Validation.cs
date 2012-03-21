@@ -38,25 +38,25 @@ namespace Ict.Petra.Server.MCommon.Cacheable
         //
         // Put Methods for the validation of Cacheable DataTables in this code file.
         //
-        
-        partial void ValidateCountryListManual(TValidationControlsDict AValidationControlsDict, 
+
+        partial void ValidateCountryListManual(TValidationControlsDict AValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();    
-            
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
             ValidationControlsDict.Add(ASubmitTable.Columns[PCountryTable.ColumnInternatTelephoneCodeId],
                 new TValidationControlsData(null, PCountryTable.GetInternatTelephoneCodeDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[PCountryTable.ColumnTimeZoneMinimumId],
                 new TValidationControlsData(null, PCountryTable.GetTimeZoneMinimumDBName(),
-                                            null, PCountryTable.GetTimeZoneMaximumDBName()));
+                    null, PCountryTable.GetTimeZoneMaximumDBName()));
 
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedValidation_CacheableDataTables.ValidateCountrySetupManual(this.GetType().Name +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PCountryRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);                                                        
-            }                               
+                    ValidationControlsDict);
+            }
         }
     }
 }

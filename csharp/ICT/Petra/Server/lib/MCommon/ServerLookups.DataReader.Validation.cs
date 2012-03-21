@@ -38,21 +38,21 @@ namespace Ict.Petra.Server.MCommon.DataReader
         // Put Methods for the validation of DataReader-managed DataTables in this code file.
         //
 
-        static partial void ValidateInternationalPostalTypeManual(TValidationControlsDict AValidationControlsDict, 
+        static partial void ValidateInternationalPostalTypeManual(TValidationControlsDict AValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();    
-            
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
             ValidationControlsDict.Add(ASubmitTable.Columns[PInternationalPostalTypeTable.ColumnDescriptionId],
-                 new TValidationControlsData(null, PInternationalPostalTypeTable.GetDescriptionDBName()));
+                new TValidationControlsData(null, PInternationalPostalTypeTable.GetDescriptionDBName()));
 
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedValidation_CacheableDataTables.ValidateInternationalPostalTypeSetup("TCommonDataReader" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PInternationalPostalTypeRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);                                                        
-            }                               
-        }                    
+                    ValidationControlsDict);
+            }
+        }
     }
 }

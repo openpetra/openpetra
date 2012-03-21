@@ -307,7 +307,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FUserControlInitialised = true;
 
             tabPartners.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-            
+
             SelectTabPage(FInitiallySelectedTabPage);
 
             CalculateTabHeaderCounters(this);
@@ -322,7 +322,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// the UserControl.</remarks>
         /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
         /// user, otherwise set it to false.</param>
-        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
         /// specific Control for which Data Validation errors might have been recorded. (Default=null).
         /// <para>
         /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
@@ -453,7 +453,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ReturnValue = false;
                 }
             }
-            
+
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucSubscriptions))
             {
                 TUC_Subscriptions UCSubscriptions =
@@ -464,7 +464,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ReturnValue = false;
                 }
             }
-            
+
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerTypes))
             {
                 TUCPartnerTypes UCPartnerTypes =
@@ -497,7 +497,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ReturnValue = false;
                 }
             }
-            
+
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucNotes))
             {
                 TUC_PartnerNotes UCNotes =
@@ -508,7 +508,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ReturnValue = false;
                 }
             }
-            
+
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucOfficeSpecific))
             {
                 TUC_LocalPartnerData UCLocalPartnerData =
@@ -1117,17 +1117,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
-        {   
+        {
             FPetraUtilsObject.VerificationResultCollection.Clear();
-            
-            if(!ValidateAllData(true, FCurrentUserControl))
+
+            if (!ValidateAllData(true, FCurrentUserControl))
             {
                 e.Cancel = true;
-                
+
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
-            }            
+            }
         }
-        
+
         private Boolean CheckSecurityOKToAccessNotesTab()
         {
             Boolean ReturnValue;

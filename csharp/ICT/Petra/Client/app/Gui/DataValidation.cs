@@ -42,8 +42,8 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="AVerificationResultCollection">A <see cref="TVerificationResultCollection " /> to inspect for
         /// data verification errors.</param>
         /// <param name="ATypeWhichRaisesError">Instance of the calling WinForm.</param>
-        /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that 
-        /// are considered by this Method to those whose <see cref="TVerificationResult.ResultContext" /> matches 
+        /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that
+        /// are considered by this Method to those whose <see cref="TVerificationResult.ResultContext" /> matches
         /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref></param>.
         /// <returns>True in case there were no data verification errors, otherwise false.</returns>
         public static bool ProcessAnyDataValidationErrors(bool ARecordChangeVerification,
@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.App.Gui
                     out FirstErrorControl, out FirstErrorContext, true, ARestrictToTypeWhichRaisesError);
 
                 // Tell user that there are data validation errors if there are any
-                if (ErrorMessages != String.Empty) 
+                if (ErrorMessages != String.Empty)
                 {
                     if (ARecordChangeVerification)
                     {
@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.App.Gui
                     {
                         TMessages.MsgFormSaveVerificationError(ErrorMessages, ReturnValue, ATypeWhichRaisesError);
                     }
-                    
+
                     // Put Focus on first Control that an error was recorded for
                     if (FirstErrorControl != null)
                     {

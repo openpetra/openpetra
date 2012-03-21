@@ -171,27 +171,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-    /// <summary>
-    /// Performs data validation.
-    /// </summary>
-    /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
-    /// the UserControl.</remarks>
-    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-    /// user, otherwise set it to false.</param>
-    /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
-    /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
-    /// <para>
-    /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
-    /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
-    /// this Argument.
-    /// </para>
-    /// </param>
-    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-    public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
-    {
-        bool ReturnValue = true;
-        
-// TODO        
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+// TODO
 //        bool ReturnValue = false;
 //        Control ControlToValidate;
 //        if (AValidateSpecificControl != null)
@@ -233,9 +233,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 //            FPetraUtilsObject.ValidationToolTip.RemoveAll();
 //        }
 
-        return ReturnValue;
-    }
-        
+            return ReturnValue;
+        }
+
         #endregion
 
         #region Helper functions
@@ -302,5 +302,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 #endif
+
     }
 }

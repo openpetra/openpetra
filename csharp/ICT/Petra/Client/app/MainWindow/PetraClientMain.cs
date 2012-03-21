@@ -333,8 +333,8 @@ namespace Ict.Petra.Client.App.PetraClient
 //            ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Petra.Shared.PetraErrorCodes().GetType());
 //            ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Common.Verification.TStringChecks().GetType());
 
-            ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
-                
+                ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
+
                 // initialize the client
                 TClientTasksQueue.ClientTasksInstanceType = typeof(TClientTaskInstance);
                 TConnectionManagementBase.ConnectorType = typeof(TConnector);

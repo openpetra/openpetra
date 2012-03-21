@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         public static readonly string StrBtnTextDelete = Catalog.GetString("&Delete");
- 
+
         /// <summary>todoComment</summary>
         public static readonly string StrBtnTextDone = Catalog.GetString("D&one");
 

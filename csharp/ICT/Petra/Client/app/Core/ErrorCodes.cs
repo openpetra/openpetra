@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.App.Core
 
         #region General error codes
 
-        
+
         #endregion
     }
 }

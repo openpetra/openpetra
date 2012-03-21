@@ -280,7 +280,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-            
+
             bool DetailsaveOK = false;
 
             AVerificationResult = null;
@@ -340,14 +340,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         {
                             ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
                             ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
-    
+
                             if (AVerificationResult.Count == 0)
-                            {                            
+                            {
                                 DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
                                     out AVerificationResult);
-                            }                            
+                            }
                         }
-    
+
                         if ((AInspectDS.AApDocumentDetail == null) // Document detail lines
                             || DetailsaveOK)
                         {
@@ -406,7 +406,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // Serialisation (needed for .NET Remoting).
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
-                        
+
             return SubmissionResult;
         }
 
@@ -1849,13 +1849,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
         }
 
-#region Data Validation
+        #region Data Validation
 
         static partial void ValidateApDocumentDetail(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         static partial void ValidateApDocumentDetailManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        
-#endregion Data Validation        
+
+        #endregion Data Validation
     }
 }

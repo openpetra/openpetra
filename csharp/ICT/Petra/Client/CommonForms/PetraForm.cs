@@ -91,12 +91,12 @@ namespace Ict.Petra.Client.CommonForms
         /// ToolTip instance which is used to show Data Validation messages.
         /// </summary>
         protected ToolTip FValidationToolTip;
-        
+
         /// <summary>
         /// Dictionary that contains Controls on whose data Data Validation should be run.
         /// </summary>
         protected TValidationControlsDict FValidationControlsDict = new TValidationControlsDict();
-        
+
         /// <summary>
         /// points to the same object as FTheForm, but already casted to a WinForm
         /// </summary>
@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.CommonForms
 
         /// This holds a reference to ALL controls on the screen  even if they are buried in GroupBoxes, Panels, or TabPages
         protected ArrayList FAllControls;
-        
+
         /// This holds a reference to ALL controls on the screen that have child controls, even if they are buried in GroupBoxes, Panels, or TabPages
         protected ArrayList FControlsWithChildren;
 
@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.CommonForms
             {
                 TFormsList.GFormsList.NotifyWindowOpened(ACallerForm.Handle, FWinForm.Handle);
             }
-            
+
             //
             // Initialise the Data Validation ToolTip
             //
@@ -398,7 +398,7 @@ namespace Ict.Petra.Client.CommonForms
                 return FValidationToolTip;
             }
         }
-        
+
         /// <summary>
         /// Sets the Validation ToolTip severity. This affects the icon and title of the Validation ToolTip.
         /// </summary>
@@ -406,38 +406,38 @@ namespace Ict.Petra.Client.CommonForms
         {
             set
             {
-                switch(value) 
+                switch (value)
                 {
                     case TResultSeverity.Resv_Critical:
                         FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
-                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Incorrect Data");                    
-                        
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Incorrect Data");
+
                         break;
-                
+
                     case TResultSeverity.Resv_Noncritical:
                         FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
                         FValidationToolTip.ToolTipTitle = Catalog.GetString("Warning");
-                        
+
                         break;
-                        
+
                     case TResultSeverity.Resv_Info:
                         FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
                         FValidationToolTip.ToolTipTitle = Catalog.GetString("Information");
-                        
+
                         break;
-                        
+
                     case TResultSeverity.Resv_Status:
                         FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.None;
                         FValidationToolTip.ToolTipTitle = Catalog.GetString("Note");
-                        
+
                         break;
                 }
             }
         }
-        
+
         /// <summary>
         /// Dictionary that contains Controls on whose data Data Validation should be run.
-        /// </summary>        
+        /// </summary>
         public TValidationControlsDict ValidationControlsDict
         {
             get
@@ -445,7 +445,7 @@ namespace Ict.Petra.Client.CommonForms
                 return FValidationControlsDict;
             }
         }
-        
+
         /// useful for initialising actions, eg based on permissions
         virtual public void InitActionState()
         {

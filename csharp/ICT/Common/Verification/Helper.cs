@@ -44,8 +44,8 @@ namespace Ict.Common.Verification
         /// </returns>
         public static string NiceValueDescription(string AValueDescription)
         {
-        	string ReturnValue;
-        	
+            string ReturnValue;
+
             if (AValueDescription != String.Empty)
             {
                 if (AValueDescription.EndsWith(":"))
@@ -57,9 +57,9 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = "'" + AValueDescription + "'";
                 }
-                
-                // Remove any ampersands ('&', signalling the keyboard shortcut in a Control's Label .Text Property) 
-                // and any double-occurance of a single-quote (which could happen after we prepended and appended 
+
+                // Remove any ampersands ('&', signalling the keyboard shortcut in a Control's Label .Text Property)
+                // and any double-occurance of a single-quote (which could happen after we prepended and appended
                 // single quotes)
                 ReturnValue = ReturnValue.Replace("&", String.Empty).Replace("''", "'");;
             }
@@ -67,7 +67,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = Catalog.GetString("Value");
             }
-            
+
             return ReturnValue;
         }
     }

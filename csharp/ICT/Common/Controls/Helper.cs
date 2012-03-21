@@ -39,41 +39,41 @@ namespace Ict.Common.Controls
         /// passed is a UserControl and this Method should return it instead of searching for
         /// a UserControl that this UserControl is hosted in.</param>
         /// <param name="AIfControlIsTabControlReturnChildUserControl">Set to true if the Control that is
-        /// passed is a TabPage and this Method should return the UserControl that is placed on it 
+        /// passed is a TabPage and this Method should return the UserControl that is placed on it
         /// instead of searching for a UserControl that this TabPage is hosted in.</param>
         /// <returns>The UserControl that hosts <paramref name="AControl" /> or null
         /// in case no hosting UserControl could be found.</returns>
-        public static object FindUserControlOrForm(this Control AControl, bool AIfControlIsUserControlReturnThis = false, 
+        public static object FindUserControlOrForm(this Control AControl, bool AIfControlIsUserControlReturnThis = false,
             bool AIfControlIsTabControlReturnChildUserControl = false)
         {
             Control ControlSoughtFor;
-            
-            if (AControl == null) 
+
+            if (AControl == null)
             {
-                return null;    
+                return null;
             }
-            
+
             ControlSoughtFor = AControl.Parent;
-            
+
             if ((AControl is UserControl)
-               && AIfControlIsUserControlReturnThis) 
+                && AIfControlIsUserControlReturnThis)
             {
-                return AControl;    
+                return AControl;
             }
-            
+
             if (!((AControl is System.Windows.Forms.TabControl)
                   && (AIfControlIsTabControlReturnChildUserControl)))
             {
                 // Iterate through all Parent Controls to find a UserControl, failing that a Form
-                while((!(ControlSoughtFor is UserControl))
-                    && (!(ControlSoughtFor is Form)))
+                while ((!(ControlSoughtFor is UserControl))
+                       && (!(ControlSoughtFor is Form)))
                 {
                     ControlSoughtFor = ControlSoughtFor.Parent;
-                }                
+                }
             }
             else
             {
-                // Check if there is only one Child Control on the currently selected TabPage and 
+                // Check if there is only one Child Control on the currently selected TabPage and
                 // that this Child Control is indeed a UserControl
                 if ((((TabControl)AControl).SelectedTab.Controls.Count == 1)
                     && (((TabControl)AControl).SelectedTab.Controls[0] is UserControl))
@@ -85,8 +85,8 @@ namespace Ict.Common.Controls
                     ControlSoughtFor = null;
                 }
             }
-            
-            if (ControlSoughtFor != AControl) 
+
+            if (ControlSoughtFor != AControl)
             {
                 return ControlSoughtFor;
             }
@@ -105,12 +105,12 @@ namespace Ict.Common.Controls
         public static UserControl FindUserControl(this Control AControl)
         {
             object FindResult = FindUserControlOrForm(AControl);
-            
+
             if (FindResult != null)
             {
-                if (FindResult is UserControl) 
+                if (FindResult is UserControl)
                 {
-                    return (UserControl)FindResult;    
+                    return (UserControl)FindResult;
                 }
                 else
                 {

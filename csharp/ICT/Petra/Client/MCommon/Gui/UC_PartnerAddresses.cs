@@ -984,14 +984,14 @@ namespace Ict.Petra.Client.MCommon.Gui
         public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
-            
-// TODO        
+
+// TODO
 //            bool ReturnValue = false;
 //            Control ControlToValidate;
 //            PSubscriptionRow CurrentRow;
-//    
+//
 //            CurrentRow = GetSelectedDetailRow();
-//    
+//
 //            if (CurrentRow != null)
 //            {
 //                if (AValidateSpecificControl != null)
@@ -1002,12 +1002,12 @@ namespace Ict.Petra.Client.MCommon.Gui
 //                {
 //                    ControlToValidate = this.ActiveControl;
 //                }
-//    
+//
 //                GetDetailsFromControls(CurrentRow);
-//    
+//
 //                // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
 //                ValidateDataDetailsManual(CurrentRow);
-//    
+//
 //                if (AProcessAnyDataValidationErrors)
 //                {
 //                    // Only process the Data Validations here if ControlToValidate is not null.
@@ -1028,7 +1028,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 //            {
 //                ReturnValue = true;
 //            }
-//    
+//
 //            if(ReturnValue)
 //            {
 //                // Remove a possibly shown Validation ToolTip as the data validation succeeded
@@ -1037,7 +1037,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             return ReturnValue;
         }
-        
+
         #endregion
 
         #region Helper functions

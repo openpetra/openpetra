@@ -722,18 +722,18 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// Generates text for a MessageBox showing all verification errors that are held in the 
-        /// <see cref="TVerificationResultCollection" /> (optionally excluding some if the 
+        /// Generates text for a MessageBox showing all verification errors that are held in the
+        /// <see cref="TVerificationResultCollection" /> (optionally excluding some if the
         /// <paramref name="ARestrictToTypeWhichRaisesError" /> Argument is not null).
         /// </summary>
         /// <param name="AErrorMessages">String containing a formatted list of error messages that is taken from the
         /// <see cref="TVerificationResultCollection" />.</param>
-        /// <param name="AFirstErrorControl">Control which the Focus should be set to as it is the first Control for which a 
+        /// <param name="AFirstErrorControl">Control which the Focus should be set to as it is the first Control for which a
         /// Verification failure is recorded against.</param>
         /// <param name="AFirstErrorContext"><see cref="TVerificationResult.ResultContext" /> of the first error.</param>
         /// <param name="AUpdateFirstErrorControl">Set to false to not update the <see cref="FirstErrorControl" /> Property.
-        /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that 
-        /// are added to the result list to those whose <see cref="TVerificationResult.ResultContext" /> matches 
+        /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that
+        /// are added to the result list to those whose <see cref="TVerificationResult.ResultContext" /> matches
         /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref></param>.
         /// of this Class (defaults to true).</param>
         public void BuildScreenVerificationResultList(out String AErrorMessages, out Control AFirstErrorControl, out object AFirstErrorContext,
@@ -741,6 +741,7 @@ namespace Ict.Common.Verification
         {
             TScreenVerificationResult si;
             bool IncludeVerificationResult;
+
             AFirstErrorControl = null;
             AErrorMessages = "";
             AFirstErrorContext = null;
@@ -748,13 +749,13 @@ namespace Ict.Common.Verification
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
                 si = (TScreenVerificationResult)(List[Counter]);
-                
-                if (ARestrictToTypeWhichRaisesError != null) 
+
+                if (ARestrictToTypeWhichRaisesError != null)
                 {
                     if (si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError)
                     {
                         IncludeVerificationResult = true;
-                    }                        
+                    }
                     else
                     {
                         IncludeVerificationResult = false;
@@ -762,31 +763,31 @@ namespace Ict.Common.Verification
                 }
                 else
                 {
-                    IncludeVerificationResult = true;   
+                    IncludeVerificationResult = true;
                 }
-                
-                if (IncludeVerificationResult) 
+
+                if (IncludeVerificationResult)
                 {
                     AErrorMessages = AErrorMessages + si.ResultText;
-    
+
                     if (si.ResultCode != String.Empty)
                     {
                         AErrorMessages += "  [" + si.ResultCode + "]";
                     }
-    
+
                     AErrorMessages += Environment.NewLine + Environment.NewLine;
-    
+
                     if (AFirstErrorControl == null)
                     {
                         AFirstErrorControl = si.ResultControl;
                         AFirstErrorContext = si.ResultContext;
-    
+
                         if (AUpdateFirstErrorControl)
                         {
                             FFirstErrorControl = AFirstErrorControl;
                         }
-                    }                    
-                }                
+                    }
+                }
             }
         }
 

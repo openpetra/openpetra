@@ -1569,7 +1569,7 @@ namespace Ict.Petra.Client.CommonControls
 
         private void TxtAutoPopulated_SetLabel(string ALookUpText, ref string ALabelText)
         {
-            string OldLabelText = ALabelText;        	
+            string OldLabelText = ALabelText;
             string StrShortnameNotRetrieved = Catalog.GetString("### ShortName not retrieved ###");
 
             ALabelText = "";

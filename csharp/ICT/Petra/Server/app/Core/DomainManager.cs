@@ -118,7 +118,7 @@ namespace Ict.Petra.Server.App.Core
             TSystemDefaultsCache.GSystemDefaultsCache = ASystemDefaultsCacheRef;
 
             TLanguageCulture.Init();
-            
+
             UserInfo.GUserInfo = (TPetraPrincipal)AUserInfo;
             DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY);
 

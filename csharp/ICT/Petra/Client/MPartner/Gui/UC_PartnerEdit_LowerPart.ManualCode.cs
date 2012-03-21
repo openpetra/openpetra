@@ -357,22 +357,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
         {
             bool ReturnValue = false;
-            
+
             ReturnValue = ucoPartnerTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
-            
-            if(ReturnValue)
+
+            if (ReturnValue)
             {
-                ReturnValue = ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors);    
+                ReturnValue = ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
             }
-            
-            if(ReturnValue)
-            {            
+
+            if (ReturnValue)
+            {
                 // TODO Other TabSets (Finance Data)
             }
-            
+
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Gets the data from all controls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls

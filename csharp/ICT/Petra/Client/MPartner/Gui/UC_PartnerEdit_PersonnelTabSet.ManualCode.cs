@@ -148,14 +148,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
         {
             bool ReturnValue = false;
-        
-            // TODO 
+
+            // TODO
             ReturnValue = true;
-            // TODO 
-                        
-            return ReturnValue;            
+            // TODO
+
+            return ReturnValue;
         }
-                
+
         /// <summary>
         /// Gets the data from all controls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls

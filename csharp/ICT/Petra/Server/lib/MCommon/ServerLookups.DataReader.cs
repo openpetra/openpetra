@@ -203,7 +203,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-            
+
             AVerificationResult = null;
 
             // TODO: check write permissions
@@ -310,7 +310,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         ValidateInternationalPostalTypeManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                         if (AVerificationResult.Count == 0)
-                        {                            
+                        {
                             if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))
                             {
@@ -412,17 +412,17 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 // Serialisation (needed for .NET Remoting).
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
-            
+
             return SubmissionResult;
         }
-        
-#region Data Validation
+
+        #region Data Validation
 
         static partial void ValidateInternationalPostalType(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         static partial void ValidateInternationalPostalTypeManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        
-#endregion Data Validation        
+
+        #endregion Data Validation
     }
 }

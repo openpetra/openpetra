@@ -157,7 +157,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
-        
+
         /// <summary>
         /// Validates the Subscription data of a Partner.
         /// </summary>
@@ -181,7 +181,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 if (((!ARow.IsSubscriptionStatusNull())
-                    && (ARow.SubscriptionStatus == String.Empty))
+                     && (ARow.SubscriptionStatus == String.Empty))
                     || (ARow.IsSubscriptionStatusNull()))
                 {
                     VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
@@ -196,6 +196,6 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-        }        
+        }
     }
 }

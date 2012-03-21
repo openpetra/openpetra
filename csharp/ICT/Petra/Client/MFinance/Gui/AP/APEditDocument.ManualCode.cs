@@ -331,11 +331,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void UseTaxAccount(Object sender, EventArgs e)
         {
         }
-        
+
         private void ValidateDataManual(AccountsPayableTDSAApDocumentRow ARow)
         {
             DataColumn ValidationColumn;
-            
+
             // 'Date Due' must be in the future or today
             ValidationColumn = ARow.Table.Columns[AccountsPayableTDSAApDocumentTable.ColumnDocumentCodeId];
 
@@ -344,13 +344,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     lblDocumentCode.Text,
                     this, ValidationColumn, txtDocumentCode), ValidationColumn);
         }
-        
+
         private void ValidateDataDetailsManual(AApDocumentDetailRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_AP.ValidateApDocumentDetailManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);            
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)
