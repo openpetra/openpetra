@@ -370,7 +370,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
@@ -973,7 +973,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLBatchTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), out AVerifications);
 
-            if (AVerifications.HasCriticalError())
+            if (AVerifications.HasCriticalErrors)
             {
                 return false;
             }

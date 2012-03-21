@@ -139,11 +139,11 @@ public static class Shutdown
         catch (Exception exp)
         {
 #if TESTMODE
-            TLogging.Log("Exception while shutting down Petra server process: " + exp.ToString());
+            TLogging.Log("Exception while shutting down OpenPetra server process: " + exp.ToString());
 #endif
 #if  TESTMODE
 #else
-            MessageBox.Show("Exception while shutting down Petra server process: " + exp.ToString());
+            MessageBox.Show("Exception while shutting down OpenPetra server process: " + exp.ToString());
 #endif
             return;
         }

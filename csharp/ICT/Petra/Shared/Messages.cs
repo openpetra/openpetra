@@ -44,7 +44,7 @@ namespace Ict.Petra.Shared
 
             if (AMessageHeadline == null)
             {
-                AMessageHeadline = "Saving of data failed!" + Environment.NewLine + "Reasons:";
+                AMessageHeadline = "Saving of data failed!" + Environment.NewLine + Environment.NewLine + "Reasons:";
             }
 
             // MessageBox.Show('AVerificationResult.Count: ' + AVerificationResult.Count.ToString);
@@ -54,8 +54,22 @@ namespace Ict.Petra.Shared
             while (VerificationResultEnum.MoveNext())
             {
                 VerificationResultEntry = ((TVerificationResult)VerificationResultEnum.Current);
-                ReturnValue = ReturnValue + "  * [" + VerificationResultEntry.ResultContext + "] " + VerificationResultEntry.ResultText +
-                              Environment.NewLine + Environment.NewLine;
+                
+                ReturnValue += "  * ";
+                
+                if (VerificationResultEntry.ResultContext != null)
+                {
+                    ReturnValue += "[" + VerificationResultEntry.ResultContext.ToString() + "] ";
+                }
+
+                ReturnValue += VerificationResultEntry.ResultText;
+
+                if (VerificationResultEntry.ResultCode != String.Empty)
+                {
+                    ReturnValue += "  [" + VerificationResultEntry.ResultCode + "]";
+                }
+                
+                ReturnValue += Environment.NewLine + Environment.NewLine;
             }
 
             return ReturnValue;

@@ -30,6 +30,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 using GNU.Gettext;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -198,6 +199,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             txtDetailAnalysisTypeCode.Enabled = false;
             return txtDetailAnalysisTypeCode.Text;
+        }
+
+        private void ValidateDataDetailsManual(AAnalysisTypeRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GLSetup.ValidateAnalysisTypesSetupManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);                
         }
     }
 }

@@ -38,6 +38,7 @@ RootNode:
         cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
             Label: S&ubscription Status
             OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
+            Validation: true
         chkPSubscriptionGratisSubscription: {OnChange=GratisSubscriptionChanged}
             Label: Free Subscri&ption
 

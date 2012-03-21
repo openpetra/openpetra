@@ -60,43 +60,31 @@ namespace Ict.Petra.Client.MPartner.Gui
 
     public partial class TUC_PartnerEdit_PartnerTabSet
     {
-        #region TODO ResourceStrings
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressesTabHeader = "Addresses";
+        private static readonly string StrAddressesTabHeader = Catalog.GetString("Addresses");
 
-        /// <summary>todoComment</summary>
-        public const String StrSubscriptionsTabHeader = "Subscriptions";
+        private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
-        /// <summary>todoComment</summary>
-        public const String StrSpecialTypesTabHeader = "Special Types";
+        private static readonly string StrSpecialTypesTabHeader = Catalog.GetString("Special Types");
 
-        /// <summary>todoComment</summary>
-        public const String StrPartnerRelationshipsTabHeader = "Relationships";
+        private static readonly string StrFamilyMembersTabHeader = Catalog.GetString("Family Members");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyMembersTabHeader = "Family Members";
+        private static readonly string StrPartnerRelationshipsTabHeader = Catalog.GetString("Relationships");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyTabHeader = "Family";
+        private static readonly string StrFamilyTabHeader = Catalog.GetString("Family");
 
-        /// <summary>todoComment</summary>
-        public const String StrInterestsTabHeader = "Interests";
+        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
-        /// <summary>todoComment</summary>
-        public const String StrNotesTabHeader = "Notes";
+        private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
 
-        /// <summary>todoComment</summary>
-        public const String StrAddressesSingular = "Address";
+        private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
-        /// <summary>todoComment</summary>
-        public const String StrSubscriptionsSingular = "Subscription";
+        private static readonly string StrSubscriptionsSingular = Catalog.GetString("Subscription");
 
-        /// <summary>todoComment</summary>
-        public const String StrTabHeaderCounterTipSingular = "{0} {2}, of which {1} is ";
+        private static readonly string StrTabHeaderCounterTipSingular = Catalog.GetString("{0} {2}, of which {1} is ");
 
-        /// <summary>todoComment</summary>
-        public const String StrTabHeaderCounterTipPlural = "{0} {2}, of which {1} are ";
+        private static readonly string StrTabHeaderCounterTipPlural = Catalog.GetString("{0} {2}, of which {1} are ");
 
         #endregion
 
@@ -318,11 +306,221 @@ namespace Ict.Petra.Client.MPartner.Gui
             ControlsUtilities.HideTabs(tabPartners, TabsToHide);
             FUserControlInitialised = true;
 
+            tabPartners.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            
             SelectTabPage(FInitiallySelectedTabPage);
 
             CalculateTabHeaderCounters(this);
 
             OnDataLoadingFinished();
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
+        /// specific Control for which Data Validation errors might have been recorded. (Default=null).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+            switch (GetPartnerDetailsVariableUC())
+            {
+                case TDynamicLoadableUserControls.dlucPartnerDetailsPerson:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsPerson))
+                    {
+                        TUC_PartnerDetails_Person UCPartnerDetailsPerson =
+                            (TUC_PartnerDetails_Person)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsPerson];
+
+                        if (!UCPartnerDetailsPerson.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsFamily:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsFamily))
+                    {
+                        TUC_PartnerDetails_Family UCPartnerDetailsFamily =
+                            (TUC_PartnerDetails_Family)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsFamily];
+
+                        if (!UCPartnerDetailsFamily.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation))
+                    {
+                        TUC_PartnerDetails_Organisation UCPartnerDetailsOrganisation =
+                            (TUC_PartnerDetails_Organisation)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation];
+
+                        if (!UCPartnerDetailsOrganisation.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsChurch))
+                    {
+                        TUC_PartnerDetails_Church UCPartnerDetailsChurch =
+                            (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
+
+                        if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsUnit:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsUnit))
+                    {
+                        TUC_PartnerDetails_Unit UCPartnerDetailsUnit =
+                            (TUC_PartnerDetails_Unit)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsUnit];
+
+                        if (!UCPartnerDetailsUnit.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsVenue:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsVenue))
+                    {
+                        TUC_PartnerDetails_Venue UCPartnerDetailsVenue =
+                            (TUC_PartnerDetails_Venue)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsVenue];
+
+                        if (!UCPartnerDetailsVenue.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+
+                case TDynamicLoadableUserControls.dlucPartnerDetailsBank:
+
+                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsBank))
+                    {
+                        TUC_PartnerDetails_Bank UCPartnerDetailsBank =
+                            (TUC_PartnerDetails_Bank)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsBank];
+
+                        if (!UCPartnerDetailsBank.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                        {
+                            ReturnValue = false;
+                        }
+                    }
+
+                    break;
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                TUCPartnerAddresses UCPartnerAddresses =
+                    (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+
+                if (!UCPartnerAddresses.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucSubscriptions))
+            {
+                TUC_Subscriptions UCSubscriptions =
+                    (TUC_Subscriptions)FTabSetup[TDynamicLoadableUserControls.dlucSubscriptions];
+
+                if (!UCSubscriptions.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerTypes))
+            {
+                TUCPartnerTypes UCPartnerTypes =
+                    (TUCPartnerTypes)FTabSetup[TDynamicLoadableUserControls.dlucPartnerTypes];
+
+                if (!UCPartnerTypes.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerRelationships))
+            {
+                TUC_PartnerRelationships UCRelationships =
+                    (TUC_PartnerRelationships)FTabSetup[TDynamicLoadableUserControls.dlucPartnerRelationships];
+
+                if (!UCRelationships.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFamilyMembers))
+            {
+                TUC_FamilyMembers UCFamilyMembers =
+                    (TUC_FamilyMembers)FTabSetup[TDynamicLoadableUserControls.dlucFamilyMembers];
+
+                if (!UCFamilyMembers.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucNotes))
+            {
+                TUC_PartnerNotes UCNotes =
+                    (TUC_PartnerNotes)FTabSetup[TDynamicLoadableUserControls.dlucNotes];
+
+                if (!UCNotes.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucOfficeSpecific))
+            {
+                TUC_LocalPartnerData UCLocalPartnerData =
+                    (TUC_LocalPartnerData)FTabSetup[TDynamicLoadableUserControls.dlucOfficeSpecific];
+
+                if (!UCLocalPartnerData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -918,6 +1116,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {   
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+            
+            if(!ValidateAllData(true, FCurrentUserControl))
+            {
+                e.Cancel = true;
+                
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }            
+        }
+        
         private Boolean CheckSecurityOKToAccessNotesTab()
         {
             Boolean ReturnValue;

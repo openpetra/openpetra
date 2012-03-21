@@ -4,11 +4,12 @@
 //
 {#GPLFILEHEADER}
 using System;
+using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows.Forms;
-using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Specialized;
@@ -17,6 +18,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 {#USINGNAMESPACES}
@@ -103,15 +105,36 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
 
-        if(   FMainDS != null
-		   && FMainDS.{#MASTERTABLE} != null
-           && FMainDS.{#MASTERTABLE}.Count > 0)
+        if((FMainDS != null)
+          && (FMainDS.{#MASTERTABLE} != null))
         {
-            ShowData(FMainDS.{#MASTERTABLE}[0]);
+{#IFDEF DATAVALIDATION}
+            BuildValidationControlsDict();
+
+{#ENDIF DATAVALIDATION}
+            if(FMainDS.{#MASTERTABLE}.Count > 0)
+            {
+                ShowData(FMainDS.{#MASTERTABLE}[0]);
+            }
         }
     }
     
     {#EVENTHANDLERSIMPLEMENTATION}
+{#IFDEF SHOWDETAILS}
+
+    /// return the selected row
+    public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
+    {
+        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (SelectedGridRow.Length >= 1)
+        {
+            return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;
+        }
+
+        return null;
+    }
+{#ENDIF SHOWDETAILS}
 
     /// make sure that the primary key cannot be edited anymore
     public void SetPrimaryKeyReadOnly(bool AReadOnly)
@@ -126,8 +149,115 @@ namespace {#NAMESPACE}
         {#SHOWDATA}
         FPetraUtilsObject.EnableDataChangedEvent();
     }
-{#ENDIF SHOWDATA}
 
+{#ENDIF SHOWDATA}
+{#IFDEF UNDODATA}
+
+    private void UndoData(DataRow ARow, Control AControl)
+    {
+        {#UNDODATA}
+    }
+{#ENDIF UNDODATA}
+
+    /// <summary>
+    /// Performs data validation.
+    /// </summary>
+    /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+    /// the UserControl.</remarks>    
+    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+    /// user, otherwise set it to false.</param>
+    /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
+    /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+    /// <para>
+    /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+    /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+    /// this Argument.
+    /// </para>
+    /// </param>
+    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+    public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+    {
+        bool ReturnValue = false;
+        Control ControlToValidate;
+{#IFDEF SHOWDETAILS}
+        {#DETAILTABLETYPE}Row CurrentRow;
+
+        CurrentRow = GetSelectedDetailRow();
+
+        if (CurrentRow != null)
+        {
+{#ENDIF SHOWDETAILS}        
+{#IFNDEF SHOWDETAILS}
+        if (AValidateSpecificControl != null) 
+        {
+            ControlToValidate = AValidateSpecificControl;
+        }
+        else
+        {
+            ControlToValidate = this.ActiveControl;
+        }
+
+        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIFN SHOWDETAILS}
+{#IFDEF SHOWDETAILS}
+            GetDetailsFromControls(CurrentRow);
+{#ENDIF SHOWDETAILS}
+
+            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+{#IFDEF VALIDATEDATADETAILSMANUAL}
+{#IFDEF SHOWDETAILS}
+            ValidateDataDetailsManual(CurrentRow);
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+            ValidateDataDetailsManual(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIFN SHOWDETAILS}
+{#ENDIF VALIDATEDATADETAILSMANUAL}
+{#IFDEF PERFORMUSERCONTROLVALIDATION}
+
+            // Perform validation in UserControls, too
+            {#USERCONTROLVALIDATION}
+{#ENDIF PERFORMUSERCONTROLVALIDATION}
+
+            if (AProcessAnyDataValidationErrors)
+            {
+                // Only process the Data Validations here if ControlToValidate is not null.
+                // It can be null if this.ActiveControl yields null - this would happen if no Control
+                // on this UserControl has got the Focus.
+                if (ControlToValidate != null) 
+                {
+                    if(ControlToValidate.FindUserControlOrForm(true) == this)
+                    {
+{#IFDEF SHOWDETAILS}
+                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+{#ENDIFN SHOWDETAILS}
+                    }
+                    else
+                    {
+                        ReturnValue = true;
+                    }
+                }
+            }
+{#IFDEF SHOWDETAILS}            
+        }
+        else
+        {
+            ReturnValue = true;
+        }
+{#ENDIF SHOWDETAILS}
+
+        if(ReturnValue)
+        {
+            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+            FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        }
+
+        return ReturnValue;
+    }
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
@@ -161,6 +291,7 @@ namespace {#NAMESPACE}
             ARow.EndEdit();
         }
     }
+    
 {#ENDIF SAVEDETAILS}
 
 
@@ -212,7 +343,64 @@ namespace {#NAMESPACE}
 
 #endregion
 {#ENDIF ACTIONENABLING}
+{#IFDEF DATAVALIDATION}
+
+#region Data Validation
+    
+    private void ControlValidatedHandler(object sender, EventArgs e)
+    {
+        TScreenVerificationResult SingleVerificationResult;
+        
+        ValidateAllData(false, (Control)sender);
+        
+        FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        
+        if (FPetraUtilsObject.VerificationResultCollection.Count > 0) 
+        {
+            for (int Counter = 0; Counter < FPetraUtilsObject.VerificationResultCollection.Count; Counter++) 
+            {
+                SingleVerificationResult = (TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[Counter];
+                
+                if (SingleVerificationResult.ResultControl == sender) 
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested)
+                    {
+                        SingleVerificationResult.ResultControl.Focus();
+                        FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = false;
+                    }
+
+                    FPetraUtilsObject.ValidationToolTipSeverity = SingleVerificationResult.ResultSeverity;
+
+                    if (SingleVerificationResult.ResultTextCaption != String.Empty) 
+                    {
+                        FPetraUtilsObject.ValidationToolTip.ToolTipTitle += ":  " + SingleVerificationResult.ResultTextCaption;    
+                    }
+{#IFDEF UNDODATA}
+
+                    if(SingleVerificationResult.ControlValueUndoRequested)
+                    {
+                        UndoData(SingleVerificationResult.ResultColumn.Table.Rows[0], SingleVerificationResult.ResultControl);
+                        SingleVerificationResult.OverrideResultText(SingleVerificationResult.ResultText + Environment.NewLine + Environment.NewLine + 
+                            Catalog.GetString("--> The value you entered has been changed back to what it was before! <--"));
+                    }
+{#ENDIF UNDODATA}
+
+                    FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
+                        ((Control)sender).Width / 2, ((Control)sender).Height);
+                }
+            }
+        }
+    }
+
+    private void BuildValidationControlsDict()
+    {
+        {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+    }
+    
+#endregion
+{#ENDIF DATAVALIDATION}
   }
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE validationcontrolsdict.cs}

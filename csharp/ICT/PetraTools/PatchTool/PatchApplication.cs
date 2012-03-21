@@ -119,7 +119,7 @@ namespace Ict.Tools.PatchTool
                 {
                     patchTools.CheckForRecentPatch();
                     TLogging.Log("The patch was installed successfully.");
-                    TLogging.Log("Your Petra was on patch " + oldPatchVersion + ", " + "and is now on patch " + patchTools.GetCurrentPatchVersion());
+                    TLogging.Log("Your OpenPetra was on patch " + oldPatchVersion + ", " + "and is now on patch " + patchTools.GetCurrentPatchVersion());
                 }
                 else
                 {

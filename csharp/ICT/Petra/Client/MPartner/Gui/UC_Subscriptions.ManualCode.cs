@@ -28,12 +28,14 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Client.App.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -240,6 +242,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FMainDS.InitVars();
+            
+            ucoDetails.SpecialInitUserControl();
         }
 
         /// <summary>
@@ -573,6 +577,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             return ReturnValue;
+        }
+        
+        private void ValidateDataDetailsManual(PSubscriptionRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidateSubscriptionManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);        
         }
 
         #endregion

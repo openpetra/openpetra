@@ -47,25 +47,91 @@ namespace Ict.Petra.Server.MCommon
         #region Functions
 
         /// <summary>
-        /// get the partner short name and the partner class and status
+        /// Retrieves the Partner ShortName, the PartnerClass and PartnerStatus.
         /// </summary>
-        /// <param name="APartnerKey">partner key to identify the partner</param>
-        /// <param name="APartnerShortName">returns the shortname</param>
-        /// <param name="APartnerClass">returns the partner class (FAMILY, ORGANISATION, etc)</param>
-        /// <param name="APartnerStatus">returns the partner status (eg. ACTIVE, DIED)</param>
-        /// <returns>true if partner was found</returns>
+        /// <param name="APartnerKey">PartnerKey to identify the Partner.</param>
+        /// <param name="APartnerShortName">Returns the ShortName.</param>
+        /// <param name="APartnerClass">Returns the PartnerClass (FAMILY, ORGANISATION, etc).</param>
+        /// <param name="APartnerStatus">Returns the PartnerStatus (eg. ACTIVE, DIED).</param>
+        /// <returns>True if partner was found, otherwise false.</returns>
         public static Boolean RetrievePartnerShortName(Int64 APartnerKey,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
             out TStdPartnerStatusCode APartnerStatus)
         {
-            Boolean ReturnValue;
+            bool NewTransaction = false;
+            bool Result = false;
             TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+
+            TPartnerClass tmpPartnerClass = new TPartnerClass();
+            TStdPartnerStatusCode tmpPartnerStatus = new TStdPartnerStatusCode();
+            string tmpPartnerShortName = "";
+
+            if (APartnerKey != 0)
+            {
+                try
+                {
+                    ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        out NewTransaction);
+
+                    Result = RetrievePartnerShortName(APartnerKey,
+                        out tmpPartnerShortName,
+                        out tmpPartnerClass,
+                        out tmpPartnerStatus,
+                        ReadTransaction);
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                        if (TLogging.DL >= 7)
+                        {
+                            Console.WriteLine("RetrievePartnerShortName: committed own transaction.");
+                        }
+#endif
+                    }
+                }
+                catch (Exception)
+                {
+                    TLogging.Log(String.Format("Problem retrieveing partner short name for Partner {0}", APartnerKey));
+                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                }
+            }
+            else
+            {
+                APartnerClass = new TPartnerClass();
+
+                Result = true;                //partner key key 0 should be valid
+            }
+
+            APartnerShortName = tmpPartnerShortName;
+            APartnerClass = tmpPartnerClass;
+            APartnerStatus = tmpPartnerStatus;
+
+            return Result;
+        }
+
+        /// <summary>
+        /// Retrieves the Partner ShortName, the PartnerClass and PartnerStatus.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey to identify the Partner.</param>
+        /// <param name="APartnerShortName">Returns the ShortName.</param>
+        /// <param name="APartnerClass">Returns the PartnerClass (FAMILY, ORGANISATION, etc).</param>
+        /// <param name="APartnerStatus">Returns the PartnerStatus (eg. ACTIVE, DIED).</param>
+        /// <param name="ATransaction">Open DB Transaction.</param>
+        /// <returns>True if partner was found, otherwise false.</returns>
+        public static Boolean RetrievePartnerShortName(Int64 APartnerKey,
+            out String APartnerShortName,
+            out TPartnerClass APartnerClass,
+            out TStdPartnerStatusCode APartnerStatus,
+            TDBTransaction ATransaction)
+        {
+            Boolean ReturnValue;
             StringCollection RequiredColumns;
             PPartnerTable PartnerTable;
 
-            // initialise outout Arguments
+            // initialise out Arguments
             APartnerShortName = "";
 
             // Default. This is not really correct but the best compromise if PartnerKey is 0 or Partner isn't found since we have an enum here.
@@ -81,26 +147,8 @@ namespace Ict.Petra.Server.MCommon
                 RequiredColumns.Add(PPartnerTable.GetPartnerShortNameDBName());
                 RequiredColumns.Add(PPartnerTable.GetPartnerClassDBName());
                 RequiredColumns.Add(PPartnerTable.GetStatusCodeDBName());
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                try
-                {
-                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, RequiredColumns, ReadTransaction, null, 0, 0);
-                }
-                finally
-                {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
-                        if (TLogging.DL >= 7)
-                        {
-                            Console.WriteLine("RetrievePartnerShortName: committed own transaction.");
-                        }
-#endif
-                    }
-                }
+
+                PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, RequiredColumns, ATransaction, null, 0, 0);
 
                 if (PartnerTable.Rows.Count == 0)
                 {

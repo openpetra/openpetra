@@ -53,7 +53,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
     ///<summary>
     /// This connector provides data for the finance Accounts Payable screens
     ///</summary>
-    public class TTransactionWebConnector
+    public partial class TTransactionWebConnector
     {
         /// <summary>
         /// Retrieve all the information for the current Ledger
@@ -279,6 +279,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+            
+            bool DetailsaveOK = false;
 
             AVerificationResult = null;
 
@@ -333,9 +336,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     if ((AInspectDS.AApDocument != null) && AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction,
                             out AVerificationResult))
                     {
+                        if (AInspectDS.AApDocumentDetail != null) // Document detail lines
+                        {
+                            ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
+                            ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
+    
+                            if (AVerificationResult.Count == 0)
+                            {                            
+                                DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
+                                    out AVerificationResult);
+                            }                            
+                        }
+    
                         if ((AInspectDS.AApDocumentDetail == null) // Document detail lines
-                            || AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
-                                out AVerificationResult))
+                            || DetailsaveOK)
                         {
                             if ((AInspectDS.AApAnalAttrib == null)  // Analysis attributes
                                 || AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction,
@@ -386,6 +400,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+                        
             return SubmissionResult;
         }
 
@@ -949,7 +970,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, out AVerificationResult);
 
-            if (AVerificationResult.HasCriticalError())
+            if (AVerificationResult.HasCriticalErrors)
             {
                 return false;
             }
@@ -1827,5 +1848,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 return false;
             }
         }
+
+#region Data Validation
+
+        static partial void ValidateApDocumentDetail(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateApDocumentDetailManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        
+#endregion Data Validation        
     }
 }

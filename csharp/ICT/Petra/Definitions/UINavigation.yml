@@ -194,6 +194,7 @@ OpenPetra:
                         ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                         SetupCostCentreTypes: {Description=Maintain types of Cost Centres, ActionOpenScreen=TFrmSetupCostCentreTypes}
+                        SetupAnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
                         #Accounts:
                         #AddPostingAccount:
                         #AddForeignCurrencyAccount:
@@ -202,7 +203,6 @@ OpenPetra:
                         #DeleteAccount:
                         #RenameAccount:
                         #ImportChartOfAccounts:
-                        SetupAnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
                     #CostCentres:
                         #AddCostCentre:
                         #EditCostCentre:

@@ -42,14 +42,12 @@ namespace Ict.Petra.Client.MCommon.Verification
     /// </summary>
     public class TPartnerAddressVerification
     {
-        /// <summary>todoComment</summary>
-        public const String StrErrorTheCodeIsNotAssignableSecurity1 = "The code";
+        #region Resoucestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrErrorTheCodeIsNotAssignableSecurity2 = "cannot be assigned because you " + "are not" + "\r\n" + "in Security Group ";
+        private static readonly string StrErrorTheCodeIsNotAssignableSecurity = Catalog.GetString(
+            "The code {0} cannot be assigned because you are not\r\nin Security Group '{1}'!");
 
-        /// <summary>todoComment</summary>
-        public const String StrErrorTheCodeIsNotAssignableSecurity3 = "!";
+        #endregion
 
         #region TPartnerAddressVerification
 
@@ -163,11 +161,6 @@ namespace Ict.Petra.Client.MCommon.Verification
         public static void VerifyEmailAddress(DataColumnChangeEventArgs e, out TVerificationResult AVerificationResult)
         {
             AVerificationResult = (TVerificationResult)TStringChecks.ValidateEmail(e.ProposedValue.ToString(), true);
-
-            if (AVerificationResult != null)
-            {
-                AVerificationResult.ResultCode = ErrorCodes.PETRAERRORCODE_EMAILADDRESSINVALID;
-            }
         }
 
         /// <summary>
@@ -188,25 +181,16 @@ namespace Ict.Petra.Client.MCommon.Verification
             {
                 if (!FoundRow.Assignable)
                 {
-                    // TODO 2 oChristianK cMessages : Use a common Message Library instead
-                    UseAlthoughUnassignable = MessageBox.Show(
-                        CommonResourcestrings.StrErrorTheCodeIsNoLongerActive1 + " '" + e.ProposedValue.ToString() +
-                        "' " + CommonResourcestrings.StrErrorTheCodeIsNoLongerActive2 + "\r\n" +
-                        CommonResourcestrings.StrErrorTheCodeIsNoLongerActive3 +
-                        "\r\n" + "\r\n" + "Message Number: " +
-                        ErrorCodes.PETRAERRORCODE_VALUEUNASSIGNABLE + "\r\n" +
-                        "File Name: " + new StackTrace(false).GetFrame(2).GetMethod().DeclaringType.ToString(),
-                        "Invalid Data Entered",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Error,
-                        MessageBoxDefaultButton.Button2);
+                    UseAlthoughUnassignable = TMessages.MsgQuestion(
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE, e.ProposedValue.ToString()),
+                        new StackTrace(false).GetFrame(2).GetMethod().DeclaringType, false);
 
                     if (UseAlthoughUnassignable == System.Windows.Forms.DialogResult.No)
                     {
                         AVerificationResult = new TVerificationResult("",
                             "",
                             "",
-                            ErrorCodes.PETRAERRORCODE_VALUEUNASSIGNABLE,
+                            PetraErrorCodes.ERR_VALUEUNASSIGNABLE,
                             TResultSeverity.Resv_Noncritical);
                     }
                 }
@@ -215,16 +199,13 @@ namespace Ict.Petra.Client.MCommon.Verification
                     if (e.ProposedValue.ToString().EndsWith(SharedConstants.SECURITY_CAN_LOCATIONTYPE)
                         && (!UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_ADDRESSCAN)))
                     {
-                        TMessages.MsgGeneralError(StrErrorTheCodeIsNotAssignableSecurity1 + " '" +
-                            e.ProposedValue.ToString() + "' " +
-                            StrErrorTheCodeIsNotAssignableSecurity2 + "'" +
-                            SharedConstants.PETRAGROUP_ADDRESSCAN + "'" +
-                            StrErrorTheCodeIsNotAssignableSecurity3,
-                            "Unassignable Value",
-                            ErrorCodes.PETRAERRORCODE_VALUEUNASSIGNABLE,
+                        TMessages.MsgGeneralError(
+                            String.Format(StrErrorTheCodeIsNotAssignableSecurity, e.ProposedValue, SharedConstants.PETRAGROUP_ADDRESSCAN),
+                            MCommonResourcestrings.StrValueUnassignable,
+                            PetraErrorCodes.ERR_VALUEUNASSIGNABLE,
                             new StackTrace(false).GetFrame(2).GetMethod().DeclaringType);
                         AVerificationResult = new TVerificationResult("", "", "",
-                            ErrorCodes.PETRAERRORCODE_VALUEUNASSIGNABLE,
+                            PetraErrorCodes.ERR_VALUEUNASSIGNABLE,
                             TResultSeverity.Resv_Noncritical);
                     }
                 }

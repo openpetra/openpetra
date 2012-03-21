@@ -529,7 +529,7 @@ namespace Ict.Petra.Server.MPartner.Import
                     TVerificationResultCollection VerificationResult;
                     PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-                    if (VerificationResult.HasCriticalError())
+                    if (VerificationResult.HasCriticalErrors)
                     {
                         TLogging.Log(VerificationResult.BuildVerificationResultString());
                         string message = "There is some critical error when saving to the database";
@@ -573,7 +573,7 @@ namespace Ict.Petra.Server.MPartner.Import
 
                     ConferenceApplicationTDSAccess.SubmitChanges(ConfDS, out VerificationResult);
 
-                    if (VerificationResult.HasCriticalError())
+                    if (VerificationResult.HasCriticalErrors)
                     {
                         TLogging.Log(VerificationResult.BuildVerificationResultString());
                         string message = "There is some critical error when saving to the database";
