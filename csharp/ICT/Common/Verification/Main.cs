@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -562,9 +562,9 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Control for which the first data validation error is recorded.
         /// </summary>
-        /// <remarks>Updated when one of the overloads of Method <see cref="BuildScreenVerificationResultList(out String,
-        /// out Control, out Object, bool, Type)" /> or
-        /// <see cref="BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
+        /// <remarks>Updated when one of the overloads of Method
+        /// <see cref="M:BuildScreenVerificationResultList(out String, out Control, out Object, bool, Type)" /> or
+        /// <see cref="M:BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
         /// except if their Argument 'AUpdateFirstErrorControl' is set to false.</remarks>
         Control FFirstErrorControl = null;
 
@@ -645,9 +645,9 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Control for which the first data validation error is recorded.
         /// </summary>
-        /// <remarks>Updated when one of the overloads of Method <see cref="BuildScreenVerificationResultList(out String,
-        /// out Control, out Object, bool, Type)" /> or
-        /// <see cref="BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
+        /// <remarks>Updated when one of the overloads of Method
+        /// <see cref="M:BuildScreenVerificationResultList(out String, out Control, out Object, bool, Type)" /> or
+        /// <see cref="M:BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
         /// except if their Argument 'AUpdateFirstErrorControl' is set to false.</remarks>
         public Control FirstErrorControl
         {
@@ -731,11 +731,11 @@ namespace Ict.Common.Verification
         /// <param name="AFirstErrorControl">Control which the Focus should be set to as it is the first Control for which a
         /// Verification failure is recorded against.</param>
         /// <param name="AFirstErrorContext"><see cref="TVerificationResult.ResultContext" /> of the first error.</param>
-        /// <param name="AUpdateFirstErrorControl">Set to false to not update the <see cref="FirstErrorControl" /> Property.
+        /// <param name="AUpdateFirstErrorControl">Set to false to not update the <see cref="FirstErrorControl" /> Property
+        /// of this Class (defaults to true).</param>
         /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that
         /// are added to the result list to those whose <see cref="TVerificationResult.ResultContext" /> matches
-        /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref></param>.
-        /// of this Class (defaults to true).</param>
+        /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref>.</param>
         public void BuildScreenVerificationResultList(out String AErrorMessages, out Control AFirstErrorControl, out object AFirstErrorContext,
             bool AUpdateFirstErrorControl = true, Type ARestrictToTypeWhichRaisesError = null)
         {
@@ -1465,7 +1465,7 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// Calls the <see cref="DataRow.SetColumnError(DataColumn, String)" /> Method of a
+        /// Calls the <see cref="M:DataRow.SetColumnError(DataColumn, String)" /> Method of a
         /// DataRow's Column to the  <see cref="TVerificationResult.ResultText" /> Property
         /// of the passed in <see cref="TVerificationResult" />.
         /// </summary>

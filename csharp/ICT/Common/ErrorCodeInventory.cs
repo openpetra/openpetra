@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,7 +46,7 @@ namespace Ict.Common
         /// Contains all Types which are registered to contain Error Code constants.
         /// </summary>
         /// <remarks>IMPORTANT: Only Error Code Constants of Types which are registered can be used with
-        /// Method <see cref="ErrorCodes.GetErrorInfo(string)" />!</remarks>
+        /// Method <see cref="M:ErrorCodes.GetErrorInfo(string)" />!</remarks>
         public static List <Type>RegisteredTypes = new List <Type>();
 
         /// <summary>
