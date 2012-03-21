@@ -10,7 +10,7 @@
         ISOLATIONLEVEL: serializable
         REPORTNAME: Partner by Field
         REPORTNAME:
-        CURRENTREPORT: Partner By Event 
+        CURRENTREPORT: Partner By Field
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK

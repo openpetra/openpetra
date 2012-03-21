@@ -911,7 +911,7 @@ namespace Ict.Petra.Client.App.Core
             DataTable CacheableDataTableFromFile = null;
             DataView CacheableDataTableFilteredDV = null;
             String HashCode = "";
-            Int32 TmpSize;
+            Int32 TmpSize = 0;
             Boolean CacheableDataTableReloadNecessary = true;
 
             System.Type TmpType;
@@ -1020,10 +1020,10 @@ namespace Ict.Petra.Client.App.Core
                         DataUtilities.CalculateHashAndSize(CacheableDataTableFromFile, out HashCode, out TmpSize);
                     }
 
-                    // MessageBox.Show('From File: CacheableTableName Clientside:  HashCode: ' + HashCode + '; Size: ' + TmpSize.ToString);
+                    
                 }
             }
-
+//System.Windows.Forms.MessageBox.Show("From File: CacheableTableName Clientside:  HashCode: " + HashCode + "; Size: " + TmpSize.ToString());
             try
             {
                 /*

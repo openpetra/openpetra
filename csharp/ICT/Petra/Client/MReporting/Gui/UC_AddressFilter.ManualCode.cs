@@ -58,8 +58,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             ACalc.AddParameter("param_city", this.txtCity.Text);
             ACalc.AddParameter("param_postcode_from", this.txtPostCodeFrom.Text);
             ACalc.AddParameter("param_postcode_to", this.txtPostCodeTo.Text);
-            ACalc.AddParameter("param_region", this.cmbRegion.Text);
-            ACalc.AddParameter("param_country", this.cmbCountry.Text);
+            ACalc.AddParameter("param_region", this.cmbRegion.GetSelectedString());
+            ACalc.AddParameter("param_country", this.cmbCountry.GetSelectedString());
 
             // manually add validity date here until we introduce a checkbox and/or date field in control
             ACalc.AddParameter("param_only_addresses_valid_on", this.chkCurrentAddressesOnly.Checked);
@@ -75,8 +75,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             txtCity.Text = AParameters.Get("param_city").ToString();
             txtPostCodeFrom.Text = AParameters.Get("param_postcode_from").ToString();
             txtPostCodeTo.Text = AParameters.Get("param_postcode_to").ToString();
-            cmbRegion.Text = AParameters.Get("param_region").ToString();
-            cmbCountry.Text = AParameters.Get("param_country").ToString();
+            cmbRegion.SetSelectedString(AParameters.Get("param_region").ToString());
+            cmbCountry.SetSelectedString(AParameters.Get("param_country").ToString());
+            
+            chkCurrentAddressesOnly.Checked = AParameters.Get("param_only_addresses_valid_on").ToBool();
         }
 
         /// <summary>
