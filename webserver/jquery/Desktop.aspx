@@ -972,6 +972,9 @@
         <a class="menu_trigger" href="#">File</a>
         <ul class="menu">
           <li>
+            <a href="#usermanagement" id="usermanagement">Manage users</a>
+          </li>
+          <li>
             <a href="#logout" id="logout">Logout</a>
           </li>
         </ul>

@@ -1,4 +1,32 @@
+var screensLoaded = "";
+
+function loadScreen(filenameWithoutExtension)
+{
+  if (screensLoaded.indexOf("["+filenameWithoutExtension+"]")==-1)
+  {
+    $.get(filenameWithoutExtension + ".html", function(data){
+        $('#desktop').append(data);
+    });  
+
+    fileref=document.createElement('script');
+    fileref.setAttribute("type","text/javascript");
+    fileref.setAttribute("src", filenameWithoutExtension + ".js");
+    document.getElementsByTagName("head")[0].appendChild(fileref);
+
+    screensLoaded += "[" + filenameWithoutExtension + "]";
+  }
+  else
+  {
+    window[filenameWithoutExtension.replace("/","")]();
+  }
+}
+
 jQuery(document).ready(function() {
+
+    $("#usermanagement").click(function() {
+       loadScreen("MSysMan/UserManagement");
+       JQD.util.clear_active();
+    });
 
     $("#logout").click(function() {
       $.ajax({
