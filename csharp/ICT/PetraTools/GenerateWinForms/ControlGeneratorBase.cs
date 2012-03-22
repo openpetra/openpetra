@@ -659,10 +659,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() != "fill"))
             {
-                writer.SetControlProperty(ctrl, "AutoSize", "true");
-            }
-            else
-            {
                 writer.SetControlProperty(ctrl, "Size",
                     "new System.Drawing.Size(" + FDefaultWidth.ToString() + ", " + FDefaultHeight.ToString() + ")");
             }
