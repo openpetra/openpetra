@@ -865,6 +865,7 @@ namespace Ict.Petra.WebServer.MConference
                 this.Response.Clear();
                 this.Response.ContentType = "application/pdf";
                 this.Response.AddHeader("Content-Type", "application/pdf");
+                this.Response.AddHeader("Content-Length", (new FileInfo(pdfFilename)).Length.ToString());
                 this.Response.AddHeader("Content-Disposition", "attachment; filename=" + row.PartnerKey.ToString() + ".pdf");
                 this.Response.WriteFile(pdfFilename);
                 // this.Response.End(); avoid System.Threading.ThreadAbortException
@@ -892,6 +893,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=Badge_" + row.FirstName + "_" + row.FamilyName + ".pdf");
                     this.Response.WriteFile(PDFPath);
                     File.Delete(PDFPath);
@@ -1052,6 +1054,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
                     File.Delete(PDFPath);
@@ -1108,6 +1111,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
                     File.Delete(PDFPath);
@@ -1152,6 +1156,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
                     File.Delete(PDFPath);
@@ -1195,6 +1200,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
                     File.Delete(PDFPath);
@@ -1238,6 +1244,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
                     File.Delete(PDFPath);
