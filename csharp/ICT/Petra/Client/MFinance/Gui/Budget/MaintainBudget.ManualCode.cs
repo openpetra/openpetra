@@ -100,10 +100,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 ClearBudgetTextboxCurrencyFormat();
 
-                if (grdDetails.Rows.Count == 0)
-                {
-                    EnableBudgetEntry(false);
-                }
+//                EnableBudgetEntry(false);
+//                
+//                if (grdDetails.Rows.Count > 0)
+//                {
+//                    EnableBudgetEntry(true);
+//                }
 
                 LoadCompleted = true;
             }
@@ -980,6 +982,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void ShowDetailsManual(ABudgetRow ARow)
         {
         	ClearBudgetPeriodTextboxes();
+        	
+        	if (grdDetails.Rows.Count == 0 && rgrSelectBudgetType.Enabled)
+        	{
+        		EnableBudgetEntry(false);
+        		return;
+        	}
+        	else if(rgrSelectBudgetType.Enabled == false)
+        	{
+        		EnableBudgetEntry(true);
+        	}
         	
         	if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SPLIT)
             {
