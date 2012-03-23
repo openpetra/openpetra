@@ -24,9 +24,12 @@ RootNode:
             Padding: 3,0,3,4
             
         pnlLeft:
-            Controls: [pnlPartnerInfo, pnlFamily, pnlPerson, pnlChurch, pnlOrganisation, pnlUnit, pnlBank, pnlVenue, pnlOther, pnlAdditionalInfo]
+            Controls: [pnlPartnerInfo, pnlClassSpecific, pnlAdditionalInfo]
             Dock: Fill
 
+        pnlClassSpecific:
+            Controls: [pnlFamily, pnlPerson, pnlChurch, pnlOrganisation, pnlUnit, pnlBank, pnlVenue, pnlOther]
+            Dock: Fill
             
 # Right-hand Panel (misc. information)            
         pnlRight:
