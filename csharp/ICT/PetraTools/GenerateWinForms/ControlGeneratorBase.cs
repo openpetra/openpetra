@@ -210,6 +210,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected virtual string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return AssignValue(ctrl, AFieldOrNull + ".ToString()", AFieldTypeDotNet);
+        }
+
+        /// <summary>
         /// for coding the transfer of the value from control to dataset
         /// </summary>
         /// <param name="ctrl"></param>
@@ -709,11 +717,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
 
-/*                for (string propertyName in FCodeStorage.GetFittingProperties(ctrl.GetAttribute("ActionOpenScreen")))
- *              {
- *                  ActionHandler += "    frm." + propertyName + " = F" + propertyName + ";" + Environment.NewLine;
- *              }
- */
+                /*                for (string propertyName in FCodeStorage.GetFittingProperties(ctrl.GetAttribute("ActionOpenScreen")))
+                 *              {
+                 *                  ActionHandler += "    frm." + propertyName + " = F" + propertyName + ";" + Environment.NewLine;
+                 *              }
+                 */
                 ActionHandler += "    frm.Show();" + Environment.NewLine;
                 ActionHandler += "}" + Environment.NewLine + Environment.NewLine;
 
@@ -769,6 +777,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TTableField field = TDataBinding.GetTableField(ctrl, dataField, out IsDetailNotMaster, true);
 
                 LinkControlDataField(writer, ctrl, field, IsDetailNotMaster);
+                DataFieldUndoCapability(writer, ctrl, field, IsDetailNotMaster);
             }
             else if (writer.CodeStorage.HasAttribute("MasterTable") || writer.CodeStorage.HasAttribute("DetailTable"))
             {
@@ -782,6 +791,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (field != null)
                     {
                         LinkControlDataField(writer, ctrl, field, IsDetailNotMaster);
+                        DataFieldUndoCapability(writer, ctrl, field, IsDetailNotMaster);
                     }
                 }
             }
@@ -790,6 +800,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
                     ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
+
+                writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
+                writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
             }
             else if (ctrl.HasAttribute("DynamicControlType"))
             {
@@ -821,6 +834,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "Enabled",
                         "false");
                 }
+            }
+
+            if ((ctrl.HasAttribute("Validation"))
+                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
+            {
+                AssignEventHandlerToControl(writer, ctrl, "Validated", "ControlValidatedHandler");
             }
 
             return writer.Template;
@@ -902,8 +921,33 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.Template.AddToCodelet("SHOWDATA", showData);
         }
 
+        private void DataFieldUndoCapability(TFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
+        {
+            if (AField == null)
+            {
+                return;
+            }
+
+            string tablename = TTable.NiceTableName(AField.strTableName);
+            string fieldname = TTable.NiceFieldName(AField);
+            string TestForNullTable = "FMainDS." + tablename;
+
+            if ((tablename == writer.CodeStorage.GetAttribute("DetailTable")) || (tablename == writer.CodeStorage.GetAttribute("MasterTable")))
+            {
+                TestForNullTable = "";
+            }
+
+            string targetCodelet = "UNDODATA";
+
+            ProcessTemplate snippetShowData = GenerateUndoDataSnippetCode(ref tablename, ref fieldname, ref TestForNullTable, writer, ctrl, AField);
+
+            writer.Template.InsertSnippet(targetCodelet, snippetShowData);
+        }
+
         private void LinkControlDataField(TFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
         {
+            ProcessTemplate snippetValidationControlsDictAdd;
+
             if (AField == null)
             {
                 return;
@@ -927,27 +971,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 targetCodelet = "SHOWDETAILS";
             }
 
-            ProcessTemplate snippetShowData = writer.Template.GetSnippet("SHOWDATAFORCOLUMN");
-
-            if (AField.GetDotNetType().ToLower().Contains("string"))
-            {
-                snippetShowData.SetCodelet("SETVALUEORNULL", "{#SETCONTROLVALUE}");
-                snippetShowData.SetCodelet("SETROWVALUEORNULL", "{#SETROWVALUE}");
-            }
-            else
-            {
-                snippetShowData.InsertSnippet("SETVALUEORNULL", writer.Template.GetSnippet("SETVALUEORNULL"));
-                snippetShowData.InsertSnippet("SETROWVALUEORNULL", writer.Template.GetSnippet("SETROWVALUEORNULL"));
-            }
-
-            snippetShowData.SetCodelet("CANBENULL", !AField.bNotNull ? "yes" : "");
-            snippetShowData.SetCodelet("DETERMINECONTROLISNULL", this.GetControlValue(ctrl, null));
-            snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
-            snippetShowData.SetCodelet("ROW", RowName);
-            snippetShowData.SetCodelet("COLUMNNAME", fieldname);
-            snippetShowData.SetCodelet("SETNULLVALUE", this.AssignValue(ctrl, null, null));
-            snippetShowData.SetCodelet("SETCONTROLVALUE", this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()));
-            snippetShowData.InsertSnippet("SETROWVALUE", writer.Template.GetSnippet("SETROWVALUE"));
+            ProcessTemplate snippetShowData = GenerateShowDataSnippetCode(ref fieldname, ref RowName, ref TestForNullTable, writer, ctrl, AField);
 
             writer.Template.InsertSnippet(targetCodelet, snippetShowData);
 
@@ -999,9 +1023,140 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
                     ", Catalog.GetString(\"" +
-                    helpText.Replace("\"", "\\\"") +  // properly escape double quotation marks
+                    helpText.Replace("\"", "\\\"") +                           // properly escape double quotation marks
                     "\"));" + Environment.NewLine);
             }
+
+            // Data Validation
+            if ((ctrl.HasAttribute("Validation"))
+                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
+            {
+                writer.FTemplate.SetCodelet("DATAVALIDATION", "TRUE");
+
+                string targetCodeletValidation = "ADDCONTROLTOVALIDATIONCONTROLSDICT";
+
+                if (!ctrl.GetAttribute("Validation").ToLower().StartsWith("pair("))
+                {
+                    snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADD");
+                }
+                else
+                {
+                    snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADDMULTI");
+
+                    string PairControlName = ctrl.GetAttribute("Validation").Substring(5, ctrl.GetAttribute("Validation").Length - 6);
+                    TControlDef SecondValidationControl = writer.CodeStorage.GetControl(PairControlName);
+
+                    if (SecondValidationControl != null)
+                    {
+                        snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL2", SecondValidationControl.controlName);
+
+                        if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(SecondValidationControl.Label)))
+                        {
+                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2",
+                                "Catalog.GetString(" + "\"" + SecondValidationControl.Label + "\")");
+                        }
+                        else
+                        {
+                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2", "\"" + SecondValidationControl.Label + "\"");
+                        }
+                    }
+                    else
+                    {
+                        throw new ApplicationException(
+                            "Pair Control for Validation '" + PairControlName + "' does not exist. Please specify a valid control!");
+                    }
+                }
+
+                snippetValidationControlsDictAdd.SetCodelet("COLUMNID",
+                    "FMainDS." + tablename + ".Columns[" + tablename + "Table.Column" + fieldname + "Id" + "]");
+                snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL", ctrl.controlName);
+
+                if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(ctrl.Label)))
+                {
+                    snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "Catalog.GetString(" + "\"" + ctrl.Label + "\")");
+                }
+                else
+                {
+                    snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "\"" + ctrl.Label + "\"");
+                }
+
+                writer.Template.InsertSnippet(targetCodeletValidation, snippetValidationControlsDictAdd);
+            }
+        }
+
+        /// <summary>
+        /// Generates code for the SHOWDATA Snippet.
+        /// </summary>
+        /// <param name="fieldname">Name of field</param>
+        /// <param name="RowName">Name of row</param>
+        /// <param name="TestForNullTable"></param>
+        /// <param name="writer">FormWriter instance.</param>
+        /// <param name="ctrl">TControlDef instance.</param>
+        /// <param name="AField">TTableField instance.</param>
+        /// <returns>A <see cref="ProcessTemplate"></see>.</returns>
+        ProcessTemplate GenerateShowDataSnippetCode(ref string fieldname,
+            ref string RowName,
+            ref string TestForNullTable,
+            TFormWriter writer,
+            TControlDef ctrl,
+            TTableField AField)
+        {
+            ProcessTemplate snippetShowData = writer.Template.GetSnippet("SHOWDATAFORCOLUMN");
+
+            if (AField.GetDotNetType().ToLower().Contains("string"))
+            {
+                snippetShowData.SetCodelet("SETVALUEORNULL", "{#SETCONTROLVALUE}");
+                snippetShowData.SetCodelet("SETROWVALUEORNULL", "{#SETROWVALUE}");
+            }
+            else
+            {
+                snippetShowData.InsertSnippet("SETVALUEORNULL", writer.Template.GetSnippet("SETVALUEORNULL"));
+                snippetShowData.InsertSnippet("SETROWVALUEORNULL", writer.Template.GetSnippet("SETROWVALUEORNULL"));
+            }
+
+            snippetShowData.SetCodelet("CANBENULL", !AField.bNotNull ? "yes" : "");
+            snippetShowData.SetCodelet("DETERMINECONTROLISNULL", this.GetControlValue(ctrl, null));
+            snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
+            snippetShowData.SetCodelet("ROW", RowName);
+            snippetShowData.SetCodelet("COLUMNNAME", fieldname);
+            snippetShowData.SetCodelet("SETNULLVALUE", this.AssignValue(ctrl, null, null));
+            snippetShowData.SetCodelet("SETCONTROLVALUE", this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()));
+            snippetShowData.InsertSnippet("SETROWVALUE", writer.Template.GetSnippet("SETROWVALUE"));
+
+            return snippetShowData;
+        }
+
+        /// <summary>
+        /// Generates code for the UNDODATA Snippet.
+        /// </summary>
+        /// <param name="tablename">Name of table</param>
+        /// <param name="fieldname">Name of field</param>
+        /// <param name="TestForNullTable"></param>
+        /// <param name="writer">FormWriter instance.</param>
+        /// <param name="ctrl">TControlDef instance.</param>
+        /// <param name="AField">TTableField instance.</param>
+        /// <returns>A <see cref="ProcessTemplate"></see>.</returns>
+        ProcessTemplate GenerateUndoDataSnippetCode(ref string tablename,
+            ref string fieldname,
+            ref string TestForNullTable,
+            TFormWriter writer,
+            TControlDef ctrl,
+            TTableField AField)
+        {
+            ProcessTemplate snippetShowData = writer.Template.GetSnippet("UNDODATAFORCOLUMN");
+
+            snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
+
+            snippetShowData.SetCodelet("UNDOCONTROLVALUE",
+                this.UndoValue(ctrl, "ARow[FMainDS." + tablename + ".Columns[(short)FMainDS." + tablename + ".GetType().GetField(\"Column" +
+                    fieldname +
+                    "Id\", BindingFlags.Public | BindingFlags.Static).GetValue(FMainDS." + tablename + ".GetType())], DataRowVersion.Original]",
+                    AField.GetDotNetType()));
+            snippetShowData.InsertSnippet("UNDOROWVALUE", writer.Template.GetSnippet("UNDOROWVALUE"));
+
+            snippetShowData.SetCodelet("CONTROLNAME", ctrl.controlName);
+
+            return snippetShowData;
         }
 
         /// <summary>

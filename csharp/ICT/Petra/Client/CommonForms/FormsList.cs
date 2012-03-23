@@ -26,6 +26,8 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Windows.Forms;
 
+using Ict.Common;
+
 namespace Ict.Petra.Client.CommonForms
 {
     /// <summary>
@@ -38,6 +40,12 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public class TFormsList : DictionaryBase
     {
+        #region Resourcestrings
+
+        private static readonly string StrPrintFormat = Catalog.GetString("Form Name: {0}, Form Title: {1}");
+
+        #endregion
+
         /// <summary>Key: child; value: parent; both can be either Delphi or Progress windows</summary>
         private SortedList WindowRelationship;
 
@@ -320,7 +328,6 @@ namespace Ict.Petra.Client.CommonForms
         public String OpenForms()
         {
             String ReturnValue = "";
-            const String PrintFormat = "Form Name: {0}, Form Title: {1}";
 
             System.Windows.Forms.Form FormInstance;
             IDictionaryEnumerator DictEnum;
@@ -329,7 +336,7 @@ namespace Ict.Petra.Client.CommonForms
             while (DictEnum.MoveNext())
             {
                 FormInstance = (System.Windows.Forms.Form)DictEnum.Value;
-                ReturnValue = ReturnValue + String.Format(PrintFormat, new Object[] { FormInstance.Name, FormInstance.Text }) + "\r\n";
+                ReturnValue = ReturnValue + String.Format(StrPrintFormat, new Object[] { FormInstance.Name, FormInstance.Text }) + "\r\n";
             }
 
             return ReturnValue;

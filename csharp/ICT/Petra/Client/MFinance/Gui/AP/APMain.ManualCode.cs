@@ -276,6 +276,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         }
 
                         String BarStatus = "|" + Row[AApDocumentTable.GetDocumentStatusDBName()].ToString();
+
                         //
                         // While I'm in this loop, I'll also check whether to enable the "Pay", "Post", "Reverse" and "Delete" buttons.
                         //
@@ -726,6 +727,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             // I can only reverse invoices that are POSTED.
             List <int>ReverseTheseDocs = new List <int>();
+
             foreach (DataRow Row in FInvoiceTable.Rows)
             {
                 if (Row["Selected"].Equals(true))
@@ -782,7 +784,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal"));
                 }
-
             }
         }
 

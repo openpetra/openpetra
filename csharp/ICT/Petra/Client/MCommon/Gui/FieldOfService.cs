@@ -48,11 +48,13 @@ namespace Ict.Petra.Client.MCommon.Gui
     {
         private TFrmPetraEditUtils FTheObject;
 
-        /// <summary>todoComment</summary>
-        public const String StrOpeningCancelledByUser = "Opening of Field Of Service screen got cancelled " + "by user.";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrOpeningCancelledByUserTitle = "Screen opening cancelled";
+        private static readonly string StrOpeningCancelledByUser = Catalog.GetString("Opening of Field Of Service screen got cancelled by user.");
+
+        private static readonly string StrOpeningCancelledByUserTitle = Catalog.GetString("Screen opening cancelled");
+
+        #endregion
 
         /// <summary>Reference to the Logic for the Screen</summary>
         private TFieldOfServiceLogic FLogic;

@@ -504,7 +504,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if (ACalculator.GenerateResultRemoteClient())
                 {
                     TMyUpdateDelegate myDelegate = @ReportCalculationSuccess;
-                    ACallerForm.Invoke((System.Delegate)new TMyUpdateDelegate(myDelegate), new object[] { ACalculator, ACallerForm, AReportName, AWrapColumn });
+                    ACallerForm.Invoke((System.Delegate) new TMyUpdateDelegate(
+                            myDelegate), new object[] { ACalculator, ACallerForm, AReportName, AWrapColumn });
                 }
             }
             catch (Exception e)
@@ -528,7 +529,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             else
             {
                 FWinForm.Cursor = Cursors.Default;
-                ((IFrmReporting)this.FTheForm).EnableBusy(false);
+                ((IFrmReporting) this.FTheForm).EnableBusy(false);
             }
         }
 
@@ -544,7 +545,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// This procedure does the calculation of the extract, and provides error messages. 
+        /// This procedure does the calculation of the extract, and provides error messages.
         /// It is called in a new thread, by MI_GenerateExtract_Click
         /// </summary>
         /// <returns>void</returns>
@@ -933,7 +934,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="AXMLFiles"></param>
         /// <param name="AIsolationLevel"></param>
         /// <param name="ACurrentReport"></param>
-        public static void InitialiseCalculator (TRptCalculator ACalculator, string AXMLFiles, string AIsolationLevel, string ACurrentReport)
+        public static void InitialiseCalculator(TRptCalculator ACalculator, string AXMLFiles, string AIsolationLevel, string ACurrentReport)
         {
             ACalculator.ResetParameters();
 
@@ -957,7 +958,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public virtual void ReadControls(TReportActionEnum AReportAction)
         {
-            InitialiseCalculator (FCalculator, FXMLFiles, FIsolationLevel, FCurrentReport);
+            InitialiseCalculator(FCalculator, FXMLFiles, FIsolationLevel, FCurrentReport);
             ((IFrmReporting) this.FTheForm).ReadControls(FCalculator, AReportAction);
 
             TParameterList CurrentParameters = FCalculator.GetParameters();

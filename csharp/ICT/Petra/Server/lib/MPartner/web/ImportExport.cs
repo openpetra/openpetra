@@ -1599,9 +1599,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             return extRecord;
         }
 
-
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns>All the text to write into an EXT file.</returns>
         [RequireModulePermission("PTNRUSER")]
@@ -1611,7 +1610,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             PPartnerTable Partners = PPartnerAccess.LoadAll(null);
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS MainDS;
-
 
             foreach (PPartnerRow Partner in Partners.Rows)
             {

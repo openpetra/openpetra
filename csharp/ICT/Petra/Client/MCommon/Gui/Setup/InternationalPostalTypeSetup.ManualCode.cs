@@ -34,6 +34,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -60,6 +61,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPInternationalPostalType();
+        }
+
+        private void ValidateDataDetailsManual(PInternationalPostalTypeRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedValidation_CacheableDataTables.ValidateInternationalPostalTypeSetup(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

@@ -176,19 +176,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     Row["Type"] = "Invoice";
 
 /*
-                    Int32 DiscountDays = (Int32)Row["DiscountDays"];
-
-                    if (DiscountDays > 0)
-                    {
-                        DateTime DiscountUntil = (DateTime)Row["Date"];
-                        DiscountUntil = DiscountUntil.AddDays(DiscountDays);
-                        Row["DiscountMsg"] =
-                            String.Format("{0:n0}% until {1}", (Decimal)Row["DiscountPercent"], TDate.DateTimeToLongDateString2(DiscountUntil));
-                    }
-                    else
-                    {
-                        Row["DiscountMsg"] = "None";
-                    }
+ *                  Int32 DiscountDays = (Int32)Row["DiscountDays"];
+ *
+ *                  if (DiscountDays > 0)
+ *                  {
+ *                      DateTime DiscountUntil = (DateTime)Row["Date"];
+ *                      DiscountUntil = DiscountUntil.AddDays(DiscountDays);
+ *                      Row["DiscountMsg"] =
+ *                          String.Format("{0:n0}% until {1}", (Decimal)Row["DiscountPercent"], TDate.DateTimeToLongDateString2(DiscountUntil));
+ *                  }
+ *                  else
+ *                  {
+ *                      Row["DiscountMsg"] = "None";
+ *                  }
  */
                 }
             }
@@ -483,11 +483,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if (SelectedGridRow[0]["Status"].ToString().Length > 0) // invoices have status, and payments don't.
                 {  // Reverse invoice to a previous (unposted) state
                     string barstatus = "|" + SelectedGridRow[0]["Status"].ToString();
+
                     if (barstatus == "|POSTED")
                     {
                         TVerificationResultCollection Verifications;
                         Int32 DocumentId = (Int32)SelectedGridRow[0]["DocumentId"];
-                        List<Int32> ApDocumentIds = new List<Int32>();
+                        List <Int32>ApDocumentIds = new List <Int32>();
                         ApDocumentIds.Add(DocumentId);
 
                         TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(

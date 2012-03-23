@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,7 +53,8 @@ namespace Ict.Common
         public TFileVersionInfo(String ARPMStyleVersion)
         {
             // 2.2.35-99: major.minor.build-private
-            String[] VersionParts = ARPMStyleVersion.Split(new char[]{'.'});
+            // also works for 2.2.35.99
+            String[] VersionParts = ARPMStyleVersion.Split(new char[] { '.', '-' });
 
             FileMajorPart = 0;
             FileMinorPart = 0;
@@ -72,14 +73,13 @@ namespace Ict.Common
 
             if (VersionParts.Length > 2)
             {
-                String[] BuildParts = VersionParts[2].Split(new char[] { '-' });
-                FileBuildPart = System.Convert.ToUInt16(BuildParts[0]);
-                if (BuildParts.Length > 1)
-                {
-                    FilePrivatePart = System.Convert.ToUInt16(BuildParts[1]);
-                }
+                FileBuildPart = System.Convert.ToUInt16(VersionParts[2]);
             }
 
+            if (VersionParts.Length > 3)
+            {
+                FilePrivatePart = System.Convert.ToUInt16(VersionParts[3]);
+            }
         }
 
         /// <summary>

@@ -141,7 +141,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             if (!ABatchAccess.Exists(ALedgerNumber, ABatchNumber, Transaction))
             {
@@ -190,7 +190,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             AGeneralLedgerMasterRow GLMTemplateRow = ADataSet.AGeneralLedgerMaster.NewRowTyped(false);
 
@@ -252,7 +252,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // Calculate the base currency amounts for each transaction, using the exchange rate from the journals.
-               // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
+            // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
 
             // Calculate the credit and debit totals
             GLRoutines.UpdateTotalsOfBatch(ref ADataSet, Batch);
@@ -285,7 +285,7 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             if (!TFinancialYear.IsValidPostingPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber,
                     out DateEffectiveYearNumber,
@@ -370,7 +370,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
@@ -973,7 +973,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLBatchTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), out AVerifications);
 
-            if (AVerifications.HasCriticalError())
+            if (AVerifications.HasCriticalErrors)
             {
                 return false;
             }
@@ -1178,7 +1178,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 MainDS = new GLBatchTDS();
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                    (IsolationLevel.Serializable,TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
+                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
 
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 

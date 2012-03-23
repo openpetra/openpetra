@@ -182,6 +182,7 @@ namespace Ict.Common.Controls
                 base.Text = "";
                 return;
             }
+
             string CurrentText;
 
 //                  MessageBox.Show("set_Text: value=" + value);

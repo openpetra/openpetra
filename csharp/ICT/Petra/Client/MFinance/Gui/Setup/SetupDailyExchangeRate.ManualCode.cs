@@ -98,10 +98,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 new System.EventHandler(this.InvertExchangeRate);
 
             FMainDS.ADailyExchangeRate.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
-                                                            ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+                                                          ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
             FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
         }
-
 
         /// <summary>
         /// In oder to run the dialog in the modal form you have to invoke this routine.
@@ -326,6 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         ADailyExRateRow.ToCurrencyCode = baseCurrencyOfLedger;
                     }
+
                     ADailyExRateRow.RateOfExchange = 1.0m;
                 }
                 else

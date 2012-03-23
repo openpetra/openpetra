@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -58,10 +59,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDetailAmount.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
             txtExchangeRateToBase.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
         }
-        
+
         private void LookupExchangeRate(Object sender, EventArgs e)
         {
-            decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(txtSupplierCurrency.Text, FLedgerRow.BaseCurrency,DateTime.Now);
+            decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(txtSupplierCurrency.Text, FLedgerRow.BaseCurrency, DateTime.Now);
+
             txtExchangeRateToBase.NumberValueDecimal = CurrentRate;
         }
 
@@ -102,6 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
             }
+
             tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
             tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
         }
@@ -329,6 +332,27 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
         }
 
+        private void ValidateDataManual(AccountsPayableTDSAApDocumentRow ARow)
+        {
+            DataColumn ValidationColumn;
+
+            // 'Date Due' must be in the future or today
+            ValidationColumn = ARow.Table.Columns[AccountsPayableTDSAApDocumentTable.ColumnDocumentCodeId];
+
+            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                TStringChecks.StringMustNotBeEmpty(ARow.DocumentCode,
+                    lblDocumentCode.Text,
+                    this, ValidationColumn, txtDocumentCode), ValidationColumn);
+        }
+
+        private void ValidateDataDetailsManual(AApDocumentDetailRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_AP.ValidateApDocumentDetailManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+        }
+
         private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)
         {
             if (sender == dtpDateDue)
@@ -364,7 +388,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void UpdateDetailBaseAmount(object sender, EventArgs e)
         {
             if ((txtExchangeRateToBase.NumberValueDecimal.HasValue)
-            && (txtDetailAmount.NumberValueDecimal.HasValue))
+                && (txtDetailAmount.NumberValueDecimal.HasValue))
             {
                 txtDetailBaseAmount.NumberValueDecimal =
                     txtDetailAmount.NumberValueDecimal * txtExchangeRateToBase.NumberValueDecimal.Value;
@@ -387,12 +411,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             EnableControls();
 
             Decimal ExchangeRateToBase = 0;
+
             if (txtExchangeRateToBase.NumberValueDecimal.HasValue)
             {
                 ExchangeRateToBase = txtExchangeRateToBase.NumberValueDecimal.Value;
             }
 
-            if (ARow.IsAmountNull() || ExchangeRateToBase == 0)
+            if (ARow.IsAmountNull() || (ExchangeRateToBase == 0))
             {
                 txtDetailBaseAmount.NumberValueDecimal = null;
             }

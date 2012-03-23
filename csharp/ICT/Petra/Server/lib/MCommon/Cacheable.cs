@@ -54,7 +54,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
     /// and which would be retrieved numerous times from the Server as UI windows
     /// are opened.
     /// </summary>
-    public class TCacheable : TCacheableTablesLoader
+    public partial class TCacheable : TCacheableTablesLoader
     {
         /// time when this object was instantiated
         private DateTime FStartTime;
@@ -227,6 +227,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Common.SaveChangedStandardCacheableTable...");
@@ -244,26 +245,57 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                     switch (ACacheableTable)
                     {
                         case TCacheableCommonTablesEnum.CountryList:
-                            if (PCountryAccess.SubmitChanges((PCountryTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateCountryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateCountryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PCountryAccess.SubmitChanges((PCountryTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheableCommonTablesEnum.FrequencyList:
-                            if (AFrequencyAccess.SubmitChanges((AFrequencyTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateFrequencyList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateFrequencyListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (AFrequencyAccess.SubmitChanges((AFrequencyTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheableCommonTablesEnum.LanguageCodeList:
-                            if (PLanguageAccess.SubmitChanges((PLanguageTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateLanguageCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateLanguageCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PLanguageAccess.SubmitChanges((PLanguageTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
+
                         default:
 
                             throw new Exception(
@@ -292,18 +324,40 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                 }
             }
 
-            /*
-            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
-            /// the next time something in the Client accesses it.
-             */
+            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            // the next time something in the Client accesses it.
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+
             return SubmissionResult;
         }
+
+#region Data Validation
+
+        partial void ValidateCountryList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateCountryListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateFrequencyList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateFrequencyListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLanguageCodeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLanguageCodeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+#endregion Data Validation
     }
 }

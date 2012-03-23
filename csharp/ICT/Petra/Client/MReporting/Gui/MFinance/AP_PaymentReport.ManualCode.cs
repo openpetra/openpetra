@@ -53,6 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private static void DefineReportColumns(TRptCalculator ACalc)
         {
             int ColumnCounter = 0;
+
             ACalc.AddParameter("param_calculation", "", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)6.0, ColumnCounter++);
             ACalc.AddParameter("param_calculation", "PaymentNumber", ColumnCounter);
@@ -86,9 +87,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public static void CreateReportNoGui(Int32 ALedgerNumber, Int32 AMinPaymentNumber, Int32 AMaxPaymentNumber, Form Owner)
         {
             TRptCalculator Calculator = new TRptCalculator();
+
             TFrmPetraReportingUtils.InitialiseCalculator(
-                Calculator, 
-                "Finance/AccountsPayable/AP_PaymentReport.xml,Finance/finance.xml,common.xml", 
+                Calculator,
+                "Finance/AccountsPayable/AP_PaymentReport.xml,Finance/finance.xml,common.xml",
                 "",
                 "APPaymentReport");
 
@@ -96,9 +98,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Calculator.AddParameter("param_payment_num_to_i", AMaxPaymentNumber);
 
 /*
-            Calculator.AddParameter("param_payment_date_from_i", DateTime.Now);
-            Calculator.AddParameter("param_payment_date_to_i", DateTime.Now);
-*/
+ *          Calculator.AddParameter("param_payment_date_from_i", DateTime.Now);
+ *          Calculator.AddParameter("param_payment_date_to_i", DateTime.Now);
+ */
             Calculator.AddParameter("param_ledger_number_i", ALedgerNumber);
             DefineReportColumns(Calculator);
 

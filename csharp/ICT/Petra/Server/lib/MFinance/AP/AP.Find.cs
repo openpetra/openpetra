@@ -200,8 +200,10 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   "0 as DiscountDays, " +
                                   "PUB_a_ap_payment.s_date_created_d as Date, " +
                                   "0 as DocumentId\n" +
-                                  " FROM PUB_a_ap_payment LEFT JOIN PUB_a_ap_document_payment on PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i" +
-                                  " LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i\n" +
+                                  " FROM PUB_a_ap_payment LEFT JOIN PUB_a_ap_document_payment on PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i"
+                                  +
+                                  " LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i\n"
+                                  +
                                   " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + FLedgerNumber +
                                   " AND p_partner_key_n=" + PartnerKey +
                                   "\n UNION\n" +
@@ -305,11 +307,10 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         [NoRemoting]
         public static Decimal GetPartPaidAmount(Int32 ApDocumentId)
         {
-
             Decimal PaidAmount = 0m;
 
             AApDocumentPaymentTable PreviousPayments =
-                AApDocumentPaymentAccess.LoadViaAApDocument (ApDocumentId, null);
+                AApDocumentPaymentAccess.LoadViaAApDocument(ApDocumentId, null);
 
             foreach (AApDocumentPaymentRow PrevPaymentRow in PreviousPayments.Rows)
             {
