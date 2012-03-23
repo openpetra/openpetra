@@ -33,7 +33,9 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
-
+using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Server.MCommon.DataReader;
+    
 namespace Ict.Petra.Server.MSysMan.Maintenance
 {
     /// <summary>
@@ -254,6 +256,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             }
 #endif
 
+            // Set up Error Codes and Data Validation Delegates for a Client's AppDomain.
+            // This setting-up makes use of the fact that this Method is called only once,
+            // namely directly after the Client logged in successfully.
+            ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
+            TSharedValidationHelper.SharedGetData = @TCommonDataReader.GetData;
+            
             if (UUserDefaultsDT == null)
             {
                 // Initialisation needs to be done once!
