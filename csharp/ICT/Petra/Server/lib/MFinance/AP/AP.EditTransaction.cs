@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, TimI
+//       timop, Tim Ingham
 //
 // Copyright 2004-2012 by OM International
 //
@@ -1545,7 +1545,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APaymentNumber"></param>
-        /// <returns></returns>
+        /// <returns>Fully loaded TDS</returns>
         [RequireModulePermission("FINANCE-3")]
         public static AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber, Int32 APaymentNumber)
         {
@@ -1597,6 +1597,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 supplierPaymentsRow.SupplierName = PartnerRow.PartnerShortName;
                 supplierPaymentsRow.CurrencyCode = SupplierRow.CurrencyCode;
                 supplierPaymentsRow.ListLabel = supplierPaymentsRow.SupplierName + " (" + supplierPaymentsRow.MethodOfPayment + ")";
+                PPartnerLocationAccess.LoadViaPPartner(MainDs, PartnerKey, ReadTransaction);
+                PLocationAccess.LoadViaPPartner(MainDs, PartnerKey, ReadTransaction);
             }
 
             if (IsMyOwnTransaction)

@@ -66,7 +66,10 @@ namespace Ict.Petra.Shared.MPartner
             plfCommaSeparated,
 
             /// <summary>Return Location Part Strings separated by CR+LF</summary>
-            plfLineBreakSeparated
+            plfLineBreakSeparated,
+
+            /// <summary>Return Location Part Strings separated by HTML br element</summary>
+            plfHtmlLineBreak
         }
 
         /// <summary>
@@ -495,6 +498,10 @@ namespace Ict.Petra.Shared.MPartner
 
                 case TPartnerLocationFormatEnum.plfLineBreakSeparated:
                     Separator = Environment.NewLine;
+                    break;
+
+                case TPartnerLocationFormatEnum.plfHtmlLineBreak:
+                    Separator = "<br/>";
                     break;
 
                 default:

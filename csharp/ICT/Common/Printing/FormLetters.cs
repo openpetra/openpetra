@@ -401,6 +401,90 @@ namespace Ict.Common.Printing
             }
         }
 
+        private class THTMLSimpleLetter : THTMLFormLetter
+        {
+            private XmlNode detailNode;
+            private String DetailHtml;
+
+
+            public THTMLSimpleLetter(string AFilename)
+                : base(AFilename)
+            {
+            }
+
+            public override void StartDocument()
+            {
+                detailNode = TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "detail");
+                if (detailNode != null)
+                {
+                    DetailHtml = detailNode.InnerXml;
+                    detailNode.InnerXml = ""; // Remove the repeating Detail from the letter.
+                }
+                ResultDocument =
+                    "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" +
+                    Environment.NewLine +
+                    TemplateDoc.DocumentElement.OuterXml;
+            }
+
+            /// <summary>
+            /// Replace these fields in the HTML.
+            /// </summary>
+            /// <param name="AData">For repeating values in the detail element, the key has a list of values.</param>
+            public void PrintDocument(SortedList<string, List<string>> AData)
+            {
+                Int32 NumRepeatedLines = 0;
+                String NewDetailHtml = "";
+
+                foreach (string Key in AData.Keys)
+                {
+                    NumRepeatedLines = Math.Max(NumRepeatedLines, AData[Key].Count);
+                }
+
+                Int32 DetailLevel = -1;
+                Boolean DetailLevelPopulated;
+                do
+                {
+                    DetailLevel++;                               // the first detail level is 0
+                    DetailLevelPopulated = false;
+
+                    foreach (string Key in AData.Keys)
+                    {
+                        String HashKey = "#" + Key;
+                        if (DetailHtml.IndexOf(HashKey) >= 0)    // This is a "detail line" item..
+                        {
+                            if ((!DetailLevelPopulated) && (AData[Key].Count > DetailLevel))
+                            {
+                                NewDetailHtml += (DetailHtml + Environment.NewLine);
+                                DetailLevelPopulated = true;     // If there's no detail section, the loop doesn't happen,
+                            }                                    // and DetailLevel stays at 0;
+
+                            if (AData[Key].Count > DetailLevel)  // I should have a complete set of detail entries,
+                            {                                    // but if there's gaps, this should catch them.
+                                NewDetailHtml = NewDetailHtml.Replace(HashKey, AData[Key][DetailLevel]);
+                            }
+                            else
+                            {
+                                NewDetailHtml = NewDetailHtml.Replace(HashKey, "");
+                            }
+                        }
+                        else            // If this isn't a detail item, look in the document body.
+                        {               // This should only happen at detailLevel 0.
+                            if (DetailLevel == 0)
+                            {
+                                ResultDocument = ResultDocument.Replace(HashKey, AData[Key][DetailLevel]);
+                            }
+                        }
+                    }
+                } while (DetailLevelPopulated);
+
+                // Now if there's anything in the detail section, I'll put it back into the document...
+                if (NewDetailHtml != "")
+                {
+                    ResultDocument = ResultDocument.Replace("<detail></detail>", NewDetailHtml);
+                }
+            }
+        }
+
         private class THTMLFormLabels : THTMLFormLetter
         {
             public float paddingLeft;
@@ -548,41 +632,44 @@ namespace Ict.Common.Printing
                         currentY += groupTopHeight;
                     }
 
-                    foreach (string line in AData[group])
+                    if (DetailNode != null)
                     {
-                        string DetailText = DetailNode.InnerXml;
-
-                        string CSVLine = line;
-                        int CountCSVValue = 1;
-
-                        while (CSVLine.Length > 0)
+                        foreach (string line in AData[group])
                         {
-                            string value = StringHelper.GetNextCSV(ref CSVLine);
-                            DetailText = DetailText.Replace("#VALUE" + CountCSVValue.ToString(), value);
+                            string DetailText = DetailNode.InnerXml;
 
-                            if (Total.Count < CountCSVValue)
+                            string CSVLine = line;
+                            int CountCSVValue = 1;
+
+                            while (CSVLine.Length > 0)
                             {
-                                Total.Add(0);
+                                string value = StringHelper.GetNextCSV(ref CSVLine);
+                                DetailText = DetailText.Replace("#VALUE" + CountCSVValue.ToString(), value);
+
+                                if (Total.Count < CountCSVValue)
+                                {
+                                    Total.Add(0);
+                                }
+
+                                if (value.Length > 0)
+                                {
+                                    Total[CountCSVValue - 1]++;
+                                }
+
+                                CountCSVValue++;
                             }
 
-                            if (value.Length > 0)
-                            {
-                                Total[CountCSVValue - 1]++;
-                            }
+                            ConditionalPageBreak(detailHeight);
 
-                            CountCSVValue++;
+                            ResultDocument += Environment.NewLine +
+                                              String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
+                                detailLeft,
+                                currentY,
+                                unit);
+                            ResultDocument += DetailText;
+                            ResultDocument += "</div>" + Environment.NewLine;
+                            currentY += detailHeight;
                         }
-
-                        ConditionalPageBreak(detailHeight);
-
-                        ResultDocument += Environment.NewLine +
-                                          String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
-                            detailLeft,
-                            currentY,
-                            unit);
-                        ResultDocument += DetailText;
-                        ResultDocument += "</div>" + Environment.NewLine;
-                        currentY += detailHeight;
                     }
 
                     if (GroupBottomNode != null)
@@ -649,6 +736,22 @@ namespace Ict.Common.Printing
             }
         }
 
+        /// <summary>
+        /// Print a one-page letter, replacing defined fields
+        /// </summary>
+        /// <param name="AFilename">Full path</param>
+        /// <param name="AFields">Value is always element [0] except for repeated elements</param>
+        /// <returns></returns>
+        public static string PrintSimpleHTMLLetter(string AFilename, SortedList<string, List<string>> AFields)
+
+        {
+            THTMLSimpleLetter formletter = new THTMLSimpleLetter (AFilename);
+            formletter.StartDocument();
+            formletter.PrintDocument(AFields);
+
+            return formletter.ResultDocument;
+
+        }
 
         /// <summary>
         /// print HTML labels into an HTML template, create pages
@@ -676,7 +779,7 @@ namespace Ict.Common.Printing
         /// print a report into an HTML template
         /// </summary>
         /// <param name="AFilename"></param>
-        /// <param name="AData"></param>
+        /// <param name="AData">A string-indexed list of values which are themselves lists</param>
         /// <param name="ATitle">title to print in the page footer</param>
         /// <param name="ASeparatePagesPerGroup">page break for each group</param>
         /// <returns></returns>
@@ -738,7 +841,7 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// generate a PDF from an HTML Document, can contain several pages
+        /// Generate a PDF from an HTML Document, can contain several pages
         /// </summary>
         /// <returns>path of the temporary PDF file</returns>
         public static string GeneratePDFFromHTML(string AHTMLDoc, string APdfPath)
@@ -759,36 +862,35 @@ namespace Ict.Common.Printing
             do
             {
                 filename = APdfPath + Path.DirectorySeparatorChar +
-                           rand.Next(1, 1000000).ToString() + ".txt";
+                           rand.Next(1, 1000000).ToString() + ".pdf";
             } while (File.Exists(filename));
 
-            TLogging.Log(filename);
-
-            StreamWriter sw = new StreamWriter(filename);
-            sw.WriteLine(AHTMLDoc);
-            sw.Close();
+            if (TLogging.DebugLevel > 0)
+            {
+                StreamWriter sw = new StreamWriter(filename.Replace(".pdf", ".html"));
+                sw.WriteLine(AHTMLDoc);
+                sw.Close();
+            }
 
             try
             {
                 PrintDocument doc = new PrintDocument();
 
                 TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
-                TPrinterHtml htmlPrinter = new TPrinterHtml(AHTMLDoc,
-                    String.Empty,
-                    pdfPrinter);
+                TPrinterHtml htmlPrinter = new TPrinterHtml(AHTMLDoc, String.Empty, pdfPrinter);
 
                 pdfPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
 
-                pdfPrinter.SavePDF(filename.Replace(".txt", ".pdf"));
+                pdfPrinter.SavePDF(filename);
             }
             catch (Exception e)
             {
-                TLogging.Log("Exception while printing badge: " + e.Message);
+                TLogging.Log("Exception while writing PDF: " + e.Message);
                 TLogging.Log(e.StackTrace);
                 throw e;
             }
 
-            return filename.Replace(".txt", ".pdf");
+            return filename;
         }
     }
 }
