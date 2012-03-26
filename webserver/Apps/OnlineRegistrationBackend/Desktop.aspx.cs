@@ -993,7 +993,7 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void DownloadPetra(object sender, StoreSubmitDataEventArgs e)
         {
-            string csvLines = TApplicationManagement.DownloadApplications(EventPartnerKey, EventCode, GetSelectedRegistrationOffice());
+            string csvLines = TApplicationManagement.DownloadApplications(EventPartnerKey, EventCode, GetSelectedRegistrationOffice(), true);
 
             this.Response.Clear();
             // TODO: this is a problem with old Petra 2.x, importing ANSI only

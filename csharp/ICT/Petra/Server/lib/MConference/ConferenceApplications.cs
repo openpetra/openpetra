@@ -1085,10 +1085,11 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <summary>
         /// export accepted and cancelled applications to Petra
         /// </summary>
-        /// <returns></returns>
-        public static string DownloadApplications(Int64 AEventPartnerKey, string AEventCode, Int64 ARegistrationOffice)
+        public static string DownloadApplications(Int64 AEventPartnerKey,
+            string AEventCode,
+            Int64 ARegistrationOffice,
+            bool AOnlyNotImportedYet = false)
         {
-            // TODO: export all partners that have not been imported to the local database yet
             string result = string.Empty;
 
             result += "PersonPartnerKey;EventPartnerKey;ApplicationDate;AcquisitionCode;Title;FirstName;FamilyName;Street;PostCode;City;";
@@ -1123,76 +1124,79 @@ namespace Ict.Petra.Server.MConference.Applications
                             ShortTermApplicationRow.RegistrationOffice,
                             Transaction)[0];
 
-                    if (GeneralApplicationRow.IsLocalPartnerKeyNull())
+                    if (GeneralApplicationRow.IsLocalPartnerKeyNull() || !AOnlyNotImportedYet)
                     {
-                        // TODO should we add the old partner key?
-                        result += "\"\";";
+                        if (GeneralApplicationRow.IsLocalPartnerKeyNull())
+                        {
+                            // TODO should we add the old partner key?
+                            result += "\"\";";
+                        }
+                        else
+                        {
+                            result += "\"" + GeneralApplicationRow.LocalPartnerKey.ToString() + "\";";
+                        }
+
+                        TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
+                            GeneralApplicationRow.RawApplicationData);
+                        string prevConf = string.Empty;
+
+                        if (data.numberprevconfadult != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfadult);
+                        }
+
+                        if (data.numberprevconfparticipant != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfparticipant);
+                        }
+
+                        if (data.numberprevconfleader != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfleader);
+                        }
+
+                        if (data.numberprevconfhelper != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfhelper);
+                        }
+
+                        if (data.numberprevconf != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconf);
+                        }
+
+                        result += "\"" + AEventPartnerKey.ToString() + "\";";
+                        result += "\"" + GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy") + "\";";
+                        // TODO AcquisitionCode
+                        result += "\"" + "\";";
+                        result += "\"" + PersonRow.Title + "\";";
+                        result += "\"" + PersonRow.FirstName + "\";";
+                        result += "\"" + PersonRow.FamilyName + "\";";
+                        result += "\"" + LocationRow.StreetName + "\";";
+                        result += "\"" + LocationRow.PostalCode + "\";";
+                        result += "\"" + LocationRow.City + "\";";
+                        result += "\"" + LocationRow.CountryCode + "\";";
+                        result += "\"" + PartnerLocationRow.TelephoneNumber + "\";";
+                        result += "\"" + PartnerLocationRow.MobileNumber + "\";";
+                        result += "\"" + PartnerLocationRow.EmailAddress + "\";";
+                        result += "\"" + PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy") + "\";";
+                        result += "\"" + PersonRow.MaritalStatus + "\";";
+                        result += "\"" + PersonRow.Gender + "\";";
+                        result += "\"" + /* vegetarian + */ "\";";
+                        result += "\"" + /* MedicalNeeds + */ "\";";
+                        result += "\"" + /* ArrivalDate + */ "\";";
+                        result += "\"" + /* DepartureDate + */ "\";";
+                        result += "\"" + ShortTermApplicationRow.StCongressCode + "\";";
+                        result += "\"" + GeneralApplicationRow.GenApplicationStatus + "\";";
+                        result += "\"" + prevConf + "\";";
+                        result += "\"" + /* AppComments + */ "\";";
+                        result += "\"" + /* NotesPerson + */ "\";";
+                        result += "\"" + PersonRow.PartnerKey.ToString() + "\";";
+                        result += "\"" + /* FamilyPartnerKey + */ "\";";
+                        result += "\"" + (GeneralApplicationRow.ImportedLocalPetra ? "yes" : "") + "\";";
+
+                        result += "\n";
                     }
-                    else
-                    {
-                        result += "\"" + GeneralApplicationRow.LocalPartnerKey.ToString() + "\";";
-                    }
-
-                    TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
-                        GeneralApplicationRow.RawApplicationData);
-                    string prevConf = string.Empty;
-
-                    if (data.numberprevconfadult != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfadult);
-                    }
-
-                    if (data.numberprevconfparticipant != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfparticipant);
-                    }
-
-                    if (data.numberprevconfleader != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfleader);
-                    }
-
-                    if (data.numberprevconfhelper != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfhelper);
-                    }
-
-                    if (data.numberprevconf != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconf);
-                    }
-
-                    result += "\"" + AEventPartnerKey.ToString() + "\";";
-                    result += "\"" + GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy") + "\";";
-                    // TODO AcquisitionCode
-                    result += "\"" + "\";";
-                    result += "\"" + PersonRow.Title + "\";";
-                    result += "\"" + PersonRow.FirstName + "\";";
-                    result += "\"" + PersonRow.FamilyName + "\";";
-                    result += "\"" + LocationRow.StreetName + "\";";
-                    result += "\"" + LocationRow.PostalCode + "\";";
-                    result += "\"" + LocationRow.City + "\";";
-                    result += "\"" + LocationRow.CountryCode + "\";";
-                    result += "\"" + PartnerLocationRow.TelephoneNumber + "\";";
-                    result += "\"" + PartnerLocationRow.MobileNumber + "\";";
-                    result += "\"" + PartnerLocationRow.EmailAddress + "\";";
-                    result += "\"" + PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy") + "\";";
-                    result += "\"" + PersonRow.MaritalStatus + "\";";
-                    result += "\"" + PersonRow.Gender + "\";";
-                    result += "\"" + /* vegetarian + */ "\";";
-                    result += "\"" + /* MedicalNeeds + */ "\";";
-                    result += "\"" + /* ArrivalDate + */ "\";";
-                    result += "\"" + /* DepartureDate + */ "\";";
-                    result += "\"" + ShortTermApplicationRow.StCongressCode + "\";";
-                    result += "\"" + GeneralApplicationRow.GenApplicationStatus + "\";";
-                    result += "\"" + prevConf + "\";";
-                    result += "\"" + /* AppComments + */ "\";";
-                    result += "\"" + /* NotesPerson + */ "\";";
-                    result += "\"" + PersonRow.PartnerKey.ToString() + "\";";
-                    result += "\"" + /* FamilyPartnerKey + */ "\";";
-                    result += "\"" + (GeneralApplicationRow.ImportedLocalPetra ? "yes" : "") + "\";";
-
-                    result += "\n";
                 }
 
                 return result;
