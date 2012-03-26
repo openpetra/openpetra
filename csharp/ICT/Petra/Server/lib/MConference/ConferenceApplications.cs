@@ -1444,13 +1444,20 @@ namespace Ict.Petra.Server.MConference.Applications
                 // get a list of partner keys that should get the person key from the local office
                 foreach (XmlNode applicant in partnerKeys.DocumentElement.ChildNodes)
                 {
-                    Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
-                    bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
-
-                    if (RecordImported)
+                    try
                     {
-                        // prepare SELECT WHERE IN (list of partner keys)
-                        RegistrationIDs = StringHelper.AddCSV(RegistrationIDs, RegistrationID.ToString(), ",");
+                        Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
+                        bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
+
+                        if (RecordImported)
+                        {
+                            // prepare SELECT WHERE IN (list of partner keys)
+                            RegistrationIDs = StringHelper.AddCSV(RegistrationIDs, RegistrationID.ToString(), ",");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("problem importing applicant: " + e.ToString());
                     }
                 }
 
@@ -1469,20 +1476,28 @@ namespace Ict.Petra.Server.MConference.Applications
                 foreach (XmlNode applicant in partnerKeys.DocumentElement.ChildNodes)
                 {
                     Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
-                    bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
 
-                    if (RecordImported)
+                    try
                     {
-                        Int64 LocalOfficePartnerKey = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "PersonPartnerKey"));
+                        bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
 
-                        Int32 index = applicationTable.DefaultView.Find(RegistrationID);
-
-                        if (index != -1)
+                        if (RecordImported)
                         {
-                            PmGeneralApplicationRow row = (PmGeneralApplicationRow)applicationTable.DefaultView[index].Row;
-                            row.LocalPartnerKey = LocalOfficePartnerKey;
-                            row.ImportedLocalPetra = true;
+                            Int64 LocalOfficePartnerKey = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "PersonPartnerKey"));
+
+                            Int32 index = applicationTable.DefaultView.Find(RegistrationID);
+
+                            if (index != -1)
+                            {
+                                PmGeneralApplicationRow row = (PmGeneralApplicationRow)applicationTable.DefaultView[index].Row;
+                                row.LocalPartnerKey = LocalOfficePartnerKey;
+                                row.ImportedLocalPetra = true;
+                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("problem importing applicant: " + e.ToString());
                     }
                 }
 
