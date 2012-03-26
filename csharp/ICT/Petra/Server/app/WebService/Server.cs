@@ -63,7 +63,7 @@ namespace PetraWebService
 ///
 /// TODO: generate soap functions with nant generateGlue from interfaces/instantiators?
 /// </summary>
-[WebService(Namespace="http://www.openpetra.org/webservices/")]
+[WebService(Namespace = "http://www.openpetra.org/webservices/")]
 [ScriptService]
 public class TOpenPetraOrg : WebService
 {

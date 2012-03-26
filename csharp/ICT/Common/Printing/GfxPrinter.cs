@@ -1023,7 +1023,7 @@ namespace Ict.Common.Printing
                             }
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // exception: no printers installed
                         FDocument.DefaultPageSettings.PaperSize =
