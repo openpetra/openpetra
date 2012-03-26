@@ -129,6 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             tpgApplications.Enabled = false;    // TODO This feature isn't implemented yet.
 
+            tabPersonnel.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
             SelectTabPage(FInitiallySelectedTabPage);
 
@@ -144,8 +145,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// the UserControl.</remarks>
         /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
         /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=null).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = false;
 
@@ -154,7 +163,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO
 
             return ReturnValue;
-        }
+        }        
 
         /// <summary>
         /// Gets the data from all controls on this TabControl.
@@ -275,6 +284,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (HookupPartnerEditDataChange != null)
             {
                 HookupPartnerEditDataChange(this, e);
+            }
+        }
+
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (!ValidateAllData(true, FCurrentUserControl))
+            {
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
         }
 
