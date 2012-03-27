@@ -139,7 +139,9 @@ namespace Ict.Petra.Server.MFinance.Common
             AVerifications = new TVerificationResultCollection();
             ADataSet = new GLBatchTDS();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             if (!ABatchAccess.Exists(ALedgerNumber, ABatchNumber, Transaction))
             {
@@ -170,7 +172,10 @@ namespace Ict.Petra.Server.MFinance.Common
             // TODO: use cached table?
             ACostCentreAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (IsMyOwnTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return true;
         }
@@ -183,7 +188,9 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         private static void LoadGLMData(ref GLBatchTDS ADataSet, Int32 ALedgerNumber)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             AGeneralLedgerMasterRow GLMTemplateRow = ADataSet.AGeneralLedgerMaster.NewRowTyped(false);
 
@@ -213,7 +220,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 query,
                 ADataSet.AGeneralLedgerMasterPeriod.TableName, Transaction, parameters.ToArray());
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (IsMyOwnTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
         }
 
         /// <summary>
@@ -242,6 +252,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // Calculate the base currency amounts for each transaction, using the exchange rate from the journals.
+            // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
+
             // Calculate the credit and debit totals
             GLRoutines.UpdateTotalsOfBatch(ref ADataSet, Batch);
 
@@ -264,13 +276,16 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("The control total {0:n2} does not fit the Credit/Debit Total {1:n2}."), Batch.BatchControlTotal,
+                        String.Format(Catalog.GetString("The control total {0:n2} does not fit the Credit/Debit Total {1:n2}."),
+                            Batch.BatchControlTotal,
                             Batch.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             if (!TFinancialYear.IsValidPostingPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber,
                     out DateEffectiveYearNumber,
@@ -289,7 +304,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 Batch.BatchYear = DateEffectiveYearNumber;
             }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (IsMyOwnTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             DataView TransactionsOfJournalView = new DataView(ADataSet.ATransaction);
 
@@ -302,7 +320,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:n2}, Credit is {2:n2}"), journal.JournalNumber,
+                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:n2}, Credit is {2:n2}"),
+                                journal.JournalNumber,
                                 journal.JournalDebitTotal, journal.JournalCreditTotal),
                             TResultSeverity.Resv_Critical));
                 }
@@ -351,11 +370,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// <summary>
-        /// validate the attributes of the tarnsactions
+        /// validate the attributes of the transactions
         /// some things are even modified, eg. batch period etc from date effective
         /// </summary>
         /// <param name="ADataSet"></param>
@@ -463,7 +482,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
@@ -954,7 +973,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLBatchTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), out AVerifications);
 
-            if (AVerifications.HasCriticalError())
+            if (AVerifications.HasCriticalErrors)
             {
                 return false;
             }
@@ -1158,7 +1177,8 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 MainDS = new GLBatchTDS();
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransactionStarted);
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
 
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 

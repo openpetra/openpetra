@@ -274,6 +274,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void SpecialInitUserControl()
         {
+            // disable change event while controls are being initialized as otherwise save button might get enabled
+            FPetraUtilsObject.DisableDataChangedEvent();
+
             /* Show/hide parts of the UserControl according to Partner Class of the Partner */
             if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
             {
@@ -344,6 +347,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* this.btnAddNewPersonThisFamily.enabled := false; */
             }
 
+            // now changes to controls can trigger enabling of save button again
+            FPetraUtilsObject.EnableDataChangedEvent();
+
             ApplySecurity();
         }
 
@@ -375,6 +381,81 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void AdjustAfterResizing()
         {
             SetupDataGridVisualAppearance();
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
+        /// to another record, otherwise set it to false.</param>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+// TODO
+//            bool ReturnValue = false;
+//            Control ControlToValidate;
+//            PSubscriptionRow CurrentRow;
+//
+//            CurrentRow = GetSelectedDetailRow();
+//
+//            if (CurrentRow != null)
+//            {
+//                if (AValidateSpecificControl != null)
+//                {
+//                    ControlToValidate = AValidateSpecificControl;
+//                }
+//                else
+//                {
+//                    ControlToValidate = this.ActiveControl;
+//                }
+//
+//                GetDetailsFromControls(CurrentRow);
+//
+//                // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+//                ValidateDataDetailsManual(CurrentRow);
+//
+//                if (AProcessAnyDataValidationErrors)
+//                {
+//                    // Only process the Data Validations here if ControlToValidate is not null.
+//                    // It can be null if this.ActiveControl yields null - this would happen if no Control
+//                    // on this UserControl has got the Focus.
+//                    if(ControlToValidate.FindUserControlOrForm(true) == this)
+//                    {
+//                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+//                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+//                    }
+//                    else
+//                    {
+//                        ReturnValue = true;
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                ReturnValue = true;
+//            }
+//
+//            if(ReturnValue)
+//            {
+//                // Remove a possibly shown Validation ToolTip as the data validation succeeded
+//                FPetraUtilsObject.ValidationToolTip.RemoveAll();
+//            }
+
+            return ReturnValue;
         }
 
         #endregion
@@ -476,7 +557,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 /* looks stupid, but is necessary when the keyboard is used! */
                 OpenComboBox();
-                btnEditFamilyID.Text = CommonResourcestrings.StrBtnTextDone;
+                btnEditFamilyID.Text = MCommonResourcestrings.StrBtnTextDone;
                 this.PrepareArrowButtons();
             }
             /* if the "DONE" button is pressed, enables screenparts, disables combobox */
@@ -532,7 +613,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (GridEdited)
             {
-                MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 + Resourcestrings.StrErrorMaintainFamilyMembers2);
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorMaintainFamilyMembers2);
             }
             else
             {
@@ -621,7 +702,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (GridEdited)
             {
-                MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 + Resourcestrings.StrErrorMaintainFamilyMembers2);
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorMaintainFamilyMembers2);
             }
             else
             {
@@ -646,8 +727,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (GridEdited)
             {
-                MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 +
-                    Resourcestrings.StrErrorMaintainFamilyMembers2);
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 +
+                    MPartnerResourcestrings.StrErrorMaintainFamilyMembers2);
             }
             else
             {
@@ -655,9 +736,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     if (FDelegateIsNewPartner(FMainDS))
                     {
-                        MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 +
-                            Resourcestrings.StrErrorChangeFamily2,
-                            Resourcestrings.StrErrorNeedToSavePartnerTitle);
+                        MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 +
+                            MPartnerResourcestrings.StrErrorChangeFamily2,
+                            MPartnerResourcestrings.StrErrorNeedToSavePartnerTitle);
                         return;
                     }
 
@@ -770,14 +851,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (GridEdited)
             {
-                MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 + Resourcestrings.StrErrorMaintainFamilyMembers2);
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorMaintainFamilyMembers2);
             }
             else
             {
                 if (FDelegateIsNewPartner(FMainDS))
                 {
-                    MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 + Resourcestrings.StrErrorChangeFamily2,
-                        Resourcestrings.StrErrorNeedToSavePartnerTitle);
+                    MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorChangeFamily2,
+                        MPartnerResourcestrings.StrErrorNeedToSavePartnerTitle);
                     return;
                 }
 
@@ -1229,7 +1310,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (GridEdited)
             {
-                MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 + Resourcestrings.StrErrorMaintainFamilyMembers2);
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorMaintainFamilyMembers2);
             }
             else
             {
@@ -1322,8 +1403,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (FDelegateIsNewPartner(FMainDS))
                 {
-                    MessageBox.Show(Resourcestrings.StrErrorNeedToSavePartner1 + Resourcestrings.StrErrorChangeFamily2,
-                        Resourcestrings.StrErrorNeedToSavePartnerTitle);
+                    MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorChangeFamily2,
+                        MPartnerResourcestrings.StrErrorNeedToSavePartnerTitle);
                     return;
                 }
 

@@ -28,6 +28,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
@@ -101,9 +102,22 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void NewRowManual(ref PmPersonEvaluationRow ARow)
         {
+            DateTime EvaluationDate = DateTime.Now.Date;
+
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-            ARow.EvaluationDate = DateTime.Now.Date;
             ARow.Evaluator = "";
+
+            /* check if the primary key is already in use and otherwise decrease the initial evaluation date
+             * which will then be modified by the user */
+            if (FMainDS.PmPersonEvaluation.Rows.Find(new object[] { ARow.PartnerKey, EvaluationDate, ARow.Evaluator }) != null)
+            {
+                while (FMainDS.PmPersonEvaluation.Rows.Find(new object[] { ARow.PartnerKey, EvaluationDate, ARow.Evaluator }) != null)
+                {
+                    EvaluationDate = EvaluationDate.AddDays(-1);
+                }
+            }
+
+            ARow.EvaluationDate = EvaluationDate;
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -114,8 +128,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.Evaluator), Catalog.GetString("Confirm Delete"),
+                            "You have choosen to delete this record ({0} {1} {2}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.Evaluator,
+                        DataBinding.DateTimeToLongDateString2(FPreviouslySelectedDetailRow.EvaluationDate),
+                        FPreviouslySelectedDetailRow.EvaluationType),
+                    Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = CurrentRowIndex();

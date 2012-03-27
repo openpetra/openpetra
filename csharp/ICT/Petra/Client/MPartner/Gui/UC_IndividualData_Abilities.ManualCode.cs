@@ -132,7 +132,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                            "You have choosen to delete this record ({0}).\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.AbilityAreaName), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {

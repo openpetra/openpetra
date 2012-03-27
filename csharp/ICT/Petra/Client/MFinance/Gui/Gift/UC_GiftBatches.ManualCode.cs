@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -302,7 +303,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
-                RefreshAll();
+
+                AGiftBatchRow giftBatchRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FSelectedBatchNumber });
+                giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
+                giftBatchRow.AcceptChanges();
+
+                ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
             }
         }
 
@@ -394,6 +400,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
                 }
             }
+        }
+
+        private void ValidateDataDetailsManual(AGiftBatchRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

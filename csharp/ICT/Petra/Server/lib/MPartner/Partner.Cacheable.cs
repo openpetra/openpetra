@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
     /// and which would be retrieved numerous times from the Server as UI windows
     /// are opened.
     /// </summary>
-    public class TPartnerCacheable : TCacheableTablesLoader
+    public partial class TPartnerCacheable : TCacheableTablesLoader
     {
         /// time when this object was instantiated
         private DateTime FStartTime;
@@ -380,6 +380,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheablePartnerTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Partner.SaveChangedStandardCacheableTable...");
@@ -397,159 +398,380 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                     switch (ACacheableTable)
                     {
                         case TCacheablePartnerTablesEnum.AddresseeTypeList:
-                            if (PAddresseeTypeAccess.SubmitChanges((PAddresseeTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateAddresseeTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateAddresseeTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PAddresseeTypeAccess.SubmitChanges((PAddresseeTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.AcquisitionCodeList:
-                            if (PAcquisitionAccess.SubmitChanges((PAcquisitionTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateAcquisitionCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateAcquisitionCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PAcquisitionAccess.SubmitChanges((PAcquisitionTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.BusinessCodeList:
-                            if (PBusinessAccess.SubmitChanges((PBusinessTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateBusinessCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateBusinessCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PBusinessAccess.SubmitChanges((PBusinessTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.CurrencyCodeList:
-                            if (ACurrencyAccess.SubmitChanges((ACurrencyTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateCurrencyCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateCurrencyCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (ACurrencyAccess.SubmitChanges((ACurrencyTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.DataLabelList:
-                            if (PDataLabelAccess.SubmitChanges((PDataLabelTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateDataLabelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateDataLabelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PDataLabelAccess.SubmitChanges((PDataLabelTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.DataLabelUseList:
-                            if (PDataLabelUseAccess.SubmitChanges((PDataLabelUseTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateDataLabelUseList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateDataLabelUseListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PDataLabelUseAccess.SubmitChanges((PDataLabelUseTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.DataLabelLookupCategoryList:
-                            if (PDataLabelLookupCategoryAccess.SubmitChanges((PDataLabelLookupCategoryTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateDataLabelLookupCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateDataLabelLookupCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PDataLabelLookupCategoryAccess.SubmitChanges((PDataLabelLookupCategoryTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.DataLabelLookupList:
-                            if (PDataLabelLookupAccess.SubmitChanges((PDataLabelLookupTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateDataLabelLookupList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateDataLabelLookupListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PDataLabelLookupAccess.SubmitChanges((PDataLabelLookupTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.DenominationList:
-                            if (PDenominationAccess.SubmitChanges((PDenominationTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateDenominationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateDenominationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PDenominationAccess.SubmitChanges((PDenominationTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.InterestList:
-                            if (PInterestAccess.SubmitChanges((PInterestTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateInterestList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateInterestListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PInterestAccess.SubmitChanges((PInterestTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.InterestCategoryList:
-                            if (PInterestCategoryAccess.SubmitChanges((PInterestCategoryTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateInterestCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateInterestCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PInterestCategoryAccess.SubmitChanges((PInterestCategoryTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.LocationTypeList:
-                            if (PLocationTypeAccess.SubmitChanges((PLocationTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateLocationTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateLocationTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PLocationTypeAccess.SubmitChanges((PLocationTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.MaritalStatusList:
-                            if (PtMaritalStatusAccess.SubmitChanges((PtMaritalStatusTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateMaritalStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateMaritalStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PtMaritalStatusAccess.SubmitChanges((PtMaritalStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.MethodOfContactList:
-                            if (PMethodOfContactAccess.SubmitChanges((PMethodOfContactTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateMethodOfContactList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateMethodOfContactListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PMethodOfContactAccess.SubmitChanges((PMethodOfContactTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.OccupationList:
-                            if (POccupationAccess.SubmitChanges((POccupationTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateOccupationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateOccupationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (POccupationAccess.SubmitChanges((POccupationTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.PartnerStatusList:
-                            if (PPartnerStatusAccess.SubmitChanges((PPartnerStatusTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidatePartnerStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePartnerStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PPartnerStatusAccess.SubmitChanges((PPartnerStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.PartnerTypeList:
-                            if (PTypeAccess.SubmitChanges((PTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidatePartnerTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePartnerTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PTypeAccess.SubmitChanges((PTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.ProposalStatusList:
-                            if (PFoundationProposalStatusAccess.SubmitChanges((PFoundationProposalStatusTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateProposalStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateProposalStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PFoundationProposalStatusAccess.SubmitChanges((PFoundationProposalStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.ProposalSubmissionTypeList:
-                            if (PProposalSubmissionTypeAccess.SubmitChanges((PProposalSubmissionTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateProposalSubmissionTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateProposalSubmissionTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PProposalSubmissionTypeAccess.SubmitChanges((PProposalSubmissionTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.RelationList:
-                            if (PRelationAccess.SubmitChanges((PRelationTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateRelationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateRelationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PRelationAccess.SubmitChanges((PRelationTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.RelationCategoryList:
-                            if (PRelationCategoryAccess.SubmitChanges((PRelationCategoryTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateRelationCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateRelationCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PRelationCategoryAccess.SubmitChanges((PRelationCategoryTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheablePartnerTablesEnum.UnitTypeList:
-                            if (UUnitTypeAccess.SubmitChanges((UUnitTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateUnitTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateUnitTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (UUnitTypeAccess.SubmitChanges((UUnitTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
+
                         default:
 
                             throw new Exception(
@@ -578,19 +800,117 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                 }
             }
 
-            /*
-            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
-            /// the next time something in the Client accesses it.
-             */
+            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            // the next time something in the Client accesses it.
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+
             return SubmissionResult;
         }
+
+#region Data Validation
+
+        partial void ValidateAddresseeTypeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAddresseeTypeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAcquisitionCodeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAcquisitionCodeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateBusinessCodeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateBusinessCodeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateCurrencyCodeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateCurrencyCodeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelUseList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelUseListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelLookupCategoryList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelLookupCategoryListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelLookupList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelLookupListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDenominationList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDenominationListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateInterestList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateInterestListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateInterestCategoryList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateInterestCategoryListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLocationTypeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLocationTypeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMaritalStatusList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMaritalStatusListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMethodOfContactList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMethodOfContactListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateOccupationList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateOccupationListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePartnerStatusList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePartnerStatusListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePartnerTypeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePartnerTypeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateProposalStatusList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateProposalStatusListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateProposalSubmissionTypeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateProposalSubmissionTypeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateRelationList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateRelationListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateRelationCategoryList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateRelationCategoryListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateUnitTypeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateUnitTypeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+#endregion Data Validation
 
         private DataTable GetCountyListTable(TDBTransaction AReadTransaction, string ATableName)
         {

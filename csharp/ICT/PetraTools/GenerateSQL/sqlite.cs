@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -236,7 +236,14 @@ public class TSQLiteWriter
                 cmd.CommandText = stmt;
 
                 // load the data from the text file
-                StreamReader reader = new StreamReader(APath + Path.DirectorySeparatorChar + ATablename + ".csv");
+                string filename = APath + Path.DirectorySeparatorChar + ATablename + ".csv";
+
+                if (File.Exists(filename + ".local"))
+                {
+                    filename += ".local";
+                }
+
+                StreamReader reader = new StreamReader(filename);
                 string line;
 
                 while ((line = reader.ReadLine()) != null)

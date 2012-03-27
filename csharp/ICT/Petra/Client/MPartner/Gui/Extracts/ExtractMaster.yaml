@@ -8,7 +8,8 @@ RootNode:
     FormType: edit
     Template: window
     Actions:
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actMaintainExtract: {ActionClick=MaintainExtract}      
+        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}      
     Controls:
         pnlContent:
             Controls: [pnlFilter, pnlExtractMasterList]
@@ -24,6 +25,12 @@ RootNode:
         ucoExtractMasterList:
             Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
             Dock: Fill
+
+    Menu:
+        mniMaintain:
+            Label: &Maintain
+            mniMaintainExtract: {Label=Maintain Extract, Action=actMaintainExtract}
+            mniVerifyExtract: {Label=Verify and Update Extract, Action=actVerifyAndUpdateExtract}
 
     Toolbar:
         tbbNew:

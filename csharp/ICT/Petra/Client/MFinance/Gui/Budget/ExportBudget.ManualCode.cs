@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if (AMessages.Count > 0)
             {
-                if (AMessages.HasCriticalError())
+                if (AMessages.HasCriticalErrors)
                 {
                     MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
                         MessageBoxButtons.OK,

@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.App.Core
         {
             String LogentryText;
 
-            LogentryText = "Petra Client Caught an Unhandled Exception.\r\n" + ALogText + "\r\n" + AException.ToString();
+            LogentryText = "OpenPetra Client Caught an Unhandled Exception.\r\n" + ALogText + "\r\n" + AException.ToString();
 
             // Check if logging is already initialised; if not, initialise it with a fallback log file
             if (TLogging.GetLogFileName() == "")

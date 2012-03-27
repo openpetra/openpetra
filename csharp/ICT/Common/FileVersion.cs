@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -52,33 +52,33 @@ namespace Ict.Common
         /// <returns>void</returns>
         public TFileVersionInfo(String ARPMStyleVersion)
         {
-            Int32 pos;
+            // 2.2.35-99: major.minor.build-private
+            // also works for 2.2.35.99
+            String[] VersionParts = ARPMStyleVersion.Split(new char[] { '.', '-' });
 
-            // 2.2.35: major.minor.buildprivate
+            FileMajorPart = 0;
+            FileMinorPart = 0;
+            FileBuildPart = 0;
+            FilePrivatePart = 0;
 
-            pos = ARPMStyleVersion.IndexOf('.');
-            FileMajorPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-            ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-            pos = ARPMStyleVersion.IndexOf('.');
-            FileMinorPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-            ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-            pos = ARPMStyleVersion.IndexOf('-');
-
-            if (pos == -1)
+            if (VersionParts.Length > 0)
             {
-                pos = ARPMStyleVersion.IndexOf('.');
+                FileMajorPart = System.Convert.ToUInt16(VersionParts[0]);
             }
 
-            if (pos == -1)
+            if (VersionParts.Length > 1)
             {
-                FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion);
-                FilePrivatePart = 0;
+                FileMinorPart = System.Convert.ToUInt16(VersionParts[1]);
             }
-            else
+
+            if (VersionParts.Length > 2)
             {
-                FileBuildPart = System.Convert.ToUInt16(ARPMStyleVersion.Substring(0, pos));
-                ARPMStyleVersion = ARPMStyleVersion.Substring(pos + 1);
-                FilePrivatePart = System.Convert.ToUInt16(ARPMStyleVersion);
+                FileBuildPart = System.Convert.ToUInt16(VersionParts[2]);
+            }
+
+            if (VersionParts.Length > 3)
+            {
+                FilePrivatePart = System.Convert.ToUInt16(VersionParts[3]);
             }
         }
 

@@ -134,20 +134,22 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         ///
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
-        /// <param name="AValidPartnerClasses">Pass in a Set of valid PartnerClasses that the
-        /// Partner is allowed to have (eg. [PERSON, FAMILY], or an empty Set ( [] ).</param>
+        /// <param name="AValidPartnerClasses">Pass in a array of valid PartnerClasses that the
+        /// Partner is allowed to have (eg. [PERSON, FAMILY], or an empty array ( [] ).</param>
+        /// <param name="APartnerExists">True if the Partner exists in the database or if PartnerKey is 0.</param>
         /// <param name="APartnerShortName">ShortName for the found Partner ('' if Partner
         /// doesn't exist or PartnerKey is 0)</param>
         /// <param name="APartnerClass">Partner Class of the found Partner (FAMILY if Partner
         /// doesn't exist or PartnerKey is 0)</param>
         /// <param name="AIsMergedPartner">true if the Partner' Partner Status is MERGED,
         /// otherwise false</param>
-        /// <returns>true if Partner was found in DB (except if AValidPartnerClasses ism't
-        /// an empty Set and the found Partner isn't of a PartnerClass that is in the
+        /// <returns>true if Partner was found in DB (except if AValidPartnerClasses isn't
+        /// an empty array and the found Partner isn't of a PartnerClass that is in the
         /// Set) or PartnerKey is 0, otherwise false
         /// </returns>
         public static Boolean VerifyPartner(Int64 APartnerKey,
             TPartnerClass[] AValidPartnerClasses,
+            out bool APartnerExists,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
             out Boolean AIsMergedPartner)
@@ -155,7 +157,10 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             Boolean ReturnValue;
             TStdPartnerStatusCode PartnerStatus;
 
-            ReturnValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
+            ReturnValue = APartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
+                out APartnerShortName,
+                out APartnerClass,
+                out PartnerStatus);
 #if DEBUGMODE
             if (TLogging.DL >= 7)
             {
@@ -281,6 +286,122 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
             else
             {
                 // Return result as valid if Partner Key is 0.
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Verifies the existence of a Partner
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
+        /// <returns>true if Partner was found in DB or Partner key = 0, otherwise false</returns>
+        public static Boolean VerifyPartner(Int64 APartnerKey)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            PPartnerTable PartnerTable;
+            Boolean ReturnValue = true;
+
+            // initialise outout Arguments
+            if (APartnerKey != 0)
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+                try
+                {
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                        if (TLogging.DL >= 7)
+                        {
+                            Console.WriteLine("VerifyPartner: committed own transaction.");
+                        }
+#endif
+                    }
+                }
+
+                if (PartnerTable.Rows.Count == 0)
+                {
+                    ReturnValue = false;
+                }
+                else
+                {
+                    ReturnValue = true;
+                }
+            }
+            else
+            {
+                // Return result as valid if Partner Key is 0.
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Verifies the existence of a Partner at a given location
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of Partner to be verified</param>
+        /// <param name="ALocationKey">Location Key of Partner to be verified</param>
+        /// <param name="AAddressNeitherCurrentNorMailing"></param>
+        /// <returns>true if Partner was found in DB at given location, otherwise false</returns>
+        public static Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
+            TLocationPK ALocationKey, out bool AAddressNeitherCurrentNorMailing)
+        {
+            AAddressNeitherCurrentNorMailing = true;
+
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            PPartnerLocationTable PartnerLocationTable;
+            Boolean ReturnValue = true;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+            try
+            {
+                PartnerLocationTable = PPartnerLocationAccess.LoadByPrimaryKey(APartnerKey,
+                    ALocationKey.SiteKey,
+                    ALocationKey.LocationKey,
+                    ReadTransaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+
+            if (PartnerLocationTable.Rows.Count == 0)
+            {
+                ReturnValue = false;
+            }
+            else
+            {
+                PPartnerLocationRow Row = (PPartnerLocationRow)PartnerLocationTable.Rows[0];
+
+                // check if the partner location is either current or if it is a mailing address
+                if ((Row.DateEffective > DateTime.Today)
+                    || (!Row.SendMail)
+                    || ((Row.DateGoodUntil != null)
+                        && (Row.DateGoodUntil < DateTime.Today)))
+                {
+                    AAddressNeitherCurrentNorMailing = true;
+                }
+                else
+                {
+                    AAddressNeitherCurrentNorMailing = false;
+                }
+
                 ReturnValue = true;
             }
 

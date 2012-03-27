@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -251,25 +251,6 @@ public class TServer
              * Infinite loop - ON PURPOSE !
              * Server can only be shutdown from PetraServerAdminConsole...
              */
-
-            /*
-             * Access a Property of TTheServerManager - without doing anything
-             * with the result value.   Stupid ? - NO !!!
-             *
-             * If this is not done, .NET is 'clever' and figures out that the Instance
-             * of TTheServerManager is no longer needed in the whole lifetime of the
-             * PetraServer Process - which is correct when looking a further lines
-             * down, where the Process will end after this loop, but is wrong in our
-             * case, because TTheServerManager can be accessed using the
-             * PetraServerAdminConsole via .NET Remoting.
-             *
-             * Therefore reading the Property is needed to keep the Instace of
-             * TTheServerManager from being GC'ed, and therefore from running its
-             * Finalizer, which would Log 'SERVER STOPPED!' as soon as GC kicks in
-             * (eg. when a Client connects)!
-             *
-             */
-            int TmpNeededForCheatingOnGarbageCollection = TheServerManager.IPPort;
 
             /*
              * Server main Thread goes to sleep and never needs to wake up again -

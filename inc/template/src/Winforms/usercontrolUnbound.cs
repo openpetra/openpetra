@@ -40,6 +40,8 @@ namespace {#NAMESPACE}
 {#IFDEF TABPAGECTRL}
     private SortedList<TDynamicLoadableUserControls, UserControl> FTabSetup;       
     private event TTabPageEventHandler FTabPageEvent;
+    private UserControl FCurrentUserControl;
+    
     {#DYNAMICTABPAGEUSERCONTROLDECLARATION}
 {#ENDIF TABPAGECTRL}
    

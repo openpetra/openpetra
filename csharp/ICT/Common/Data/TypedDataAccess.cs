@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1538,7 +1538,7 @@ namespace Ict.Common.Data
         /// <param name="AOrderBy"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public static void LoadByPrimaryKey(short ATableId,
+        public static DataRow LoadByPrimaryKey(short ATableId,
             DataSet ADataSet,
             System.Object[] APrimaryKeyValues,
             StringCollection AFieldList,
@@ -1555,12 +1555,14 @@ namespace Ict.Common.Data
                 GenerateOrderByClause(AOrderBy),
                 TTypedDataTable.GetTableName(ATableId),
                 ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+
+            return ADataSet.Tables[TTypedDataTable.GetTableName(ATableId)].Rows.Find(APrimaryKeyValues);
         }
 
         /// <summary>
         /// different version for data table
         /// </summary>
-        public static void LoadByPrimaryKey(short ATableId,
+        public static DataRow LoadByPrimaryKey(short ATableId,
             TTypedDataTable ADataTable,
             System.Object[] APrimaryKeyValues,
             StringCollection AFieldList,
@@ -1576,6 +1578,8 @@ namespace Ict.Common.Data
                 GenerateWhereClauseFromPrimaryKey(ATableId) +
                 GenerateOrderByClause(AOrderBy),
                 ATransaction, ParametersArray, AStartRecord, AMaxRecords);
+
+            return ADataTable.Rows.Find(APrimaryKeyValues);
         }
 
         /// <summary>

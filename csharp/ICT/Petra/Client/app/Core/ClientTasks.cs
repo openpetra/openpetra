@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.App.Core
                 if (FClientTaskDataRow["TaskGroup"].ToString() == SharedConstants.CLIENTTASKGROUP_USERMESSAGE)
                 {
                     // MessageBox.Show(CLIENTTASKGROUP_USERMESSAGE + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + '): ' + FClientTaskDataRow['TaskCode'].ToString, 'Client #' + UClientID.ToString + ' received a ClientTask.');
-                    MessageBox.Show(FClientTaskDataRow["TaskCode"].ToString(), "Petra Message");
+                    MessageBox.Show(FClientTaskDataRow["TaskCode"].ToString(), "OpenPetra Message");
                 }
 
                 if (FClientTaskDataRow["TaskGroup"].ToString() == SharedConstants.CLIENTTASKGROUP_CACHEREFRESH)
@@ -100,13 +100,17 @@ namespace Ict.Petra.Client.App.Core
 
                 // messagebox.show('Finished executing Client Task #' + FClientTaskDataRow['TaskID'].ToString + ' in Thread.');
             }
+#if DEBUGMODE
             catch (Exception Exp)
             {
-#if DEBUGMODE
                 MessageBox.Show("Exception occured in TClientTaskInstance.Execute: \r\n" + Exp.ToString());
                 TLogging.Log("Exception occured in TClientTaskInstance.Execute: \r\n" + Exp.ToString());
-#endif
             }
+#else
+            catch (Exception)
+            {
+            }
+#endif
         }
     }
 }

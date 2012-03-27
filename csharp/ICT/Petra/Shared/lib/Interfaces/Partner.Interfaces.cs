@@ -260,6 +260,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.ImportExport.WebConnectors
                                        Boolean ANoFamily,
                                        StringCollection ASpecificBuildingInfo);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
+        String ExportAllPartnersExt();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.ImportExport.WebConnectors.TImportExportWebConnector)</summary>
         Boolean ImportDataExt(System.String[] ALinesToImport,
                               System.String ALimitToOption,
                               System.Boolean ADoNotOverwrite,
@@ -311,6 +313,10 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Mailing.Cacheable
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable.Class)</summary>
         void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableMailingTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable.Class)</summary>
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+                                                               ref TTypedDataTable ASubmitTable,
+                                                               out TVerificationResultCollection AVerificationResult);
     }
 
 }
@@ -464,6 +470,7 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
         Boolean VerifyPartner(Int64 APartnerKey,
                               TPartnerClass[] AValidPartnerClasses,
+                              out bool APartnerExists,
                               out String APartnerShortName,
                               out TPartnerClass APartnerClass,
                               out Boolean AIsMergedPartner);
@@ -473,6 +480,12 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups
                               out TPartnerClass APartnerClass,
                               out Boolean AIsMergedPartner,
                               out Boolean AUserCanAccessPartner);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
+        Boolean VerifyPartner(Int64 APartnerKey);
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
+        Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
+                                        TLocationPK ALocationKey,
+                                        out Boolean AAddressNeitherCurrentNorMailing);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
         Boolean MergedPartnerDetails(Int64 AMergedPartnerPartnerKey,
                                      out String AMergedPartnerPartnerShortName,
@@ -688,9 +701,21 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         MExtractMasterTable GetAllExtractHeaders();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
-        Boolean DeleteExtract(System.Int32 AExtractId);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean ExtractExists(String AExtractName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        ExtractTDSMExtractTable GetExtractRowsWithPartnerData(System.Int32 AExtractId);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        TSubmitChangesResult SaveExtractMaster(ref MExtractMasterTable AExtractMasterTable,
+                                               out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        TSubmitChangesResult SaveExtract(System.Int32 AExtractId,
+                                         ref MExtractTable AExtractTable,
+                                         out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
+        System.Boolean AddRecentlyUsedPartner(Int64 APartnerKey,
+                                              TPartnerClass APartnerClass,
+                                              Boolean ANewPartner,
+                                              TLastPartnerUse ALastPartnerUse);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
         System.Boolean ChangeFamily(Int64 APersonKey,
                                     Int64 AOldFamilyKey,

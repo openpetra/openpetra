@@ -57,11 +57,14 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public partial class TFrmPetraEditUtils : TFrmPetraUtils
     {
-        /// <summary>todoComment</summary>
-        public const String StrFormCaptionPrefixNew = "NEW: ";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrFormCaptionPrefixReadonly = "READ-ONLY: ";
+        /// <summary>This Resourcestring needs to be public becaused it is used elsewhere as well.</summary>
+        public static readonly string StrFormCaptionPrefixNew = Catalog.GetString("NEW: ");
+
+// TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
+
+        #endregion
 
         /// Tells which mode the screen should be opened in
         protected TScreenMode FScreenMode;
@@ -74,6 +77,9 @@ namespace Ict.Petra.Client.CommonForms
 
         /// Tells whether the Screen is working with new data (is not editing existing data)
         protected Boolean FHasNewData;
+
+        /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
+        protected Boolean FSubmitChangesContinue;
 
         /// Tells whether the check if the Form can be closed has already been run
         protected Boolean FCloseFormCheckRun;
@@ -112,6 +118,20 @@ namespace Ict.Petra.Client.CommonForms
             set
             {
                 FVerificationResultCollection = value;
+            }
+        }
+
+        /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
+        public bool SubmitChangesContinue
+        {
+            get
+            {
+                return FSubmitChangesContinue;
+            }
+
+            set
+            {
+                FSubmitChangesContinue = value;
             }
         }
 
@@ -278,7 +298,8 @@ namespace Ict.Petra.Client.CommonForms
                 }
                 else if (ctrl.GetType() == typeof(TtxtPetraDate))
                 {
-                    ((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                    //((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                    ((TtxtPetraDate)ctrl).TextChanged += new EventHandler(MultiEventHandler);
                 }
                 else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
                 {
@@ -306,7 +327,8 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(TreeView))
                          || (ctrl.GetType() == typeof(TTrvTreeView))
                          || (ctrl.GetType() == typeof(TbtnCreated))
-                         || (ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel)))
+                         || ((ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel))
+                             || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))))
                 {
                     // nothing to do
                 }
@@ -363,7 +385,8 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             if ((this.SuppressChangeDetection == false)
-                && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string)) || !((string)ctrl.Tag).Contains("SuppressChangeDetection"))
+                && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string))
+                    || !((string)ctrl.Tag).Contains(MCommonResourcestrings.StrCtrlSuppressChangeDetection))
                 && ((Control)sender).Visible
                 && ((Control)sender).Enabled)
             {
@@ -578,10 +601,10 @@ namespace Ict.Petra.Client.CommonForms
                 }
 
                 // still unsaved data in the DataSet
-                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(CommonResourcestrings.StrFormHasUnsavedChanges +
+                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(MCommonResourcestrings.StrFormHasUnsavedChanges +
                     Environment.NewLine + Environment.NewLine +
-                    CommonResourcestrings.StrFormHasUnsavedChangesQuestion,
-                    CommonResourcestrings.StrGenericWarning,
+                    MCommonResourcestrings.StrFormHasUnsavedChangesQuestion,
+                    MCommonResourcestrings.StrGenericWarning,
                     MessageBoxButtons.YesNoCancel,
                     MessageBoxIcon.Warning,
                     MessageBoxDefaultButton.Button1);
@@ -604,10 +627,10 @@ namespace Ict.Petra.Client.CommonForms
                     catch (CancelSaveException)
                     {
                     }
-                    catch (Exception exp)
+                    catch (Exception)
                     {
-                        MessageBox.Show("Exception occured during saving of data: " + exp.ToString());
                         CloseFormCheckRun = false;
+                        throw;
                     }
 
                     ReturnValue = true;
@@ -719,7 +742,7 @@ namespace Ict.Petra.Client.CommonForms
                 CaptionPrefix = StrFormCaptionPrefixNew;
             }
 
-            FWinForm.Text = CaptionPrefix + Catalog.GetString("New Petra Screen");
+            FWinForm.Text = CaptionPrefix + Catalog.GetString("New OpenPetra Screen");
         }
 
         #endregion

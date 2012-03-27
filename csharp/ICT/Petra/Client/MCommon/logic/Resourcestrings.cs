@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,106 +23,111 @@
 //
 using System;
 
+using Ict.Common;
+
+
 namespace Ict.Petra.Client.MCommon
 {
     /// <summary>
     /// Contains resourcetexts that are used across several Petra Modules.
     /// </summary>
-    public class CommonResourcestrings
+    public class MCommonResourcestrings
     {
         /// <summary>todoComment</summary>
-        public const String StrGenericInfo = "Information";
+        public static readonly string StrGenericInfo = Catalog.GetString("Information");
 
         /// <summary>todoComment</summary>
-        public const String StrGenericWarning = "Warning";
+        public static readonly string StrGenericWarning = Catalog.GetString("Warning");
 
         /// <summary>todoComment</summary>
-        public const String StrGenericError = "Error";
+        public static readonly string StrGenericError = Catalog.GetString("Error");
 
         /// <summary>todoComment</summary>
-        public const String StrGenericReady = "Ready";
+        public static readonly string StrGenericReady = Catalog.GetString("Ready");
 
         /// <summary>todoComment</summary>
-        public const String StrGenericInactiveCode = " (inactive)";
+        public static readonly string StrDetails = Catalog.GetString("Details: ");
 
         /// <summary>todoComment</summary>
-        public const String StrGenericFunctionalityNotAvailable = "Functionality not available";
+        public static readonly string StrGenericInactiveCode = Catalog.GetString(" (inactive)");
 
         /// <summary>todoComment</summary>
-        public const String StrFormHasUnsavedChanges = "This window has changes that have not been saved.";
+        public static readonly string StrGenericFunctionalityNotAvailable = Catalog.GetString("Functionality not available");
 
         /// <summary>todoComment</summary>
-        public const String StrFormHasUnsavedChangesQuestion = "Save changes before closing?";
+        public static readonly string StrFormHasUnsavedChanges = Catalog.GetString("This window has changes that have not been saved.");
 
         /// <summary>todoComment</summary>
-        public const String StrSavingDataCancelled = "Saving of data cancelled by user!";
+        public static readonly string StrFormHasUnsavedChangesQuestion = Catalog.GetString("Save changes before closing?");
+
+        /// <summary>Shown while data is being saved.</summary>
+        public static readonly string StrSavingDataInProgress = Catalog.GetString("Saving data...");
+
+        /// <summary>Shown when data was saved successfully.</summary>
+        public static readonly string StrSavingDataSuccessful = Catalog.GetString("Data successfully saved.");
+
+        /// <summary>Shown when saving of data failed.</summary>
+        public static readonly string StrSavingDataException = Catalog.GetString("Data could not be saved because an unexpected error occured!");
 
         /// <summary>todoComment</summary>
-        public const String StrSavingDataNothingToSave = "There was nothing to be saved.";
+        public static readonly string StrSavingDataErrorOccured = Catalog.GetString("Data could not be saved because an error occured!");
 
         /// <summary>todoComment</summary>
-        public const String StrSavingDataErrorOccured = "An error occured during the saving of the data!";
+        public static readonly string StrSavingDataCancelled = Catalog.GetString("Saving of data cancelled by user!");
+
+        /// <summary>Shown when no data needs saving.</summary>
+        public static readonly string StrSavingDataNothingToSave = Catalog.GetString("There was nothing to be saved.");
 
         /// <summary>todoComment</summary>
-        public const String StrPetraServerTooBusy = "The Petra Server is currently too busy to {0}." + "\r\n" + "\r\n" +
-                                                    "Please wait a few seconds and press 'Retry' then to retry, or 'Cancel' to abort.";
+        public static readonly string StrPetraServerTooBusy = Catalog.GetString("The OpenPetra Server is currently too busy to {0}.\r\n\r\n" +
+            "Please wait a few seconds and press 'Retry' then to retry, or 'Cancel' to abort.");
 
         /// <summary>todoComment</summary>
-        public const String StrPetraServerTooBusyTitle = "Petra Server Too Busy";
+        public static readonly string StrPetraServerTooBusyTitle = Catalog.GetString("OpenPetra Server Too Busy");
 
         /// <summary>todoComment</summary>
-        public const String StrOpeningCancelledByUser = "Opening of {0} screen got cancelled by user.";
+        public static readonly string StrOpeningCancelledByUser = Catalog.GetString("Opening of {0} screen got cancelled by user.");
 
         /// <summary>todoComment</summary>
-        public const String StrOpeningCancelledByUserTitle = "Screen opening cancelled";
+        public static readonly string StrOpeningCancelledByUserTitle = Catalog.GetString("Screen opening cancelled");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnerClass = "Partner Class";
+        public static readonly string StrErrorOnlyForPerson = Catalog.GetString("This only works for Partners of Partner Class PERSON");
 
         /// <summary>todoComment</summary>
-        public const String StrPartnerKey = "Partner Key";
+        public static readonly string StrErrorOnlyForFamilyOrPerson = Catalog.GetString(
+            "This only works for Partners of Partner Classes FAMILY or PERSON");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorOnlyForPerson = "This only works for Partners of Partner Class PERSON";
+        public static readonly string StrErrorOnlyForPersonOrUnit = Catalog.GetString(
+            "This only works for Partners of Partner Classes PERSON or UNIT");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorOnlyForFamilyOrPerson = "This only works for Partners of Partner Classes FAMILY or PERSON";
+        public static readonly string StrErrorNoInstalledSites = Catalog.GetString("No Installed Sites!");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorOnlyForPersonOrUnit = "This only works for Partners of Partner Classes PERSON or UNIT";
+        public static readonly string StrBtnTextNew = Catalog.GetString("&New");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorTheCodeIsNoLongerActive1 = "The code";
+        public static readonly string StrBtnTextEdit = Catalog.GetString("Edi&t");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorTheCodeIsNoLongerActive2 = "is no longer active.";
+        public static readonly string StrBtnTextDelete = Catalog.GetString("&Delete");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorTheCodeIsNoLongerActive3 = "Do you still want to use it?";
+        public static readonly string StrBtnTextDone = Catalog.GetString("D&one");
 
         /// <summary>todoComment</summary>
-        public const String StrErrorNoInstalledSites = "No Installed Sites!";
+        public static readonly string StrPartnerStatusChange = Catalog.GetString("The Partner's Status is currently" + " '{0}'.\r\n" +
+            "OpenPetra will change it automatically to '{1}'");
 
         /// <summary>todoComment</summary>
-        public const String StrBtnTextNew = "&New";
+        public static readonly string StrPartnerReActivationTitle = Catalog.GetString("Partner Gets Re-activated!");
 
         /// <summary>todoComment</summary>
-        public const String StrBtnTextEdit = "Edi&t";
+        public static readonly string StrValueUnassignable = Catalog.GetString("Unassignable Value");
 
         /// <summary>todoComment</summary>
-        public const String StrBtnTextDelete = "&Delete";
-
-        /// <summary>todoComment</summary>
-        public const String StrBtnTextCancel = "&Cancel";
-
-        /// <summary>todoComment</summary>
-        public const String StrBtnTextDone = "D&one";
-
-        /// <summary>todoComment</summary>
-        public const String StrPartnerStatusChange = "The Partner's Status is currently" + " '{0}'." + "\r\n" +
-                                                     "Petra will change it automatically to '{1}'";
-
-        /// <summary>todoComment</summary>
-        public const String StrPartnerReActivationTitle = "Partner Gets Re-activated!";
+        public const String StrCtrlSuppressChangeDetection = "SuppressChangeDetection";
     }
 }

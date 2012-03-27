@@ -178,7 +178,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 AddStatus(FormatVerificationResult("Imported file verification: ", VerificationResult));
 
-                if ((VerificationResult != null) && VerificationResult.HasCriticalError())
+                if ((VerificationResult != null) && VerificationResult.HasCriticalErrors)
                 {
                     string ErrorMessages = String.Empty;
 

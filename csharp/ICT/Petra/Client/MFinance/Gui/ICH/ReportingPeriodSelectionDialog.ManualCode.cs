@@ -194,8 +194,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 }
                 catch (EDBTransactionBusyException)
                 {
-                    ServerBusyDialogResult = MessageBox.Show(CommonResourcestrings.StrPetraServerTooBusy,
-                        CommonResourcestrings.StrPetraServerTooBusyTitle,
+                    ServerBusyDialogResult = MessageBox.Show(MCommonResourcestrings.StrPetraServerTooBusy,
+                        MCommonResourcestrings.StrPetraServerTooBusyTitle,
                         MessageBoxButtons.RetryCancel,
                         MessageBoxIcon.Warning,
                         MessageBoxDefaultButton.Button1);

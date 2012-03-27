@@ -220,8 +220,14 @@ namespace Ict.Tools.GenerateWinForms
         /// <returns>-1 if node1 depends on node2, +1 if node2 depends on node1, and 0 if they are identical</returns>
         public int Compare(string node1, string node2)
         {
-            string path1 = Path.GetDirectoryName(node1);
-            string path2 = Path.GetDirectoryName(node2);
+            string path1 = Path.GetDirectoryName(node1).Replace("\\", "/");
+            string path2 = Path.GetDirectoryName(node2).Replace("\\", "/");
+
+            if (path1.IndexOf("/Client/") != -1)
+            {
+                path1 = path1.Substring(path1.IndexOf("/Client/") + 8);
+                path2 = path2.Substring(path2.IndexOf("/Client/") + 8);
+            }
 
             if ((path1.Length > path2.Length) && path1.StartsWith(path2))
             {
@@ -235,10 +241,31 @@ namespace Ict.Tools.GenerateWinForms
 
             if (path1 == path2)
             {
-                return 0;
+                // compare the filename
+                return node1.CompareTo(node2);
             }
 
-            return -1;
+            string module1 = path1.Split(new char[] { '/' })[0];
+            string module2 = path2.Split(new char[] { '/' })[0];
+
+            if (module1 != module2)
+            {
+                // first process MReporting, so that we can link to it from the old Finance main screen (#695)
+                string ModuleOrder = "app,CommonForms,MCommon,MReporting,MConference,MPartner,MPersonnel,MFinance,MSysMan";
+
+                if (ModuleOrder.IndexOf(module1) < ModuleOrder.IndexOf(module2))
+                {
+                    return -1;
+                }
+                else if (ModuleOrder.IndexOf(module1) > ModuleOrder.IndexOf(module2))
+                {
+                    return +1;
+                }
+
+                return module1.CompareTo(module2);
+            }
+
+            return path1.CompareTo(path2);
         }
     }
 }

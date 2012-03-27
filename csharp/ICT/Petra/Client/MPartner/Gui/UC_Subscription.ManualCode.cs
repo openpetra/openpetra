@@ -25,11 +25,13 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
@@ -265,6 +267,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public void SpecialInitUserControl()
         {
+            BuildValidationControlsDict();
         }
 
         /// <summary>
@@ -388,7 +391,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                             MessageBoxDefaultButton.Button2) == DialogResult.No)
                     {
                         /* If user selects not to use the publication, the recent publication code is selected. */
-                        this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue = FSelectedPublicationCode;
+                        if (FSelectedPublicationCode != null)
+                        {
+                            this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue = FSelectedPublicationCode;
+                        }
+                        else
+                        {
+                            this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedIndex = -1;
+                        }
                     }
                     else
                     {
@@ -399,6 +409,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             catch (Exception)
             {
             }
+        }
+
+        private void ValidateDataDetailsManual(PSubscriptionRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidateSubscriptionManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         #endregion

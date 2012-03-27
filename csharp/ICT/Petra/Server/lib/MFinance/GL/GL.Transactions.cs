@@ -333,7 +333,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                       " AND " + ABatchTable.GetBatchNumberDBName() + " IN (" + ListOfBatchNumbers + ")";
 
                 GLBatchTDS BatchDS = new GLBatchTDS();
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
                 try
                 {
@@ -341,7 +344,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
                 finally
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    if (IsMyOwnTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
                 }
 
                 foreach (ABatchRow batch in BatchDS.ABatch.Rows)
@@ -356,7 +362,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (AVerificationResult.HasCriticalError())
+                if (AVerificationResult.HasCriticalErrors)
                 {
                     return TSubmitChangesResult.scrError;
                 }

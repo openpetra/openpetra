@@ -31,33 +31,120 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MPartner.Extracts;
 
-namespace Ict.Petra.Server.MPartner.queries
+namespace Ict.Petra.Server.MCommon.queries
 {
     /// <summary>
-    /// contains helper methods that are needed to prepare queries for Extracts
+    /// base class for extract queries on server side
     /// </summary>
-    public class TExtractHelper
+    public abstract class ExtractQueryBase
     {
+        /// <summary>
+        /// calculate an extract from a report: all partners of a given type (or selection of multiple types)
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="ASqlStmt"></param>
+        /// <param name="AResults"></param>
+        /// <returns></returns>
+        protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults)
+        {
+            // get the partner keys from the database
+            try
+            {
+                Boolean ReturnValue = false;
+                Boolean NewTransaction;
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                TSelfExpandingArrayList SqlParameterList = new TSelfExpandingArrayList();
+                bool AddressFilterAdded;
+
+                // call to derived class to retrieve parameters specific for extract
+                RetrieveParameters(AParameters, ref SqlParameterList);
+
+                // add address filter information to sql statement and parameter list
+                AddressFilterAdded = AddAddressFilter(AParameters, ref ASqlStmt, ref SqlParameterList);
+
+                // now run the database query
+                TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
+                    ConvertParameterArrayList(SqlParameterList));
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
+                // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
+                if (AParameters.Get("CancelReportCalculation").ToBool() == true)
+                {
+                    return false;
+                }
+
+                TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+
+                TVerificationResultCollection VerificationResult;
+                int NewExtractID;
+
+                // create an extract with the given name in the parameters
+                ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                    AParameters.Get("param_extract_name").ToString(),
+                    AParameters.Get("param_extract_description").ToString(),
+                    out NewExtractID,
+                    out VerificationResult,
+                    partnerkeys,
+                    0,
+                    AddressFilterAdded);
+
+                if (ReturnValue)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                return ReturnValue;
+            }
+            catch (Exception)
+            {
+//                TLogging.Log(e.ToString());
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                return false;
+            }
+        }
+
         /// <summary>
         /// extend query statement and query parameter list by address filter information given in extract parameters
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="AOdbcParameterList"></param>
-        /// <param name="AAddressFilterAdded"></param>
-        /// <returns></returns>
-        public static bool AddAddressFilter(TParameterList AParameters, ref string ASqlStmt,
-            ref TSelfExpandingArrayList AOdbcParameterList,
-            out bool AAddressFilterAdded)
+        /// <returns>true if address tables and fields were added</returns>
+        protected bool AddAddressFilter(TParameterList AParameters, ref string ASqlStmt,
+            ref TSelfExpandingArrayList AOdbcParameterList)
         {
             string WhereClause = "";
             string TableNames = "";
+            string FieldNames = "";
+            string OrderByClause = "";
             string StringValue;
             DateTime DateValue;
             string PostCodeFrom = "";
             string PostCodeTo = "";
             bool LocationTableNeeded = false;
+            bool PartnerLocationTableNeeded = false;
             bool RegionTableNeeded = false;
+            bool AddressFilterAdded = false;
+
+            // add check for mailing addresses only
+            if (AParameters.Exists("param_mailing_addresses_only"))
+            {
+                if (AParameters.Get("param_mailing_addresses_only").ToBool())
+                {
+                    WhereClause = WhereClause + " AND pub_p_partner_location.p_send_mail_l";
+                    PartnerLocationTableNeeded = true;
+                }
+            }
 
             // add city statement (allow any city that begins with search string)
             if (AParameters.Exists("param_city"))
@@ -187,14 +274,28 @@ namespace Ict.Petra.Server.MPartner.queries
                 }
             }
 
+            // if location table is needed then automatically partner location table is needed as well
             if (LocationTableNeeded)
             {
+                FieldNames = ", pub_p_partner_location.p_site_key_n, pub_p_partner_location.p_location_key_i ";
                 TableNames = TableNames + ", pub_p_location, pub_p_partner_location";
 
                 WhereClause = " AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n" +
                               " AND pub_p_location.p_site_key_n = pub_p_partner_location.p_site_key_n" +
                               " AND pub_p_location.p_location_key_i = pub_p_partner_location.p_location_key_i" +
                               WhereClause;
+
+                OrderByClause = ", pub_p_partner.p_partner_key_n";
+            }
+            else if (PartnerLocationTableNeeded)
+            {
+                FieldNames = ", pub_p_partner_location.p_site_key_n, pub_p_partner_location.p_location_key_i ";
+                TableNames = TableNames + ", pub_p_partner_location";
+
+                WhereClause = " AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n" +
+                              WhereClause;
+
+                OrderByClause = ", pub_p_partner.p_partner_key_n";
             }
 
             if (RegionTableNeeded)
@@ -202,20 +303,28 @@ namespace Ict.Petra.Server.MPartner.queries
                 TableNames = TableNames + ", pub_p_postcode_region, pub_p_postcode_range";
             }
 
-            ASqlStmt = ASqlStmt.Replace("##address_filter_table_names##", TableNames);
-            ASqlStmt = ASqlStmt.Replace("##address_filter_where_clause##", WhereClause);
-
-            if ((TableNames.Length > 0)
-                || (WhereClause.Length > 0))
+            // Set information if address filter was set. It is not enough to just check if extra fields or
+            // clauses were built but filter fields to be replaced also need to exist.
+            if ((ASqlStmt.Contains("##address_filter_fields##")
+                 || ASqlStmt.Contains("##address_filter_tables##")
+                 || ASqlStmt.Contains("##address_filter_where_clause##")
+                 || ASqlStmt.Contains("##address_filter_order_by_clause##"))
+                && ((TableNames.Length > 0)
+                    || (WhereClause.Length > 0)))
             {
-                AAddressFilterAdded = true;
+                AddressFilterAdded = true;
             }
             else
             {
-                AAddressFilterAdded = false;
+                AddressFilterAdded = false;
             }
 
-            return true;
+            ASqlStmt = ASqlStmt.Replace("##address_filter_fields##", FieldNames);
+            ASqlStmt = ASqlStmt.Replace("##address_filter_tables##", TableNames);
+            ASqlStmt = ASqlStmt.Replace("##address_filter_where_clause##", WhereClause);
+            ASqlStmt = ASqlStmt.Replace("##address_filter_order_by_clause##", OrderByClause);
+
+            return AddressFilterAdded;
         }
 
         /// <summary>
@@ -223,7 +332,7 @@ namespace Ict.Petra.Server.MPartner.queries
         /// </summary>
         /// <param name="AOdbcParameterList"></param>
         /// <returns></returns>
-        public static OdbcParameter[] ConvertParameterArrayList(TSelfExpandingArrayList AOdbcParameterList)
+        protected OdbcParameter[] ConvertParameterArrayList(TSelfExpandingArrayList AOdbcParameterList)
         {
             OdbcParameter[] parameterArray = new OdbcParameter[AOdbcParameterList.Count];
             int Index = 0;
@@ -236,5 +345,12 @@ namespace Ict.Petra.Server.MPartner.queries
 
             return parameterArray;
         }
+
+        /// <summary>
+        /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="ASqlParameterList"></param>
+        protected abstract void RetrieveParameters (TParameterList AParameters, ref TSelfExpandingArrayList ASqlParameterList);
     }
 }

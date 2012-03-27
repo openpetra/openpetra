@@ -9,7 +9,7 @@ RootNode:
     MasterTable: PmPersonalData
     Controls:
         pnlContent: {ControlsOrientation=vertical}
-            Controls: [grpBelieverSince, grpDriver]              
+            Controls: [grpBelieverSince]              
             Dock: Fill
        
         grpBelieverSince:
@@ -24,11 +24,3 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
             Label: Comment
-        #The following required data from field pm_personal_data.pm_driving_license_number_c
-        grpDriver:
-            Label: Driver information
-            Controls: [txtDrivingLicenseNumber]
-
-        txtDrivingLicenseNumber:
-            Width: 260
-            Label: Driving Licence Number

@@ -1541,7 +1541,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="ALocationKey">Partner's primary location key</param>
         /// <param name="ANoFamily">Set this flag for a PERSON, to prevent the FAMILY being exported too.</param>
         /// <param name="ASpecificBuildingInfo">Only include these buildings (null for all)</param>
-        /// <returns></returns>
+        /// <returns>One partner in EXT format</returns>
         [RequireModulePermission("PTNRUSER")]
         public static string ExportPartnerExt(Int64 APartnerKey,
             Int32 ASiteKey,
@@ -1597,6 +1597,31 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             extRecord += Exporter.ExportPartnerExt(AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
             return extRecord;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>All the text to write into an EXT file.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static String ExportAllPartnersExt()
+        {
+            String ExtText = GetExtFileHeader();
+            PPartnerTable Partners = PPartnerAccess.LoadAll(null);
+            TPartnerFileExport Exporter = new TPartnerFileExport();
+            PartnerImportExportTDS MainDS;
+
+            foreach (PPartnerRow Partner in Partners.Rows)
+            {
+                if ((Partner.PartnerKey != 0) && (Partner.PartnerKey != 1000000)) // skip organization root and 0 when exporting
+                {
+                    MainDS = TExportAllPartnerData.ExportPartner(Partner.PartnerKey);
+                    ExtText += Exporter.ExportPartnerExt(MainDS, /*ASiteKey*/ 0, /*ALocationKey*/ 0, null);
+                }
+            }
+
+            ExtText += GetExtFileFooter();
+            return ExtText;
         }
 
         /// <summary>

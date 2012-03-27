@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,6 +49,8 @@ using System.Globalization;
 using System.Timers;
 using System.Collections.Generic;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.MFinance.Gui.GL;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -59,7 +62,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private DataTable FSupplierTable;
         private DataTable FInvoiceTable;
         private ALedgerRow FLedgerInfo;
-
 
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
@@ -76,6 +78,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 FLedgerNumber = value;
                 FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
+                // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
+                TEnsureKeepAlive.Register(FSupplierFindObject);
+
                 ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(FLedgerNumber);
                 FLedgerInfo = Tbl[0];
 
@@ -219,7 +224,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdInvoiceResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
 
                 grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
-                grdInvoiceResult.Columns[5].Width = 90;  // they're being added. 
+                grdInvoiceResult.Columns[5].Width = 90;  // they're being added.
                 grdInvoiceResult.Columns[7].Width = 110; // For these currency and date columns,
                 grdInvoiceResult.Columns[9].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
 
@@ -233,14 +238,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             // If I was called from a timer, kill that now:
             if (Sender != null)
+            {
                 ((System.Windows.Forms.Timer)Sender).Stop();
-
+            }
 
             // Add up all the selected Items  ** I can only sum items that are in my currency! **
             String MyCurrency = GetLedgerCurrency(FLedgerNumber);
 
             bool TaggedInvoicesPostable = false;
             bool TaggedInvoicesPayable = false;
+            bool TaggedInvoicesReversable = false;
+            bool TaggedInvoicesDeletable = false;
             Decimal TotalSelected = 0;
             bool ListHasItems = false;
 
@@ -250,6 +258,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     ListHasItems = true;
                 }
+
                 foreach (DataRow Row in FInvoiceTable.Rows)
                 {
                     if (Row["Selected"].Equals(true))
@@ -265,34 +274,46 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                                 TotalSelected += (Decimal)(Row[AApDocumentTable.GetTotalAmountDBName()]);
                             }
                         }
+
+                        String BarStatus = "|" + Row[AApDocumentTable.GetDocumentStatusDBName()].ToString();
+
                         //
-                        // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
+                        // While I'm in this loop, I'll also check whether to enable the "Pay", "Post", "Reverse" and "Delete" buttons.
                         //
-                        if ("|POSTED|PARTPAID|".IndexOf("|" + Row[AApDocumentTable.GetDocumentStatusDBName()].ToString()) >= 0)
+                        if ("|POSTED|PARTPAID|".IndexOf(BarStatus) >= 0)
                         {
                             TaggedInvoicesPayable = true;
                         }
 
-                        if ("|POSTED|PARTPAID|PAID|".IndexOf(Row[AApDocumentTable.GetDocumentStatusDBName()].ToString()) < 0)
+                        if ("|POSTED|PARTPAID|PAID|".IndexOf(BarStatus) < 0)
                         {
                             TaggedInvoicesPostable = true;
+                            TaggedInvoicesDeletable = true;
+                        }
+
+                        if ("|POSTED" == BarStatus)
+                        {
+                            TaggedInvoicesReversable = true;
                         }
                     }
                 }
             }
+
             txtSumTagged.Text = TotalSelected.ToString("n2") + " " + MyCurrency;
 
             ActionEnabledEvent(null, new ActionEventArgs("actPaySelected", TaggedInvoicesPayable));
             ActionEnabledEvent(null, new ActionEventArgs("actPostSelected", TaggedInvoicesPostable));
+            ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", TaggedInvoicesReversable));
+            ActionEnabledEvent(null, new ActionEventArgs("actDeleteSelected", TaggedInvoicesDeletable));
             ActionEnabledEvent(null, new ActionEventArgs("actTagAllPostable", ListHasItems));
             ActionEnabledEvent(null, new ActionEventArgs("actTagAllPayable", ListHasItems));
             ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", ListHasItems));
         }
 
         private void grdInvoiceResult_Click(object sender, EventArgs e)
-        // I want to update the total tagged field, 
-        // but it needs to be performed AFTER the default processing so I'm using a timer.
         {
+            // I want to update the total tagged field,
+            // but it needs to be performed AFTER the default processing so I'm using a timer.
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
             timer.Tick += new EventHandler(RefreshSumTagged);
@@ -339,7 +360,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSupplierResult.TotalPages > 0));
-
             }
             else
             {
@@ -356,8 +376,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     // Make the Grid respond on updown keys
                     grdInvoiceResult.Focus();
                 }
-
             }
+
             TabChange(null, null);
         }
 
@@ -375,7 +395,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ANeededPage"></param>
         /// <param name="APageSize"></param>
@@ -389,7 +409,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (FSupplierFindObject != null)
             {
-
                 if (FSearchForSuppliers)
                 {
                     FSupplierTable = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
@@ -407,7 +426,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         Row["Selected"] = false;
 
                         if ((Row[8].GetType() == typeof(Decimal))
-                          && (Row[9].GetType() == typeof(DateTime)))
+                            && (Row[9].GetType() == typeof(DateTime)))
                         {
                             Decimal DiscountPercent = (Decimal)Row[8];
                             DateTime DiscountUntil = (DateTime)Row[9];
@@ -423,9 +442,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             }
                         }
                     }
+
                     return FInvoiceTable;
                 }
-
             }
             else
             {
@@ -434,7 +453,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="Tbl"></param>
         /// <param name="APartnerKey"></param>
@@ -461,25 +480,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             DataRowView[] SelectedGridRow = grdSupplierResult.SelectedDataRowsAsDataRowView;
             Int64 SupplierKey = -1;
+
             if (SelectedGridRow.Length >= 1)
             {
                 Object Cell = SelectedGridRow[0]["p_partner_key_n"];
+
                 if (Cell.GetType() == typeof(Decimal))
                 {
                     SupplierKey = Convert.ToInt64(Cell);
                 }
             }
+
             return SupplierKey;
         }
 
-        private Int32 GetCurrentlySelectedInvoice()
+        private Int32 GetCurrentlySelectedDocumentId()
         {
             DataRowView[] SelectedGridRow = grdInvoiceResult.SelectedDataRowsAsDataRowView;
             Int32 InvoiceNum = -1;
 
             if (SelectedGridRow.Length >= 1)
             {
-                Object Cell = SelectedGridRow[0]["a_ap_number_i"];
+                Object Cell = SelectedGridRow[0]["a_ap_document_id_i"];
+
                 if (Cell.GetType() == typeof(Int32))
                 {
                     InvoiceNum = Convert.ToInt32(Cell);
@@ -505,13 +528,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-
         /// <summary>
         /// Open the selected invoice
         /// </summary>
         public void ShowInvoice(object sender, EventArgs e)
         {
-            Int32 SelectedInvoice = GetCurrentlySelectedInvoice();
+            Int32 SelectedInvoice = GetCurrentlySelectedDocumentId();
+
             if (SelectedInvoice > 0)
             {
                 TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
@@ -519,7 +542,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 frm.Show();
             }
         }
-
 
         /// <summary>
         /// create a new supplier
@@ -658,8 +680,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     Row["Selected"] = true;
                 }
-
             }
+
             RefreshSumTagged(null, null);
         }
 
@@ -672,6 +694,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     Row["Selected"] = true;
                 }
             }
+
             RefreshSumTagged(null, null);
         }
 
@@ -681,12 +704,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 Row["Selected"] = false;
             }
+
             RefreshSumTagged(null, null);
         }
 
         private AccountsPayableTDS LoadTaggedDocuments()
         {
             AccountsPayableTDS LoadDs = new AccountsPayableTDS();
+
             foreach (DataRow Row in FInvoiceTable.Rows)
             {
                 if (Row["Selected"].Equals(true))
@@ -698,28 +723,95 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return LoadDs;
         }
 
-        private void DeleteAllTagged(object sender, EventArgs e) 
+        private void ReverseAllTagged(object sender, EventArgs e)
+        {
+            // I can only reverse invoices that are POSTED.
+            List <int>ReverseTheseDocs = new List <int>();
+
+            foreach (DataRow Row in FInvoiceTable.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    if ("POSTED" == Row["a_document_status_c"].ToString())
+                    {
+                        ReverseTheseDocs.Add((int)Row["a_ap_document_id_i"]);
+                    }
+                    else
+                    {
+                        System.Windows.Forms.MessageBox.Show(Catalog.GetString("Only posted documents can be reversed."),
+                            Catalog.GetString("Document reversal failed"));
+                    }
+                }
+            }
+
+            if (ReverseTheseDocs.Count > 0)
+            {
+                TVerificationResultCollection Verifications;
+                TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
+                    FLedgerNumber,
+                    Catalog.GetString("Select reversal date"),
+                    Catalog.GetString("The date effective for this reversal") + ":");
+
+                if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
+                {
+                    MessageBox.Show(Catalog.GetString("Reversal was cancelled."), Catalog.GetString(
+                            "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                DateTime PostingDate = dateEffectiveDialog.SelectedDate;
+
+                if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
+                        FLedgerNumber,
+                        ReverseTheseDocs,
+                        PostingDate,
+                        true,
+                        out Verifications))
+                {
+                    System.Windows.Forms.MessageBox.Show("Ivoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                    return;
+                }
+                else
+                {
+                    string ErrorMessages = String.Empty;
+
+                    foreach (TVerificationResult verif in Verifications)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal"));
+                }
+            }
+        }
+
+        private void DeleteAllTagged(object sender, EventArgs e)
         {
             // I can only delete invoices that are not posted already.
-            List<int> DeleteTheseDocs = new List<int>();
+            List <int>DeleteTheseDocs = new List <int>();
+
             foreach (DataRow Row in FInvoiceTable.Rows)
             {
                 if (Row["Selected"].Equals(true))
                 {
                     if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["a_document_status_c"].ToString()) < 0)
                     {
-                        DeleteTheseDocs.Add((int)Row["a_ap_number_i"]);
+                        DeleteTheseDocs.Add((int)Row["a_ap_document_id_i"]);
                     }
                     else
                     {
-                        System.Windows.Forms.MessageBox.Show(Catalog.GetString("Can't delete posted invoices."), Catalog.GetString("Document Deletion failed"));
+                        System.Windows.Forms.MessageBox.Show(Catalog.GetString("Can't delete posted documents. Reverse the document first."),
+                            Catalog.GetString("Document Deletion failed"));
                     }
                 }
             }
 
             if (DeleteTheseDocs.Count == 0)
             {
-                System.Windows.Forms.MessageBox.Show(Catalog.GetString("No tagged invoices can be deleted."), Catalog.GetString("Document Deletion failed"));
+                System.Windows.Forms.MessageBox.Show(Catalog.GetString("No tagged invoices can be deleted."),
+                    Catalog.GetString("Document Deletion failed"));
                 return;
             }
 
@@ -748,18 +840,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
             TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
-            List<int> PayTheseDocs = new List<int>();
+
+            List <int>PayTheseDocs = new List <int>();
+
             foreach (DataRow Row in FInvoiceTable.Rows)
             {
-                if ((Row["Selected"].Equals(true) 
-                    && ("|POSTED|PARTPAID".IndexOf("|" + Row["a_document_status_c"].ToString()) >= 0)))
+                if ((Row["Selected"].Equals(true)
+                     && ("|POSTED|PARTPAID".IndexOf("|" + Row["a_document_status_c"].ToString()) >= 0)))
                 {
-                    PayTheseDocs.Add((int)Row["a_ap_number_i"]);
+                    PayTheseDocs.Add((int)Row["a_ap_document_id_i"]);
                 }
             }
+
             if (PayTheseDocs.Count > 0)
             {
-                PaymentScreen.AddDocumentsToPayment(TempDS, PayTheseDocs);
+                PaymentScreen.AddDocumentsToPayment(TempDS, FLedgerNumber, PayTheseDocs);
                 PaymentScreen.Show();
             }
         }
@@ -768,14 +863,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
 
-            List<int> PostTheseDocs = new List<int>();
+            List <int>PostTheseDocs = new List <int>();
+
             foreach (DataRow Row in FInvoiceTable.Rows)
             {
                 if ((Row["Selected"].Equals(true) && ("|POSTED|PARTPAID|PAID|".IndexOf(Row["a_document_status_c"].ToString()) < 0)))
                 {
-                    PostTheseDocs.Add((int)Row["a_ap_number_i"]);
+                    PostTheseDocs.Add((int)Row["a_ap_document_id_i"]);
                 }
             }
+
             if (PostTheseDocs.Count > 0)
             {
                 if (TFrmAPEditDocument.PostApDocumentList(TempDS, FLedgerNumber, PostTheseDocs))
@@ -787,7 +884,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
         }
-        
+
         private void TabChange(object sender, EventArgs e)
         {
             if (tabSearchResult.SelectedTab == tpgOutstandingInvoices)
@@ -820,8 +917,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tbbPost.Visible = false;
                 tbbPay.Visible = false;
             }
+
             RefreshSumTagged(null, null);
+        }
+
+        private void Form_Closed(object sender, EventArgs e)
+        {
+            if (FSupplierFindObject != null)
+            {
+                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
+                TEnsureKeepAlive.UnRegister(FSupplierFindObject);
+                FSupplierFindObject = null;
+            }
         }
     }
 }
-

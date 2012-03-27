@@ -48,23 +48,6 @@ namespace Ict.Common.Remoting.Client
     /// </summary>
     public class TEnsureKeepAlive
     {
-        /// <summary>todoComment</summary>
-        public const String StrConnectionBroken =
-            "The connection to the Petra Server has broken.\r\n\r\n==> Unfortunately you will need to close Petra and log in again. <==";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionBrokenTitle = "SERVER CONNECTION BROKEN!";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionClosed =
-            "The connection to the Petra Server has been closed by the Petra Server.\r\n\r\n==> Unfortunately you will need to close Petra and log in again. <==";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionClosedTitle = "SERVER CONNECTION CLOSED BY PETRA SERVER!";
-
-        /// <summary>todoComment</summary>
-        public const String StrConnectionUnavailableCause = "\r\n\r\nDEBUG INFORMATION: Actual cause for the problem: \r\n";
-
         /// <summary>Keeps the Registered Objects</summary>
         private static SortedList UKeepAliveObjects;
 
@@ -196,12 +179,16 @@ namespace Ict.Common.Remoting.Client
                         "DEVELOPER DEBUGGING INFORMATION");
 #endif
                 }
+#if DEBUGMODE
                 catch (Exception Exp)
                 {
-#if DEBUGMODE
                     TLogging.Log("TEnsureKeepAlive.UnRegister: Exception: " + Exp.ToString(), TLoggingType.ToLogfile);
-#endif
                 }
+#else
+                catch (Exception)
+                {
+                }
+#endif
 
                 if (ObjectHashCode != "")
                 {
@@ -305,14 +292,18 @@ namespace Ict.Common.Remoting.Client
 
                                     // TLogging.Log("KeepAliveThread: Kept Object " + ObjectEnum.Value.ToString() + " alive", TLoggingType.ToLogfile);
                                 }
+#if DEBUGMODE
                                 catch (Exception Exp)
                                 {
-#if DEBUGMODE
                                     TLogging.Log(
-                                        "KeepAliveThread: " + ObjectEnum.Key.ToString() + " Could not contact PetraServer!\r\n" + Exp.ToString(),
+                                        "KeepAliveThread: " + ObjectEnum.Key.ToString() + " Could not contact OpenPetra Server!\r\n" + Exp.ToString(),
                                         TLoggingType.ToLogfile);
-#endif
                                 }
+#else
+                                catch (Exception)
+                                {
+                                }
+#endif
                             }
                         }
                     }
@@ -324,16 +315,16 @@ namespace Ict.Common.Remoting.Client
                 catch (System.Runtime.Remoting.RemotingException Exp)
                 {
                     // string DebugInfo = StrConnectionUnavailableCause + Exp.ToString();
-                    // MessageBox.Show(StrConnectionBroken + DebugInfo, StrConnectionBrokenTitle,
-                    // MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // MessageBox.Show(AppCoreResourcestrings.StrConnectionBroken + DebugInfo, AppCoreResourcestrings.StrConnectionBrokenTitle,
+                    //     MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("RemotingException in TEnsureKeepAlive.KeepAliveThread: " + Exp.ToString(), TLoggingType.ToLogfile);
                 }
                 catch (System.Net.Sockets.SocketException Exp)
                 {
                     // string DebugInfo = StrConnectionUnavailableCause + Exp.ToString() +
                     //            "\r\n\r\nSocketException.ErrorCode: " + Exp.ErrorCode.ToString();
-                    // MessageBox.Show(StrConnectionClosed + DebugInfo, StrConnectionClosedTitle,
-                    // MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // MessageBox.Show(AppCoreResourcestrings.StrConnectionClosed + DebugInfo, AppCoreResourcestrings.StrConnectionClosedTitle,
+                    //     MessageBoxButtons.OK, MessageBoxIcon.Error);
                     TLogging.Log("SocketException in TEnsureKeepAlive.KeepAliveThread: " + Exp.ToString(), TLoggingType.ToLogfile);
                 }
                 catch (Exception Exp)

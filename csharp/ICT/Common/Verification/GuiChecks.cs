@@ -30,21 +30,28 @@ using Ict.Common.Verification;
 namespace Ict.Common.Verification
 {
     /// <summary>
-    /// Class for GUI control verifications
-    ///
+    /// Class for GUI control verifications.
     /// </summary>
-    /// <remark> None of the data verifications in here must access the database
-    ///   since the Client doesn't have access to the database!
-    /// </remark>
+    /// <remarks>None of the data verifications in here must access the database
+    /// since the Client doesn't have access to the database!
+    /// </remarks>
     public class TGuiChecks : System.Object
     {
+        #region Resourcestrings
+
+        private static readonly string StrItemNeedsToBeChecked = Catalog.GetString("At least one item needs to be checked.");
+        private static readonly string StrNoItemSelected = Catalog.GetString("No item has been selected");
+        private static readonly string StrNonExistingItem = Catalog.GetString("You have typed in a non-existing item.");
+
+        #endregion
+
+
         /// <summary>
-        /// Validates if a CheckedListBox has at least one checked item
-        ///
+        /// Checks if a CheckedListBox has at least one checked item.
         /// </summary>
-        /// <param name="ACheckedListBox">listbox control that should be verified</param>
-        /// <returns>TVerificationResult Nil if validation succeeded, otherwise it contains
-        /// details about the problem.
+        /// <param name="ACheckedListBox">LisBbox Control that should be verified.</param>
+        /// <returns>Null if if validation succeeded, otherwise a <see cref="TVerificationResult" />
+        /// is returned that contains details about the problem.
         /// </returns>
         public static TVerificationResult ValidateCheckedListBox(System.Windows.Forms.CheckedListBox ACheckedListBox)
         {
@@ -52,23 +59,19 @@ namespace Ict.Common.Verification
 
             if (ACheckedListBox.CheckedItems.Count == 0)
             {
-                ReturnValue = new TVerificationResult(ACheckedListBox.Name,
-                    "At least one item needs to be checked.",
-                    "Information missing",
-                    "X_00??",
-                    TResultSeverity.Resv_Critical);
+                ReturnValue = new TVerificationResult(ACheckedListBox.Name, ErrorCodes.GetErrorInfo(
+                        CommonErrorCodes.ERR_INFORMATIONMISSING, StrItemNeedsToBeChecked));
             }
 
             return ReturnValue;
         }
 
         /// <summary>
-        /// Validates if a versatile CheckedListBox has at least one checked item
-        ///
+        /// Checks if a versatile CheckedListBox has at least one checked item.
         /// </summary>
-        /// <param name="AClbVersatile">versatile listbox control that should be verified</param>
-        /// <returns>TVerificationResult Nil if validation succeeded, otherwise it contains
-        /// details about the problem.
+        /// <param name="AClbVersatile">VersatileListBox Control that should be verified.</param>
+        /// <returns>Null if if validation succeeded, otherwise a <see cref="TVerificationResult" />
+        /// is returned that contains details about the problem.
         /// </returns>
         public static TVerificationResult ValidateCheckedListBoxVersatile(TClbVersatile AClbVersatile)
         {
@@ -76,21 +79,17 @@ namespace Ict.Common.Verification
 
             if (AClbVersatile.CheckedItemsCount == 0)
             {
-                ReturnValue = new TVerificationResult(AClbVersatile.Name,
-                    "At least one item needs to be checked.",
-                    "Information missing",
-                    "X_00??",
-                    TResultSeverity.Resv_Critical);
+                ReturnValue = new TVerificationResult(AClbVersatile.Name, ErrorCodes.GetErrorInfo(
+                        CommonErrorCodes.ERR_INFORMATIONMISSING, StrItemNeedsToBeChecked));
             }
 
             return ReturnValue;
         }
 
         /// <summary>
-        /// Validates if a Combobox Text is equal the selected item
-        ///
+        /// Checks if a Combobox Text is equal the selected item.
         /// </summary>
-        /// <param name="AComboBox">combobox control that should be verified</param>
+        /// <param name="AComboBox">ComboBox Control that should be verified.</param>
         /// <returns>TVerificationResult Nil if validation succeeded, otherwise it contains
         /// details about the problem.
         /// </returns>
@@ -100,20 +99,14 @@ namespace Ict.Common.Verification
 
             if (AComboBox.SelectedItem == null)
             {
-                return new TVerificationResult(AComboBox.Name,
-                    "No item has been selected",
-                    "Information missing",
-                    "X_00??",
-                    TResultSeverity.Resv_Critical);
+                ReturnValue = new TVerificationResult(AComboBox.Name, ErrorCodes.GetErrorInfo(
+                        CommonErrorCodes.ERR_INFORMATIONMISSING, StrNoItemSelected));
             }
 
             if (AComboBox.FindString(AComboBox.Text) != AComboBox.SelectedIndex)
             {
-                return new TVerificationResult(AComboBox.Name,
-                    "You have typed in a non existing item.",
-                    "Information missing",
-                    "X_00??",
-                    TResultSeverity.Resv_Critical);
+                ReturnValue = new TVerificationResult(AComboBox.Name, ErrorCodes.GetErrorInfo(
+                        CommonErrorCodes.ERR_INFORMATIONMISSING, StrNonExistingItem));
             }
 
             return ReturnValue;

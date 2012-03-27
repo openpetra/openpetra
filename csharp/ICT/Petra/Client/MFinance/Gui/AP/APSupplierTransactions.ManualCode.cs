@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -135,7 +136,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ANeededPage"></param>
         /// <param name="APageSize"></param>
@@ -149,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DataTable ResultsTable = new DataTable();
 
             ResultsTable = FFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
-            ResultsTable.Columns.Add("DiscountMsg", typeof(string));
+//          ResultsTable.Columns.Add("DiscountMsg", typeof(string));
             ResultsTable.Columns.Add("Type", typeof(string));
             ResultsTable.Columns.Add("Tagged", typeof(bool));
 
@@ -159,7 +160,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
                 {
-                    Row["DiscountMsg"] = "";
+//                  Row["DiscountMsg"] = "";
+
                     if (Row["Status"].ToString().Length > 0) // Credit notes have Status, but payments don't.
                     {
                         Row["Type"] = "Credit Note";
@@ -168,25 +170,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         Row["Type"] = "Payment";
                     }
-
                 }
                 else
                 {
                     Row["Type"] = "Invoice";
 
-                    Int32 DiscountDays = (Int32)Row["DiscountDays"];
-                    if (DiscountDays > 0)
-                    {
-                        DateTime DiscountUntil = (DateTime)Row["Date"];
-                        DiscountUntil = DiscountUntil.AddDays(DiscountDays);
-                        Row["DiscountMsg"] = String.Format("{0:n0}% until {1}", (Decimal)Row["DiscountPercent"], TDate.DateTimeToLongDateString2(DiscountUntil));
-                    }
-                    else
-                    {
-                        Row["DiscountMsg"] = "None";
-                    }
+/*
+ *                  Int32 DiscountDays = (Int32)Row["DiscountDays"];
+ *
+ *                  if (DiscountDays > 0)
+ *                  {
+ *                      DateTime DiscountUntil = (DateTime)Row["Date"];
+ *                      DiscountUntil = DiscountUntil.AddDays(DiscountDays);
+ *                      Row["DiscountMsg"] =
+ *                          String.Format("{0:n0}% until {1}", (Decimal)Row["DiscountPercent"], TDate.DateTimeToLongDateString2(DiscountUntil));
+ *                  }
+ *                  else
+ *                  {
+ *                      Row["DiscountMsg"] = "None";
+ *                  }
+ */
                 }
             }
+
             return ResultsTable;
         }
 
@@ -198,14 +204,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 90);
             grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
             grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
-            grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
+//          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
             grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
 
             grdResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while they're being added. For these currency and date columns,
-            grdResult.Columns[7].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+            grdResult.Columns[6].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
         }
-
 
         private void UpdateDisplayedBalance()
         {
@@ -216,6 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 foreach (DataRowView rv in FPagedDataTable.DefaultView)
                 {
                     DataRow Row = rv.Row;
+
                     if (Row["Amount"].GetType() == typeof(Decimal))
                     {
                         if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
@@ -229,6 +235,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     }
                 }
             }
+
             txtDisplayedBalance.Text = SumDisplayed.ToString("n2");
         }
 
@@ -237,10 +244,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (FPagedDataTable != null)
             {
                 String FilterJoint = "";
+
                 if ((FTypeFilter.Length > 0) && (FStatusFilter.Length > 0))
                 {
                     FilterJoint = " AND ";
                 }
+
                 FPagedDataTable.DefaultView.RowFilter = FTypeFilter + FilterJoint + FStatusFilter;
                 UpdateDisplayedBalance();
             }
@@ -299,7 +308,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             // If I was called from a timer, kill that now:
             if (Sender != null)
+            {
                 ((System.Windows.Forms.Timer)Sender).Stop();
+            }
 
             // if there's no results table yet, I can't do this...
             if (FPagedDataTable == null)
@@ -332,7 +343,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         TotalSelected += (Decimal)(Row["Amount"]);
                     }
 
-
                     //
                     // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
                     //
@@ -347,6 +357,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     }
                 }
             }
+
             txtSumOfTagged.Text = TotalSelected.ToString("n2") + " " + FSupplierRow.CurrencyCode;
 
             ActionEnabledEvent(null, new ActionEventArgs("actAddTaggedToPayment", TaggedInvoicesPayable));
@@ -357,9 +368,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         private void grdResult_Click(object sender, EventArgs e)
-        // I want to update the total tagged field, 
-        // but it needs to be performed AFTER the default processing so I'm using a timer.
         {
+            // I want to update the total tagged field,
+            // but it needs to be performed AFTER the default processing so I'm using a timer.
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
             timer.Tick += new EventHandler(RefreshSumTagged);
@@ -379,6 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 FStatusFilter = "(Status = '' OR Status='" + SelectedItem + "')";
             }
+
             UpdateRowFilter();
         }
 
@@ -394,6 +406,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 FTypeFilter = "Type='" + SelectedItem + "'";
             }
+
             UpdateRowFilter();
         }
 
@@ -402,12 +415,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
                 DataRow Row = rv.Row;
+
                 if ((Row["Status"].ToString().Length > 0) && ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["Status"].ToString()) < 0))
                 {
                     Row["Tagged"] = true;
                 }
-
             }
+
             RefreshSumTagged(null, null);
         }
 
@@ -416,11 +430,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
                 DataRow Row = rv.Row;
+
                 if ((Row["Status"].ToString().Length > 0) && ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0))
                 {
                     Row["Tagged"] = true;
                 }
             }
+
             RefreshSumTagged(null, null);
         }
 
@@ -431,6 +447,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 DataRow Row = rv.Row;
                 Row["Tagged"] = false;
             }
+
             RefreshSumTagged(null, null);
         }
 
@@ -442,28 +459,86 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (SelectedGridRow[0]["Status"].ToString().Length > 0) // invoices have status, and payments don't.
                 {
+                    Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["DocumentId"]);
                     TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
-                    frm.LoadAApDocument(FLedgerNumber, Convert.ToInt32(SelectedGridRow[0]["ApNum"]));
+                    frm.LoadAApDocument(FLedgerNumber, DocumentId);
                     frm.Show();
                 }
                 else
                 {
-                // TODO: Can I open the payment?
+                    Int32 PaymentNumber = Convert.ToInt32(SelectedGridRow[0]["ApNum"]);
+                    TFrmAPPayment frm = new TFrmAPPayment(this);
+                    frm.ReloadPayment(FLedgerNumber, PaymentNumber);
+                    frm.Show();
                 }
             }
         }
 
-         private void ReverseSelected(object sender, EventArgs e)
+        private void ReverseSelected(object sender, EventArgs e)
         {
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
 
             if (SelectedGridRow.Length >= 1)
             {
                 if (SelectedGridRow[0]["Status"].ToString().Length > 0) // invoices have status, and payments don't.
-                {  // Reverse invoice to a previous (unpaid?) state
+                {  // Reverse invoice to a previous (unposted) state
+                    string barstatus = "|" + SelectedGridRow[0]["Status"].ToString();
+
+                    if (barstatus == "|POSTED")
+                    {
+                        TVerificationResultCollection Verifications;
+                        Int32 DocumentId = (Int32)SelectedGridRow[0]["DocumentId"];
+                        List <Int32>ApDocumentIds = new List <Int32>();
+                        ApDocumentIds.Add(DocumentId);
+
+                        TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
+                            FLedgerNumber,
+                            Catalog.GetString("Select reversal date"),
+                            Catalog.GetString("The date effective for this reversal") + ":");
+
+                        if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
+                        {
+                            MessageBox.Show(Catalog.GetString("Reversal was cancelled."), Catalog.GetString(
+                                    "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+
+                        DateTime PostingDate = dateEffectiveDialog.SelectedDate;
+
+                        if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
+                                FLedgerNumber,
+                                ApDocumentIds,
+                                PostingDate,
+                                true,
+                                out Verifications))
+                        {
+                            System.Windows.Forms.MessageBox.Show("Ivoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                            return;
+                        }
+                        else
+                        {
+                            string ErrorMessages = String.Empty;
+
+                            foreach (TVerificationResult verif in Verifications)
+                            {
+                                ErrorMessages += "[" + verif.ResultContext + "] " +
+                                                 verif.ResultTextCaption + ": " +
+                                                 verif.ResultText + Environment.NewLine;
+                            }
+
+                            System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal"));
+                        }
+
+                        return;
+                    } // reverse posted invoice
+
+                    if ("|PAID|PARTPAID".IndexOf(barstatus) >= 0)
+                    {
+                        MessageBox.Show("Can't reverse paid a invoice. Reverse the payment instead.", "Reverse");
+                    }
                 }
-                else
-                {  // Reverse payment
+                else // Reverse payment
+                {
                     Int32 PaymentNum = (Int32)SelectedGridRow[0]["ApNum"];
                     TFrmAPPayment PaymentScreen = new TFrmAPPayment(this);
                     PaymentScreen.ReversePayment(FLedgerNumber, PaymentNum);
@@ -471,7 +546,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-       /// <summary>
+        /// <summary>
         /// Create a new invoice
         /// </summary>
         /// <param name="sender"></param>
@@ -508,20 +583,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             foreach (DataRow row in FPagedDataTable.Rows)
             {
-                if ((row["Tagged"].Equals(true)) && (row ["Status"].ToString().Length > 0)  // Invoices have status, Payments don't.
+                if ((row["Tagged"].Equals(true)) && (row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
                     && ("|POSTED|PARTPAID|PAID".IndexOf("|" + row["Status"].ToString()) < 0))
-
                 {
-                    Int32 ApNum = (Int32)row["ApNum"];
-                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, ApNum));
+                    Int32 DocumentId = (Int32)row["DocumentId"];
+                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
-                    TempDS.AApDocument.DefaultView.Sort = "a_ap_number_i";
-                    Int32 Idx = TempDS.AApDocument.DefaultView.Find(ApNum);
+                    TempDS.AApDocument.DefaultView.Sort = "a_ap_document_id_i";
+                    Int32 Idx = TempDS.AApDocument.DefaultView.Find(DocumentId);
                     AApDocumentRow DocumentRow = TempDS.AApDocument[Idx];
-                    if (TFrmAPEditDocument.ApDocumentCanPost (TempDS, DocumentRow))
+
+                    if (TFrmAPEditDocument.ApDocumentCanPost(TempDS, DocumentRow))
                     {
-                        TaggedDocuments.Add(ApNum);
+                        TaggedDocuments.Add(DocumentId);
                     }
                 }
             }
@@ -531,7 +606,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            // TODO: make sure that there are uptodate exchange rates
             if (TFrmAPEditDocument.PostApDocumentList(TempDS, FLedgerNumber, TaggedDocuments))
             {
                 // TODO: print reports on successfully posted batch
@@ -546,7 +620,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// Add all selected invoices to the payment list and show that list so that the user can make the payment
         private void AddTaggedToPayment(object sender, EventArgs e)
         {
-            List<Int32> TaggedDocuments = new List<Int32>();
+            List <Int32>TaggedDocuments = new List <Int32>();
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
             foreach (DataRow row in FPagedDataTable.Rows)
@@ -554,17 +628,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((row["Tagged"].Equals(true)) && (!row["InvNum"].Equals("Payment")))
                 {
                     // TODO: only use tagged rows that can be paid
-                    Int32 ApNum = (Int32)row["ApNum"];
-                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, ApNum));
+                    Int32 DocumentId = (Int32)row["DocumentId"];
+                    TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
-                    TempDS.AApDocument.DefaultView.Sort = "a_ap_number_i";
-                    Int32 Idx = TempDS.AApDocument.DefaultView.Find(ApNum);
+                    TempDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
+                    Int32 Idx = TempDS.AApDocument.DefaultView.Find(DocumentId);
                     AApDocumentRow DocumentRow = TempDS.AApDocument[Idx];
 
                     if ("|POSTED|PARTPAID|".IndexOf("|" + DocumentRow["a_document_status_c"].ToString()) >= 0)
                     {
-                        TaggedDocuments.Add(ApNum);
+                        TaggedDocuments.Add(DocumentId);
                     }
                 }
             }
@@ -576,15 +650,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TFrmAPPayment frm = new TFrmAPPayment(this);
 
-            frm.AddDocumentsToPayment(TempDS, TaggedDocuments);
+            frm.AddDocumentsToPayment(TempDS, FLedgerNumber, TaggedDocuments);
 
             frm.Show();
         }
+
         private void PaymentReport(object sender, EventArgs e)
         {
             TFrmAP_PaymentReport reporter = new TFrmAP_PaymentReport(this);
+
             reporter.Show();
         }
-
     }
 }

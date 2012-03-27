@@ -28,12 +28,14 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Client.App.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -234,8 +236,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void InitializeManualCode()
         {
-            FMainDS.Tables.Add(new PSubscriptionTable());
+            if (!FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
+            {
+                FMainDS.Tables.Add(new PSubscriptionTable());
+            }
+
             FMainDS.InitVars();
+
+            ucoDetails.SpecialInitUserControl();
         }
 
         /// <summary>
@@ -315,6 +323,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         private void NewRowManual(ref PSubscriptionRow ARow)
         {
+            // apply changes from previous record
+            GetDetailsFromControls(GetSelectedDetailRow());
+
             // Initialize subscription
             ARow.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
             ARow.PublicationCode = "";
@@ -484,20 +495,26 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            int rowIndex = CurrentRowIndex();
-            FPreviouslySelectedDetailRow.Delete();
-            FPetraUtilsObject.SetChangedFlag();
-            SelectByIndex(rowIndex);
-
-            // reset counter in tab header
-            RecalculateTabHeaderCounter();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (MessageBox.Show(String.Format(Catalog.GetString(
+                            "You have choosen to delete this value ({0}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.PublicationCode), Catalog.GetString("Confirm Delete"),
+                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                btnCancelAllSubscriptions.Enabled = false;
-                ucoDetails.MakeScreenInvisible(true);
+                int rowIndex = CurrentRowIndex();
+                FPreviouslySelectedDetailRow.Delete();
+                FPetraUtilsObject.SetChangedFlag();
+                SelectByIndex(rowIndex);
+
+                // reset counter in tab header
+                RecalculateTabHeaderCounter();
+
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    btnCancelAllSubscriptions.Enabled = false;
+                    ucoDetails.MakeScreenInvisible(true);
+                }
             }
         }
 
@@ -560,6 +577,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             return ReturnValue;
+        }
+
+        private void ValidateDataDetailsManual(PSubscriptionRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidateSubscriptionManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         #endregion

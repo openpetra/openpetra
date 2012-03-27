@@ -31,12 +31,13 @@ using System.ComponentModel.Design;
 using System.Windows.Forms;
 using System.Resources;
 using System.Threading;
+
+using Ict.Common;
+using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
-using Ict.Common.Controls;
-
 //using Ict.Petra.Client.CommonDialogs;
-using Ict.Common;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -87,6 +88,16 @@ namespace Ict.Petra.Client.CommonForms
         protected IFrmPetra FTheForm;
 
         /// <summary>
+        /// ToolTip instance which is used to show Data Validation messages.
+        /// </summary>
+        protected ToolTip FValidationToolTip;
+
+        /// <summary>
+        /// Dictionary that contains Controls on whose data Data Validation should be run.
+        /// </summary>
+        protected TValidationControlsDict FValidationControlsDict = new TValidationControlsDict();
+
+        /// <summary>
         /// points to the same object as FTheForm, but already casted to a WinForm
         /// </summary>
         protected System.Windows.Forms.Form FWinForm;
@@ -124,6 +135,15 @@ namespace Ict.Petra.Client.CommonForms
             {
                 TFormsList.GFormsList.NotifyWindowOpened(ACallerForm.Handle, FWinForm.Handle);
             }
+
+            //
+            // Initialise the Data Validation ToolTip
+            //
+            FValidationToolTip = new System.Windows.Forms.ToolTip();
+            FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+            FValidationToolTip.ToolTipTitle = Catalog.GetString("Incorrect Data");
+            FValidationToolTip.UseAnimation = true;
+            FValidationToolTip.UseFading = true;
 
             // WriteToStatusBar(Catalog.GetString("Ready."));
         }
@@ -184,6 +204,13 @@ namespace Ict.Petra.Client.CommonForms
         {
             foreach (Control ctrl in c.Controls)
             {
+                // exclude TPetraUserControl objects that should not be hooked up
+                if ((ctrl is TPetraUserControl)
+                    && (!((TPetraUserControl)ctrl).CanBeHookedUpForValueChangedEvent))
+                {
+                    continue;
+                }
+
                 // recurse into children;
                 // but special case for UpDownBase/NumericUpDown, because we don't want the child controls of that
                 if ((ctrl.HasChildren == true) && !(ctrl is UpDownBase) && !(ctrl is TClbVersatile))
@@ -361,6 +388,64 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// <summary>
+        /// ToolTip instance which is used to show Data Validation messages.
+        /// </summary>
+        public ToolTip ValidationToolTip
+        {
+            get
+            {
+                return FValidationToolTip;
+            }
+        }
+
+        /// <summary>
+        /// Sets the Validation ToolTip severity. This affects the icon and title of the Validation ToolTip.
+        /// </summary>
+        public TResultSeverity ValidationToolTipSeverity
+        {
+            set
+            {
+                switch (value)
+                {
+                    case TResultSeverity.Resv_Critical:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Error;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Incorrect Data");
+
+                        break;
+
+                    case TResultSeverity.Resv_Noncritical:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Warning");
+
+                        break;
+
+                    case TResultSeverity.Resv_Info:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Information");
+
+                        break;
+
+                    case TResultSeverity.Resv_Status:
+                        FValidationToolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.None;
+                        FValidationToolTip.ToolTipTitle = Catalog.GetString("Note");
+
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Dictionary that contains Controls on whose data Data Validation should be run.
+        /// </summary>
+        public TValidationControlsDict ValidationControlsDict
+        {
+            get
+            {
+                return FValidationControlsDict;
+            }
+        }
+
         /// useful for initialising actions, eg based on permissions
         virtual public void InitActionState()
         {
@@ -497,12 +582,24 @@ namespace Ict.Petra.Client.CommonForms
          * @param s the text to be displayed in the StatusBar
          *
          */
+        delegate void WriteCallback (String s);
+
+        /// <summary>
+        /// (Thread safe)
+        /// </summary>
+        /// <param name="s"></param>
         public void WriteToStatusBar(String s)
         {
             if (FStatusBar != null)
             {
-                // StatusBar appears to be threadsafe; otherwise you would need a Invoke(System.Delegate(@myDelegate)); call
-                FStatusBar.ShowMessage(s);
+                if (FStatusBar.InvokeRequired)
+                {
+                    FStatusBar.Invoke(new WriteCallback(WriteToStatusBar), new object[] { s });
+                }
+                else
+                {
+                    FStatusBar.ShowMessage(s);
+                }
             }
         }
 
