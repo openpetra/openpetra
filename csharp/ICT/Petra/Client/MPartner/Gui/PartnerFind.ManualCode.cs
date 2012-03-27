@@ -67,14 +67,14 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         #region Resourcestrings
 
-        private static readonly string StrPartnersAddedToExtractText = Catalog.GetString(
-            "{0} Partner was added to the new Extract.");
+// TODO        private static readonly string StrPartnersAddedToExtractText = Catalog.GetString(
+// TODO            "{0} Partner was added to the new Extract.");
 
-        private static readonly string StrPartnersAddedToExtractPluralText = Catalog.GetString(
-            "{0} Partners were added to the new Extract.");
+// TODO        private static readonly string StrPartnersAddedToExtractPluralText = Catalog.GetString(
+// TODO            "{0} Partners were added to the new Extract.");
 
-        private static readonly string StrPartnersAddedToExtractTitle = Catalog.GetString(
-            "Generate Extract From Found Partners");
+// TODO        private static readonly string StrPartnersAddedToExtractTitle = Catalog.GetString(
+// TODO            "Generate Extract From Found Partners");
 
         /// <summary>String for the title</summary>
         private static readonly string StrTitleFirstPart = Catalog.GetString("Partner");
