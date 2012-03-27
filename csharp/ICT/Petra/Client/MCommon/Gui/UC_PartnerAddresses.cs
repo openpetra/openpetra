@@ -71,13 +71,13 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         private static readonly string StrSimilarLocationUsedByN1 = Catalog.GetString("NOTE: this is used by {0} ");
 
-        private static readonly string StrAddressAddedFamilyPromotion1stLine = Catalog.GetString(
-            "You have added the following address to this family:");
+// TODO        private static readonly string StrAddressAddedFamilyPromotion1stLine = Catalog.GetString(
+// TODO            "You have added the following address to this family:");
 
-        private static readonly string StrAddressAddedFamilyPromotionQuestion = Catalog.GetString(
-            "Do you want to add this address to all members\r\nof this family?");
+// TODO        private static readonly string StrAddressAddedFamilyPromotionQuestion = Catalog.GetString(
+// TODO            "Do you want to add this address to all members\r\nof this family?");
 
-        private static readonly string StrAddressAddedFamilyPromotionQuestionTitle = Catalog.GetString("Add Address to Family Members?");
+// TODO        private static readonly string StrAddressAddedFamilyPromotionQuestionTitle = Catalog.GetString("Add Address to Family Members?");
 
         private static readonly string StrExpireAllCurrentAddressesTitle = Catalog.GetString("Expire All Current Addresses");
 

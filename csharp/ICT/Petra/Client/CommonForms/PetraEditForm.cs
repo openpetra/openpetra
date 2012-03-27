@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>This Resourcestring needs to be public becaused it is used elsewhere as well.</summary>
         public static readonly string StrFormCaptionPrefixNew = Catalog.GetString("NEW: ");
 
-        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
+// TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
 
         #endregion
 
