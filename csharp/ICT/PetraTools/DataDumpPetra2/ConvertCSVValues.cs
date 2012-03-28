@@ -61,8 +61,17 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 while (!AReader.EndOfStream)
                 {
-                    StringBuilder line = new StringBuilder(AReader.ReadLine());
-                    OrigLine = line.ToString();
+                    OrigLine = AReader.ReadLine();
+
+                    if (OrigLine == ".")
+                    {
+                        // we have parsed all the data
+                        AReader.ReadToEnd();
+
+                        break;
+                    }
+
+                    StringBuilder line = new StringBuilder(OrigLine);
 
                     int ColumnCounter = 0;
 
@@ -99,7 +108,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                                 try
                                 {
-                                    val = StringHelper.GetNextCSV(ref line, ',');
+                                    val = StringHelper.GetNextCSV(ref line, ' ');
                                     AcrossSeveralLines = false;
                                 }
                                 catch (System.IndexOutOfRangeException)
@@ -116,7 +125,7 @@ namespace Ict.Tools.DataDumpPetra2
                         }
                         else
                         {
-                            val = StringHelper.GetNextCSV(ref line, ',');
+                            val = StringHelper.GetNextCSV(ref line, ' ');
 
                             if (val == "?")
                             {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,8 +48,6 @@ namespace Ict.Tools.DataDumpPetra2
                     "usage: Ict.Tools.DataDumpPetra2 -debuglevel:<0..10> -table:<single table or all> -oldpetraxml:<path and filename of old petra.xml> -newpetraxml:<path and filename of petra.xml>");
                 Console.Error.WriteLine("will default to processing all tables, and using petra23.xml and petra.xml from the current directory");
                 Console.Error.WriteLine("");
-                Console.Error.WriteLine("If the file fulldumpOpenPetraCSV.r does not exist yet, the .p file will be written.");
-                Console.Error.WriteLine("");
                 Console.Error.WriteLine(
                     "You should redirect the output to a file, or even pipe it through gzip. eg. mono Ict.Tools.DataDumpPetra2.exe | iconv --to-code=UTF-8 | gzip > mydump.sql.gz");
                 Console.Error.WriteLine("");
@@ -62,17 +60,27 @@ namespace Ict.Tools.DataDumpPetra2
                 string newxmlfile = TAppSettingsManager.GetValue("newpetraxml", "petra.xml");
                 string oldxmlfile = TAppSettingsManager.GetValue("oldpetraxml", "petra23.xml");
 
-                if (!File.Exists("fulldumpOpenPetraCSV.r"))
+                // the upgrade process is split into two steps, to make testing quicker
+
+                // Step 1: dump from Progress Petra 2.3 to CSV files, write gz files to keep size of fulldump small
+                // this takes about 45 minutes for the german database
+                // just use the simple fulldump.p from progress/petra/compiler (slightly modified, fulldump23.p)
+                if ((TAppSettingsManager.GetValue("operation", "dump23") == "dump23") && File.Exists("fulldumpPetra23.r"))
                 {
-                    TCreateFulldumpProgressCode CreateProgressCode = new TCreateFulldumpProgressCode();
-                    CreateProgressCode.GenerateFulldumpCode(oldxmlfile, newxmlfile, "fulldumpOpenPetraCSV.p");
-                    TLogging.Log("Please compile fulldumpOpenPetraCSV.p against a StandAlone Petra 2.3 database (network would take forever),");
-                    TLogging.Log("and copy the resulting fulldumpOpenPetraCSV.r into this directory. Then rerun Ict.Tools.DataDumpPetra2.exe.");
-                    return;
+                    TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
+                    dumper.DumpTablesToCSV(table, oldxmlfile);
                 }
 
-                TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                dumper.DumpTables(table, oldxmlfile, newxmlfile);
+                // Step 2: produce one or several sql load files for PostgreSQL
+                // can be called independant from first step: for all tables or just one table
+                // for tables merged into one: append to previous file
+                if (TAppSettingsManager.GetValue("operation", "load30") == "load30")
+                {
+                    TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
+                    dumper.LoadTablesToPostgresql(table, oldxmlfile, newxmlfile);
+                }
+
+                // TODO: also anonymize the names of the partners (use random names from external list of names)? what about amounts?
             }
             catch (Exception e)
             {

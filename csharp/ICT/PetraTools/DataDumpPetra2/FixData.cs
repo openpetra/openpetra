@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
+using Ict.Tools.DBXML;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -59,12 +60,162 @@ namespace Ict.Tools.DataDumpPetra2
             return ACurrentRow[AColumnNames.IndexOf(AColumnName)];
         }
 
+        private static string[] CreateRow(StringCollection AColumnNames)
+        {
+            return StringHelper.StrMerge(AColumnNames, ',').Split(new char[] { ',' });
+        }
+
         /// <summary>
         /// fix data that would cause problems for PostgreSQL constraints
         /// </summary>
-        /// <param name="ATableName"></param>
-        /// <param name="AColumnNames"></param>
-        /// <param name="ACSVLines"></param>
+        public static List <string[]>MigrateData(TTable AOldTable, TTable ANewTable, List <string[]>AParsedRows)
+        {
+            StringCollection OldColumnNames = new StringCollection();
+
+            foreach (TTableField field in AOldTable.grpTableField.List)
+            {
+                OldColumnNames.Add(field.strName);
+            }
+
+            StringCollection NewColumnNames = new StringCollection();
+
+            foreach (TTableField field in ANewTable.grpTableField.List)
+            {
+                NewColumnNames.Add(field.strName);
+            }
+
+            List <string[]>Result = new List <string[]>();
+
+            foreach (string[] OldRow in AParsedRows)
+            {
+                string[] NewRow = CreateRow(NewColumnNames);
+
+                foreach (TTableField newField in ANewTable.grpTableField.List)
+                {
+                    TTableField oldField = null;
+
+                    string oldname = "";
+
+                    oldField = AOldTable.GetField(newField.strName);
+
+                    if ((oldField == null) && (DataDefinitionDiff.GetNewFieldName(ANewTable.strName, ref oldname, ref newField.strName)))
+                    {
+                        oldField = AOldTable.GetField(oldname);
+                    }
+
+                    if (oldField != null)
+                    {
+                        string value = GetValue(OldColumnNames, OldRow, oldField.strName);
+
+                        if ((oldField.strName == "s_created_by_c")
+                            || (oldField.strName == "s_modified_by_c")
+                            || (oldField.strName == "p_owner_c")
+                            || (oldField.strName == "s_user_id_c")
+                            || (oldField.strName == "p_relation_name_c")
+                            || oldField.strName.EndsWith("_code_c"))
+                        {
+                            value = value.Trim().ToUpper();
+
+                            if (!oldField.bNotNull)
+                            {
+                                if (value.Length == 0)
+                                {
+                                    value = "\\N";
+                                }
+                            }
+                        }
+                        else if (!oldField.bNotNull
+                                 && ((oldField.strName == "p_field_key_n")
+                                     || (oldField.strName == "pm_gen_app_poss_srv_unit_key_n")
+                                     || (oldField.strName == "pm_st_field_charged_n")
+                                     || (oldField.strName == "pm_st_current_field_n")
+                                     || (oldField.strName == "pm_st_option2_n")
+                                     || (oldField.strName == "pm_st_option1_n")
+                                     || (oldField.strName == "pm_st_confirmed_option_n")
+                                     || (oldField.strName == "pm_office_recruited_by_n")
+                                     || (oldField.strName == "a_key_ministry_key_n")
+                                     || (oldField.strName == "pm_placement_partner_key_n")
+                                     ))
+                        {
+                            if (value == "0")
+                            {
+                                value = "\\N";
+                            }
+                        }
+                        else if ((value.Length == 0) && (oldField.strType.ToUpper() == "VARCHAR") && !oldField.bNotNull)
+                        {
+                            value = "\\N";
+                        }
+                        else if (oldField.strType.ToUpper() == "BIT")
+                        {
+                            value = (value == "yes") ? "1" : "0";
+                        }
+                        else if (oldField.strType.ToUpper() == "DATE")
+                        {
+                            if ((value.Length > 0) && (value != "\\N"))
+                            {
+                                if (value.Length != 10)
+                                {
+                                    TLogging.Log("Invalid date: " + oldField.strName + " " + value);
+                                    value = "\\N";
+                                }
+                                else
+                                {
+                                    // TODO: check for year format, or force all the same in the dump program dmy?
+                                    // 15/04/2010 => 2010-04-15
+                                    value = string.Format("{0}-{1}-{2}", value.Substring(6, 4), value.Substring(3, 2), value.Substring(0, 2));
+                                }
+                            }
+                        }
+
+                        SetValue(NewColumnNames, ref NewRow, newField.strName, value);
+                    }
+                    else
+                    {
+                        // this is a new field. insert default value
+                        string defaultValue = "?";
+
+                        if ((newField.strInitialValue != null) && (newField.strInitialValue.Length > 0))
+                        {
+                            if (newField.strInitialValue.ToUpper() == "TODAY")
+                            {
+                                // it does not make sense to set s_date_created_d to today during conversion.
+                                // so no change to defaultValue.
+                            }
+                            else if (newField.strType.ToUpper() == "VARCHAR")
+                            {
+                                defaultValue = '"' + newField.strInitialValue + "\"";
+                            }
+                            else if (newField.strType.ToUpper() == "BIT")
+                            {
+                                defaultValue = newField.strInitialValue;
+
+                                if (newField.strFormat.Contains(newField.strInitialValue))
+                                {
+                                    defaultValue = newField.strFormat.StartsWith(newField.strInitialValue) ? "0" : "1";
+                                }
+                            }
+                            else
+                            {
+                                defaultValue = newField.strInitialValue;
+                            }
+                        }
+
+                        SetValue(NewColumnNames, ref NewRow, newField.strName, defaultValue);
+                    }
+                }
+
+                Result.Add(NewRow);
+            }
+
+            FixData(AOldTable.strName, OldColumnNames, ref Result);
+
+            return Result;
+        }
+
+        /// <summary>
+        /// fix data that would cause problems for PostgreSQL constraints
+        /// </summary>
         public static void FixData(string ATableName, StringCollection AColumnNames, ref List <string[]>ACSVLines)
         {
             // update pub.a_account_property set a_property_value_c = 'true' where a_property_code_c = 'Bank Account';

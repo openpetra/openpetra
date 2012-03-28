@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -94,17 +94,20 @@ namespace Ict.Tools.DBXML
                 // if the table name has been renamed as well, need a TRenamedField for both old and new table
             }
 
-            foreach (TRenamedField row in NewFieldNames)
+            if (NewFieldNames != null)
             {
-                if (row.TableName == tablename)
+                foreach (TRenamedField row in NewFieldNames)
                 {
-                    if (newname == row.NewFieldName)
+                    if (row.TableName == tablename)
                     {
-                        oldname = row.OldFieldName;
-                    }
-                    else if (oldname == row.OldFieldName)
-                    {
-                        newname = row.NewFieldName;
+                        if (newname == row.NewFieldName)
+                        {
+                            oldname = row.OldFieldName;
+                        }
+                        else if (oldname == row.OldFieldName)
+                        {
+                            newname = row.NewFieldName;
+                        }
                     }
                 }
             }
