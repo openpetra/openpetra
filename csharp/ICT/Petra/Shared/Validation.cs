@@ -143,5 +143,54 @@ namespace Ict.Petra.Shared
     /// of this Dictionary are of Type <see cref="TValidationControlsData" />.</remarks>
     public class TValidationControlsDict : Dictionary <DataColumn, TValidationControlsData>
     {
+        /// <summary>
+        /// Special implementation of the base ContainsKey Method as comparing two
+        /// DataColumn objects does not *always* work reliably (weired indeed). The solution is to compare
+        /// their names and see if they match, and if they do, assume the DataColumns are identical.
+        /// </summary>
+        /// <remarks>This Method exposes worse performance than the implementation in the base Class
+        /// as we can't access private Members and have to resort to using an iterator.</remarks>
+        /// <param name="AKey">DataColumn to check for.</param>
+        /// <returns>True if the Dictionary contains an entry with the passed in DataColumn as its Key,
+        /// otherwise false.</returns>
+        public new bool ContainsKey(DataColumn AKey)
+        {
+            foreach (var DictEntry in this) 
+            {
+                if (DictEntry.Key.ToString() == AKey.ToString())
+                {
+                    return true;
+                }
+            }
+            
+            return false;               
+        }            
+        
+        /// <summary>
+        /// Special implementation of the base ContainsKey Method as comparing two
+        /// DataColumn objects does not *always* work reliably (weired indeed). The solution is to compare
+        /// their names and see if they match, and if they do, assume the DataColumns are identical.
+        /// </summary>
+        /// <remarks>This Method exposes worse performance than the implementation in the base Class
+        /// as we can't access private Members and have to resort to using an iterator.</remarks>
+        /// <param name="AKey">DataColumn to check for.</param>
+        /// <param name="AValue">The Value of the Dictionary entry if <paramref name="AKey" /> 
+        /// was found in the Dictionary.</param>
+        /// <returns>True if the Dictionary contains an entry with the passed in DataColumn as its Key,
+        /// otherwise false.</returns>       
+        public new bool TryGetValue(DataColumn AKey, out TValidationControlsData AValue)
+        {
+            foreach (var DictEntry in this) 
+            {
+                if (DictEntry.Key.ToString() == AKey.ToString())
+                {
+                    AValue = DictEntry.Value;
+                    return true;
+                }
+            }
+            
+            AValue = new TValidationControlsData(null, null);                
+            return false;             
+        }
     }
 }
