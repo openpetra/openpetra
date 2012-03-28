@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
@@ -65,24 +66,91 @@ namespace Ict.Tools.DataDumpPetra2
             return StringHelper.StrMerge(AColumnNames, ',').Split(new char[] { ',' });
         }
 
+        private static StringCollection GetColumnNames(TTable ATable)
+        {
+            StringCollection ColumnNames = new StringCollection();
+
+            foreach (TTableField field in ATable.grpTableField.List)
+            {
+                ColumnNames.Add(field.strName);
+            }
+
+            return ColumnNames;
+        }
+
+        private static string FixValue(string AValue, TTableField AOldField)
+        {
+            if ((AOldField.strName == "s_created_by_c")
+                || (AOldField.strName == "s_modified_by_c")
+                || (AOldField.strName == "p_owner_c")
+                || (AOldField.strName == "s_user_id_c")
+                || (AOldField.strName == "p_relation_name_c")
+                || AOldField.strName.EndsWith("_code_c"))
+            {
+                AValue = AValue.Trim().ToUpper();
+
+                if (!AOldField.bNotNull)
+                {
+                    if (AValue.Length == 0)
+                    {
+                        AValue = "\\N";
+                    }
+                }
+            }
+            else if (!AOldField.bNotNull
+                     && ((AOldField.strName == "p_field_key_n")
+                         || (AOldField.strName == "pm_gen_app_poss_srv_unit_key_n")
+                         || (AOldField.strName == "pm_st_field_charged_n")
+                         || (AOldField.strName == "pm_st_current_field_n")
+                         || (AOldField.strName == "pm_st_option2_n")
+                         || (AOldField.strName == "pm_st_option1_n")
+                         || (AOldField.strName == "pm_st_confirmed_option_n")
+                         || (AOldField.strName == "pm_office_recruited_by_n")
+                         || (AOldField.strName == "a_key_ministry_key_n")
+                         || (AOldField.strName == "pm_placement_partner_key_n")
+                         ))
+            {
+                if (AValue == "0")
+                {
+                    AValue = "\\N";
+                }
+            }
+            else if ((AValue.Length == 0) && (AOldField.strType.ToUpper() == "VARCHAR") && !AOldField.bNotNull)
+            {
+                AValue = "\\N";
+            }
+            else if (AOldField.strType.ToUpper() == "BIT")
+            {
+                AValue = (AValue == "yes") ? "1" : "0";
+            }
+            else if (AOldField.strType.ToUpper() == "DATE")
+            {
+                if ((AValue.Length > 0) && (AValue != "\\N"))
+                {
+                    if (AValue.Length != 10)
+                    {
+                        TLogging.Log("WARNING: Invalid date: " + AOldField.strName + " " + AValue);
+                        AValue = "\\N";
+                    }
+                    else
+                    {
+                        // TODO: check for year format, or force all the same in the dump program dmy?
+                        // 15/04/2010 => 2010-04-15
+                        AValue = string.Format("{0}-{1}-{2}", AValue.Substring(6, 4), AValue.Substring(3, 2), AValue.Substring(0, 2));
+                    }
+                }
+            }
+
+            return AValue;
+        }
+
         /// <summary>
         /// fix data that would cause problems for PostgreSQL constraints
         /// </summary>
         public static List <string[]>MigrateData(TTable AOldTable, TTable ANewTable, List <string[]>AParsedRows)
         {
-            StringCollection OldColumnNames = new StringCollection();
-
-            foreach (TTableField field in AOldTable.grpTableField.List)
-            {
-                OldColumnNames.Add(field.strName);
-            }
-
-            StringCollection NewColumnNames = new StringCollection();
-
-            foreach (TTableField field in ANewTable.grpTableField.List)
-            {
-                NewColumnNames.Add(field.strName);
-            }
+            StringCollection OldColumnNames = GetColumnNames(AOldTable);
+            StringCollection NewColumnNames = GetColumnNames(ANewTable);
 
             List <string[]>Result = new List <string[]>();
 
@@ -107,66 +175,7 @@ namespace Ict.Tools.DataDumpPetra2
                     {
                         string value = GetValue(OldColumnNames, OldRow, oldField.strName);
 
-                        if ((oldField.strName == "s_created_by_c")
-                            || (oldField.strName == "s_modified_by_c")
-                            || (oldField.strName == "p_owner_c")
-                            || (oldField.strName == "s_user_id_c")
-                            || (oldField.strName == "p_relation_name_c")
-                            || oldField.strName.EndsWith("_code_c"))
-                        {
-                            value = value.Trim().ToUpper();
-
-                            if (!oldField.bNotNull)
-                            {
-                                if (value.Length == 0)
-                                {
-                                    value = "\\N";
-                                }
-                            }
-                        }
-                        else if (!oldField.bNotNull
-                                 && ((oldField.strName == "p_field_key_n")
-                                     || (oldField.strName == "pm_gen_app_poss_srv_unit_key_n")
-                                     || (oldField.strName == "pm_st_field_charged_n")
-                                     || (oldField.strName == "pm_st_current_field_n")
-                                     || (oldField.strName == "pm_st_option2_n")
-                                     || (oldField.strName == "pm_st_option1_n")
-                                     || (oldField.strName == "pm_st_confirmed_option_n")
-                                     || (oldField.strName == "pm_office_recruited_by_n")
-                                     || (oldField.strName == "a_key_ministry_key_n")
-                                     || (oldField.strName == "pm_placement_partner_key_n")
-                                     ))
-                        {
-                            if (value == "0")
-                            {
-                                value = "\\N";
-                            }
-                        }
-                        else if ((value.Length == 0) && (oldField.strType.ToUpper() == "VARCHAR") && !oldField.bNotNull)
-                        {
-                            value = "\\N";
-                        }
-                        else if (oldField.strType.ToUpper() == "BIT")
-                        {
-                            value = (value == "yes") ? "1" : "0";
-                        }
-                        else if (oldField.strType.ToUpper() == "DATE")
-                        {
-                            if ((value.Length > 0) && (value != "\\N"))
-                            {
-                                if (value.Length != 10)
-                                {
-                                    TLogging.Log("Invalid date: " + oldField.strName + " " + value);
-                                    value = "\\N";
-                                }
-                                else
-                                {
-                                    // TODO: check for year format, or force all the same in the dump program dmy?
-                                    // 15/04/2010 => 2010-04-15
-                                    value = string.Format("{0}-{1}-{2}", value.Substring(6, 4), value.Substring(3, 2), value.Substring(0, 2));
-                                }
-                            }
-                        }
+                        value = FixValue(value, oldField);
 
                         SetValue(NewColumnNames, ref NewRow, newField.strName, value);
                     }
@@ -208,7 +217,7 @@ namespace Ict.Tools.DataDumpPetra2
                 Result.Add(NewRow);
             }
 
-            FixData(AOldTable.strName, OldColumnNames, ref Result);
+            FixData(AOldTable.strName, NewColumnNames, ref Result);
 
             return Result;
         }
@@ -416,6 +425,50 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref CurrentRow, "pm_st_field_charged_n",
                             GetValue(AColumnNames, CurrentRow, "pm_registration_office_n"));
                     }
+                }
+            }
+
+            // pm_personal_data: move values from the p_person table for
+            if (ATableName == "pm_personal_data")
+            {
+                // load the file p_person.d.gz so that we can access the values for each person
+                TTable personTableOld = TDumpProgressToPostgresql.storeOld.GetTable("p_person");
+
+                List <string[]>PersonRows = TParseProgressCSV.ParseFile(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "p_person.d.gz",
+                    personTableOld.grpTableField.List.Count);
+
+                StringCollection PersonColumnNames = GetColumnNames(personTableOld);
+
+                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                {
+                    string[] CurrentRow = ACSVLines[counter];
+                    string partnerkey = GetValue(AColumnNames, CurrentRow, "p_partner_key_n");
+
+                    bool canFindPerson = false;
+                    string believerSinceYear = string.Empty;
+                    string believerSinceComment = string.Empty;
+
+                    foreach (string[] PersonRow in PersonRows)
+                    {
+                        if (GetValue(PersonColumnNames, PersonRow, "p_partner_key_n") == partnerkey)
+                        {
+                            canFindPerson = true;
+                            believerSinceYear = GetValue(PersonColumnNames, PersonRow, "p_believer_since_year_i");
+                            believerSinceComment = GetValue(PersonColumnNames, PersonRow, "p_believer_since_comment_c");
+                            break;
+                        }
+                    }
+
+                    if (!canFindPerson)
+                    {
+                        throw new Exception("Error: Cannot find p_person with partner key " + partnerkey);
+                    }
+
+                    SetValue(AColumnNames, ref CurrentRow, "p_believer_since_year_i",
+                        FixValue(believerSinceYear, personTableOld.GetField("p_believer_since_year_i")));
+                    SetValue(AColumnNames, ref CurrentRow, "p_believer_since_comment_c",
+                        FixValue(believerSinceComment, personTableOld.GetField("p_believer_since_comment_c")));
                 }
             }
         }

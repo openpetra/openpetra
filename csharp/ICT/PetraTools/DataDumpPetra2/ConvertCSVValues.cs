@@ -26,7 +26,9 @@ using System.IO;
 using System.Text;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Threading;
 using Ict.Common;
+using ICSharpCode.SharpZipLib.GZip;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -35,38 +37,53 @@ namespace Ict.Tools.DataDumpPetra2
     /// </summary>
     public class TParseProgressCSV
     {
-        private static int MAXROWS = 200000;
-        private static int RealLineCounter = 0;
+        private static Encoding ProgressFileEncoding;
+
+        /// <summary>
+        /// init the codepage/encoding for the Progress CSV files
+        /// </summary>
+        public static void InitProgressCodePage()
+        {
+            string ProgressCodepage = Environment.GetEnvironmentVariable("PROGRESS_CP");
+
+            try
+            {
+                ProgressFileEncoding = Encoding.GetEncoding(Convert.ToInt32(ProgressCodepage));
+            }
+            catch
+            {
+                ProgressFileEncoding = Encoding.GetEncoding(ProgressCodepage);
+            }
+        }
 
         /// <summary>
         /// parse a CSV file that was dumped by Progress.
         /// that is the fastest way of dumping the data, but it is not ready for being imported into PostgreSQL.
-        /// this function will stop after MAXROWS, and the next call will continue in the next row. This should avoid too much memory use.
         /// </summary>
-        /// <param name="AReader"></param>
+        /// <param name="AInputFileDGz">the path to a gzipped csv file</param>
         /// <param name="AColumnCount">for checking the number of columns</param>
-        /// <param name="CountRows">returns the current number of rows that have been parsed.</param>
-        public static List <string[]>ParseFile(StreamReader AReader, int AColumnCount, ref int CountRows)
+        public static List <string[]>ParseFile(string AInputFileDGz, int AColumnCount)
         {
+            System.IO.Stream fs = new FileStream(AInputFileDGz, FileMode.Open, FileAccess.Read);
+            GZipInputStream gzipStream = new GZipInputStream(fs);
+            StreamReader MyReader = new StreamReader(gzipStream, ProgressFileEncoding);
+
             List <string[]>Result = new List <string[]>();
 
-            if (CountRows == 0)
-            {
-                RealLineCounter = 0;
-            }
+            int RealLineCounter = 0;
 
             string OrigLine = string.Empty;
 
             try
             {
-                while (!AReader.EndOfStream)
+                while (!MyReader.EndOfStream)
                 {
-                    OrigLine = AReader.ReadLine();
+                    OrigLine = MyReader.ReadLine();
 
                     if (OrigLine == ".")
                     {
                         // we have parsed all the data
-                        AReader.ReadToEnd();
+                        MyReader.ReadToEnd();
 
                         break;
                     }
@@ -96,7 +113,7 @@ namespace Ict.Tools.DataDumpPetra2
                             {
                                 if (AcrossSeveralLines)
                                 {
-                                    line.Append("\n").Append(AReader.ReadLine());
+                                    line.Append("\n").Append(MyReader.ReadLine());
 
                                     if (TLogging.DebugLevel == 10)
                                     {
@@ -163,16 +180,10 @@ namespace Ict.Tools.DataDumpPetra2
                     }
 
                     Result.Add(NewLine);
-                    CountRows++;
 
-                    if ((TLogging.DebugLevel > 0) && (CountRows % 500000 == 0))
+                    if ((TLogging.DebugLevel > 0) && (RealLineCounter % 500000 == 0))
                     {
-                        TLogging.Log(CountRows.ToString() + " " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
-                    }
-
-                    if (CountRows % MAXROWS == 0)
-                    {
-                        break;
+                        TLogging.Log(RealLineCounter.ToString() + " " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
                     }
                 }
             }

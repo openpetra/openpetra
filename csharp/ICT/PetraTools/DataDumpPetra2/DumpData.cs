@@ -44,9 +44,12 @@ namespace Ict.Tools.DataDumpPetra2
     {
         const Int32 MAX_SIZE_D_GZ_SEPARATE_PROCESS = 100000;
 
-        private TDataDefinitionStore storeOld;
+        /// <summary>
+        /// the data definition for the old database structure
+        /// </summary>
+        public static TDataDefinitionStore storeOld;
+
         private TDataDefinitionStore storeNew;
-        private Encoding ProgressFileEncoding;
 
         private void LoadTable(TTable newTable)
         {
@@ -160,44 +163,30 @@ namespace Ict.Tools.DataDumpPetra2
 
             try
             {
-                using (System.IO.Stream fs = new FileStream(dumpFile + ".d.gz", FileMode.Open, FileAccess.Read))
+                List <string[]>ParsedValues = TParseProgressCSV.ParseFile(
+                    dumpFile + ".d.gz",
+                    oldTable.grpTableField.List.Count);
+
+                using (FileStream outStream = File.Create(dumpFile + ".sql.gz"))
                 {
-                    using (GZipInputStream gzipStream = new GZipInputStream(fs))
+                    using (Stream gzoStream = new GZipOutputStream(outStream))
                     {
-                        using (StreamReader sr = new StreamReader(gzipStream, ProgressFileEncoding))
+                        using (StreamWriter sw = new StreamWriter(gzoStream))
                         {
-                            using (FileStream outStream = File.Create(dumpFile + ".sql.gz"))
+                            sw.WriteLine("COPY " + newTable.strName + " FROM stdin;");
+                            Console.WriteLine("COPY " + newTable.strName + " FROM stdin;");
+
+                            List <string[]>DumpValues = TFixData.MigrateData(oldTable, newTable, ParsedValues);
+
+                            foreach (string[] row in DumpValues)
                             {
-                                using (Stream gzoStream = new GZipOutputStream(outStream))
-                                {
-                                    using (StreamWriter sw = new StreamWriter(gzoStream))
-                                    {
-                                        int CountRows = 0;
-
-                                        sw.WriteLine("COPY " + newTable.strName + " FROM stdin;");
-                                        Console.WriteLine("COPY " + newTable.strName + " FROM stdin;");
-
-                                        while (!sr.EndOfStream)
-                                        {
-                                            List <string[]>ParsedValues = TParseProgressCSV.ParseFile(sr,
-                                                oldTable.grpTableField.List.Count,
-                                                ref CountRows);
-
-                                            List <string[]>DumpValues = TFixData.MigrateData(oldTable, newTable, ParsedValues);
-
-                                            foreach (string[] row in DumpValues)
-                                            {
-                                                sw.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
-                                                Console.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
-                                            }
-                                        }
-
-                                        sw.Close();
-
-                                        TLogging.Log(" after processing file, rows: " + CountRows.ToString());
-                                    }
-                                }
+                                sw.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
+                                Console.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
                             }
+
+                            sw.Close();
+
+                            TLogging.Log(" after processing file, rows: " + ParsedValues.Count.ToString());
                         }
                     }
                 }
@@ -287,16 +276,7 @@ namespace Ict.Tools.DataDumpPetra2
 
             WritePSQLHeader();
 
-            string ProgressCodepage = Environment.GetEnvironmentVariable("PROGRESS_CP");
-
-            try
-            {
-                ProgressFileEncoding = Encoding.GetEncoding(Convert.ToInt32(ProgressCodepage));
-            }
-            catch
-            {
-                ProgressFileEncoding = Encoding.GetEncoding(ProgressCodepage);
-            }
+            TParseProgressCSV.InitProgressCodePage();
 
             if (ATableName.Length == 0)
             {
