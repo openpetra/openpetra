@@ -48,17 +48,12 @@ namespace Ict.Tools.DataDumpPetra2
                     "usage: Ict.Tools.DataDumpPetra2 -debuglevel:<0..10> -table:<single table or all> -oldpetraxml:<path and filename of old petra.xml> -newpetraxml:<path and filename of petra.xml>");
                 Console.Error.WriteLine("will default to processing all tables, and using petra23.xml and petra.xml from the current directory");
                 Console.Error.WriteLine("");
-                Console.Error.WriteLine(
-                    "You should redirect the output to a file, or even pipe it through gzip. eg. mono Ict.Tools.DataDumpPetra2.exe | iconv --to-code=UTF-8 | gzip > mydump.sql.gz");
-                Console.Error.WriteLine("");
             }
 
             try
             {
                 TLogging.DebugLevel = TAppSettingsManager.GetInt16("debuglevel", 0);
                 string table = TAppSettingsManager.GetValue("table", "");
-                string newxmlfile = TAppSettingsManager.GetValue("newpetraxml", "petra.xml");
-                string oldxmlfile = TAppSettingsManager.GetValue("oldpetraxml", "petra23.xml");
 
                 // the upgrade process is split into two steps, to make testing quicker
 
@@ -68,7 +63,7 @@ namespace Ict.Tools.DataDumpPetra2
                 if ((TAppSettingsManager.GetValue("operation", "dump23") == "dump23") && File.Exists("fulldumpPetra23.r"))
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    dumper.DumpTablesToCSV(table, oldxmlfile);
+                    dumper.DumpTablesToCSV(table);
                 }
 
                 // Step 2: produce one or several sql load files for PostgreSQL
@@ -77,7 +72,14 @@ namespace Ict.Tools.DataDumpPetra2
                 if (TAppSettingsManager.GetValue("operation", "load30") == "load30")
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    dumper.LoadTablesToPostgresql(table, oldxmlfile, newxmlfile);
+                    dumper.LoadTablesToPostgresql(table);
+                }
+
+                // Step 3: concatenate all existing sql.gz files into one load sql file, gzipped. in the correct order
+                if (TAppSettingsManager.GetValue("operation", "createSQL") == "createSQL")
+                {
+                    TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
+                    dumper.CreateNewSQLFile();
                 }
 
                 // TODO: also anonymize the names of the partners (use random names from external list of names)? what about amounts?

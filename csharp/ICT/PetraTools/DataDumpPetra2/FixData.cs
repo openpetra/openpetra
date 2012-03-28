@@ -432,7 +432,7 @@ namespace Ict.Tools.DataDumpPetra2
             if (ATableName == "pm_personal_data")
             {
                 // load the file p_person.d.gz so that we can access the values for each person
-                TTable personTableOld = TDumpProgressToPostgresql.storeOld.GetTable("p_person");
+                TTable personTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("p_person");
 
                 List <string[]>PersonRows = TParseProgressCSV.ParseFile(
                     TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "p_person.d.gz",

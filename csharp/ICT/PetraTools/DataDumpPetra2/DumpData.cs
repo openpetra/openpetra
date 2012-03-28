@@ -44,12 +44,53 @@ namespace Ict.Tools.DataDumpPetra2
     {
         const Int32 MAX_SIZE_D_GZ_SEPARATE_PROCESS = 100000;
 
-        /// <summary>
-        /// the data definition for the old database structure
-        /// </summary>
-        public static TDataDefinitionStore storeOld;
+        private static TDataDefinitionStore storeOld = null;
+        private static TDataDefinitionStore storeNew = null;
 
-        private TDataDefinitionStore storeNew;
+        /// <summary>
+        /// get the data structure for the version that should be upgraded
+        /// </summary>
+        public static TDataDefinitionStore GetStoreOld()
+        {
+            if (storeOld == null)
+            {
+                string PetraOldPath = TAppSettingsManager.GetValue("oldpetraxml", "petra23.xml");
+
+                TLogging.Log(String.Format("Reading 2.x xml file {0}...", PetraOldPath));
+                TDataDefinitionParser parserOld = new TDataDefinitionParser(PetraOldPath);
+                storeOld = new TDataDefinitionStore();
+
+                if (!parserOld.ParseDocument(ref storeOld, false, true))
+                {
+                    return null;
+                }
+            }
+
+            return storeOld;
+        }
+
+        /// <summary>
+        /// get the data structure for the new version
+        /// </summary>
+        public static TDataDefinitionStore GetStoreNew()
+        {
+            if (storeNew == null)
+            {
+                string PetraNewPath = TAppSettingsManager.GetValue("newpetraxml", "petra.xml");
+
+                TLogging.Log(String.Format("Reading OpenPetra xml file {0}...", PetraNewPath));
+
+                TDataDefinitionParser parserNew = new TDataDefinitionParser(PetraNewPath, false);
+                storeNew = new TDataDefinitionStore();
+
+                if (!parserNew.ParseDocument(ref storeNew, false, true))
+                {
+                    return null;
+                }
+            }
+
+            return storeNew;
+        }
 
         private void LoadTable(TTable newTable)
         {
@@ -174,15 +215,16 @@ namespace Ict.Tools.DataDumpPetra2
                         using (StreamWriter sw = new StreamWriter(gzoStream))
                         {
                             sw.WriteLine("COPY " + newTable.strName + " FROM stdin;");
-                            Console.WriteLine("COPY " + newTable.strName + " FROM stdin;");
 
                             List <string[]>DumpValues = TFixData.MigrateData(oldTable, newTable, ParsedValues);
 
                             foreach (string[] row in DumpValues)
                             {
                                 sw.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
-                                Console.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
                             }
+
+                            sw.WriteLine("\\.");
+                            sw.WriteLine();
 
                             sw.Close();
 
@@ -203,9 +245,6 @@ namespace Ict.Tools.DataDumpPetra2
                     File.Delete(dumpFile + ".sql.gz");
                 }
             }
-
-            Console.WriteLine("\\.");
-            Console.WriteLine();
         }
 
         private static void WriteSequences()
@@ -229,52 +268,33 @@ namespace Ict.Tools.DataDumpPetra2
             File.Delete(dumpFile);
         }
 
-        void WritePSQLHeader()
+        void WritePSQLHeader(StreamWriter sw)
         {
-            Console.WriteLine("--");
-            Console.WriteLine("-- PostgreSQL database dump");
-            Console.WriteLine("--");
-            Console.WriteLine();
-            Console.WriteLine("SET statement_timeout = 0;");
-            Console.WriteLine("SET client_encoding = 'UTF8';");
-            Console.WriteLine("SET standard_conforming_strings = off;");
-            Console.WriteLine("SET check_function_bodies = false;");
-            Console.WriteLine("SET client_min_messages = warning;");
-            Console.WriteLine("SET escape_string_warning = off;");
-            Console.WriteLine();
-            Console.WriteLine("SET search_path = public, pg_catalog;");
-            Console.WriteLine();
+            sw.WriteLine("--");
+            sw.WriteLine("-- PostgreSQL database dump");
+            sw.WriteLine("--");
+            sw.WriteLine();
+            sw.WriteLine("SET statement_timeout = 0;");
+            sw.WriteLine("SET client_encoding = 'UTF8';");
+            sw.WriteLine("SET standard_conforming_strings = off;");
+            sw.WriteLine("SET check_function_bodies = false;");
+            sw.WriteLine("SET client_min_messages = warning;");
+            sw.WriteLine("SET escape_string_warning = off;");
+            sw.WriteLine();
+            sw.WriteLine("SET search_path = public, pg_catalog;");
+            sw.WriteLine();
         }
 
         /// <summary>
         /// Load the data from the 2.x Petra CSV file, and create psql load file
         /// </summary>
-        public void LoadTablesToPostgresql(string ATableName, String APetraOldPath, String APetraNewPath)
+        public void LoadTablesToPostgresql(string ATableName)
         {
-            TDataDefinitionParser parserOld = new TDataDefinitionParser(APetraOldPath);
-
-            storeOld = new TDataDefinitionStore();
-            TDataDefinitionParser parserNew = new TDataDefinitionParser(APetraNewPath, false);
-            storeNew = new TDataDefinitionStore();
-
-            TLogging.Log(String.Format("Reading 2.x xml file {0}...", APetraOldPath));
-
-            if (!parserOld.ParseDocument(ref storeOld, false, true))
-            {
-                return;
-            }
-
-            TLogging.Log(String.Format("Reading OpenPetra xml file {0}...", APetraNewPath));
-
-            if (!parserNew.ParseDocument(ref storeNew, false, true))
-            {
-                return;
-            }
+            GetStoreOld();
+            GetStoreNew();
 
             DataDefinitionDiff.newVersion = "3.0";
             TTable.GEnabledLoggingMissingFields = false;
-
-            WritePSQLHeader();
 
             TParseProgressCSV.InitProgressCodePage();
 
@@ -301,19 +321,54 @@ namespace Ict.Tools.DataDumpPetra2
         }
 
         /// <summary>
+        /// collect all sql.gz files and concatenate them to one, and also the sequence file
+        /// </summary>
+        public void CreateNewSQLFile()
+        {
+            GetStoreNew();
+
+            using (FileStream outStream = File.Create(
+                       TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                       Path.DirectorySeparatorChar + "load.sql.gz"))
+            {
+                using (Stream gzoStream = new GZipOutputStream(outStream))
+                {
+                    StreamWriter sw = new StreamWriter(gzoStream);
+
+                    WritePSQLHeader(sw);
+
+                    // TODO LoadSequences();
+
+                    ArrayList newTables = storeNew.GetTables();
+
+                    foreach (TTable newTable in newTables)
+                    {
+                        string fileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                          Path.DirectorySeparatorChar + newTable.strName + ".sql.gz";
+
+                        if (File.Exists(fileName))
+                        {
+                            System.IO.Stream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                            GZipInputStream gzipStream = new GZipInputStream(fs);
+                            StreamReader sr = new StreamReader(gzipStream);
+
+                            sw.Write(sr.ReadToEnd());
+                        }
+                    }
+
+                    sw.Close();
+                }
+            }
+
+            TLogging.Log("Success: finished writing the file load.sql.gz");
+        }
+
+        /// <summary>
         /// dump one or all tables from Progress into a simple CSV file. still using the old Petra 2.x format
         /// </summary>
-        public void DumpTablesToCSV(string ATableName, String APetraOldPath)
+        public void DumpTablesToCSV(string ATableName)
         {
-            TDataDefinitionParser parserOld = new TDataDefinitionParser(APetraOldPath);
-
-            storeOld = new TDataDefinitionStore();
-            TLogging.Log(String.Format("Reading 2.x xml file {0}...", APetraOldPath));
-
-            if (!parserOld.ParseDocument(ref storeOld, false, true))
-            {
-                return;
-            }
+            GetStoreOld();
 
             if (!Directory.Exists(TAppSettingsManager.GetValue("fulldumpPath", "fulldump")))
             {

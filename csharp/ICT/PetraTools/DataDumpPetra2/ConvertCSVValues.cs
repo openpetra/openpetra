@@ -44,7 +44,8 @@ namespace Ict.Tools.DataDumpPetra2
         /// </summary>
         public static void InitProgressCodePage()
         {
-            string ProgressCodepage = Environment.GetEnvironmentVariable("PROGRESS_CP");
+            string ProgressCodepage =
+                TAppSettingsManager.GetValue("CodePage", Environment.GetEnvironmentVariable("PROGRESS_CP"));
 
             try
             {
