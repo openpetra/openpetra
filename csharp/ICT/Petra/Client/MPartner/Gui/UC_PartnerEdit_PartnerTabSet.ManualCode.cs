@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrFamilyTabHeader = Catalog.GetString("Family");
 
-        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
+// TODO        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
 

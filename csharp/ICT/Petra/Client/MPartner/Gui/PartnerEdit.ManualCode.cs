@@ -121,43 +121,43 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static readonly string StrQueryUnitParent = Catalog.GetString(
             "All 'Units' MUST be assigned a 'Parent'.\r\nDo you wish to assign one now?");
         private static readonly string StrQueryUnitParentTitle = Catalog.GetString("Assign Parent in Unit Hierarchy?");
-        private static readonly string StrQueryOverwriteAddress = Catalog.GetString(
-            "Are you sure you want to replace the current address with the address\r\n" +
-            "that you are about to find?\r\n\r\nWARNING:\r\n" +
-            "If you choose 'Yes', history for the currently displayed address will be lost!\r\n" +
-            "If the displayed address was valid, you should instead add a new address\r\n" +
-            "and then enter an end (to) date for the old address.");
-        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
-        private static readonly string StrCannotDeletePartner = Catalog.GetString(
-            "Cannot delete Partner that has unsaved changes.\r\n\r\n" +
-            "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
-            "and then delete the Partner from the Partner Module screen.");
-        private static readonly string StrCannotDeletePartnerTitle = Catalog.GetString("Cannot Delete Partner That Has Unsaved Changes");
-        private static readonly string StrDownloadVideoTutorialTitle = Catalog.GetString("Download Video Tutorial");
-        private static readonly string StrDownloadVideoTutoriaManuallTitle = Catalog.GetString("Manual Download of Video Tutorial");
-        private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
-        private static readonly string StrVideoTutorialNotFound = Catalog.GetString(
-            "The Video Tutorial for Partner Edit Screen cannot be found on your system.\r\n" +
-            "(OpenPetra is looking in '{0}' for a file named '{1}').\r\n\r\n" +
-            "The video can also be download from the Internet. Choose 'Yes' to download it and view it,\r\n" +
-            "or choose 'No' to not download the video.");
-        private static readonly string StrVideoTutorialLaunchFailed = Catalog.GetString(
-            "There was a problem launching the Video Tutorial application. (Details can be found in the log file.)");
-        private static readonly string StrVideoTutorialWebBRowserLaunched = Catalog.GetString(
-            "The web browser should have been launched and offer the download of the file.");
-        private static readonly string StrVideoTutorialWebBRowserLaunchFailed = Catalog.GetString(
-            "There was a problem launching Internet Explorer. (Details can be found in the log file.)\r\n\r\n" +
-            "To download the Video Tutorial, launch your web browser and enter the following address:\r\n" + "   ");
-        private static readonly string StrVideoTutorialDownloadInstructions = Catalog.GetString(
-            "Please save the file in the following folder:\r\n   {0}\r\n\r\n" +
-            "After the download is finished: choose 'Yes' to start the Video Tutorial from that folder,\r\n" +
-            "or choose 'No' to return to the Partner Edit screen.");
-        private static readonly string StrDeactivatePartnerTitle = Catalog.GetString("Deactivate Partner");
-        private static readonly string StrDeactivatePartnerActionCancelled = Catalog.GetString(
-            "Deactivate Partner procedure cancelled - no data was changed.");
-        private static readonly string StrDeactivatePartnerSuccess = Catalog.GetString("Deactivate Partner procedure finished sucessfully.");
-        private static readonly string StrDeactivatePartnerStatusNotChanged = Catalog.GetString(
-            "Partner Status wasn't changed - it was already set to '{0}'.");
+// TODO        private static readonly string StrQueryOverwriteAddress = Catalog.GetString(
+// TODO            "Are you sure you want to replace the current address with the address\r\n" +
+// TODO            "that you are about to find?\r\n\r\nWARNING:\r\n" +
+// TODO            "If you choose 'Yes', history for the currently displayed address will be lost!\r\n" +
+// TODO            "If the displayed address was valid, you should instead add a new address\r\n" +
+// TODO            "and then enter an end (to) date for the old address.");
+// TODO        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
+// TODO        private static readonly string StrCannotDeletePartner = Catalog.GetString(
+// TODO            "Cannot delete Partner that has unsaved changes.\r\n\r\n" +
+// TODO            "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
+// TODO            "and then delete the Partner from the Partner Module screen.");
+// TODO        private static readonly string StrCannotDeletePartnerTitle = Catalog.GetString("Cannot Delete Partner That Has Unsaved Changes");
+// TODO        private static readonly string StrDownloadVideoTutorialTitle = Catalog.GetString("Download Video Tutorial");
+// TODO        private static readonly string StrDownloadVideoTutoriaManuallTitle = Catalog.GetString("Manual Download of Video Tutorial");
+// TODO        private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
+// TODO        private static readonly string StrVideoTutorialNotFound = Catalog.GetString(
+// TODO            "The Video Tutorial for Partner Edit Screen cannot be found on your system.\r\n" +
+// TODO            "(OpenPetra is looking in '{0}' for a file named '{1}').\r\n\r\n" +
+// TODO            "The video can also be download from the Internet. Choose 'Yes' to download it and view it,\r\n" +
+// TODO            "or choose 'No' to not download the video.");
+// TODO        private static readonly string StrVideoTutorialLaunchFailed = Catalog.GetString(
+// TODO            "There was a problem launching the Video Tutorial application. (Details can be found in the log file.)");
+// TODO        private static readonly string StrVideoTutorialWebBRowserLaunched = Catalog.GetString(
+// TODO            "The web browser should have been launched and offer the download of the file.");
+// TODO        private static readonly string StrVideoTutorialWebBRowserLaunchFailed = Catalog.GetString(
+// TODO            "There was a problem launching Internet Explorer. (Details can be found in the log file.)\r\n\r\n" +
+// TODO            "To download the Video Tutorial, launch your web browser and enter the following address:\r\n" + "   ");
+// TODO        private static readonly string StrVideoTutorialDownloadInstructions = Catalog.GetString(
+// TODO            "Please save the file in the following folder:\r\n   {0}\r\n\r\n" +
+// TODO            "After the download is finished: choose 'Yes' to start the Video Tutorial from that folder,\r\n" +
+// TODO            "or choose 'No' to return to the Partner Edit screen.");
+// TODO        private static readonly string StrDeactivatePartnerTitle = Catalog.GetString("Deactivate Partner");
+// TODO        private static readonly string StrDeactivatePartnerActionCancelled = Catalog.GetString(
+// TODO            "Deactivate Partner procedure cancelled - no data was changed.");
+// TODO        private static readonly string StrDeactivatePartnerSuccess = Catalog.GetString("Deactivate Partner procedure finished sucessfully.");
+// TODO        private static readonly string StrDeactivatePartnerStatusNotChanged = Catalog.GetString(
+// TODO            "Partner Status wasn't changed - it was already set to '{0}'.");
 
         #endregion
 
