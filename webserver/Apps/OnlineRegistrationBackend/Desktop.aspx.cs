@@ -233,6 +233,11 @@ namespace Ict.Petra.WebServer.MConference
             try
             {
                 RegistrationOffice = Convert.ToInt64(this.FilterRegistrationOffice.SelectedItem.Value);
+
+                if (RegistrationOffice == 0)
+                {
+                    RegistrationOffice = -1;
+                }
             }
             catch (Exception)
             {
@@ -271,15 +276,23 @@ namespace Ict.Petra.WebServer.MConference
 
             if ((CurrentApplicants == null) || (sender != null) || (Session["CURRENTROW"] == null))
             {
-                CurrentApplicants = new ConferenceApplicationTDS();
-                TApplicationManagement.GetApplications(
-                    ref CurrentApplicants,
-                    EventPartnerKey,
-                    EventCode,
-                    this.FilterStatus.SelectedItem.Value,
-                    GetSelectedRegistrationOffice(),
-                    GetSelectedRole(),
-                    true);
+                try
+                {
+                    CurrentApplicants = new ConferenceApplicationTDS();
+                    TApplicationManagement.GetApplications(
+                        ref CurrentApplicants,
+                        EventPartnerKey,
+                        EventCode,
+                        this.FilterStatus.SelectedItem.Value,
+                        GetSelectedRegistrationOffice(),
+                        GetSelectedRole(),
+                        true);
+                }
+                catch (Exception exc)
+                {
+                    TLogging.Log(exc.ToString());
+                }
+
                 Session["CURRENTAPPLICANTS"] = CurrentApplicants;
                 this.FormPanel1.SetValues(new { });
                 this.FormPanel1.Disabled = true;

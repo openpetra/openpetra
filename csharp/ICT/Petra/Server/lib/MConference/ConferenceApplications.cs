@@ -511,7 +511,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     newRow.JSONData = GeneralApplication.RawApplicationData;
                 }
 
-                if (AApplicationStatus.Length == 0)
+                if (AApplicationStatus == null || AApplicationStatus.Length == 0)
                 {
                     AApplicationStatus = "on hold";
                 }
