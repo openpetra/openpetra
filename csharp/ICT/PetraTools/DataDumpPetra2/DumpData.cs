@@ -163,9 +163,11 @@ namespace Ict.Tools.DataDumpPetra2
 
             ChildProcess.StartInfo.Arguments +=
                 " -debuglevel:" + TAppSettingsManager.GetValue("debuglevel", "0") +
+                " -fulldumpPath:" + TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                " -CodePage:" + TAppSettingsManager.GetValue("CodePage", Environment.GetEnvironmentVariable("PROGRESS_CP")) +
                 " -table:" + newTable.strName +
                 " -newpetraxml:" + TAppSettingsManager.GetValue("newpetraxml", "petra.xml") +
-                " -oldpetraxml:" + TAppSettingsManager.GetValue("oldpetraxml", "petra.xml");
+                " -oldpetraxml:" + TAppSettingsManager.GetValue("oldpetraxml", "petra23.xml");
 
             ChildProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
@@ -326,6 +328,8 @@ namespace Ict.Tools.DataDumpPetra2
         public void CreateNewSQLFile()
         {
             GetStoreNew();
+
+            TLogging.Log("creating load.sql.gz file...");
 
             using (FileStream outStream = File.Create(
                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +

@@ -76,7 +76,7 @@ namespace Ict.Tools.DataDumpPetra2
                 }
 
                 // Step 3: concatenate all existing sql.gz files into one load sql file, gzipped. in the correct order
-                if (TAppSettingsManager.GetValue("operation", "createSQL") == "createSQL")
+                if ((TAppSettingsManager.GetValue("operation", "createSQL") == "createSQL") && (TAppSettingsManager.GetValue("table", "").Length == 0))
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
                     dumper.CreateNewSQLFile();
