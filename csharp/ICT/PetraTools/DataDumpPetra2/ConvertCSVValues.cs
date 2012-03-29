@@ -33,6 +33,191 @@ using ICSharpCode.SharpZipLib.GZip;
 namespace Ict.Tools.DataDumpPetra2
 {
     /// <summary>
+    /// a memory conscious class to parse CSV files
+    /// </summary>
+    public class CSVFile
+    {
+        private StreamReader FReader;
+        private char FSeparator;
+        private int FCurrentPosition;
+        private int FCurrentLength;
+        private int FColumnCount;
+
+        /// <summary>
+        /// the current line
+        /// </summary>
+        public string FCurrentLine;
+        /// <summary>
+        /// list of the values for the current row
+        /// </summary>
+        public string[] FCurrentRow;
+        /// <summary>
+        /// the current line. as it is seen in the file, not considering logical lines (which can go across several lines)
+        /// </summary>
+        public long FRealLineCounter;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public CSVFile(StreamReader AReader, int AColumnCount, char ASeparator)
+        {
+            FReader = AReader;
+            FColumnCount = AColumnCount;
+            FSeparator = ASeparator;
+            FRealLineCounter = 0;
+        }
+
+        private bool GetNextCSV()
+        {
+            FCurrentLength = 0;
+
+            if (FCurrentPosition > FCurrentLine.Length)
+            {
+                return false;
+            }
+
+            bool escape = false;
+            int position = FCurrentPosition;
+
+            if (FCurrentLine[position] != FSeparator)
+            {
+                if (FCurrentLine[position] == '"')
+                {
+                    int QuotedStringLength = (StringHelper.FindMatchingQuote(FCurrentLine, position) - position);
+
+                    position += QuotedStringLength + 2;
+                    FCurrentLength += QuotedStringLength + 2;
+                }
+                else
+                {
+                    while (position < FCurrentLine.Length)
+                    {
+                        if (escape)
+                        {
+                            escape = false;
+                        }
+                        else
+                        {
+                            if (FCurrentLine[position] == '\\')
+                            {
+                                escape = true;
+                                position++;
+                                FCurrentLength++;
+                            }
+                        }
+
+                        position++;
+                        FCurrentLength++;
+
+                        if (!escape && (position < FCurrentLine.Length) && (FCurrentLine[position] == FSeparator))
+                        {
+                            // found the next separator
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private string GetCurrentValue()
+        {
+            string value;
+
+            if (FCurrentPosition == FCurrentLine.Length)
+            {
+                // line ends with the separator. empty value at the end
+                value = string.Empty;
+            }
+            else if (FCurrentLine[FCurrentPosition] == '"')
+            {
+                value = FCurrentLine.Substring(FCurrentPosition + 1, FCurrentLength - 2);
+            }
+            else
+            {
+                value = FCurrentLine.Substring(FCurrentPosition, FCurrentLength);
+            }
+
+            if (value.IndexOf("\"\"") != -1)
+            {
+                value = value.Replace("\"\"", "\"");
+            }
+
+            if (TLogging.DebugLevel >= 20)
+            {
+                TLogging.Log("parsed value " + value);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// get the next row
+        /// </summary>
+        /// <returns></returns>
+        public bool GetNextRow()
+        {
+            if (FReader.EndOfStream)
+            {
+                return false;
+            }
+
+            FCurrentRow = new string[FColumnCount];
+
+            FCurrentLine = FReader.ReadLine();
+            FRealLineCounter++;
+            FCurrentPosition = 0;
+            int CurrentColumn = 0;
+
+            while (true)
+            {
+                try
+                {
+                    if (!GetNextCSV())
+                    {
+                        break;
+                    }
+
+                    if (CurrentColumn >= FColumnCount)
+                    {
+                        throw new Exception(
+                            String.Format("Line {0}: Invalid number of columns, should be {1} but there are more columns.",
+                                FRealLineCounter,
+                                FColumnCount));
+                    }
+
+                    FCurrentRow[CurrentColumn] = GetCurrentValue();
+                    FCurrentPosition += FCurrentLength + 1;
+                    CurrentColumn++;
+                }
+                catch (System.IndexOutOfRangeException)
+                {
+                    // could use StringBuilder, but not sure if that helps here enough
+                    FCurrentLine += "\n" + FReader.ReadLine();
+                    FRealLineCounter++;
+
+                    if (TLogging.DebugLevel == 10)
+                    {
+                        TLogging.Log("adding next line: " + FCurrentLine.ToString());
+                    }
+                }
+            }
+
+            if (CurrentColumn != FColumnCount)
+            {
+                throw new Exception(
+                    String.Format("Line {0}: Invalid number of columns, should be {1} but there are only {2} columns.",
+                        FRealLineCounter,
+                        FColumnCount,
+                        CurrentColumn));
+            }
+
+            return true;
+        }
+    }
+
+    /// <summary>
     /// parse the dump file from Progress which is basically a CSV file
     /// </summary>
     public class TParseProgressCSV
@@ -71,127 +256,54 @@ namespace Ict.Tools.DataDumpPetra2
 
             List <string[]>Result = new List <string[]>();
 
-            int RealLineCounter = 0;
-
-            string OrigLine = string.Empty;
+            CSVFile csvfile = new CSVFile(MyReader, AColumnCount, ' ');
 
             try
             {
-                while (!MyReader.EndOfStream)
+                while (csvfile.GetNextRow())
                 {
-                    OrigLine = MyReader.ReadLine();
-
-                    if (OrigLine == ".")
+                    if (csvfile.FCurrentRow[0] == ".")
                     {
                         // we have parsed all the data
-                        MyReader.ReadToEnd();
-
                         break;
                     }
 
-                    StringBuilder line = new StringBuilder(OrigLine);
-
-                    int ColumnCounter = 0;
-
-                    if (TLogging.DebugLevel == 10)
+                    for (int countColumn = 0; countColumn < AColumnCount; countColumn++)
                     {
-                        TLogging.Log("parsing line: " + line.ToString());
-                    }
-
-                    RealLineCounter++;
-
-                    string[] NewLine = new string[AColumnCount];
-
-                    while (line.Length > 0)
-                    {
-                        string val = string.Empty;
-
-                        if (line[0] == '"')
+                        if ((csvfile.FCurrentRow[countColumn].IndexOf('\n') != -1)
+                            || (csvfile.FCurrentRow[countColumn].IndexOf('\r') != -1))
                         {
-                            bool AcrossSeveralLines = false;
-
-                            do
-                            {
-                                if (AcrossSeveralLines)
-                                {
-                                    line.Append("\n").Append(MyReader.ReadLine());
-
-                                    if (TLogging.DebugLevel == 10)
-                                    {
-                                        TLogging.Log("adding next line: " + line.ToString());
-                                    }
-
-                                    RealLineCounter++;
-                                }
-
-                                try
-                                {
-                                    val = StringHelper.GetNextCSV(ref line, ' ');
-                                    AcrossSeveralLines = false;
-                                }
-                                catch (System.IndexOutOfRangeException)
-                                {
-                                    // the current data row is across several lines
-                                    AcrossSeveralLines = true;
-                                }
-                            } while (AcrossSeveralLines);
-
-                            // double quotes have been escaped by two double quotes
-                            val = val.Replace("\"\"", "\"");
-
-                            val = val.Replace("\n", "\\n").Replace("\r", "\\r");
+                            csvfile.FCurrentRow[countColumn] = csvfile.FCurrentRow[countColumn].Replace("\n", "\\n").Replace("\r", "\\r");
                         }
                         else
                         {
-                            val = StringHelper.GetNextCSV(ref line, ' ');
-
-                            if (val == "?")
+                            if (csvfile.FCurrentRow[countColumn] == "?")
                             {
                                 // NULL
-                                val = "\\N";
+                                csvfile.FCurrentRow[countColumn] = "\\N";
                             }
                         }
 
                         if (TLogging.DebugLevel == 10)
                         {
-                            TLogging.Log("Parsed value: " + val);
+                            TLogging.Log("Parsed value: " + csvfile.FCurrentRow[countColumn]);
                         }
-
-                        if (ColumnCounter >= AColumnCount)
-                        {
-                            TLogging.Log(OrigLine);
-                            throw new Exception(
-                                String.Format("Line {0}: Invalid number of columns, should be only {1} but there are more columns.",
-                                    RealLineCounter,
-                                    AColumnCount));
-                        }
-
-                        NewLine[ColumnCounter] = val;
-                        ColumnCounter++;
                     }
 
-                    if (ColumnCounter != AColumnCount)
-                    {
-                        TLogging.Log(OrigLine);
-                        throw new Exception(
-                            String.Format("Line {0}: Invalid number of columns, should be {1} but there are only {2} columns.",
-                                RealLineCounter,
-                                AColumnCount,
-                                ColumnCounter));
-                    }
+                    // this adds up to a lot of memory!!!
+                    // TODO: should we store this in a sqlite db, instead of holding it in memory? also useful if we need p_person again, etc
+                    Result.Add(csvfile.FCurrentRow);
 
-                    Result.Add(NewLine);
-
-                    if ((TLogging.DebugLevel > 0) && (RealLineCounter % 500000 == 0))
+                    if ((TLogging.DebugLevel > 0) && (csvfile.FRealLineCounter % 500000 == 0))
                     {
-                        TLogging.Log(RealLineCounter.ToString() + " " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
+                        TLogging.Log(csvfile.FRealLineCounter.ToString() + " " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
                     }
                 }
             }
             catch (Exception e)
             {
-                TLogging.Log(OrigLine);
-                TLogging.Log("Problem parsing file, in line " + RealLineCounter.ToString());
+                TLogging.Log(csvfile.FCurrentLine);
+                TLogging.Log("Problem parsing file, in line " + csvfile.FRealLineCounter.ToString());
                 throw e;
             }
 
