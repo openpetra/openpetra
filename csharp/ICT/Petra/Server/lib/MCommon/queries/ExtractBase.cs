@@ -38,12 +38,12 @@ namespace Ict.Petra.Server.MCommon.queries
     /// </summary>
     public abstract class ExtractQueryBase
     {
-    	/// <summary>
-    	/// Extracts who need special treatment need to set this to true. It is needed if there is more
-    	/// than one query involved in running the extract.
-    	/// </summary>
-    	protected bool FSpecialTreatment = false;
-    	
+        /// <summary>
+        /// Extracts who need special treatment need to set this to true. It is needed if there is more
+        /// than one query involved in running the extract.
+        /// </summary>
+        protected bool FSpecialTreatment = false;
+
         /// <summary>
         /// calculate an extract from a report: all partners of a given type (or selection of multiple types)
         /// </summary>
@@ -64,48 +64,48 @@ namespace Ict.Petra.Server.MCommon.queries
 
                 if (FSpecialTreatment)
                 {
-                	ReturnValue = RunSpecialTreatment (AParameters, Transaction);
+                    ReturnValue = RunSpecialTreatment(AParameters, Transaction);
                 }
                 else
                 {
-	                // call to derived class to retrieve parameters specific for extract
-	                RetrieveParameters(AParameters, ref SqlParameterList);
-	
-	                // add address filter information to sql statement and parameter list
-	                AddressFilterAdded = AddAddressFilter(AParameters, ref ASqlStmt, ref SqlParameterList);
-	
-	                // now run the database query
-	                TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-	                DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
-	                    ConvertParameterArrayList(SqlParameterList));
-	
-	                if (NewTransaction)
-	                {
-	                    DBAccess.GDBAccessObj.RollbackTransaction();
-	                }
-	
-	                // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
-	                // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
-	                if (AParameters.Get("CancelReportCalculation").ToBool() == true)
-	                {
-	                    return false;
-	                }
-	
-	                TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
-	
-	                TVerificationResultCollection VerificationResult;
-	                int NewExtractID;
-	
-	                // create an extract with the given name in the parameters
-	                ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
-	                    AParameters.Get("param_extract_name").ToString(),
-	                    AParameters.Get("param_extract_description").ToString(),
-	                    out NewExtractID,
-	                    out VerificationResult,
-	                    partnerkeys,
-	                    0,
-	                    AddressFilterAdded,
-	                    true);
+                    // call to derived class to retrieve parameters specific for extract
+                    RetrieveParameters(AParameters, ref SqlParameterList);
+
+                    // add address filter information to sql statement and parameter list
+                    AddressFilterAdded = AddAddressFilter(AParameters, ref ASqlStmt, ref SqlParameterList);
+
+                    // now run the database query
+                    TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                    DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
+                        ConvertParameterArrayList(SqlParameterList));
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+
+                    // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
+                    // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
+                    if (AParameters.Get("CancelReportCalculation").ToBool() == true)
+                    {
+                        return false;
+                    }
+
+                    TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
+
+                    TVerificationResultCollection VerificationResult;
+                    int NewExtractID;
+
+                    // create an extract with the given name in the parameters
+                    ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                        AParameters.Get("param_extract_name").ToString(),
+                        AParameters.Get("param_extract_description").ToString(),
+                        out NewExtractID,
+                        out VerificationResult,
+                        partnerkeys,
+                        0,
+                        AddressFilterAdded,
+                        true);
                 }
 
                 if (ReturnValue)
@@ -366,11 +366,11 @@ namespace Ict.Petra.Server.MCommon.queries
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        protected virtual bool RunSpecialTreatment (TParameterList AParameters, TDBTransaction ATransaction)
+        protected virtual bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction)
         {
-			return true;        	
+            return true;
         }
-        
+
         /// <summary>
         /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
         /// </summary>

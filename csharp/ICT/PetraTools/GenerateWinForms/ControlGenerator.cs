@@ -1185,8 +1185,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 ColumnType = "PartnerKey";
             }
-            
-            
+
             if (ColumnType == "Boolean")
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",

@@ -1019,10 +1019,9 @@ namespace Ict.Petra.Client.App.Core
                     {
                         DataUtilities.CalculateHashAndSize(CacheableDataTableFromFile, out HashCode, out TmpSize);
                     }
-
-                    
                 }
             }
+
 //System.Windows.Forms.MessageBox.Show("From File: CacheableTableName Clientside:  HashCode: " + HashCode + "; Size: " + TmpSize.ToString());
             try
             {

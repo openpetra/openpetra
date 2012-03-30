@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
-            
+
             ucoChkFilter.ShowFamiliesOnly(false);
         }
 

@@ -103,13 +103,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         private void FieldDatesSelectionChanged(System.Object sender, EventArgs e)
         {
-        	// when date range is selected then only commitments can be considered
-        	if (rbtDateRange.Checked)
-        	{
-        		rbtCommitmentsOnly.Checked = true;
-        	}
-       }
-        
+            // when date range is selected then only commitments can be considered
+            if (rbtDateRange.Checked)
+            {
+                rbtCommitmentsOnly.Checked = true;
+            }
+        }
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbField.GetCheckedStringList().Length == 0)
@@ -121,14 +121,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
         }
-        
+
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-			if (rbtNow.Checked)
-			{
-				ACalc.AddParameter("param_from_date", DateTime.Today.Date);
-				ACalc.AddParameter("param_until_date", DateTime.Today.Date);
-			}
+            if (rbtNow.Checked)
+            {
+                ACalc.AddParameter("param_from_date", DateTime.Today.Date);
+                ACalc.AddParameter("param_until_date", DateTime.Today.Date);
+            }
         }
     }
 }

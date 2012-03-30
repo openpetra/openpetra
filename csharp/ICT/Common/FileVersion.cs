@@ -53,7 +53,7 @@ namespace Ict.Common
         public TFileVersionInfo(String ARPMStyleVersion)
         {
             // 2.2.35-99: major.minor.build-private
-            String[] VersionParts = ARPMStyleVersion.Split(new char[]{'.'});
+            String[] VersionParts = ARPMStyleVersion.Split(new char[] { '.' });
 
             FileMajorPart = 0;
             FileMinorPart = 0;
@@ -74,12 +74,12 @@ namespace Ict.Common
             {
                 String[] BuildParts = VersionParts[2].Split(new char[] { '-' });
                 FileBuildPart = System.Convert.ToUInt16(BuildParts[0]);
+
                 if (BuildParts.Length > 1)
                 {
                     FilePrivatePart = System.Convert.ToUInt16(BuildParts[1]);
                 }
             }
-
         }
 
         /// <summary>

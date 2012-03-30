@@ -110,13 +110,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 // Load data
                 string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
                                  ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
-                				 " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTable.GetTableDBName() +
-                				 " WHERE ((" + PUnitTable.GetOutreachCodeDBName() + " IS NULL)" +
-                				 "        OR(" + PUnitTable.GetOutreachCodeDBName() + " = ''))" +
-								 " AND " + PUnitTable.GetUnitTypeCodeDBName() + " <> 'KEY-MIN'" +
-								 " AND pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
-								 " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
-								 " AND " + PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE'";
+                                 " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTable.GetTableDBName() +
+                                 " WHERE ((" + PUnitTable.GetOutreachCodeDBName() + " IS NULL)" +
+                                 "        OR(" + PUnitTable.GetOutreachCodeDBName() + " = ''))" +
+                                 " AND " + PUnitTable.GetUnitTypeCodeDBName() + " <> 'KEY-MIN'" +
+                                 " AND pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                 " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                                 " AND " + PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE'";
 
                 if (AFieldName.Length > 0)
                 {
@@ -159,7 +159,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return UnitTable;
         }
-        
+
         /// <summary>
         /// return unit table records for conference or outreach
         /// </summary>
@@ -299,10 +299,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 // Load data
                 string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
                                  ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
-                				 " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTypeTable.GetTableDBName() +
-                				 " WHERE pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
-								 " = pub_" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() +
-								 " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + MPartnerConstants.PARTNERTYPE_LEDGER + "'";
+                                 " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTypeTable.GetTableDBName() +
+                                 " WHERE pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                 " = pub_" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() +
+                                 " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + MPartnerConstants.PARTNERTYPE_LEDGER + "'";
 
                 if (ALedgerName.Length > 0)
                 {
@@ -345,6 +345,5 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return UnitTable;
         }
-        
     }
 }

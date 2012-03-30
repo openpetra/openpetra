@@ -237,7 +237,7 @@ namespace Ict.Petra.Client.CommonControls
                 FAllowVerification = value;
             }
         }
-        
+
         /// <summary>
         /// This property determines whether the user will be allowed to leave the Date
         /// TextBox if it contains an invalid date. (Default: true)

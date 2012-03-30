@@ -1005,7 +1005,7 @@ namespace Ict.Common.Controls
                 object value,
                 Type destinationType)
             {
-				return String.Format("{0:0000000000}", (Int64)value);
+                return String.Format("{0:0000000000}", (Int64)value);
             }
         }
 
@@ -1016,9 +1016,9 @@ namespace Ict.Common.Controls
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn)
         {
-        	AddPartnerKeyColumn(AColumnTitle, ADataColumn, -1);
+            AddPartnerKeyColumn(AColumnTitle, ADataColumn, -1);
         }
-        
+
         /// <summary>
         /// add a column that shows a PartnerKey value (include leading zeros to display a 10 digit number)
         /// </summary>
@@ -1034,7 +1034,7 @@ namespace Ict.Common.Controls
 
             AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, PartnerKeyEditor, null, null, null);
         }
-        
+
         #endregion
 
         #region Overridden Events

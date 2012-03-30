@@ -336,7 +336,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                    (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
                 try
                 {

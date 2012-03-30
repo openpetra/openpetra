@@ -147,32 +147,35 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         private bool ValidateAccountCurrency(string AccountRef, string AccountType)
-
         {
             bool CurrencyIsOk = true;
-            AAccountTable AccountList = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            AAccountTable AccountList = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
+                FLedgerNumber);
+
             AccountList.DefaultView.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
                 FLedgerNumber, AccountRef);
 
             if (AccountList.DefaultView.Count == 1)
             {
                 AAccountRow AccountDetail = (AAccountRow)AccountList.DefaultView[0].Row;
+
                 if (FMainDS.AApSupplier[0].CurrencyCode == FLedgerRow.BaseCurrency)
                 {
                     CurrencyIsOk = (AccountDetail.ForeignCurrencyFlag == false);
                 }
                 else
                 {
-                    CurrencyIsOk = ((AccountDetail.ForeignCurrencyFlag == true) && (AccountDetail.ForeignCurrencyCode == FMainDS.AApSupplier[0].CurrencyCode));
+                    CurrencyIsOk =
+                        ((AccountDetail.ForeignCurrencyFlag == true) && (AccountDetail.ForeignCurrencyCode == FMainDS.AApSupplier[0].CurrencyCode));
                 }
 
                 if (!CurrencyIsOk)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("The {0} must be a {1} currency account."), 
-                        AccountType, FMainDS.AApSupplier[0].CurrencyCode), "Validation");
+                    MessageBox.Show(String.Format(Catalog.GetString("The {0} must be a {1} currency account."),
+                            AccountType, FMainDS.AApSupplier[0].CurrencyCode), "Validation");
                     FMainDS.AApSupplier.Rows[0].EndEdit();
 
-                    // This call isn't really useful, because although the user may go and create the required account, 
+                    // This call isn't really useful, because although the user may go and create the required account,
                     // she won't have done so yet...
                     TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber); // scrub the cache so that I'll notice if the user makes a change
                 }
@@ -180,12 +183,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 MessageBox.Show(String.Format(Catalog.GetString("Unable to access {0} account {1}"),
-                    AccountType, AccountRef), "Error");
+                        AccountType, AccountRef), "Error");
                 FMainDS.AApSupplier.Rows[0].EndEdit();
                 TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList); // scrub the cache - perhaps I'll get a different answer next time!
                 CurrencyIsOk = false;
             }
-
 
             return CurrencyIsOk;
         }
@@ -217,8 +219,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // The account would usually be 9100-AP account.
             if (FMainDS.AApSupplier[0].DefaultApAccount != "9100")
             {
-                if (MessageBox.Show(Catalog.GetString("You are not using the standard AP account (9100) - is this OK?"), 
-                    "Verification", MessageBoxButtons.YesNo)
+                if (MessageBox.Show(Catalog.GetString("You are not using the standard AP account (9100) - is this OK?"),
+                        "Verification", MessageBoxButtons.YesNo)
                     != System.Windows.Forms.DialogResult.Yes)
                 {
                     FMainDS.AApSupplier.Rows[0].EndEdit();
@@ -239,14 +241,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 return false;
             }
+
 /*
  * If we wanted to have only expense accounts in a single currency, we could have this,
  * but that's probably not what we want...
- * 
-            if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultExpAccount, "Expense"))
-            {
-                return false;
-            }
+ *
+ *          if (!ValidateAccountCurrency(FMainDS.AApSupplier[0].DefaultExpAccount, "Expense"))
+ *          {
+ *              return false;
+ *          }
  */
 
             if (FPetraUtilsObject.VerificationResultCollection.Count == 0)

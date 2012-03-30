@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
-            
+
             ucoChkFilter.ShowFamiliesOnly(false);
 
             // Prepare the window title and settings directory (will be used later by TFrmPetraReportingUtils).
@@ -79,13 +79,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             // we need to initialize it a second time here with the correct directory.
             if (FCalledForConferences)
             {
-	            FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Conference");
+                FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Conference");
             }
             else
             {
-	            FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Outreach");
+                FPetraUtilsObject.WindowCaption = Catalog.GetString("Partner by Outreach");
             }
-            
+
             // enable autofind in list for first character (so the user can press character to find list entry)
             this.clbEvent.AutoFindColumn = ((Int16)(1));
             this.clbEvent.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
@@ -99,9 +99,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             // populate list with data to be loaded
             this.LoadListData("");
-            
-		    FPetraUtilsObject.LoadDefaultSettings();
 
+            FPetraUtilsObject.LoadDefaultSettings();
         }
 
         private void LoadListData(string AFilter)

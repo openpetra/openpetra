@@ -64,11 +64,12 @@ namespace Ict.Petra.Server.MFinance.queries
         /// <param name="ASQLParameterList"></param>
         protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
         {
-        	bool AllLedgers;
+            bool AllLedgers;
+
             ICollection <String>param_ledgers;
 
             AllLedgers = AParameters.Get("param_all_ledgers").ToBool();
-            
+
             // now add parameters to sql parameter list
             ASQLParameterList.Add(new OdbcParameter("param_all_ledgers", OdbcType.Bit)
                 {
@@ -77,20 +78,20 @@ namespace Ict.Petra.Server.MFinance.queries
 
             if (AllLedgers)
             {
-            	// Add dummy value in case of an empty list so sql query does not fail.
-            	// This value is irrelevant in this case.
-            	ASQLParameterList.Add(new OdbcParameter("ledgers", OdbcType.BigInt)
-                {
-                    Value = 0
-                });
+                // Add dummy value in case of an empty list so sql query does not fail.
+                // This value is irrelevant in this case.
+                ASQLParameterList.Add(new OdbcParameter("ledgers", OdbcType.BigInt)
+                    {
+                        Value = 0
+                    });
             }
-			else
-			{
-	            // prepare list of ledgers
-	            param_ledgers = AParameters.Get("param_ledgers").ToString().Split(new Char[] { ',', });
-	            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("ledgers", OdbcType.BigInt, param_ledgers));
-			}
-            
+            else
+            {
+                // prepare list of ledgers
+                param_ledgers = AParameters.Get("param_ledgers").ToString().Split(new Char[] { ',', });
+                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("ledgers", OdbcType.BigInt, param_ledgers));
+            }
+
             ASQLParameterList.Add(new OdbcParameter("param_date_from_unset", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_date_from").IsZeroOrNull()

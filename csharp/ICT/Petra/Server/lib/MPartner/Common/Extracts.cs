@@ -782,11 +782,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             if (ResultValue)
             {
-            	ResultValue = ExtendExtractFromListOfPartnerKeys(ANewExtractId, out AVerificationResults, 
-            	                  APartnerKeysTable, APartnerKeyColumn, ASiteKeyColumn, ALocationKeyColumn, 
-            	                  true, ACommitTransaction);
+                ResultValue = ExtendExtractFromListOfPartnerKeys(ANewExtractId, out AVerificationResults,
+                    APartnerKeysTable, APartnerKeyColumn, ASiteKeyColumn, ALocationKeyColumn,
+                    true, ACommitTransaction);
             }
-            
+
             return ResultValue;
         }
 
@@ -827,7 +827,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     APartnerKeyColumn, -1, -1, AIgnoreDuplicates, ACommitTransaction);
             }
         }
-        
+
         /// <summary>
         /// extend an extract from a list of best addresses
         /// </summary>
@@ -852,14 +852,14 @@ namespace Ict.Petra.Server.MPartner.Extracts
             bool AIgnoreDuplicates,
             bool ACommitTransaction)
         {
-        	bool ResultValue = true;
+            bool ResultValue = true;
             Boolean NewTransaction;
             int RecordCounter = 0;
             PPartnerLocationTable PartnerLocationKeysTable;
             Int64 PartnerKey;
 
             AVerificationResults = null;
-            
+
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
@@ -867,7 +867,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             {
                 MExtractTable ExtractTable = new MExtractTable();
                 ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, WriteTransaction);
-				
+
                 // Location Keys need to be determined as extracts do not only need partner keys but
                 // also Location Keys.
                 DetermineBestLocationKeys(APartnerKeysTable, APartnerKeyColumn, ASiteKeyColumn,
@@ -890,11 +890,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         NewRow.PartnerKey = PartnerKey;
                         NewRow.SiteKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetSiteKeyDBName()]);
                         NewRow.LocationKey = Convert.ToInt32(PartnerLocationRow[PPartnerLocationTable.GetLocationKeyDBName()]);
-                        
+
                         // only add row if it does not already exist for this partner
-                        if (AIgnoreDuplicates || !ExtractTable.Rows.Contains(new object[] {NewRow.ExtractId, NewRow.PartnerKey, NewRow.SiteKey}))
+                        if (AIgnoreDuplicates || !ExtractTable.Rows.Contains(new object[] { NewRow.ExtractId, NewRow.PartnerKey, NewRow.SiteKey }))
                         {
-	                        ExtractTable.Rows.Add(NewRow);
+                            ExtractTable.Rows.Add(NewRow);
                         }
                     }
                 }
@@ -911,7 +911,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     }
                     else
                     {
-                    	ResultValue = false;
+                        ResultValue = false;
                     }
                 }
             }
@@ -923,19 +923,19 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             if (ACommitTransaction)
             {
-	            if (ResultValue && NewTransaction)
-	            {
-	                DBAccess.GDBAccessObj.CommitTransaction();
-	            }
-	            else if (NewTransaction)
-	            {
-	                DBAccess.GDBAccessObj.RollbackTransaction();
-	            }
+                if (ResultValue && NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
-            
+
             return ResultValue;
         }
-        
+
         /// <summary>
         /// finalize extract from a list of best addresses (commit or rollback current transaction)
         /// </summary>
@@ -944,10 +944,10 @@ namespace Ict.Petra.Server.MPartner.Extracts
         public static void FinishExtractFromListOfPartnerKeys(bool ACommitTransaction)
         {
             Boolean NewTransaction;
-            
+
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-        	
+
             if (ACommitTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
@@ -957,7 +957,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
         }
-        
+
         /// <summary>
         /// Determine location keys for partners needed for extract, depending on if location information
         /// was retrieved by query or not.

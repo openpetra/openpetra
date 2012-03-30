@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui
             // todo: load ledger details, display on the main finance screen, etc.
             // MessageBox.Show("selected ledger: " + FLedgerNumber.ToString());
         }
-        
+
         /// Open screen for creating "Recipient by Field" Extract
         public static void RecipientByFieldExtract(Form AParentForm)
         {
@@ -83,6 +83,5 @@ namespace Ict.Petra.Client.MFinance.Gui
             frm.CalledFromExtracts = true;
             frm.Show();
         }
-        
     }
 }
