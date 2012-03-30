@@ -34,7 +34,6 @@ namespace {#NAMESPACE}
     private {#DATASETTYPE} FMainDS;
 {#ENDIF DATASETTYPE}
 {#IFNDEF DATASETTYPE}
-    private TTypedDataSet FParentMainDS;
     private class FMainDS 
     {
         public static {#DETAILTABLE}Table {#DETAILTABLE};
@@ -75,16 +74,7 @@ namespace {#NAMESPACE}
         }
     }
     {#ENDIF DATASETTYPE}
-    {#IFNDEF DATASETTYPE}
-        /// dataset for the whole screen
-    public TTypedDataSet MainDS
-    {
-        set
-        {
-            FParentMainDS = value;
-        }
-    }
-    {#ENDIFN DATASETTYPE}
+
     /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
     /// <returns>void</returns>    /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()

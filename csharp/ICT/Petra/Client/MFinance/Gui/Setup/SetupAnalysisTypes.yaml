@@ -45,7 +45,7 @@ RootNode:
             Dock: Fill
           
         txtDetailAnalysisTypeCode: {Label=&Analysis Type Code}
-        txtDetailAnalysisTypeDescription: {Label=Description, Width=400}
+        txtDetailAnalysisTypeDescription: {Label=Description, Width=400, Validation=true}
         chkDetailSystemAnalysisType: {Label=System Analysis Type, ReadOnly=true}
     Menu:
         mniAnalysisTypes:

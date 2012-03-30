@@ -22,11 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -34,6 +39,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
+        private UserControl FCurrentUserControl;
+
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
             get
@@ -85,12 +92,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         private int standardTabIndex = 0;
+
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             tabGiftBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null);
+            tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+        }
+
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (tabGiftBatch.SelectedIndex == 0)
+            {
+                FCurrentUserControl = ucoTransactions;
+            }
+            else
+            {
+                FCurrentUserControl = ucoBatches;
+            }
+
+            if (!ValidateAllData(true, FCurrentUserControl))
+            {
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            ucoBatches.Focus();
+            HookupAllInContainer(ucoBatches);
+            HookupAllInContainer(ucoTransactions);
         }
 
         /// <summary>

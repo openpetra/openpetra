@@ -209,7 +209,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalError())
+            if (VerificationResult.HasCriticalErrors)
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 Assert.Fail("There was a critical error when saving. Please check the logs");
@@ -248,7 +248,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalError())
+            if (VerificationResult.HasCriticalErrors)
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 Assert.Fail("There was a critical error when saving. Please check the logs");
@@ -278,7 +278,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             ResponseDS = new PartnerEditTDS();
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalError())
+            if (VerificationResult.HasCriticalErrors)
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 Assert.Fail("There was a critical error when saving. Please check the logs");
@@ -313,7 +313,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalError())
+            if (VerificationResult.HasCriticalErrors)
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 Assert.Fail("There was a critical error when saving. Please check the logs");
@@ -338,7 +338,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalError())
+            if (VerificationResult.HasCriticalErrors)
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 Assert.Fail("There was a critical error when saving. Please check the logs");
@@ -367,7 +367,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalError())
+            if (VerificationResult.HasCriticalErrors)
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 Assert.Fail("There was a critical error when saving. Please check the logs");
@@ -385,7 +385,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalError())
+            if (VerificationResult.HasCriticalErrors)
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 Assert.Fail("There was a critical error when saving. Please check the logs");

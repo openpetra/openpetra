@@ -1,14 +1,9 @@
-﻿// auto generated with nant generateWinforms from UnhandledExceptionDetailsDialog.yaml
-//
-// DO NOT edit manually, DO NOT edit with the designer
-//
-//
-// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+﻿// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       auto generated
+//       jomammele
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,18 +23,19 @@
 using System;
 using System.Windows.Forms;
 
+
 namespace Ict.Petra.Client.App.Core
 {
     partial class TFrmUnhandledExceptionDetailsDialog
     {
-        private String FErrorDetails;        
-        
+        private String FErrorDetails;
+
         /// <summary>Error Details shown on this screen.</summary>
         public String ErrorDetails
         {
             get
             {
-                return FErrorDetails;                
+                return FErrorDetails;
             }
 
             set
@@ -51,17 +47,41 @@ namespace Ict.Petra.Client.App.Core
 
         private void btnOK_Click(System.Object sender, System.EventArgs e)
         {
-            this.Close();            
+            this.Close();
         }
-        
+
         private void btnCopyToClipboard_Click(System.Object sender, System.EventArgs e)
         {
             Clipboard.SetDataObject(FErrorDetails);
         }
 
+        private void btnShowServerLog_Click(System.Object sender, System.EventArgs e)
+        {
+            OpenExtendedMessageBox("Server.log");
+            Clipboard.SetDataObject("btnShowServerLog_Click was clicked");
+        }
+
+        private void btnShowClientLog_Click(System.Object sender, System.EventArgs e)
+        {
+            OpenExtendedMessageBox("PetraClient.log");
+            Clipboard.SetDataObject("btnShowClientLog_Click was clicked");
+        }
+
         private void Form_Load(System.Object sender, System.EventArgs e)
         {
             txtErrorDetails.Text = FErrorDetails;
-        }        
+        }
+
+        private void OpenExtendedMessageBox(string FWhatToOpen)
+        {
+            TFrmUnhandledExceptionLogFileDialog UHELFDialogue;
+
+            UHELFDialogue = new TFrmUnhandledExceptionLogFileDialog(this);
+            UHELFDialogue.WhatToOpen = FWhatToOpen;
+            UHELFDialogue.ShowDialog();
+
+            /* get UnhandledExceptionLogFile Dialogue out of memory */
+            UHELFDialogue.Dispose();
+        }
     }
 }

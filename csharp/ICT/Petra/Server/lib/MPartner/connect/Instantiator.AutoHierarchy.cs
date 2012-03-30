@@ -2328,6 +2328,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         /// generated method from interface
         public Boolean VerifyPartner(Int64 APartnerKey,
                                      TPartnerClass[] AValidPartnerClasses,
+                                     out bool APartnerExists,
                                      out String APartnerShortName,
                                      out TPartnerClass APartnerClass,
                                      out Boolean AIsMergedPartner)
@@ -2335,6 +2336,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
             #region ManualCode
             return TPartnerServerLookups.VerifyPartner(APartnerKey,
                 AValidPartnerClasses,
+                out APartnerExists,
                 out APartnerShortName,
                 out APartnerClass,
                 out AIsMergedPartner);

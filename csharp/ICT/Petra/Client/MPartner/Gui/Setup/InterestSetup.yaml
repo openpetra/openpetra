@@ -42,7 +42,7 @@ RootNode:
             Controls:
                 Row0: [txtDetailDescription]
             ColSpan: 3
-        txtDetailInterest: {Label=Interest}
+        txtDetailInterest: {Label=Interest, CharacterCasing=Upper}
         cmbDetailCategory: {Label=Category, List=InterestCategoryList}
         txtDetailDescription: {Width=357}
     Toolbar:

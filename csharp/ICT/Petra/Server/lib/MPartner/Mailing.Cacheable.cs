@@ -54,7 +54,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
     /// and which would be retrieved numerous times from the Server as UI windows
     /// are opened.
     /// </summary>
-    public class TPartnerCacheable : TCacheableTablesLoader
+    public partial class TPartnerCacheable : TCacheableTablesLoader
     {
         /// time when this object was instantiated
         private DateTime FStartTime;
@@ -235,6 +235,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Mailing.SaveChangedStandardCacheableTable...");
@@ -252,47 +253,108 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                     switch (ACacheableTable)
                     {
                         case TCacheableMailingTablesEnum.ContactAttributeList:
-                            if (PContactAttributeAccess.SubmitChanges((PContactAttributeTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateContactAttributeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateContactAttributeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PContactAttributeAccess.SubmitChanges((PContactAttributeTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheableMailingTablesEnum.ContactAttributeDetailList:
-                            if (PContactAttributeDetailAccess.SubmitChanges((PContactAttributeDetailTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateContactAttributeDetailList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateContactAttributeDetailListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PContactAttributeDetailAccess.SubmitChanges((PContactAttributeDetailTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheableMailingTablesEnum.MethodOfContactList:
-                            if (PMethodOfContactAccess.SubmitChanges((PMethodOfContactTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateMethodOfContactList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateMethodOfContactListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PMethodOfContactAccess.SubmitChanges((PMethodOfContactTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheableMailingTablesEnum.MergeFormList:
-                            if (PMergeFormAccess.SubmitChanges((PMergeFormTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateMergeFormList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateMergeFormListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PMergeFormAccess.SubmitChanges((PMergeFormTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheableMailingTablesEnum.MergeFieldList:
-                            if (PMergeFieldAccess.SubmitChanges((PMergeFieldTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateMergeFieldList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateMergeFieldListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PMergeFieldAccess.SubmitChanges((PMergeFieldTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheableMailingTablesEnum.MailingList:
-                            if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateMailingList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateMailingListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
+
                         default:
 
                             throw new Exception(
@@ -321,19 +383,53 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                 }
             }
 
-            /*
-            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
-            /// the next time something in the Client accesses it.
-             */
+            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            // the next time something in the Client accesses it.
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+
             return SubmissionResult;
         }
+
+#region Data Validation
+
+        partial void ValidateContactAttributeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateContactAttributeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateContactAttributeDetailList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateContactAttributeDetailListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMethodOfContactList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMethodOfContactListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMergeFormList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMergeFormListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMergeFieldList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMergeFieldListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMailingList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMailingListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+#endregion Data Validation
 
         private DataTable GetPostCodeRegionListTable(TDBTransaction AReadTransaction, string ATableName)
         {

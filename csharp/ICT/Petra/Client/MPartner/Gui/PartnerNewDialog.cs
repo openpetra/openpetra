@@ -50,25 +50,23 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TPartnerNewDialogWinForm : System.Windows.Forms.Form, IFrmPetra
     {
-        /// <summary>todoComment</summary>
-        public const String StrCantCreateNewPartner = "New Partner can't be created because there are " + "no Installed Sites available!" + "\r\n" +
-                                                      "Please set up at least one Installed Site in the " + "System Manager Module!";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyNeedsToBeSelected = "A Family needs to be selected when a new Par" +
-                                                         "tner of Partner Class 'PERSON' should be created!";
+        private static readonly string StrCantCreateNewPartner = Catalog.GetString(
+            "New Partner can't be created because there are no Installed Sites available!\r\n" +
+            "Please set up at least one Installed Site in the System Manager Module!");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyNeedsToBeSelectedTitle = "Family Needed!";
+        private static readonly string StrFamilyNeedsToBeSelected = Catalog.GetString(
+            "A Family needs to be selected when a new Partner of Partner Class 'PERSON' should be created!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExists1 = "A Partner with Partner Key ";
+        private static readonly string StrFamilyNeedsToBeSelectedTitle = Catalog.GetString("Family Needed!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExists2 = " already exists." + "\r\n" + "Please choose a different Partner Key!";
+        private static readonly string StrAPartnerKeyExists = Catalog.GetString(
+            "A Partner with Partner Key {0} already exists.\r\nPlease choose a different Partner Key!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExistsTitle = "Partner Key already in use";
+        private static readonly string StrAPartnerKeyExistsTitle = Catalog.GetString("Partner Key already in use");
+
+        #endregion
 
         private TPartnerNewDialogScreenLogic FLogic;
 
@@ -285,7 +283,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                MessageBox.Show(StrAPartnerKeyExists1 + txtPartnerKey.PartnerKey.ToString() + StrAPartnerKeyExists2, StrAPartnerKeyExistsTitle);
+                MessageBox.Show(String.Format(StrAPartnerKeyExists, txtPartnerKey.PartnerKey, StrAPartnerKeyExistsTitle));
                 txtPartnerKey.Focus();
             }
         }
@@ -362,7 +360,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                MessageBox.Show(StrCantCreateNewPartner, CommonResourcestrings.StrErrorNoInstalledSites);
+                MessageBox.Show(StrCantCreateNewPartner, MCommonResourcestrings.StrErrorNoInstalledSites);
                 DialogResult = System.Windows.Forms.DialogResult.Cancel;
                 Close();
                 return;

@@ -39,8 +39,13 @@ namespace Ict.Common.Remoting.Server
     /// </remarks>
     public class ClientStillAliveCheck
     {
-        private const String StrClientFailedToContact1 = "Client failed to contact PetraServer regularl" + "y (last contact was ";
-        private const String StrClientFailedToContact2 = " ago [Format: hh:mm:ss]): ClientStillAliveCheck mechanism found " + "timeout expired!";
+        #region Resourcestrings
+
+        private static readonly string StrClientFailedToContact = Catalog.GetString(
+            "Client failed to contact OpenPetra Server regularly (last contact was {0} ago [Format: hh:mm:ss]): ClientStillAliveCheck mechanism found timeout expired!");
+
+        #endregion
+
         private static TDelegateTearDownAppDomain UTearDownAppDomain;
         private static String UTearDownAppDomainToken;
         private static Thread UClientStillAliveCheckThread;
@@ -215,8 +220,8 @@ namespace Ict.Common.Remoting.Server
                         if (UTearDownAppDomain != null)
                         {
                             UTearDownAppDomain(UTearDownAppDomainToken,
-                                StrClientFailedToContact1 + Duration.Hours.ToString() + ':' + Duration.Minutes.ToString() + ':' +
-                                Duration.Seconds.ToString() + StrClientFailedToContact2);
+                                String.Format(StrClientFailedToContact, Duration.Hours.ToString() + ':' + Duration.Minutes.ToString() + ':' +
+                                    Duration.Seconds.ToString()));
                         }
                         else
                         {

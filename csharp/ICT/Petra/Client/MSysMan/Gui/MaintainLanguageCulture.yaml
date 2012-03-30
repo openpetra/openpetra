@@ -3,12 +3,15 @@ RootNode:
     FormTitle: Maintain Language and Culture
     Namespace: Ict.Petra.Client.MSysMan.Gui
     FormType: dialog
+    Width: 200
+    Height: 60
     Template: window
+
     Controls:
         pnlDialogContent:
             Controls: 
                 Row0: [cmbLanguage]
                 Row1: [cmbCulture]
 
-        cmbLanguage: {Width=204}
-        cmbCulture: {Width=204}
+        cmbLanguage: {ColSpan=2, Width=204}
+        cmbCulture: {ColSpan=2, Width=204}

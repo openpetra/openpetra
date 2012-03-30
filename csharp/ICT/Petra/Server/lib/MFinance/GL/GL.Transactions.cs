@@ -362,7 +362,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (AVerificationResult.HasCriticalError())
+                if (AVerificationResult.HasCriticalErrors)
                 {
                     return TSubmitChangesResult.scrError;
                 }

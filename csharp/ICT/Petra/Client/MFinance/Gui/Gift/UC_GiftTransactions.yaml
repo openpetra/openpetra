@@ -100,7 +100,7 @@ RootNode:
         txtDetailGiftTransactionAmount: {Label=Amount,Format=Currency, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}
-        txtDetailGiftCommentOne: {Label=Comment 1,Width=250}
+        txtDetailGiftCommentOne: {Label=Comment 1,Width=250, Validation=true}
         txtDetailGiftCommentTwo: {Label=Comment 2,Width=250}
         txtDetailGiftCommentThree: {Label=Comment 3,Width=250}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}

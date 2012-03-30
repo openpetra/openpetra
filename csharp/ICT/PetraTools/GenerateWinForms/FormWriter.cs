@@ -804,7 +804,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", "");
             FTemplate.AddToCodelet("ELSESTATEMENT", "");
-            FTemplate.AddToCodelet("VALIDATEDETAILS", "");
+//            FTemplate.AddToCodelet("VALIDATEDETAILS", "");
 
             if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
             {
@@ -1110,12 +1110,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual(ARow);" + Environment.NewLine);
             }
 
-            if (FCodeStorage.ManualFileExistsAndContains("ValidateDetailsManual"))
-            {
-                ProcessTemplate validateSnippet = FTemplate.GetSnippet("VALIDATEDETAILS");
-                FTemplate.InsertSnippet("VALIDATEDETAILS", validateSnippet);
-            }
-
+//            if (FCodeStorage.ManualFileExistsAndContains("ValidateDetailsManual"))
+//            {
+//                ProcessTemplate validateSnippet = FTemplate.GetSnippet("VALIDATEDETAILS");
+//                FTemplate.InsertSnippet("VALIDATEDETAILS", validateSnippet);
+//            }
+//
             if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))
             {
                 FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailDataFromControlsManual(ARow);" + Environment.NewLine);
@@ -1129,6 +1129,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("void SetControlsManual"))
             {
                 FTemplate.AddToCodelet("SETCONTROLS", "SetControlsManual(AParameters);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("ValidateDataManual"))
+            {
+                FTemplate.SetCodelet("VALIDATEDATAMANUAL", "true");
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("ValidateDataDetailsManual"))
+            {
+                FTemplate.SetCodelet("VALIDATEDATADETAILSMANUAL", "true");
             }
 
             InsertCodeIntoTemplate(AXAMLFilename);

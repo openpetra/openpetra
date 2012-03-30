@@ -47,6 +47,9 @@ private void TabSelectionChanged(System.Object sender, EventArgs e)
     {#IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT}
     
     {#DYNAMICTABPAGEUSERCONTROLSELECTIONCHANGED}
+
+    // Ensure that a Validation ToolTip is removed when the user switches to another Tab
+    FPetraUtilsObject.ValidationToolTip.RemoveAll();
 }
 
 /// <summary>
