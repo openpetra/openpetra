@@ -75,8 +75,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             txtCity.Text = AParameters.Get("param_city").ToString();
             txtPostCodeFrom.Text = AParameters.Get("param_postcode_from").ToString();
             txtPostCodeTo.Text = AParameters.Get("param_postcode_to").ToString();
-            cmbRegion.SetSelectedString(AParameters.Get("param_region").ToString());
-            cmbCountry.SetSelectedString(AParameters.Get("param_country").ToString());
+            cmbRegion.SetSelectedString(AParameters.Get("param_region").ToString(),-1);
+            cmbCountry.SetSelectedString(AParameters.Get("param_country").ToString(),-1);
             
             chkCurrentAddressesOnly.Checked = AParameters.Get("param_only_addresses_valid_on").ToBool();
         }

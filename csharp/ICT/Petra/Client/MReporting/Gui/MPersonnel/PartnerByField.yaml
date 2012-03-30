@@ -21,6 +21,7 @@
         ModulePermissionRequired: [PTNRUSER]
     Actions:
         actFilter: {Label=Filter List, ActionClick=FilterList}
+        actFieldDatesSelectionChanged: {ActionClick=FieldDatesSelectionChanged}
     Controls:
         tpgGeneralSettings: {ControlsOrientation=vertical}
             Label: General Settings
@@ -52,10 +53,9 @@
             
         rgrFieldDates: {Label=Partners at Field, ParameterName=param_field_dates}
             Controls: [rbtNow, rbtEver, rbtDateRange]
-#            Action: actFieldDatesSelectionChanged
-        rbtNow: {Label=Now, ParameterValue=DateNow}
-        rbtEver: {Label=Ever, ParameterValue=DateEver}
-        rbtDateRange: {Label=Within Date Range, ParameterValue=DateRange}
+        rbtNow: {Label=Now, ParameterValue=DateNow, Action=actFieldDatesSelectionChanged}
+        rbtEver: {Label=Ever, ParameterValue=DateEver, Action=actFieldDatesSelectionChanged}
+        rbtDateRange: {Label=Within Date Range, ParameterValue=DateRange, Action=actFieldDatesSelectionChanged}
             Controls:[dtpFromDate, dtpUntilDate]
         dtpFromDate: {Label=from, ParameterName=param_from_date}
         dtpUntilDate: {Label=until, ParameterName=param_until_date}

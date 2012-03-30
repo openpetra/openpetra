@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -100,6 +101,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             LoadListData(txtFilter.Text);
         }
 
+        private void FieldDatesSelectionChanged(System.Object sender, EventArgs e)
+        {
+        	// when date range is selected then only commitments can be considered
+        	if (rbtDateRange.Checked)
+        	{
+        		rbtCommitmentsOnly.Checked = true;
+        	}
+       }
+        
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbField.GetCheckedStringList().Length == 0)
@@ -110,6 +120,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
+        }
+        
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+			if (rbtNow.Checked)
+			{
+				ACalc.AddParameter("param_from_date", DateTime.Today.Date);
+				ACalc.AddParameter("param_until_date", DateTime.Today.Date);
+			}
         }
     }
 }

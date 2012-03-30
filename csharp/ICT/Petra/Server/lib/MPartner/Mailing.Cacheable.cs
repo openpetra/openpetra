@@ -182,10 +182,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                         }
                         case TCacheableMailingTablesEnum.PostCodeRegionList:
                         {
-                    		// sort table by region as this is needed by autopopulated combobox to filter regions
-                    		StringCollection OrderFields = new StringCollection();
-                    		OrderFields.Add(PPostcodeRegionTable.GetRegionDBName());
-                            DataTable TmpTable = PPostcodeRegionAccess.LoadAll(null, ReadTransaction, OrderFields, 0, 0);
+                            DataTable TmpTable = GetPostCodeRegionListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -338,5 +335,15 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
             return SubmissionResult;
         }
 
+        private DataTable GetPostCodeRegionListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+            // sort table by region as this is needed by autopopulated combobox to filter regions
+            StringCollection OrderFields = new StringCollection();
+            OrderFields.Add(PPostcodeRegionTable.GetRegionDBName());
+            
+            return PPostcodeRegionAccess.LoadAll(null, AReadTransaction, OrderFields, 0, 0);
+#endregion ManualCode        
+        }
     }
 }
