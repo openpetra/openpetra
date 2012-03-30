@@ -41,29 +41,33 @@ namespace Ict.Tools.DataDumpPetra2
             string AColumnName,
             string ANewValue)
         {
-            if (AColumnNames.IndexOf(AColumnName) == -1)
+            int index = AColumnNames.IndexOf(AColumnName);
+
+            if (index == -1)
             {
                 throw new Exception("TFixData.SetValue: Problem with unknown column name " + AColumnName);
             }
 
-            ACurrentRow[AColumnNames.IndexOf(AColumnName)] = ANewValue;
+            ACurrentRow[index] = ANewValue;
         }
 
         private static string GetValue(StringCollection AColumnNames,
             string[] ACurrentRow,
             string AColumnName)
         {
-            if (AColumnNames.IndexOf(AColumnName) == -1)
+            int index = AColumnNames.IndexOf(AColumnName);
+
+            if (index == -1)
             {
                 throw new Exception("TFixData.GetValue: Problem with unknown column name " + AColumnName);
             }
 
-            return ACurrentRow[AColumnNames.IndexOf(AColumnName)];
+            return ACurrentRow[index];
         }
 
         private static string[] CreateRow(StringCollection AColumnNames)
         {
-            return StringHelper.StrMerge(AColumnNames, ',').Split(new char[] { ',' });
+            return new string[AColumnNames.Count];
         }
 
         private static StringCollection GetColumnNames(TTable ATable)
@@ -115,15 +119,15 @@ namespace Ict.Tools.DataDumpPetra2
                     AValue = "\\N";
                 }
             }
-            else if ((AValue.Length == 0) && (AOldField.strType.ToUpper() == "VARCHAR") && !AOldField.bNotNull)
+            else if ((AValue.Length == 0) && AOldField.strType.Equals("VARCHAR", StringComparison.OrdinalIgnoreCase) && !AOldField.bNotNull)
             {
                 AValue = "\\N";
             }
-            else if (AOldField.strType.ToUpper() == "BIT")
+            else if (AOldField.strType.Equals("BIT", StringComparison.OrdinalIgnoreCase))
             {
                 AValue = (AValue == "yes") ? "1" : "0";
             }
-            else if (AOldField.strType.ToUpper() == "DATE")
+            else if (AOldField.strType.Equals("DATE", StringComparison.OrdinalIgnoreCase))
             {
                 if ((AValue.Length > 0) && (AValue != "\\N"))
                 {
@@ -147,16 +151,32 @@ namespace Ict.Tools.DataDumpPetra2
         /// <summary>
         /// fix data that would cause problems for PostgreSQL constraints
         /// </summary>
-        public static List <string[]>MigrateData(TTable AOldTable, TTable ANewTable, List <string[]>AParsedRows)
+        public static int MigrateData(TParseProgressCSV AParser, StreamWriter AWriter, TTable AOldTable, TTable ANewTable)
         {
             StringCollection OldColumnNames = GetColumnNames(AOldTable);
             StringCollection NewColumnNames = GetColumnNames(ANewTable);
+            int RowCounter = 0;
 
-            List <string[]>Result = new List <string[]>();
+            SortedList <string, int>OldTableFields = new SortedList <string, int>();
 
-            foreach (string[] OldRow in AParsedRows)
+            int counter = 0;
+
+            foreach (TTableField t in AOldTable.grpTableField.List)
             {
-                string[] NewRow = CreateRow(NewColumnNames);
+                OldTableFields.Add(t.strName, counter);
+                counter++;
+            }
+
+            string[] NewRow = CreateRow(NewColumnNames);
+
+            while (true)
+            {
+                string[] OldRow = AParser.ReadNextRow();
+
+                if (OldRow == null)
+                {
+                    break;
+                }
 
                 foreach (TTableField newField in ANewTable.grpTableField.List)
                 {
@@ -164,11 +184,13 @@ namespace Ict.Tools.DataDumpPetra2
 
                     string oldname = "";
 
-                    oldField = AOldTable.GetField(newField.strName);
-
-                    if ((oldField == null) && (DataDefinitionDiff.GetNewFieldName(ANewTable.strName, ref oldname, ref newField.strName)))
+                    if (OldTableFields.Keys.Contains(newField.strName))
                     {
-                        oldField = AOldTable.GetField(oldname);
+                        oldField = (TTableField)AOldTable.grpTableField.List[OldTableFields[newField.strName]];
+                    }
+                    else if (DataDefinitionDiff.GetNewFieldName(ANewTable.strName, ref oldname, ref newField.strName))
+                    {
+                        oldField = (TTableField)AOldTable.grpTableField.List[OldTableFields[oldname]];
                     }
 
                     if (oldField != null)
@@ -214,66 +236,56 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                 }
 
-                Result.Add(NewRow);
+                if (FixData(AOldTable.strName, NewColumnNames, ref NewRow, AWriter))
+                {
+                    RowCounter++;
+                    AWriter.WriteLine(StringHelper.StrMerge(NewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                }
             }
 
-            FixData(AOldTable.strName, NewColumnNames, ref Result);
-
-            return Result;
+            return RowCounter;
         }
 
         /// <summary>
         /// fix data that would cause problems for PostgreSQL constraints
         /// </summary>
-        public static void FixData(string ATableName, StringCollection AColumnNames, ref List <string[]>ACSVLines)
+        /// <returns>false if the row should be dropped</returns>
+        public static bool FixData(string ATableName, StringCollection AColumnNames, ref string[] ANewRow, StreamWriter AWriter)
         {
             // update pub.a_account_property set a_property_value_c = 'true' where a_property_code_c = 'Bank Account';
             if (ATableName == "a_account_property")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                if (GetValue(AColumnNames, ANewRow, "a_property_code_c") == "Bank Account")
                 {
-                    string[] CurrentRow = ACSVLines[counter];
-
-                    if (GetValue(AColumnNames, CurrentRow, "a_property_code_c") == "Bank Account")
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "a_property_value_c", "true");
-                    }
+                    SetValue(AColumnNames, ref ANewRow, "a_property_value_c", "true");
                 }
             }
 
             // a_email_destination.a_conditional_value_c is sometimes null, but it is part of the primary key
             if (ATableName == "a_email_destination")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
-                {
-                    string[] CurrentRow = ACSVLines[counter];
-                    string ConditionalValue = GetValue(AColumnNames, CurrentRow, "a_conditional_value_c");
+                string ConditionalValue = GetValue(AColumnNames, ANewRow, "a_conditional_value_c");
 
-                    if ((ConditionalValue == "?") || (ConditionalValue.Length == 0))
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "a_conditional_value_c", "NOT SET");
-                    }
+                if ((ConditionalValue == "?") || (ConditionalValue.Length == 0))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "a_conditional_value_c", "NOT SET");
                 }
             }
 
             // s_user_group contains some SQL_* users, which are not part of the s_user table
             if (ATableName == "s_user_group")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                if (GetValue(AColumnNames, ANewRow, "s_user_id_c").StartsWith("SQL_"))
                 {
-                    string[] CurrentRow = ACSVLines[counter];
-
-                    if (GetValue(AColumnNames, CurrentRow, "s_user_id_c").StartsWith("SQL_"))
-                    {
-                        ACSVLines.RemoveAt(counter);
-                        counter--;
-                    }
+                    // do not write this line
+                    return false;
                 }
             }
 
             // there is a space in front of the code, which causes a duplicate primary key
             if (ATableName == "p_type")
             {
+#if todo
                 bool duplicateExists = false;
 
                 for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
@@ -296,145 +308,112 @@ namespace Ict.Tools.DataDumpPetra2
                         counter--;
                     }
                 }
+#endif
             }
 
             // there is a space in front of the code, which causes a duplicate primary key
             if (ATableName == "p_reason_subscription_given")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                if (GetValue(AColumnNames, ANewRow, "p_code_c") == " FREE")
                 {
-                    string[] CurrentRow = ACSVLines[counter];
-
-                    if (GetValue(AColumnNames, CurrentRow, "p_code_c") == " FREE")
-                    {
-                        ACSVLines.RemoveAt(counter);
-                        counter--;
-                    }
+                    return false;
                 }
             }
 
             // fix foreign key, remove space
             if (ATableName == "p_subscription")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                if (GetValue(AColumnNames, ANewRow, "p_reason_subs_given_code_c") == " FREE")
                 {
-                    string[] CurrentRow = ACSVLines[counter];
-
-                    if (GetValue(AColumnNames, CurrentRow, "p_reason_subs_given_code_c") == " FREE")
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "p_reason_subs_given_code_c", "FREE");
-                    }
+                    SetValue(AColumnNames, ref ANewRow, "p_reason_subs_given_code_c", "FREE");
                 }
             }
 
             // pm_person_language, language code cannot be null, should be 99
             if (ATableName == "pm_person_language")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
-                {
-                    string[] CurrentRow = ACSVLines[counter];
-                    string val = GetValue(AColumnNames, CurrentRow, "p_language_code_c");
+                string val = GetValue(AColumnNames, ANewRow, "p_language_code_c");
 
-                    if ((val.Length == 0) || (val == "\\N"))
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "p_language_code_c", "99");
-                    }
+                if ((val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_language_code_c", "99");
                 }
             }
 
             // p_partner_contact, method of contact cannot be null, should be UNKNOWN
             if (ATableName == "p_partner_contact")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
-                {
-                    string[] CurrentRow = ACSVLines[counter];
-                    string val = GetValue(AColumnNames, CurrentRow, "p_contact_code_c");
+                string val = GetValue(AColumnNames, ANewRow, "p_contact_code_c");
 
-                    if ((val.Length == 0) || (val == "\\N"))
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "p_contact_code_c", "UNKNOWN");
-                    }
+                if ((val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_contact_code_c", "UNKNOWN");
                 }
             }
 
             // wrong gift batch status, need to have case sensitive status
             if (ATableName == "a_gift_batch")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
-                {
-                    string[] CurrentRow = ACSVLines[counter];
-                    string val = GetValue(AColumnNames, CurrentRow, "a_batch_status_c");
+                string val = GetValue(AColumnNames, ANewRow, "a_batch_status_c");
 
-                    if (val == "posted")
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "a_batch_status_c", "Posted");
-                    }
+                if (val == "posted")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "a_batch_status_c", "Posted");
                 }
             }
 
             // bank code has too many characters, remove spaces
             if (ATableName == "p_bank")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
-                {
-                    string[] CurrentRow = ACSVLines[counter];
-                    string val = GetValue(AColumnNames, CurrentRow, "p_branch_code_c");
+                string val = GetValue(AColumnNames, ANewRow, "p_branch_code_c");
 
-                    if (val.Length > 20)
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "p_branch_code_c", val.Replace(" ", ""));
-                    }
+                if (val.Length > 20)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_branch_code_c", val.Replace(" ", ""));
                 }
             }
 
             // if target field is null or 0, use the home office partner key
             if (ATableName == "pm_staff_data")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
-                {
-                    string[] CurrentRow = ACSVLines[counter];
-                    string val = GetValue(AColumnNames, CurrentRow, "pm_receiving_field_n");
+                string val = GetValue(AColumnNames, ANewRow, "pm_receiving_field_n");
 
-                    if ((val == "0") || (val.Length == 0) || (val == "\\N"))
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "pm_receiving_field_n",
-                            GetValue(AColumnNames, CurrentRow, "pm_home_office_n"));
-                    }
+                if ((val == "0") || (val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pm_receiving_field_n",
+                        GetValue(AColumnNames, ANewRow, "pm_home_office_n"));
                 }
             }
 
             // pm_st_basic_outreach_id_c cannot be null
             if (ATableName == "pm_short_term_application")
             {
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                string val = GetValue(AColumnNames, ANewRow, "pm_st_basic_outreach_id_c");
+
+                if ((val == "0") || (val.Length == 0) || (val == "\\N"))
                 {
-                    string[] CurrentRow = ACSVLines[counter];
-                    string val = GetValue(AColumnNames, CurrentRow, "pm_st_basic_outreach_id_c");
+                    SetValue(AColumnNames, ref ANewRow, "pm_st_basic_outreach_id_c",
+                        GetValue(AColumnNames, ANewRow, "pm_registration_office_n") + "-" +
+                        GetValue(AColumnNames, ANewRow, "pm_application_key_i"));
+                }
 
-                    if ((val == "0") || (val.Length == 0) || (val == "\\N"))
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "pm_st_basic_outreach_id_c",
-                            GetValue(AColumnNames, CurrentRow, "pm_registration_office_n") + "-" +
-                            GetValue(AColumnNames, CurrentRow, "pm_application_key_i"));
-                    }
+                val = GetValue(AColumnNames, ANewRow, "pm_st_field_charged_n");
 
-                    val = GetValue(AColumnNames, CurrentRow, "pm_st_field_charged_n");
-
-                    if ((val == "0") || (val.Length == 0) || (val == "\\N"))
-                    {
-                        SetValue(AColumnNames, ref CurrentRow, "pm_st_field_charged_n",
-                            GetValue(AColumnNames, CurrentRow, "pm_registration_office_n"));
-                    }
+                if ((val == "0") || (val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pm_st_field_charged_n",
+                        GetValue(AColumnNames, ANewRow, "pm_registration_office_n"));
                 }
             }
 
+#if false
             // pm_personal_data: move values from the p_person table for
             if (ATableName == "pm_personal_data")
             {
                 // load the file p_person.d.gz so that we can access the values for each person
                 TTable personTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("p_person");
 
-                List <string[]>PersonRows = TParseProgressCSV.ParseFile(
+                SqliteConnection PersonRows = TParseProgressCSV.ParseFile(
                     TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "p_person.d.gz",
                     personTableOld.grpTableField.List.Count);
 
@@ -471,6 +450,8 @@ namespace Ict.Tools.DataDumpPetra2
                         FixValue(believerSinceComment, personTableOld.GetField("p_believer_since_comment_c")));
                 }
             }
+#endif
+            return true;
         }
     }
 }

@@ -204,7 +204,8 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
-            if (CurrentColumn != FColumnCount)
+            // last line has just a dot
+            if ((CurrentColumn != 1) && (CurrentColumn != FColumnCount))
             {
                 throw new Exception(
                     String.Format("Line {0}: Invalid number of columns, should be {1} but there are only {2} columns.",
@@ -242,33 +243,45 @@ namespace Ict.Tools.DataDumpPetra2
             }
         }
 
+        private Stream fs;
+        private GZipInputStream gzipStream;
+        private StreamReader MyReader;
+        private CSVFile csvfile;
+        private int FColumnCount;
+
         /// <summary>
         /// parse a CSV file that was dumped by Progress.
         /// that is the fastest way of dumping the data, but it is not ready for being imported into PostgreSQL.
         /// </summary>
         /// <param name="AInputFileDGz">the path to a gzipped csv file</param>
         /// <param name="AColumnCount">for checking the number of columns</param>
-        public static List <string[]>ParseFile(string AInputFileDGz, int AColumnCount)
+        public TParseProgressCSV(string AInputFileDGz, int AColumnCount)
         {
-            System.IO.Stream fs = new FileStream(AInputFileDGz, FileMode.Open, FileAccess.Read);
-            GZipInputStream gzipStream = new GZipInputStream(fs);
-            StreamReader MyReader = new StreamReader(gzipStream, ProgressFileEncoding);
+            fs = new FileStream(AInputFileDGz, FileMode.Open, FileAccess.Read);
+            gzipStream = new GZipInputStream(fs);
+            MyReader = new StreamReader(gzipStream, ProgressFileEncoding);
 
-            List <string[]>Result = new List <string[]>();
+            csvfile = new CSVFile(MyReader, AColumnCount, ' ');
+            FColumnCount = AColumnCount;
+        }
 
-            CSVFile csvfile = new CSVFile(MyReader, AColumnCount, ' ');
-
+        /// <summary>
+        /// read the next (logical) row, ie. record of data
+        /// </summary>
+        /// <returns></returns>
+        public string[] ReadNextRow()
+        {
             try
             {
-                while (csvfile.GetNextRow())
+                if (csvfile.GetNextRow())
                 {
                     if (csvfile.FCurrentRow[0] == ".")
                     {
                         // we have parsed all the data
-                        break;
+                        return null;
                     }
 
-                    for (int countColumn = 0; countColumn < AColumnCount; countColumn++)
+                    for (int countColumn = 0; countColumn < FColumnCount; countColumn++)
                     {
                         if ((csvfile.FCurrentRow[countColumn].IndexOf('\n') != -1)
                             || (csvfile.FCurrentRow[countColumn].IndexOf('\r') != -1))
@@ -290,14 +303,16 @@ namespace Ict.Tools.DataDumpPetra2
                         }
                     }
 
-                    // this adds up to a lot of memory!!!
-                    // TODO: should we store this in a sqlite db, instead of holding it in memory? also useful if we need p_person again, etc
-                    Result.Add(csvfile.FCurrentRow);
-
                     if ((TLogging.DebugLevel > 0) && (csvfile.FRealLineCounter % 500000 == 0))
                     {
                         TLogging.Log(csvfile.FRealLineCounter.ToString() + " " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
                     }
+
+                    return csvfile.FCurrentRow;
+                }
+                else
+                {
+                    return null;
                 }
             }
             catch (Exception e)
@@ -306,56 +321,6 @@ namespace Ict.Tools.DataDumpPetra2
                 TLogging.Log("Problem parsing file, in line " + csvfile.FRealLineCounter.ToString());
                 throw e;
             }
-
-            return Result;
-        }
-
-        private static string ReplaceKommaQuotes(string InputString)
-        {
-            int startCopyIndex = 0;
-            string lineWithoutDoubleQuotes = "";
-
-            int StringLength = InputString.Length - 1;
-            bool IsString = false;
-
-            for (int Counter = 0; Counter < StringLength; ++Counter)
-            {
-                if (InputString[Counter] == '\"')
-                {
-                    if (!IsString)
-                    {
-                        IsString = true;
-
-                        if ((Counter > 0)
-                            && (InputString[Counter - 1] == ','))
-                        {
-                            // We have ," replace it with KOMMAQUOTES%%
-                            lineWithoutDoubleQuotes = lineWithoutDoubleQuotes +
-                                                      InputString.Substring(startCopyIndex, Counter - 1 - startCopyIndex) +
-                                                      "KOMMAQUOTES%%";
-                            startCopyIndex = Counter + 1;
-                        }
-                    }
-                    else
-                    {
-                        // check if " is end of string or part of string
-                        if (InputString[Counter + 1] == '\"')
-                        {
-                            // We have a double quote as part of the string
-                            Counter++;
-                        }
-                        else
-                        {
-                            IsString = false;
-                        }
-                    }
-                }
-            }
-
-            lineWithoutDoubleQuotes = lineWithoutDoubleQuotes +
-                                      InputString.Substring(startCopyIndex, InputString.Length - startCopyIndex);
-
-            return lineWithoutDoubleQuotes;
         }
     }
 }

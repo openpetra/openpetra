@@ -128,65 +128,16 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 if (((long)info.Length > MAX_SIZE_D_GZ_SEPARATE_PROCESS) && !TAppSettingsManager.HasValue("table"))
                 {
-                    ProcessAndWritePostgresqlFileNewProcess(dumpFile, newTable);
+                    if (TAppSettingsManager.GetValue("IgnoreBigTables", "false", false) == "false")
+                    {
+                        ProcessAndWritePostgresqlFile(dumpFile, newTable);
+                    }
                 }
                 else
                 {
                     ProcessAndWritePostgresqlFile(dumpFile, newTable);
                 }
             }
-        }
-
-        private void ProcessAndWritePostgresqlFileNewProcess(string dumpFile, TTable newTable)
-        {
-            if (TAppSettingsManager.GetValue("IgnoreBigTables", "false", false) == "true")
-            {
-                return;
-            }
-
-            TLogging.Log("Special treatment of file " + Path.GetFileName(dumpFile));
-            System.Diagnostics.Process ChildProcess = new System.Diagnostics.Process();
-            ChildProcess.EnableRaisingEvents = false;
-
-            if (Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
-            {
-                ChildProcess.StartInfo.FileName = "mono";
-
-                ChildProcess.StartInfo.Arguments = "Ict.Tools.DataDumpPetra2.exe ";
-            }
-            else         // windows
-            {
-                ChildProcess.StartInfo.FileName = "Ict.Tools.DataDumpPetra2.exe";
-
-                ChildProcess.StartInfo.Arguments = string.Empty;
-            }
-
-            ChildProcess.StartInfo.Arguments +=
-                " -debuglevel:" + TAppSettingsManager.GetValue("debuglevel", "0") +
-                " -fulldumpPath:" + TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
-                " -CodePage:" + TAppSettingsManager.GetValue("CodePage", Environment.GetEnvironmentVariable("PROGRESS_CP")) +
-                " -table:" + newTable.strName +
-                " -newpetraxml:" + TAppSettingsManager.GetValue("newpetraxml", "petra.xml") +
-                " -oldpetraxml:" + TAppSettingsManager.GetValue("oldpetraxml", "petra23.xml");
-
-            ChildProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-            ChildProcess.EnableRaisingEvents = true;
-            ChildProcess.StartInfo.UseShellExecute = false;
-
-            if (!ChildProcess.Start())
-            {
-                return;
-            }
-
-            Thread.Sleep(500);
-
-            while ((!ChildProcess.HasExited))
-            {
-                Thread.Sleep(500);
-            }
-
-            ChildProcess.Close();
         }
 
         /// <summary>
@@ -206,40 +157,28 @@ namespace Ict.Tools.DataDumpPetra2
 
             try
             {
-                List <string[]>ParsedValues = TParseProgressCSV.ParseFile(
+                TParseProgressCSV Parser = new TParseProgressCSV(
                     dumpFile + ".d.gz",
                     oldTable.grpTableField.List.Count);
 
-                using (FileStream outStream = File.Create(dumpFile + ".sql.gz"))
-                {
-                    using (Stream gzoStream = new GZipOutputStream(outStream))
-                    {
-                        using (StreamWriter sw = new StreamWriter(gzoStream))
-                        {
-                            sw.WriteLine("COPY " + newTable.strName + " FROM stdin;");
+                FileStream outStream = File.Create(dumpFile + ".sql.gz");
+                Stream gzoStream = new GZipOutputStream(outStream);
+                StreamWriter MyWriter = new StreamWriter(gzoStream);
 
-                            List <string[]>DumpValues = TFixData.MigrateData(oldTable, newTable, ParsedValues);
+                MyWriter.WriteLine("COPY " + newTable.strName + " FROM stdin;");
 
-                            foreach (string[] row in DumpValues)
-                            {
-                                sw.WriteLine(StringHelper.StrMerge(row, '\t').Replace("\\\\N", "\\N").ToString());
-                            }
+                int ProcessedRows = TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
 
-                            sw.WriteLine("\\.");
-                            sw.WriteLine();
+                MyWriter.WriteLine("\\.");
+                MyWriter.WriteLine();
 
-                            sw.Close();
+                MyWriter.Close();
 
-                            TLogging.Log(" after processing file, rows: " + ParsedValues.Count.ToString());
-                        }
-                    }
-                }
-
-                File.Delete(dumpFile + ".d");
+                TLogging.Log(" after processing file, rows: " + ProcessedRows.ToString());
             }
             catch (Exception e)
             {
-                TLogging.Log((GC.GetTotalMemory(false) / 1024 / 1024).ToString());
+                TLogging.Log("Memory usage: " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
                 TLogging.Log("WARNING Problems processing file " + dumpFile + ": " + e.ToString());
 
                 if (File.Exists(dumpFile + ".sql.gz"))
