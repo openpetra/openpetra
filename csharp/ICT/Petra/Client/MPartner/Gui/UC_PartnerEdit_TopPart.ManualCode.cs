@@ -65,8 +65,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private String FPartnerClass;
 
-        private DataView FPartnerDefaultView;
-
         // <summary>
         // Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
         // </summary>
@@ -125,7 +123,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// arrange the panels and controls according to the partner class
         public void InitialiseUserControl()
         {
-            FPartnerDefaultView = FMainDS.PPartner.DefaultView;
             FIgnorePartnerStatusChange = false;
 
             BuildValidationControlsDict();

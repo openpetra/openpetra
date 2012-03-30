@@ -51,7 +51,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void InitializeManualCode()
         {
             // Initialise the user control variables
-            ucContactDetail.MainDS = null;
             ucContactDetail.PetraUtilsObject = FPetraUtilsObject;
 
             // The auto-generator does not dock our user control correctly
@@ -189,9 +188,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void txtDetailContactAttributeCode_LostFocus(object sender, EventArgs e)
         {
-            // If the user has changed the content of the code we have some checking to do
-            int NumDetails = Convert.ToInt32(FPreviouslySelectedDetailRow[NumDetailCodesColumnOrdinal]);
-
             if (NumDetailCodesColumnOrdinal == 0)
             {
                 return;                                                 // No problem if we have no details yet
