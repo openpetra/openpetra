@@ -292,6 +292,46 @@ namespace Ict.Common.Remoting.Server
             // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''GetRemotingURL'' in Client''s AppDomain! Returned value: ' + APetraModuleInstantiatorRemotingURL); $ENDIF
         }
 
+        
+        
+        /// <summary>
+        /// Loads the CallForwinding DLL into the Client's AppDomain, instantiates the
+        /// main Class (TCallForwarding) and by that sets up Delegates that allow arbitrary code 
+        /// to be called in various server-side methods.
+        /// </summary>
+        /// <returns>void</returns>
+        public void LoadCallForwardingAssembly()
+        {
+            const string CALLFORWARDING_DLLNAME = "Ict.Petra.Server.lib.CallForwarding";
+            const string CALLFORWARDING_CLASSNAME = "Ict.Petra.Server.CallForwarding.TCallForwarding";
+            Type CallforwardingClass;
+            
+//Console.WriteLine("TRemoteLoader.LoadCallForwardingAssembly in AppDomain: " + AppDomain.CurrentDomain.ToString());
+
+//Console.WriteLine("Trying to load " + CALLFORWARDING_DLLNAME + ".dll into Client''s AppDomain...");
+            Assembly LoadedAssembly = Assembly.Load(CALLFORWARDING_DLLNAME);
+
+//Console.WriteLine("Successfully loaded " + CALLFORWARDING_DLLNAME + ".dll into Client's AppDomain."); 
+            CallforwardingClass = LoadedAssembly.GetType(CALLFORWARDING_CLASSNAME);
+
+            // $IFDEF DEBUGMODE
+            // Console.WriteLine('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ' (after DLL loading into new AppDomain):');
+            // foreach Assembly tmpAssembly in Thread.GetDomain.GetAssemblies() do
+            // begin
+            // Console.WriteLine(tmpAssembly.FullName);
+            // end;
+            // $ENDIF
+//Console.WriteLine("Creating Instance of " + CALLFORWARDING_CLASSNAME + " in Client''s AppDomain...");
+            FRemoteClientDomainManagerObject = Activator.CreateInstance(CallforwardingClass,
+                (BindingFlags.Public | BindingFlags.Instance | BindingFlags.CreateInstance), null,
+                new Object[] {}, null);
+
+//Console.WriteLine("Successfully created an instance of " + CALLFORWARDING_CLASSNAME + " in Client''s AppDomain.");
+        }        
+        
+        
+        
+        
         /// <summary>
         /// stop the appdomain of the client
         /// </summary>
@@ -514,7 +554,9 @@ namespace Ict.Common.Remoting.Server
                 TSrvSetting.ServerSettings,
                 out ARemotingURLPollClientTasks);
 
-            //
+            // Load the CallForwinding DLL into the Client's AppDomain
+            FRemoteLoader.LoadCallForwardingAssembly();
+            
             // IMPORTANT: If the following code is uncommented, the ClientDomain DLL that is loaded only in the Client's AppDomain might get loaded into the Default AppDomain  that's what we don't want!!!
             // Use this therefore only to find out what DLL's are loaded in the Client's AppDomain!!!!!!
             if (TLogging.DL >= 10)
