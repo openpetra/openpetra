@@ -63,36 +63,36 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             bool AllDataValidationsOK = true;
-            
+
             AVerificationResult = new TVerificationResultCollection();
-            
+
             // TODO: calculate debit and credit sums for journal and batch?
 
-            if (AInspectDS.Tables.Contains(PmStaffDataTable.GetTableName())) 
+            if (AInspectDS.Tables.Contains(PmStaffDataTable.GetTableName()))
             {
-                if (AInspectDS.PmStaffData.Rows.Count > 0) 
+                if (AInspectDS.PmStaffData.Rows.Count > 0)
                 {
                     ValidatePersonnelStaff(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
                     ValidatePersonnelStaffManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
-    
+
                     if (AVerificationResult.Count > 0)
                     {
                         AllDataValidationsOK = false;
                     }
-                }                
+                }
             }
-           
+
             if (AllDataValidationsOK)
             {
-                SubmissionResult = PersonnelTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);                
+                SubmissionResult = PersonnelTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
             }
             else if (AVerificationResult.Count > 0)
             {
                 // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
                 // Serialisation (needed for .NET Remoting).
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
-            }                
-            
+            }
+
             return SubmissionResult;
         }
 
@@ -189,14 +189,14 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             return JobKey;
         }
-        
-#region Data Validation
+
+        #region Data Validation
 
         static partial void ValidatePersonnelStaff(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         static partial void ValidatePersonnelStaffManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
-#endregion Data Validation      
+        #endregion Data Validation
     }
 }

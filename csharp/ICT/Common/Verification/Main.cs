@@ -164,7 +164,7 @@ namespace Ict.Common.Verification
         /// but needs to be declared in this Class to make the handling easier.
         /// </summary>
         protected bool FSuppressValidationToolTip = false;
-        
+
         /// <summary>
         /// We need this constructor so that inherited Classes can get by not having a default constructor...
         /// </summary>
@@ -365,13 +365,13 @@ namespace Ict.Common.Verification
             {
                 return FSuppressValidationToolTip;
             }
-            
+
             set
             {
                 FSuppressValidationToolTip = value;
             }
         }
-        
+
         /// <summary>
         /// Overrides the ResultText that the <see cref="TVerificationResult" /> was
         /// originally populated with.

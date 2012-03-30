@@ -155,17 +155,17 @@ namespace Ict.Petra.Shared
         /// otherwise false.</returns>
         public new bool ContainsKey(DataColumn AKey)
         {
-            foreach (var DictEntry in this) 
+            foreach (var DictEntry in this)
             {
                 if (DictEntry.Key.ToString() == AKey.ToString())
                 {
                     return true;
                 }
             }
-            
-            return false;               
-        }            
-        
+
+            return false;
+        }
+
         /// <summary>
         /// Special implementation of the base ContainsKey Method as comparing two
         /// DataColumn objects does not *always* work reliably (weired indeed). The solution is to compare
@@ -174,13 +174,13 @@ namespace Ict.Petra.Shared
         /// <remarks>This Method exposes worse performance than the implementation in the base Class
         /// as we can't access private Members and have to resort to using an iterator.</remarks>
         /// <param name="AKey">DataColumn to check for.</param>
-        /// <param name="AValue">The Value of the Dictionary entry if <paramref name="AKey" /> 
+        /// <param name="AValue">The Value of the Dictionary entry if <paramref name="AKey" />
         /// was found in the Dictionary.</param>
         /// <returns>True if the Dictionary contains an entry with the passed in DataColumn as its Key,
-        /// otherwise false.</returns>       
+        /// otherwise false.</returns>
         public new bool TryGetValue(DataColumn AKey, out TValidationControlsData AValue)
         {
-            foreach (var DictEntry in this) 
+            foreach (var DictEntry in this)
             {
                 if (DictEntry.Key.ToString() == AKey.ToString())
                 {
@@ -188,9 +188,9 @@ namespace Ict.Petra.Shared
                     return true;
                 }
             }
-            
-            AValue = new TValidationControlsData(null, null);                
-            return false;             
+
+            AValue = new TValidationControlsData(null, null);
+            return false;
         }
     }
 }

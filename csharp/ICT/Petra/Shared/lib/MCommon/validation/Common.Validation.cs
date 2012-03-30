@@ -50,43 +50,44 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <returns>Null if <paramref name="AInternatPostalTypeCode" /> is null,
         /// otherwise a <see cref="TVerificationResult" /> is returned that
         /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
-        public static TVerificationResult IsValidInternationalPostalCode(string AInternatPostalTypeCode, 
+        public static TVerificationResult IsValidInternationalPostalCode(string AInternatPostalTypeCode,
             string ADescription = "", object AResultContext = null, System.Data.DataColumn AResultColumn = null,
             System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
+
             Ict.Common.Data.TTypedDataTable IntPostalDT;
-            
-            if (AInternatPostalTypeCode != null) 
+
+            if (AInternatPostalTypeCode != null)
             {
-                if (AInternatPostalTypeCode != String.Empty) 
+                if (AInternatPostalTypeCode != String.Empty)
                 {
                     TSharedValidationHelper.GetData(PInternationalPostalTypeTable.GetTableDBName(), null, out IntPostalDT);
-                    
-                    if (IntPostalDT.Rows.Find(new object[] {AInternatPostalTypeCode}) == null)
+
+                    if (IntPostalDT.Rows.Find(new object[] { AInternatPostalTypeCode }) == null)
                     {
                         ReturnValue = new TVerificationResult(AResultContext,
                             ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALIDINTERNATIONALPOSTALCODE));
-        
+
                         if (AResultColumn != null)
                         {
                             ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
                         }
-                    }                
+                    }
                 }
                 else
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALIDINTERNATIONALPOSTALCODE));
-    
+
                     if (AResultColumn != null)
                     {
                         ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
                     }
                 }
             }
-            
+
             return ReturnValue;
-        }        
+        }
     }
 }

@@ -43,21 +43,21 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-            
+
             ValidationControlsDict.Add(ASubmitTable.Columns[PmStaffDataTable.ColumnReceivingFieldId],
                 new TValidationControlsData(null, PmStaffDataTable.GetReceivingFieldDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[PmStaffDataTable.ColumnStartOfCommitmentId],
                 new TValidationControlsData(null, PmStaffDataTable.GetStartOfCommitmentDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[PmStaffDataTable.ColumnEndOfCommitmentId],
-               new TValidationControlsData(null, PmStaffDataTable.GetEndOfCommitmentDBName(),
-                   null, PmStaffDataTable.GetStartOfCommitmentDBName()));
+                new TValidationControlsData(null, PmStaffDataTable.GetEndOfCommitmentDBName(),
+                    null, PmStaffDataTable.GetStartOfCommitmentDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[PmStaffDataTable.ColumnStatusCodeId],
                 new TValidationControlsData(null, PmStaffDataTable.GetStatusCodeDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[PmStaffDataTable.ColumnHomeOfficeId],
                 new TValidationControlsData(null, PmStaffDataTable.GetHomeOfficeDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[PmStaffDataTable.ColumnOfficeRecruitedById],
                 new TValidationControlsData(null, PmStaffDataTable.GetOfficeRecruitedByDBName()));
-                        
+
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedPartnerValidation_Partner.ValidatePersonnelStaffDataManual("TPersonnelWebConnector" +

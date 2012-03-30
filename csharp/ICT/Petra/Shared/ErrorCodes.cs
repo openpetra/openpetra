@@ -135,8 +135,8 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Invalid International Postal Type entered.",
              FullDescription = "The International Postal Code entered is not a valid International Postal Type.")]
         public const String ERR_INVALIDINTERNATIONALPOSTALCODE = "PARTN.00008V";
-        
-        
+
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

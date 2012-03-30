@@ -163,7 +163,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO
 
             return ReturnValue;
-        }        
+        }
 
         /// <summary>
         /// Gets the data from all controls on this TabControl.

@@ -41,13 +41,13 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// Delegate for invoking the verification of the existence of a Partner.
         /// </summary>
         public delegate bool TVerifyPartner(Int64 APartnerKey, TPartnerClass[] AValidPartnerClasses, out bool APartnerExists,
-                out String APartnerShortName, out TPartnerClass APartnerClass, out Boolean AIsMergedPartner);
-        
+            out String APartnerShortName, out TPartnerClass APartnerClass, out Boolean AIsMergedPartner);
+
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Partner.
         /// </summary>
         private static TVerifyPartner FDelegateVerifyPartner;
-        
+
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Partner.
         /// </summary>
@@ -64,7 +64,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 FDelegateVerifyPartner = value;
             }
         }
-        
+
         /// <summary>
         /// Verifies the existence of a Partner.
         /// </summary>
@@ -92,7 +92,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             else
             {
                 throw new InvalidOperationException("Delegate 'TVerifyPartner' must be initialised before calling this Method");
-            }            
-        }       
+            }
+        }
     }
 }

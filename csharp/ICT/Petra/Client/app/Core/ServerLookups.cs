@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.App.Core
         public class TMCommon
         {
             #region TServerLookup.TMCommon
-            
+
             /// <summary>
             /// simple data reader;
             /// checks for permissions of the current user;
@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return TRemote.MCommon.DataReader.GetData(ATablename, ASearchCriteria, out AResultTable);
             }
-            
+
             #endregion
         }
 

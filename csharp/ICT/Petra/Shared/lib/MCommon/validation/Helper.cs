@@ -41,12 +41,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// Delegate for invoking the simple data reader.
         /// </summary>
         public delegate bool TSharedGetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable);
-        
+
         /// <summary>
         /// Reference to the Delegate for invoking the simple data reader.
         /// </summary>
         private static TSharedGetData FDelegateSharedGetData;
-        
+
         /// <summary>
         /// This property is used to provide a function which invokes the simple data reader.
         /// </summary>
@@ -63,7 +63,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 FDelegateSharedGetData = value;
             }
         }
-        
+
         /// <summary>
         /// simple data reader;
         /// checks for permissions of the current user;
@@ -71,7 +71,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// <param name="ATablename"></param>
         /// <param name="ASearchCriteria">a set of search criteria</param>
         /// <param name="AResultTable">returns typed datatable</param>
-        /// <returns></returns>        
+        /// <returns></returns>
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
             if (FDelegateSharedGetData != null)
