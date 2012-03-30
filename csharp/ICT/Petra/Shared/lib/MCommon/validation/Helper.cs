@@ -51,7 +51,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
         /// This property is used to provide a function which invokes the simple data reader.
         /// </summary>
         /// <description>The Delegate is set up at the start of the application.</description>
-        public static TSharedGetData SharedGetData
+        public static TSharedGetData SharedGetDataDelegate
         {
             get
             {

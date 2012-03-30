@@ -38,6 +38,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner; // Implicit reference
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
@@ -640,7 +641,8 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenConferenceFindScreen = @TConferenceFindScreenManager.OpenModalForm;
             
             // Set up Data Validation Delegates
-            TSharedValidationHelper.SharedGetData = @TServerLookup.TMCommon.GetData;
+            TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
+            TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TServerLookup.TMPartner.VerifyPartner;
             
             // I18N: assign proper font which helps to read asian characters
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
