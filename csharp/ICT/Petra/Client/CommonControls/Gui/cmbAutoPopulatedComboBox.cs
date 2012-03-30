@@ -662,9 +662,9 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.PostCodeRegionList:
 
                     /* Region table contains several records per actual region, depending on how many
-                     * postcode ranges there are in a region. Therefore it is important to remove "duplicate"
-                     * rows and just have one row per actual region code in the combobox. It is important
-                     *                     that region rows arrive in "order by Region" from server */
+                    * postcode ranges there are in a region. Therefore it is important to remove "duplicate"
+                    * rows and just have one row per actual region code in the combobox. It is important
+                    *                     that region rows arrive in "order by Region" from server */
                     PPostcodeRegionTable RegionTable = (PPostcodeRegionTable)TDataCache.TMPartner.GetCacheableMailingTable(
                     TCacheableMailingTablesEnum.PostCodeRegionList);
                     PPostcodeRegionRow RegionRow;
