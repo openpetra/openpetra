@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO; // Implicit reference
@@ -98,7 +99,7 @@ public class TWriteSQL
 
         FileStream outPutFileStream = new FileStream(AOutputFile, FileMode.Create, FileAccess.Write);
         StreamWriter sw = new StreamWriter(outPutFileStream);
-        ArrayList Tables = AStore.GetTables();
+        List <TTable>Tables = AStore.GetTables();
 
         foreach (TTable Table in Tables)
         {
@@ -182,7 +183,7 @@ public class TWriteSQL
         }
         else
         {
-            ArrayList Sequences = AStore.GetSequences();
+            List <TSequence>Sequences = AStore.GetSequences();
 
             foreach (TSequence Sequence in Sequences)
             {
@@ -281,7 +282,7 @@ public class TWriteSQL
             // also no sequences in Mysql
             // see http://dev.mysql.com/doc/refman/5.0/en/information-functions.html for a workaround
             // look for CREATE TABLE sequence and LAST_INSERT_ID
-            ArrayList Sequences = AStore.GetSequences();
+            List <TSequence>Sequences = AStore.GetSequences();
 
             foreach (TSequence seq in Sequences)
             {
@@ -298,7 +299,7 @@ public class TWriteSQL
         }
         else
         {
-            ArrayList Sequences = AStore.GetSequences();
+            List <TSequence>Sequences = AStore.GetSequences();
 
             foreach (TSequence Sequence in Sequences)
             {
@@ -359,7 +360,7 @@ public class TWriteSQL
         // Run over all fields
         bool first = true;
 
-        foreach (TTableField field in ATable.grpTableField.List)
+        foreach (TTableField field in ATable.grpTableField)
         {
             ASw.Write(WriteField(ATargetDatabase, ATable, field, first, true));
             first = false;
@@ -499,7 +500,7 @@ public class TWriteSQL
 
     private static void DumpConstraints(StreamWriter ASw, TTable ATable, Boolean onlyForeign, Boolean AAdd)
     {
-        foreach (TConstraint constr in ATable.grpConstraint.List)
+        foreach (TConstraint constr in ATable.grpConstraint)
         {
             WriteConstraint(ASw, ATable, constr, onlyForeign, AAdd);
         }
@@ -545,7 +546,7 @@ public class TWriteSQL
         {
             countGeneratedIndex = 0;
 
-            foreach (TIndex index in ATable.grpIndex.List)
+            foreach (TIndex index in ATable.grpIndex)
             {
                 // first the automatically generated Indexes
                 if (index.bImplicit == (implicit_ != 1))
@@ -572,7 +573,7 @@ public class TWriteSQL
                         ASw.WriteLine("   ON {0}", ATable.strName);
                         string fields = "";
 
-                        foreach (TIndexField indfield in index.grpIndexField.List)
+                        foreach (TIndexField indfield in index.grpIndexField)
                         {
                             if (fields.Length > 0)
                             {

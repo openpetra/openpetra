@@ -74,7 +74,7 @@ namespace Ict.Tools.DataDumpPetra2
         {
             StringCollection ColumnNames = new StringCollection();
 
-            foreach (TTableField field in ATable.grpTableField.List)
+            foreach (TTableField field in ATable.grpTableField)
             {
                 ColumnNames.Add(field.strName);
             }
@@ -157,14 +157,53 @@ namespace Ict.Tools.DataDumpPetra2
             StringCollection NewColumnNames = GetColumnNames(ANewTable);
             int RowCounter = 0;
 
-            SortedList <string, int>OldTableFields = new SortedList <string, int>();
+            SortedList <string, TTableField>MappingOfFields = new SortedList <string, TTableField>();
+            SortedList <string, string>DefaultValues = new SortedList <string, string>();
 
-            int counter = 0;
-
-            foreach (TTableField t in AOldTable.grpTableField.List)
+            foreach (TTableField newField in ANewTable.grpTableField)
             {
-                OldTableFields.Add(t.strName, counter);
-                counter++;
+                string oldname = "";
+
+                TTableField oldField = AOldTable.GetField(newField.strName);
+
+                if ((oldField == null) && (DataDefinitionDiff.GetNewFieldName(ANewTable.strName, ref oldname, ref newField.strName)))
+                {
+                    oldField = AOldTable.GetField(oldname);
+                }
+
+                MappingOfFields.Add(newField.strName, oldField);
+
+                // prepare the default values once
+                // this is a new field. insert default value
+                string defaultValue = "?";
+
+                if ((newField.strInitialValue != null) && (newField.strInitialValue.Length > 0))
+                {
+                    if (newField.strInitialValue.ToUpper() == "TODAY")
+                    {
+                        // it does not make sense to set s_date_created_d to today during conversion.
+                        // so no change to defaultValue.
+                    }
+                    else if (newField.strType.ToUpper() == "VARCHAR")
+                    {
+                        defaultValue = '"' + newField.strInitialValue + "\"";
+                    }
+                    else if (newField.strType.ToUpper() == "BIT")
+                    {
+                        defaultValue = newField.strInitialValue;
+
+                        if (newField.strFormat.Contains(newField.strInitialValue))
+                        {
+                            defaultValue = newField.strFormat.StartsWith(newField.strInitialValue) ? "0" : "1";
+                        }
+                    }
+                    else
+                    {
+                        defaultValue = newField.strInitialValue;
+                    }
+                }
+
+                DefaultValues.Add(newField.strName, defaultValue);
             }
 
             string[] NewRow = CreateRow(NewColumnNames);
@@ -178,20 +217,9 @@ namespace Ict.Tools.DataDumpPetra2
                     break;
                 }
 
-                foreach (TTableField newField in ANewTable.grpTableField.List)
+                foreach (TTableField newField in ANewTable.grpTableField)
                 {
-                    TTableField oldField = null;
-
-                    string oldname = "";
-
-                    if (OldTableFields.Keys.Contains(newField.strName))
-                    {
-                        oldField = (TTableField)AOldTable.grpTableField.List[OldTableFields[newField.strName]];
-                    }
-                    else if (DataDefinitionDiff.GetNewFieldName(ANewTable.strName, ref oldname, ref newField.strName))
-                    {
-                        oldField = (TTableField)AOldTable.grpTableField.List[OldTableFields[oldname]];
-                    }
+                    TTableField oldField = MappingOfFields[newField.strName];
 
                     if (oldField != null)
                     {
@@ -203,36 +231,7 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                     else
                     {
-                        // this is a new field. insert default value
-                        string defaultValue = "?";
-
-                        if ((newField.strInitialValue != null) && (newField.strInitialValue.Length > 0))
-                        {
-                            if (newField.strInitialValue.ToUpper() == "TODAY")
-                            {
-                                // it does not make sense to set s_date_created_d to today during conversion.
-                                // so no change to defaultValue.
-                            }
-                            else if (newField.strType.ToUpper() == "VARCHAR")
-                            {
-                                defaultValue = '"' + newField.strInitialValue + "\"";
-                            }
-                            else if (newField.strType.ToUpper() == "BIT")
-                            {
-                                defaultValue = newField.strInitialValue;
-
-                                if (newField.strFormat.Contains(newField.strInitialValue))
-                                {
-                                    defaultValue = newField.strFormat.StartsWith(newField.strInitialValue) ? "0" : "1";
-                                }
-                            }
-                            else
-                            {
-                                defaultValue = newField.strInitialValue;
-                            }
-                        }
-
-                        SetValue(NewColumnNames, ref NewRow, newField.strName, defaultValue);
+                        SetValue(NewColumnNames, ref NewRow, newField.strName, DefaultValues[newField.strName]);
                     }
                 }
 

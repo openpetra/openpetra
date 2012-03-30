@@ -124,7 +124,7 @@ namespace Ict.Tools.DataDumpPetra2
                 return;
             }
 
-            if (!File.Exists(dumpFile + ".sql.gz") || ((new FileInfo(dumpFile + ".sql.gz")).Length == 0))
+            if (TAppSettingsManager.HasValue("table") || !File.Exists(dumpFile + ".sql.gz") || ((new FileInfo(dumpFile + ".sql.gz")).Length == 0))
             {
                 if (((long)info.Length > MAX_SIZE_D_GZ_SEPARATE_PROCESS) && !TAppSettingsManager.HasValue("table"))
                 {
@@ -159,7 +159,7 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 TParseProgressCSV Parser = new TParseProgressCSV(
                     dumpFile + ".d.gz",
-                    oldTable.grpTableField.List.Count);
+                    oldTable.grpTableField.Count);
 
                 FileStream outStream = File.Create(dumpFile + ".sql.gz");
                 Stream gzoStream = new GZipOutputStream(outStream);
@@ -243,7 +243,7 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 // TODO LoadSequences();
 
-                ArrayList newTables = storeNew.GetTables();
+                List <TTable>newTables = storeNew.GetTables();
 
                 foreach (TTable newTable in newTables)
                 {
@@ -282,7 +282,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                     // TODO LoadSequences();
 
-                    ArrayList newTables = storeNew.GetTables();
+                    List <TTable>newTables = storeNew.GetTables();
 
                     foreach (TTable newTable in newTables)
                     {
@@ -324,7 +324,7 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 TRunProgress.RunProgress("fulldumpPetra23.r", "Sequences", TLogging.GetLogFileName());
 
-                ArrayList oldTables = storeOld.GetTables();
+                List <TTable>oldTables = storeOld.GetTables();
 
                 foreach (TTable oldTable in oldTables)
                 {
