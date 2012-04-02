@@ -320,7 +320,7 @@ namespace Ict.Common.Remoting.Server
             // end;
             // $ENDIF
 //Console.WriteLine("Creating Instance of " + CALLFORWARDING_CLASSNAME + " in Client''s AppDomain...");
-            object CallForwardingObject = Activator.CreateInstance(CallforwardingClass,
+            Activator.CreateInstance(CallforwardingClass,
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.CreateInstance), null,
                 new Object[] { }, null);
 
