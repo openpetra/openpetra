@@ -565,24 +565,27 @@ namespace {#NAMESPACE}
                         FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = false;
                     }
 
-                    FPetraUtilsObject.ValidationToolTipSeverity = SingleVerificationResult.ResultSeverity;
-
-                    if (SingleVerificationResult.ResultTextCaption != String.Empty) 
-                    {
-                        FPetraUtilsObject.ValidationToolTip.ToolTipTitle += ":  " + SingleVerificationResult.ResultTextCaption;    
-                    }
 {#IFDEF UNDODATA}
-
                     if(SingleVerificationResult.ControlValueUndoRequested)
                     {
                         UndoData(SingleVerificationResult.ResultColumn.Table.Rows[0], SingleVerificationResult.ResultControl);
                         SingleVerificationResult.OverrideResultText(SingleVerificationResult.ResultText + Environment.NewLine + Environment.NewLine + 
                             Catalog.GetString("--> The value you entered has been changed back to what it was before! <--"));
                     }
-{#ENDIF UNDODATA}
 
-                    FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
-                        ((Control)sender).Width / 2, ((Control)sender).Height);
+{#ENDIF UNDODATA}
+                    if (!SingleVerificationResult.SuppressValidationToolTip) 
+                    {
+                        FPetraUtilsObject.ValidationToolTipSeverity = SingleVerificationResult.ResultSeverity;
+
+                        if (SingleVerificationResult.ResultTextCaption != String.Empty) 
+                        {
+                            FPetraUtilsObject.ValidationToolTip.ToolTipTitle += ":  " + SingleVerificationResult.ResultTextCaption;    
+                        }
+
+                        FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
+                            ((Control)sender).Width / 2, ((Control)sender).Height);
+                    }
                 }
             }
         }
