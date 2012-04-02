@@ -223,7 +223,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             {
                 VerificationResult = IsValidUNITPartner(
                     ARow.ReceivingField, false, THelper.NiceValueDescription(
-                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.", 
+                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
