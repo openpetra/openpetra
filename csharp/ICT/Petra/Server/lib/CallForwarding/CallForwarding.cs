@@ -50,10 +50,9 @@ namespace Ict.Petra.Server.CallForwarding
             // This setting-up makes use of the fact that this Method is called only once,
             // namely directly after the Client logged in successfully.
             ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
-            TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
 
+            TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
-            Console.WriteLine("TCallForwading: static constructor ran!");
         }
     }
 }
