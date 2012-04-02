@@ -19,6 +19,7 @@ RootNode:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
         tpgGeneralSettings:
+            Label: General Settings
             Controls: 
                 Row0: [pnlTop]
                 Row1: [pnlFields]
