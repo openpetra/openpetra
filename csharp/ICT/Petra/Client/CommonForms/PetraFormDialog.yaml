@@ -42,6 +42,6 @@ RootNode:
             Controls: 
                 Row0: [btnOK, btnCancel, btnApply]
          
-        btnOK: {Label=&OK, TabIndex=0, ActionClick=BtnOK_Click}        
+        btnOK: {Label=&OK, TabIndex=0, AcceptButton=true, ActionClick=BtnOK_Click}        
         btnApply: {Label=&Apply, TabIndex=2, Visible=false}
         btnCancel: {Label=&Cancel, TabIndex=1, Action=actClose}
