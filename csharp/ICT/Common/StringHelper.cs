@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -716,6 +716,24 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// parse a line of CSV values, and return a StringCollection with the values
+        /// </summary>
+        public static StringCollection GetCSVList(string list, string delimiter)
+        {
+            string listcsv = list;
+            StringCollection Result = new StringCollection();
+
+            Result.Add(GetNextCSV(ref listcsv, delimiter));
+
+            while ((listcsv.Length != 0))
+            {
+                Result.Add(GetNextCSV(ref listcsv, delimiter));
+            }
+
+            return Result;
+        }
+
+        /// <summary>
         /// checks if the list contains the given value
         /// </summary>
         /// <param name="list">separated values</param>
@@ -723,11 +741,8 @@ namespace Ict.Common
         /// <returns>true if the value is an element of the list</returns>
         public static Boolean ContainsCSV(string list, String AElement)
         {
-            String element;
-            String listcsv;
-
-            listcsv = list;
-            element = GetNextCSV(ref listcsv);
+            string listcsv = list;
+            string element = GetNextCSV(ref listcsv);
 
             while ((listcsv.Length != 0) && (element != AElement))
             {

@@ -70,6 +70,8 @@ namespace Ict.Testing.NUnitPetraServer
             new TAppSettingsManager(AConfigName);
             new TLogging(TAppSettingsManager.GetValue("Server.LogFile"));
 
+            CommonNUnitFunctions.InitRootPath();
+
             Catalog.Init();
             TServerManager ServerManager = new TServerManager();
 

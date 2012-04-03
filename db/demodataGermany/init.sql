@@ -109,3 +109,10 @@ COPY a_motivation_group FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_group.csv' WI
 COPY a_motivation_detail FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 COPY p_publication FROM '{#ABSOLUTEBASEDATAPATH}/p_publication.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+
+-- import sample partner
+COPY p_partner FROM '{#ABSOLUTEBASEDATAPATH}/p_partner.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_family FROM '{#ABSOLUTEBASEDATAPATH}/p_family.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_location FROM '{#ABSOLUTEBASEDATAPATH}/p_location.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_partner_location FROM '{#ABSOLUTEBASEDATAPATH}/p_partner_location.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+UPDATE p_partner_ledger SET p_last_partner_id_i = 5001 WHERE p_partner_key_n = 43000000; 
