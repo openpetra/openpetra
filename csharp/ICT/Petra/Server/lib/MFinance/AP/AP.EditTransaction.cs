@@ -748,7 +748,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 //              So the Journal exchange rate is set below (in a loop, but it works OK!)
 
 //              journal.ExchangeRateToBase =  TExchangeRateTools.GetDailyExchangeRate(CurrencyCode, LedgerTbl[0].BaseCurrency, DateTime.Now);
-                journal.ExchangeRateTime = (Int32)DateTime.Now.ToFileTimeUtc();
+                journal.ExchangeRateTime = 0;
                 GLDataset.AJournal.Rows.Add(journal);
 
                 Int32 TransactionCounter = 1;
@@ -1120,7 +1120,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.DateOfEntry = DateTime.Now;
 
                 journal.ExchangeRateToBase = TExchangeRateTools.GetDailyExchangeRate(CurrencyCode, LedgerTbl[0].BaseCurrency, DateTime.Now);
-                journal.ExchangeRateTime = (Int32)DateTime.Now.ToFileTimeUtc();
+                journal.ExchangeRateTime = 0;
                 GLDataset.AJournal.Rows.Add(journal);
 
                 Int32 TransactionCounter = 1;
@@ -1410,7 +1410,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DateTime APostingDate,
             out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
             bool ResultValue = false;
 
             if ((MainDS.AApPayment.Rows.Count < 1) || (MainDS.AApDocumentPayment.Rows.Count < 1))
