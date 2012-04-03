@@ -29,6 +29,8 @@
         <formatter type="Plain" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerEdit.dll" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GL.dll" />
+        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.ICH.dll" />
+        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.AP.dll" />
 
         <!-- TODO https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=578 
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />

@@ -139,9 +139,11 @@ namespace Ict.Petra.Server.MFinance.Common
             AVerifications = new TVerificationResultCollection();
             ADataSet = new GLBatchTDS();
 
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             if (!ABatchAccess.Exists(ALedgerNumber, ABatchNumber, Transaction))
             {
@@ -149,7 +151,12 @@ namespace Ict.Petra.Server.MFinance.Common
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
                         Catalog.GetString("The batch does not exist at all."),
                         TResultSeverity.Resv_Critical));
-                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
                 return false;
             }
 
@@ -172,7 +179,7 @@ namespace Ict.Petra.Server.MFinance.Common
             // TODO: use cached table?
             ACostCentreAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
 
-            if (IsMyOwnTransaction)
+            if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -188,9 +195,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         private static void LoadGLMData(ref GLBatchTDS ADataSet, Int32 ALedgerNumber)
         {
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             AGeneralLedgerMasterRow GLMTemplateRow = ADataSet.AGeneralLedgerMaster.NewRowTyped(false);
 
@@ -220,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 query,
                 ADataSet.AGeneralLedgerMasterPeriod.TableName, Transaction, parameters.ToArray());
 
-            if (IsMyOwnTransaction)
+            if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -283,9 +292,12 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+
+            bool NewTransaction = false;
+            //TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             if (!TFinancialYear.IsValidPostingPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber,
                     out DateEffectiveYearNumber,
@@ -304,7 +316,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 Batch.BatchYear = DateEffectiveYearNumber;
             }
 
-            if (IsMyOwnTransaction)
+            if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -987,6 +999,65 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
+        /// post a GL Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        {
+            // TODO: get a lock on this ledger, no one else is allowed to change anything.
+
+            GLBatchTDS MainDS;
+
+            if (PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, true))
+            {
+                bool result = SubmitChanges(MainDS, out AVerifications);
+
+                // TODO: release the lock
+
+                return result;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// post a GL Batch
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ADBTransaction"></param>
+        /// <param name="AVerifications"></param>
+        public static bool PostGLBatch(GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            TDBTransaction ADBTransaction,
+            out TVerificationResultCollection AVerifications)
+        {
+            // TODO: get a lock on this ledger, no one else is allowed to change anything.
+
+            AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(AMainDS,
+                ALedgerNumber,
+                MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD,
+                ADBTransaction);
+            AAccountAccess.LoadViaALedger(AMainDS, ALedgerNumber, ADBTransaction);
+            ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, ADBTransaction);
+
+            if (PostGLBatchInternal(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications, true))
+            {
+                bool result = SubmitChanges(AMainDS, out AVerifications);
+
+                // TODO: release the lock
+
+                return result;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// prepare posting a GL Batch, without saving to database yet.
         /// This is called by the actual PostGLBatch routine, but also by the routine for testing what would happen to the balances.
         /// </summary>
@@ -1087,27 +1158,97 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// post a GL Batch
+        /// prepare posting a GL Batch, without saving to database yet.
+        /// This is called by the actual PostGLBatch routine, but also by the routine for testing what would happen to the balances.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
+        /// <param name="ABatchNumber">Batch to post</param>
         /// <param name="AVerifications"></param>
-        public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        /// <param name="AMainDS">modified dataset, but not submitted to database yet</param>
+        /// <param name="ACalculatePostingTree">for testing a batch, we don't need to calculate the whole tree</param>
+        /// <returns></returns>
+        public static bool PostGLBatchInternal(ref GLBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications,
+            bool ACalculatePostingTree)
         {
-            // TODO: get a lock on this ledger, no one else is allowed to change anything.
-
-            GLBatchTDS MainDS;
-
-            if (PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, true))
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
-                bool result = SubmitChanges(MainDS, out AVerifications);
-
-                // TODO: release the lock
-
-                return result;
+                TLogging.Log("Posting: LoadData...");
             }
 
-            return false;
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Validation...");
+            }
+
+            // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
+            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                return false;
+            }
+
+            if (!ValidateAnalysisAttributes(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                return false;
+            }
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Load GLM Data...");
+            }
+
+            LoadGLMData(ref AMainDS, ALedgerNumber);
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Mark as posted and collect data...");
+            }
+
+            // post each journal, each transaction; add sums for costcentre/account combinations
+            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS);
+
+            // we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
+            // for testing the balances, we don't need to calculate the whole tree
+            if (ACalculatePostingTree)
+            {
+                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+                {
+                    TLogging.Log("Posting: CalculateTrees...");
+                }
+
+                // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
+                SortedList <string, TAccountTreeElement>AccountTree;
+
+                // key is the PostingCostCentre, the value is the parent Cost Centre
+                SortedList <string, string>CostCentreTree;
+
+                // TODO Can anything of this be done in StoredProcedures? Only SQLite here?
+
+                // this was in Petra 2.x; takes a lot of time, which the reports could do better
+                // TODO: can we just calculate the cost centre tree, since that is needed for Balance Sheet,
+                // but avoid calculating the whole account tree?
+                CalculateTrees(ALedgerNumber, ref PostingLevel, out AccountTree, out CostCentreTree, AMainDS);
+
+                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+                {
+                    TLogging.Log("Posting: SummarizeData...");
+                }
+
+                SummarizeData(ref AMainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
+            }
+            else
+            {
+                SummarizeDataSimple(ALedgerNumber, ref AMainDS, ref PostingLevel);
+            }
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: SummarizeDataSimple...");
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -1149,9 +1290,6 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Critical));
                 return false;
             }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
 
             return true;
         }

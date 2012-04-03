@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,25 +29,27 @@ using NUnit.Framework.Constraints;
 using System.IO;
 using System.Collections;
 using Ict.Testing.NUnitPetraServer;
+using Ict.Testing.NUnitTools;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Common.Data;
-using Ict.Testing.NUnitTools;
 
-namespace Tests.MFinance.Server.Gift
+namespace Tests.MFinance.Server.ICH
 {
     /// This will test the business logic directly on the server
     [TestFixture]
-    public class TGiftBatchTest
+    public class TStewardshipCalculationTest
     {
         Int32 FLedgerNumber = -1;
 
@@ -77,8 +79,7 @@ namespace Tests.MFinance.Server.Gift
         /// <summary>
         /// This will import a test gift batch, and post it.
         /// </summary>
-        [Test]
-        public void TestPostGiftBatch()
+        public int ImportAndPostGiftBatch(DateTime AGiftDateEffective)
         {
             TGiftImporting importer = new TGiftImporting();
 
@@ -87,6 +88,8 @@ namespace Tests.MFinance.Server.Gift
             string FileContent = sr.ReadToEnd();
 
             sr.Close();
+
+            FileContent = FileContent.Replace("2010-09-30", AGiftDateEffective.ToString("yyyy-MM-dd"));
 
             Hashtable parameters = new Hashtable();
             parameters.Add("Delimiter", ",");
@@ -99,6 +102,9 @@ namespace Tests.MFinance.Server.Gift
 
             importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
 
+            Assert.IsFalse(
+                VerificationResult.HasCriticalErrors, "error when importing gift batch: " + VerificationResult.BuildVerificationResultString());
+
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
             Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and return a valid batch number");
@@ -107,17 +113,39 @@ namespace Tests.MFinance.Server.Gift
             {
                 Assert.Fail("Gift Batch was not posted");
             }
+
+            return BatchNumber;
         }
 
-        /// <summary>
-        /// This will test the admin fee processer
-        /// </summary>
-        [Test]
-        public void TestProcessAdminFees()
-        {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+//        /// <summary>
+//        /// Test that the valid posting period code works
+//        /// </summary>
+//        [Test]
+//        public void TestIsValidPostingPeriod()
+//        {
+//              int DateEffectivePeriodNumber;
+//              int DateEffectiveYearNumber;
+//
+//              bool NewTransaction = false;
+//
+//              TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+//
+//			Assert.IsTrue(TFinancialYear.IsValidPostingPeriod(FLedgerNumber, Convert.ToDateTime("15-Sep-2011"), out DateEffectivePeriodNumber, out DateEffectiveYearNumber, Transaction),"Period is not valid");
+//
+//              if (NewTransaction)
+//              {
+//                      DBAccess.GDBAccessObj.RollbackTransaction();
+//              }
+//        }
 
-            TVerificationResultCollection VerficationResults = null;
+        /// <summary>
+        /// this function will import admin fees if there are no admin fees in the database yet
+        /// </summary>
+        private void ImportAdminFees()
+        {
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
 
@@ -125,8 +153,6 @@ namespace Tests.MFinance.Server.Gift
             template.FeeCode = MainFeesPayableCode;
 
             AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
-
-            TLogging.Log("Fees payable" + FeesPayableTable.Count.ToString());
 
             if (FeesPayableTable.Count == 0)
             {
@@ -147,16 +173,35 @@ namespace Tests.MFinance.Server.Gift
                     "test-sql\\gl-test-feesreceivable-data.sql");
             }
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+        }
+
+        /// <summary>
+        /// This will test the admin fee processer
+        /// </summary>
+        [Test]
+        public void TestProcessAdminFees()
+        {
+            ImportAdminFees();
+
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            TVerificationResultCollection VerificationResults = null;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
-
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
             AFeesReceivableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
@@ -164,7 +209,43 @@ namespace Tests.MFinance.Server.Gift
                     FLedgerNumber,
                     "GIF",
                     -200m,
-                    out VerficationResults), "expect 15");
+                    out VerificationResults), "expect 12");
+        }
+
+        /// <summary>
+        /// this test loads the sample partners, imports a gift batch, and posts it, and then runs a stewardship calculation
+        /// </summary>
+        [Test]
+        public void TestPerformStewardshipCalculation()
+        {
+            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+
+            Int32 PeriodNumber = 5;
+
+            // run possibly empty stewardship calculation, to process all gifts that do not belong to this test
+            TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
+                PeriodNumber, out VerificationResults);
+            Assert.IsFalse(VerificationResults.HasCriticalErrors, "Performing initial Stewardship Calculation Failed! " +
+                VerificationResults.BuildVerificationResultString());
+
+            // import new gift batch. use proper period and date effective
+            DateTime PeriodStartDate, PeriodEndDate;
+            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, PeriodNumber, out PeriodStartDate, out PeriodEndDate, null);
+            int GiftBatchNumber = ImportAndPostGiftBatch(PeriodStartDate);
+
+            // make sure we have some admin fees
+            ImportAdminFees();
+
+            TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
+                PeriodNumber, out VerificationResults);
+            Assert.IsFalse(VerificationResults.HasCriticalErrors, "Performing Stewardship Calculation Failed!" +
+                VerificationResults.BuildVerificationResultString());
+
+            // analyse the admin fee batch
+            // TODO check transactions
+
+            // analyse the stewardship batch
+            // TODO check transactions
         }
     }
 }

@@ -67,9 +67,12 @@ namespace Ict.Petra.Server.MFinance.ICH.UIConnectors
         /// <returns>True if calculation succeeded, otherwise false.</returns>
         public bool PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult)
         {
-            TStewardshipCalculation StewardshipCalc = new TStewardshipCalculation();
+            //This should never be used
+            AVerificationResult = null;
+            return false;
+            //TStewardshipCalculation StewardshipCalc = new TStewardshipCalculation();
 
-            return StewardshipCalc.PerformStewardshipCalculation(FLedgerNumber, FPeriodNumber, out AVerificationResult);
+            //return StewardshipCalc.PerformStewardshipCalculation(FLedgerNumber, FPeriodNumber, out AVerificationResult);
         }
     }
 }

@@ -72,6 +72,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
@@ -98,6 +99,7 @@ using Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors;
+using Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors;
@@ -124,6 +126,7 @@ using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.ICH.UIConnectors;
+using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 //using Ict.Petra.Server.MFinance.PeriodEnd.UIConnectors;
 //using Ict.Petra.Server.MFinance.Reporting.UIConnectors;
 //using Ict.Petra.Server.MFinance.Setup.UIConnectors;
@@ -2599,6 +2602,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public System.String IdentifyPartnerCostCentre(Int32 ledgerNumber,
+                                                       Int64 fieldNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "IdentifyPartnerCostCentre", ";INT;LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.IdentifyPartnerCostCentre(ledgerNumber, fieldNumber);
+        }
+
+        /// generated method from connector
         public Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
                                                                                  out Int64 fieldNumber)
         {
@@ -3132,6 +3143,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
         private DateTime FStartTime;
 #endif
         private TICHUIConnectorsNamespace FICHUIConnectorsSubNamespace;
+        private TICHWebConnectorsNamespace FICHWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TICHNamespace()
@@ -3223,6 +3235,35 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
             }
 
         }
+
+        /// <summary>The 'ICHWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IICHWebConnectorsNamespace WebConnectors
+        {
+            get
+            {
+                //
+                // Creates or passes a reference to an instantiator of sub-namespaces that
+                // reside in the 'ICH.WebConnectors' sub-namespace.
+                // A call to this function is done everytime a Client uses an object of this
+                // sub-namespace - this is fully transparent to the Client.
+                //
+                // @return A reference to an instantiator of sub-namespaces that reside in
+                //         the 'ICH.WebConnectors' sub-namespace
+                //
+
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FICHWebConnectorsSubNamespace == null)
+                {
+                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
+                    //      * for the Generator: the name of this Type ('TICHWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.ICH.Instantiator.WebConnectors') should be automatically contructable.
+                    FICHWebConnectorsSubNamespace = new TICHWebConnectorsNamespace();
+                }
+
+                return FICHWebConnectorsSubNamespace;
+            }
+
+        }
     }
 }
 
@@ -3300,6 +3341,86 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
                                                                              System.Int32 APeriodNumber)
         {
             return new TStewardshipCalculationUIConnector(ALedgerNumber, APeriodNumber);
+        }
+    }
+}
+
+namespace Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors
+{
+    /// <summary>auto generated class </summary>
+    public class TICHWebConnectorsNamespace : MarshalByRefObject, IICHWebConnectorsNamespace
+    {
+#if DEBUGMODE
+        private DateTime FStartTime;
+#endif
+
+        /// <summary>Constructor</summary>
+        public TICHWebConnectorsNamespace()
+        {
+#if DEBUGMODE
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
+            }
+
+            FStartTime = DateTime.Now;
+#endif
+        }
+
+        // NOTE AutoGeneration: This destructor is only needed for debugging...
+#if DEBUGMODE
+        /// <summary>Destructor</summary>
+        ~TICHWebConnectorsNamespace()
+        {
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            const Int32 MAX_ITERATIONS = 100000;
+            System.Int32 LoopCounter;
+            object MyObject;
+            object MyObject2;
+#endif
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
+                                                                                                DateTime.Now.Ticks -
+                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
+            }
+
+#if DEBUGMODELONGRUNNINGFINALIZERS
+            MyObject = new object();
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
+            }
+
+            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
+            {
+                MyObject2 = new object();
+                GC.KeepAlive(MyObject);
+            }
+
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
+            }
+
+#endif
+        }
+
+#endif
+
+        /// NOTE AutoGeneration: This function is all-important!!!
+        public override object InitializeLifetimeService()
+        {
+            return null; // make sure that the TICHWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public System.Boolean PerformStewardshipCalculation(System.Int32 ALedgerNumber,
+                                                            System.Int32 APeriodNumber,
+                                                            out TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector), "PerformStewardshipCalculation", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector.PerformStewardshipCalculation(ALedgerNumber, APeriodNumber, out AVerificationResult);
         }
     }
 }
