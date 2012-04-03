@@ -134,22 +134,20 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="HtmlString">May be a whole document, or just a fragment.</param>
-        public static void CopyHtmlToClipboard (String HtmlString)
-
+        public static void CopyHtmlToClipboard(String HtmlString)
         {
-
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
             // Build the CF_HTML header. See format specification here:
             // http://msdn.microsoft.com/library/default.asp?url=/workshop/networking/clipboard/htmlclipboard.asp
 
-            // The string contains index references to other spots in the string, so we need placeholders so we can compute the offsets. 
+            // The string contains index references to other spots in the string, so we need placeholders so we can compute the offsets.
             // The <<<<<<<_ strings are just placeholders. I'll backpatch the actual values afterwards.
             sb.Append(
-@"Format:HTML Format
+                @"Format:HTML Format
 Version:1.0
 StartHTML:<<<<<<<1
 EndHTML:<<<<<<<2
@@ -158,14 +156,15 @@ EndFragment:<<<<<<<4
 StartSelection:<<<<<<<3
 EndSelection:<<<<<<<4
 SourceURL:OpenPetra
-");
+"                                                                                                                                                                                                            );
             int startHTML = sb.Length;
             int fragmentEnd;
             int fragmentStart = HtmlString.ToLower().IndexOf("<body>");
 
             if (fragmentStart < 0)
             {
-                sb.Append(@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN""><HTML><HEAD><TITLE>From clipboard</TITLE></HEAD><BODY><!--StartFragment-->");
+                sb.Append(
+                    @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN""><HTML><HEAD><TITLE>From clipboard</TITLE></HEAD><BODY><!--StartFragment-->");
                 fragmentStart = sb.Length;
 
                 fragmentEnd = sb.Length;

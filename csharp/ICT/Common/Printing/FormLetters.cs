@@ -415,11 +415,13 @@ namespace Ict.Common.Printing
             public override void StartDocument()
             {
                 detailNode = TXMLParser.FindNodeRecursive(TemplateDoc.DocumentElement, "detail");
+
                 if (detailNode != null)
                 {
                     DetailHtml = detailNode.InnerXml;
                     detailNode.InnerXml = ""; // Remove the repeating Detail from the letter.
                 }
+
                 ResultDocument =
                     "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" +
                     Environment.NewLine +
@@ -430,7 +432,7 @@ namespace Ict.Common.Printing
             /// Replace these fields in the HTML.
             /// </summary>
             /// <param name="AData">For repeating values in the detail element, the key has a list of values.</param>
-            public void PrintDocument(SortedList<string, List<string>> AData)
+            public void PrintDocument(SortedList <string, List <string>>AData)
             {
                 Int32 NumRepeatedLines = 0;
                 String NewDetailHtml = "";
@@ -442,6 +444,7 @@ namespace Ict.Common.Printing
 
                 Int32 DetailLevel = -1;
                 Boolean DetailLevelPopulated;
+
                 do
                 {
                     DetailLevel++;                               // the first detail level is 0
@@ -450,6 +453,7 @@ namespace Ict.Common.Printing
                     foreach (string Key in AData.Keys)
                     {
                         String HashKey = "#" + Key;
+
                         if (DetailHtml.IndexOf(HashKey) >= 0)    // This is a "detail line" item..
                         {
                             if ((!DetailLevelPopulated) && (AData[Key].Count > DetailLevel))
@@ -742,15 +746,14 @@ namespace Ict.Common.Printing
         /// <param name="AFilename">Full path</param>
         /// <param name="AFields">Value is always element [0] except for repeated elements</param>
         /// <returns></returns>
-        public static string PrintSimpleHTMLLetter(string AFilename, SortedList<string, List<string>> AFields)
-
+        public static string PrintSimpleHTMLLetter(string AFilename, SortedList <string, List <string>>AFields)
         {
-            THTMLSimpleLetter formletter = new THTMLSimpleLetter (AFilename);
+            THTMLSimpleLetter formletter = new THTMLSimpleLetter(AFilename);
+
             formletter.StartDocument();
             formletter.PrintDocument(AFields);
 
             return formletter.ResultDocument;
-
         }
 
         /// <summary>

@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="APaymentNum"></param>
         /// <param name="ALedgerNumber"></param>
@@ -71,28 +71,30 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             txtPaymentNum.NumberValueInt = APaymentNum;
             AccountsPayableTDS PaymentDetails = TRemote.MFinance.AP.WebConnectors.LoadAPPayment(ALedgerNumber, APaymentNum);
+
             if (PaymentDetails.AApPayment.Rows.Count == 0) // unable to load this payment..
             {
                 lblLoadStatus.Text = String.Format(Catalog.GetString("Error - can't load Payment number {0}."), APaymentNum);
                 return;
             }
-            SortedList <string, List <string>>FormValues = new SortedList<string,List<string>>();
+
+            SortedList <string, List <string>>FormValues = new SortedList <string, List <string>>();
 
             //
             // These are the fields that I will pull out of the TDS...
             //
-            FormValues.Add("SupplierName", new List<string>());
-            FormValues.Add("SupplierAddress", new List<string>());
-            FormValues.Add("PaymentDate", new List<string>());
-            FormValues.Add("OurReference", new List<string>());
-            FormValues.Add("InvoiceDate", new List<string>());
-            FormValues.Add("InvoiceNumber", new List<string>());
-            FormValues.Add("InvoiceAmount", new List<string>());
-            FormValues.Add("TotalPayment", new List<string>());
+            FormValues.Add("SupplierName", new List <string>());
+            FormValues.Add("SupplierAddress", new List <string>());
+            FormValues.Add("PaymentDate", new List <string>());
+            FormValues.Add("OurReference", new List <string>());
+            FormValues.Add("InvoiceDate", new List <string>());
+            FormValues.Add("InvoiceNumber", new List <string>());
+            FormValues.Add("InvoiceAmount", new List <string>());
+            FormValues.Add("TotalPayment", new List <string>());
 
             FormValues["SupplierName"].Add(PaymentDetails.PPartner[0].PartnerShortName);
             FormValues["SupplierAddress"].Add(Calculations.DetermineLocationString(PaymentDetails.PLocation[0],
-                Calculations.TPartnerLocationFormatEnum.plfHtmlLineBreak));
+                    Calculations.TPartnerLocationFormatEnum.plfHtmlLineBreak));
 
             String DatePattern = Thread.CurrentThread.CurrentCulture.DateTimeFormat.LongDatePattern;
             DatePattern = "dd MMMM yyyy"; // The long pattern above is no good in UK, although it might be OK in other cultures...
@@ -106,14 +108,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FormValues["InvoiceNumber"].Add(Row.DocumentCode);
                 FormValues["InvoiceAmount"].Add(Row.TotalAmount.ToString("n2") + " " + PaymentDetails.AApSupplier[0].CurrencyCode);
             }
+
             FormValues["TotalPayment"].Add(PaymentDetails.AApPayment[0].Amount.ToString("n2") + " " + PaymentDetails.AApSupplier[0].CurrencyCode);
 
             String TemplateFilename = TAppSettingsManager.GetValue("Formletters.Path") + "\\ApRemittanceAdvice.html";
+
             if (!File.Exists(TemplateFilename))
             {
                 lblLoadStatus.Text = String.Format(Catalog.GetString("Error - unable to load HTML template from {0}"), TemplateFilename);
                 return;
             }
+
             FHtmlDoc = TFormLettersTools.PrintSimpleHTMLLetter(TemplateFilename, FormValues);
 
             System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
@@ -144,12 +149,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             btnPDF.Visible = true;
             btnCopy.Visible = true;
 
-            lblLoadStatus.Text =  "";
+            lblLoadStatus.Text = "";
         }
 
-       /// <summary>
-       /// 
-       /// </summary>
+        /// <summary>
+        ///
+        /// </summary>
         public void BtnLoad_Click(object sender, EventArgs e)
         {
             if (txtPaymentNum.NumberValueInt.HasValue)
@@ -169,6 +174,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             string PDFPath = TFormLettersTools.GeneratePDFFromHTML(FHtmlDoc,
                 TAppSettingsManager.GetValue("Server.PathData") + Path.DirectorySeparatorChar +
                 "reports");
+
             lblLoadStatus.Text = Catalog.GetString("Generated PDF Document: ") + PDFPath;
         }
 
