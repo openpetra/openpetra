@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="param_ledgers" value="eString:" />
+  <Parameter id="param_all_ledgers" value="eBoolean:false" />
+  <Parameter id="param_receipt_letter_frequency" value="eString:" />
+  <Parameter id="param_date_from" value="eDateTime:" />
+  <Parameter id="param_date_to" value="eDateTime:" />
+  <Parameter id="param_active" value="eBoolean:true" />
+  <Parameter id="param_mailing_addresses_only" value="eBoolean:true" />
+</Parameters>

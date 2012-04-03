@@ -54,6 +54,7 @@ OpenPetra:
                         PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TFrmPersonnelMain.PartnerByFieldExtract}
                     GenerateFinanceExtracts: {Label=Generate Finance Extract}
                         RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFrmFinanceMain.RecipientByFieldExtract}
+                        DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Field, ActionClick=TFrmFinanceMain.DonorByFieldExtract}
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
@@ -193,6 +194,7 @@ OpenPetra:
                     Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                         RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Recipient by Field, ActionClick=TFrmFinanceMain.RecipientByFieldExtract}
+                        DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Field, ActionClick=TFrmFinanceMain.DonorByFieldExtract}
                 #Budgets:
                 #ICH:
                 #Reports:
