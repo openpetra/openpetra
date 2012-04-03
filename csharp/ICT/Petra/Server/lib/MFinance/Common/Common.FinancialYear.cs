@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -149,6 +149,24 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction ATransaction)
         {
             return GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateToTest, out AYearNr, out APeriodNumber, ATransaction, false);
+        }
+
+        /// <summary>
+        /// get the start and end date of the given period in the current year
+        /// </summary>
+        public static bool GetStartAndEndDateOfPeriod(Int32 ALedgerNumber,
+            Int32 APeriodNumber,
+            out DateTime APeriodStartDate,
+            out DateTime APeriodEndDate,
+            TDBTransaction ATransaction)
+        {
+            AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, ATransaction);
+            AAccountingPeriodRow AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
+
+            APeriodStartDate = AccPeriodRow.PeriodStartDate;
+            APeriodEndDate = AccPeriodRow.PeriodEndDate;
+
+            return true;
         }
 
         /// <summary>

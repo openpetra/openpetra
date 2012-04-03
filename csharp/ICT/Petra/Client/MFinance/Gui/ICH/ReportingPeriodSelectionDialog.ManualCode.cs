@@ -4,7 +4,7 @@
 // @Authors:
 //       christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -100,26 +100,22 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            TVerificationResultCollection VerificationResult;
+            TVerificationResultCollection VerificationResult = null;
 
             switch (this.ReportingPeriodSelectionMode)
             {
                 case TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc:
 
-                    if (GetStewardshipCalculationUIConnector(FLedgerNumber, cmbReportPeriod.GetSelectedInt32()))
+                    if (TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
+                            out VerificationResult))
                     {
-                        MessageBox.Show("TStewardshipCalculationUIConnector successfully acquired!");
-
-                        if (FUIConnectorStewardshipCalc.PerformStewardshipCalculation(out VerificationResult))
-                        {
-                            MessageBox.Show("PerformStewardshipCalculation ran successfully!");
-                        }
-                        else
-                        {
-                            MessageBox.Show(
-                                Messages.BuildMessageFromVerificationResult("PerformStewardshipCalculation was UNSUCCESSFUL",
-                                    VerificationResult));
-                        }
+                        MessageBox.Show("PerformStewardshipCalculation ran successfully!");
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            Messages.BuildMessageFromVerificationResult("PerformStewardshipCalculation was UNSUCCESSFUL",
+                                VerificationResult));
                     }
 
                     break;

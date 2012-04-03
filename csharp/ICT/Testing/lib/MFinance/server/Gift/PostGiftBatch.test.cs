@@ -38,8 +38,10 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Common.Data;
+using Ict.Testing.NUnitTools;
 
 namespace Tests.MFinance.Server.Gift
 {
@@ -48,6 +50,9 @@ namespace Tests.MFinance.Server.Gift
     public class TGiftBatchTest
     {
         Int32 FLedgerNumber = -1;
+
+        const string MainFeesPayableCode = "ICT";
+        const string MainFeesReceivableCode = "HO_ADMIN";
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -114,18 +119,50 @@ namespace Tests.MFinance.Server.Gift
 
             TVerificationResultCollection VerficationResults = null;
 
+            AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
+
+            template.LedgerNumber = FLedgerNumber;
+            template.FeeCode = MainFeesPayableCode;
+
+            AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
+
+            TLogging.Log("Fees payable" + FeesPayableTable.Count.ToString());
+
+            if (FeesPayableTable.Count == 0)
+            {
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                    "test-sql\\gl-test-feespayable-data.sql");
+            }
+
+            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
+
+            template.LedgerNumber = FLedgerNumber;
+            template.FeeCode = MainFeesReceivableCode;
+
+            AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
+
+            if (FeesReceivableTable.Count == 0)
+            {
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                    "test-sql\\gl-test-feesreceivable-data.sql");
+            }
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+
             GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
             AFeesReceivableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
-            DBAccess.GDBAccessObj.RollbackTransaction();
 
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
-            Assert.AreEqual(-30m, TTransactionWebConnector.CalculateAdminFee(MainDS,
+            Assert.AreEqual(-12m, TTransactionWebConnector.CalculateAdminFee(MainDS,
                     FLedgerNumber,
-                    "NEWCODEP",
+                    "GIF",
                     -200m,
                     out VerficationResults), "expect 15");
         }

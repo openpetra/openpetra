@@ -122,10 +122,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
+                //txtDetailCostCentreCode.Text
+
                 if (!FInKeyMinistryChanging)
                 {
                     //...this does not work as expected, because the timer fires valuechanged event after this value is reset
                     TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
+
+                    long FieldNumber = Convert.ToInt64(txtField.Text);
+
+                    txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
                 }
             }
             finally
@@ -214,10 +220,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     // TODO: allow to select the cost centre here, which reports to the motivation cost centre
                     //txtDetailCostCentreCode.Text =
                 }
-                else
-                {
-                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
-                }
+
+                //Wrong
+//                else
+//                {
+//                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
+//                }
             }
         }
 
