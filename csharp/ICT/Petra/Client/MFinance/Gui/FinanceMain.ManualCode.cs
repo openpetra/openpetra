@@ -83,5 +83,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             frm.CalledFromExtracts = true;
             frm.Show();
         }
+
+        /// Open screen for creating "Donor by Field" Extract
+        public static void DonorByFieldExtract(Form AParentForm)
+        {
+            TFrmDonorByField frm = new TFrmDonorByField(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
     }
 }
