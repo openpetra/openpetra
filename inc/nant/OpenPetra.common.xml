@@ -248,7 +248,9 @@
           
 <!-- logdir -->
 <property name="dir.log" value="${path::combine(dir.root, 'log')}" overwrite="false" />
+<mkdir dir="${dir.log}" failonerror="false"/>
 <property name="dir.var" value="${path::combine(dir.root, 'var')}" overwrite="false" />
+<mkdir dir="${dir.var}" failonerror="false"/>
 <property name="dir.petraclient.log" value="${dir.log}" overwrite="false" />
 <property name="dir.petraclient.var" value="${dir.var}" overwrite="false" />
 <property name="dir.petraclient.tmp" value="${tempdir}" overwrite="false" />
