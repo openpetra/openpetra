@@ -250,7 +250,7 @@ namespace Tests.MFinance.Server.ICH
             // import new gift batch. use proper period and date effective
             DateTime PeriodStartDate, PeriodEndDate;
             TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, PeriodNumber, out PeriodStartDate, out PeriodEndDate, null);
-            int GiftBatchNumber = ImportAndPostGiftBatch(PeriodStartDate);
+            ImportAndPostGiftBatch(PeriodStartDate);
 
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber, out VerificationResults);

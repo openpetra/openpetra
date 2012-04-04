@@ -148,8 +148,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             int APeriodNumber,
             ref TVerificationResultCollection AVerificationResult)
         {
-            string StandardCostCentre = ALedgerNumber + "00";
-            string STDSummmaryCostCentre = StandardCostCentre + "S";
+            string StandardCostCentre = (ALedgerNumber*100).ToString("0000");
 
             bool IsSuccessful = false;
             bool DrCrIndicator = true;
@@ -159,7 +158,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
             string IncomeAccounts;
             string ExpenseAccounts;
-            string PLAccounts;
 
             int ICHProcessing;
             decimal ICHTotal = 0;
@@ -316,11 +314,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     ErrorType = TResultSeverity.Resv_Noncritical;
                     throw new System.InvalidOperationException(ErrorMessage);
                 }
-
-                PLAccounts = BuildChildAccountList(ALedgerNumber,
-                    AccountRow,
-                    DBTransaction,
-                    ref AVerificationResult);
 
                 // find out the stewardship number - Ln 275
                 // Increment the Last ICH No.
@@ -597,7 +590,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 {
                     //Create a transaction
                     if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
-                            MFinanceConstants.ICH_ACCT_ICH, (ALedgerNumber * 100).ToString("0000"), ICHTotal, PeriodEndDate, DrCrIndicator, "ICH",
+                            MFinanceConstants.ICH_ACCT_ICH, StandardCostCentre, ICHTotal, PeriodEndDate, DrCrIndicator, "ICH",
                             true, 0,
                             out GLTransactionNumber))
                     {
@@ -958,8 +951,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             CostCentreView.Sort = CostCentreCodeDBName;
                             CostCentreView.RowFilter = string.Format("{0} = '{1}'", AProcessedFeeTable.GetFeeCodeDBName(), CurrentFeeCode);
                             DataTable ProcessedFeeCostCentresTable = CostCentreView.ToTable(true, CostCentreCodeDBName);
-
-                            Int32 NumCostCentres = ProcessedFeeCostCentresTable.Rows.Count;
 
                             foreach (DataRow r in ProcessedFeeCostCentresTable.Rows)
                             {
