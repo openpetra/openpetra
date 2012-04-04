@@ -206,11 +206,11 @@ namespace Tests.MFinance.Server.ICH
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
-            Assert.AreEqual(-12m, TTransactionWebConnector.CalculateAdminFee(MainDS,
+            Assert.AreEqual(2m, TTransactionWebConnector.CalculateAdminFee(MainDS,
                     FLedgerNumber,
                     "GIF",
-                    -200m,
-                    out VerificationResults), "expect 12");
+                    200m,
+                    out VerificationResults), "expect 1% of 200");
         }
 
         /// <summary>
