@@ -828,14 +828,12 @@ namespace Ict.Common.Testing
 
             #region GetErrorInfo
 
-            TLogging.Log("Before checking for EDuplicateErrorCodeException...");
             EDuplicateErrorCodeException TestException1 = Assert.Throws <EDuplicateErrorCodeException>(
                 delegate { ErrorCodes.GetErrorInfo("TEST.99995x", new string[] { }); });
             Assert.That(TestException1.Message, Is.EqualTo("An attempt to add Error Code with value 'TEST.99995x' through constant " +
                     "'Ict.Common.Testing.TTestCommon.ERR_TESTONLY6' failed, as there is already an Error Code with that value: it is defined through constant "
                     +
                     "'Ict.Common.Testing.TTestCommon.ERR_TESTONLY5'."));
-            TLogging.Log("After checking for EDuplicateErrorCodeException.");
             ArgumentException TestException2 = Assert.Throws <ArgumentException>(
                 delegate {  ErrorCodes.GetErrorInfo("TEST.99999V", null, new string[] { }); });
             Assert.That(TestException2.Message, Is.EqualTo("Argument 'AErrorMessageText' must not be null"));
