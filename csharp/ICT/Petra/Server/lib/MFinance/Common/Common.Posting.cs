@@ -316,6 +316,31 @@ namespace Ict.Petra.Server.MFinance.Common
                 Batch.BatchYear = DateEffectiveYearNumber;
             }
 
+            // check that all transactions are inside the same period as the GL date effective of the batch
+            DateTime PostingPeriodStartDate, PostingPeriodEndDate;
+            TFinancialYear.GetStartAndEndDateOfPeriod(Batch.LedgerNumber,
+                DateEffectivePeriodNumber,
+                out PostingPeriodStartDate,
+                out PostingPeriodEndDate,
+                Transaction);
+
+            foreach (ATransactionRow transRow in ADataSet.ATransaction.Rows)
+            {
+                if ((transRow.TransactionDate < PostingPeriodStartDate) || (transRow.TransactionDate > PostingPeriodEndDate))
+                {
+                    AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                            String.Format(
+                                "invalid transaction date for transaction {0} in Batch {1} Journal {2}: {3:d-MMM-yyyy} must be inside period {4} ({5:d-MMM-yyyy} till {6:d-MMM-yyyy})",
+                                transRow.TransactionNumber, transRow.BatchNumber, transRow.JournalNumber,
+                                transRow.TransactionDate,
+                                DateEffectivePeriodNumber,
+                                PostingPeriodStartDate,
+                                PostingPeriodEndDate),
+                            TResultSeverity.Resv_Critical));
+                }
+            }
+
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();

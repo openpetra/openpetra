@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,12 +49,12 @@ namespace Ict.Petra.Shared.MFinance
                 return;
             }
 
-            if (ACurrentJournal.ExchangeRateToBase == 0.0m)
+            if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
+                && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
             {
-                ACurrentJournal.ExchangeRateToBase = 1.0m;
-//              throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
-//                                                ACurrentJournal.BatchNumber,
-//                                                ACurrentJournal.JournalNumber));
+                throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
+                        ACurrentJournal.BatchNumber,
+                        ACurrentJournal.JournalNumber));
             }
 
             ACurrentJournal.JournalDebitTotal = 0.0M;
@@ -69,18 +69,11 @@ namespace Ict.Petra.Shared.MFinance
 
                 // recalculate the amount in base currency
 
-/*
- *              // I don't want to do this here -
- *              // I have "forex reval" transactions that deliberately have different amounts in Base,
- *              // to revalue the foreign transactions.
- *              //      CSharp\ICT\Petra\Server\lib\MFinance\AP\AP.EditTransaction.cs
- *              //      CreateGLBatchAndTransactionsForPaying (line 1111)
- *              //                                                                   Tim Ingham March 2012
- *
- *              // BUT - if this is not calculated here, it needs to be calculated by the caller prior to calling this.
- *
- *              r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
- */
+                if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
+                {
+                    r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
+                }
+
                 if (r.DebitCreditIndicator)
                 {
                     ACurrentJournal.JournalDebitTotal += r.TransactionAmount;
