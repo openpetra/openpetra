@@ -326,7 +326,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             foreach (ATransactionRow transRow in ADataSet.ATransaction.Rows)
             {
-                if ((transRow.TransactionDate < PostingPeriodStartDate) || (transRow.TransactionDate > PostingPeriodEndDate))
+                if (transRow.BatchNumber == ABatchNumber &&
+                    (transRow.TransactionDate < PostingPeriodStartDate) || (transRow.TransactionDate > PostingPeriodEndDate))
                 {
                     AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
