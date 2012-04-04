@@ -24,6 +24,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using Ict.Common;
+using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -42,6 +45,29 @@ namespace Ict.Petra.Client.App.Core
     /// </summary>
     public class TServerLookup
     {
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public class TMCommon
+        {
+            #region TServerLookup.TMCommon
+
+            /// <summary>
+            /// simple data reader;
+            /// checks for permissions of the current user;
+            /// </summary>
+            /// <param name="ATablename"></param>
+            /// <param name="ASearchCriteria">a set of search criteria</param>
+            /// <param name="AResultTable">returns typed datatable</param>
+            /// <returns></returns>
+            public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
+            {
+                return TRemote.MCommon.DataReader.GetData(ATablename, ASearchCriteria, out AResultTable);
+            }
+
+            #endregion
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>

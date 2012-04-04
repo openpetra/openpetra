@@ -130,6 +130,13 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "{0} seems to be a BIC/SWIFT Code")]
         public const String ERR_BRANCHCODELIKEBIC = "PARTN.00006N";
 
+        /// <summary>Invalid International Postal Type.</summary>
+        [ErrCodeAttribute("Invalid International Postal Type.",
+             ErrorMessageText = "Invalid International Postal Type entered.",
+             FullDescription = "The International Postal Code entered is not a valid International Postal Type.")]
+        public const String ERR_INVALIDINTERNATIONALPOSTALCODE = "PARTN.00008V";
+
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

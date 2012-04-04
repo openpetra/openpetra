@@ -113,7 +113,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitializeManualCode()
         {
             FFormSetupFinished = false;
-            FRunAsModalForm = this.Modal;
 
             ArrangeMenuItemsAndToolBarButtons();
             SetupGridContextMenu();
@@ -152,6 +151,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoFindByPartnerDetails.SetupPartnerInfoPane();
         }
 
+        /// <summary>
+        /// Run only once on first Activation of Form
+        /// </summary>
+        public void RunOnceOnActivationManual()
+        {
+            FRunAsModalForm = this.Modal;
+        }
+        
         void ucoFindByPartnerDetails_SearchOperationStateChange(TSearchOperationStateChangeEventArgs e)
         {
             if (e.SearchOperationIsRunning)

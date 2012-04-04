@@ -1215,10 +1215,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void OpenNewPartnerEditScreen(bool ARunAsModalForm)
         {
             string PartnerClass = String.Empty;
-            string CountryCode = String.Empty;
-
-            // string CallerContext = String.Empty;
-
             TFrmPartnerEdit frm;
 
             this.Cursor = Cursors.WaitCursor;
@@ -1232,16 +1228,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     // Modal. May have restrictions, may not.
+                    // Default behavior is to allow all Partner Classes
 
-                    // default behavior is to allow all
-                    PartnerClass = "";
-
-// TODO
-//                    if (FRestrictToPartnerClasses.Length > 0)
-//                    {
-//                        /* at least one entry so use first one */
-//                        PartnerClass = FRestrictToPartnerClasses[0];
-//                    }
+                    if (ucoPartnerFindCriteria.RestrictedPartnerClass.Length > 0)
+                    {
+                        /* at least one entry so use first one */
+                        PartnerClass = ucoPartnerFindCriteria.RestrictedPartnerClass[0];
+                    }
 
                     /*
                      * Create (and remember!) a GUID that we pass to the 'Partner Edit' screen
@@ -1250,7 +1243,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * of the Modal Partner Find screen.
                      */
 // TODO             FNewPartnerContext = System.Guid.NewGuid().ToString();
-//                  CallerContext = System.Guid.NewGuid().ToString();
 
                     PartnerClass = PartnerClass.Replace("OM-FAM", "FAMILY");
                 }
@@ -1258,8 +1250,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 frm = new Ict.Petra.Client.MPartner.Gui.TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
                 frm.SetParameters(TScreenMode.smNew,
-                    PartnerClass, -1, -1, CountryCode);
-// TODO                frm.CallerContext = CallerContext;
+                    PartnerClass, -1, -1, String.Empty);
+// TODO                frm.CallerContext = FNewPartnerContext;
 
                 if (!ARunAsModalForm)
                 {

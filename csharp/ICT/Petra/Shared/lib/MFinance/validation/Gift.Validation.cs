@@ -109,12 +109,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
-            object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
             // 'Gift Comment One' must not be empty
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnGiftCommentOneId];
-            ValidationContext = ARow.BatchNumber.ToString() + ";" + ARow.GiftTransactionNumber.ToString();
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {

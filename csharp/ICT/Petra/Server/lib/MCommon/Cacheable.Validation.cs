@@ -46,6 +46,8 @@ namespace Ict.Petra.Server.MCommon.Cacheable
 
             ValidationControlsDict.Add(ASubmitTable.Columns[PCountryTable.ColumnInternatTelephoneCodeId],
                 new TValidationControlsData(null, PCountryTable.GetInternatTelephoneCodeDBName()));
+            ValidationControlsDict.Add(ASubmitTable.Columns[PCountryTable.ColumnInternatPostalTypeCodeId],
+                new TValidationControlsData(null, PCountryTable.GetInternatAccessCodeDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[PCountryTable.ColumnTimeZoneMinimumId],
                 new TValidationControlsData(null, PCountryTable.GetTimeZoneMinimumDBName(),
                     null, PCountryTable.GetTimeZoneMaximumDBName()));

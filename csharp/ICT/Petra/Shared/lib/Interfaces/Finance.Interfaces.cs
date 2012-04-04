@@ -55,6 +55,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
@@ -633,6 +634,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GLSetupTDS LoadPartnerData(System.Int64 DonorKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        System.String IdentifyPartnerCostCentre(Int32 ledgerNumber,
+                                                Int64 fieldNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
                                                                           out Int64 fieldNumber);
     }
@@ -802,6 +806,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH
             get;
         }
 
+        /// <summary>access to sub namespace</summary>
+        IICHWebConnectorsNamespace WebConnectors
+        {
+            get;
+        }
+
     }
 
 }
@@ -822,6 +832,20 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
         System.Boolean PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
+    }
+
+}
+
+
+namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors
+{
+    /// <summary>auto generated</summary>
+    public interface IICHWebConnectorsNamespace : IInterface
+    {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector)</summary>
+        System.Boolean PerformStewardshipCalculation(System.Int32 ALedgerNumber,
+                                                     System.Int32 APeriodNumber,
+                                                     out TVerificationResultCollection AVerificationResult);
     }
 
 }

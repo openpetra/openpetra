@@ -96,6 +96,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 rgrAmountToPay.Enabled = false;
                 tbbPrintReport.Enabled = true;
+                chkPrintRemittance.Enabled = true;
+                chkClaimDiscount.Enabled = false;
+                chkPrintCheque.Enabled = false;
+                chkPrintLabel.Enabled = false;
             }
             else
             {
@@ -132,7 +136,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             TRemote.MFinance.AP.WebConnectors.CreatePaymentTableEntries(ref FMainDS, ALedgerNumber, ADocumentsToPay);
-
+            chkPrintRemittance.Checked = true;
+            chkClaimDiscount.Enabled = false;
+            chkPrintCheque.Enabled = false;
+            chkPrintLabel.Enabled = false;
             ShowDataManual();
         }
 
@@ -241,6 +248,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TFrmAP_PaymentReport.CreateReportNoGui(LedgerNumber, MinPaymentNumber, MaxPaymentNumber, this);
         }
 
+        private void PrintRemittanceAdvice()
+        {
+            if (chkPrintRemittance.Checked)
+            {
+                TFrmAP_RemittanceAdvice PreviewFrame = new TFrmAP_RemittanceAdvice(this);
+                PreviewFrame.Show();
+                PreviewFrame.PrintRemittanceAdvice(FMainDS.AApPayment[0].PaymentNumber, FMainDS.AApPayment[0].LedgerNumber);
+            }
+        }
+
         private void MakePayment(object sender, EventArgs e)
         {
             FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
@@ -308,6 +325,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 PrintPaymentReport(sender, e);
+                PrintRemittanceAdvice();
+
                 // TODO: show posting register of GL Batch?
 
                 // After the payments screen, The status of this document may have changed.
