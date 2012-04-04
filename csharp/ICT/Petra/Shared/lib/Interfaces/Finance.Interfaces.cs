@@ -778,7 +778,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                                                 DateTime AStartDate,
                                                 DateTime AEndDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean CancelGLBatch(out GLBatchTDS MainDS,
+        System.Boolean CancelGLBatch(out GLBatchTDS AMainDS,
                                      Int32 ALedgerNumber,
                                      Int32 ABatchNumber,
                                      out TVerificationResultCollection AVerifications);
@@ -822,16 +822,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
     /// <summary>auto generated</summary>
     public interface IICHUIConnectorsNamespace : IInterface
     {
-        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
+        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors.Class)</summary>
         IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
                                                                       System.Int32 APeriodNumber);
-    }
-
-    /// <summary>auto generated</summary>
-    public interface IICHUIConnectorsStewardshipCalculation : IInterface
-    {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
-        System.Boolean PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
     }
 
 }

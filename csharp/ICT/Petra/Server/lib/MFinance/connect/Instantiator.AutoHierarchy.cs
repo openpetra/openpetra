@@ -3105,13 +3105,13 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean CancelGLBatch(out GLBatchTDS MainDS,
+        public System.Boolean CancelGLBatch(out GLBatchTDS AMainDS,
                                             Int32 ALedgerNumber,
                                             Int32 ABatchNumber,
                                             out TVerificationResultCollection AVerifications)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "CancelGLBatch", ";GLBATCHTDS;INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// generated method from connector
