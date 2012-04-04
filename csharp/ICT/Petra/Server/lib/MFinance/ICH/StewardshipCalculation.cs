@@ -148,7 +148,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             int APeriodNumber,
             ref TVerificationResultCollection AVerificationResult)
         {
-            string StandardCostCentre = (ALedgerNumber*100).ToString("0000");
+            string StandardCostCentre = (ALedgerNumber * 100).ToString("0000");
 
             bool IsSuccessful = false;
             bool DrCrIndicator = true;
