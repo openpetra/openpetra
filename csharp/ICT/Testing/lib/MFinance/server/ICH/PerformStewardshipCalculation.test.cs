@@ -54,7 +54,7 @@ namespace Tests.MFinance.Server.ICH
     {
         Int32 FLedgerNumber = -1;
 
-        const string MainFeesPayableCode = "ICT";
+        const string MainFeesPayableCode = "GIF";
         const string MainFeesReceivableCode = "HO_ADMIN";
 
         /// <summary>
