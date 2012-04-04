@@ -207,7 +207,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 //Run RUN gl1110o.p to create a batch
                 BatchDescription = "ICH Stewardship";
-                NewBatchRow.BeginEdit();
                 NewBatchRow.BatchDescription = BatchDescription;
                 NewBatchRow.DateEffective = PeriodEndDate;
 
@@ -236,8 +235,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 NewJournalRow.DateEffective = PeriodEndDate;
                 NewJournalRow.JournalPeriod = APeriodNumber;
                 MainDS.AJournal.Rows.Add(NewJournalRow);
-
-                NewBatchRow.EndEdit();
 
                 GLJournalNumber = NewJournalRow.JournalNumber;
                 GLTransactionNumber = NewJournalRow.LastTransactionNumber + 1;
@@ -862,7 +859,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     GLBatchTDS AdminFeeDS = TGLPosting.CreateABatch(ALedgerNumber);
                     ABatchRow AdminFeeBatch = AdminFeeDS.ABatch[0];
 
-                    AdminFeeBatch.BeginEdit();
                     AdminFeeBatch.BatchDescription = BatchDescription;
                     AdminFeeBatch.DateEffective = AccountingPeriodRow.PeriodEndDate;
                     AdminFeeBatch.BatchPeriod = APeriodNumber;
@@ -872,8 +868,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     JournalRow.LedgerNumber = ALedgerNumber;
                     JournalRow.BatchNumber = AdminFeeBatch.BatchNumber;
                     JournalRow.JournalNumber = ++AdminFeeBatch.LastJournal;
-
-                    AdminFeeBatch.EndEdit();
 
                     JournalRow.JournalDescription = BatchDescription;
                     JournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
@@ -1040,9 +1034,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         if (CreditFeeTotalDR != null)
                         {
-                            CreditFeeTotalDR.BeginEdit();
                             CreditFeeTotalDR.TransactionAmount += Math.Round(pFR.PeriodicAmount, NumDecPlaces);
-                            CreditFeeTotalDR.EndEdit();
                         }
                         else
                         {
