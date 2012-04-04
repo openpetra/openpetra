@@ -54,7 +54,6 @@ using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
-using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
@@ -801,30 +800,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH
     public interface IICHNamespace : IInterface
     {
         /// <summary>access to sub namespace</summary>
-        IICHUIConnectorsNamespace UIConnectors
-        {
-            get;
-        }
-
-        /// <summary>access to sub namespace</summary>
         IICHWebConnectorsNamespace WebConnectors
         {
             get;
         }
 
-    }
-
-}
-
-
-namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
-{
-    /// <summary>auto generated</summary>
-    public interface IICHUIConnectorsNamespace : IInterface
-    {
-        /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors.Class)</summary>
-        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
-                                                                      System.Int32 APeriodNumber);
     }
 
 }

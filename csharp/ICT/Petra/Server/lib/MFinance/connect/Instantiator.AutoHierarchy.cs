@@ -71,7 +71,6 @@ using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
-using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
@@ -98,7 +97,6 @@ using Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors;
-using Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors;
@@ -125,7 +123,6 @@ using Ict.Petra.Server.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Server.MFinance.ICH.UIConnectors;
 using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 //using Ict.Petra.Server.MFinance.PeriodEnd.UIConnectors;
 //using Ict.Petra.Server.MFinance.Reporting.UIConnectors;
@@ -3142,7 +3139,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
-        private TICHUIConnectorsNamespace FICHUIConnectorsSubNamespace;
         private TICHWebConnectorsNamespace FICHWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
@@ -3207,35 +3203,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
 
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
-        /// <summary>The 'ICHUIConnectors' subnamespace contains further subnamespaces.</summary>
-        public IICHUIConnectorsNamespace UIConnectors
-        {
-            get
-            {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'ICH.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'ICH.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FICHUIConnectorsSubNamespace == null)
-                {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TICHUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.ICH.Instantiator.UIConnectors') should be automatically contructable.
-                    FICHUIConnectorsSubNamespace = new TICHUIConnectorsNamespace();
-                }
-
-                return FICHUIConnectorsSubNamespace;
-            }
-
-        }
-
         /// <summary>The 'ICHWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IICHWebConnectorsNamespace WebConnectors
         {
@@ -3263,84 +3230,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
                 return FICHWebConnectorsSubNamespace;
             }
 
-        }
-    }
-}
-
-namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
-{
-    /// <summary>auto generated class </summary>
-    public class TICHUIConnectorsNamespace : MarshalByRefObject, IICHUIConnectorsNamespace
-    {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-
-        /// <summary>Constructor</summary>
-        public TICHUIConnectorsNamespace()
-        {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
-        }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TICHUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
-
-        /// NOTE AutoGeneration: This function is all-important!!!
-        public override object InitializeLifetimeService()
-        {
-            return null; // make sure that the TICHUIConnectorsNamespace object exists until this AppDomain is unloaded!
-        }
-
-        /// generated method from interface
-        public IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
-                                                                             System.Int32 APeriodNumber)
-        {
-            return new TStewardshipCalculationUIConnector(ALedgerNumber, APeriodNumber);
         }
     }
 }
