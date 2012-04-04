@@ -5,7 +5,7 @@ COPY a_fees_payable (a_ledger_number_i, a_fee_code_c, a_charge_option_c, a_charg
 43	GIF2	Percentage	1.00	0.0000000000	4300	3400	Global Impact Fund2	4900	2012-02-29	DEMO	\N	\N	0000000000000000000000000000000000000000000000000000000000000000000000;0000000000000000000000000000000000000000000000000000000000000000001828
 \.
 
-INSERT INTO a_motivation_detail_fee(a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c, a_fee_code_c) VALUES (43, "GIFT", "FIELD", "ICT");
-INSERT INTO a_motivation_detail_fee(a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c, a_fee_code_c) VALUES (43, "GIFT", "FIELD", "GIF");
-INSERT INTO a_motivation_detail_fee(a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c, a_fee_code_c) VALUES (43, "GIFT", "SUPPORT", "ICT");
-INSERT INTO a_motivation_detail_fee(a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c, a_fee_code_c) VALUES (43, "GIFT", "SUPPORT", "GIF");
+INSERT INTO a_motivation_detail_fee(a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c, a_fee_code_c) VALUES (43, 'GIFT', 'FIELD', 'ICT');
+INSERT INTO a_motivation_detail_fee(a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c, a_fee_code_c) VALUES (43, 'GIFT', 'FIELD', 'GIF');
+INSERT INTO a_motivation_detail_fee(a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c, a_fee_code_c) VALUES (43, 'GIFT', 'SUPPORT', 'ICT');
+INSERT INTO a_motivation_detail_fee(a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c, a_fee_code_c) VALUES (43, 'GIFT', 'SUPPORT', 'GIF');
