@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -503,17 +503,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// cancel a GL Batch
         /// </summary>
-        /// <param name="MainDS"></param>
+        /// <param name="AMainDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
         [RequireModulePermission("FINANCE-3")]
-        public static bool CancelGLBatch(out GLBatchTDS MainDS,
+        public static bool CancelGLBatch(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
-            return TGLPosting.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+            return TGLPosting.CancelGLBatch(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// <summary>

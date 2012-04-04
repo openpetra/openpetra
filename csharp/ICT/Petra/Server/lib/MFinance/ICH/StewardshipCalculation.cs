@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, christophert, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -89,8 +89,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             {
                 if (GenerateAdminFeeBatch(ALedgerNumber, APeriodNumber, false, DBTransaction, ref AVerificationResult))
                 {
-                    //&& PostToLedger(ALedgerNumber, APeriodNumber, DBTransaction, ref AVerificationResult))
-
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
@@ -330,8 +328,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
 
                 //Iterate through the cost centres
-                string CostCentre = "";
-
                 string WhereClause = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = True" +
                                      " AND " + ACostCentreTable.GetCostCentreTypeDBName() +
                                      " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'";
@@ -343,7 +339,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 {
                     ACostCentreRow CostCentreRow = (ACostCentreRow)untypedCCRow;
 
-                    CostCentre = CostCentreRow.CostCentreCode;
+                    string CostCentre = CostCentreRow.CostCentreCode;
 
                     //Initialise values for each Cost Centre
                     SettlementAmount = 0;
@@ -601,7 +597,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 {
                     //Create a transaction
                     if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
-                            MFinanceConstants.ICH_ACCT_ICH, CostCentre, ICHTotal, PeriodEndDate, DrCrIndicator, "ICH", true, 0,
+                            MFinanceConstants.ICH_ACCT_ICH, (ALedgerNumber * 100).ToString("0000"), ICHTotal, PeriodEndDate, DrCrIndicator, "ICH",
+                            true, 0,
                             out GLTransactionNumber))
                     {
                         ErrorContext = "Generating the ICH batch";
@@ -774,7 +771,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             ref TVerificationResultCollection AVerificationResult
             )
         {
-            /*-----gl1250.p - begin-----*/
+            /*-----gl2150.p - begin-----*/
             //Return value
             bool IsSuccessful = false;
 
@@ -849,7 +846,16 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 DBAccess.GDBAccessObj.SelectDT(ProcessedFeeDataTable, sqlStmt, ADBTransaction, parameters, -1, -1);
 
-                if (ProcessedFeeDataTable.Count > 0)
+                if (ProcessedFeeDataTable.Count == 0)
+                {
+                    if (TLogging.DebugLevel > 0)
+                    {
+                        TLogging.Log("No fees to charge were found");
+                    }
+
+                    IsSuccessful = true;
+                }
+                else
                 {
                     //Post to Ledger - Ln 132
                     //****************4GL Transaction Starts Here********************
@@ -1114,6 +1120,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         /*RUN gl1210.p (pvedgerumber,lv_gl_batch_number,TRUE,OUTPUT IsSuccessful).*/
                         IsSuccessful = TGLPosting.PostGLBatch(AdminFeeDS, ALedgerNumber, AdminFeeBatch.BatchNumber, ADBTransaction, out Verification);
+
+                        if (IsSuccessful)
+                        {
+                            AProcessedFeeAccess.SubmitChanges(ProcessedFeeDataTable, ADBTransaction, out Verification);
+                        }
                     }
 
                     if ((Verification == null) || Verification.HasCriticalErrors)
@@ -1132,11 +1143,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         //TODO
                     }
-                }
-                else
-                {
-                    /*     MESSAGE "No fees to charge were found." VIEW-AS ALERT-BOX MESSAGE. */
-                    IsSuccessful = true;
                 }
             }
             catch (InvalidOperationException ex)
