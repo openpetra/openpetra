@@ -383,7 +383,7 @@ OpenPetra:
             Database:
                 ImportExport:
                     ExportAllData: {ActionClick=TSysManMain.ExportAllData}
-                    ResetDatabase: {ActionClick=TSysManMain.ImportAllData}
+                    RestoreDatabaseFromBackup: {ActionClick=TSysManMain.ImportAllData, Description=This will overwrite all your existing data}
             Auditing:
                 Logs:
                     #ErrorLog
