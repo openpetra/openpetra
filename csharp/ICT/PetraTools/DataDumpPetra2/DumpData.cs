@@ -169,6 +169,8 @@ namespace Ict.Tools.DataDumpPetra2
 
                 int ProcessedRows = TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
 
+                ProcessedRows += MoveTables(newTable.strName, dumpFile, MyWriter, newTable);
+
                 MyWriter.WriteLine("\\.");
                 MyWriter.WriteLine();
 
@@ -186,6 +188,87 @@ namespace Ict.Tools.DataDumpPetra2
                     File.Delete(dumpFile + ".sql.gz");
                 }
             }
+        }
+
+        private int MoveTables(string ANewTableName, string dumpFile, StreamWriter MyWriter, TTable newTable)
+        {
+            int ProcessedRows = 0;
+
+            if (ANewTableName == "a_batch")
+            {
+                TLogging.Log("a_this_year_old_batch");
+                TTable oldTable = storeOld.GetTable("a_this_year_old_batch");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_this_year_old_batch") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                TLogging.Log("a_previous_year_batch");
+                oldTable = storeOld.GetTable("a_previous_year_batch");
+                Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_previous_year_batch") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+            else if (ANewTableName == "a_journal")
+            {
+                TLogging.Log("a_this_year_old_journal");
+                TTable oldTable = storeOld.GetTable("a_this_year_old_journal");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_this_year_old_journal") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                TLogging.Log("a_previous_year_journal");
+                oldTable = storeOld.GetTable("a_previous_year_journal");
+                Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_previous_year_journal") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+            else if (ANewTableName == "a_transaction")
+            {
+                TLogging.Log("a_this_year_old_transaction");
+                TTable oldTable = storeOld.GetTable("a_this_year_old_transaction");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_this_year_old_transaction") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                TLogging.Log("a_previous_year_transaction");
+                oldTable = storeOld.GetTable("a_previous_year_transaction");
+                Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_previous_year_transaction") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+            else if (ANewTableName == "a_trans_anal_attrib")
+            {
+                TLogging.Log("a_thisyearold_trans_anal_attrib");
+                TTable oldTable = storeOld.GetTable("a_thisyearold_trans_anal_attrib");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_thisyearold_trans_anal_attrib") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                TLogging.Log("a_prev_year_trans_anal_attrib");
+                oldTable = storeOld.GetTable("a_prev_year_trans_anal_attrib");
+                Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_prev_year_trans_anal_attrib") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+            else if (ANewTableName == "a_corporate_exchange_rate")
+            {
+                TLogging.Log("a_prev_year_corp_ex_rate");
+                TTable oldTable = storeOld.GetTable("a_prev_year_corp_ex_rate");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_prev_year_corp_ex_rate") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+
+            return ProcessedRows;
         }
 
         void WritePSQLHeader(StreamWriter sw)

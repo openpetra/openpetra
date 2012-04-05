@@ -242,7 +242,7 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                 }
 
-                if (FixData(AOldTable.strName, NewColumnNames, ref NewRow))
+                if (FixData(ANewTable.strName, NewColumnNames, ref NewRow))
                 {
                     RowCounter++;
                     AWriter.WriteLine(StringHelper.StrMerge(NewRow, '\t').Replace("\\\\N", "\\N").ToString());
