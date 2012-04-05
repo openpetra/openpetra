@@ -188,27 +188,6 @@ namespace Ict.Tools.DataDumpPetra2
             }
         }
 
-        private static void WriteSequences()
-        {
-            TLogging.Log("writing the sequences: ...");
-// TODO
-            string dumpFile = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "initialiseSequences.sql";
-            StreamReader reader = new StreamReader(dumpFile);
-
-            while (!reader.EndOfStream)
-            {
-                Console.WriteLine(reader.ReadLine());
-            }
-
-            Console.WriteLine();
-
-            reader.Close();
-
-            TLogging.Log("  sequences are done");
-
-            File.Delete(dumpFile);
-        }
-
         void WritePSQLHeader(StreamWriter sw)
         {
             sw.WriteLine("--");
@@ -239,10 +218,10 @@ namespace Ict.Tools.DataDumpPetra2
 
             TParseProgressCSV.InitProgressCodePage();
 
+            TSequenceWriter.InitSequences(GetStoreNew().GetSequences());
+
             if (ATableName.Length == 0)
             {
-                // TODO LoadSequences();
-
                 List <TTable>newTables = storeNew.GetTables();
 
                 foreach (TTable newTable in newTables)
@@ -256,6 +235,10 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 LoadTable(storeNew.GetTable(ATableName));
             }
+
+            // write some tables, if they have been used
+            TFinanceAccountsPayableUpgrader.WriteAPDocumentNumberToId();
+            TSequenceWriter.WriteSequences();
 
             TLogging.Log("Success: finished exporting the data");
             TTable.GEnabledLoggingMissingFields = true;
@@ -280,8 +263,22 @@ namespace Ict.Tools.DataDumpPetra2
 
                     WritePSQLHeader(sw);
 
-                    // TODO LoadSequences();
+                    // Load Sequences
+                    string fileNameSequences = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                               Path.DirectorySeparatorChar + "_Sequences.sql.gz";
 
+                    if (File.Exists(fileNameSequences))
+                    {
+                        System.IO.Stream fs = new FileStream(fileNameSequences, FileMode.Open, FileAccess.Read);
+                        GZipInputStream gzipStream = new GZipInputStream(fs);
+                        StreamReader sr = new StreamReader(gzipStream);
+
+                        sw.Write(sr.ReadToEnd());
+
+                        sr.Close();
+                    }
+
+                    // Load Tables
                     List <TTable>newTables = storeNew.GetTables();
 
                     foreach (TTable newTable in newTables)
@@ -296,6 +293,8 @@ namespace Ict.Tools.DataDumpPetra2
                             StreamReader sr = new StreamReader(gzipStream);
 
                             sw.Write(sr.ReadToEnd());
+
+                            sr.Close();
                         }
                     }
 

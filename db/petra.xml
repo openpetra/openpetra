@@ -14491,6 +14491,9 @@
     <primarykey name="a_ap_document_pk"
                 descr=""
                 thisFields="a_ap_document_id_i"/>
+    <uniquekey name="a_ap_document_uk"
+               descr=""
+               thisFields="a_ledger_number_i, a_ap_number_i"/>
     <foreignkey name="a_ap_document_fk1"
                 descr=""
                 thisFields="a_ledger_number_i"

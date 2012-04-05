@@ -53,6 +53,27 @@ namespace Ict.Tools.DataDumpPetra2
             try
             {
                 TLogging.DebugLevel = TAppSettingsManager.GetInt16("debuglevel", 0);
+
+                if (TAppSettingsManager.GetValue("clean", "false") == "true")
+                {
+                    TLogging.Log("deleting all resulting files...");
+
+                    // delete sql.gz files, also _*.txt
+                    string[] FilesToDelete = Directory.GetFiles(TAppSettingsManager.GetValue("fulldumpPath", "fulldump"), "*.sql.gz");
+
+                    foreach (string file in FilesToDelete)
+                    {
+                        File.Delete(file);
+                    }
+
+                    FilesToDelete = Directory.GetFiles(TAppSettingsManager.GetValue("fulldumpPath", "fulldump"), "_*.txt");
+
+                    foreach (string file in FilesToDelete)
+                    {
+                        File.Delete(file);
+                    }
+                }
+
                 string table = TAppSettingsManager.GetValue("table", "");
 
                 // the upgrade process is split into two steps, to make testing quicker

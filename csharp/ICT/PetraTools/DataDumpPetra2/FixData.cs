@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
@@ -36,7 +37,10 @@ namespace Ict.Tools.DataDumpPetra2
     /// </summary>
     public class TFixData
     {
-        private static void SetValue(StringCollection AColumnNames,
+        /// <summary>
+        /// set a value of a row, position given by AColumnNames
+        /// </summary>
+        protected static void SetValue(StringCollection AColumnNames,
             ref string[] ACurrentRow,
             string AColumnName,
             string ANewValue)
@@ -51,7 +55,10 @@ namespace Ict.Tools.DataDumpPetra2
             ACurrentRow[index] = ANewValue;
         }
 
-        private static string GetValue(StringCollection AColumnNames,
+        /// <summary>
+        /// get a value from a row, position given by AColumnNames
+        /// </summary>
+        protected static string GetValue(StringCollection AColumnNames,
             string[] ACurrentRow,
             string AColumnName)
         {
@@ -260,6 +267,16 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     SetValue(AColumnNames, ref ANewRow, "a_property_value_c", "true");
                 }
+            }
+
+            if (ATableName == "a_ap_document")
+            {
+                return TFinanceAccountsPayableUpgrader.FixAPDocument(AColumnNames, ref ANewRow);
+            }
+
+            if (ATableName == "a_ap_anal_attrib")
+            {
+                return TFinanceAccountsPayableUpgrader.FixAPAnalAttrib(AColumnNames, ref ANewRow);
             }
 
             // a_email_destination.a_conditional_value_c is sometimes null, but it is part of the primary key
