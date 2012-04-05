@@ -328,17 +328,18 @@ namespace Ict.Tools.DataDumpPetra2
         }
 
         /// <summary>
-        /// collect all sql.gz files and concatenate them to one, and also the sequence file
+        /// if ATableName is empty: collect all sql.gz files and concatenate them to one, and also the sequence file
+        /// otherwise just make that one table loadable by adding the PSQL Header
         /// </summary>
-        public void CreateNewSQLFile()
+        public void CreateNewSQLFile(string ATableName)
         {
             GetStoreNew();
 
-            TLogging.Log("creating load.sql.gz file...");
+            TLogging.Log("creating _load.sql.gz file...");
 
             using (FileStream outStream = File.Create(
                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
-                       Path.DirectorySeparatorChar + "load.sql.gz"))
+                       Path.DirectorySeparatorChar + "_load.sql.gz"))
             {
                 using (Stream gzoStream = new GZipOutputStream(outStream))
                 {
@@ -346,28 +347,10 @@ namespace Ict.Tools.DataDumpPetra2
 
                     WritePSQLHeader(sw);
 
-                    // Load Sequences
-                    string fileNameSequences = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
-                                               Path.DirectorySeparatorChar + "_Sequences.sql.gz";
-
-                    if (File.Exists(fileNameSequences))
-                    {
-                        System.IO.Stream fs = new FileStream(fileNameSequences, FileMode.Open, FileAccess.Read);
-                        GZipInputStream gzipStream = new GZipInputStream(fs);
-                        StreamReader sr = new StreamReader(gzipStream);
-
-                        sw.Write(sr.ReadToEnd());
-
-                        sr.Close();
-                    }
-
-                    // Load Tables
-                    List <TTable>newTables = storeNew.GetTables();
-
-                    foreach (TTable newTable in newTables)
+                    if (ATableName.Length > 0)
                     {
                         string fileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
-                                          Path.DirectorySeparatorChar + newTable.strName + ".sql.gz";
+                                          Path.DirectorySeparatorChar + ATableName + ".sql.gz";
 
                         if (File.Exists(fileName))
                         {
@@ -380,12 +363,49 @@ namespace Ict.Tools.DataDumpPetra2
                             sr.Close();
                         }
                     }
+                    else
+                    {
+                        // Load Sequences
+                        string fileNameSequences = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                                   Path.DirectorySeparatorChar + "_Sequences.sql.gz";
+
+                        if (File.Exists(fileNameSequences))
+                        {
+                            System.IO.Stream fs = new FileStream(fileNameSequences, FileMode.Open, FileAccess.Read);
+                            GZipInputStream gzipStream = new GZipInputStream(fs);
+                            StreamReader sr = new StreamReader(gzipStream);
+
+                            sw.Write(sr.ReadToEnd());
+
+                            sr.Close();
+                        }
+
+                        // Load Tables
+                        List <TTable>newTables = storeNew.GetTables();
+
+                        foreach (TTable newTable in newTables)
+                        {
+                            string fileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                              Path.DirectorySeparatorChar + newTable.strName + ".sql.gz";
+
+                            if (File.Exists(fileName))
+                            {
+                                System.IO.Stream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                                GZipInputStream gzipStream = new GZipInputStream(fs);
+                                StreamReader sr = new StreamReader(gzipStream);
+
+                                sw.Write(sr.ReadToEnd());
+
+                                sr.Close();
+                            }
+                        }
+                    }
 
                     sw.Close();
                 }
             }
 
-            TLogging.Log("Success: finished writing the file load.sql.gz");
+            TLogging.Log("Success: finished writing the file _load.sql.gz");
         }
 
         /// <summary>

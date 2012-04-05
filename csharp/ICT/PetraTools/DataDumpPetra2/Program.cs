@@ -97,10 +97,10 @@ namespace Ict.Tools.DataDumpPetra2
                 }
 
                 // Step 3: concatenate all existing sql.gz files into one load sql file, gzipped. in the correct order
-                if ((TAppSettingsManager.GetValue("operation", "createSQL") == "createSQL") && (TAppSettingsManager.GetValue("table", "").Length == 0))
+                if (TAppSettingsManager.GetValue("operation", "createSQL") == "createSQL")
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
-                    dumper.CreateNewSQLFile();
+                    dumper.CreateNewSQLFile(table);
                 }
 
                 // TODO: also anonymize the names of the partners (use random names from external list of names)? what about amounts?
