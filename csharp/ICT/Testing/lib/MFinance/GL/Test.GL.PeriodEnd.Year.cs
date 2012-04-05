@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,6 +37,7 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Cacheable;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
 using Ict.Common.DB;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
@@ -244,35 +245,42 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult = new TVerificationResultCollection();
 
+            int intLedgerNumber2010 = 2010;
+
+            // create new ledger 2010 which is in year 2010
+            TGLSetupWebConnector.CreateNewLedger(intLedgerNumber2010, "NUnit test 2010", "99", "EUR", "USD", new DateTime(2010,
+                    1,
+                    1), 12, 1, 8, out verificationResult);
+
             // We are in 2010 and this and 2011 is not a leap year
             TAccountPeriodToNewYear accountPeriodToNewYear =
-                new TAccountPeriodToNewYear(intLedgerNumber, 2010);
+                new TAccountPeriodToNewYear(intLedgerNumber2010, 2010);
             accountPeriodToNewYear.VerificationResultCollection = verificationResult;
             accountPeriodToNewYear.IsInInfoMode = false;
 
             // RunEndOfPeriodOperation ...
-            Assert.AreEqual(20, accountPeriodToNewYear.JobSize, "...");
+            Assert.AreEqual(12, accountPeriodToNewYear.JobSize, "JobSize before switching to 2011");
             accountPeriodToNewYear.RunEndOfPeriodOperation();
 
             // JobSize-Check ...
             TAccountPeriodToNewYear accountPeriodToNewYear2 =
-                new TAccountPeriodToNewYear(intLedgerNumber, 2010);
+                new TAccountPeriodToNewYear(intLedgerNumber2010, 2010);
             accountPeriodToNewYear2.IsInInfoMode = false;
-            Assert.AreEqual(0, accountPeriodToNewYear2.JobSize, "...");
+            Assert.AreEqual(0, accountPeriodToNewYear2.JobSize, "JobSize after switching to 2011");
 
-            TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber);
+            TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
             accountPeriodInfo.AccountingPeriodNumber = 2;
             Assert.AreEqual(2011, accountPeriodInfo.PeriodStartDate.Year, "Test of the year");
             Assert.AreEqual(28, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 28th");
 
             // Switch to 2012 - this is a leap year ...
-            accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber, 2011);
+            accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010, 2011);
             accountPeriodToNewYear.IsInInfoMode = false;
-            Assert.AreEqual(20, accountPeriodToNewYear.JobSize, "...");
+            Assert.AreEqual(12, accountPeriodToNewYear.JobSize, "JobSize before switching to 2012");
             accountPeriodToNewYear.RunEndOfPeriodOperation();
-            Assert.AreEqual(0, accountPeriodToNewYear.JobSize, "...");
+            Assert.AreEqual(0, accountPeriodToNewYear.JobSize, "JobSize after switching to 2012");
 
-            accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber);
+            accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
             accountPeriodInfo.AccountingPeriodNumber = 2;
             Assert.AreEqual(29, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 29th");
         }

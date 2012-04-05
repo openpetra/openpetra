@@ -54,7 +54,6 @@ using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
-using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
@@ -778,7 +777,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
                                                 DateTime AStartDate,
                                                 DateTime AEndDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
-        System.Boolean CancelGLBatch(out GLBatchTDS MainDS,
+        System.Boolean CancelGLBatch(out GLBatchTDS AMainDS,
                                      Int32 ALedgerNumber,
                                      Int32 ABatchNumber,
                                      out TVerificationResultCollection AVerifications);
@@ -801,37 +800,11 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH
     public interface IICHNamespace : IInterface
     {
         /// <summary>access to sub namespace</summary>
-        IICHUIConnectorsNamespace UIConnectors
-        {
-            get;
-        }
-
-        /// <summary>access to sub namespace</summary>
         IICHWebConnectorsNamespace WebConnectors
         {
             get;
         }
 
-    }
-
-}
-
-
-namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors
-{
-    /// <summary>auto generated</summary>
-    public interface IICHUIConnectorsNamespace : IInterface
-    {
-        /// <summary>auto generated from Connector constructor (Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
-        IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
-                                                                      System.Int32 APeriodNumber);
-    }
-
-    /// <summary>auto generated</summary>
-    public interface IICHUIConnectorsStewardshipCalculation : IInterface
-    {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.UIConnectors.TStewardshipCalculationUIConnector)</summary>
-        System.Boolean PerformStewardshipCalculation(out TVerificationResultCollection AVerificationResult);
     }
 
 }

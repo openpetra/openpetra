@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1261,12 +1261,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-2")]
         public static bool PostGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
-            AVerifications = null;
+            AVerifications = new TVerificationResultCollection();
             bool ResultValue = false;
 
             GiftBatchTDS MainDS = LoadGiftBatchForPosting(ALedgerNumber, ABatchNumber);
 
-            // TODO: make sure that MainDS.AGiftBatch[0].BatchPeriod has the correct and valid value
+            // check that the Gift Batch BatchPeriod matches the date effective
+            int DateEffectivePeriod, DateEffectiveYear;
+            TFinancialYear.IsValidPostingPeriod(MainDS.AGiftBatch[0].LedgerNumber,
+                MainDS.AGiftBatch[0].GlEffectiveDate,
+                out DateEffectivePeriod,
+                out DateEffectiveYear,
+                null);
+
+            if (MainDS.AGiftBatch[0].BatchPeriod != DateEffectivePeriod)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting Gift Batch",
+                        String.Format("Invalid gift batch period {0} for date {1:dd-MMM-yyyy}",
+                            MainDS.AGiftBatch[0].BatchPeriod,
+                            MainDS.AGiftBatch[0].GlEffectiveDate),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
 
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
