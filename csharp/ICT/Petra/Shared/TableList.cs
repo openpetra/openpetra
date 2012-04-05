@@ -142,9 +142,6 @@ namespace Ict.Petra.Shared
             list.Add("a_method_of_giving");
             list.Add("a_method_of_payment");
             list.Add("a_motivation_group");
-            list.Add("a_previous_year_batch");
-            list.Add("a_prev_year_corp_ex_rate");
-            list.Add("a_this_year_old_batch");
             list.Add("a_recurring_batch");
             list.Add("a_batch");
             list.Add("a_special_trans_type");
@@ -235,8 +232,6 @@ namespace Ict.Petra.Shared
             list.Add("a_account_hierarchy_detail");
             list.Add("a_email_destination");
             list.Add("a_transaction_type");
-            list.Add("a_previous_year_journal");
-            list.Add("a_this_year_old_journal");
             list.Add("a_recurring_journal");
             list.Add("a_journal");
             list.Add("a_suspense_account");
@@ -325,10 +320,6 @@ namespace Ict.Petra.Shared
             list.Add("a_ep_match");
             list.Add("a_ep_transaction");
             list.Add("a_motivation_detail_fee");
-            list.Add("a_previous_year_transaction");
-            list.Add("a_prev_year_trans_anal_attrib");
-            list.Add("a_this_year_old_transaction");
-            list.Add("a_thisyearold_trans_anal_attrib");
             list.Add("a_recurring_transaction");
             list.Add("a_recurring_trans_anal_attrib");
             list.Add("a_recurring_gift_batch");
