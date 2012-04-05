@@ -21,7 +21,11 @@
 			<field whichfield="descr1"><value text="Ledger: "/><value variable="param_ledger_number_i"/>
 				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
 			</field>
-		</pageheader>
+      <field whichfield ="descr3">
+        <value text="Report Date: "/>
+        <value variable="param_payment_date"/>
+      </field>
+    </pageheader>
 		
 		<calculations>
 
@@ -140,19 +144,28 @@
       </calculation>
 
     </calculations>
-		
-		<levels>
+
+    <levels>
 		  <level name="main">
+			  <detail>
+  				  <lowerLevelReport level="ReportLevel"/>
+			  </detail>
+		  </level>
+
+      <level name="ReportLevel">
 			  <detail>
   				  <lowerLevelReport level="DocumentLevel" calculation="SelectDocuments"/>
 			  </detail>
-        <footer>
+        <footer space="above">
+          <field whichfield="column 6">
+            <value text="Total:"/>
+          </field>
           <field whichfield="column 7" format="#,##0.00;#,##0.00;0.00;0.00">
             <value function="getSumLowerReport({{lineId}}, {{column}})"/>
           </field>          
         </footer>
-		  </level>
-
+      </level>
+      
       <level name="DocumentLevel">
         <header>
         </header>
