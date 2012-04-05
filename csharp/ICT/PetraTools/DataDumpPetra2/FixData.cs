@@ -235,7 +235,7 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                 }
 
-                if (FixData(AOldTable.strName, NewColumnNames, ref NewRow, AWriter))
+                if (FixData(AOldTable.strName, NewColumnNames, ref NewRow))
                 {
                     RowCounter++;
                     AWriter.WriteLine(StringHelper.StrMerge(NewRow, '\t').Replace("\\\\N", "\\N").ToString());
@@ -245,11 +245,13 @@ namespace Ict.Tools.DataDumpPetra2
             return RowCounter;
         }
 
+        static SortedList <string, string[]>PPersonBelieverInfo = null;
+
         /// <summary>
         /// fix data that would cause problems for PostgreSQL constraints
         /// </summary>
         /// <returns>false if the row should be dropped</returns>
-        public static bool FixData(string ATableName, StringCollection AColumnNames, ref string[] ANewRow, StreamWriter AWriter)
+        public static bool FixData(string ATableName, StringCollection AColumnNames, ref string[] ANewRow)
         {
             // update pub.a_account_property set a_property_value_c = 'true' where a_property_code_c = 'Bank Account';
             if (ATableName == "a_account_property")
@@ -265,7 +267,7 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 string ConditionalValue = GetValue(AColumnNames, ANewRow, "a_conditional_value_c");
 
-                if ((ConditionalValue == "?") || (ConditionalValue.Length == 0))
+                if ((ConditionalValue == "\\N") || (ConditionalValue.Length == 0))
                 {
                     SetValue(AColumnNames, ref ANewRow, "a_conditional_value_c", "NOT SET");
                 }
@@ -284,30 +286,10 @@ namespace Ict.Tools.DataDumpPetra2
             // there is a space in front of the code, which causes a duplicate primary key
             if (ATableName == "p_type")
             {
-#if todo
-                bool duplicateExists = false;
-
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                if (GetValue(AColumnNames, ANewRow, "p_type_code_c") == " STAFF")
                 {
-                    string[] CurrentRow = ACSVLines[counter];
-
-                    if (GetValue(AColumnNames, CurrentRow, "p_type_code_c") == "STAFF")
-                    {
-                        duplicateExists = true;
-                    }
+                    return false;
                 }
-
-                for (Int32 counter = 0; duplicateExists && counter < ACSVLines.Count; counter++)
-                {
-                    string[] CurrentRow = ACSVLines[counter];
-
-                    if (GetValue(AColumnNames, CurrentRow, "p_type_code_c") == " STAFF")
-                    {
-                        ACSVLines.RemoveAt(counter);
-                        counter--;
-                    }
-                }
-#endif
             }
 
             // there is a space in front of the code, which causes a duplicate primary key
@@ -405,51 +387,49 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
-#if false
             // pm_personal_data: move values from the p_person table for
             if (ATableName == "pm_personal_data")
             {
-                // load the file p_person.d.gz so that we can access the values for each person
-                TTable personTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("p_person");
-
-                SqliteConnection PersonRows = TParseProgressCSV.ParseFile(
-                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "p_person.d.gz",
-                    personTableOld.grpTableField.List.Count);
-
-                StringCollection PersonColumnNames = GetColumnNames(personTableOld);
-
-                for (Int32 counter = 0; counter < ACSVLines.Count; counter++)
+                if (PPersonBelieverInfo == null)
                 {
-                    string[] CurrentRow = ACSVLines[counter];
-                    string partnerkey = GetValue(AColumnNames, CurrentRow, "p_partner_key_n");
+                    PPersonBelieverInfo = new SortedList <string, string[]>();
 
-                    bool canFindPerson = false;
+                    // load the file p_person.d.gz so that we can access the values for each person
+                    TTable personTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("p_person");
+
+                    TParseProgressCSV Parser = new TParseProgressCSV(
+                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "p_person.d.gz",
+                        personTableOld.grpTableField.Count);
+
+                    StringCollection PersonColumnNames = GetColumnNames(personTableOld);
+
+                    string personKey = string.Empty;
                     string believerSinceYear = string.Empty;
                     string believerSinceComment = string.Empty;
 
-                    foreach (string[] PersonRow in PersonRows)
+                    while (true)
                     {
-                        if (GetValue(PersonColumnNames, PersonRow, "p_partner_key_n") == partnerkey)
+                        string[] OldRow = Parser.ReadNextRow();
+
+                        if (OldRow == null)
                         {
-                            canFindPerson = true;
-                            believerSinceYear = GetValue(PersonColumnNames, PersonRow, "p_believer_since_year_i");
-                            believerSinceComment = GetValue(PersonColumnNames, PersonRow, "p_believer_since_comment_c");
                             break;
                         }
-                    }
 
-                    if (!canFindPerson)
-                    {
-                        throw new Exception("Error: Cannot find p_person with partner key " + partnerkey);
+                        personKey = GetValue(PersonColumnNames, OldRow, "p_partner_key_n");
+                        believerSinceComment = GetValue(PersonColumnNames, OldRow, "p_believer_since_comment_c");
+                        believerSinceYear = GetValue(PersonColumnNames, OldRow, "p_believer_since_year_i");
+                        PPersonBelieverInfo.Add(personKey, new string[] { believerSinceComment, believerSinceYear });
                     }
-
-                    SetValue(AColumnNames, ref CurrentRow, "p_believer_since_year_i",
-                        FixValue(believerSinceYear, personTableOld.GetField("p_believer_since_year_i")));
-                    SetValue(AColumnNames, ref CurrentRow, "p_believer_since_comment_c",
-                        FixValue(believerSinceComment, personTableOld.GetField("p_believer_since_comment_c")));
                 }
+
+                string partnerkey = GetValue(AColumnNames, ANewRow, "p_partner_key_n");
+
+                string[] believerInfo = PPersonBelieverInfo[partnerkey];
+                SetValue(AColumnNames, ref ANewRow, "p_believer_since_comment_c", believerInfo[0]);
+                SetValue(AColumnNames, ref ANewRow, "p_believer_since_year_i", believerInfo[1]);
             }
-#endif
+
             return true;
         }
     }

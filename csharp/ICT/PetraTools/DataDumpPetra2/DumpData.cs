@@ -163,7 +163,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                 FileStream outStream = File.Create(dumpFile + ".sql.gz");
                 Stream gzoStream = new GZipOutputStream(outStream);
-                StreamWriter MyWriter = new StreamWriter(gzoStream);
+                StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
 
                 MyWriter.WriteLine("COPY " + newTable.strName + " FROM stdin;");
 
