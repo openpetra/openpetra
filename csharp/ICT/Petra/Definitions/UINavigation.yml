@@ -29,7 +29,7 @@ OpenPetra:
                     SearchBoxes: [Partner]
                     NewPartner:
                         AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
-                        #disabled until household/person thing implemented: AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
+                        AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
                         AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
                     MaintainPartner:
                         #ChangeAddress:
