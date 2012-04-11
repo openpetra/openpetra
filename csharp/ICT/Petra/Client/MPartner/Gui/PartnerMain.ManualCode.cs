@@ -43,6 +43,17 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TFrmPartnerMain
     {
+        private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
+        
+        /// dataset for the whole screen
+        public Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS MainDS
+        {
+            set
+            {
+                FMainDS = value;
+            }
+        }
+    
         /// <summary>
         /// create a new partner (default to family ie. household)
         /// </summary>
@@ -66,9 +77,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// create a new person
         public static void NewPerson(Form AParentForm)
         {
+            TLogging.Log("FMainDS.PFamily[0].PartnerKey");
+            TLogging.Log(FMainDS.PFamily[0].PartnerKey);
+            
             TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
-            frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
+            frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "", "", false,
+                    FMainDS.PFamily[0].PartnerKey, -1, -1);
+            //frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
             frm.Show();
         }
 

@@ -877,8 +877,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "", "", false,
                     FMainDS.PFamily[0].PartnerKey, FamilysCurrentLocationKey, FamilysCurrentSiteKey);
                 frm.Show();
-                TLogging.Log("FMainDS.PFamily[0].PartnerKey, FamilysCurrentLocationKey, FamilysCurrentSiteKey");
-                TLogging.Log(FMainDS.PFamily[0].PartnerKey + " " + FamilysCurrentLocationKey + " " + FamilysCurrentSiteKey);
+                //TLogging.Log("FMainDS.PFamily[0].PartnerKey, FamilysCurrentLocationKey, FamilysCurrentSiteKey");
+                //TLogging.Log(FMainDS.PFamily[0].PartnerKey + " " + FamilysCurrentLocationKey + " " + FamilysCurrentSiteKey);
             }
         }
 
