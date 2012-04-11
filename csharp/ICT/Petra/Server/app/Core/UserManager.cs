@@ -64,8 +64,8 @@ namespace Ict.Petra.Server.App.Core.Security
 
         private static readonly string StrInvalidUserIDPassword = Catalog.GetString("Invalid User ID/Password.");
 
-        private static readonly string StrUserRecordIsLocked = Catalog.GetString(
-            "Your user record is locked by another process!r\nPlease try to login again later.");
+// TODO        private static readonly string StrUserRecordIsLocked = Catalog.GetString(
+// TODO            "Your user record is locked by another process!r\nPlease try to login again later.");
 
         #endregion
 

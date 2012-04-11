@@ -20,8 +20,8 @@
     Actions:
         actFilter: {Label=Filter List, ActionClick=FilterList}
     Controls:
-        tpgReportSpecific: {ControlsOrientation=vertical}
-            Label: Report parameters
+        tpgGeneralSettings: {ControlsOrientation=vertical}
+            Label: General Settings
             Controls: [pnlFilter, pnlMiddle, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
             Dock: Fill

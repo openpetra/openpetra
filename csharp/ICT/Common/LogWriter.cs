@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -117,10 +117,14 @@ namespace Ict.Common
                 SWriter.Close();
                 FStream.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // eg cannot find directory
-                throw;
+                Console.WriteLine("TLogWriter:Log was not able to write to the log file");
+                Console.WriteLine(e.ToString());
+
+                // do not throw, this causes somehow problems on running nant test on ci-win
+                // throw;
             }
         }
 

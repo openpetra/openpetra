@@ -111,8 +111,8 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>Error message</summary>
         private static readonly string UNIT_NO_VALID_OCCUPATIONCODE = Catalog.GetString("NOT A VALID OCCUPATION CODE!");
 
-        /// <summary>Error message</summary>
-        private static readonly string UNIT_NO_VALID_PARTNERKEY = Catalog.GetString("NOT A VALID PARTNERKEY!");
+// TODO        /// <summary>Error message</summary>
+// TODO       private static readonly string UNIT_NO_VALID_PARTNERKEY = Catalog.GetString("NOT A VALID PARTNERKEY!");
 
         /// <summary>
         /// Available Types for TtxtAutoPopulatedButtonLabel

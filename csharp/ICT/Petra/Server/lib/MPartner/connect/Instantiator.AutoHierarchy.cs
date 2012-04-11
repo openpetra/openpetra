@@ -2328,7 +2328,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         /// generated method from interface
         public Boolean VerifyPartner(Int64 APartnerKey,
                                      TPartnerClass[] AValidPartnerClasses,
-                                     out bool APartnerExists,
+                                     out System.Boolean APartnerExists,
                                      out String APartnerShortName,
                                      out TPartnerClass APartnerClass,
                                      out Boolean AIsMergedPartner)
@@ -2840,6 +2840,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader), "GetOutreachUnits", ";STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetOutreachUnits(AOutreachName);
+        }
+
+        /// generated method from connector
+        public PUnitTable GetActiveFieldUnits(System.String AFieldName)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader), "GetActiveFieldUnits", ";STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetActiveFieldUnits(AFieldName);
+        }
+
+        /// generated method from connector
+        public PUnitTable GetLedgerUnits(System.String ALedgerName)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader), "GetLedgerUnits", ";STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader.GetLedgerUnits(ALedgerName);
         }
 
         /// generated method from connector

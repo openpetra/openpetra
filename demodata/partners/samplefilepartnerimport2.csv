@@ -1,0 +1,28 @@
+"class","Country","status","SiteKey","PartnerKey","FirstName","LastName","Title","CreatedAt","SpecialTypes","Street","City","PostCode","Email","Phone","MobilePhone","Name","UnitTypeCode","ParentUnitKey"
+ ,,,-1,,,,,,,,,,,,,,,
+FAMILY,DE,ACTIVE,0,,,,,,,,,,,,,,,
+ ,,,,43005001,Dalton,Lloyd,,2012-03-08 00:00:00,"VOLUNTEER, SUPPORTER",,,,,,,,,
+ ,,,,,,,,,,2047 Proin Rd.,Ponce,CM0 8RI,Nullam.ut.nisi@elementumpurusaccumsan.com,,,,,
+ ,,,,43005002,Julian,Hart,,2012-03-08 00:00:00,"VOLUNTEER, SUPPORTER",,,,,,,,,
+ ,,,,,,,,,,279-8779 Nec Rd.,Valdez,K1B 0GO,dignissim.pharetra@sapienCrasdolor.org,,,,,
+ ,,,,43005003,Dahlia,Pope,,2012-03-08 00:00:00,"VOLUNTEER, SUPPORTER",,,,,,,,,
+ ,,,,,,,,,,Ap #279-4130 Nunc St.,Huntington Beach,2987PU,mauris.blandit.mattis@ac.ca,,,,,
+ ,,,,43005004,Ulric,Harvey,,2012-03-08 00:00:00,SUPPORTER,,,,,,,,,
+ ,,,,,,,,,,788-4853 Eu Street,Clairton,6814KU,posuere.cubilia@diameu.ca,,,,,
+ ,,,,43005005,Julian,Ingram,,2012-03-08 00:00:00,SUPPORTER,,,,,,,,,
+ ,,,,,,,,,,8487 Rutrum. Rd.,Columbus,NR8 4BT,aliquet.Phasellus@Proinnon.com,,,,,
+ ,,,,43005006,Robert,Parrish,,2012-03-08 00:00:00,SUPPORTER,,,,,,,,,
+ ,,,,,,,,,,Ap #975-7000 Congue Av.,Alexandria,9709AE,a.scelerisque.sed@ornare.edu,,,,,
+ ,,,,43005007,Otto,Oneal,,2012-03-08 00:00:00,SUPPORTER,,,,,,,,,
+ ,,,,,,,,,,Ap #975-7000 Congue Av.,Alexandria,9709AE,Vivamus@variusNam.com,,,,,
+ORGANISATION,DE,ACTIVE,0,,,,,,,,,,,,,,,
+ ,,,,43005008,,,,2012-03-08 00:00:00,,,,,,,,IT Hardwarestore,,
+ ,,,,,,,,,,"P.O. Box 102, 8566 Justo. Road",Akron,5656CN,diam@liberoduinec.com,,,,,
+UNIT,,ACTIVE,-1,,,,,,,,,,,,,,,
+UNIT,99,ACTIVE,0,,,,,,,,,,,,,,,
+ ,,,,4000000,,,,2012-03-08 00:00:00,LEDGER,,,,,,,International Clearing House,D,1000000
+ ,,,,95000000,,,,2012-03-08 00:00:00,LEDGER,,,,,,,Global Impact Fund,D,1000000
+ ,,,,35000000,,,,2012-03-08 00:00:00,LEDGER,,,,,,,Switzerland,F,1000000
+ ,,,,73000000,,,,2012-03-08 00:00:00,LEDGER,,,,,,,Kenya,F,1000000
+UNIT,99,ACTIVE,43000000,,,,,,,,,,,,,,,
+ ,,,,43000000,,,,2012-03-08 00:00:00,LEDGER,,,,,,,Germany,F,1000000

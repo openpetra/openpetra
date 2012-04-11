@@ -56,12 +56,13 @@ namespace Ict.Testing.NUnitTools
             string[] strArr = strAssemblyPath.Split(new char[] { '\\', '/' });
             rootPath = "";
 
+            //For SharpDevelop testing use -2, for NUnit standalone use -3
             for (int i = 0; i < strArr.Length - 2; ++i)
             {
                 rootPath += strArr[i] + "/";
             }
 
-            // System.Diagnostics.Debug.WriteLine("rootPath: " + rootPath);
+            TLogging.Log("rootPath: " + rootPath);
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1064,7 +1064,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
 
             try
             {
@@ -1216,33 +1216,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // TODO CT
             // see Add_To_Fee_Totals in gr1210.p
 
-            /* Get the record for the totals of the processed fees. */
-            AProcessedFeeTable ProcessedFeeDataTable = AMainDS.AProcessedFee;
-            AProcessedFeeRow ProcessedFeeRow =
-                (AProcessedFeeRow)ProcessedFeeDataTable.Rows.Find(new object[] { AGiftDetailRow.LedgerNumber,
-                                                                                 AFeeCode,
-                                                                                 AGiftDetailRow.BatchNumber,
-                                                                                 AGiftDetailRow.GiftTransactionNumber,
-                                                                                 AGiftDetailRow.DetailNumber });
-
-            if (ProcessedFeeRow == null)
+            try
             {
-                ProcessedFeeRow = (AProcessedFeeRow)ProcessedFeeDataTable.NewRowTyped(false);
-                ProcessedFeeRow.LedgerNumber = AGiftDetailRow.LedgerNumber;
-                ProcessedFeeRow.BatchNumber = AGiftDetailRow.BatchNumber;
-                ProcessedFeeRow.GiftTransactionNumber = AGiftDetailRow.GiftTransactionNumber;
-                ProcessedFeeRow.DetailNumber = AGiftDetailRow.DetailNumber;
-                ProcessedFeeRow.FeeCode = AFeeCode;
-                ProcessedFeeRow.PeriodicAmount = 0;
+                /* Get the record for the totals of the processed fees. */
+                AProcessedFeeTable ProcessedFeeDataTable = AMainDS.AProcessedFee;
+                AProcessedFeeRow ProcessedFeeRow =
+                    (AProcessedFeeRow)ProcessedFeeDataTable.Rows.Find(new object[] { AGiftDetailRow.LedgerNumber,
+                                                                                     AGiftDetailRow.BatchNumber,
+                                                                                     AGiftDetailRow.GiftTransactionNumber,
+                                                                                     AGiftDetailRow.DetailNumber,
+                                                                                     AFeeCode });
 
-                ProcessedFeeDataTable.Rows.Add(ProcessedFeeRow);
+                if (ProcessedFeeRow == null)
+                {
+                    ProcessedFeeRow = (AProcessedFeeRow)ProcessedFeeDataTable.NewRowTyped(false);
+                    ProcessedFeeRow.LedgerNumber = AGiftDetailRow.LedgerNumber;
+                    ProcessedFeeRow.BatchNumber = AGiftDetailRow.BatchNumber;
+                    ProcessedFeeRow.GiftTransactionNumber = AGiftDetailRow.GiftTransactionNumber;
+                    ProcessedFeeRow.DetailNumber = AGiftDetailRow.DetailNumber;
+                    ProcessedFeeRow.FeeCode = AFeeCode;
+                    ProcessedFeeRow.PeriodicAmount = 0;
+
+                    ProcessedFeeDataTable.Rows.Add(ProcessedFeeRow);
+                }
+
+                ProcessedFeeRow.CostCentreCode = AGiftDetailRow.CostCentreCode;
+                ProcessedFeeRow.PeriodNumber = APostingPeriod;
+
+                /* Add the amount to the existing total. */
+                ProcessedFeeRow.PeriodicAmount += AFeeAmount;
             }
-
-            ProcessedFeeRow.CostCentreCode = AGiftDetailRow.CostCentreCode;
-            ProcessedFeeRow.PeriodNumber = APostingPeriod;
-
-            /* Add the amount to the existing total. */
-            ProcessedFeeRow.PeriodicAmount += AFeeAmount;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -1254,12 +1261,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-2")]
         public static bool PostGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
-            AVerifications = null;
+            AVerifications = new TVerificationResultCollection();
             bool ResultValue = false;
 
             GiftBatchTDS MainDS = LoadGiftBatchForPosting(ALedgerNumber, ABatchNumber);
 
-            // TODO: make sure that MainDS.AGiftBatch[0].BatchPeriod has the correct and valid value
+            // check that the Gift Batch BatchPeriod matches the date effective
+            int DateEffectivePeriod, DateEffectiveYear;
+            TFinancialYear.IsValidPostingPeriod(MainDS.AGiftBatch[0].LedgerNumber,
+                MainDS.AGiftBatch[0].GlEffectiveDate,
+                out DateEffectivePeriod,
+                out DateEffectiveYear,
+                null);
+
+            if (MainDS.AGiftBatch[0].BatchPeriod != DateEffectivePeriod)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting Gift Batch",
+                        String.Format("Invalid gift batch period {0} for date {1:dd-MMM-yyyy}",
+                            MainDS.AGiftBatch[0].BatchPeriod,
+                            MainDS.AGiftBatch[0].GlEffectiveDate),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
 
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
@@ -1402,6 +1427,48 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Find the cost centre associated with the partner
+        /// </summary>
+        /// <param name="ledgerNumber"></param>
+        /// <param name="fieldNumber"></param>
+        /// <returns>Cost Centre code</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string IdentifyPartnerCostCentre(Int32 ledgerNumber, Int64 fieldNumber)
+        {
+            bool NewTransaction = false;
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            string costCentre = string.Empty;
+
+            try
+            {
+                AValidLedgerNumberTable ValidLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ledgerNumber, fieldNumber, DBTransaction);
+
+                if (ValidLedgerNumberTable.Count > 0)
+                {
+                    AValidLedgerNumberRow ValidLedgerNumberRow = (AValidLedgerNumberRow)ValidLedgerNumberTable.Rows[0];
+
+                    costCentre = ValidLedgerNumberRow.CostCentreCode;
+                }
+                else
+                {
+                    //Use the default cost centre
+                    string StandardCostCentre = ledgerNumber + "00";
+                    costCentre = StandardCostCentre;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return costCentre;
+        }
+
+        /// <summary>
         /// Load key Ministry
         /// The data file contents from the client is sent as a string, imported in the database
         /// and committed immediately
@@ -1419,7 +1486,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             try
             {
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
 
                 LoadKeyMinistryInsideTrans(ref Transaction, ref unitTable, ref partnerTable, partnerKey, out fieldNumber);
             }
@@ -1517,7 +1583,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        private static Int64 SearchField(Int64 partnerKey, ref TDBTransaction Transaction)
+        private static
+        Int64 SearchField(Int64 partnerKey, ref TDBTransaction Transaction)
         {
             PPartnerTypeTable ptt = PPartnerTypeAccess.LoadByPrimaryKey(partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER, Transaction);
 
