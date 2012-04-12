@@ -31,6 +31,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Shared.MPartner.Validation
 {
@@ -196,6 +197,250 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+        }
+
+        /// <summary>
+        /// Validates the Personnel Staff data of a Partner.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePersonnelStaffDataManual(object AContext, PmStaffDataRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Receiving Field' must be a Partner of Class 'UNIT' and must not be 0
+            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnReceivingFieldId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = IsValidUNITPartner(
+                    ARow.ReceivingField, false, THelper.NiceValueDescription(
+                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
+            // 'Home Office' must be a Partner of Class 'UNIT'
+            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnHomeOfficeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = IsValidUNITPartner(ARow.HomeOffice, true,
+                    THelper.NiceValueDescription(ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
+            // 'Recruiting Office' must be a Partner of Class 'UNIT'
+            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnOfficeRecruitedById];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = IsValidUNITPartner(ARow.OfficeRecruitedBy, true,
+                    THelper.NiceValueDescription(ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
+            // 'Start of Commitment' must be defined
+            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnStartOfCommitmentId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.StartOfCommitment,
+                    ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
+                    ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'End of Commitment' must be later than 'Start of Commitment'
+            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnEndOfCommitmentId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstGreaterThanSecondDate(ARow.EndOfCommitment, ARow.StartOfCommitment,
+                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Status' must have a value
+            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnStatusCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.StatusCode,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Checks whether a Partner with a certain PartnerKey and a range of valid PartnerClasses exists.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey.</param>
+        /// <param name="AValidPartnerClasses">An array of PartnerClasses. If the Partner exists, but its
+        /// PartnerClass isn't in the array, a TVerificationResult is still returned.</param>
+        /// <param name="AZeroPartnerKeyIsValid">Set to true if <paramref name="APartnerKey" /> 0 should be considered
+        /// as valid (Default: false)</param>
+        /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
+        /// <param name="AResultContext">ResultContext (Default: null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null). (Default: null).</param>
+        /// <returns>Null if the Partner exists and its PartnerClass is in the <paramref name="AValidPartnerClasses" />
+        /// array. If the Partner exists, but its PartnerClass isn't in the array, a TVerificationResult
+        /// with details about the error is returned. This is also the case if the Partner doesn't exist at all
+        /// or got merged into another Partner, or if <paramref name="APartnerKey" /> is 0 and <paramref name="AZeroPartnerKeyIsValid" />
+        /// is false.
+        /// </returns>
+        public static TVerificationResult IsValidPartner(Int64 APartnerKey, TPartnerClass[] AValidPartnerClasses,
+            bool AZeroPartnerKeyIsValid = false, string AErrorMessageText = "", object AResultContext = null,
+            System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            string ShortName;
+            TPartnerClass PartnerClass;
+            bool PartnerExists;
+            bool IsMergedPartner;
+            string ValidPartnerClassesStr = String.Empty;
+            bool PartnerClassValid = false;
+            string PartnerClassInvalidMessageStr = Catalog.GetString("The Partner Class of the Partner needs to be '{0}', but it is '{1}'.");
+            string PartnerClassConcatStr = Catalog.GetString(" or ");
+
+            if ((AZeroPartnerKeyIsValid)
+                && (APartnerKey == 0))
+            {
+                return null;
+            }
+            else if ((!AZeroPartnerKeyIsValid)
+                     && (APartnerKey == 0))
+            {
+                if (AErrorMessageText == String.Empty)
+                {
+                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOZERO, new string[] { APartnerKey.ToString() }));
+                }
+                else
+                {
+                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOZERO));
+                    ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
+                }
+            }
+            else
+            {
+                bool VerificationOK = TSharedPartnerValidationHelper.VerifyPartner(APartnerKey, AValidPartnerClasses, out PartnerExists,
+                    out ShortName, out PartnerClass, out IsMergedPartner);
+
+                if ((!VerificationOK)
+                    || (IsMergedPartner))
+                {
+                    if (AErrorMessageText == String.Empty)
+                    {
+                        ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString() }));
+                    }
+                    else
+                    {
+                        ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString() }));
+                        ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
+                    }
+
+                    if ((PartnerExists)
+                        && (!IsMergedPartner))
+                    {
+                        if ((AValidPartnerClasses.Length == 1)
+                            && (AValidPartnerClasses[0] != PartnerClass))
+                        {
+                            ReturnValue.OverrideResultText(ReturnValue.ResultText + " " +
+                                String.Format(PartnerClassInvalidMessageStr, AValidPartnerClasses[0], PartnerClass));
+                        }
+                        else if (AValidPartnerClasses.Length > 1)
+                        {
+                            for (int Counter = 0; Counter < AValidPartnerClasses.Length; Counter++)
+                            {
+                                ValidPartnerClassesStr += "'" + AValidPartnerClasses[Counter] + "'" + PartnerClassConcatStr;
+
+                                if (AValidPartnerClasses[Counter] == PartnerClass)
+                                {
+                                    PartnerClassValid = true;
+                                }
+                            }
+
+                            if (!PartnerClassValid)
+                            {
+                                ValidPartnerClassesStr = ValidPartnerClassesStr.Substring(0,
+                                    ValidPartnerClassesStr.Length - PartnerClassConcatStr.Length - 1);                                                                                            // strip off "' or "
+                                ReturnValue.OverrideResultText(ReturnValue.ResultText + " " +
+                                    String.Format(PartnerClassInvalidMessageStr, ValidPartnerClassesStr, PartnerClass));
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ((ReturnValue != null)
+                && (AResultColumn != null))
+            {
+                ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks that a Partner with a certain PartnerKey exists and is a Partner of PartnerClass UNIT.
+        /// </summary>
+        /// <param name="APartnerKey">PartneKey.</param>
+        /// <param name="AZeroPartnerKeyIsValid">Set to true if <paramref name="APartnerKey" /> 0 should be considered
+        /// as valid (Default: false)</param>
+        /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
+        /// <param name="AResultContext">ResultContext (optional).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null). (Default: null).</param>
+        /// <returns>Null if the Partner exists and its PartnerClass is UNIT. If the Partner exists,
+        /// but its PartnerClass isn't UNIT, a TVerificationResult with details about the error is
+        /// returned. This is also the case if the Partner doesn't exist at all or got merged
+        /// into another Partner, or if <paramref name="APartnerKey" /> is 0 and <paramref name="AZeroPartnerKeyIsValid" />
+        /// is false.
+        /// </returns>
+        public static TVerificationResult IsValidUNITPartner(Int64 APartnerKey, bool AZeroPartnerKeyIsValid = false,
+            string AErrorMessageText = "", object AResultContext = null, System.Data.DataColumn AResultColumn = null,
+            System.Windows.Forms.Control AResultControl = null)
+        {
+            return IsValidPartner(APartnerKey, new TPartnerClass[] { TPartnerClass.UNIT }, AZeroPartnerKeyIsValid,
+                AErrorMessageText, AResultContext, AResultColumn, AResultControl);
         }
     }
 }

@@ -43,7 +43,7 @@ RootNode:
                 Row0: [txtDetailLevelDescriptions, txtDetailLevelRangeLow, txtDetailLevelRangeHigh]
             ColWidths: [3=Fixed:60]
             ColSpan: 3
-        txtDetailCategory: {Label=Category}
+        txtDetailCategory: {Label=Category, CharacterCasing=Upper}
         txtDetailDescription: {Label=Description, Width=260}
         txtDetailLevelDescriptions:
         txtDetailLevelRangeLow: {Format=Integer, Label=Level Range Lower, Width=30}

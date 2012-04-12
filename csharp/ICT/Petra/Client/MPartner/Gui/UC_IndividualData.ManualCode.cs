@@ -62,6 +62,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_JobAssignments FUcoJobAssignments;
         private Ict.Petra.Client.MPartner.Gui.TUC_IndividualData_LocalPersonnelData FUcoLocalPersonnelData;
 
+        //the background color that all PanelHelpers will have
+        private System.Drawing.Color PanelHelperBackGround = System.Drawing.Color.Yellow;
 
         /// <summary>
         /// Enumeration of dynamic loadable UserControls which are used
@@ -921,9 +923,12 @@ namespace Ict.Petra.Client.MPartner.Gui
              */
             OnDataLoadingStarted(this, new EventArgs());
 
+            ResetAllBackColors();
+
             if (ASender == llbOverview)
             {
                 ucoSummaryData.Parent.BringToFront();
+                llbOverview.BackColor = PanelHelperBackGround;
             }
             else if (ASender == llbSpecialNeeds)
             {
@@ -967,6 +972,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FUcoSpecialNeeds.AdjustAfterResizing();
                     }
                 }
+
+                llbSpecialNeeds.BackColor = PanelHelperBackGround;
 
                 FUcoSpecialNeeds.Parent.BringToFront();
             }
@@ -1017,6 +1024,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
+                llbLanguages.BackColor = PanelHelperBackGround;
+
                 FUcoPersonalLanguages.Parent.BringToFront();
             }
             else if (ASender == llbProgressReports)
@@ -1065,6 +1074,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FUcoProgressReports.AdjustAfterResizing();
                     }
                 }
+
+                llbProgressReports.BackColor = PanelHelperBackGround;
 
                 FUcoProgressReports.Parent.BringToFront();
             }
@@ -1115,6 +1126,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
+                llbCommitmentPeriods.BackColor = PanelHelperBackGround;
+
                 FUcoCommitmentPeriods.Parent.BringToFront();
             }
             else if (ASender == llbPersonSkills)
@@ -1163,6 +1176,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FUcoPersonSkills.AdjustAfterResizing();
                     }
                 }
+
+                llbPersonSkills.BackColor = PanelHelperBackGround;
 
                 FUcoPersonSkills.Parent.BringToFront();
             }
@@ -1213,6 +1228,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
+                llbPersonalAbilities.BackColor = PanelHelperBackGround;
+
                 FUcoPersonalAbilities.Parent.BringToFront();
             }
             else if (ASender == llbPassportDetails)
@@ -1262,6 +1279,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
+                llbPassportDetails.BackColor = PanelHelperBackGround;
+
                 FUcoPassportDetails.Parent.BringToFront();
             }
             else if (ASender == llbPersonalData)
@@ -1307,6 +1326,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
+                llbPersonalData.BackColor = PanelHelperBackGround;
+
                 FUcoPersonalData.Parent.BringToFront();
             }
             else if (ASender == llbEmergencyData)
@@ -1351,6 +1372,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FUcoEmergencyData.AdjustAfterResizing();
                     }
                 }
+
+                llbEmergencyData.BackColor = PanelHelperBackGround;
 
                 FUcoEmergencyData.Parent.BringToFront();
             }
@@ -1401,6 +1424,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
+                llbPreviousExperience.BackColor = PanelHelperBackGround;
+
                 FUcoPreviousExperience.Parent.BringToFront();
             }
             else if (ASender == llbPersonalDocuments)
@@ -1450,6 +1475,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
+                llbPersonalDocuments.BackColor = PanelHelperBackGround;
+
                 FUcoPersonalDocuments.Parent.BringToFront();
             }
             else if (ASender == llbJobAssignments)
@@ -1466,6 +1493,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TDynamicLoadableUserControls.dlucJobAssignments);
 
                     // Hook up RecalculateScreenParts Event
+
                     FUcoJobAssignments.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateLinkLabelCounters);
 
                     FUcoJobAssignments.MainDS = FMainDS;
@@ -1498,6 +1526,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FUcoJobAssignments.AdjustAfterResizing();
                     }
                 }
+
+                llbJobAssignments.BackColor = PanelHelperBackGround;
 
                 FUcoJobAssignments.Parent.BringToFront();
             }
@@ -1547,6 +1577,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FUcoLocalPersonnelData.AdjustAfterResizing();
                     }
                 }
+
+                llbLocalPersonnelData.BackColor = PanelHelperBackGround;
 
                 FUcoLocalPersonnelData.Parent.BringToFront();
             }
@@ -1822,6 +1854,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Resets the BackColor on all LinkLabels
+        /// </summary>
+        /// <returns>void</returns>
+        private void ResetAllBackColors()
+        {
+            llbOverview.ResetBackColor();
+            llbEmergencyData.ResetBackColor();
+            llbCommitmentPeriods.ResetBackColor();
+            llbJobAssignments.ResetBackColor();
+            llbPassportDetails.ResetBackColor();
+            llbPersonalDocuments.ResetBackColor();
+            llbSpecialNeeds.ResetBackColor();
+            llbLanguages.ResetBackColor();
+            llbPersonSkills.ResetBackColor();
+            llbPreviousExperience.ResetBackColor();
+            llbProgressReports.ResetBackColor();
+            llbLocalPersonnelData.ResetBackColor();
+            llbPersonalData.ResetBackColor();
+            llbProfessionalAreas.ResetBackColor();
+            llbPersonalAbilities.ResetBackColor();
         }
 
         #endregion

@@ -434,12 +434,12 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
         private DataTable GetPostCodeRegionListTable(TDBTransaction AReadTransaction, string ATableName)
         {
 #region ManualCode
-            // Used eg. in Report Gift Data Export for finding donors by address.
-            return DBAccess.GDBAccessObj.SelectDT(
-                "SELECT DISTINCT " + PPostcodeRegionTable.GetRegionDBName() + " FROM PUB." + PPostcodeRegionTable.GetTableDBName(),
-                ATableName,
-                AReadTransaction);
-#endregion ManualCode
+            // sort table by region as this is needed by autopopulated combobox to filter regions
+            StringCollection OrderFields = new StringCollection();
+            OrderFields.Add(PPostcodeRegionTable.GetRegionDBName());
+            
+            return PPostcodeRegionAccess.LoadAll(null, AReadTransaction, OrderFields, 0, 0);
+#endregion ManualCode        
         }
     }
 }

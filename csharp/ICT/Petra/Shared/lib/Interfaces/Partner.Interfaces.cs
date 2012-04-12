@@ -470,7 +470,7 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
         Boolean VerifyPartner(Int64 APartnerKey,
                               TPartnerClass[] AValidPartnerClasses,
-                              out bool APartnerExists,
+                              out System.Boolean APartnerExists,
                               out String APartnerShortName,
                               out TPartnerClass APartnerClass,
                               out Boolean AIsMergedPartner);
@@ -726,6 +726,10 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         PUnitTable GetConferenceUnits(System.String AConferenceName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
         PUnitTable GetOutreachUnits(System.String AOutreachName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
+        PUnitTable GetActiveFieldUnits(System.String AFieldName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
+        PUnitTable GetLedgerUnits(System.String ALedgerName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
         Int64 NewPartnerKey(Int64 AFieldPartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>

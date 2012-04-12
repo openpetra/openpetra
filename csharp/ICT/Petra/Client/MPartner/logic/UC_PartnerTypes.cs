@@ -57,8 +57,8 @@ namespace Ict.Petra.Client.MPartner
             "This Partner is linked to a Cost Centre ({0}) in the\r\nFinance Module.  Remove the link before deleting\r\n" +
             "this Special Type.");
         private static readonly string StrPartnerHasCostCentreLinkTitle = Catalog.GetString("Cannot remove Partner Type");
-        private static readonly string StrTheCodeIsNoLongerActive = Catalog.GetString(
-            "The code '{0}' is no longer active.\r\nDo you still want to use it?");
+// TODO        private static readonly string StrTheCodeIsNoLongerActive = Catalog.GetString(
+// TODO            "The code '{0}' is no longer active.\r\nDo you still want to use it?");
         private static readonly string StrSecurityPreventsRemoval = Catalog.GetString(
             "You are not allowed to remove this Partner Type from the Partner\r\n" +
             "because of the security warning you have just received.");
