@@ -56,8 +56,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             nudDiscountDays.Visible = false;        // There's currently no discounting, so this
             lblDiscountPercentage.Visible = false;  // just hides the associated controls.
             txtDiscountPercentage.Visible = false;
-            txtDetailAmount.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
-            txtExchangeRateToBase.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
         }
 
         private void LookupExchangeRate(Object sender, EventArgs e)
@@ -336,7 +336,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             DataColumn ValidationColumn;
 
-            // 'Date Due' must be in the future or today
             ValidationColumn = ARow.Table.Columns[AccountsPayableTDSAApDocumentTable.ColumnDocumentCodeId];
 
             FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
@@ -391,7 +390,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 && (txtDetailAmount.NumberValueDecimal.HasValue))
             {
                 txtDetailBaseAmount.NumberValueDecimal =
-                    txtDetailAmount.NumberValueDecimal * txtExchangeRateToBase.NumberValueDecimal.Value;
+                    txtDetailAmount.NumberValueDecimal / txtExchangeRateToBase.NumberValueDecimal.Value;
             }
         }
 
@@ -424,7 +423,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 decimal DetailAmount = Convert.ToDecimal(ARow.Amount);
-                DetailAmount *= ExchangeRateToBase;
+                DetailAmount /= ExchangeRateToBase;
                 txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
             }
         }

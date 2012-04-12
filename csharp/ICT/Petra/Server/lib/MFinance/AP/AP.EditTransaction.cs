@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             NewDocumentRow.PartnerKey = APartnerKey;
             NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
             NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
-            NewDocumentRow.LastDetailNumber = -1;
+            NewDocumentRow.LastDetailNumber = 0;
 
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
@@ -436,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             NewRow.ApDocumentId = AApDocumentId;
             NewRow.LedgerNumber = ALedgerNumber;
-            NewRow.DetailNumber = ALastDetailNumber;
+            NewRow.DetailNumber = ALastDetailNumber + 1;
             NewRow.Amount = AAmount;
             NewRow.CostCentreCode = AApSupplier_DefaultCostCentre;
             NewRow.AccountCode = AApSupplier_DefaultExpAccount;
