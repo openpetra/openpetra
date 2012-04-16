@@ -45,6 +45,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     public partial class TFrmAPPayment
     {
         AccountsPayableTDS FMainDS = null;
+        Int32 FLedgerNumber = -1;
+        ALedgerRow FLedgerRow = null;
         AccountsPayableTDSAApPaymentRow FSelectedPaymentRow = null;
         AccountsPayableTDSAApDocumentPaymentRow FSelectedDocumentRow = null;
 
@@ -53,6 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             rbtPayFullOutstandingAmount.CheckedChanged += new EventHandler(EnablePartialPayment);
             chkClaimDiscount.Visible = false;
+            txtExchangeRate.TextChanged += new EventHandler(UpdateTotalAmount);
         }
 
         private void ShowDataManual()
@@ -67,7 +70,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // grdDetails.AddTextColumn("Currency", FMainDS.AApDocumentPayment.ColumnCurrencyCode, 50); // I like this, but it's not required...
 
             grdPayments.AddTextColumn("Supplier", FMainDS.AApPayment.ColumnListLabel);
-
 
             FMainDS.AApDocumentPayment.DefaultView.AllowNew = false;
             FMainDS.AApDocumentPayment.DefaultView.AllowEdit = false;
@@ -84,6 +86,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 txtChequeNumber.Enabled = false;
                 txtCurrency.Enabled = false;
                 txtExchangeRate.Enabled = false;
+                txtExchangeRate.NumberValueDecimal = FMainDS.AApPayment[0].ExchangeRateToBase;
+
                 txtReference.Enabled = false;
                 txtTotalAmount.Enabled = false;
                 cmbBankAccount.Enabled = false;
@@ -116,6 +120,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public void AddDocumentsToPayment(AccountsPayableTDS ADataset, Int32 ALedgerNumber, List <Int32>ADocumentsToPay)
         {
             FMainDS = ADataset;
+            FLedgerNumber = ALedgerNumber;
 
             if (FMainDS.AApPayment == null)
             {
@@ -143,6 +148,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ShowDataManual();
         }
 
+        private void UpdateTotalAmount(Object sender, EventArgs e)
+        {
+            txtTotalAmount.NumberValueDecimal = FSelectedPaymentRow.Amount;
+            if (txtExchangeRate.NumberValueDecimal.HasValue)
+            {
+                FSelectedPaymentRow.ExchangeRateToBase = txtExchangeRate.NumberValueDecimal.Value;
+                txtBaseAmount.NumberValueDecimal = FSelectedPaymentRow.Amount / FSelectedPaymentRow.ExchangeRateToBase;
+            }
+        }
+
         private void CalculateTotalPayment()
         {
             FMainDS.AApDocumentPayment.DefaultView.RowFilter = String.Format("{0}={1}",
@@ -156,7 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FSelectedPaymentRow.Amount += DocPaymentRow.Amount;
             }
 
-            txtTotalAmount.Text = FSelectedPaymentRow.Amount.ToString("N2");
+            UpdateTotalAmount(null, null);
         }
 
         private void EnablePartialPayment(object sender, EventArgs e)
@@ -190,10 +205,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     AApSupplierRow supplier = TFrmAPMain.GetSupplier(FMainDS.AApSupplier, FSelectedPaymentRow.SupplierKey);
                     txtCurrency.Text = supplier.CurrencyCode;
+                    ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+                    FLedgerRow = Tbl[0];
+
+                    decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(supplier.CurrencyCode, FLedgerRow.BaseCurrency, DateTime.Now);
+                    txtExchangeRate.NumberValueDecimal = CurrentRate;
                 }
 
                 cmbBankAccount.SetSelectedString(FSelectedPaymentRow.BankAccount);
-                txtExchangeRate.Text = "1.0";
 
                 FMainDS.AApDocumentPayment.DefaultView.RowFilter = AccountsPayableTDSAApDocumentPaymentTable.GetPaymentNumberDBName() +
                                                                    " = " + FSelectedPaymentRow.PaymentNumber.ToString();
@@ -350,6 +369,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public void ReloadPayment(Int32 ALedgerNumber, Int32 APaymentNumber)
         {
             FMainDS = TRemote.MFinance.AP.WebConnectors.LoadAPPayment(ALedgerNumber, APaymentNumber);
+            FLedgerNumber = FMainDS.AApPayment[0].LedgerNumber;
             ShowDataManual();
         }
 

@@ -1009,6 +1009,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         }
 
         /// generated method from connector
+        public String CheckAccountsAndCostCentres(Int32 ALedgerNumber,
+                                                  List<String>AccountCodesCostCentres)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "CheckAccountsAndCostCentres", ";INT;STRING?;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.CheckAccountsAndCostCentres(ALedgerNumber, AccountCodesCostCentres);
+        }
+
+        /// generated method from connector
         public System.Boolean DeleteAPDocuments(Int32 ALedgerNumber,
                                                 List<Int32>ADeleteTheseDocs,
                                                 out TVerificationResultCollection AVerifications)

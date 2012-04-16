@@ -7,7 +7,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.AP.Data.AccountsPayableTDS
     FormType: browse
     Template: window
-    WindowWidth: 750
+    WindowWidth: 770
     WindowHeight: 600
     Actions:
         actMakePayment: {Label=&Make Payment, ActionClick=MakePayment}
@@ -33,7 +33,7 @@ RootNode:
             Controls: 
                 Row0: [txtCurrency, cmbPaymentType]
                 Row1: [txtTotalAmount, txtExchangeRate]
-                Row2: [cmbBankAccount]
+                Row2: [txtBaseAmount, cmbBankAccount]
                 Row3: [txtReference]
                 Row4: [chkPrintRemittance, chkPrintLabel]
                 Row5: [chkPrintCheque, txtChequeNumber]
@@ -48,6 +48,7 @@ RootNode:
         chkPrintCheque:
             CheckBoxAttachedLabel: right
         txtChequeNumber:
+            Width: 80
         grpDetails:
             Controls: [grdDetails, pnlDetails]
             Label: Invoices in this payment
@@ -67,18 +68,29 @@ RootNode:
             CheckBoxAttachedLabel: right
             ReadOnly: true
         txtAmountToPay:
-        txtCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
+        txtCurrency:
+            Label: Currency
+            ReadOnly: true
+            DataField: AApSupplier.CurrencyCode
+            Width: 80
         cmbPaymentType:
             OptionalValues: [=Cash, Cheque]
             # TODO: Transfer, Electronic
             Label: Payment T&ype
-            Width: 130
+            Width: 120
         txtReference: {Label=&Reference, ColSpan=2, DataField=AApPayment.Reference}
-        cmbBankAccount: {List=UserDefinedList, ColSpan=2}
+        cmbBankAccount:
+            List: UserDefinedList
         txtExchangeRate:
+            Format: Decimal(5)
         txtTotalAmount:
-            Label: &Amount
+            Label: Amount
             ReadOnly: true
+            Format: Decimal(2)
+        txtBaseAmount:
+            Label: Amount in Base
+            ReadOnly: true
+            Format: Decimal(2)
     Toolbar:
         tbbMakePayment:
         tbbPrintReport:
