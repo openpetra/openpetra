@@ -816,12 +816,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
-                        transaction.AmountInIntlCurrency = transaction.TransactionAmount * TExchangeRateTools.GetDailyExchangeRate(
-                            journal.TransactionCurrency,
+                        transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
+
+                        transaction.AmountInIntlCurrency = transaction.AmountInBaseCurrency * TExchangeRateTools.GetDailyExchangeRate(
+                            GLDataset.ALedger[0].BaseCurrency,
                             GLDataset.ALedger[0].IntlCurrency,
                             transaction.TransactionDate);
-
-                        transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
