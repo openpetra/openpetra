@@ -182,7 +182,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                 // prepare the default values once
                 // this is a new field. insert default value
-                string defaultValue = "?";
+                string defaultValue = "\\N";
 
                 if ((newField.strInitialValue != null) && (newField.strInitialValue.Length > 0))
                 {
@@ -277,6 +277,16 @@ namespace Ict.Tools.DataDumpPetra2
             if (ATableName == "a_ap_anal_attrib")
             {
                 return TFinanceAccountsPayableUpgrader.FixAPAnalAttrib(AColumnNames, ref ANewRow);
+            }
+
+            if (ATableName == "a_journal")
+            {
+                // date of entry must not be NULL
+                if (GetValue(AColumnNames, ANewRow, "a_date_of_entry_d") == "\\N")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "a_date_of_entry_d",
+                        GetValue(AColumnNames, ANewRow, "a_date_effective_d"));
+                }
             }
 
             // a_email_destination.a_conditional_value_c is sometimes null, but it is part of the primary key
