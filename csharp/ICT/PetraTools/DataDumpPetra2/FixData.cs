@@ -92,7 +92,9 @@ namespace Ict.Tools.DataDumpPetra2
         private static string FixValue(string AValue, TTableField AOldField)
         {
             if ((AOldField.strName == "s_created_by_c")
+                || (AOldField.strName == "s_merged_by_c")
                 || (AOldField.strName == "s_modified_by_c")
+                || (AOldField.strName == "m_manual_mod_by_c")
                 || (AOldField.strName == "p_owner_c")
                 || (AOldField.strName == "s_user_id_c")
                 || (AOldField.strName == "p_relation_name_c")
@@ -110,18 +112,37 @@ namespace Ict.Tools.DataDumpPetra2
             }
             else if (!AOldField.bNotNull
                      && ((AOldField.strName == "p_field_key_n")
+                         || (AOldField.strName == "p_partner_key_n")
+                         || (AOldField.strName == "p_contact_partner_key_n")
+                         || (AOldField.strName == "p_recipient_key_n")
+                         || (AOldField.strName == "a_recipient_ledger_number_n")
                          || (AOldField.strName == "pm_gen_app_poss_srv_unit_key_n")
+                         || (AOldField.strName == "a_ilt_processing_centre_n")
                          || (AOldField.strName == "pm_st_field_charged_n")
                          || (AOldField.strName == "pm_st_current_field_n")
                          || (AOldField.strName == "pm_st_option2_n")
                          || (AOldField.strName == "pm_st_option1_n")
                          || (AOldField.strName == "pm_st_confirmed_option_n")
                          || (AOldField.strName == "pm_office_recruited_by_n")
+                         || (AOldField.strName == "pm_home_office_n")
+                         || (AOldField.strName == "p_primary_office_n")
+                         || (AOldField.strName == "p_value_partner_key_n")
+                         || (AOldField.strName == "pm_receiving_field_office_n")
                          || (AOldField.strName == "a_key_ministry_key_n")
                          || (AOldField.strName == "pm_placement_partner_key_n")
+                         || (AOldField.strName == "pm_contact_partner_key_n")
                          ))
             {
                 if (AValue == "0")
+                {
+                    AValue = "\\N";
+                }
+            }
+            else if (!AOldField.bNotNull
+                     && ((AOldField.strName == "pt_qualification_area_name_c")
+                         ))
+            {
+                if (AValue == "")
                 {
                     AValue = "\\N";
                 }
