@@ -902,18 +902,19 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
         /// <summary>
         /// Check that the Account codes for an invoice can be used with the cost centres referenced.
-        /// 
+        ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AccountCodesCostCentres">list {Account"|"Cost Centre}</param>
         /// <returns>Empty string if there's no problems</returns>
         [RequireModulePermission("FINANCE-3")]
-        public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List<String> AccountCodesCostCentres)
+        public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List <String>AccountCodesCostCentres)
         {
             String ReportMsg = "";
+
             foreach (String AccCostCentre in AccountCodesCostCentres)
             {
-                Int32 BarPos = AccCostCentre.IndexOf ("|");
+                Int32 BarPos = AccCostCentre.IndexOf("|");
                 String AccountCode = AccCostCentre.Substring(0, BarPos);
                 AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AccountCode, null);
                 String ValidCcCombo = AccountTbl[0].ValidCcCombo.ToLower();
@@ -926,14 +927,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     String CostCentre = AccCostCentre.Substring(BarPos + 1);
                     ACostCentreTable CcTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, CostCentre, null);
                     String CcType = CcTbl[0].CostCentreType.ToLower();
+
                     if (ValidCcCombo != CcType)
                     {
-                        ReportMsg += String.Format (Catalog.GetString("Error: Account {0} cannot be used with cost centre {1}. Account requires a {2} cost centre."),
-                            AccountCode, CostCentre, ValidCcCombo);
+                        ReportMsg +=
+                            String.Format(Catalog.GetString(
+                                    "Error: Account {0} cannot be used with cost centre {1}. Account requires a {2} cost centre."),
+                                AccountCode, CostCentre, ValidCcCombo);
                         ReportMsg += Environment.NewLine;
                     }
                 }
             }
+
             return ReportMsg;
         }
 

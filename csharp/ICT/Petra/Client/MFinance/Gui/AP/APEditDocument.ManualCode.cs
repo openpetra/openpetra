@@ -466,12 +466,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <returns>false if any detail lines have incompatible cost centres.</returns>
         public static bool AllLinesAccountsOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
-            List<String> AccountCodesCostCentres = new List<string>();
+            List <String>AccountCodesCostCentres = new List <string>();
+
             foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
                 if (Row.ApDocumentId == AApDocument.ApDocumentId)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
                 {
                     String AccountCostCentre = Row.AccountCode + "|" + Row.CostCentreCode;
+
                     if (!AccountCodesCostCentres.Contains(AccountCostCentre))
                     {
                         AccountCodesCostCentres.Add(AccountCostCentre);
@@ -483,11 +485,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // The check is done on the server..
 
             String ReportMsg = TRemote.MFinance.AP.WebConnectors.CheckAccountsAndCostCentres(AApDocument.LedgerNumber, AccountCodesCostCentres);
+
             if (ReportMsg != "")
             {
                 MessageBox.Show(ReportMsg, Catalog.GetString("Invalid Account"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return false;
             }
+
             return true;
         }
 
@@ -546,7 +550,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 CanPost = false;
             }
-
 
             return CanPost;
         }

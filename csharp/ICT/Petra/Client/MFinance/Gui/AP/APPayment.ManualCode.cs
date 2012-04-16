@@ -151,6 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void UpdateTotalAmount(Object sender, EventArgs e)
         {
             txtTotalAmount.NumberValueDecimal = FSelectedPaymentRow.Amount;
+
             if (txtExchangeRate.NumberValueDecimal.HasValue)
             {
                 FSelectedPaymentRow.ExchangeRateToBase = txtExchangeRate.NumberValueDecimal.Value;

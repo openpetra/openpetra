@@ -182,7 +182,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 rowIndex = RowCount - 1;
             }
-            
+
             if ((rowIndex < 1) && (RowCount > 1))
             {
                 rowIndex = 1;

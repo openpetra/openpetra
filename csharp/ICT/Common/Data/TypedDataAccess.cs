@@ -2062,7 +2062,6 @@ namespace Ict.Common.Data
 
             short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
 
-
             for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount = (RowCount + 1))
             {
                 TheRow = ATable.Rows[RowCount];

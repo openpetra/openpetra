@@ -29,49 +29,48 @@ using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
+    public partial class TFrmAP_CurrentPayable
+    {
+        private Int32 FLedgerNumber;
 
-  public partial class TFrmAP_CurrentPayable
-  {
-      private Int32 FLedgerNumber;
+        /// <summary>
+        /// The main screen will call this on creation, to give me my Ledger Number.
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+            }
+        }
 
-      /// <summary>
-      /// The main screen will call this on creation, to give me my Ledger Number.
-      /// </summary>
-      public Int32 LedgerNumber
-      {
-          set
-          {
-              FLedgerNumber = value;
-          }
-      }
+        private static void DefineReportColumns(TRptCalculator ACalc)
+        {
+            int ColumnCounter = 0;
 
-      private static void DefineReportColumns(TRptCalculator ACalc)
-      {
-          int ColumnCounter = 0;
+            ACalc.AddParameter("param_calculation", "ApNumber", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "SupplierKey", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "SupplierName", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)5.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "DocCode", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "DueDate", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "Currency", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "CurAmount", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("param_calculation", "BaseAmount", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
+            ACalc.AddParameter("MaxDisplayColumns", ColumnCounter);
+        }
 
-          ACalc.AddParameter("param_calculation", "ApNumber", ColumnCounter);
-          ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
-          ACalc.AddParameter("param_calculation", "SupplierKey", ColumnCounter);
-          ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
-          ACalc.AddParameter("param_calculation", "SupplierName", ColumnCounter);
-          ACalc.AddParameter("ColumnWidth", (float)5.0, ColumnCounter++);
-          ACalc.AddParameter("param_calculation", "DocCode", ColumnCounter);
-          ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
-          ACalc.AddParameter("param_calculation", "DueDate", ColumnCounter);
-          ACalc.AddParameter("ColumnWidth", (float)4.0, ColumnCounter++);
-          ACalc.AddParameter("param_calculation", "Currency", ColumnCounter);
-          ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter++);
-          ACalc.AddParameter("param_calculation", "CurAmount", ColumnCounter);
-          ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
-          ACalc.AddParameter("param_calculation", "BaseAmount", ColumnCounter);
-          ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter++);
-          ACalc.AddParameter("MaxDisplayColumns", ColumnCounter);
-      }
-
-      private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
-      {
-          ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-          DefineReportColumns(ACalc);
-      }
-  }
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            DefineReportColumns(ACalc);
+        }
+    }
 }
