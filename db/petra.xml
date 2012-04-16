@@ -12454,6 +12454,10 @@
                 label="Transaction Currency"
                 help="Select a currency code to use for the journal transactions."
                 notnull="yes"/>
+    <tablefield name="a_base_currency_c"
+                type="varchar"
+                descr=""
+                format="X(8)"/>
     <tablefield name="a_exchange_rate_to_base_n"
                 type="number"
                 length="24"
@@ -12506,6 +12510,11 @@
     <foreignkey name="a_journal_fk4"
                 descr=""
                 thisFields="a_transaction_currency_c"
+                otherTable="a_currency"
+                otherFields="a_currency_code_c"/>
+    <foreignkey name="a_journal_fk5"
+                descr=""
+                thisFields="a_base_currency_c"
                 otherTable="a_currency"
                 otherFields="a_currency_code_c"/>
     <!-- Explicit Indexes on table a_journal  -->
