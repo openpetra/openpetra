@@ -357,7 +357,14 @@
             <copy file="${file}" tofile="${SQLitedb.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <if test="${string::ends-with(file, '.gz')}">
+                <gunzip src="${file}" dest="${tempdir + '/load.sql'}" />
+                <psql exe="${PostgreSQL.exe}" sqlfile="${tempdir + '/load.sql'}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <delete file="${tempdir + '/load.sql'}"/>
+            </if>
+            <if test="${not string::ends-with(file, '.gz')}">
+                <psql exe="${PostgreSQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
