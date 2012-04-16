@@ -12635,7 +12635,7 @@
     <tablefield name="a_narrative_c"
                 type="varchar"
                 descr=""
-                format="X(80)"
+                format="X(100)"
                 label="Narrative"
                 columnlabel="Narrative"
                 help="Enter a description of the transaction."/>
