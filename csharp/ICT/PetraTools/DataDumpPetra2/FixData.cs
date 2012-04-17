@@ -279,6 +279,8 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
+            RowCounter += FixData(ANewTable.strName, NewColumnNames, ref NewRow, AWriter);
+
             return RowCounter;
         }
 
@@ -477,7 +479,7 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
-            // pm_personal_data: move values from the p_person table for
+            // pm_personal_data: move values from the p_person table for believer info
             if (ATableName == "pm_personal_data")
             {
                 if (PPersonBelieverInfo == null)
@@ -521,6 +523,64 @@ namespace Ict.Tools.DataDumpPetra2
             }
 
             return true;
+        }
+
+        private static int FixData(string ATableName, StringCollection AColumnNames, ref string[] ANewRow, StreamWriter AWriter)
+        {
+            int RowCounter = 0;
+
+            if (ATableName == "a_budget_revision")
+            {
+                // in Petra 2.x, there never has been a record in this table.
+                // so if there is a budget, we need to create a revision 0 for each year
+
+                // load the file a_budget.d.gz so that we can access the values for each person
+                TTable budgetTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("a_budget");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "a_budget.d.gz",
+                    budgetTableOld.grpTableField.Count);
+
+                StringCollection BudgetColumnNames = GetColumnNames(budgetTableOld);
+
+                List <string>Revisions = new List <string>();
+
+                string LedgerNumber = string.Empty;
+                string YearNumber = string.Empty;
+                SetValue(AColumnNames, ref ANewRow, "a_revision_i", "0");
+                SetValue(AColumnNames, ref ANewRow, "a_description_c", "default");
+                SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modification_id_c", "\\N");
+
+                while (true)
+                {
+                    string[] OldRow = Parser.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+
+                    LedgerNumber = GetValue(BudgetColumnNames, OldRow, "a_ledger_number_i");
+                    YearNumber = GetValue(BudgetColumnNames, OldRow, "a_year_i");
+
+                    if (!Revisions.Contains(LedgerNumber + "_" + YearNumber))
+                    {
+                        SetValue(AColumnNames, ref ANewRow, "a_ledger_number_i", LedgerNumber);
+                        SetValue(AColumnNames, ref ANewRow, "a_year_i", YearNumber);
+
+                        AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        RowCounter++;
+
+                        Revisions.Add(LedgerNumber + "_" + YearNumber);
+                    }
+                }
+            }
+
+            return RowCounter;
         }
     }
 }
