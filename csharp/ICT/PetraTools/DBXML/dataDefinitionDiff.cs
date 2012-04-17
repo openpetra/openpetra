@@ -47,8 +47,15 @@ namespace Ict.Tools.DBXML
         {
             string newname = oldname;
 
-            // if (oldname = 'um_job_ability') then
-            // newname := 'um_job_requirement';
+            if (oldname == "pt_om_contact")
+            {
+                return "pt_contact";
+            }
+            else if (oldname == "pt_camp_preference_level")
+            {
+                return "pt_outreach_preference_level";
+            }
+
             return newname;
         }
 
@@ -61,8 +68,15 @@ namespace Ict.Tools.DBXML
         {
             string oldname = newname;
 
-            // if (newname = 'um_job_requirement') then
-            // oldname := 'um_job_ability';
+            if (newname == "pt_contact")
+            {
+                return "pt_om_contact";
+            }
+            else if (newname == "pt_outreach_preference_level")
+            {
+                return "pt_camp_preference_level";
+            }
+
             return oldname;
         }
 

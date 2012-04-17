@@ -101,6 +101,8 @@ namespace Ict.Tools.DataDumpPetra2
                      || (AOldField.strName == "m_manual_mod_by_c")
                      || (AOldField.strName == "p_country_of_issue_c")
                      || (AOldField.strName == "a_transaction_currency_c")
+                     || (AOldField.strName == "pm_st_leadership_rating_c")
+                     || (AOldField.strName == "pm_passport_details_type_c")
                      || (AOldField.strName == "p_marital_status_c")
                      || (AOldField.strName == "p_owner_c")
                      || (AOldField.strName == "s_user_id_c")
@@ -118,7 +120,7 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
             else if (!AOldField.bNotNull
-                     && ((AOldField.strName == "p_field_key_n")
+                     && ((AOldField.strName == "p_om_field_key_n")
                          || (AOldField.strName == "p_bank_key_n")
                          || (AOldField.strName == "p_partner_key_n")
                          || (AOldField.strName == "p_contact_partner_key_n")

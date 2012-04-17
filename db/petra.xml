@@ -14728,7 +14728,9 @@
                 format="X(1)"
                 label="Leadership Rating"
                 columnlabel="Leadership Rating"
-                help="Indicates the Leadership Rating."/>
+                help="Indicates the Leadership Rating."
+                notnull="yes"
+                initial=""/>
     <tablefield name="pm_confirmed_option_code_c"
                 type="varchar"
                 descr="Indicates the outreach code of the confirmed option."
