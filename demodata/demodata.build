@@ -26,7 +26,7 @@
     </exec>
 </target>
 
-<target name="importDemodata" depends="init">
+<target name="importDemodata" depends="init, initConfigFiles">
     <!-- requires a server to be started that we can connect to and upload our data -->
     <ExecDotNet program="${dir.bin}/Ict.Testing.SampleDataConstructor.exe" 
         commandline="-C:&quot;${dir.etc}/TestServer.config&quot; -dir.data.generated:&quot;${dir.root}/demodata/generated&quot;"
