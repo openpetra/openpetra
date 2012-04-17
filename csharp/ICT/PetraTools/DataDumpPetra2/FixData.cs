@@ -283,6 +283,7 @@ namespace Ict.Tools.DataDumpPetra2
         }
 
         static SortedList <string, string[]>PPersonBelieverInfo = null;
+        static string FPreviousLoginTime = string.Empty;
 
         /// <summary>
         /// fix data that would cause problems for PostgreSQL constraints
@@ -322,6 +323,17 @@ namespace Ict.Tools.DataDumpPetra2
             if (ATableName == "s_login")
             {
                 SetValue(AColumnNames, ref ANewRow, "s_login_process_id_r", TSequenceWriter.GetNextSequenceValue("seq_login_process_id").ToString());
+
+                string LoginTime = GetValue(AColumnNames, ANewRow, "s_login_time_i");
+
+                while (FPreviousLoginTime == LoginTime)
+                {
+                    int intLoginTime = Convert.ToInt32(LoginTime);
+                    LoginTime = (intLoginTime + 1).ToString();
+                    SetValue(AColumnNames, ref ANewRow, "s_login_time_i", LoginTime);
+                }
+
+                FPreviousLoginTime = LoginTime;
             }
 
             if (ATableName == "a_journal")
