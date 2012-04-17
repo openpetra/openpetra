@@ -394,7 +394,13 @@ namespace Ict.Tools.DataDumpPetra2
                                 GZipInputStream gzipStream = new GZipInputStream(fs);
                                 StreamReader sr = new StreamReader(gzipStream);
 
-                                sw.Write(sr.ReadToEnd());
+                                char[] block = new char[100000];
+                                int count = 0;
+
+                                while ((count = sr.ReadBlock(block, 0, block.Length)) != 0)
+                                {
+                                    sw.Write(block, 0, count);
+                                }
 
                                 sr.Close();
                             }

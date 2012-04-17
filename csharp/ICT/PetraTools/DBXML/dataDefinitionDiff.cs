@@ -101,6 +101,8 @@ namespace Ict.Tools.DBXML
                     NewFieldNames = new List <TRenamedField>();
                     NewFieldNames.Add(new TRenamedField("p_acquisition", "p_recruiting_mission_l", "p_recruiting_effort_l"));
                     NewFieldNames.Add(new TRenamedField("a_ap_anal_attrib", "a_ap_number_i", "a_ap_document_id_i"));
+                    NewFieldNames.Add(new TRenamedField("a_ap_document_detail", "a_ap_number_i", "a_ap_document_id_i"));
+                    NewFieldNames.Add(new TRenamedField("a_ap_document_payment", "a_ap_number_i", "a_ap_document_id_i"));
                     NewFieldNames.Add(new TRenamedField("p_partner", "p_caleb_id_c", "p_intranet_id_c"));
                     NewFieldNames.Add(new TRenamedField("p_unit", "p_campaign_code_c", "p_outreach_code_c"));
                     NewFieldNames.Add(new TRenamedField("p_unit", "p_campaign_cost_n", "p_outreach_cost_n"));

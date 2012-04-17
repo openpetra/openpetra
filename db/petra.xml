@@ -1125,6 +1125,10 @@
          label="Login"
          dumpname="s_login"
          group="sysman">
+    <tablefield name="s_login_process_id_r"
+                type="integer"
+                sequence="seq_login_process_id"
+                descr="Petra process ID; this is a unique key"/>
     <tablefield name="s_user_id_c"
                 type="varchar"
                 descr="This is the system user id. Each user of the system is allocated one."
@@ -1164,17 +1168,10 @@
                 descr="The date a user logged out."
                 format="99/99/9999"
                 label="Logout Date"/>
-    <tablefield name="s_login_process_id_r"
-                type="integer"
-                sequence="seq_login_process_id"
-                descr="Petra process ID; this is a unique key"/>
     <!-- Constraints on table s_login -->
     <primarykey name="s_login_pk"
                 descr=""
                 thisFields="s_login_process_id_r"/>
-    <uniquekey name="s_login_uk"
-                descr=""
-                thisFields="s_user_id_c, s_login_date_d, s_login_time_i"/>
     <!-- Explicit Indexes on table s_login  -->
     <index name="s_login_date"
            descr=""

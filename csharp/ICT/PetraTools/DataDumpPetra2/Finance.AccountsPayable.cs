@@ -109,6 +109,12 @@ namespace Ict.Tools.DataDumpPetra2
                 APDocumentNumberToId.Add(LedgerNumberAndAPNumber, newValue);
             }
 
+            if (GetValue(AColumnNames, ANewRow, "a_date_issued_d") == "\\N")
+            {
+                SetValue(AColumnNames, ref ANewRow, "a_date_issued_d",
+                    GetValue(AColumnNames, ANewRow, "a_date_entered_d"));
+            }
+
             return true;
         }
 
@@ -121,6 +127,62 @@ namespace Ict.Tools.DataDumpPetra2
             LoadAPDocumentNumberToId();
 
             // a_ap_anal_attrib does not contain a_ap_number_i anymore, but the value has been copied into a_ap_document_id_i
+            string LedgerNumberAndAPNumber =
+                GetValue(AColumnNames, ANewRow, "a_ledger_number_i") + "_" +
+                GetValue(AColumnNames, ANewRow, "a_ap_document_id_i");
+
+            if (APDocumentNumberToId.ContainsKey(LedgerNumberAndAPNumber))
+            {
+                SetValue(AColumnNames, ref ANewRow, "a_ap_document_id_i", APDocumentNumberToId[LedgerNumberAndAPNumber].ToString());
+            }
+            else
+            {
+                long newValue = TSequenceWriter.GetNextSequenceValue("seq_ap_document");
+
+                SetValue(AColumnNames, ref ANewRow, "a_ap_document_id_i", newValue.ToString());
+                APDocumentNumberToId.Add(LedgerNumberAndAPNumber, newValue);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// fixing table a_ap_document_detail
+        /// </summary>
+        public static bool FixAPDocumentDetail(StringCollection AColumnNames, ref string[] ANewRow)
+        {
+            TSequenceWriter.LoadSequences();
+            LoadAPDocumentNumberToId();
+
+            // a_ap_document_detail does not contain a_ap_number_i anymore, but the value has been copied into a_ap_document_id_i
+            string LedgerNumberAndAPNumber =
+                GetValue(AColumnNames, ANewRow, "a_ledger_number_i") + "_" +
+                GetValue(AColumnNames, ANewRow, "a_ap_document_id_i");
+
+            if (APDocumentNumberToId.ContainsKey(LedgerNumberAndAPNumber))
+            {
+                SetValue(AColumnNames, ref ANewRow, "a_ap_document_id_i", APDocumentNumberToId[LedgerNumberAndAPNumber].ToString());
+            }
+            else
+            {
+                long newValue = TSequenceWriter.GetNextSequenceValue("seq_ap_document");
+
+                SetValue(AColumnNames, ref ANewRow, "a_ap_document_id_i", newValue.ToString());
+                APDocumentNumberToId.Add(LedgerNumberAndAPNumber, newValue);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// fixing table a_ap_document_payment
+        /// </summary>
+        public static bool FixAPDocumentPayment(StringCollection AColumnNames, ref string[] ANewRow)
+        {
+            TSequenceWriter.LoadSequences();
+            LoadAPDocumentNumberToId();
+
+            // a_ap_document_payment does not contain a_ap_number_i anymore, but the value has been copied into a_ap_document_id_i
             string LedgerNumberAndAPNumber =
                 GetValue(AColumnNames, ANewRow, "a_ledger_number_i") + "_" +
                 GetValue(AColumnNames, ANewRow, "a_ap_document_id_i");

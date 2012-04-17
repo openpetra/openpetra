@@ -91,14 +91,21 @@ namespace Ict.Tools.DataDumpPetra2
 
         private static string FixValue(string AValue, TTableField AOldField)
         {
-            if ((AOldField.strName == "s_created_by_c")
-                || (AOldField.strName == "s_merged_by_c")
-                || (AOldField.strName == "s_modified_by_c")
-                || (AOldField.strName == "m_manual_mod_by_c")
-                || (AOldField.strName == "p_owner_c")
-                || (AOldField.strName == "s_user_id_c")
-                || (AOldField.strName == "p_relation_name_c")
-                || AOldField.strName.EndsWith("_code_c"))
+            if (AOldField.strName == "s_modification_id_c")
+            {
+                AValue = "\\N";
+            }
+            else if ((AOldField.strName == "s_created_by_c")
+                     || (AOldField.strName == "s_merged_by_c")
+                     || (AOldField.strName == "s_modified_by_c")
+                     || (AOldField.strName == "m_manual_mod_by_c")
+                     || (AOldField.strName == "p_country_of_issue_c")
+                     || (AOldField.strName == "a_transaction_currency_c")
+                     || (AOldField.strName == "p_marital_status_c")
+                     || (AOldField.strName == "p_owner_c")
+                     || (AOldField.strName == "s_user_id_c")
+                     || (AOldField.strName == "p_relation_name_c")
+                     || AOldField.strName.EndsWith("_code_c"))
             {
                 AValue = AValue.Trim().ToUpper();
 
@@ -112,6 +119,7 @@ namespace Ict.Tools.DataDumpPetra2
             }
             else if (!AOldField.bNotNull
                      && ((AOldField.strName == "p_field_key_n")
+                         || (AOldField.strName == "p_bank_key_n")
                          || (AOldField.strName == "p_partner_key_n")
                          || (AOldField.strName == "p_contact_partner_key_n")
                          || (AOldField.strName == "p_recipient_key_n")
@@ -140,6 +148,7 @@ namespace Ict.Tools.DataDumpPetra2
             }
             else if (!AOldField.bNotNull
                      && ((AOldField.strName == "pt_qualification_area_name_c")
+                         || (AOldField.strName == "pm_passport_details_type_c")
                          ))
             {
                 if (AValue == "")
@@ -300,6 +309,21 @@ namespace Ict.Tools.DataDumpPetra2
                 return TFinanceAccountsPayableUpgrader.FixAPAnalAttrib(AColumnNames, ref ANewRow);
             }
 
+            if (ATableName == "a_ap_document_detail")
+            {
+                return TFinanceAccountsPayableUpgrader.FixAPDocumentDetail(AColumnNames, ref ANewRow);
+            }
+
+            if (ATableName == "a_ap_document_payment")
+            {
+                return TFinanceAccountsPayableUpgrader.FixAPDocumentPayment(AColumnNames, ref ANewRow);
+            }
+
+            if (ATableName == "s_login")
+            {
+                SetValue(AColumnNames, ref ANewRow, "s_login_process_id_r", TSequenceWriter.GetNextSequenceValue("seq_login_process_id").ToString());
+            }
+
             if (ATableName == "a_journal")
             {
                 // date of entry must not be NULL
@@ -405,12 +429,18 @@ namespace Ict.Tools.DataDumpPetra2
             // if target field is null or 0, use the home office partner key
             if (ATableName == "pm_staff_data")
             {
-                string val = GetValue(AColumnNames, ANewRow, "pm_receiving_field_n");
+                string ReceivingField = GetValue(AColumnNames, ANewRow, "pm_receiving_field_n");
+                string HomeOffice = GetValue(AColumnNames, ANewRow, "pm_home_office_n");
 
-                if ((val == "0") || (val.Length == 0) || (val == "\\N"))
+                if ((HomeOffice == "0") || (HomeOffice.Length == 0) || (HomeOffice == "\\N"))
                 {
-                    SetValue(AColumnNames, ref ANewRow, "pm_receiving_field_n",
-                        GetValue(AColumnNames, ANewRow, "pm_home_office_n"));
+                    HomeOffice = GetValue(AColumnNames, ANewRow, "pm_office_recruited_by_n");
+                    SetValue(AColumnNames, ref ANewRow, "pm_home_office_n", HomeOffice);
+                }
+
+                if ((ReceivingField == "0") || (ReceivingField.Length == 0) || (ReceivingField == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pm_receiving_field_n", HomeOffice);
                 }
             }
 
