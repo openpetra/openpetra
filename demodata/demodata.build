@@ -20,6 +20,8 @@
           workingdir="${dir.incdir.cfg + '/benerator'}">
         <environment>
             <variable name="PATH" value="${path::get-directory-name(external.Java)}"/>
+            <variable name="BENERATOR_HOME" value="${path::get-directory-name(external.Benerator)}/.."/>
+            <variable name="JAVA_HOME" value="${path::get-directory-name(external.Java)}/.."/>
         </environment>
     </exec>
 </target>
