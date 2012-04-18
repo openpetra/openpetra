@@ -161,7 +161,9 @@ namespace Ict.Tools.DataDumpPetra2
                     dumpFile + ".d.gz",
                     oldTable.grpTableField.Count);
 
-                FileStream outStream = File.Create(dumpFile + ".sql.gz");
+                FileStream outStream = File.Create(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                    newTable.strName + ".sql.gz");
                 Stream gzoStream = new GZipOutputStream(outStream);
                 StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
 

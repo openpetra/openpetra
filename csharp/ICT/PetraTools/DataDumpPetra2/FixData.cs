@@ -89,29 +89,29 @@ namespace Ict.Tools.DataDumpPetra2
             return ColumnNames;
         }
 
-        private static string FixValue(string AValue, TTableField AOldField)
+        private static string FixValue(string AValue, TTableField ANewField)
         {
-            if (AOldField.strName == "s_modification_id_c")
+            if (ANewField.strName == "s_modification_id_c")
             {
                 AValue = "\\N";
             }
-            else if ((AOldField.strName == "s_created_by_c")
-                     || (AOldField.strName == "s_merged_by_c")
-                     || (AOldField.strName == "s_modified_by_c")
-                     || (AOldField.strName == "m_manual_mod_by_c")
-                     || (AOldField.strName == "p_country_of_issue_c")
-                     || (AOldField.strName == "a_transaction_currency_c")
-                     || (AOldField.strName == "pm_st_leadership_rating_c")
-                     || (AOldField.strName == "pm_passport_details_type_c")
-                     || (AOldField.strName == "p_marital_status_c")
-                     || (AOldField.strName == "p_owner_c")
-                     || (AOldField.strName == "s_user_id_c")
-                     || (AOldField.strName == "p_relation_name_c")
-                     || AOldField.strName.EndsWith("_code_c"))
+            else if ((ANewField.strName == "s_created_by_c")
+                     || (ANewField.strName == "s_merged_by_c")
+                     || (ANewField.strName == "s_modified_by_c")
+                     || (ANewField.strName == "m_manual_mod_by_c")
+                     || (ANewField.strName == "p_country_of_issue_c")
+                     || (ANewField.strName == "a_transaction_currency_c")
+                     || (ANewField.strName == "pm_st_leadership_rating_c")
+                     || (ANewField.strName == "pm_passport_details_type_c")
+                     || (ANewField.strName == "p_marital_status_c")
+                     || (ANewField.strName == "p_owner_c")
+                     || (ANewField.strName == "s_user_id_c")
+                     || (ANewField.strName == "p_relation_name_c")
+                     || ANewField.strName.EndsWith("_code_c"))
             {
                 AValue = AValue.Trim().ToUpper();
 
-                if (!AOldField.bNotNull)
+                if (!ANewField.bNotNull)
                 {
                     if (AValue.Length == 0)
                     {
@@ -119,28 +119,28 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                 }
             }
-            else if (!AOldField.bNotNull
-                     && ((AOldField.strName == "p_om_field_key_n")
-                         || (AOldField.strName == "p_bank_key_n")
-                         || (AOldField.strName == "p_partner_key_n")
-                         || (AOldField.strName == "p_contact_partner_key_n")
-                         || (AOldField.strName == "p_recipient_key_n")
-                         || (AOldField.strName == "a_recipient_ledger_number_n")
-                         || (AOldField.strName == "pm_gen_app_poss_srv_unit_key_n")
-                         || (AOldField.strName == "a_ilt_processing_centre_n")
-                         || (AOldField.strName == "pm_st_field_charged_n")
-                         || (AOldField.strName == "pm_st_current_field_n")
-                         || (AOldField.strName == "pm_st_option2_n")
-                         || (AOldField.strName == "pm_st_option1_n")
-                         || (AOldField.strName == "pm_st_confirmed_option_n")
-                         || (AOldField.strName == "pm_office_recruited_by_n")
-                         || (AOldField.strName == "pm_home_office_n")
-                         || (AOldField.strName == "p_primary_office_n")
-                         || (AOldField.strName == "p_value_partner_key_n")
-                         || (AOldField.strName == "pm_receiving_field_office_n")
-                         || (AOldField.strName == "a_key_ministry_key_n")
-                         || (AOldField.strName == "pm_placement_partner_key_n")
-                         || (AOldField.strName == "pm_contact_partner_key_n")
+            else if (!ANewField.bNotNull
+                     && ((ANewField.strName == "p_field_key_n")
+                         || (ANewField.strName == "p_bank_key_n")
+                         || (ANewField.strName == "p_partner_key_n")
+                         || (ANewField.strName == "p_contact_partner_key_n")
+                         || (ANewField.strName == "p_recipient_key_n")
+                         || (ANewField.strName == "a_recipient_ledger_number_n")
+                         || (ANewField.strName == "pm_gen_app_poss_srv_unit_key_n")
+                         || (ANewField.strName == "a_ilt_processing_centre_n")
+                         || (ANewField.strName == "pm_st_field_charged_n")
+                         || (ANewField.strName == "pm_st_current_field_n")
+                         || (ANewField.strName == "pm_st_option2_n")
+                         || (ANewField.strName == "pm_st_option1_n")
+                         || (ANewField.strName == "pm_st_confirmed_option_n")
+                         || (ANewField.strName == "pm_office_recruited_by_n")
+                         || (ANewField.strName == "pm_home_office_n")
+                         || (ANewField.strName == "p_primary_office_n")
+                         || (ANewField.strName == "p_value_partner_key_n")
+                         || (ANewField.strName == "pm_receiving_field_office_n")
+                         || (ANewField.strName == "a_key_ministry_key_n")
+                         || (ANewField.strName == "pm_placement_partner_key_n")
+                         || (ANewField.strName == "pm_contact_partner_key_n")
                          ))
             {
                 if (AValue == "0")
@@ -148,9 +148,9 @@ namespace Ict.Tools.DataDumpPetra2
                     AValue = "\\N";
                 }
             }
-            else if (!AOldField.bNotNull
-                     && ((AOldField.strName == "pt_qualification_area_name_c")
-                         || (AOldField.strName == "pm_passport_details_type_c")
+            else if (!ANewField.bNotNull
+                     && ((ANewField.strName == "pt_qualification_area_name_c")
+                         || (ANewField.strName == "pm_passport_details_type_c")
                          ))
             {
                 if (AValue == "")
@@ -158,21 +158,21 @@ namespace Ict.Tools.DataDumpPetra2
                     AValue = "\\N";
                 }
             }
-            else if ((AValue.Length == 0) && AOldField.strType.Equals("VARCHAR", StringComparison.OrdinalIgnoreCase) && !AOldField.bNotNull)
+            else if ((AValue.Length == 0) && ANewField.strType.Equals("VARCHAR", StringComparison.OrdinalIgnoreCase) && !ANewField.bNotNull)
             {
                 AValue = "\\N";
             }
-            else if (AOldField.strType.Equals("BIT", StringComparison.OrdinalIgnoreCase))
+            else if (ANewField.strType.Equals("BIT", StringComparison.OrdinalIgnoreCase))
             {
                 AValue = (AValue == "yes") ? "1" : "0";
             }
-            else if (AOldField.strType.Equals("DATE", StringComparison.OrdinalIgnoreCase))
+            else if (ANewField.strType.Equals("DATE", StringComparison.OrdinalIgnoreCase))
             {
                 if ((AValue.Length > 0) && (AValue != "\\N"))
                 {
                     if (AValue.Length != 10)
                     {
-                        TLogging.Log("WARNING: Invalid date: " + AOldField.strName + " " + AValue);
+                        TLogging.Log("WARNING: Invalid date: " + ANewField.strName + " " + AValue);
                         AValue = "\\N";
                     }
                     else
@@ -264,7 +264,7 @@ namespace Ict.Tools.DataDumpPetra2
                     {
                         string value = GetValue(OldColumnNames, OldRow, oldField.strName);
 
-                        value = FixValue(value, oldField);
+                        value = FixValue(value, newField);
 
                         SetValue(NewColumnNames, ref NewRow, newField.strName, value);
                     }
