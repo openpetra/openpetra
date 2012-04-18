@@ -251,8 +251,11 @@ namespace Ict.Petra.Shared.MFinance
         /// standard account
         public const string INTERNAL_XFER_ACCT = "9800";
 
-        /// Cost Centres
-        public const string FOREIGN_CC_TYPE = "FOREIGN";
+        /// Cost Centres Types
+        public const string FOREIGN_CC_TYPE = "Foreign";
+
+        /// Cost Centres Types
+        public const string LOCAL_CC_TYPE = "Local";
 
         /// admin fee accounts.
         public const string FUND_TRANSFER_INCOME_ACC = "3300";

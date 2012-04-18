@@ -114,6 +114,17 @@ partner -> partner-location -> location
     <property name='distribution' value='random'    />
 </bean>
 
+<!-- field -->
+<generate name="the_field" type="Field" count="${fields_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/fields.csv')">
+    <id name="id" type="int" generator="IncrementalIdGenerator" />
+	<attribute name="Name" type="string" pattern="(HK|GY|GT|IE|GN|ID|IQ|KH|LB|MD|MR|NG|PR|RW|SV|UY|TN|UZ|VE|ZW)" unique="true"/>
+    <!-- key ministries per field -->
+    <generate type="KeyMinistry" count="${keyminsperfield_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/keymins.csv')">
+        <attribute name="name" type="string" pattern="(Feed the|Heal the|Save the|Rescue the|Free the) (Forest|Dolphins|Poor|Hungry|Injured|Addicted|Disadvantaged)" unique="true"/>
+        <reference name="field" script="the_field.id"/>
+    </generate>
+</generate>
+
 <generate type="Donations" count="${donations_count}" 
 	consumer="new CSVEntityExporter(uri='${dir.data.output}/donations.csv')">
 

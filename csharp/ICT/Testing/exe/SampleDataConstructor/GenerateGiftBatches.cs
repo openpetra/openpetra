@@ -63,7 +63,7 @@ namespace Ict.Testing.SampleDataConstructor
                 throw new Exception(VerificationResult.BuildVerificationResultString());
             }
 
-            // TODO post all gift batches???
+            // TODO post all gift batches??? apart from last open period?
         }
 
         private static SortedList <DateTime, List <XmlNode>>SortGiftsByDate(string AInputBeneratorFile)
@@ -153,6 +153,8 @@ namespace Ict.Testing.SampleDataConstructor
                         FLedgerNumber,
                         GlEffectiveDate);
 
+                    giftBatch.BatchDescription = "Benerator Batch for " + GlEffectiveDate.ToShortDateString();
+
                     foreach (XmlNode RecordNode in AGiftsPerDate[GlEffectiveDate])
                     {
                         AGiftRow gift = MainDS.AGift.NewRowTyped();
@@ -235,8 +237,11 @@ namespace Ict.Testing.SampleDataConstructor
                         }
                     }
 
-                    TLogging.Log(
-                        GlEffectiveDate.ToShortDateString() + " " + giftBatch.LastGiftNumber.ToString() + " " + KeyMinKeys.Rows.Count.ToString());
+                    if (TLogging.DebugLevel > 0)
+                    {
+                        TLogging.Log(
+                            GlEffectiveDate.ToShortDateString() + " " + giftBatch.LastGiftNumber.ToString());
+                    }
                 }
             }
             finally
