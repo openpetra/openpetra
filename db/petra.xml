@@ -10954,6 +10954,7 @@
                 descr="gift batch description"
                 format="X(40)"
                 label="Batch description"
+                notnull="yes"
                 help="Enter a description for the gift batch."/>
     <tablefield name="s_modification_date_d"
                 type="date"
