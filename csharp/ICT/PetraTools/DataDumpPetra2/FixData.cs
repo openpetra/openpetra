@@ -392,8 +392,15 @@ namespace Ict.Tools.DataDumpPetra2
             // fix foreign key, remove space
             if (ATableName == "p_subscription")
             {
-                if (GetValue(AColumnNames, ANewRow, "p_reason_subs_given_code_c") == " FREE")
+                string value = GetValue(AColumnNames, ANewRow, "p_reason_subs_given_code_c");
+
+                if (value == " FREE")
                 {
+                    SetValue(AColumnNames, ref ANewRow, "p_reason_subs_given_code_c", "FREE");
+                }
+                else if (value.Length == 0)
+                {
+                    // p_reason_subs_given_code_c must not be NULL
                     SetValue(AColumnNames, ref ANewRow, "p_reason_subs_given_code_c", "FREE");
                 }
             }
@@ -478,6 +485,14 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     SetValue(AColumnNames, ref ANewRow, "pm_st_field_charged_n",
                         GetValue(AColumnNames, ANewRow, "pm_registration_office_n"));
+                }
+            }
+
+            if (ATableName == "um_job_qualification")
+            {
+                if (GetValue(AColumnNames, ANewRow, "pt_qualification_area_name_c") == "")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_qualification_area_name_c", "OTHER");
                 }
             }
 
