@@ -959,9 +959,12 @@ namespace Ict.Common.Verification
         /// <see cref="System.Data.DataColumn" />.  (Default: null.)</param>
         /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
         /// where it is placed on as identical ResultContexts. (Default: false.)</param>
+        /// <param name="ATreatAllResultTextsAsIdentical">Set to true to ignore a comparison of the ResultTexts.
+        /// You would only do this if mutliple forms use the same verification on a single control in different contexts.
+        /// The text is then overridden at the form level.  (Default: false.)</param>
         /// <returns>True if the <see cref="TVerificationResult" /> got added, otherwise false.</returns>
         public bool AddOrRemove(TVerificationResult AVerificationResult, DataColumn AResultColumn, object AResultContext = null,
-            bool ATreatUserControlAndFormContextsAsIdentical = false)
+            bool ATreatUserControlAndFormContextsAsIdentical = false, bool ATreatAllResultTextsAsIdentical = false)
         {
             List <TScreenVerificationResult>si = FindAllBy(AResultColumn);
             bool IdenticalVResultFound = false;
@@ -979,7 +982,7 @@ namespace Ict.Common.Verification
                     foreach (TScreenVerificationResult SingleEntry in si)
                     {
                         if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult, false,
-                                ATreatUserControlAndFormContextsAsIdentical))
+                                ATreatUserControlAndFormContextsAsIdentical, ATreatAllResultTextsAsIdentical))
                         {
                             IdenticalVResultFound = true;
                             break;
@@ -1027,16 +1030,19 @@ namespace Ict.Common.Verification
         /// the validation was run. Only used if the <see cref="AddOrRemove" /> Methods is called.</param>
         /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
         /// where it is placed on as identical ResultContexts. (Default: false.)</param>
+        /// <param name="ATreatAllResultTextsAsIdentical">Set to true to ignore a comparison of the ResultTexts.
+        /// You would only do this if mutliple forms use the same verification on a single control in different contexts.
+        /// The text is then overridden at the form level.  (Default: false.)</param>
         /// <returns>True if the <see cref="TVerificationResult" /> got added, otherwise false.</returns>
         public bool Auto_Add_Or_AddOrRemove(object AContext, TVerificationResult AVerificationResult, DataColumn AValidationColumn,
-            bool ATreatUserControlAndFormContextsAsIdentical = false)
+            bool ATreatUserControlAndFormContextsAsIdentical = false, bool ATreatAllResultTextsAsIdentical = false)
         {
             bool ReturnValue = false;
 
             if ((AContext is System.Windows.Forms.Form)
                 || (AContext is System.Windows.Forms.UserControl))
             {
-                ReturnValue = this.AddOrRemove(AVerificationResult, AValidationColumn, null, ATreatUserControlAndFormContextsAsIdentical);
+                ReturnValue = this.AddOrRemove(AVerificationResult, AValidationColumn, null, ATreatUserControlAndFormContextsAsIdentical, ATreatAllResultTextsAsIdentical);
             }
             else
             {
@@ -1339,10 +1345,14 @@ namespace Ict.Common.Verification
         /// compare what a call of the .ToString() Method on the two object yields. (Default: false.)</param>
         /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
         /// where it is placed on as identical ResultContexts. (Default: false.)</param>
+        /// <param name="ATreatAllResultTextsAsIdentical">Set to true to ignore a comparison of the ResultTexts.
+        /// You would only do this if mutliple forms use the same verification on a single control in different contexts.
+        /// The text is then overridden at the form level.  (Default: false.)</param>
         /// <returns>True if the two <see cref="TVerificationResult" />s are completely identical,
         /// otherwise false.</returns>
         public static bool AreVerificationResultsIdentical(TVerificationResult AVerificationResult1, TVerificationResult AVerificationResult2,
-            bool ACompareResultContextsAsStrings = false, bool ATreatUserControlAndFormContextsAsIdentical = false)
+            bool ACompareResultContextsAsStrings = false, bool ATreatUserControlAndFormContextsAsIdentical = false,
+            bool ATreatAllResultTextsAsIdentical = false)
         {
             if ((AVerificationResult1 == null)
                 || (AVerificationResult2 == null))
@@ -1442,7 +1452,7 @@ namespace Ict.Common.Verification
                     return false;
                 }
 
-                if (AVerificationResult1.ResultText != AVerificationResult2.ResultText)
+                if (AVerificationResult1.ResultText != AVerificationResult2.ResultText && !ATreatAllResultTextsAsIdentical)
                 {
                     return false;
                 }
