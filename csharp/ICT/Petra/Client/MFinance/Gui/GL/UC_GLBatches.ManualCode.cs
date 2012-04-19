@@ -750,13 +750,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!NewTransaction.IsTransactionDateNull())
                 {
-                    NewTransaction.AmountInIntlCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                        ARefJournalRow.TransactionCurrency,
-                        FMainDS.ALedger[0].IntlCurrency,
-                        NewTransaction.TransactionDate);
                     NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
                         ARefJournalRow.TransactionCurrency,
                         FMainDS.ALedger[0].BaseCurrency,
+                        NewTransaction.TransactionDate);
+                    //
+                    // The International currency calculation is changed to "Base -> International", because it's likely
+                    // we won't have a "Transaction -> International" conversion rate defined.
+                    //
+                    NewTransaction.AmountInIntlCurrency = NewTransaction.AmountInBaseCurrency * TExchangeRateCache.GetDailyExchangeRate(
+                        FMainDS.ALedger[0].BaseCurrency,
+                        FMainDS.ALedger[0].IntlCurrency,
                         NewTransaction.TransactionDate);
                 }
             } while (!dataFile.EndOfStream);

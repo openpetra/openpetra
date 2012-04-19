@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             NewDocumentRow.PartnerKey = APartnerKey;
             NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
             NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
-            NewDocumentRow.LastDetailNumber = -1;
+            NewDocumentRow.LastDetailNumber = 0;
 
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
@@ -436,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             NewRow.ApDocumentId = AApDocumentId;
             NewRow.LedgerNumber = ALedgerNumber;
-            NewRow.DetailNumber = ALastDetailNumber;
+            NewRow.DetailNumber = ALastDetailNumber + 1;
             NewRow.Amount = AAmount;
             NewRow.CostCentreCode = AApSupplier_DefaultCostCentre;
             NewRow.AccountCode = AApSupplier_DefaultExpAccount;
@@ -818,6 +818,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
+                        transaction.AmountInIntlCurrency = transaction.AmountInBaseCurrency * TExchangeRateTools.GetDailyExchangeRate(
+                            GLDataset.ALedger[0].BaseCurrency,
+                            GLDataset.ALedger[0].IntlCurrency,
+                            transaction.TransactionDate);
+
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
                         transaction.Narrative = "AP" + document.ApNumber.ToString() + " - " + documentDetail.Narrative + " - " + SupplierShortName;
@@ -859,6 +864,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionAmount *= -1;
                     }
 
+                    transaction.AmountInIntlCurrency = transaction.TransactionAmount * TExchangeRateTools.GetDailyExchangeRate(
+                        journal.TransactionCurrency,
+                        GLDataset.ALedger[0].IntlCurrency,
+                        transaction.TransactionDate);
+
                     transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
                     transaction.AccountCode = document.ApAccount;
@@ -888,6 +898,48 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             return GLDataset;
+        }
+
+        /// <summary>
+        /// Check that the Account codes for an invoice can be used with the cost centres referenced.
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AccountCodesCostCentres">list {Account"|"Cost Centre}</param>
+        /// <returns>Empty string if there's no problems</returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List <String>AccountCodesCostCentres)
+        {
+            String ReportMsg = "";
+
+            foreach (String AccCostCentre in AccountCodesCostCentres)
+            {
+                Int32 BarPos = AccCostCentre.IndexOf("|");
+                String AccountCode = AccCostCentre.Substring(0, BarPos);
+                AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AccountCode, null);
+                String ValidCcCombo = AccountTbl[0].ValidCcCombo.ToLower();
+
+                // If this account goes with any cost centre (as is likely),
+                // there's nothing more to do.
+
+                if (ValidCcCombo != "all")
+                {
+                    String CostCentre = AccCostCentre.Substring(BarPos + 1);
+                    ACostCentreTable CcTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, CostCentre, null);
+                    String CcType = CcTbl[0].CostCentreType.ToLower();
+
+                    if (ValidCcCombo != CcType)
+                    {
+                        ReportMsg +=
+                            String.Format(Catalog.GetString(
+                                    "Error: Account {0} cannot be used with cost centre {1}. Account requires a {2} cost centre."),
+                                AccountCode, CostCentre, ValidCcCombo);
+                        ReportMsg += Environment.NewLine;
+                    }
+                }
+            }
+
+            return ReportMsg;
         }
 
         /// <summary>
@@ -1177,6 +1229,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
+                        transaction.AmountInIntlCurrency = transaction.TransactionAmount * TExchangeRateTools.GetDailyExchangeRate(
+                            journal.TransactionCurrency,
+                            GLDataset.ALedger[0].IntlCurrency,
+                            transaction.TransactionDate);
+
                         transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
                         transaction.AccountCode = payment.BankAccount;
@@ -1201,6 +1258,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transactionAPAccount.DebitCreditIndicator = !transaction.DebitCreditIndicator;
                         transactionAPAccount.TransactionAmount = transaction.TransactionAmount;
                         transactionAPAccount.AmountInBaseCurrency = transaction.AmountInBaseCurrency;
+                        transactionAPAccount.AmountInIntlCurrency = transaction.AmountInIntlCurrency;
                         transactionAPAccount.TransactionDate = batch.DateEffective;
                         transactionAPAccount.AccountCode = document.ApAccount;
                         transactionAPAccount.CostCentreCode =
@@ -1253,6 +1311,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 transactionReval.CostCentreCode = transaction.CostCentreCode;
                                 transactionReval.TransactionDate = batch.DateEffective;
                                 transactionReval.TransactionAmount = 0; // no real value
+                                transactionReval.AmountInIntlCurrency = 0; // no real value
                                 transactionReval.DebitCreditIndicator = (ForexGain > 0);
                                 transactionReval.AmountInBaseCurrency = Math.Abs(ForexGain);
 
@@ -1271,6 +1330,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 transactionApReval.TransactionDate = batch.DateEffective;
                                 transactionApReval.DebitCreditIndicator = !transactionReval.DebitCreditIndicator;
                                 transactionApReval.AmountInBaseCurrency = transactionReval.AmountInBaseCurrency;
+                                transactionApReval.AmountInIntlCurrency = transactionReval.AmountInIntlCurrency;
 
                                 GLDataset.ATransaction.Rows.Add(transactionApReval);
                             }
