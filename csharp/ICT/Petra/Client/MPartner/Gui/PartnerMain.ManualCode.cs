@@ -24,17 +24,21 @@
 using System;
 using System.Xml;
 using System.Windows.Forms;
+using System.Collections;
+using System.Collections.Generic;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 //using Ict.Petra.Client.MReporting.Gui.MPersonnel;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Collections.Specialized;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -43,16 +47,16 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TFrmPartnerMain
     {
-        private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
+        //private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
         
-        /// dataset for the whole screen
-        public Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS MainDS
+        // dataset for the whole screen
+        /*public Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS MainDS
         {
             set
             {
                 FMainDS = value;
             }
-        }
+        }*/
     
         /// <summary>
         /// create a new partner (default to family ie. household)
@@ -77,13 +81,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// create a new person
         public static void NewPerson(Form AParentForm)
         {
-            TLogging.Log("FMainDS.PFamily[0].PartnerKey");
-            TLogging.Log(FMainDS.PFamily[0].PartnerKey);
+            //TLogging.Log("FMainDS.PFamily[0].PartnerKey");
+            //TLogging.Log(FMainDS.PFamily[0].PartnerKey);
             
             TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
+            
+            System.Int64 AFamilyKey = GetLastUsedFamilyKey();
 
             frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "", "", false,
-                    FMainDS.PFamily[0].PartnerKey, -1, -1);
+                 AFamilyKey, -1, -1);
             //frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
             frm.Show();
         }
@@ -118,6 +124,45 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             frm.SetParameters(false, -1);
             frm.Show();
+        }
+        
+               /// <summary>
+        /// Makes a server call to get the key of the last used family
+        /// <param name="AFamilyKey">FamilyKey of the last accessed family</param>
+        /// </summary>
+        private static System.Int64 GetLastUsedFamilyKey()
+        {
+            bool LastFamilyFound = false;
+            System.Int64 AFamilyKey = 0000000000;
+            Dictionary <long, string>RecentlyUsedPartners;
+            ArrayList PartnerClasses = new ArrayList();
+
+            PartnerClasses.Add("*");
+
+            int MaxPartnersCount = 7;
+            TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
+
+            foreach (KeyValuePair <long, string>CurrentEntry in RecentlyUsedPartners)
+            {
+                //search for the last FamilyKey
+                //assign it only to AFamilyKey if there hasn't been yet found another Family
+                
+                //fe. CurrentEntry.Key= 43005007 CurrentEntry.Value= Test, alex (type PERSON)
+                TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
+                if(CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
+                   {
+                       AFamilyKey = CurrentEntry.Key;
+                       LastFamilyFound = true;
+                   }
+            }
+
+            // If there are no recently used partners
+            if (RecentlyUsedPartners.Count == 0)
+            {
+
+            }
+            
+            return AFamilyKey;
         }
     }
 }
