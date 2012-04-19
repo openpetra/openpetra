@@ -64,6 +64,13 @@
             Ext.getCmp('MedicalPanel').setActiveTab(panelId);
         }
 
+        function SetDateFormat(format)
+        {
+            Ext.getCmp('DateOfArrival').format = format;
+            Ext.getCmp('DateOfDeparture').format = format;
+            Ext.getCmp('GenAppDate').format = format;
+            Ext.getCmp('DateOfBirth').format = format;
+        }
 </script>        
 </head>
 <body>

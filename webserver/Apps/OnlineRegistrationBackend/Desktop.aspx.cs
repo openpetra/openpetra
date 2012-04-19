@@ -651,6 +651,15 @@ namespace Ict.Petra.WebServer.MConference
                 SecondSibling.Clear();
                 CancelledByFinanceOffice.Clear();
 
+                if (rawDataObject["RegistrationCountryCode"].ToString() == "sv-SE")
+                {
+                    X.Js.Call("SetDateFormat", "Y-m-d");
+                }
+                else
+                {
+                    X.Js.Call("SetDateFormat", "d-m-Y");
+                }
+
                 // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
                 // instead a Dictionary can be used as well
                 // See also StackOverflow ObjectExtensions::ToDictionary for converting an anonymous type to a dictionary
