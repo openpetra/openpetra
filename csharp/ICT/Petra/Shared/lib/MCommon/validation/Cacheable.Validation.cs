@@ -128,6 +128,151 @@ namespace Ict.Petra.Shared.MCommon.Validation
         }
 
         /// <summary>
+        /// Validates the Setup Frequency screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateFrequencySetupManual(object AContext, AFrequencyRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+            bool bFoundNegativeValue = false;
+
+            // 'NumberOfYears' cannot be negative
+            ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfYearsId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfYears,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                bFoundNegativeValue |= (VerificationResult != null);
+            }
+
+            // 'NumberOfMonths' cannot be negative
+            ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfMonthsId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfMonths,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                bFoundNegativeValue |= (VerificationResult != null);
+            }
+
+            // 'NumberOfDays' cannot be negative
+            ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfDaysId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfDays,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                bFoundNegativeValue |= (VerificationResult != null);
+            }
+
+            // 'NumberOfHours' cannot be negative
+            ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfHoursId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfHours,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                bFoundNegativeValue |= (VerificationResult != null);
+            }
+
+            // 'NumberOfMinutes' cannot be negative
+            ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfMinutesId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.NumberOfMinutes,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                bFoundNegativeValue |= (VerificationResult != null);
+            }
+
+            // Finally, having checked that no single box is negative, at least one of the boxes (any box) must be a positive number
+            // So our test is going to fail if the sum of the boxes is 0 and we did not get any negatives
+            // We pick the first box and invalidate that, because this is only one error despite all boxes being 0.
+            // This does mean that the tooltip will only pop up if the focus is associated with this one box, but the validation will still work.
+            // It will not be possible to leave this record.
+            ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfYearsId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                // Check for success as a positive integer in TotalOfBoxes
+                // If we had a negative number anywhere we always make this test pass, because that is a more serious error
+                int TotalOfBoxes = ARow.NumberOfYears + ARow.NumberOfMonths + ARow.NumberOfDays + ARow.NumberOfHours + ARow.NumberOfMinutes;
+                if (bFoundNegativeValue) TotalOfBoxes = 1;
+                VerificationResult = TNumericalChecks.IsPositiveInteger(TotalOfBoxes,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                if (VerificationResult != null)
+                {
+                    // Over-ride the message as follows...
+                    string msg = String.Format(Catalog.GetString("A quantity of time must be defined for the '{0}' frequency."), ARow.FrequencyDescription);
+                    VerificationResult.OverrideResultText(msg);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validates the Setup Partner Acquisition Code screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateAcquisitionCodeSetup(object AContext, PAcquisitionRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'AcquisitionDescription' must have a value
+            ValidationColumn = ARow.Table.Columns[PAcquisitionTable.ColumnAcquisitionDescriptionId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.AcquisitionDescription,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
         /// Validates the MPartner Marital Status screen data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>

@@ -107,6 +107,9 @@ COPY a_transaction_type FROM '{#ABSOLUTEBASEDATAPATH}/a_transaction_type.csv' WI
 COPY a_valid_ledger_number FROM '{#ABSOLUTEBASEDATAPATH}/a_valid_ledger_number.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_motivation_group FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_group.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_motivation_detail FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_fees_payable FROM '{#ABSOLUTEBASEDATAPATH}/a_fees_payable.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_fees_receivable FROM '{#ABSOLUTEBASEDATAPATH}/a_fees_receivable.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_motivation_detail_fee FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_detail_fee.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 COPY p_publication FROM '{#ABSOLUTEBASEDATAPATH}/p_publication.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
