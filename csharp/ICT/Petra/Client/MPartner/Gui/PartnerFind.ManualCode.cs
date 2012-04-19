@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FRunAsModalForm = this.Modal;
         }
-        
+
         void ucoFindByPartnerDetails_SearchOperationStateChange(TSearchOperationStateChangeEventArgs e)
         {
             if (e.SearchOperationIsRunning)
