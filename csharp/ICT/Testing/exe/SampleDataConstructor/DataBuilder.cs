@@ -2,9 +2,10 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       thomass (on the basis of work done by timop)
+//       thomass
+//       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,7 +36,8 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-
+using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core;
 
 namespace SampleDataConstructor
 {
@@ -68,12 +70,6 @@ class ExecutionReport
 class DataBuilder : RawData
 {
     /// <summary>
-    /// Used for the internal (non PetraServer) way of determining the next
-    /// new partner key only.
-    /// </summary>
-    private static Int64 nextNewPartnerKey = 1;     // used with the internal method only
-
-    /// <summary>
     /// The SiteKey used when creating or altering data
     /// TODO: use it! It is not used yet.
     /// </summary>
@@ -89,33 +85,11 @@ class DataBuilder : RawData
     /// </remarks>
     protected static Int64 getNewPartnerKey()
     {
-        //
-        // Determines if the partner keys are created by OpenPetra or internally
-        //
-        // Either we create a partner key internally "somehow" (e.g. by just counting up
-        // from a certain number), or we ask the server to do so. Asking the server would
-        // be the right way to do it. On the other hand, the server seems to demand from us
-        // that we immediately use the partner keys by saving partners on the server.
-        // Unfortunately this probibits us from "just building the data in memory on the client",
-        // and require more server interaction. So for now, do without.
-        // One could (a) ask the server (b) use that number as a starter - or somehow like that.
-        //
-        bool openPetraCreatesNewPartnerKey = false;
-        Int64 newPartnerKey;
+        Int64 newPartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
 
-        if (openPetraCreatesNewPartnerKey)
+        if (!TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, newPartnerKey, ref newPartnerKey))
         {
-            newPartnerKey = Ict.Petra.Server.MPartner.Common.TNewPartnerKey.GetNewPartnerKey(-1);
-            // TODO: keeping the sitekey would be helpful anyway
-            // (somewhere at the start of the program)
-            // Using getNewPartner is probably simplest (says christiank)
-            Int32 SiteKey = Int32.Parse(newPartnerKey.ToString().Substring(0, 4));
-            Ict.Petra.Server.MPartner.Common.TNewPartnerKey.SubmitNewPartnerKey(
-                SiteKey, newPartnerKey, ref newPartnerKey);
-        }
-        else
-        {
-            newPartnerKey = nextNewPartnerKey++;
+            throw new Exception("create key ministry: problems getting a new partner key");
         }
 
         return newPartnerKey;
