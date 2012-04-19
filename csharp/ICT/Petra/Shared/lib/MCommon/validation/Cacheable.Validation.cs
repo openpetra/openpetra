@@ -225,17 +225,24 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 // Check for success as a positive integer in TotalOfBoxes
                 // If we had a negative number anywhere we always make this test pass, because that is a more serious error
                 int TotalOfBoxes = ARow.NumberOfYears + ARow.NumberOfMonths + ARow.NumberOfDays + ARow.NumberOfHours + ARow.NumberOfMinutes;
-                if (bFoundNegativeValue) TotalOfBoxes = 1;
+
+                if (bFoundNegativeValue)
+                {
+                    TotalOfBoxes = 1;
+                }
+
                 VerificationResult = TNumericalChecks.IsPositiveInteger(TotalOfBoxes,
                     ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
                 if (VerificationResult != null)
                 {
                     // Over-ride the message as follows...
-                    string msg = String.Format(Catalog.GetString("A quantity of time must be defined for the '{0}' frequency."), ARow.FrequencyDescription);
+                    string msg = String.Format(Catalog.GetString(
+                            "A quantity of time must be defined for the '{0}' frequency."), ARow.FrequencyDescription);
                     VerificationResult.OverrideResultText(msg);
                 }
             }

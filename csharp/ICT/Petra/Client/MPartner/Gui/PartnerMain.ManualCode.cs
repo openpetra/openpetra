@@ -47,17 +47,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TFrmPartnerMain
     {
-        //private Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS FMainDS;
-        
-        // dataset for the whole screen
-        /*public Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS MainDS
-        {
-            set
-            {
-                FMainDS = value;
-            }
-        }*/
-    
         /// <summary>
         /// create a new partner (default to family ie. household)
         /// </summary>
@@ -83,13 +72,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             //TLogging.Log("FMainDS.PFamily[0].PartnerKey");
             //TLogging.Log(FMainDS.PFamily[0].PartnerKey);
-            
+
             TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
-            
+
             System.Int64 AFamilyKey = GetLastUsedFamilyKey();
 
             frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "", "", false,
-                 AFamilyKey, -1, -1);
+                AFamilyKey, -1, -1);
             //frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
             frm.Show();
         }
@@ -125,14 +114,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.SetParameters(false, -1);
             frm.Show();
         }
-        
-               /// <summary>
+
+        /// <summary>
         /// Makes a server call to get the key of the last used family
-        /// <param name="AFamilyKey">FamilyKey of the last accessed family</param>
+        /// <returns>FamilyKey of the last accessed family</returns>
         /// </summary>
         private static System.Int64 GetLastUsedFamilyKey()
         {
             bool LastFamilyFound = false;
+
             System.Int64 AFamilyKey = 0000000000;
             Dictionary <long, string>RecentlyUsedPartners;
             ArrayList PartnerClasses = new ArrayList();
@@ -146,22 +136,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 //search for the last FamilyKey
                 //assign it only to AFamilyKey if there hasn't been yet found another Family
-                
+
                 //fe. CurrentEntry.Key= 43005007 CurrentEntry.Value= Test, alex (type PERSON)
-                TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
-                if(CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
-                   {
-                       AFamilyKey = CurrentEntry.Key;
-                       LastFamilyFound = true;
-                   }
+                //TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
+                if (CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
+                {
+                    AFamilyKey = CurrentEntry.Key;
+                    LastFamilyFound = true;
+                }
             }
 
             // If there are no recently used partners
             if (RecentlyUsedPartners.Count == 0)
             {
-
             }
-            
+
             return AFamilyKey;
         }
     }

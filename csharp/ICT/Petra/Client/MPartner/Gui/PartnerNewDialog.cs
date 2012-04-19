@@ -41,6 +41,7 @@ using Ict.Common;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -60,6 +61,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             "A Family needs to be selected when a new Partner of Partner Class 'PERSON' should be created!");
 
         private static readonly string StrFamilyNeedsToBeSelectedTitle = Catalog.GetString("Family Needed!");
+
+        private static readonly string StrCorrectFamilyKeyNeedsToBeEntered = Catalog.GetString(
+            "The correct key of an existing family needs to be entered when a new Partner of Partner Class 'PERSON' should be created!");
+
+        private static readonly string StrCorrectFamilyKeyNeedsToBeEnteredTitle = Catalog.GetString("A correct family key needs to be entered!");
 
         private static readonly string StrAPartnerKeyExists = Catalog.GetString(
             "A Partner with Partner Key {0} already exists.\r\nPlease choose a different Partner Key!");
@@ -270,6 +276,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBox.Show(StrFamilyNeedsToBeSelected, StrFamilyNeedsToBeSelectedTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     txtFamilyPartnerBox.Focus();
                     return;
+                }
+                else //check if a family with the given familyPartnerKey exists; if this is not the case then diplay a message box
+                {
+                    TPartnerClass[] AValidPartnerClasses = new TPartnerClass[1];
+                    AValidPartnerClasses[0] = TPartnerClass.FAMILY;
+                    bool APartnerExists;
+                    String APartnerShortName;
+                    TPartnerClass APartnerClass;
+                    Boolean AIsMergedPartner;
+
+                    if (!TServerLookup.TMPartner.VerifyPartner(FFamilyPartnerKey, AValidPartnerClasses,
+                            out APartnerExists,
+                            out APartnerShortName,
+                            out APartnerClass,
+                            out AIsMergedPartner))
+                    {
+                        MessageBox.Show(StrCorrectFamilyKeyNeedsToBeEntered,
+                            StrCorrectFamilyKeyNeedsToBeEnteredTitle,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
+                        txtFamilyPartnerBox.Focus();
+                        return;
+                    }
                 }
             }
 
