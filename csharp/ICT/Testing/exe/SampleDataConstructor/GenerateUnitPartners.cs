@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
+using Ict.Petra.Server.MPartner.Common;
 using SampleDataConstructor;
 
 namespace Ict.Testing.SampleDataConstructor
@@ -144,6 +145,67 @@ namespace Ict.Testing.SampleDataConstructor
         /// <param name="AKeyMinCSVFile"></param>
         public static void GenerateKeyMinistries(string AKeyMinCSVFile)
         {
+            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AKeyMinCSVFile, ",");
+
+            XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
+
+            SortedList <DateTime, List <XmlNode>>GiftsPerDate = new SortedList <DateTime, List <XmlNode>>();
+
+            PartnerImportExportTDS PartnerDS = new PartnerImportExportTDS();
+
+            // get a list of fields (all class UNIT, with unit type F)
+            string sqlGetFieldPartnerKeys = "SELECT p_partner_key_n, p_unit_name_c FROM PUB_p_unit WHERE u_unit_type_code_c = 'F'";
+            DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", null);
+
+            while (RecordNode != null)
+            {
+                int FieldID =
+                    Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "field")) % FieldKeys.Rows.Count;
+                long FieldPartnerKey = Convert.ToInt64(FieldKeys.Rows[FieldID].ItemArray[0]);
+                
+                PUnitRow UnitRow = PartnerDS.PUnit.NewRowTyped();
+                long UnitPartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
+                if (!TNewPartnerKey.SubmitNewPartnerKey(FLedgerNumber * 1000000, 
+                                                                        UnitPartnerKey, ref UnitPartnerKey))
+                {
+                    throw new Exception("create key ministry: problems getting a new partner key");
+                }
+                
+                UnitRow.PartnerKey = UnitPartnerKey;
+                UnitRow.UnitName = FieldKeys.Rows[FieldID].ItemArray[1].ToString() + " - " + TXMLParser.GetAttribute(RecordNode, "KeyMinName");
+                UnitRow.UnitTypeCode = "KEY-MIN";
+                PartnerDS.PUnit.Rows.Add(UnitRow);
+
+                PPartnerRow PartnerRow = PartnerDS.PPartner.NewRowTyped();
+                PartnerRow.PartnerKey = UnitRow.PartnerKey;
+                PartnerRow.PartnerShortName = UnitRow.UnitName;
+                PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
+                PartnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+                PartnerDS.PPartner.Rows.Add(PartnerRow);
+
+                // add empty location so that the partner can be found in the Partner Find screen
+                PPartnerLocationRow PartnerLocationRow = PartnerDS.PPartnerLocation.NewRowTyped();
+                PartnerLocationRow.PartnerKey = UnitRow.PartnerKey;
+                PartnerLocationRow.LocationKey = 0;
+                PartnerLocationRow.SiteKey = 0;
+                PartnerDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
+
+                // create unit hierarchy
+                UmUnitStructureRow UnitStructureRow = PartnerDS.UmUnitStructure.NewRowTyped();
+                UnitStructureRow.ParentUnitKey = FieldPartnerKey;
+                UnitStructureRow.ChildUnitKey = UnitRow.PartnerKey;
+                PartnerDS.UmUnitStructure.Rows.Add(UnitStructureRow);
+
+                RecordNode = RecordNode.NextSibling;
+            }
+
+            TVerificationResultCollection VerificationResult;
+            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS, out VerificationResult);
+
+            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            {
+                throw new Exception(VerificationResult.BuildVerificationResultString());
+            }
         }
     }
 }
