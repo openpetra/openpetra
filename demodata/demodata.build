@@ -20,11 +20,13 @@
           workingdir="${dir.incdir.cfg + '/benerator'}">
         <environment>
             <variable name="PATH" value="${path::get-directory-name(external.Java)}"/>
+            <variable name="BENERATOR_HOME" value="${path::get-directory-name(external.Benerator)}/.."/>
+            <variable name="JAVA_HOME" value="${path::get-directory-name(external.Java)}/.."/>
         </environment>
     </exec>
 </target>
 
-<target name="importDemodata" depends="init">
+<target name="importDemodata" depends="init, initConfigFiles">
     <!-- requires a server to be started that we can connect to and upload our data -->
     <ExecDotNet program="${dir.bin}/Ict.Testing.SampleDataConstructor.exe" 
         commandline="-C:&quot;${dir.etc}/TestServer.config&quot; -dir.data.generated:&quot;${dir.root}/demodata/generated&quot;"

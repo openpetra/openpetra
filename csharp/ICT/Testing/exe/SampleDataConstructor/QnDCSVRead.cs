@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       thomass + (some parts from Microsoft .net documentation, as noted)
+//       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,8 +24,9 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
-
+using Ict.Common;
 
 namespace SampleDataConstructor
 {
@@ -136,11 +138,10 @@ class QnDCSVRead
         }
 
         lastAttemptedLine++;
-        string[] data = line.Split(',');
 
-        // TODO: fixthis - do a proper csv readline (which also allows '"' )
-        // Shortterm fix: just ignore incorrectly read lines (sample data can be thrown away)
-        if (data.GetLength(0) != headerCount)
+        StringCollection data = StringHelper.GetCSVList(line, ",");
+
+        if (data.Count != headerCount)
         {
             throw new Exception(
                 "Inappropriate amount of elements when reading line " + lastAttemptedLine +
@@ -149,7 +150,10 @@ class QnDCSVRead
         }
 
         lastSuccessfulLine = lastAttemptedLine;
-        _curline = data;
+
+        _curline = new string[data.Count];
+        data.CopyTo(_curline, 0);
+
         return _curline;
     }
 

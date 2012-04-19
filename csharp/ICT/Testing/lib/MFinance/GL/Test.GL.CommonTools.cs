@@ -208,7 +208,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual("7000S", gahdi.GetParentAccount("7010"));
 
             List <String>list2 = gahdi.GetChildren("ASSETS");
-            Assert.AreEqual(40, list2.Count, "Atually 40 chield entries ...");
+            Assert.AreEqual(41, list2.Count, "Currently 41 chield entries ...");
         }
 
         /// <summary>

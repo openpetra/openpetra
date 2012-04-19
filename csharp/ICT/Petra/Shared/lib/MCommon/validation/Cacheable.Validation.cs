@@ -82,12 +82,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
-            // 'International access code' must have a value
-            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatAccessCodeId];
+            // 'International Postal Type' must be in 'p_international_postal_type' DB Table (this DB Table is not a Cacheable DataTable)
+            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatPostalTypeCodeId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.InternatAccessCode,
+                VerificationResult = TSharedCommonValidation.IsValidInternationalPostalCode(ARow.InternatPostalTypeCode,
                     ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 

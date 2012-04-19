@@ -5,9 +5,6 @@ RootNode:
     FormType: dialog
     Template: window
     
-    Events:
-        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
-
     Controls:
         pnlDialogContent:
             Controls:

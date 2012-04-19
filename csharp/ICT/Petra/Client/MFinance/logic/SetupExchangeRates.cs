@@ -57,9 +57,9 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AValueOneDirectionLabel.Text =
                     String.Format(StrLabelText,
                         1.0m.ToString("N2"),
-                        AFromCurrencyCode,
+                        AToCurrencyCode,
                         AExchangeRate.ToString("N10"),
-                        AToCurrencyCode
+                        AFromCurrencyCode
                         );
             }
 
@@ -81,9 +81,9 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AValueOtherDirectionLabel.Text =
                     String.Format(StrLabelText,
                         1.0m.ToString("N2"),
-                        AToCurrencyCode,
+                        AFromCurrencyCode,
                         AExchangeRate.ToString("N10"),
-                        AFromCurrencyCode
+                        AToCurrencyCode
                         );
             }
         }

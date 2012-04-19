@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../../reports.dtd">
+<reports>
+
+	<report id="APCurrentPayable">
+		<description>
+			Show all the documents that are outstanding, or were outstanding on a particular date.
+		</description>
+		<reportparameters>
+			<reportparameter name="param_ledger_number_i"/>
+			<reportparameter name="param_payment_date"/>
+		</reportparameters>
+		
+		<reportheader/>
+		
+		<pageheader>
+			<field whichfield="title1">
+					<value text ="Current Accounts Payable" />
+			</field>
+			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+			<field whichfield="descr1"><value text="Ledger: "/><value variable="param_ledger_number_i"/>
+				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
+			</field>
+      <field whichfield ="descr3">
+        <value text="Report Date: "/>
+        <value variable="param_payment_date"/>
+      </field>
+    </pageheader>
+		
+		<calculations>
+
+      <calculation id="SelectDocuments" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              <!-- Documents that do not have an associated payment record -->
+              <!-- or -->
+              <!-- Where the associated payment is dated after the date selected by parameter -->
+              SELECT DISTINCT
+              PUB_a_ap_document.a_ap_number_i AS ApNumber,
+              PUB_a_ap_document.p_partner_key_n AS SupplierKey,
+              PUB_p_partner.p_partner_short_name_c AS SupplierName,
+              PUB_a_ap_document.a_document_code_c AS DocCode,
+              PUB_a_ap_document.a_date_issued_d + PUB_a_ap_document.a_credit_terms_i AS DueDate,
+              PUB_a_ap_supplier.a_currency_code_c AS Currency,
+              PUB_a_ap_document.a_total_amount_n AS CurAmount,
+              PUB_a_ap_document.a_total_amount_n * PUB_a_ap_document.a_exchange_rate_to_base_n AS BaseAmount,
+              PUB_a_ap_payment.a_payment_date_d
+              FROM PUB_a_ap_document LEFT JOIN PUB_a_ap_document_payment USING (a_ap_document_id_i)
+              LEFT JOIN PUB_a_ap_payment USING (a_payment_number_i)
+              JOIN PUB_a_ap_supplier USING (p_partner_key_n)
+              JOIN PUB_p_partner USING (p_partner_key_n)
+              WHERE ((PUB_a_ap_payment.a_payment_date_d IS NULL) OR (PUB_a_ap_payment.a_payment_date_d > {#param_payment_date#}))
+              AND (PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}})
+              ORDER BY SupplierName, ApNumber;
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="ApNumber" returnsFormat="text" returns="text">
+        <caption>
+          <value text="ApNum"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="ApNumber"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SupplierKey" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Supplier"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="SupplierKey"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SupplierName" returnsFormat="text" returns="text">
+        <query>
+          <queryDetail>
+            <value variable="SupplierName"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="DocCode" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Invoice"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="DocCode"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="DueDate" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Due"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="DueDate"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Currency" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Currency"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Currency"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="CurAmount" returnsFormat="currency" returns="text">
+        <caption>
+          <value text="Amount"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="CurAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="BaseAmount" returnsFormat="currency" returns="text">
+        <caption>
+          <value text="Base Amount"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="BaseAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+    </calculations>
+
+    <levels>
+		  <level name="main">
+			  <detail>
+  				  <lowerLevelReport level="ReportLevel"/>
+			  </detail>
+		  </level>
+
+      <level name="ReportLevel">
+			  <detail>
+  				  <lowerLevelReport level="DocumentLevel" calculation="SelectDocuments"/>
+			  </detail>
+        <footer space="above">
+          <field whichfield="column 6">
+            <value text="Total:"/>
+          </field>
+          <field whichfield="column 7" format="#,##0.00;#,##0.00;0.00;0.00">
+            <value function="getSumLowerReport({{lineId}}, {{column}})"/>
+          </field>          
+        </footer>
+      </level>
+      
+      <level name="DocumentLevel">
+        <header>
+        </header>
+        <detail>
+          <field whichfield="column 0">
+            <value variable="ApNumber"/>
+          </field>
+          <field whichfield="column 1">
+            <value variable="SupplierKey"/>
+          </field>
+          <field whichfield="column 2">
+            <value variable="SupplierName"/>
+          </field>
+          <field whichfield="column 3">
+            <value variable="DocCode"/>
+          </field>
+           <field whichfield="column 4">
+            <value variable="DueDate"/>
+          </field>
+          <field whichfield="column 5">
+            <value variable="Currency"/>
+          </field>
+          <field whichfield="column 6">
+            <value variable="CurAmount"/>
+          </field>
+          <field whichfield="column 7">
+            <value variable="BaseAmount"/>
+          </field>
+        </detail>
+      </level>
+		</levels>
+	</report>
+</reports>

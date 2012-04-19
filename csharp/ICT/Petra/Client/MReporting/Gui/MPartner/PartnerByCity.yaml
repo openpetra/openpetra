@@ -21,8 +21,8 @@
         tpgReportSorting:
             Label: Sorting
             Controls: [ucoReportSorting]
-        tpgReportSpecific:
-            Label: Report parameters
+        tpgGeneralSettings:
+            Label: General Settings
             Controls: [txtCityName]
             Order: AlwaysFirst
         txtCityName: {Label=Name of City, ParameterName=param_city}

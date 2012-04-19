@@ -159,6 +159,13 @@ namespace Ict.Common.Verification
         protected bool FControlValueUndoRequested = false;
 
         /// <summary>
+        /// Is true (or set to true) if the data validation code requests that the validation
+        /// ToolTip should not be shown on the validated Control. This is only useful for <see cref="TScreenVerificationResult" />s
+        /// but needs to be declared in this Class to make the handling easier.
+        /// </summary>
+        protected bool FSuppressValidationToolTip = false;
+
+        /// <summary>
         /// We need this constructor so that inherited Classes can get by not having a default constructor...
         /// </summary>
         protected internal TVerificationResult()
@@ -345,6 +352,23 @@ namespace Ict.Common.Verification
             set
             {
                 FControlValueUndoRequested = value;
+            }
+        }
+
+        /// <summary>
+        /// Is true (or set to true) if the data validation code requests that the validation
+        /// ToolTip should not be shown on the validated Control.
+        /// </summary>
+        public bool SuppressValidationToolTip
+        {
+            get
+            {
+                return FSuppressValidationToolTip;
+            }
+
+            set
+            {
+                FSuppressValidationToolTip = value;
             }
         }
 

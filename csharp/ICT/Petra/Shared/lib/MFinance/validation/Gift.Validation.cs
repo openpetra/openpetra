@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -106,32 +106,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         public static bool ValidateGiftDetailManual(object AContext, AGiftDetailRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
-            DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
-            object ValidationContext;
-            int VerifResultCollAddedCount = 0;
-
-            // 'Gift Comment One' must not be empty
-            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnGiftCommentOneId];
-            ValidationContext = ARow.BatchNumber.ToString() + ";" + ARow.GiftTransactionNumber.ToString();
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.GiftCommentOne,
-                    String.Format("{0} of Batch Number {1}, Gift Transaction Number {2}, Gift Detail {3}",
-                        ValidationControlsData.ValidationControlLabel,
-                        ARow.BatchNumber, ARow.GiftTransactionNumber, ARow.DetailNumber),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-                {
-                    VerifResultCollAddedCount++;
-                }
-            }
-
-            return VerifResultCollAddedCount == 0;
+            return true;
         }
     }
 }

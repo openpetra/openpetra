@@ -91,8 +91,8 @@ namespace Ict.Petra.Server.MFinance.Common
             if (Apeo.JobSize == 0)
             {
                 // Non Critical Problem but the user shall be informed ...
-                String strTitle = Catalog.GetString("Peridic end routine hint");
-                String strMessage = Catalog.GetString("There is nothing to do for the module: [{0}]");
+                String strTitle = Catalog.GetString("Periodic end routine hint");
+                String strMessage = Catalog.GetString("There is nothing to be done for the module: [{0}]");
                 strMessage = String.Format(strMessage, AOperationName);
                 TVerificationResult tvt =
                     new TVerificationResult(strTitle, strMessage, "",
@@ -113,7 +113,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     String strTitle = Catalog.GetString("Problem occurs in module [{0}]");
                     strTitle = String.Format(strTitle, AOperationName);
                     String strMessage = Catalog.GetString(
-                        "The operation has heft {0} elements which are not transformed!");
+                        "The operation has left {0} elements which are not transformed!");
                     strMessage = String.Format(strMessage, newApeo.JobSize.ToString());
                     TVerificationResult tvt =
                         new TVerificationResult(strTitle, strMessage, "",
@@ -503,11 +503,6 @@ namespace Ict.Petra.Server.MFinance.Common
                         blnFound = true;
                     }
 
-                    if (accountingPeriodRow.EffectiveDate.Year == intActualYear)
-                    {
-                        blnFound = true;
-                    }
-
                     if (blnFound)
                     {
                         ++cnt;
@@ -529,23 +524,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     accountingPeriodRow = accountingPeriodTable[i];
 
-                    if (accountingPeriodRow.PeriodStartDate.Year == intActualYear)
-                    {
-                        accountingPeriodRow.PeriodStartDate =
-                            accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
-                    }
-
-                    if (accountingPeriodRow.PeriodEndDate.Year == intActualYear)
-                    {
-                        accountingPeriodRow.PeriodEndDate =
-                            accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
-                    }
-
-                    if (accountingPeriodRow.EffectiveDate.Year == intActualYear)
-                    {
-                        accountingPeriodRow.EffectiveDate =
-                            accountingPeriodRow.EffectiveDate.AddDays(1).AddYears(1).AddDays(-1);
-                    }
+                    accountingPeriodRow.PeriodStartDate =
+                        accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
+                    accountingPeriodRow.PeriodEndDate =
+                        accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
                 }
 
                 TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
