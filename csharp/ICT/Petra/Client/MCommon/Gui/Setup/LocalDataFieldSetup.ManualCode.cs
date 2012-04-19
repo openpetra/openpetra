@@ -848,6 +848,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidateLocalDataFieldSetup(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+
+            // Over-ride the tool-tip text, depending on the context
             TScreenVerificationResult result = VerificationResultCollection.FindBy(FMainDS.PDataLabel.Columns[UsedByColumnOrdinal]);
             if (result != null)
             {

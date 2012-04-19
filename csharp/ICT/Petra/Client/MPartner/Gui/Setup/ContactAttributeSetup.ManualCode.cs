@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void GetDetailDataFromControlsManual(PContactAttributeRow ARow)
         {
             // Tell the user control to get its data too
-            ucContactDetail.GetDataFromControls();
+            // ucContactDetail.GetDetailsFromControls();
         }
 
         private void txtDetailContactAttributeCode_LostFocus(object sender, EventArgs e)
