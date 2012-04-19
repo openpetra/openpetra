@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       thomass
+//       thomass, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -112,9 +112,9 @@ namespace Ict.Testing.SampleDataConstructor
                 TLogging.Log("(1) Read raw data files into memory");
 
                 RawData rawDataDe = new RawData(); // Raw Data Germany
-                rawDataDe.AddDataSourceCSV("People.csv", RawData.FileTypes.people, dd);
-                rawDataDe.AddDataSourceCSV("Organisations.csv", RawData.FileTypes.organizations, dd);
-                rawDataDe.AddDataSourceCSV("Addresses.csv", RawData.FileTypes.addresses, dd);
+                rawDataDe.AddDataSourceCSV("people.csv", RawData.FileTypes.people, dd);
+                rawDataDe.AddDataSourceCSV("organisations.csv", RawData.FileTypes.organizations, dd);
+                rawDataDe.AddDataSourceCSV("addresses.csv", RawData.FileTypes.addresses, dd);
                 rawDataDe.LoadAllData();
                 // Print some stats
                 TLogging.Log("\tPeople:        " + rawDataDe.People.Count);

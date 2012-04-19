@@ -362,7 +362,8 @@
   <if test="${'unix'==platform::get-name()}">
     <!-- Unix specific -->
     <property name="external.Uncrustify" value="uncrustify" overwrite="false"/>
-    <property name="external.Java" value="java" overwrite="false"/>
+    <property name="external.Benerator" value="/usr/local/benerator/bin/benerator.sh" overwrite="false"/>
+    <property name="external.Java" value="/usr/bin/java" overwrite="false"/>
     <property name="external.Poedit.gettext" value="/usr/bin/xgettext" overwrite="false"/>
     <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
     <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>     
