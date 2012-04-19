@@ -162,15 +162,16 @@ namespace Ict.Testing.SampleDataConstructor
                 int FieldID =
                     Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "field")) % FieldKeys.Rows.Count;
                 long FieldPartnerKey = Convert.ToInt64(FieldKeys.Rows[FieldID].ItemArray[0]);
-                
+
                 PUnitRow UnitRow = PartnerDS.PUnit.NewRowTyped();
                 long UnitPartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
-                if (!TNewPartnerKey.SubmitNewPartnerKey(FLedgerNumber * 1000000, 
-                                                                        UnitPartnerKey, ref UnitPartnerKey))
+
+                if (!TNewPartnerKey.SubmitNewPartnerKey(FLedgerNumber * 1000000,
+                        UnitPartnerKey, ref UnitPartnerKey))
                 {
                     throw new Exception("create key ministry: problems getting a new partner key");
                 }
-                
+
                 UnitRow.PartnerKey = UnitPartnerKey;
                 UnitRow.UnitName = FieldKeys.Rows[FieldID].ItemArray[1].ToString() + " - " + TXMLParser.GetAttribute(RecordNode, "KeyMinName");
                 UnitRow.UnitTypeCode = "KEY-MIN";

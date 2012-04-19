@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -126,7 +126,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!FInKeyMinistryChanging)
                 {
-                    //...this does not work as expected, because the timer fires valuechanged event after this value is reset
                     TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
 
                     long FieldNumber = Convert.ToInt64(txtField.Text);
@@ -155,11 +154,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (APartnerKey != FLastDonor)
                 {
-                    GLSetupTDS PartnerDS = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+                    PPartnerTable PartnerDT = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
 
-                    if (PartnerDS.PPartner.Rows.Count > 0)
+                    if (PartnerDT.Rows.Count > 0)
                     {
-                        PPartnerRow pr = PartnerDS.PPartner[0];
+                        PPartnerRow pr = PartnerDT[0];
                         chkDetailConfidentialGiftFlag.Checked = pr.AnonymousDonor;
                     }
 

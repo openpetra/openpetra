@@ -34,6 +34,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using SampleDataConstructor;
 
 namespace Ict.Testing.SampleDataConstructor
@@ -210,6 +211,8 @@ namespace Ict.Testing.SampleDataConstructor
                                     Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_field_" +
                                             counter.ToString())) % FieldKeys.Rows.Count;
                                 giftDetail.RecipientKey = Convert.ToInt64(FieldKeys.Rows[recipientID].ItemArray[0]);
+                                giftDetail.RecipientLedgerNumber = giftDetail.RecipientKey;
+                                giftDetail.CostCentreCode = (giftDetail.RecipientKey / 10000).ToString("0000");
                             }
                             else if (motivation == "KEYMIN")
                             {
@@ -223,6 +226,8 @@ namespace Ict.Testing.SampleDataConstructor
                                     Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_keymin_" +
                                             counter.ToString())) % KeyMinKeys.Rows.Count;
                                 giftDetail.RecipientKey = Convert.ToInt64(KeyMinKeys.Rows[recipientID].ItemArray[0]);
+                                giftDetail.RecipientLedgerNumber = TTransactionWebConnector.SearchRecipientLedgerKey(giftDetail.RecipientKey);
+                                giftDetail.CostCentreCode = (giftDetail.RecipientLedgerNumber / 10000).ToString("0000");
                             }
 
                             giftDetail.DetailNumber = gift.LastDetailNumber + 1;
