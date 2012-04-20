@@ -37,6 +37,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 //using Ict.Petra.Client.MReporting.Gui.MPersonnel;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner;
 using System.Collections.Specialized;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 
@@ -73,10 +74,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
             System.Int64 FamilyKey = GetLastUsedFamilyKey();
+            TLocationPK LocationSiteKey = TRemote.MPartner.Partner.WebConnectors.DetermineBestAddress(FamilyKey);
 
             frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "", "", false,
-                FamilyKey, -1, -1);
-            //frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
+                FamilyKey, LocationSiteKey.LocationKey, LocationSiteKey.SiteKey);
+
             frm.Show();
         }
 

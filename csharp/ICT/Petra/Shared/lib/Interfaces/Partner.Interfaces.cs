@@ -717,6 +717,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
                                               Boolean ANewPartner,
                                               TLastPartnerUse ALastPartnerUse);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
+        TLocationPK DetermineBestAddress(Int64 APartnerKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
         System.Boolean ChangeFamily(Int64 APersonKey,
                                     Int64 AOldFamilyKey,
                                     Int64 ANewFamilyKey,
