@@ -32,7 +32,8 @@ Recommended: (BR),DE,US
 	consumer="new CSVEntityExporter(uri='${dir.data.output}/people.csv')">
 				
 	<variable name="person" generator="PersonGenerator" />
-	<id name="identifier" type="long"  />		<attribute name="active" type="boolean" constant="true" />
+	<id name="identifier" type="long"  />
+	<attribute name="active" type="boolean" constant="true" />
 	<attribute name="Title" script="person.salutation" />
 	<attribute name="NobilityTitle" script="person.nobilityTitle" /> <!-- e.g. "Duke" -->
 	<attribute name="Gender" script="person.gender" />
@@ -124,6 +125,85 @@ partner -> partner-location -> location
         <attribute name="KeyMinName" type="string" pattern="(Feed the|Heal the|Save the|Rescue the|Free the) (Forest|Dolphins|Poor|Hungry|Injured|Addicted|Disadvantaged)" unique="true"/>
         <reference name="field" script="the_field.id"/>
     </generate>
+</generate>
+
+<!-- workers -->
+<bean id="myMalePersonGen" class="PersonGenerator">
+    <property name='femaleQuota'          value='0.0'/>
+    <property name='minAgeYears'          value='18'/>
+</bean>
+
+<bean id="myFemalePersonGen" class="PersonGenerator">
+    <property name='femaleQuota'          value='1.0'/>
+    <property name='minAgeYears'          value='18'/>
+</bean>
+
+<bean id="myChildPersonGen" class="PersonGenerator">
+    <property name='minAgeYears'          value='0'/>
+    <property name='maxAgeYears'          value='21'/>
+</bean>
+
+<generate name="the_worker" type="Worker" count="${workers_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/workers.csv')">
+    <id name="id" type="int" generator="IncrementalIdGenerator" />
+    <!-- worker needs a person and a family record, perhaps with spouse and children, an address record, and a commitment record with one of the fields. -->
+    
+    <variable name="personHusband" generator="myMalePersonGen"/>
+    <variable name="personWife" generator="myFemalePersonGen"/>
+    <variable name="personChild1" generator="myChildPersonGen"/>
+    <variable name="personChild2" generator="myChildPersonGen"/>
+    <variable name="personChild3" generator="myChildPersonGen"/>
+    <variable name="personChild4" generator="myChildPersonGen"/>
+    <variable name="personChild5" generator="myChildPersonGen"/>
+
+	<id name="identifier" type="long"  />
+	<attribute name="HusbandTitle" script="personHusband.salutation" />
+	<attribute name="HusbandFirstName" script="personHusband.givenName" />
+	<attribute name="HusbandMiddleName" script="personHusband.secondGivenName" />
+	<attribute name="HusbandFamilyName" script="personHusband.familyName" />
+	<attribute name="HusbandDateOfBirth" script="personHusband.birthDate" />
+	<attribute name="HusbandEmail" script="personHusband.email" />
+
+	<attribute name="WifeTitle" script="personWife.salutation" />
+	<attribute name="WifeFirstName" script="personWife.givenName" />
+	<attribute name="WifeMiddleName" script="personWife.secondGivenName" />
+	<attribute name="WifePreviousName" script="personWife.familyName" />
+	<attribute name="WifeDateOfBirth" script="personWife.birthDate" />
+	<attribute name="WifeEmail" script="personWife.email" />
+
+	<attribute name="Child1Title" script="personChild1.salutation" />
+	<attribute name="Child1FirstName" script="personChild1.givenName" />
+	<attribute name="Child1MiddleName" script="personChild1.secondGivenName" />
+	<attribute name="Child1DateOfBirth" script="personChild1.birthDate" />
+    
+	<attribute name="Child2Title" script="personChild2.salutation" />
+	<attribute name="Child2FirstName" script="personChild2.givenName" />
+	<attribute name="Child2MiddleName" script="personChild2.secondGivenName" />
+	<attribute name="Child2DateOfBirth" script="personChild2.birthDate" />
+
+	<attribute name="Child3Title" script="personChild3.salutation" />
+	<attribute name="Child3FirstName" script="personChild3.givenName" />
+	<attribute name="Child3MiddleName" script="personChild3.secondGivenName" />
+	<attribute name="Child3DateOfBirth" script="personChild3.birthDate" />
+
+   	<attribute name="Child4Title" script="personChild4.salutation" />
+	<attribute name="Child4FirstName" script="personChild4.givenName" />
+	<attribute name="Child4MiddleName" script="personChild4.secondGivenName" />
+	<attribute name="Child4DateOfBirth" script="personChild4.birthDate" />
+
+	<attribute name="Child5Title" script="personChild5.salutation" />
+	<attribute name="Child5FirstName" script="personChild5.givenName" />
+	<attribute name="Child5MiddleName" script="personChild5.secondGivenName" />
+	<attribute name="Child5DateOfBirth" script="personChild5.birthDate" />
+
+    <attribute name="address" type="int" min="1" max="5000"/>
+    <attribute name="familySituation" type="string" pattern="(singleMan|singleWoman|family)"/>
+    <attribute name="numberOfChildren" type="int" min="0" max="5"/>
+    
+    <!-- TODO: add a commitment for the wife as well? -->
+    <attribute name="startDateCommitment" type="int" min="1" max="5000"/>
+    <attribute name="lengthCommitment" type="int" min="0" max="5"/> <!-- 0 is open ended -->
+    <attribute name="lengthCommitmentUnit" type="string" pattern="(week|month|year)"/>
+    <attribute name="fieldCommitment" type="int" min="1" max="300"/>
 </generate>
 
 <generate type="Donations" count="${donations_count}" 
