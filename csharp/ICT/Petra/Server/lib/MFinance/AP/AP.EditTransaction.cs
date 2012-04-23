@@ -902,18 +902,19 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
         /// <summary>
         /// Check that the Account codes for an invoice can be used with the cost centres referenced.
-        /// 
+        ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AccountCodesCostCentres">list {Account"|"Cost Centre}</param>
         /// <returns>Empty string if there's no problems</returns>
         [RequireModulePermission("FINANCE-3")]
-        public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List<String> AccountCodesCostCentres)
+        public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List <String>AccountCodesCostCentres)
         {
             String ReportMsg = "";
+
             foreach (String AccCostCentre in AccountCodesCostCentres)
             {
-                Int32 BarPos = AccCostCentre.IndexOf ("|");
+                Int32 BarPos = AccCostCentre.IndexOf("|");
                 String AccountCode = AccCostCentre.Substring(0, BarPos);
                 AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AccountCode, null);
                 String ValidCcCombo = AccountTbl[0].ValidCcCombo.ToLower();
@@ -926,14 +927,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     String CostCentre = AccCostCentre.Substring(BarPos + 1);
                     ACostCentreTable CcTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, CostCentre, null);
                     String CcType = CcTbl[0].CostCentreType.ToLower();
+
                     if (ValidCcCombo != CcType)
                     {
-                        ReportMsg += String.Format (Catalog.GetString("Error: Account {0} cannot be used with cost centre {1}. Account requires a {2} cost centre."),
-                            AccountCode, CostCentre, ValidCcCombo);
+                        ReportMsg +=
+                            String.Format(Catalog.GetString(
+                                    "Error: Account {0} cannot be used with cost centre {1}. Account requires a {2} cost centre."),
+                                AccountCode, CostCentre, ValidCcCombo);
                         ReportMsg += Environment.NewLine;
                     }
                 }
             }
+
             return ReportMsg;
         }
 
@@ -1523,14 +1528,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             foreach (AccountsPayableTDSAApDocumentPaymentRow row in MainDS.AApDocumentPayment.Rows)
             {
-                AccountsPayableTDSAApDocumentRow documentRow = (AccountsPayableTDSAApDocumentRow) MainDS.AApDocument.Rows.Find(row.ApDocumentId);
+                AccountsPayableTDSAApDocumentRow documentRow = (AccountsPayableTDSAApDocumentRow)MainDS.AApDocument.Rows.Find(row.ApDocumentId);
+
                 if (documentRow != null)
                 {
                     MainDS.AApDocument.Rows.Remove(documentRow);
                 }
 
                 documentRow = (AccountsPayableTDSAApDocumentRow)
-                            AApDocumentAccess.LoadByPrimaryKey(MainDS, row.ApDocumentId, ReadTransaction);
+                              AApDocumentAccess.LoadByPrimaryKey(MainDS, row.ApDocumentId, ReadTransaction);
 
                 SetOutstandingAmount(documentRow, documentRow.LedgerNumber, MainDS.AApDocumentPayment);
 
@@ -1792,7 +1798,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     AApDocumentRow OldDocumentRow = TempDS.AApDocument[DocIdx];
                     AccountsPayableTDSAApDocumentRow NewDocumentRow = ReverseDS.AApDocument.NewRowTyped();
                     DocIdx = TempDS.AApPayment.DefaultView.Find(DocPaymentRow.PaymentNumber);
-                    AApPaymentRow  OldPaymentRow = TempDS.AApPayment[DocIdx];
+                    AApPaymentRow OldPaymentRow = TempDS.AApPayment[DocIdx];
                     DataUtilities.CopyAllColumnValues(OldDocumentRow, NewDocumentRow);
                     NewDocumentRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document);
 
@@ -1891,7 +1897,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                                                                     // created to balance the books.
                 }
 
-
                 if (!PostAPPayments(
                         ref ReverseDS,
                         APostingDate,
@@ -1983,7 +1988,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 AVerifications = new TVerificationResultCollection();
                 TLogging.Log("In ReversePayment: exception " + e.Message);
                 TLogging.Log(e.StackTrace);
-                
+
                 TVerificationResult Res = new TVerificationResult("Exception", e.Message + "\r\n" + e.StackTrace, TResultSeverity.Resv_Critical);
                 AVerifications.Add(Res);
                 return false;

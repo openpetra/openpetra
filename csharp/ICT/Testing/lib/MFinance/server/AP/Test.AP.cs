@@ -314,7 +314,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [Test]
         public void ForeignCurrencyPostPayAndReverse()
@@ -372,7 +372,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             TFinancialYear.GetStartAndEndDateOfPeriod(intLedgerNumber, LedgerTable[0].CurrentPeriod, out PeriodStartDate, out PeriodEndDate, null);
 
             // Post the AP document
-            List<int> documentIds = new List<int>();
+            List <int>documentIds = new List <int>();
             documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
 
             if (!TTransactionWebConnector.PostAPDocuments(intLedgerNumber,
@@ -384,21 +384,21 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                     VerificationResult.BuildVerificationResultString());
             }
 
-            /* 
-            // Since the previous test succeeded, I'm not interested in examining the result here -
-            // I'll go straight on and pay, then "un-pay", then "un-post",
-            // and then see what the results is!
-
-            decimal ExpAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultExpAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-
-            //  I need rounding to avoid this error:
-            //  Expected: 83.33333333333333333333333333m
-            //  But was:  83.3333333333m
-            Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 5), Math.Round(ExpAccountAfter - ExpAccountBefore,
-                    5), "after posting the invoice, the expense account should be debited the amount in base currency");
-            */
+            /*
+             * // Since the previous test succeeded, I'm not interested in examining the result here -
+             * // I'll go straight on and pay, then "un-pay", then "un-post",
+             * // and then see what the results is!
+             *
+             * decimal ExpAccountAfter = new TGet_GLM_Info(intLedgerNumber,
+             *  MainDS.AApSupplier[0].DefaultExpAccount,
+             *  MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+             *
+             * //  I need rounding to avoid this error:
+             * //  Expected: 83.33333333333333333333333333m
+             * //  But was:  83.3333333333m
+             * Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 5), Math.Round(ExpAccountAfter - ExpAccountBefore,
+             *      5), "after posting the invoice, the expense account should be debited the amount in base currency");
+             */
 
             // Pay the AP document
             int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;
@@ -426,43 +426,44 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                     VerificationResult.BuildVerificationResultString());
             }
 
-            /* 
-            // Since the previous test succeeded, I'm not interested in examining the result here -
-            // I'll go straight on and "un-pay", then "un-post",
-            // and then see what the results is!
-
-            // save the current amount on the AP account
-            decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultApAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultBankAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdForeign;
-
-            // check the amount on the AP account
-            Assert.AreEqual(0.0m, APAccountBalanceAfter - APAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
-            Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - BankAccountBefore, "after paying the invoice, the bank account should be credited");
-
-            decimal RevalAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            Assert.AreEqual(
-                Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 5),
-                Math.Round((RevalAccountAfter - RevalAccountBefore), 5),
-                "after paying the invoice, the revaluation account should be credited with the forex gain");
-            */
+            /*
+             * // Since the previous test succeeded, I'm not interested in examining the result here -
+             * // I'll go straight on and "un-pay", then "un-post",
+             * // and then see what the results is!
+             *
+             * // save the current amount on the AP account
+             * decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
+             *  MainDS.AApSupplier[0].DefaultApAccount,
+             *  MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+             * decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
+             *  MainDS.AApSupplier[0].DefaultBankAccount,
+             *  MainDS.AApSupplier[0].DefaultCostCentre).YtdForeign;
+             *
+             * // check the amount on the AP account
+             * Assert.AreEqual(0.0m, APAccountBalanceAfter - APAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
+             * Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - BankAccountBefore, "after paying the invoice, the bank account should be credited");
+             *
+             * decimal RevalAccountAfter = new TGet_GLM_Info(intLedgerNumber,
+             *  LedgerTable[0].ForexGainsLossesAccount,
+             *  MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+             * Assert.AreEqual(
+             *  Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 5),
+             *  Math.Round((RevalAccountAfter - RevalAccountBefore), 5),
+             *  "after paying the invoice, the revaluation account should be credited with the forex gain");
+             */
 
             //
             // Now I'll try to immediately "un-pay" this invoice...
             //
             if (!TTransactionWebConnector.ReversePayment(intLedgerNumber,
-                                             docPayment.PaymentNumber,
-                                             PeriodEndDate,
-                                             out VerificationResult))
+                    docPayment.PaymentNumber,
+                    PeriodEndDate,
+                    out VerificationResult))
             {
-                 Assert.Fail("Failed to reverse AP payment: " +
+                Assert.Fail("Failed to reverse AP payment: " +
                     VerificationResult.BuildVerificationResultString());
             }
+
             //
             // "un-post" the invoice, returning it to "Approved" status:
             //
@@ -470,9 +471,9 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             documentIds[0] += 2; // The invoice I posted was reversed, and a duplicate now exists with an Id 2 greater than the original.
 
             if (!TTransactionWebConnector.PostAPDocuments(intLedgerNumber,
-                                documentIds,
-                                PeriodEndDate,
-                                true, out VerificationResult))
+                    documentIds,
+                    PeriodEndDate,
+                    true, out VerificationResult))
             {
                 Assert.Fail("Failed to post AP document reversal: " +
                     VerificationResult.BuildVerificationResultString());
@@ -501,6 +502,5 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 Math.Round(RevalAccountBefore, 5),
                 "After paying then reversing, the Forex Gains/Losses Account account should be as before.");
         }
-
     }
 }
