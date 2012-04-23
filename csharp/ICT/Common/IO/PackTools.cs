@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -238,35 +239,25 @@ namespace Ict.Common.IO
         }
 
         /// unzip a base64 encoded string and return the original utf8 string using gzip
-        public static string UnzipString(string ACompressedString)
+        public static string[] UnzipString(string ACompressedString)
         {
-            string result = string.Empty;
+            List <String>Result = new List <string>();
 
             Byte[] compressedBuffer = Convert.FromBase64String(ACompressedString);
 
             MemoryStream memoryStream = new MemoryStream(compressedBuffer);
             GZipInputStream gzStream = new GZipInputStream(memoryStream);
+            StreamReader sr = new StreamReader(gzStream);
 
-            int size = 2048;
-            byte[] clearTextBuffer = new byte[size];
-
-            while (true)
+            while (!sr.EndOfStream)
             {
-                size = gzStream.Read(clearTextBuffer, 0, size);
-
-                if (size > 0)
-                {
-                    result += Encoding.UTF8.GetString(clearTextBuffer, 0, size);
-                }
-                else
-                {
-                    break;
-                }
+                Result.Add(sr.ReadLine());
             }
 
+            sr.Close();
             gzStream.Close();
 
-            return result;
+            return Result.ToArray();
         }
 
         /// <summary>
