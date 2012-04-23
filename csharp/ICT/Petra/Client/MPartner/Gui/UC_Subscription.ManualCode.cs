@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;

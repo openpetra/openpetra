@@ -51,6 +51,7 @@ RootNode:
             List: DocumentTypeList
             DataField: PmDocument.DocCode
             ColSpan: 3
+            Validation: true
         
         txtDocumentID:
             Label: Document ID

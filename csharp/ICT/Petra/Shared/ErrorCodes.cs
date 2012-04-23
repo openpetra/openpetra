@@ -75,12 +75,18 @@ namespace Ict.Petra.Shared
              HelpID = "V.12345")]
         public const String ERR_GENERAL_VERIFICATION_ERROR = "GEN.00001V";
 
-        /// <summary>Value is no longer assignable.</summary>
+        /// <summary>Value is no longer assignable (show error).</summary>
         [ErrCodeAttribute("Value is no longer assignable.",
              ErrorMessageText = "The code '{0}' is no longer active.\r\nDo you still want to use it?",
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUEUNASSIGNABLE = "GEN.00002V";
 
+        /// <summary>Value is no longer assignable (just give warning).</summary>
+        [ErrCodeAttribute("Value is no longer assignable.",
+             ErrorMessageText = "The code '{0}' is no longer assignable.\r\nIt should no longer be used.",
+             ErrorMessageTitle = "Unassignable Code Used")]
+        public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007N";
+        
         /// <summary>No permission to access DB Table.</summary>
         [ErrCodeAttribute("You don't have permission to access the specified database table.")]
         public const String ERR_NOPERMISSIONTOACCESSTABLE = "GEN.00003E";

@@ -87,6 +87,22 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
         }
 #endif
 
+#region ManualCode
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Wrapper for other GetCacheableTable method
+        /// </summary>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <returns>DataTable</returns>
+        public DataTable GetCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable)
+        {
+            System.Type TmpType;
+            return GetCacheableTable(ACacheableTable, "", false, out TmpType);
+        }
+#endregion ManualCode
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
         /// rows of a specified table.

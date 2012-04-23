@@ -416,24 +416,24 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Cacheable
     public interface ICacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 System.Int32 ALedgerNumber,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable);
+        void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                    System.Int32 ALedgerNumber);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                    System.Int32 ALedgerNumber,
                                    out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MFinance.Instantiator.Cacheable.Class)</summary>

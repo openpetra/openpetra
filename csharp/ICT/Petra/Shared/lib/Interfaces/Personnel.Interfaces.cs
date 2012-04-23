@@ -194,7 +194,7 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Application
     public interface IPersonDataElementsApplicationsCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable);
+        System.Data.DataTable GetCacheableTable(TCacheablePersonTablesEnum ACacheableTable);
     }
 
 }
@@ -222,11 +222,11 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.Cacheable
     public interface IPersonDataElementsCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheablePersonTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable.Class)</summary>
-        TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheablePersonTablesEnum ACacheableTable,
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheablePersonTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
                                                                out TVerificationResultCollection AVerificationResult);
     }
@@ -360,11 +360,11 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.Units.DataElements.Cacheable
     public interface IUnitsDataElementsCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheableUnitTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable.Class)</summary>
-        TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MPersonnel.TCacheableUnitTablesEnum ACacheableTable,
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableUnitTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
                                                                out TVerificationResultCollection AVerificationResult);
     }

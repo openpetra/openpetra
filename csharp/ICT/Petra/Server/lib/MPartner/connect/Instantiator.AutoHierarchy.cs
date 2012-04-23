@@ -1431,7 +1431,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPartner.TCacheableMailingTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -1441,7 +1441,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableMailingTablesEnum ACacheableTable)
+        public void RefreshCacheableTable(TCacheableMailingTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -1450,7 +1450,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableMailingTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode
@@ -1989,7 +1989,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPartner.TCacheablePartnerTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -1999,7 +1999,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheablePartnerTablesEnum ACacheableTable)
+        public void RefreshCacheableTable(TCacheablePartnerTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -2008,7 +2008,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheablePartnerTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode
@@ -2328,7 +2328,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         /// generated method from interface
         public Boolean VerifyPartner(Int64 APartnerKey,
                                      TPartnerClass[] AValidPartnerClasses,
-                                     out bool APartnerExists,
+                                     out System.Boolean APartnerExists,
                                      out String APartnerShortName,
                                      out TPartnerClass APartnerClass,
                                      out Boolean AIsMergedPartner)
@@ -3320,7 +3320,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPartner.TCacheableSubscriptionsTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -3330,7 +3330,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableSubscriptionsTablesEnum ACacheableTable)
+        public void RefreshCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -3339,7 +3339,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableSubscriptionsTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode
