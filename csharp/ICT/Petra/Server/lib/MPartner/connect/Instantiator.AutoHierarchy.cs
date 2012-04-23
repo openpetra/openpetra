@@ -2818,6 +2818,13 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public TLocationPK DetermineBestAddress(Int64 APartnerKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector), "DetermineBestAddress", ";LONG;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector.DetermineBestAddress(APartnerKey);
+        }
+
+        /// generated method from connector
         public System.Boolean ChangeFamily(Int64 APersonKey,
                                            Int64 AOldFamilyKey,
                                            Int64 ANewFamilyKey,

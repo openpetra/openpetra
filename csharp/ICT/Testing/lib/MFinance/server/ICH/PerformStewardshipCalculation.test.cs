@@ -54,8 +54,8 @@ namespace Tests.MFinance.Server.ICH
     {
         Int32 FLedgerNumber = -1;
 
-        const string MainFeesPayableCode = "GIF";
-        const string MainFeesReceivableCode = "HO_ADMIN";
+        const string MainFeesPayableCode = "GIF2";
+        const string MainFeesReceivableCode = "HO_ADMIN2";
 
         /// <summary>
         /// open database connection or prepare other things for this test
