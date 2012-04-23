@@ -6,7 +6,10 @@
 <target name="generateDemodata">
     <property name="people_count" value="1000" overwrite="false"/>
     <property name="organisations_count" value="200" overwrite="false"/>
-    <property name="addresses_count" value="1500" overwrite="false"/>
+    <property name="fields_count" value="15" overwrite="false"/>
+    <property name="workers_count" value="100" overwrite="false"/>
+    <property name="keyminsperfield_count" value="10" overwrite="false"/>
+    <property name="donations_count" value="3000" overwrite="false"/>
     <property name="dir.data.output" value="${string::replace(dir.root,'\','/')}/demodata/generated" overwrite="false"/>
 
     <copy file="${dir.incdir.cfg + '/benerator/create-data.ben.xml'}"
@@ -20,14 +23,17 @@
           workingdir="${dir.incdir.cfg + '/benerator'}">
         <environment>
             <variable name="PATH" value="${path::get-directory-name(external.Java)}"/>
+            <variable name="BENERATOR_HOME" value="${path::get-directory-name(external.Benerator)}/.."/>
+            <variable name="JAVA_HOME" value="${path::get-directory-name(external.Java)}/.."/>
         </environment>
     </exec>
 </target>
 
-<target name="importDemodata" depends="init">
+<target name="importDemodata" depends="init, initConfigFiles">
     <!-- requires a server to be started that we can connect to and upload our data -->
+    <property name="operation" value="all" overwrite="false"/>
     <ExecDotNet program="${dir.bin}/Ict.Testing.SampleDataConstructor.exe" 
-        commandline="-C:&quot;${dir.etc}/TestServer.config&quot; -dir.data.generated:&quot;${dir.root}/demodata/generated&quot;"
+        commandline="-C:&quot;${dir.etc}/TestServer.config&quot; -dir.data.generated:&quot;${dir.root}/demodata/generated&quot; -operation:${operation}"
         failonerror="true"/>
 </target>
 

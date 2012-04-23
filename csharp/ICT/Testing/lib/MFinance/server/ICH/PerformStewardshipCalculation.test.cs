@@ -40,6 +40,7 @@ using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -53,8 +54,8 @@ namespace Tests.MFinance.Server.ICH
     {
         Int32 FLedgerNumber = -1;
 
-        const string MainFeesPayableCode = "ICT";
-        const string MainFeesReceivableCode = "HO_ADMIN";
+        const string MainFeesPayableCode = "GIF2";
+        const string MainFeesReceivableCode = "HO_ADMIN2";
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -111,7 +112,7 @@ namespace Tests.MFinance.Server.ICH
 
             if (!TTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
-                Assert.Fail("Gift Batch was not posted");
+                Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
 
             return BatchNumber;
@@ -205,11 +206,11 @@ namespace Tests.MFinance.Server.ICH
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
-            Assert.AreEqual(-12m, TTransactionWebConnector.CalculateAdminFee(MainDS,
+            Assert.AreEqual(2m, TTransactionWebConnector.CalculateAdminFee(MainDS,
                     FLedgerNumber,
                     "GIF",
-                    -200m,
-                    out VerificationResults), "expect 12");
+                    200m,
+                    out VerificationResults), "expect 1% of 200");
         }
 
         /// <summary>
@@ -221,6 +222,8 @@ namespace Tests.MFinance.Server.ICH
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
             Int32 PeriodNumber = 5;
+            const string CostCentreGIF = "9500";
+            const string CostCentreReceivingField = "7300";
 
             // run possibly empty stewardship calculation, to process all gifts that do not belong to this test
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
@@ -228,24 +231,59 @@ namespace Tests.MFinance.Server.ICH
             Assert.IsFalse(VerificationResults.HasCriticalErrors, "Performing initial Stewardship Calculation Failed! " +
                 VerificationResults.BuildVerificationResultString());
 
+            // make sure we have some admin fees
+            ImportAdminFees();
+
+            decimal AdminGrantIncomeBefore = new TGet_GLM_Info(FLedgerNumber,
+                MFinanceConstants.ADMIN_FEE_INCOME_ACCT,
+                (FLedgerNumber * 100).ToString("0000")).YtdActual;
+            decimal GIFBefore = new TGet_GLM_Info(FLedgerNumber,
+                MFinanceConstants.ICH_ACCT_SETTLEMENT,
+                CostCentreGIF).YtdActual;
+            decimal RecipientBefore = new TGet_GLM_Info(FLedgerNumber,
+                MFinanceConstants.ICH_ACCT_SETTLEMENT,
+                CostCentreReceivingField).YtdActual;
+            decimal ClearingHouseBefore = new TGet_GLM_Info(FLedgerNumber,
+                MFinanceConstants.ICH_ACCT_ICH,
+                (FLedgerNumber * 100).ToString("0000")).YtdActual;
+
             // import new gift batch. use proper period and date effective
             DateTime PeriodStartDate, PeriodEndDate;
             TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, PeriodNumber, out PeriodStartDate, out PeriodEndDate, null);
-            int GiftBatchNumber = ImportAndPostGiftBatch(PeriodStartDate);
-
-            // make sure we have some admin fees
-            ImportAdminFees();
+            ImportAndPostGiftBatch(PeriodStartDate);
 
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber, out VerificationResults);
             Assert.IsFalse(VerificationResults.HasCriticalErrors, "Performing Stewardship Calculation Failed!" +
                 VerificationResults.BuildVerificationResultString());
 
-            // analyse the admin fee batch
-            // TODO check transactions
+            // Home office keeps 1.40 => 4300/3400 Admin Grant income
+            decimal AdminGrantIncomeAfter = new TGet_GLM_Info(FLedgerNumber,
+                MFinanceConstants.ADMIN_FEE_INCOME_ACCT,
+                (FLedgerNumber * 100).ToString("0000")).YtdActual;
+            Assert.AreEqual(20.0m * 7.0m / 100.0m, AdminGrantIncomeAfter - AdminGrantIncomeBefore,
+                "Home office keeps 7% of 20 Euro gift");
 
-            // analyse the stewardship batch
-            // TODO check transactions
+            // GIF should get 0.20 => 9500/5601
+            decimal GIFAfter = new TGet_GLM_Info(FLedgerNumber,
+                MFinanceConstants.ICH_ACCT_SETTLEMENT,
+                CostCentreGIF).YtdActual;
+            Assert.AreEqual(20.0m * 1.0m / 100.0m, GIFAfter - GIFBefore,
+                "GIF should get 1% of 20 Euro gift");
+
+            // Receiving field should get 20-1.60 = 18.40 => 7300/5601
+            decimal RecipientAfter = new TGet_GLM_Info(FLedgerNumber,
+                MFinanceConstants.ICH_ACCT_SETTLEMENT,
+                CostCentreReceivingField).YtdActual;
+            Assert.AreEqual(20.0m * (100.0m - 1.0m - 7.0m) / 100.0m, RecipientAfter - RecipientBefore,
+                "Receiving field should get 92% of 20 Euro gift");
+
+            // Clearing House (4300/8500) should receive the money for GIF and receiving field
+            decimal ClearingHouseAfter = new TGet_GLM_Info(FLedgerNumber,
+                MFinanceConstants.ICH_ACCT_ICH,
+                (FLedgerNumber * 100).ToString("0000")).YtdActual;
+            Assert.AreEqual(20.0m * (100.0m - 7.0m) / 100.0m, ClearingHouseAfter - ClearingHouseBefore,
+                "We have to give everything apart from our 7% to ICH");
         }
     }
 }

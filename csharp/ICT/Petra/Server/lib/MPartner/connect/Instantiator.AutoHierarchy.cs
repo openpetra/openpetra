@@ -2328,7 +2328,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
         /// generated method from interface
         public Boolean VerifyPartner(Int64 APartnerKey,
                                      TPartnerClass[] AValidPartnerClasses,
-                                     out bool APartnerExists,
+                                     out System.Boolean APartnerExists,
                                      out String APartnerShortName,
                                      out TPartnerClass APartnerClass,
                                      out Boolean AIsMergedPartner)
@@ -2815,6 +2815,13 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector), "AddRecentlyUsedPartner", ";LONG;TPARTNERCLASS;BOOL;TLASTPARTNERUSE;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector.AddRecentlyUsedPartner(APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse);
+        }
+
+        /// generated method from connector
+        public TLocationPK DetermineBestAddress(Int64 APartnerKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector), "DetermineBestAddress", ";LONG;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector.DetermineBestAddress(APartnerKey);
         }
 
         /// generated method from connector

@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have chosen to delete thistype ({0}).\n\nDo you really want to delete it?"),
+                                "You have chosen to delete this type ({0}).\n\nDo you really want to delete it?"),
                             FPreviouslySelectedDetailRow.AnalysisTypeCode), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
@@ -170,17 +170,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void SelectByIndex(int rowIndex)
         {
-            if (rowIndex >= grdDetails.Rows.Count)
+            int RowCount = grdDetails.Rows.Count;
+
+            if (RowCount == 1) // There's no Items left in the grid (I just deleted the last one?)
             {
-                rowIndex = grdDetails.Rows.Count - 1;
+                txtDetailAnalysisTypeCode.ResetText();
+                txtDetailAnalysisTypeDescription.ResetText();
             }
 
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
+            if (rowIndex >= RowCount)
+            {
+                rowIndex = RowCount - 1;
+            }
+
+            if ((rowIndex < 1) && (RowCount > 1))
             {
                 rowIndex = 1;
             }
 
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+            if ((rowIndex >= 1) && (RowCount > 1))
             {
                 grdDetails.Selection.SelectRow(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();

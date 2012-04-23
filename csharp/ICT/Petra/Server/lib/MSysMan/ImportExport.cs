@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Xml;
 using System.IO;
 using System.Reflection;
 using System.Globalization;
+using System.Text;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
@@ -168,7 +169,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 foreach (DataColumn col in table.Columns)
                 {
-                    if (row[col].GetType() != typeof(DBNull))
+                    if ((row[col].GetType() != typeof(DBNull)) && (col.ColumnName != "ModificationId"))
                     {
                         if (col.DataType == typeof(DateTime))
                         {
@@ -242,18 +243,19 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction, false);
                 }
 
-                TYml2Xml ymlParser = new TYml2Xml(PackTools.UnzipString(AZippedNewDatabaseData).Replace("\r", "").Split(new char[] { '\n' }));
-                XmlDocument doc = ymlParser.ParseYML2XML();
+                TSimpleYmlParser ymlParser = new TSimpleYmlParser(PackTools.UnzipString(AZippedNewDatabaseData));
+
+                ymlParser.ParseCaptions();
 
                 tables.Reverse();
 
                 // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
                 bool success = true;
-                success = success && LoadTable("s_user", doc, Transaction);
-                success = success && LoadTable("s_module", doc, Transaction);
-                success = success && LoadTable("s_user_module_access_permission", doc, Transaction);
-                success = success && LoadTable("s_system_defaults", doc, Transaction);
-                success = success && LoadTable("s_system_status", doc, Transaction);
+                success = success && LoadTable("s_user", ymlParser, Transaction);
+                success = success && LoadTable("s_module", ymlParser, Transaction);
+                success = success && LoadTable("s_user_module_access_permission", ymlParser, Transaction);
+                success = success && LoadTable("s_system_defaults", ymlParser, Transaction);
+                success = success && LoadTable("s_system_status", ymlParser, Transaction);
 
                 if (!success)
                 {
@@ -272,13 +274,13 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 foreach (string table in tables)
                 {
-                    LoadTable(table, doc, Transaction);
+                    LoadTable(table, ymlParser, Transaction);
                 }
 
                 // set sequences appropriately, not lagging behind the imported data
                 foreach (string seq in TTableList.GetDBSequenceNames())
                 {
-                    LoadSequence(seq, doc, Transaction);
+                    LoadSequence(seq, ymlParser, Transaction);
                 }
 
                 // make sure we have the correct database version
@@ -303,76 +305,63 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return true;
         }
 
-        private static XmlNode FindNode(XmlDocument ADoc, string ATableName)
+        private static bool LoadSequence(string ASequenceName, TSimpleYmlParser AYmlParser, TDBTransaction ATransaction)
         {
-            XmlNode rootNode = ADoc.FirstChild.NextSibling;
-
-            foreach (XmlNode ModuleNode in rootNode.ChildNodes)
+            if (!AYmlParser.StartParseList("Sequences"))
             {
-                foreach (XmlNode TableNode in ModuleNode.ChildNodes)
+                return false;
+            }
+
+            SortedList <string, string>RowDetails;
+
+            while ((RowDetails = AYmlParser.GetNextLineAttributes()) != null)
+            {
+                if (RowDetails["RowName"] == StringHelper.UpperCamelCase(ASequenceName, false, false))
                 {
-                    if (TableNode.Name == ATableName)
-                    {
-                        return TableNode;
-                    }
+                    DBAccess.GDBAccessObj.RestartSequence(
+                        ASequenceName,
+                        ATransaction,
+                        Convert.ToInt64(RowDetails["value"]));
+
+                    return true;
                 }
             }
 
-            return null;
+            return false;
         }
 
-        private static bool LoadSequence(string ASequenceName, XmlDocument ADoc, TDBTransaction ATransaction)
+        private static bool LoadTable(string ATableName, TSimpleYmlParser AYmlParser, TDBTransaction ATransaction)
         {
-            XmlNode SequenceNode = FindNode(ADoc, StringHelper.UpperCamelCase(ASequenceName, false, false));
-
-            if (SequenceNode == null)
+            if (!AYmlParser.StartParseList(StringHelper.UpperCamelCase(ATableName, false, false) + "Table"))
             {
-                TLogging.Log("SequenceNode null: " + ASequenceName);
+                // TLogging.Log("empty table " + ATableName + " " + StringHelper.UpperCamelCase(ATableName, false, false) + "Table");
                 return false;
             }
 
-            DBAccess.GDBAccessObj.RestartSequence(ASequenceName, ATransaction, Convert.ToInt64(TYml2Xml.GetAttribute(SequenceNode, "value")));
-
-            return true;
-        }
-
-        private static bool LoadTable(string ATableName, XmlDocument ADoc, TDBTransaction ATransaction)
-        {
-            XmlNode TableNode = FindNode(ADoc, StringHelper.UpperCamelCase(ATableName, false, false) + "Table");
-
-            if (TableNode == null)
-            {
-                // TLogging.Log("tablenode null: " + ATableName);
-                return false;
-            }
-
-            if (TableNode.ChildNodes.Count == 0)
-            {
-                // TLogging.Log("no children: " + ATableName);
-                return false;
-            }
-
+            TLogging.Log("processing table " + ATableName, TLoggingType.ToStatusBar | TLoggingType.ToConsole);
             DataTable table = DBAccess.GDBAccessObj.SelectDT("Select * from " + ATableName, ATableName, ATransaction);
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
 
-            string InsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
-
-            string OrigInsertStatement = InsertStatement;
+            string OrigInsertStatement = "INSERT INTO pub_" + ATableName + "() VALUES ";
+            StringBuilder InsertStatement = new StringBuilder(OrigInsertStatement);
 
             ConvertColumnNames(table.Columns);
 
-            bool firstRow = true;
+            SortedList <string, string>RowDetails;
+            int count = 0;
 
-            foreach (XmlNode RowNode in TableNode.ChildNodes)
+            while ((RowDetails = AYmlParser.GetNextLineAttributes()) != null)
             {
-                if (!firstRow)
+                count++;
+
+                if (count != 1)
                 {
-                    if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                    if ((CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite) || ((count % 500) == 0))
                     {
                         // SQLite does not support INSERT of several rows at the same time
                         try
                         {
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement, ATransaction, false, Parameters.ToArray());
+                            DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, Parameters.ToArray());
                         }
                         catch (Exception e)
                         {
@@ -380,18 +369,16 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                             throw e;
                         }
 
-                        InsertStatement = OrigInsertStatement;
+                        InsertStatement = new StringBuilder(OrigInsertStatement);
                         Parameters = new List <OdbcParameter>();
                     }
                     else
                     {
-                        InsertStatement += ",";
+                        InsertStatement.Append(",");
                     }
                 }
 
-                firstRow = false;
-
-                InsertStatement += "(";
+                InsertStatement.Append("(");
 
                 bool firstColumn = true;
 
@@ -399,14 +386,14 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 {
                     if (!firstColumn)
                     {
-                        InsertStatement += ",";
+                        InsertStatement.Append(",");
                     }
 
                     firstColumn = false;
 
-                    if (TYml2Xml.HasAttribute(RowNode, col.ColumnName))
+                    if (RowDetails.ContainsKey(col.ColumnName))
                     {
-                        string strValue = TYml2Xml.GetAttribute(RowNode, col.ColumnName);
+                        string strValue = RowDetails[col.ColumnName];
 
                         if (col.DataType == typeof(DateTime))
                         {
@@ -467,20 +454,20 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                             throw new Exception("error in ResetDatabase, LoadTable: " + col.DataType.ToString() + " has not yet been implemented");
                         }
 
-                        InsertStatement += "?";
+                        InsertStatement.Append("?");
                     }
                     else
                     {
-                        InsertStatement += "NULL"; // DEFAULT
+                        InsertStatement.Append("NULL"); // DEFAULT
                     }
                 }
 
-                InsertStatement += ")";
+                InsertStatement.Append(")");
             }
 
             try
             {
-                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement, ATransaction, false, Parameters.ToArray());
+                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, Parameters.ToArray());
             }
             catch (Exception e)
             {

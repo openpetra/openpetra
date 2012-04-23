@@ -72,6 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TypeCode = ((TFrmSetupAnalysisTypes)ParentForm).FreezeTypeCode();
             this.CreateNewAFreeformAnalysis();
             pnlDetails.Enabled = true;
+            txtDetailAnalysisValue.Focus();
         }
 
         private void NewRowManual(ref AFreeformAnalysisRow ARow)
@@ -160,17 +161,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void SelectByIndex(int rowIndex)
         {
-            if (rowIndex >= grdDetails.Rows.Count)
+            int RowCount = grdDetails.Rows.Count;
+
+            if (rowIndex >= RowCount)
             {
-                rowIndex = grdDetails.Rows.Count - 1;
+                rowIndex = RowCount - 1;
             }
 
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
+            if ((rowIndex < 1) && (RowCount > 1))
             {
                 rowIndex = 1;
             }
 
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
+            if ((rowIndex >= 1) && (RowCount > 1))
             {
                 grdDetails.Selection.SelectRow(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();

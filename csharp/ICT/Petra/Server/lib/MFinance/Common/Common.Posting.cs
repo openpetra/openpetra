@@ -191,9 +191,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Load all GLM and GLMPeriod records for the batch period and the following periods, since that will avoid loading them one by one during submitchanges.
         /// this is called after ValidateBatchAndTransactions, because the BatchYear and BatchPeriod are validated and recalculated there
         /// </summary>
-        /// <param name="ADataSet"></param>
-        /// <param name="ALedgerNumber"></param>
-        private static void LoadGLMData(ref GLBatchTDS ADataSet, Int32 ALedgerNumber)
+        private static void LoadGLMData(ref GLBatchTDS ADataSet, Int32 ALedgerNumber, ABatchRow ABatchToPost)
         {
             bool NewTransaction = false;
 
@@ -204,7 +202,7 @@ namespace Ict.Petra.Server.MFinance.Common
             AGeneralLedgerMasterRow GLMTemplateRow = ADataSet.AGeneralLedgerMaster.NewRowTyped(false);
 
             GLMTemplateRow.LedgerNumber = ALedgerNumber;
-            GLMTemplateRow.Year = ADataSet.ABatch[0].BatchYear;
+            GLMTemplateRow.Year = ABatchToPost.BatchYear;
             AGeneralLedgerMasterAccess.LoadUsingTemplate(ADataSet, GLMTemplateRow, Transaction);
 
             string query = "SELECT PUB_a_general_ledger_master_period.* " +
@@ -220,10 +218,10 @@ namespace Ict.Petra.Server.MFinance.Common
             parameter.Value = ALedgerNumber;
             parameters.Add(parameter);
             parameter = new OdbcParameter("year", OdbcType.Int);
-            parameter.Value = ADataSet.ABatch[0].BatchYear;
+            parameter.Value = ABatchToPost.BatchYear;
             parameters.Add(parameter);
             parameter = new OdbcParameter("period", OdbcType.Int);
-            parameter.Value = ADataSet.ABatch[0].BatchPeriod;
+            parameter.Value = ABatchToPost.BatchPeriod;
             parameters.Add(parameter);
             DBAccess.GDBAccessObj.Select(ADataSet,
                 query,
@@ -241,22 +239,21 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="ADataSet"></param>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
+        /// <param name="ABatchToPost"></param>
         /// <param name="AVerifications"></param>
         /// <returns></returns>
         private static bool ValidateBatchAndTransactions(ref GLBatchTDS ADataSet,
             Int32 ALedgerNumber,
-            Int32 ABatchNumber,
+            ABatchRow ABatchToPost,
             out TVerificationResultCollection AVerifications)
         {
             AVerifications = new TVerificationResultCollection();
-            ABatchRow Batch = ADataSet.ABatch[0];
 
-            if ((Batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED) || (Batch.BatchStatus == MFinanceConstants.BATCH_POSTED))
+            if ((ABatchToPost.BatchStatus == MFinanceConstants.BATCH_CANCELLED) || (ABatchToPost.BatchStatus == MFinanceConstants.BATCH_POSTED))
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It has status {0}"), Batch.BatchStatus),
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("It has status {0}"), ABatchToPost.BatchStatus),
                         TResultSeverity.Resv_Critical));
             }
 
@@ -264,30 +261,31 @@ namespace Ict.Petra.Server.MFinance.Common
             // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
 
             // Calculate the credit and debit totals
-            GLRoutines.UpdateTotalsOfBatch(ref ADataSet, Batch);
+            GLRoutines.UpdateTotalsOfBatch(ref ADataSet, ABatchToPost);
 
-            if (Convert.ToDecimal(Batch.BatchCreditTotal) != Convert.ToDecimal(Batch.BatchDebitTotal))
+            if (Convert.ToDecimal(ABatchToPost.BatchCreditTotal) != Convert.ToDecimal(ABatchToPost.BatchDebitTotal))
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It does not balance: Debit is {0:n2}, Credit is {1:n2}"), Batch.BatchDebitTotal,
-                            Batch.BatchCreditTotal),
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("It does not balance: Debit is {0:n2}, Credit is {1:n2}"), ABatchToPost.BatchDebitTotal,
+                            ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
-            else if (Batch.BatchCreditTotal == 0)
+            else if (ABatchToPost.BatchCreditTotal == 0)
             {
 //                AVerifications.Add(new TVerificationResult(
 //                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
 //                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
 //                        TResultSeverity.Resv_Critical));
             }
-            else if ((Batch.BatchControlTotal != 0) && (Convert.ToDecimal(Batch.BatchControlTotal) != Convert.ToDecimal(Batch.BatchCreditTotal)))
+            else if ((ABatchToPost.BatchControlTotal != 0)
+                     && (Convert.ToDecimal(ABatchToPost.BatchControlTotal) != Convert.ToDecimal(ABatchToPost.BatchCreditTotal)))
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                         String.Format(Catalog.GetString("The control total {0:n2} does not fit the Credit/Debit Total {1:n2}."),
-                            Batch.BatchControlTotal,
-                            Batch.BatchCreditTotal),
+                            ABatchToPost.BatchControlTotal,
+                            ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
 
@@ -299,21 +297,47 @@ namespace Ict.Petra.Server.MFinance.Common
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
-            if (!TFinancialYear.IsValidPostingPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber,
+            if (!TFinancialYear.IsValidPostingPeriod(ABatchToPost.LedgerNumber, ABatchToPost.DateEffective, out DateEffectivePeriodNumber,
                     out DateEffectiveYearNumber,
                     Transaction))
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                         String.Format(Catalog.GetString("The Date Effective {0:d-MMM-yyyy} does not fit any open accounting period."),
-                            Batch.DateEffective),
+                            ABatchToPost.DateEffective),
                         TResultSeverity.Resv_Critical));
             }
             else
             {
                 // just make sure that the correct BatchPeriod is used
-                Batch.BatchPeriod = DateEffectivePeriodNumber;
-                Batch.BatchYear = DateEffectiveYearNumber;
+                ABatchToPost.BatchPeriod = DateEffectivePeriodNumber;
+                ABatchToPost.BatchYear = DateEffectiveYearNumber;
+            }
+
+            // check that all transactions are inside the same period as the GL date effective of the batch
+            DateTime PostingPeriodStartDate, PostingPeriodEndDate;
+            TFinancialYear.GetStartAndEndDateOfPeriod(ABatchToPost.LedgerNumber,
+                DateEffectivePeriodNumber,
+                out PostingPeriodStartDate,
+                out PostingPeriodEndDate,
+                Transaction);
+
+            foreach (ATransactionRow transRow in ADataSet.ATransaction.Rows)
+            {
+                if ((transRow.BatchNumber == ABatchToPost.BatchNumber)
+                    && (transRow.TransactionDate < PostingPeriodStartDate) || (transRow.TransactionDate > PostingPeriodEndDate))
+                {
+                    AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
+                            String.Format(
+                                "invalid transaction date for transaction {0} in Batch {1} Journal {2}: {3:d-MMM-yyyy} must be inside period {4} ({5:d-MMM-yyyy} till {6:d-MMM-yyyy})",
+                                transRow.TransactionNumber, transRow.BatchNumber, transRow.JournalNumber,
+                                transRow.TransactionDate,
+                                DateEffectivePeriodNumber,
+                                PostingPeriodStartDate,
+                                PostingPeriodEndDate),
+                            TResultSeverity.Resv_Critical));
+                }
             }
 
             if (NewTransaction)
@@ -325,13 +349,13 @@ namespace Ict.Petra.Server.MFinance.Common
 
             foreach (AJournalRow journal in ADataSet.AJournal.Rows)
             {
-                journal.DateEffective = Batch.DateEffective;
-                journal.JournalPeriod = Batch.BatchPeriod;
+                journal.DateEffective = ABatchToPost.DateEffective;
+                journal.JournalPeriod = ABatchToPost.BatchPeriod;
 
                 if (Convert.ToDecimal(journal.JournalCreditTotal) != Convert.ToDecimal(journal.JournalDebitTotal))
                 {
                     AVerifications.Add(new TVerificationResult(
-                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                             String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:n2}, Credit is {2:n2}"),
                                 journal.JournalNumber,
                                 journal.JournalDebitTotal, journal.JournalCreditTotal),
@@ -361,7 +385,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency != Account.ForeignCurrencyCode))
                         {
                             AVerifications.Add(new TVerificationResult(
-                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                                     String.Format(Catalog.GetString(
                                             "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
                                         transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
@@ -374,7 +398,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     if ((transaction.AmountInBaseCurrency == 0) && (transaction.TransactionAmount != 0))
                     {
                         AVerifications.Add(new TVerificationResult(
-                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                                 String.Format(Catalog.GetString("Transaction {0} in Journal {1} has invalid base transaction amount of 0."),
                                     transaction.TransactionNumber, transaction.JournalNumber),
                                 TResultSeverity.Resv_Critical));
@@ -564,9 +588,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// mark each journal, each transaction as being posted;
         /// add sums for costcentre/account combinations
         /// </summary>
-        /// <param name="MainDS">only contains the batch to post, and its journals and transactions</param>
+        /// <param name="MainDS">can contain several batches and journals and transactions</param>
+        /// <param name="ABatchToPost">the batch to post</param>
         /// <returns>a list with the sums for each costcentre/account combination</returns>
-        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(ref GLBatchTDS MainDS)
+        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(ref GLBatchTDS MainDS, ABatchRow ABatchToPost)
         {
             SortedList <string, TAmount>PostingLevel = new SortedList <string, TAmount>();
 
@@ -575,9 +600,20 @@ namespace Ict.Petra.Server.MFinance.Common
 
             foreach (AJournalRow journal in MainDS.AJournal.Rows)
             {
+                if (journal.BatchNumber != ABatchToPost.BatchNumber)
+                {
+                    continue;
+                }
+
                 foreach (DataRowView transactionview in myView.FindRows(journal.JournalNumber))
                 {
                     ATransactionRow transaction = (ATransactionRow)transactionview.Row;
+
+                    if (transaction.BatchNumber != ABatchToPost.BatchNumber)
+                    {
+                        continue;
+                    }
+
                     transaction.TransactionStatus = true;
 
                     // get the account that this transaction is writing to
@@ -615,7 +651,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 journal.JournalStatus = MFinanceConstants.BATCH_POSTED;
             }
 
-            MainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
+            ABatchToPost.BatchStatus = MFinanceConstants.BATCH_POSTED;
 
             return PostingLevel;
         }
@@ -712,18 +748,14 @@ namespace Ict.Petra.Server.MFinance.Common
         /// for each posting level, propagate the value upwards through both the account and the cost centre hierarchy in glm master;
         /// also propagate the value from the posting period through the following periods;
         /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="APostingLevel"></param>
-        /// <param name="AAccountTree"></param>
-        /// <param name="ACostCentreTree"></param>
-        /// <returns></returns>
         private static bool SummarizeData(
             ref GLBatchTDS AMainDS,
+            ref ABatchRow ABatchToPost,
             ref SortedList <string, TAmount>APostingLevel,
             ref SortedList <string, TAccountTreeElement>AAccountTree,
             ref SortedList <string, string>ACostCentreTree)
         {
-            Int32 FromPeriod = AMainDS.ABatch[0].BatchPeriod;
+            Int32 FromPeriod = ABatchToPost.BatchPeriod;
 
             if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
             {
@@ -855,16 +887,13 @@ namespace Ict.Petra.Server.MFinance.Common
         /// on the posting level propagate the value from the posting period through the following periods;
         /// in this version of SummarizeData, there is no calculation of summary accounts/cost centres, since that can be done by the reports
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AMainDS"></param>
-        /// <param name="APostingLevel"></param>
-        /// <returns></returns>
         private static bool SummarizeDataSimple(
             Int32 ALedgerNumber,
             ref GLBatchTDS AMainDS,
+            ABatchRow ABatchToPost,
             ref SortedList <string, TAmount>APostingLevel)
         {
-            Int32 FromPeriod = AMainDS.ABatch[0].BatchPeriod;
+            Int32 FromPeriod = ABatchToPost.BatchPeriod;
 
             if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
             {
@@ -1089,8 +1118,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.Log("Posting: Validation...");
             }
 
+            ABatchRow BatchToPost =
+                ((ABatchRow)AMainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
+
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, BatchToPost, out AVerifications))
             {
                 return false;
             }
@@ -1105,7 +1137,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.Log("Posting: Load GLM Data...");
             }
 
-            LoadGLMData(ref AMainDS, ALedgerNumber);
+            LoadGLMData(ref AMainDS, ALedgerNumber, BatchToPost);
 
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
@@ -1113,7 +1145,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // post each journal, each transaction; add sums for costcentre/account combinations
-            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS);
+            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS, BatchToPost);
 
             // we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
             // for testing the balances, we don't need to calculate the whole tree
@@ -1142,11 +1174,11 @@ namespace Ict.Petra.Server.MFinance.Common
                     TLogging.Log("Posting: SummarizeData...");
                 }
 
-                SummarizeData(ref AMainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
+                SummarizeData(ref AMainDS, ref BatchToPost, ref PostingLevel, ref AccountTree, ref CostCentreTree);
             }
             else
             {
-                SummarizeDataSimple(ALedgerNumber, ref AMainDS, ref PostingLevel);
+                SummarizeDataSimple(ALedgerNumber, ref AMainDS, BatchToPost, ref PostingLevel);
             }
 
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
@@ -1183,8 +1215,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.Log("Posting: Validation...");
             }
 
+            ABatchRow BatchToPost =
+                ((ABatchRow)AMainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
+
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, BatchToPost, out AVerifications))
             {
                 return false;
             }
@@ -1199,7 +1234,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.Log("Posting: Load GLM Data...");
             }
 
-            LoadGLMData(ref AMainDS, ALedgerNumber);
+            LoadGLMData(ref AMainDS, ALedgerNumber, BatchToPost);
 
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
@@ -1207,7 +1242,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // post each journal, each transaction; add sums for costcentre/account combinations
-            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS);
+            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS, BatchToPost);
 
             // we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
             // for testing the balances, we don't need to calculate the whole tree
@@ -1236,11 +1271,11 @@ namespace Ict.Petra.Server.MFinance.Common
                     TLogging.Log("Posting: SummarizeData...");
                 }
 
-                SummarizeData(ref AMainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
+                SummarizeData(ref AMainDS, ref BatchToPost, ref PostingLevel, ref AccountTree, ref CostCentreTree);
             }
             else
             {
-                SummarizeDataSimple(ALedgerNumber, ref AMainDS, ref PostingLevel);
+                SummarizeDataSimple(ALedgerNumber, ref AMainDS, BatchToPost, ref PostingLevel);
             }
 
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
