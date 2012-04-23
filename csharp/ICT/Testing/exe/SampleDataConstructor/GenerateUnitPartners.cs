@@ -40,7 +40,6 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
-using SampleDataConstructor;
 
 namespace Ict.Testing.SampleDataConstructor
 {

@@ -38,7 +38,6 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
-using SampleDataConstructor;
 
 namespace Ict.Testing.SampleDataConstructor
 {
@@ -144,7 +143,10 @@ namespace Ict.Testing.SampleDataConstructor
             }
         }
 
-        private static PFamilyRow GenerateFamilyRecord(XmlNode ACurrentNode, string APrefix, PartnerEditTDS AMainDS)
+        /// <summary>
+        /// generate a family record
+        /// </summary>
+        public static PFamilyRow GenerateFamilyRecord(XmlNode ACurrentNode, string APrefix, PartnerEditTDS AMainDS)
         {
             PFamilyRow FamilyRow = AMainDS.PFamily.NewRowTyped();
             PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
@@ -177,7 +179,14 @@ namespace Ict.Testing.SampleDataConstructor
             return FamilyRow;
         }
 
-        private static void GeneratePersonRecord(XmlNode ACurrentNode, PFamilyRow AFamilyRow, string APrefix, PartnerEditTDS AMainDS)
+        /// <summary>
+        /// generate a person record and update the associated family partner
+        /// </summary>
+        /// <param name="ACurrentNode"></param>
+        /// <param name="AFamilyRow"></param>
+        /// <param name="APrefix"></param>
+        /// <param name="AMainDS"></param>
+        public static void GeneratePersonRecord(XmlNode ACurrentNode, PFamilyRow AFamilyRow, string APrefix, PartnerEditTDS AMainDS)
         {
             PPersonRow PersonRow = AMainDS.PPerson.NewRowTyped();
             PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
@@ -235,7 +244,11 @@ namespace Ict.Testing.SampleDataConstructor
 
             PPartnerRow FamilyPartnerRow = (PPartnerRow)AMainDS.PPartner.Rows.Find(AFamilyRow.PartnerKey);
 
-            if (FamilyView.Count == 1)
+            if (FamilyView.Count == 0)
+            {
+                FamilyPartnerRow.AddresseeTypeCode = PartnerRow.AddresseeTypeCode;
+            }
+            else if (FamilyView.Count == 1)
             {
                 // this is a couple
                 PersonRow.MaritalStatus = MPartnerConstants.MARITALSTATUS_MARRIED;
@@ -268,7 +281,7 @@ namespace Ict.Testing.SampleDataConstructor
         /// <summary>
         /// create PPartnerLocation records for the FAMILY partner, and all the PERSON records of this family
         /// </summary>
-        private static void GenerateAddressForFamily(XmlNode ACurrentNode, PFamilyRow AFamilyRow, PartnerEditTDS AMainDS)
+        public static void GenerateAddressForFamily(XmlNode ACurrentNode, PFamilyRow AFamilyRow, PartnerEditTDS AMainDS)
         {
             PLocationRow locationRow = AMainDS.PLocation.NewRowTyped();
 

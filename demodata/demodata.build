@@ -6,7 +6,6 @@
 <target name="generateDemodata">
     <property name="people_count" value="1000" overwrite="false"/>
     <property name="organisations_count" value="200" overwrite="false"/>
-    <property name="addresses_count" value="1500" overwrite="false"/>
     <property name="fields_count" value="15" overwrite="false"/>
     <property name="workers_count" value="100" overwrite="false"/>
     <property name="keyminsperfield_count" value="10" overwrite="false"/>

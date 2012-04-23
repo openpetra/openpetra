@@ -181,6 +181,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>addressee type</summary>
         public const String ADDRESSEETYPE_FAMILY = "FAMILY";
 
+        /// <summary>addressee type</summary>
+        public const String ADDRESSEETYPE_ORGANISATION = "ORGANISA";
+
         /// <summary>DEFAULT</summary>
         public const String ADDRESSEETYPE_DEFAULT = "DEFAULT";
 
@@ -201,6 +204,9 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>HOME</summary>
         public const String LOCATIONTYPE_HOME = "HOME";
+
+        /// <summary>Location type</summary>
+        public const String LOCATIONTYPE_BUSINESS = "BUSINESS";
 
         /// <summary>PartnerClass</summary>
         public const String PARTNERIMPORT_PARTNERCLASS = "PartnerClass";
