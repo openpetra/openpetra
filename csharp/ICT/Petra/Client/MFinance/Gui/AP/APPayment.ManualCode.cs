@@ -154,8 +154,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (txtExchangeRate.NumberValueDecimal.HasValue)
             {
-                FSelectedPaymentRow.ExchangeRateToBase = txtExchangeRate.NumberValueDecimal.Value;
-                txtBaseAmount.NumberValueDecimal = FSelectedPaymentRow.Amount / FSelectedPaymentRow.ExchangeRateToBase;
+                Decimal ExchangeRate = txtExchangeRate.NumberValueDecimal.Value;
+                if (ExchangeRate != 0)
+                {
+                    FSelectedPaymentRow.ExchangeRateToBase = ExchangeRate;
+                    txtBaseAmount.NumberValueDecimal = FSelectedPaymentRow.Amount / FSelectedPaymentRow.ExchangeRateToBase;
+                }
             }
         }
 
