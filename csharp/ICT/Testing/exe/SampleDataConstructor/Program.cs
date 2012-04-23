@@ -124,6 +124,8 @@ namespace Ict.Testing.SampleDataConstructor
                         Path.Combine(datadirectory, "fields.csv"));
                     SampleDataUnitPartners.GenerateKeyMinistries(
                         Path.Combine(datadirectory, "keymins.csv"));
+                    SampleDataWorkers.GenerateWorkers(
+                        Path.Combine(datadirectory, "workers.csv"));
                 }
 
                 TLogging.Log("(5) Create gift batches");

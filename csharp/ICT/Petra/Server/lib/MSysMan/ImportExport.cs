@@ -338,7 +338,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 return false;
             }
 
-            TLogging.Log("processing table " + ATableName, TLoggingType.ToStatusBar|TLoggingType.ToConsole);
+            TLogging.Log("processing table " + ATableName, TLoggingType.ToStatusBar | TLoggingType.ToConsole);
             DataTable table = DBAccess.GDBAccessObj.SelectDT("Select * from " + ATableName, ATableName, ATransaction);
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
 

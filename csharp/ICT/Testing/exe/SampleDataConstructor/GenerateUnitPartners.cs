@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core;
 using SampleDataConstructor;
 
 namespace Ict.Testing.SampleDataConstructor
@@ -100,7 +101,7 @@ namespace Ict.Testing.SampleDataConstructor
                 // create special type
                 PPartnerTypeRow PartnerTypeRow = PartnerDS.PPartnerType.NewRowTyped();
                 PartnerTypeRow.PartnerKey = UnitRow.PartnerKey;
-                PartnerTypeRow.TypeCode = "LEDGER";
+                PartnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
                 PartnerDS.PPartnerType.Rows.Add(PartnerTypeRow);
 
                 // create cost centre
@@ -166,7 +167,7 @@ namespace Ict.Testing.SampleDataConstructor
                 PUnitRow UnitRow = PartnerDS.PUnit.NewRowTyped();
                 long UnitPartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
 
-                if (!TNewPartnerKey.SubmitNewPartnerKey(FLedgerNumber * 1000000,
+                if (!TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey,
                         UnitPartnerKey, ref UnitPartnerKey))
                 {
                     throw new Exception("create key ministry: problems getting a new partner key");

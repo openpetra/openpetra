@@ -5,7 +5,7 @@
 //       christiank
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -97,6 +97,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner Types (Special Types)</summary>
         public const String PARTNERTYPE_EX_WORKER = "EX-WORKER";
 
+        /// <summary>Partner Types (Special Types)</summary>
+        public const String PARTNERTYPE_WORKER = "WORKER";
+
         /// <summary>Partner Types</summary>
         public const String PARTNERTYPE_LEDGER = "LEDGER";
 
@@ -171,6 +174,12 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>1-FEMALE</summary>
         public const String ADDRESSEETYPE_FEMALE = "1-FEMALE";
+
+        /// <summary>addressee type</summary>
+        public const String ADDRESSEETYPE_COUPLE = "COUPLE";
+
+        /// <summary>addressee type</summary>
+        public const String ADDRESSEETYPE_FAMILY = "FAMILY";
 
         /// <summary>DEFAULT</summary>
         public const String ADDRESSEETYPE_DEFAULT = "DEFAULT";
