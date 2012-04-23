@@ -144,7 +144,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodNumber"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>True if successful</returns>
-        private static bool GenerateICHStewardshipBatch(int ALedgerNumber,
+        public static bool GenerateICHStewardshipBatch(int ALedgerNumber,
             int APeriodNumber,
             ref TVerificationResultCollection AVerificationResult)
         {
@@ -325,6 +325,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 DataRow[] FoundCCRows = MainDS.ACostCentre.Select(WhereClause, OrderBy);
 
+                AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
+                
                 foreach (DataRow untypedCCRow in FoundCCRows)
                 {
                     ACostCentreRow CostCentreRow = (ACostCentreRow)untypedCCRow;
@@ -544,10 +546,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         || (ExpenseAmount != 0)
                         || (XferAmount != 0))
                     {
-                        AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
                         AIchStewardshipRow IchStewardshipRow = IchStewardshipTable.NewRowTyped(true);
 
-                        MainDS.Tables.Add(IchStewardshipTable);
+                        //MainDS.Tables.Add(IchStewardshipTable);
 
                         IchStewardshipRow.LedgerNumber = ALedgerNumber;
                         IchStewardshipRow.PeriodNumber = APeriodNumber;
@@ -604,7 +605,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     //Post the batch
                     if (PostICHBatch)
                     {
-                        IsSuccessful = TGLPosting.PostGLBatch(MainDS, ALedgerNumber, GLBatchNumber, DBTransaction, out AVerificationResult);
+                        IsSuccessful = AIchStewardshipAccess.SubmitChanges(IchStewardshipTable, DBTransaction, out AVerificationResult);
+                        if (IsSuccessful)
+                        {
+                        	IsSuccessful = TGLPosting.PostGLBatch(MainDS, ALedgerNumber, GLBatchNumber, DBTransaction, out AVerificationResult);	
+                        }
                     }
                     else
                     {

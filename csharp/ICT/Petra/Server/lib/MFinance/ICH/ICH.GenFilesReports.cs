@@ -67,13 +67,12 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="ALedgerNumber">ICH Ledger number</param>
         /// <param name="APeriodNumber">Period</param>
-        /// <param name="AICHNumber"></param>
-        /// <param name="ACurrencyType">Currency type</param>
+        /// <param name="AICHNumber">ICH Processing Number</param>
+        /// <param name="ACurrencyType">Currency type: 1 = base, 2 = intl</param>
         /// <param name="AFileName">File name to process</param>
         /// <param name="AEmail">If true then send email</param>
         /// <param name="AVerificationResult">Error messaging</param>
-        /// <returns></returns>
-        public void GenerateStewardshipFile(int ALedgerNumber,
+        public static void GenerateStewardshipFile(int ALedgerNumber,
             int APeriodNumber,
             int AICHNumber,
             int ACurrencyType,
@@ -232,37 +231,42 @@ namespace Ict.Petra.Server.MFinance.ICH
                         operators2,
                         null,
                         DBTransaction);
-                    AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
-
-                    string SenderAddress = "";
-                    string EmailAddress = EmailDestinationRow.EmailAddress;
-                    string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
-                    string HTMLText = string.Empty;
-
-                    //Read the file title
-                    FileInfo FileDetails = new FileInfo(AFileName);
-                    string FileTitle = FileDetails.Name;
-
-                    if (!File.Exists(AFileName))
+                    
+                    if (AEmailDestinationTable.Count == 0)
                     {
-                        HTMLText = "<html><body>" + String.Format(Catalog.GetString("Cannot find file {0}"), AFileName) + "</body></html>";
+	                    AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
+	
+	                    string SenderAddress = TAppSettingsManager.GetValue("SenderAddress");
+	                    string EmailAddress = EmailDestinationRow.EmailAddress;
+	                    string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
+	                    string HTMLText = string.Empty;
+	
+	                    //Read the file title
+	                    FileInfo FileDetails = new FileInfo(AFileName);
+	                    string FileTitle = FileDetails.Name;
+	
+	                    if (!File.Exists(AFileName))
+	                    {
+	                        HTMLText = "<html><body>" + String.Format(Catalog.GetString("Cannot find file {0}"), AFileName) + "</body></html>";
+	                    }
+	                    else
+	                    {
+	                        HTMLText = "<html><body>" + EmailSubject + ": " + FileTitle + Catalog.GetString(" is attached.") + "</body></html>";
+	                    }
+	
+	                    TSmtpSender SendMail = new TSmtpSender();
+	
+	                    MailMessage msg = new MailMessage(SenderAddress,
+	                        EmailAddress,
+	                        EmailSubject,
+	                        HTMLText);
+	
+	                    msg.Attachments.Add(new Attachment(AFileName));
+	                    //msg.Bcc.Add(BCCAddress);
+	
+	                    SendMail.SendMessage(ref msg);
+                    	
                     }
-                    else
-                    {
-                        HTMLText = "<html><body>" + EmailSubject + ": " + FileTitle + Catalog.GetString(" is attached.") + "</body></html>";
-                    }
-
-                    TSmtpSender SendMail = new TSmtpSender();
-
-                    MailMessage msg = new MailMessage(SenderAddress,
-                        EmailAddress,
-                        EmailSubject,
-                        HTMLText);
-
-                    msg.Attachments.Add(new Attachment(AFileName));
-                    //msg.Bcc.Add(BCCAddress);
-
-                    SendMail.SendMessage(ref msg);
                 }
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -901,7 +905,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if ((LedgerNo != PreviousLedger) || (PeriodNo != PreviousPeriod) || (RunNo != PreviousRunNumber))
                 {
-                    Successful = GenerateStewardshipBatch(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
+                    Successful = GenerateStewardshipBatchFromReportFile(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
                             "00") + "00", FileName, ref ALogWriter);
                 }
                 else
@@ -950,7 +954,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AFromCostCentre">Fund to which stewardship relates</param>
         /// <param name="AFileName">Filename of stewardship report to process</param>
         /// <param name="ALogWriter">TextWriter for log file</param>
-        private bool GenerateStewardshipBatch(int ALedgerNumber,
+        private bool GenerateStewardshipBatchFromReportFile(int ALedgerNumber,
             int AYear,
             int APeriod,
             int ARunNumber,
