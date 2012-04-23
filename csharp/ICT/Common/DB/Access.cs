@@ -1508,15 +1508,13 @@ namespace Ict.Common.DB
         /// </param>
         /// <param name="ANewTransaction">True if a new Transaction was started and is returned,
         /// false if an already existing Transaction is returned</param>
-        /// <returns>Either an existing or a new Transaction that exactly meets the specified <see cref="IsolationLevel" /></returns>
-        /// <exception cref="EDBTransactionIsolationLevelWrongException">Thrown if the
-        /// <paramref name="ATryToEnforceIsolationLevel" /> Argument is set to
-        /// <see cref="TEnforceIsolationLevel.eilExact" /> and the existing Transactions' <see cref="IsolationLevel" /> does not
-        /// exactly match the <see cref="IsolationLevel" /> specified with Argument  <paramref name="ADesiredIsolationLevel" />,
-        /// <see cref="EDBTransactionIsolationLevelWrongException" /></exception>
+        /// <returns>Either an existing or a new Transaction that exactly meets the specified IsolationLevel</returns>
+        /// <exception cref="EDBTransactionIsolationLevelWrongException">Thrown if the ATryToEnforceIsolationLevel Argument is set to
+        /// TEnforceIsolationLevel.eilExact and the existing Transactions' IsolationLevel does not
+        /// exactly match the IsolationLevel specified with Argument ADesiredIsolationLevel.</exception>
         /// <exception cref="EDBTransactionIsolationLevelTooLowException">Thrown if ATryToEnforceIsolationLevel is set to
         /// eilExact and the existing Transaction's Isolation Level does not exactly match the Isolation Level specified,</exception>
-        /// <exception cref="EDBTransactionIsolationLevelWrongException" />Thrown if ATryToEnforceIsolationLevel Argument is set to
+        /// <exception cref="EDBTransactionIsolationLevelWrongException">Thrown if ATryToEnforceIsolationLevel Argument is set to
         /// eilMinimum and the existing Transaction's Isolation Level hasn't got at least the Isolation Level specified.</exception>
         public TDBTransaction GetNewOrExistingTransaction(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel ATryToEnforceIsolationLevel,
