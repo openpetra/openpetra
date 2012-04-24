@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,12 +56,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 snippet.SetCodelet("BASECLASSTABLE", TTable.NiceTableName(currentTable.strName) + "Table");
                 derivedTable = "new ";
-                snippet.SetCodelet("TABLEID", origTable.order.ToString());
+                snippet.SetCodelet("TABLEID", origTable.iOrder.ToString());
             }
             else
             {
                 snippet.SetCodelet("BASECLASSTABLE", "TTypedDataTable");
-                snippet.SetCodelet("TABLEID", currentTable.order.ToString());
+                snippet.SetCodelet("TABLEID", currentTable.iOrder.ToString());
             }
 
             snippet.SetCodelet("NEW", derivedTable);
@@ -90,7 +90,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 // the fields in the primary key should be used in the same order as in the table.
                 // otherwise this is causing confusion. eg. a_processed_fee
-                foreach (TTableField column in currentTable.grpTableField.List)
+                foreach (TTableField column in currentTable.grpTableField)
                 {
                     int newIndex = -1;
 
@@ -116,13 +116,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 // the fields in the primary key should be used in the same order as in the table.
                 // otherwise this is causing confusion. eg. a_processed_fee
-                foreach (TTableField column in currentTable.grpTableField.List)
+                foreach (TTableField column in currentTable.grpTableField)
                 {
                     if (primKey.strThisFields.Contains(column.strName) || primKey.strThisFields.Contains(TTable.NiceFieldName(column)))
                     {
                         string columnName = column.strName;
 
-                        string toAdd = currentTable.grpTableField.List.IndexOf(currentTable.GetField(columnName)).ToString();
+                        string toAdd = currentTable.grpTableField.IndexOf(currentTable.GetField(columnName)).ToString();
 
                         if (!first)
                         {
@@ -155,7 +155,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 foreach (string columnName in primKey.strThisFields)
                 {
-                    string toAdd = currentTable.grpTableField.List.IndexOf(currentTable.GetField(columnName)).ToString();
+                    string toAdd = currentTable.grpTableField.IndexOf(currentTable.GetField(columnName)).ToString();
 
                     if (!first)
                     {
@@ -174,7 +174,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             int colOrder = 0;
 
-            foreach (TTableField col in currentTable.grpTableField.List)
+            foreach (TTableField col in currentTable.grpTableField)
             {
                 ProcessTemplate tempTemplate = null;
                 string columnOverwrite = "";
@@ -218,7 +218,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     tempTemplate.SetCodelet("COLUMNODBCTYPE", CodeGenerationPetra.ToOdbcTypeString(col));
                     tempTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
                     tempTemplate.SetCodelet("COLUMNNOTNULL", col.bNotNull.ToString().ToLower());
-                    tempTemplate.SetCodelet("COLUMNCOMMA", colOrder + 1 < currentTable.grpTableField.List.Count ? "," : "");
+                    tempTemplate.SetCodelet("COLUMNCOMMA", colOrder + 1 < currentTable.grpTableField.Count ? "," : "");
                     snippet.InsertSnippet("COLUMNINFO", tempTemplate);
                 }
 
@@ -274,7 +274,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
 
-            foreach (TTableField col in currentTable.grpTableField.List)
+            foreach (TTableField col in currentTable.grpTableField)
             {
                 ProcessTemplate tempTemplate = null;
                 string columnOverwrite = "";

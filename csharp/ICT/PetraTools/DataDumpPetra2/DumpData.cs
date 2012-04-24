@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,9 +28,12 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Tools.DBXML;
+using ICSharpCode.SharpZipLib.GZip;
+using ICSharpCode.SharpZipLib.Core;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -39,10 +42,57 @@ namespace Ict.Tools.DataDumpPetra2
     /// </summary>
     public class TDumpProgressToPostgresql
     {
-        private TDataDefinitionStore storeOld;
-        private TDataDefinitionStore storeNew;
+        const Int32 MAX_SIZE_D_GZ_SEPARATE_PROCESS = 100000;
 
-        private void DumpTable(TTable newTable)
+        private static TDataDefinitionStore storeOld = null;
+        private static TDataDefinitionStore storeNew = null;
+
+        /// <summary>
+        /// get the data structure for the version that should be upgraded
+        /// </summary>
+        public static TDataDefinitionStore GetStoreOld()
+        {
+            if (storeOld == null)
+            {
+                string PetraOldPath = TAppSettingsManager.GetValue("oldpetraxml", "petra23.xml");
+
+                TLogging.Log(String.Format("Reading 2.x xml file {0}...", PetraOldPath));
+                TDataDefinitionParser parserOld = new TDataDefinitionParser(PetraOldPath);
+                storeOld = new TDataDefinitionStore();
+
+                if (!parserOld.ParseDocument(ref storeOld, false, true))
+                {
+                    return null;
+                }
+            }
+
+            return storeOld;
+        }
+
+        /// <summary>
+        /// get the data structure for the new version
+        /// </summary>
+        public static TDataDefinitionStore GetStoreNew()
+        {
+            if (storeNew == null)
+            {
+                string PetraNewPath = TAppSettingsManager.GetValue("newpetraxml", "petra.xml");
+
+                TLogging.Log(String.Format("Reading OpenPetra xml file {0}...", PetraNewPath));
+
+                TDataDefinitionParser parserNew = new TDataDefinitionParser(PetraNewPath, false);
+                storeNew = new TDataDefinitionStore();
+
+                if (!parserNew.ParseDocument(ref storeNew, false, true))
+                {
+                    return null;
+                }
+            }
+
+            return storeNew;
+        }
+
+        private void LoadTable(TTable newTable)
         {
             TLogging.Log(newTable.strName);
 
@@ -56,201 +106,394 @@ namespace Ict.Tools.DataDumpPetra2
                 return;
             }
 
-            if (!Directory.Exists("fulldump"))
+            // the file has already been stored in fulldump, tablename.d.gz
+            string dumpFile = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + oldTableName;
+
+            if (!File.Exists(dumpFile + ".d.gz"))
             {
-                Directory.CreateDirectory("fulldump");
+                TLogging.Log("cannot find file " + dumpFile + ".d.gz");
+                return;
             }
 
-            // the result will be stored in fulldump
-            string dumpFile = "fulldump" + Path.DirectorySeparatorChar + oldTableName + ".d";
+            FileInfo info = new FileInfo(dumpFile + ".d.gz");
 
-            // now run the compiled .r program against the Progress database
-            // in debug mode, don't dump the file again
-            if ((TLogging.DebugLevel == 0) || !File.Exists(dumpFile))
+            if (info.Length == 0)
             {
-                TRunProgress.RunProgress("fulldumpOpenPetraCSV.r", oldTableName, TLogging.GetLogFileName());
-
-#if DISABLED
-                // line numbers from exceptions in the ConvertCSVValues parser will not be completely correct in vi
-                // if we do not call this. reason: some characters (^M is not considered as a newline character in vi, but in Notepad++ and also in StreamReader.ReadLine().
-                // but this routine seems to cost a lot of memory, which makes all the other calculations even slower.
-                // so only switch this on for debugging
-                StringBuilder WholeFile = new StringBuilder();
-
-                using (StreamReader fileReader = new StreamReader(dumpFile))
-                {
-                    // avoid single \r and \n newline characters. Convert all to the local line endings.
-                    // Fixes problems with line number differences in vi
-                    WholeFile.Append(fileReader.ReadToEnd());
-                }
-
-                WholeFile.Replace("\r\n", "\\r\\n").
-                Replace("\n", Environment.NewLine).
-                Replace("\r", Environment.NewLine).
-                Replace("\\r\\n", Environment.NewLine);
-
-                using (StreamWriter sw = new StreamWriter(dumpFile))
-                {
-                    sw.Write(WholeFile.ToString());
-                }
-
-                WholeFile = null;
-#endif
+                // this table should be ignored
+                TLogging.Log("ignoring " + dumpFile + ".d.gz");
+                return;
             }
 
-            TLogging.Log("after reading from Progress");
-
-            StringCollection ColumnNames = new StringCollection();
-            StringBuilder copyCommand = new StringBuilder();
-            copyCommand.Append("COPY ").Append(newTable.strName).Append(" (");
-
-            foreach (TTableField field in newTable.grpTableField.List)
+            if (TAppSettingsManager.HasValue("table") || !File.Exists(dumpFile + ".sql.gz") || ((new FileInfo(dumpFile + ".sql.gz")).Length == 0))
             {
-                ColumnNames.Add(field.strName);
-                copyCommand.Append(field.strName).Append(",");
-            }
-
-            copyCommand.Remove(copyCommand.Length - 1, 1);
-            copyCommand.Append(") FROM stdin;");
-
-            Console.WriteLine(copyCommand.ToString());
-
-            int CountRows = 0;
-
-            using (StreamReader sr = new StreamReader(dumpFile))
-            {
-                while (!sr.EndOfStream)
+                if (((long)info.Length > MAX_SIZE_D_GZ_SEPARATE_PROCESS) && !TAppSettingsManager.HasValue("table"))
                 {
-                    List <string[]>DumpValues = TParseProgressCSV.ParseFile(sr, newTable.grpTableField.List.Count, ref CountRows);
-
-                    TFixData.FixData(oldTableName, ColumnNames, ref DumpValues);
-
-                    foreach (string[] row in DumpValues)
+                    if (TAppSettingsManager.GetValue("IgnoreBigTables", "false", false) == "false")
                     {
-                        StringBuilder sb = new StringBuilder();
-
-                        for (int countColumn = 0; countColumn < newTable.grpTableField.List.Count; countColumn++)
-                        {
-                            if (countColumn > 0)
-                            {
-                                sb.Append('\t');
-                            }
-
-                            sb.Append(row[countColumn]);
-                        }
-
-                        Console.WriteLine(sb.ToString());
+                        ProcessAndWritePostgresqlFile(dumpFile, newTable);
                     }
                 }
+                else
+                {
+                    ProcessAndWritePostgresqlFile(dumpFile, newTable);
+                }
             }
-
-            if (TLogging.DebugLevel == 0)
-            {
-                File.Delete(dumpFile);
-            }
-
-            TLogging.Log(" after processing file, rows: " + CountRows.ToString());
-
-            Console.WriteLine("\\.");
-            Console.WriteLine();
-        }
-
-        private static void DumpSequences()
-        {
-            TLogging.Log("dumping the sequences: ...");
-
-            // now run the compiled .r program against the Progress database
-            TRunProgress.RunProgress("fulldumpOpenPetraCSV.r", "sequences", TLogging.GetLogFileName());
-
-            string dumpFile = "fulldump" + Path.DirectorySeparatorChar + "initialiseSequences.sql";
-            StreamReader reader = new StreamReader(dumpFile);
-
-            while (!reader.EndOfStream)
-            {
-                Console.WriteLine(reader.ReadLine());
-            }
-
-            Console.WriteLine();
-
-            reader.Close();
-
-            TLogging.Log("  sequences are done");
-
-            File.Delete(dumpFile);
-        }
-
-        void WritePSQLHeader()
-        {
-            Console.WriteLine("--");
-            Console.WriteLine("-- PostgreSQL database dump");
-            Console.WriteLine("--");
-            Console.WriteLine();
-            Console.WriteLine("SET statement_timeout = 0;");
-            Console.WriteLine("SET client_encoding = 'UTF8';");
-            Console.WriteLine("SET standard_conforming_strings = off;");
-            Console.WriteLine("SET check_function_bodies = false;");
-            Console.WriteLine("SET client_min_messages = warning;");
-            Console.WriteLine("SET escape_string_warning = off;");
-            Console.WriteLine();
-            Console.WriteLine("SET search_path = public, pg_catalog;");
-            Console.WriteLine();
         }
 
         /// <summary>
-        /// dump one or all tables from Progress, and create a sql load file for PostgreSQL
+        /// process the data from the Progress dump file, so that Postgresql can read the result
         /// </summary>
-        public void DumpTables(string ATableName, String APetraOldPath, String APetraNewPath)
+        public void ProcessAndWritePostgresqlFile(string dumpFile, TTable newTable)
         {
-            TDataDefinitionParser parserOld = new TDataDefinitionParser(APetraOldPath);
+            string oldTableName = DataDefinitionDiff.GetOldTableName(newTable.strName);
 
-            storeOld = new TDataDefinitionStore();
-            TDataDefinitionParser parserNew = new TDataDefinitionParser(APetraNewPath, false);
-            storeNew = new TDataDefinitionStore();
+            TTable oldTable = storeOld.GetTable(oldTableName);
 
-            TLogging.Log(String.Format("Reading 2.x xml file {0}...", APetraOldPath));
-
-            if (!parserOld.ParseDocument(ref storeOld, false, true))
+            // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
+            if (oldTable == null)
             {
                 return;
             }
 
-            TLogging.Log(String.Format("Reading OpenPetra xml file {0}...", APetraNewPath));
-
-            if (!parserNew.ParseDocument(ref storeNew, false, true))
+            try
             {
-                return;
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile + ".d.gz",
+                    oldTable.grpTableField.Count);
+
+                FileStream outStream = File.Create(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                    newTable.strName + ".sql.gz");
+                Stream gzoStream = new GZipOutputStream(outStream);
+                StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
+
+                MyWriter.WriteLine("COPY " + newTable.strName + " FROM stdin;");
+
+                int ProcessedRows = TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                ProcessedRows += MoveTables(newTable.strName, dumpFile, MyWriter, newTable);
+
+                MyWriter.WriteLine("\\.");
+                MyWriter.WriteLine();
+
+                MyWriter.Close();
+
+                TLogging.Log(" after processing file, rows: " + ProcessedRows.ToString());
             }
+            catch (Exception e)
+            {
+                TLogging.Log("Memory usage: " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
+                TLogging.Log("WARNING Problems processing file " + dumpFile + ": " + e.ToString());
+
+                if (File.Exists(dumpFile + ".sql.gz"))
+                {
+                    File.Delete(dumpFile + ".sql.gz");
+                }
+            }
+        }
+
+        private int MoveTables(string ANewTableName, string dumpFile, StreamWriter MyWriter, TTable newTable)
+        {
+            int ProcessedRows = 0;
+
+            if (ANewTableName == "a_batch")
+            {
+                TLogging.Log("a_this_year_old_batch");
+                TTable oldTable = storeOld.GetTable("a_this_year_old_batch");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_this_year_old_batch") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                TLogging.Log("a_previous_year_batch");
+                oldTable = storeOld.GetTable("a_previous_year_batch");
+                Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_previous_year_batch") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+            else if (ANewTableName == "a_journal")
+            {
+                TLogging.Log("a_this_year_old_journal");
+                TTable oldTable = storeOld.GetTable("a_this_year_old_journal");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_this_year_old_journal") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                TLogging.Log("a_previous_year_journal");
+                oldTable = storeOld.GetTable("a_previous_year_journal");
+                Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_previous_year_journal") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+            else if (ANewTableName == "a_transaction")
+            {
+                TLogging.Log("a_this_year_old_transaction");
+                TTable oldTable = storeOld.GetTable("a_this_year_old_transaction");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_this_year_old_transaction") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                TLogging.Log("a_previous_year_transaction");
+                oldTable = storeOld.GetTable("a_previous_year_transaction");
+                Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_previous_year_transaction") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+            else if (ANewTableName == "a_trans_anal_attrib")
+            {
+                TLogging.Log("a_thisyearold_trans_anal_attrib");
+                TTable oldTable = storeOld.GetTable("a_thisyearold_trans_anal_attrib");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_thisyearold_trans_anal_attrib") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+
+                TLogging.Log("a_prev_year_trans_anal_attrib");
+                oldTable = storeOld.GetTable("a_prev_year_trans_anal_attrib");
+                Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_prev_year_trans_anal_attrib") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+            else if (ANewTableName == "a_corporate_exchange_rate")
+            {
+                TLogging.Log("a_prev_year_corp_ex_rate");
+                TTable oldTable = storeOld.GetTable("a_prev_year_corp_ex_rate");
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    dumpFile.Replace(ANewTableName, "a_prev_year_corp_ex_rate") + ".d.gz",
+                    oldTable.grpTableField.Count);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+            }
+
+            return ProcessedRows;
+        }
+
+        void WritePSQLHeader(StreamWriter sw)
+        {
+            sw.WriteLine("--");
+            sw.WriteLine("-- PostgreSQL database dump");
+            sw.WriteLine("--");
+            sw.WriteLine();
+            sw.WriteLine("SET statement_timeout = 0;");
+            sw.WriteLine("SET client_encoding = 'UTF8';");
+            sw.WriteLine("SET standard_conforming_strings = off;");
+            sw.WriteLine("SET check_function_bodies = false;");
+            sw.WriteLine("SET client_min_messages = warning;");
+            sw.WriteLine("SET escape_string_warning = off;");
+            sw.WriteLine();
+            sw.WriteLine("SET search_path = public, pg_catalog;");
+            sw.WriteLine();
+        }
+
+        /// <summary>
+        /// Load the data from the 2.x Petra CSV file, and create psql load file
+        /// </summary>
+        public void LoadTablesToPostgresql(string ATableName)
+        {
+            GetStoreOld();
+            GetStoreNew();
 
             DataDefinitionDiff.newVersion = "3.0";
             TTable.GEnabledLoggingMissingFields = false;
 
-            if (!Directory.Exists("fulldump"))
-            {
-                Directory.CreateDirectory("fulldump");
-            }
+            TParseProgressCSV.InitProgressCodePage();
 
-            WritePSQLHeader();
+            TSequenceWriter.InitSequences(GetStoreNew().GetSequences());
 
             if (ATableName.Length == 0)
             {
-                DumpSequences();
-
-                ArrayList newTables = storeNew.GetTables();
+                List <TTable>newTables = storeNew.GetTables();
 
                 foreach (TTable newTable in newTables)
                 {
-                    DumpTable(newTable);
+                    LoadTable(newTable);
                 }
 
                 GC.Collect();
             }
             else
             {
-                DumpTable(storeNew.GetTable(ATableName));
+                LoadTable(storeNew.GetTable(ATableName));
             }
+
+            // write some tables, if they have been used
+            TFinanceAccountsPayableUpgrader.WriteAPDocumentNumberToId();
+            TSequenceWriter.WriteSequences();
 
             TLogging.Log("Success: finished exporting the data");
             TTable.GEnabledLoggingMissingFields = true;
+        }
+
+        /// <summary>
+        /// if ATableName is empty: collect all sql.gz files and concatenate them to one, and also the sequence file
+        /// otherwise just make that one table loadable by adding the PSQL Header
+        /// </summary>
+        public void CreateNewSQLFile(string ATableName)
+        {
+            GetStoreNew();
+
+            TLogging.Log("creating _load.sql.gz file...");
+
+            using (FileStream outStream = File.Create(
+                       TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                       Path.DirectorySeparatorChar + "_load.sql.gz"))
+            {
+                using (Stream gzoStream = new GZipOutputStream(outStream))
+                {
+                    StreamWriter sw = new StreamWriter(gzoStream);
+
+                    WritePSQLHeader(sw);
+
+                    if (ATableName.Length > 0)
+                    {
+                        string fileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                          Path.DirectorySeparatorChar + ATableName + ".sql.gz";
+
+                        if (File.Exists(fileName))
+                        {
+                            System.IO.Stream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                            GZipInputStream gzipStream = new GZipInputStream(fs);
+                            StreamReader sr = new StreamReader(gzipStream);
+
+                            sw.Write(sr.ReadToEnd());
+
+                            sr.Close();
+                        }
+                    }
+                    else
+                    {
+                        // Load Sequences
+                        string fileNameSequences = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                                   Path.DirectorySeparatorChar + "_Sequences.sql.gz";
+
+                        if (File.Exists(fileNameSequences))
+                        {
+                            System.IO.Stream fs = new FileStream(fileNameSequences, FileMode.Open, FileAccess.Read);
+                            GZipInputStream gzipStream = new GZipInputStream(fs);
+                            StreamReader sr = new StreamReader(gzipStream);
+
+                            sw.Write(sr.ReadToEnd());
+
+                            sr.Close();
+                        }
+
+                        // Load Tables
+                        List <TTable>newTables = storeNew.GetTables();
+
+                        foreach (TTable newTable in newTables)
+                        {
+                            string fileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                              Path.DirectorySeparatorChar + newTable.strName + ".sql.gz";
+
+                            if (File.Exists(fileName))
+                            {
+                                System.IO.Stream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                                GZipInputStream gzipStream = new GZipInputStream(fs);
+                                StreamReader sr = new StreamReader(gzipStream);
+
+                                char[] block = new char[100000];
+                                int count = 0;
+
+                                while ((count = sr.ReadBlock(block, 0, block.Length)) != 0)
+                                {
+                                    sw.Write(block, 0, count);
+                                }
+
+                                sr.Close();
+                            }
+                        }
+                    }
+
+                    sw.Close();
+                }
+            }
+
+            TLogging.Log("Success: finished writing the file _load.sql.gz");
+        }
+
+        /// <summary>
+        /// dump one or all tables from Progress into a simple CSV file. still using the old Petra 2.x format
+        /// </summary>
+        public void DumpTablesToCSV(string ATableName)
+        {
+            GetStoreOld();
+
+            if (!Directory.Exists(TAppSettingsManager.GetValue("fulldumpPath", "fulldump")))
+            {
+                Directory.CreateDirectory(TAppSettingsManager.GetValue("fulldumpPath", "fulldump"));
+            }
+
+            TLogging.Log("Start: dumping the data");
+
+            if (ATableName.Length == 0)
+            {
+                TRunProgress.RunProgress("fulldumpPetra23.r", "Sequences", TLogging.GetLogFileName());
+
+                List <TTable>oldTables = storeOld.GetTables();
+
+                foreach (TTable oldTable in oldTables)
+                {
+                    string dumpFile = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + oldTable.strName;
+
+                    if (!File.Exists(dumpFile + ".d.gz"))
+                    {
+                        TLogging.Log("Exporting to CSV: table " + oldTable.strName);
+                        TRunProgress.RunProgress("fulldumpPetra23.r", oldTable.strName, TLogging.GetLogFileName());
+
+                        if (TLogging.DebugLevel >= 10)
+                        {
+                            // line numbers from exceptions in the ConvertCSVValues parser will not be completely correct in vi
+                            // if we do not call this. reason: some characters (^M is not considered as a newline character in vi, but in Notepad++ and also in StreamReader.ReadLine().
+                            // but this routine seems to cost a lot of memory, which makes all the other calculations even slower.
+                            // so only switch this on for debugging
+                            StringBuilder WholeFile = new StringBuilder();
+
+                            using (StreamReader fileReader = new StreamReader(dumpFile + ".d"))
+                            {
+                                // avoid single \r and \n newline characters. Convert all to the local line endings.
+                                // Fixes problems with line number differences in vi
+                                WholeFile.Append(fileReader.ReadToEnd());
+                            }
+
+                            WholeFile.Replace("\r\n", "\\r\\n").
+                            Replace("\n", Environment.NewLine).
+                            Replace("\r", Environment.NewLine).
+                            Replace("\\r\\n", Environment.NewLine);
+
+                            using (StreamWriter sw = new StreamWriter(dumpFile + ".d"))
+                            {
+                                sw.Write(WholeFile.ToString());
+                            }
+
+                            WholeFile = null;
+                        }
+
+                        // gzip the file, to keep the amount of data small on the harddrive
+                        Stream outStream = File.Create(dumpFile + ".d.gz");
+                        Stream gzoStream = new GZipOutputStream(outStream);
+
+                        using (Stream inputStream = File.OpenRead(dumpFile + ".d"))
+                        {
+                            byte[]  dataBuffer = new byte[4096];
+                            StreamUtils.Copy(inputStream, gzoStream, dataBuffer);
+                        }
+                        gzoStream.Close();
+
+                        File.Delete(dumpFile + ".d");
+                    }
+                }
+            }
+            else
+            {
+                TRunProgress.RunProgress("fulldumpPetra23.r", ATableName, TLogging.GetLogFileName());
+            }
+
+            TLogging.Log("Success: finished exporting the data");
         }
     }
 }

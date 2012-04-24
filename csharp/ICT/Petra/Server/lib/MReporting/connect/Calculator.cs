@@ -439,7 +439,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
 
                 if (CurrentReport.rptGrpCalculation != null)
                 {
-                    foreach (TRptCalculation calc in CurrentReport.rptGrpCalculation.List)
+                    foreach (TRptCalculation calc in CurrentReport.rptGrpCalculation)
                     {
                         if ((calc.strReturns == "text") || (calc.strReturns == "amount"))
                         {
@@ -866,7 +866,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
 
             if ((CurrentReport != null) && (CurrentReport.rptGrpDetailReport != null))
             {
-                foreach (TRptDetailReport detailReport in CurrentReport.rptGrpDetailReport.List)
+                foreach (TRptDetailReport detailReport in CurrentReport.rptGrpDetailReport)
                 {
                     detailReportCSV = "";
                     detailReportCSV = StringHelper.AddCSV(detailReportCSV, detailReport.strId, ",");
@@ -875,7 +875,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
 
                     if (detailReport.rptGrpParameter != null)
                     {
-                        foreach (TRptParameter parameter in detailReport.rptGrpParameter.List)
+                        foreach (TRptParameter parameter in detailReport.rptGrpParameter)
                         {
                             detailReportCSV = StringHelper.AddCSV(detailReportCSV, parameter.strName, ",");
                             detailReportCSV = StringHelper.AddCSV(detailReportCSV, parameter.strValue, ",");
