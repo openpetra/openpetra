@@ -742,7 +742,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors
         GLBatchTDS CreateABatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         GLBatchTDS LoadABatch(Int32 ALedgerNumber,
-                              TFinanceBatchFilterEnum AFilterBatchStatus);
+                              TFinanceBatchFilterEnum AFilterBatchStatus,
+                              System.Int32 AYear,
+                              System.Int32 APeriod);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector)</summary>
         GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber,
                                         Int32 ABatchNumber);
