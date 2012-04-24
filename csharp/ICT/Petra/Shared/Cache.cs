@@ -87,7 +87,7 @@ namespace Ict.Petra.Shared
                 }
             }
         }
-        #endregion        
+        #endregion
 
         #region TDataCache.TMConference
         /// <summary>
@@ -139,8 +139,8 @@ namespace Ict.Petra.Shared
                 }
             }
         }
-        #endregion        
-        
+        #endregion
+
         #region TDataCache.TMFinance
         /// <summary>
         /// todoComment
@@ -191,9 +191,9 @@ namespace Ict.Petra.Shared
                 }
             }
         }
-        #endregion        
+        #endregion
 
-    	#region TDataCache.TMPartner
+        #region TDataCache.TMPartner
         /// <summary>
         /// todoComment
         /// </summary>
@@ -213,17 +213,17 @@ namespace Ict.Petra.Shared
             /// Delegate for retrieving data of a cacheable subscriptions table
             /// </summary>
             public delegate DataTable TGetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum ACacheableTable);
-            
+
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable mailing table
             /// </summary>
             private static TGetCacheableMailingTable FDelegateGetCacheableMailingTable;
-            
+
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable partner table
             /// </summary>
             private static TGetCacheablePartnerTable FDelegateGetCacheablePartnerTable;
-            
+
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable subscriptions table
             /// </summary>
@@ -279,7 +279,7 @@ namespace Ict.Petra.Shared
                     FDelegateGetCacheableSubscriptionsTable = value;
                 }
             }
-            
+
             /// <summary>
             /// retrieve cacheable mailing table
             /// </summary>
@@ -331,7 +331,7 @@ namespace Ict.Petra.Shared
                 }
             }
         }
-        #endregion        
+        #endregion
 
         #region TDataCache.TMPersonnel
         /// <summary>
@@ -348,7 +348,7 @@ namespace Ict.Petra.Shared
             /// Delegate for retrieving data of a cacheable Unit table
             /// </summary>
             public delegate DataTable TGetCacheableUnitsTable(TCacheableUnitTablesEnum ACacheableTable);
-            
+
             /// <summary>
             /// Reference to the Delegate for retrieving data of a cacheable personnel table
             /// </summary>
@@ -358,7 +358,7 @@ namespace Ict.Petra.Shared
             /// Reference to the Delegate for retrieving data of a cacheable Units table
             /// </summary>
             private static TGetCacheableUnitsTable FDelegateGetCacheableUnitsTable;
-            
+
             /// <summary>
             /// This property is used to provide a function which retrieves data of a cacheable personnel table
             /// </summary>
@@ -392,7 +392,7 @@ namespace Ict.Petra.Shared
                     FDelegateGetCacheableUnitsTable = value;
                 }
             }
-            
+
             /// <summary>
             /// retrieve cacheable personnel table
             /// </summary>
@@ -427,8 +427,8 @@ namespace Ict.Petra.Shared
                 }
             }
         }
-        #endregion        
-        
+        #endregion
+
         #region TDataCache.TMSysMan
         /// <summary>
         /// todoComment
@@ -479,7 +479,6 @@ namespace Ict.Petra.Shared
                 }
             }
         }
-        #endregion        
-
+        #endregion
     }
 }

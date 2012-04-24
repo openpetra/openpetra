@@ -326,6 +326,5 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidatePersonalDocumentManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
-        
     }
 }

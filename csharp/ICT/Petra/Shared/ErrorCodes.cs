@@ -86,7 +86,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "The code '{0}' is no longer assignable.\r\nIt should no longer be used.",
              ErrorMessageTitle = "Unassignable Code Used")]
         public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007N";
-        
+
         /// <summary>No permission to access DB Table.</summary>
         [ErrCodeAttribute("You don't have permission to access the specified database table.")]
         public const String ERR_NOPERMISSIONTOACCESSTABLE = "GEN.00003E";

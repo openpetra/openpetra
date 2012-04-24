@@ -41,9 +41,9 @@ using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 using Ict.Petra.Server.MPersonnel.Person.Cacheable;
 using Ict.Petra.Server.MPersonnel.Unit.Cacheable;
 using Ict.Petra.Server.MSysMan.Cacheable;
-	
+
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-	
+
 namespace Ict.Petra.Server.CallForwarding
 {
     /// <summary>
@@ -62,7 +62,7 @@ namespace Ict.Petra.Server.CallForwarding
         private static Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable CachePopulatorPersonnel;
         private static Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable CachePopulatorUnits;
         private static Ict.Petra.Server.MSysMan.Cacheable.TCacheable CachePopulatorSysMan;
-		
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.CallForwarding
 
             TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
-            
+
             // Set up Delegates for retrieval of cacheable tables when called from Shared directories on server side
             CachePopulatorCommon = new Ict.Petra.Server.MCommon.Cacheable.TCacheable();
             CachePopulatorConference = new Ict.Petra.Server.MConference.Cacheable.TCacheable();
@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.CallForwarding
             CachePopulatorPersonnel = new Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable();
             CachePopulatorUnits = new Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable();
             CachePopulatorSysMan = new Ict.Petra.Server.MSysMan.Cacheable.TCacheable();
-            
+
             TSharedDataCache.TMCommon.GetCacheableCommonTableDelegate = @CachePopulatorCommon.GetCacheableTable;
 
             TSharedDataCache.TMFinance.GetCacheableFinanceTableDelegate = @CachePopulatorFinance.GetCacheableTable;

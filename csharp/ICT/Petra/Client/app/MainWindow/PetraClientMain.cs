@@ -659,7 +659,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @TDataCache.TMConference.GetCacheableConferenceTable;
 
             TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @TDataCache.TMSysMan.GetCacheableSysManTable;
-            	
+
             // I18N: assign proper font which helps to read asian characters
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
             TAppSettingsManager.InitFontI18N();

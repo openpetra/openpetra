@@ -59,26 +59,27 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             PmDocumentTypeRow DocTypeRow = null;
 
             ValidationColumn = ARow.Table.Columns[PmDocumentTable.ColumnDocCodeId];
-          
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = null;
-                
-            	if (   (!ARow.IsDocCodeNull())
+
+                if ((!ARow.IsDocCodeNull())
                     && (ARow.DocCode != String.Empty))
                 {
-		            DocTypeTable = (PmDocumentTypeTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.DocumentTypeList);
+                    DocTypeTable = (PmDocumentTypeTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
+                        TCacheablePersonTablesEnum.DocumentTypeList);
                     DocTypeRow = (PmDocumentTypeRow)DocTypeTable.Rows.Find(ARow.DocCode);
-                    
-		            // 'Document Code' must not be unassignable
-				    if (   DocTypeRow != null
+
+                    // 'Document Code' must not be unassignable
+                    if ((DocTypeRow != null)
                         && DocTypeRow.UnassignableFlag
-                        && (    DocTypeRow.IsUnassignableDateNull()
+                        && (DocTypeRow.IsUnassignableDateNull()
                             || (DocTypeRow.UnassignableDate <= DateTime.Today)))
                     {
-	                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-							ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,new string[] {ARow.DocCode})),
-	                        ValidationColumn, ValidationControlsData.ValidationControl);
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.DocCode })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                 }
 
@@ -112,21 +113,22 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = null;
-                
-            	if (!ARow.IsLanguageLevelNull())
-            	{
-		            LanguageLevelTable = (PtLanguageLevelTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(TCacheablePersonTablesEnum.LanguageLevelList);
+
+                if (!ARow.IsLanguageLevelNull())
+                {
+                    LanguageLevelTable = (PtLanguageLevelTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(
+                        TCacheablePersonTablesEnum.LanguageLevelList);
                     LanguageLevelRow = (PtLanguageLevelRow)LanguageLevelTable.Rows.Find(ARow.LanguageLevel);
-            		
-		            // 'Language Level' must not be unassignable
-				    if (   LanguageLevelRow != null
+
+                    // 'Language Level' must not be unassignable
+                    if ((LanguageLevelRow != null)
                         && LanguageLevelRow.UnassignableFlag
-                        && (    LanguageLevelRow.IsUnassignableDateNull()
+                        && (LanguageLevelRow.IsUnassignableDateNull()
                             || (LanguageLevelRow.UnassignableDate <= DateTime.Today)))
                     {
-	                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-		            	                                                                           ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,new string[] {ARow.LanguageLevel.ToString()})),
-	                        ValidationColumn, ValidationControlsData.ValidationControl);
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.LanguageLevel.ToString() })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                 }
 
