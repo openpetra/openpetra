@@ -77,7 +77,12 @@ namespace Ict.Tools.DataDumpPetra2
             return new string[AColumnNames.Count];
         }
 
-        private static StringCollection GetColumnNames(TTable ATable)
+        /// <summary>
+        /// get the names of the columns for the given table
+        /// </summary>
+        /// <param name="ATable"></param>
+        /// <returns></returns>
+        protected static StringCollection GetColumnNames(TTable ATable)
         {
             StringCollection ColumnNames = new StringCollection();
 
@@ -425,6 +430,11 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     SetValue(AColumnNames, ref ANewRow, "p_contact_code_c", "UNKNOWN");
                 }
+            }
+
+            if (ATableName == "a_batch")
+            {
+                return TFinanceGeneralLedgerUpgrader.FixABatch(AColumnNames, ref ANewRow);
             }
 
             // wrong gift batch status, need to have case sensitive status
