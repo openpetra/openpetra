@@ -431,16 +431,16 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Cacheable
     public interface ICacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable);
+        void RefreshCacheableTable(TCacheableSysManTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MSysMan.Instantiator.Cacheable.Class)</summary>
-        TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+        TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
                                                                out TVerificationResultCollection AVerificationResult);
     }

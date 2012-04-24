@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -202,7 +202,7 @@ namespace Ict.Common.IO.Testing
 
             string compressed = PackTools.ZipString(testText);
 
-            Assert.AreEqual(testText, PackTools.UnzipString(compressed), "compressing a string");
+            Assert.AreEqual(testText, PackTools.UnzipString(compressed)[0], "compressing a string");
         }
     }
 }

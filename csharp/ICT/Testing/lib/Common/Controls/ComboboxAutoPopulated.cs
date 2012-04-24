@@ -33,6 +33,7 @@ using System.Globalization;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Controls;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.CommonControls;

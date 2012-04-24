@@ -644,6 +644,22 @@ namespace Ict.Petra.Client.App.PetraClient
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TServerLookup.TMPartner.VerifyPartner;
 
+            // Set up Delegates for retrieval of cacheable tables when called from Shared directories on client side
+            TSharedDataCache.TMCommon.GetCacheableCommonTableDelegate = @TDataCache.TMCommon.GetCacheableCommonTable;
+
+            TSharedDataCache.TMFinance.GetCacheableFinanceTableDelegate = @TDataCache.TMFinance.GetCacheableFinanceTable;
+
+            TSharedDataCache.TMPartner.GetCacheablePartnerTableDelegate = @TDataCache.TMPartner.GetCacheablePartnerTable;
+            TSharedDataCache.TMPartner.GetCacheableMailingTableDelegate = @TDataCache.TMPartner.GetCacheableMailingTable;
+            TSharedDataCache.TMPartner.GetCacheableSubscriptionsTableDelegate = @TDataCache.TMPartner.GetCacheableSubscriptionsTable;
+
+            TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate = @TDataCache.TMPersonnel.GetCacheablePersonnelTable;
+            TSharedDataCache.TMPersonnel.GetCacheableUnitsTableDelegate = @TDataCache.TMPersonnel.GetCacheableUnitsTable;
+
+            TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @TDataCache.TMConference.GetCacheableConferenceTable;
+
+            TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @TDataCache.TMSysMan.GetCacheableSysManTable;
+
             // I18N: assign proper font which helps to read asian characters
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
             TAppSettingsManager.InitFontI18N();

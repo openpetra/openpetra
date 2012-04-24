@@ -60,8 +60,6 @@ namespace Ict.Testing.SampleDataConstructor
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 
-            SortedList <DateTime, List <XmlNode>>GiftsPerDate = new SortedList <DateTime, List <XmlNode>>();
-
             PartnerImportExportTDS PartnerDS = new PartnerImportExportTDS();
             GLSetupTDS GLSetupDS = new GLSetupTDS();
 
@@ -148,8 +146,6 @@ namespace Ict.Testing.SampleDataConstructor
             XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AKeyMinCSVFile, ",");
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
-
-            SortedList <DateTime, List <XmlNode>>GiftsPerDate = new SortedList <DateTime, List <XmlNode>>();
 
             PartnerImportExportTDS PartnerDS = new PartnerImportExportTDS();
 

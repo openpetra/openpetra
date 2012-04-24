@@ -27,7 +27,7 @@
 
 using System;
 
-namespace Ict.Petra.Shared.MSysMan
+namespace Ict.Petra.Shared
 {
     /// <summary>
     /// Enums holding the possible cacheable tables for the Petra SysMan Module, specifically SysMan submodule
