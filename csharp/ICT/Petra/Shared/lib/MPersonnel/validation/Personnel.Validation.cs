@@ -72,7 +72,9 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                     
 		            // 'Document Code' must not be unassignable
 				    if (   DocTypeRow != null
-                        && DocTypeRow.UnassignableFlag)
+                        && DocTypeRow.UnassignableFlag
+                        && (    DocTypeRow.IsUnassignableDateNull()
+                            || (DocTypeRow.UnassignableDate <= DateTime.Today)))
                     {
 	                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
 							ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,new string[] {ARow.DocCode})),
@@ -101,23 +103,31 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult;
+            PtLanguageLevelTable LanguageLevelTable;
+            PtLanguageLevelRow LanguageLevelRow = null;
 
-            // 'Language Code' must not be unassignable
-            ValidationColumn = ARow.Table.Columns[PmPersonLanguageTable.ColumnLanguageCodeId];
+            // 'Language Level' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PmPersonLanguageTable.ColumnLanguageLevelId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	if ((   (!ARow.IsLanguageCodeNull())
-                     && (ARow.LanguageCode != String.Empty))
-                     && (ARow.LanguageCode == "IN"))
-                {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-						ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,new string[] {"IN"})),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-                else
-                {
-                    VerificationResult = null;
+                VerificationResult = null;
+                
+            	if (!ARow.IsLanguageLevelNull())
+            	{
+		            LanguageLevelTable = (PtLanguageLevelTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(TCacheablePersonTablesEnum.LanguageLevelList);
+                    LanguageLevelRow = (PtLanguageLevelRow)LanguageLevelTable.Rows.Find(ARow.LanguageLevel);
+            		
+		            // 'Language Level' must not be unassignable
+				    if (   LanguageLevelRow != null
+                        && LanguageLevelRow.UnassignableFlag
+                        && (    LanguageLevelRow.IsUnassignableDateNull()
+                            || (LanguageLevelRow.UnassignableDate <= DateTime.Today)))
+                    {
+	                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+		            	                                                                           ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,new string[] {ARow.LanguageLevel.ToString()})),
+	                        ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection

@@ -47,7 +47,7 @@ RootNode:
         cmbLanguageCode: {Label=Language, DataField=PmPersonLanguage.LanguageCode, List=LanguageCodeList, Width=200, ColSpan=3, Validation=true}
         txtYearsOfExperience: {DataField=PmPersonLanguage.YearsOfExperience, Width=25, Format=Integer}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonLanguage.YearsOfExperienceAsOf}
-        cmbLanguageLevel: {Label=Level, List=LanguageLevelList, Width=170}
+        cmbLanguageLevel: {Label=Level, List=LanguageLevelList, Width=170, Validation=true}
         btnShowLanguageLevelExplanation:
         txtComment:
             DataField: PmPersonLanguage.Comment
