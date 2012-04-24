@@ -1447,6 +1447,7 @@ namespace Ict.Tools.DBXML
         /// <param name="table"></param>
         public void AddTable(TTable table)
         {
+            table.iOrder = tables.Count;
             tables.Add(table);
         }
 
