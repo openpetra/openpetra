@@ -54,6 +54,13 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 TLogging.DebugLevel = TAppSettingsManager.GetInt16("debuglevel", 0);
 
+                if (TAppSettingsManager.GetValue("operation", false) == "createProgressCode")
+                {
+                    TCreateFulldumpProgressCode createProgressCode = new TCreateFulldumpProgressCode();
+                    createProgressCode.GenerateFulldumpCode();
+                    return;
+                }
+
                 if (TAppSettingsManager.GetValue("clean", "false") == "true")
                 {
                     TLogging.Log("deleting all resulting files...");
