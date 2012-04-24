@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -59,7 +59,8 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                     "Cacheable.Shared.cs");
 
                 SharedTemplate.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(ATemplateDir));
-                SharedTemplate.SetCodelet("NAMESPACE", "Ict.Petra.Shared.M" + module.Name);
+//                SharedTemplate.SetCodelet("NAMESPACE", "Ict.Petra.Shared.M" + module.Name);
+                SharedTemplate.SetCodelet("NAMESPACE", "Ict.Petra.Shared");
 
                 while (subModule != null)
                 {
@@ -307,10 +308,14 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                     subModule = subModule.NextSibling;
                 }
 
+//                SharedTemplate.FinishWriting(ASharedPath +
+//                    Path.DirectorySeparatorChar + "lib" +
+//                    Path.DirectorySeparatorChar + "M" + module.Name +
+//                    Path.DirectorySeparatorChar + "Cacheable.cs",
+//                    ".cs", true);
+
                 SharedTemplate.FinishWriting(ASharedPath +
-                    Path.DirectorySeparatorChar + "lib" +
-                    Path.DirectorySeparatorChar + "M" + module.Name +
-                    Path.DirectorySeparatorChar + "Cacheable.cs",
+                    Path.DirectorySeparatorChar + "M" + module.Name + ".Cacheable.cs",
                     ".cs", true);
 
                 module = module.NextSibling;

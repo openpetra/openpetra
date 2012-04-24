@@ -27,7 +27,7 @@
 
 using System;
 
-namespace Ict.Petra.Shared.MFinance
+namespace Ict.Petra.Shared
 {
     /// <summary>
     /// Enums holding the possible cacheable tables for the Petra Finance Module, specifically Finance submodule

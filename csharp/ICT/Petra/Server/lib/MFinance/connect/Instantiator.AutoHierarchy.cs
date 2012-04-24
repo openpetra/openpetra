@@ -1791,7 +1791,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -1801,7 +1801,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        System.Int32 ALedgerNumber,
                                                        out System.Type AType)
@@ -1812,7 +1812,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable)
+        public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -1821,7 +1821,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode
@@ -1831,7 +1831,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                           System.Int32 ALedgerNumber)
         {
             #region ManualCode
@@ -1841,7 +1841,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                           System.Int32 ALedgerNumber,
                                           out System.Data.DataTable ADataTable)
         {

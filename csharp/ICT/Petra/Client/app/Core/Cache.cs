@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.App.Core
              * @return Chosen DataTable
              *
              */
-            public static DataTable GetCacheableCommonTable(TCacheableConferenceTablesEnum ACacheableTable)
+            public static DataTable GetCacheableConferenceTable(TCacheableConferenceTablesEnum ACacheableTable)
             {
                 return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
             }

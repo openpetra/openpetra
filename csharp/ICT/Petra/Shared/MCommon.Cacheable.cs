@@ -27,16 +27,26 @@
 
 using System;
 
-namespace Ict.Petra.Shared.MConference
+namespace Ict.Petra.Shared
 {
     /// <summary>
-    /// Enums holding the possible cacheable tables for the Petra Conference Module, specifically Conference submodule
+    /// Enums holding the possible cacheable tables for the Petra Common Module, specifically Common submodule
     /// </summary>
-    public enum TCacheableConferenceTablesEnum
+    public enum TCacheableCommonTablesEnum
     {
         /// <summary>
-        /// Lists types of options that can be used for a conference
+        /// List of countries with their codes
         /// </summary>
-        ConferenceOptionTypeList
+        CountryList,
+
+        /// <summary>
+        /// List of Frequencies (e.g. of Mailings, Publications, etc.)
+        /// </summary>
+        FrequencyList,
+
+        /// <summary>
+        /// List of language codes
+        /// </summary>
+        LanguageCodeList
     };
 }

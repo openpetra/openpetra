@@ -32,6 +32,7 @@ using System.Data;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;

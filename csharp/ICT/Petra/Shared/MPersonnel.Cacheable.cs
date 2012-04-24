@@ -27,7 +27,7 @@
 
 using System;
 
-namespace Ict.Petra.Shared.MPersonnel
+namespace Ict.Petra.Shared
 {
     /// <summary>
     /// Enums holding the possible cacheable tables for the Petra Personnel Module, specifically Unit submodule

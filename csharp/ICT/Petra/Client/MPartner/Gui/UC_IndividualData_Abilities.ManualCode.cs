@@ -30,6 +30,7 @@ using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;

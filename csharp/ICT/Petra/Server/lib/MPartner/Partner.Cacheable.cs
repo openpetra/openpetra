@@ -97,7 +97,22 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 #endif
 
 #region ManualCode
-		/// <summary>
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Wrapper for other GetCacheableTable method
+        /// </summary>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <returns>DataTable</returns>
+        public DataTable GetCacheableTable(TCacheablePartnerTablesEnum ACacheableTable)
+        {
+            System.Type TmpType;
+            return GetCacheableTable(ACacheableTable, "", false, out TmpType);
+        }
+
+        /// <summary>
 		/// Overload of <see cref="M:GetCacheableTable(TCacheablePartnerTablesEnum, string, bool, out System.Type)" />. See description there.
 		/// </summary>
 		/// <remarks>Can be used with Delegate TGetCacheableDataTableFromCache.</remarks>

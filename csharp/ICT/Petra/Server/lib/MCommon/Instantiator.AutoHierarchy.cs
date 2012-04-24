@@ -469,7 +469,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -479,7 +479,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable)
+        public void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -488,7 +488,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode
