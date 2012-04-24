@@ -124,15 +124,21 @@ namespace Ict.Petra.Server.MFinance.Gift
                         if (RowType == "B")
                         {
                             previousGift = null;
+
+                            string BatchDescription = ImportString(Catalog.GetString("batch description"));
+                            string BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
+                            decimal HashTotal = ImportDecimal(Catalog.GetString("hash total"));
+                            DateTime GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
+
                             giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref FMainDS,
                                 ref FTransaction,
                                 ref LedgerTable,
                                 FLedgerNumber,
-                                DateTime.Today);
-                            giftBatch.BatchDescription = ImportString(Catalog.GetString("batch description"));
-                            giftBatch.BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
-                            giftBatch.HashTotal = ImportDecimal(Catalog.GetString("hash total"));
-                            giftBatch.GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
+                                GlEffectiveDate);
+
+                            giftBatch.BatchDescription = BatchDescription;
+                            giftBatch.BankAccountCode = BankAccountCode;
+                            giftBatch.HashTotal = HashTotal;
                             giftBatch.CurrencyCode = ImportString(Catalog.GetString("currency code"));
                             giftBatch.ExchangeRateToBase = ImportDecimal(Catalog.GetString("exchange rate to base"));
                             giftBatch.BankCostCentre = ImportString(Catalog.GetString("bank cost centre"));

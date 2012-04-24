@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,17 +24,22 @@
 using System;
 using System.Xml;
 using System.Windows.Forms;
+using System.Collections;
+using System.Collections.Generic;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 //using Ict.Petra.Client.MReporting.Gui.MPersonnel;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner;
 using System.Collections.Specialized;
+using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -68,7 +73,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
 
-            frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "");
+            System.Int64 FamilyKey = GetLastUsedFamilyKey();
+            TLocationPK LocationSiteKey = TRemote.MPartner.Partner.WebConnectors.DetermineBestAddress(FamilyKey);
+
+            frm.SetParameters(TScreenMode.smNew, "PERSON", -1, -1, "", "", false,
+                FamilyKey, LocationSiteKey.LocationKey, LocationSiteKey.SiteKey);
+
             frm.Show();
         }
 
@@ -102,6 +112,40 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             frm.SetParameters(false, -1);
             frm.Show();
+        }
+
+        /// <summary>
+        /// Makes a server call to get the key of the last used family
+        /// <returns>FamilyKey of the last accessed family</returns>
+        /// </summary>
+        private static System.Int64 GetLastUsedFamilyKey()
+        {
+            bool LastFamilyFound = false;
+
+            System.Int64 FamilyKey = 0000000000;
+            Dictionary <long, string>RecentlyUsedPartners;
+            ArrayList PartnerClasses = new ArrayList();
+
+            PartnerClasses.Add("*");
+
+            int MaxPartnersCount = 7;
+            TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
+
+            foreach (KeyValuePair <long, string>CurrentEntry in RecentlyUsedPartners)
+            {
+                //search for the last FamilyKey
+                //assign it only to FamilyKey if there hasn't been yet found another Family
+
+                //fe. CurrentEntry.Key= 43005007 CurrentEntry.Value= Test, alex (type PERSON)
+                //TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
+                if (CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
+                {
+                    FamilyKey = CurrentEntry.Key;
+                    LastFamilyFound = true;
+                }
+            }
+
+            return FamilyKey;
         }
     }
 }

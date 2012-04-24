@@ -56,8 +56,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             nudDiscountDays.Visible = false;        // There's currently no discounting, so this
             lblDiscountPercentage.Visible = false;  // just hides the associated controls.
             txtDiscountPercentage.Visible = false;
-            txtDetailAmount.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
-            txtExchangeRateToBase.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
         }
 
         private void LookupExchangeRate(Object sender, EventArgs e)
@@ -336,7 +336,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             DataColumn ValidationColumn;
 
-            // 'Date Due' must be in the future or today
             ValidationColumn = ARow.Table.Columns[AccountsPayableTDSAApDocumentTable.ColumnDocumentCodeId];
 
             FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
@@ -390,8 +389,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if ((txtExchangeRateToBase.NumberValueDecimal.HasValue)
                 && (txtDetailAmount.NumberValueDecimal.HasValue))
             {
-                txtDetailBaseAmount.NumberValueDecimal =
-                    txtDetailAmount.NumberValueDecimal * txtExchangeRateToBase.NumberValueDecimal.Value;
+                decimal ExchangeRate = 1.0m;
+
+                if (txtExchangeRateToBase.NumberValueDecimal.HasValue)
+                {
+                    ExchangeRate = txtExchangeRateToBase.NumberValueDecimal.Value;
+                }
+
+                if (ExchangeRate != 0)
+                {
+                    txtDetailBaseAmount.NumberValueDecimal =
+                        txtDetailAmount.NumberValueDecimal / ExchangeRate;
+                }
             }
         }
 
@@ -424,7 +433,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 decimal DetailAmount = Convert.ToDecimal(ARow.Amount);
-                DetailAmount *= ExchangeRateToBase;
+                DetailAmount /= ExchangeRateToBase;
                 txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
             }
         }
@@ -457,6 +466,43 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         "The document Amount does not equal the sum of the detail lines."), Catalog.GetString("Balance Problem"));
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Check that the cost centres referred to are OK with the accounts I'm using. If not a message is displayed.
+        /// </summary>
+        /// <param name="Atds"></param>
+        /// <param name="AApDocument"></param>
+        /// <returns>false if any detail lines have incompatible cost centres.</returns>
+        public static bool AllLinesAccountsOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        {
+            List <String>AccountCodesCostCentres = new List <string>();
+
+            foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
+            {
+                if (Row.ApDocumentId == AApDocument.ApDocumentId)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                {
+                    String AccountCostCentre = Row.AccountCode + "|" + Row.CostCentreCode;
+
+                    if (!AccountCodesCostCentres.Contains(AccountCostCentre))
+                    {
+                        AccountCodesCostCentres.Add(AccountCostCentre);
+                    }
+                }
+            }
+
+            //
+            // The check is done on the server..
+
+            String ReportMsg = TRemote.MFinance.AP.WebConnectors.CheckAccountsAndCostCentres(AApDocument.LedgerNumber, AccountCodesCostCentres);
+
+            if (ReportMsg != "")
+            {
+                MessageBox.Show(ReportMsg, Catalog.GetString("Invalid Account"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -506,6 +552,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             if (!AllLinesHaveAttributes(Atds, Adocument))
+            {
+                CanPost = false;
+            }
+
+            if (!AllLinesAccountsOK(Atds, Adocument))
             {
                 CanPost = false;
             }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -269,7 +269,7 @@ namespace Ict.Common.IO
 
         /// StreamReader DetectEncodingFromByteOrderMarks does not work for ANSI?
         /// therefore we have to detect the encoding by comparing the first bytes of the file
-        public static Encoding GetFileEncoding(String AFilename)
+        public static Encoding GetFileEncoding(String AFilename, Encoding ADefaultEncoding = null)
         {
             FileInfo fileinfo = new FileInfo(AFilename);
 
@@ -304,7 +304,12 @@ namespace Ict.Common.IO
                 fs.Close();
             }
 
-            return Encoding.Default;
+            if (ADefaultEncoding == null)
+            {
+                return Encoding.Default;
+            }
+
+            return ADefaultEncoding;
         }
     }
 }

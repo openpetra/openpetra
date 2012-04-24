@@ -67,7 +67,6 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
         ICH: {Description=International Clearing House Sub-System}
-            UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
         PeriodEnd: {Description=Period End Sub-System}
             UIConnectors: {Description=User Interface Connectors}
