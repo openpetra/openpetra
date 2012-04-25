@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
@@ -42,7 +43,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <param name="AFilename"></param>
         public static void WriteTableList(TDataDefinitionStore AStore, string AFilename)
         {
-            ArrayList tables = AStore.GetTables();
+            List <TTable>tables = AStore.GetTables();
 
             tables = TTableSort.TopologicalSort(AStore, tables);
 
@@ -55,7 +56,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             TInsertIntoRegion.InsertIntoRegion(AFilename, "DBTableNames", namesCodelet);
 
-            ArrayList Sequences = AStore.GetSequences();
+            List <TSequence>Sequences = AStore.GetSequences();
 
             namesCodelet = string.Empty;
 
@@ -77,7 +78,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             StreamWriter sw = new StreamWriter(AFilename + ".new");
 
             sw.WriteLine("-- Generated with nant generateORMTables");
-            ArrayList tables = AStore.GetTables();
+            List <TTable>tables = AStore.GetTables();
             tables = TTableSort.TopologicalSort(AStore, tables);
             tables.Reverse();
 

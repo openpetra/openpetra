@@ -405,7 +405,7 @@ namespace Ict.Common.Data
             }
             else
             {
-                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ",");
+                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ',');
 
                 string[] PrimKeyColumnStringList = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableID);
 

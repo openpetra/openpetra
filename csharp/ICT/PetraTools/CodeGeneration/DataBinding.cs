@@ -155,7 +155,7 @@ namespace Ict.Tools.CodeGeneration
                     newField.strDescription = "";
                     newField.bNotNull =
                         TXMLParser.HasAttribute(customField, "notnull") && TXMLParser.GetAttribute(customField, "notnull").ToLower() == "true";
-                    table.grpTableField.List.Add(newField);
+                    table.grpTableField.Add(newField);
                 }
 
                 // add other fields from other tables that are defined in petra.xml
@@ -172,7 +172,7 @@ namespace Ict.Tools.CodeGeneration
                     }
 
                     newField.strTableName = tablename;
-                    table.grpTableField.List.Add(newField);
+                    table.grpTableField.Add(newField);
                 }
 
                 result.Add(tablename, table);
@@ -253,7 +253,7 @@ namespace Ict.Tools.CodeGeneration
                                         tablename = TTable.NiceTableName(table2.strName);
                                     }
 
-                                    foreach (TTableField field in table2.grpTableField.List)
+                                    foreach (TTableField field in table2.grpTableField)
                                     {
                                         if (TTable.NiceFieldName(field.strName) == ADataField.Substring(tablename.Length))
                                         {
@@ -273,7 +273,7 @@ namespace Ict.Tools.CodeGeneration
                             {
                                 TTable table2 = FCurrentDataset[FCodeStorage.GetAttribute("MasterTable")];
 
-                                foreach (TTableField field in table2.grpTableField.List)
+                                foreach (TTableField field in table2.grpTableField)
                                 {
                                     if ((TTable.NiceFieldName(field.strName) == ADataField) || (field.strNameDotNet == ADataField))
                                     {
@@ -290,7 +290,7 @@ namespace Ict.Tools.CodeGeneration
                                 {
                                     TTable table2 = FCurrentDataset[FCodeStorage.GetAttribute("DetailTable")];
 
-                                    foreach (TTableField field in table2.grpTableField.List)
+                                    foreach (TTableField field in table2.grpTableField)
                                     {
                                         if ((TTable.NiceFieldName(field.strName) == ADataField) || (field.strNameDotNet == ADataField))
                                         {
@@ -306,7 +306,7 @@ namespace Ict.Tools.CodeGeneration
                             {
                                 foreach (TTable table2 in FCurrentDataset.Values)
                                 {
-                                    foreach (TTableField field in table2.grpTableField.List)
+                                    foreach (TTableField field in table2.grpTableField)
                                     {
                                         if ((TTable.NiceFieldName(field.strName) == ADataField) || (field.strNameDotNet == ADataField))
                                         {
