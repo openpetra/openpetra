@@ -86,7 +86,7 @@ namespace Ict.Tools.DataDumpPetra2
                 // the upgrade process is split into two steps, to make testing quicker
 
                 // Step 1: dump from Progress Petra 2.3 to CSV files, write gz files to keep size of fulldump small
-                // this takes about 45 minutes for the german database
+                // this takes about 7 minutes for the german database
                 // use the generated fulldump23.p
                 if ((TAppSettingsManager.GetValue("operation", "dump23") == "dump23") && File.Exists("fulldump23.r"))
                 {
@@ -97,6 +97,7 @@ namespace Ict.Tools.DataDumpPetra2
                 // Step 2: produce one or several sql load files for PostgreSQL
                 // can be called independant from first step: for all tables or just one table
                 // for tables merged into one: append to previous file
+                // this takes 50 minutes on my virtual machine on the german server for all tables. on a faster machine, it is only 25 minutes
                 if (TAppSettingsManager.GetValue("operation", "load30") == "load30")
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
