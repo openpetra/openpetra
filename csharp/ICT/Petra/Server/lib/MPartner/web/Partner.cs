@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -57,6 +58,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               (APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse);
 
             return ResultValue;
+        }
+
+        /// <summary>
+        /// return the location key and site key for the best address for that partner
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static TLocationPK DetermineBestAddress(Int64 APartnerKey)
+        {
+            return ServerCalculations.DetermineBestAddress(APartnerKey);
         }
 
         /// <summary>

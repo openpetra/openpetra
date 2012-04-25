@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             NewDocumentRow.PartnerKey = APartnerKey;
             NewDocumentRow.CreditNoteFlag = ACreditNoteOrInvoice;
             NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
-            NewDocumentRow.LastDetailNumber = -1;
+            NewDocumentRow.LastDetailNumber = 0;
 
             bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
@@ -436,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             NewRow.ApDocumentId = AApDocumentId;
             NewRow.LedgerNumber = ALedgerNumber;
-            NewRow.DetailNumber = ALastDetailNumber;
+            NewRow.DetailNumber = ALastDetailNumber + 1;
             NewRow.Amount = AAmount;
             NewRow.CostCentreCode = AApSupplier_DefaultCostCentre;
             NewRow.AccountCode = AApSupplier_DefaultExpAccount;
@@ -818,6 +818,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
+                        transaction.AmountInIntlCurrency = transaction.AmountInBaseCurrency * TExchangeRateTools.GetDailyExchangeRate(
+                            GLDataset.ALedger[0].BaseCurrency,
+                            GLDataset.ALedger[0].IntlCurrency,
+                            transaction.TransactionDate);
+
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
                         transaction.Narrative = "AP" + document.ApNumber.ToString() + " - " + documentDetail.Narrative + " - " + SupplierShortName;
@@ -859,6 +864,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionAmount *= -1;
                     }
 
+                    transaction.AmountInIntlCurrency = transaction.TransactionAmount * TExchangeRateTools.GetDailyExchangeRate(
+                        journal.TransactionCurrency,
+                        GLDataset.ALedger[0].IntlCurrency,
+                        transaction.TransactionDate);
+
                     transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
                     transaction.AccountCode = document.ApAccount;
@@ -888,6 +898,43 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             return GLDataset;
+        }
+
+        /// <summary>
+        /// Check that the Account codes for an invoice can be used with the cost centres referenced.
+        /// 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AccountCodesCostCentres">list {Account"|"Cost Centre}</param>
+        /// <returns>Empty string if there's no problems</returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List<String> AccountCodesCostCentres)
+        {
+            String ReportMsg = "";
+            foreach (String AccCostCentre in AccountCodesCostCentres)
+            {
+                Int32 BarPos = AccCostCentre.IndexOf ("|");
+                String AccountCode = AccCostCentre.Substring(0, BarPos);
+                AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AccountCode, null);
+                String ValidCcCombo = AccountTbl[0].ValidCcCombo.ToLower();
+
+                // If this account goes with any cost centre (as is likely),
+                // there's nothing more to do.
+
+                if (ValidCcCombo != "all")
+                {
+                    String CostCentre = AccCostCentre.Substring(BarPos + 1);
+                    ACostCentreTable CcTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, CostCentre, null);
+                    String CcType = CcTbl[0].CostCentreType.ToLower();
+                    if (ValidCcCombo != CcType)
+                    {
+                        ReportMsg += String.Format (Catalog.GetString("Error: Account {0} cannot be used with cost centre {1}. Account requires a {2} cost centre."),
+                            AccountCode, CostCentre, ValidCcCombo);
+                        ReportMsg += Environment.NewLine;
+                    }
+                }
+            }
+            return ReportMsg;
         }
 
         /// <summary>
@@ -1052,7 +1099,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
-        /// creates the GL batch needed for paying the AP Documents
+        /// Creates the GL batch needed for paying the AP Documents
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APostingDate"></param>
@@ -1179,6 +1226,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
+                        transaction.AmountInIntlCurrency = transaction.AmountInBaseCurrency * TExchangeRateTools.GetDailyExchangeRate(
+                            GLDataset.ALedger[0].BaseCurrency,
+                            GLDataset.ALedger[0].IntlCurrency,
+                            transaction.TransactionDate);
+
                         transaction.AccountCode = payment.BankAccount;
                         transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
                             payment.LedgerNumber);
@@ -1201,6 +1253,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transactionAPAccount.DebitCreditIndicator = !transaction.DebitCreditIndicator;
                         transactionAPAccount.TransactionAmount = transaction.TransactionAmount;
                         transactionAPAccount.AmountInBaseCurrency = transaction.AmountInBaseCurrency;
+                        transactionAPAccount.AmountInIntlCurrency = transaction.AmountInIntlCurrency;
                         transactionAPAccount.TransactionDate = batch.DateEffective;
                         transactionAPAccount.AccountCode = document.ApAccount;
                         transactionAPAccount.CostCentreCode =
@@ -1253,6 +1306,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 transactionReval.CostCentreCode = transaction.CostCentreCode;
                                 transactionReval.TransactionDate = batch.DateEffective;
                                 transactionReval.TransactionAmount = 0; // no real value
+                                transactionReval.AmountInIntlCurrency = 0; // no real value
                                 transactionReval.DebitCreditIndicator = (ForexGain > 0);
                                 transactionReval.AmountInBaseCurrency = Math.Abs(ForexGain);
 
@@ -1271,6 +1325,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 transactionApReval.TransactionDate = batch.DateEffective;
                                 transactionApReval.DebitCreditIndicator = !transactionReval.DebitCreditIndicator;
                                 transactionApReval.AmountInBaseCurrency = transactionReval.AmountInBaseCurrency;
+                                transactionApReval.AmountInIntlCurrency = transactionReval.AmountInIntlCurrency;
 
                                 GLDataset.ATransaction.Rows.Add(transactionApReval);
                             }
@@ -1376,8 +1431,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             supplierPaymentsRow.BankAccount = supplier.DefaultBankAccount;
                             supplierPaymentsRow.CurrencyCode = supplier.CurrencyCode;
 
-                            // TODO: use uptodate exchange rate?
-                            supplierPaymentsRow.ExchangeRateToBase = 1.0M;
+                            supplierPaymentsRow.ExchangeRateToBase = apdocument.ExchangeRateToBase; // The client may change this.
 
                             // TODO: leave empty
                             supplierPaymentsRow.Reference = "TODO";
@@ -1469,8 +1523,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             foreach (AccountsPayableTDSAApDocumentPaymentRow row in MainDS.AApDocumentPayment.Rows)
             {
-                AccountsPayableTDSAApDocumentRow documentRow = (AccountsPayableTDSAApDocumentRow)
-                                                               AApDocumentAccess.LoadByPrimaryKey(MainDS, row.ApDocumentId, ReadTransaction);
+                AccountsPayableTDSAApDocumentRow documentRow = (AccountsPayableTDSAApDocumentRow) MainDS.AApDocument.Rows.Find(row.ApDocumentId);
+                if (documentRow != null)
+                {
+                    MainDS.AApDocument.Rows.Remove(documentRow);
+                }
+
+                documentRow = (AccountsPayableTDSAApDocumentRow)
+                            AApDocumentAccess.LoadByPrimaryKey(MainDS, row.ApDocumentId, ReadTransaction);
 
                 SetOutstandingAmount(documentRow, documentRow.LedgerNumber, MainDS.AApDocumentPayment);
 
@@ -1724,13 +1784,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // Now produce a reversed copy of each referenced document
                 //
                 TempDS.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
+                TempDS.AApPayment.DefaultView.Sort = AApPaymentTable.GetPaymentNumberDBName();
 
-                foreach (AApDocumentPaymentRow PaymentRow in TempDS.AApDocumentPayment.Rows)
+                foreach (AApDocumentPaymentRow DocPaymentRow in TempDS.AApDocumentPayment.Rows)
                 {
-                    Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(PaymentRow.ApDocumentId);
+                    Int32 DocIdx = TempDS.AApDocument.DefaultView.Find(DocPaymentRow.ApDocumentId);
                     AApDocumentRow OldDocumentRow = TempDS.AApDocument[DocIdx];
-                    AApDocumentRow NewDocumentRow = ReverseDS.AApDocument.NewRowTyped();
-
+                    AccountsPayableTDSAApDocumentRow NewDocumentRow = ReverseDS.AApDocument.NewRowTyped();
+                    DocIdx = TempDS.AApPayment.DefaultView.Find(DocPaymentRow.PaymentNumber);
+                    AApPaymentRow  OldPaymentRow = TempDS.AApPayment[DocIdx];
                     DataUtilities.CopyAllColumnValues(OldDocumentRow, NewDocumentRow);
                     NewDocumentRow.ApDocumentId = (Int32)TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_ap_document);
 
@@ -1744,6 +1806,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     NewDocumentRow.DateCreated = DateTime.Now;
                     NewDocumentRow.DateEntered = DateTime.Now;
                     NewDocumentRow.ApNumber = NextApDocumentNumber(ALedgerNumber, ReversalTransaction, out AVerifications);
+                    NewDocumentRow.ExchangeRateToBase = OldDocumentRow.ExchangeRateToBase;
+                    NewDocumentRow.SavedExchangeRate = OldPaymentRow.ExchangeRateToBase;
                     ReverseDS.AApDocument.Rows.Add(NewDocumentRow);
 
                     TempDS.AApDocumentDetail.DefaultView.RowFilter = String.Format("{0}={1}",
@@ -1785,6 +1849,18 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // Now I can post these new documents, and pay them:
                 //
 
+                foreach (AccountsPayableTDSAApDocumentRow DocumentRow in ReverseDS.AApDocument.Rows)
+                {
+                    //
+                    // For foreign invoices,
+                    // I need to ensure that the reverse payment uses the exchange rate that was used
+                    // when the original document was paid.
+                    //
+                    Decimal PaymentExchangeRate = DocumentRow.SavedExchangeRate;
+                    DocumentRow.SavedExchangeRate = DocumentRow.ExchangeRateToBase;
+                    DocumentRow.ExchangeRateToBase = PaymentExchangeRate;
+                }
+
                 if (!PostAPDocuments(
                         ALedgerNumber,
                         PostTheseDocs,
@@ -1799,6 +1875,22 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 CreatePaymentTableEntries(ref ReverseDS, ALedgerNumber, PostTheseDocs);
 //              AccountsPayableTDSAApPaymentTable AApPayment = ReverseDS.AApPayment;
 //              AccountsPayableTDSAApDocumentPaymentTable AApDocumentPayment = ReverseDS.AApDocumentPayment;
+
+                //
+                // For foreign invoices,
+                // I need to ensure that the invoice shows the exchange rate that was used
+                // when the original document was posted.
+                //
+
+                foreach (AccountsPayableTDSAApDocumentRow DocumentRow in ReverseDS.AApDocument.Rows)
+                {
+                    //
+                    // I'll restore the exchange rates I save above...
+                    DocumentRow.ExchangeRateToBase = DocumentRow.SavedExchangeRate; // If this exchange rate is different to the one
+                                                                                    // used in the payment, a "Forex Reval" transaction will be
+                                                                                    // created to balance the books.
+                }
+
 
                 if (!PostAPPayments(
                         ref ReverseDS,
@@ -1885,9 +1977,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 DBAccess.GDBAccessObj.CommitTransaction();
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction(); // throw away all that...
+                AVerifications = new TVerificationResultCollection();
+                TLogging.Log("In ReversePayment: exception " + e.Message);
+                TLogging.Log(e.StackTrace);
+                
+                TVerificationResult Res = new TVerificationResult("Exception", e.Message + "\r\n" + e.StackTrace, TResultSeverity.Resv_Critical);
+                AVerifications.Add(Res);
                 return false;
             }
         }

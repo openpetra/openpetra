@@ -67,6 +67,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using System.Collections.Specialized;
 
 #endregion ManualCode
@@ -260,6 +261,9 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors
                                            System.String ADocumentStatus,
                                            System.Boolean IsCreditNoteNotInvoice,
                                            System.Boolean AHideAgedTransactions);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
+        String CheckAccountsAndCostCentres(Int32 ALedgerNumber,
+                                           List<String> AccountCodesCostCentres);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector)</summary>
         System.Boolean DeleteAPDocuments(Int32 ALedgerNumber,
                                          List<Int32> ADeleteTheseDocs,
@@ -631,13 +635,15 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                          String importString,
                                          out TVerificationResultCollection AMessages);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        GLSetupTDS LoadPartnerData(System.Int64 DonorKey);
+        PPartnerTable LoadPartnerData(System.Int64 PartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         System.String IdentifyPartnerCostCentre(Int32 ledgerNumber,
                                                 Int64 fieldNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
                                                                           out Int64 fieldNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        Int64 SearchRecipientLedgerKey(Int64 partnerKey);
     }
 
 }

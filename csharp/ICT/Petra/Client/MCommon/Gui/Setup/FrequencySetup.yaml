@@ -44,12 +44,12 @@ RootNode:
             ColSpan: 3
         txtDetailFrequencyCode:
         txtDetailFrequencyDescription: {Width=160}
-        txtDetailNumberOfYears: {Format=Integer, Width=30}
-        txtDetailNumberOfMonths: {Format=Integer, Width=30}
+        txtDetailNumberOfYears: {Format=Integer, Width=30, Validation=true}
+        txtDetailNumberOfMonths: {Format=Integer, Width=30, Validation=true}
         Empty:
-        txtDetailNumberOfDays: {Format=Integer, Width=30}
-        txtDetailNumberOfHours: {Format=Integer, Width=30}
-        txtDetailNumberOfMinutes: {Format=Integer, Width=30}
+        txtDetailNumberOfDays: {Format=Integer, Width=30, Validation=true}
+        txtDetailNumberOfHours: {Format=Integer, Width=30, Validation=true}
+        txtDetailNumberOfMinutes: {Format=Integer, Width=30, Validation=true}
     Toolbar:
         tbbNew:
             Label: New Frequency

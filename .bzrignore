@@ -61,3 +61,6 @@ csharp/ICT/experimenting/treasurerEmails/obj
 csharp/ICT/Petra/Server/lib/data/*.cs
 csharp/ICT/Petra/Shared/lib/data/*.cs
 *lang-template.js
+inc/cfg/benerator/benerator.log
+./i18n/template - Kopie.pot_beforeremove
+./nantbuildTranslationTemplate_output

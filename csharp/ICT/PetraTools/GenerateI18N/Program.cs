@@ -42,10 +42,11 @@ namespace Ict.Tools.GenerateI18N
             GettextProcess.EnableRaisingEvents = false;
             GettextProcess.StartInfo.FileName = AGettextApp;
             GettextProcess.StartInfo.Arguments = String.Format(
-                "-j --add-comments=/// --no-location --from-code=UTF-8 {0} -o \"{1}\"",
+                "-j --add-comments=/ --add-location --from-code=UTF-8 {0} -o \"{1}\"",
                 AListOfFilesToParse, APoFile);
             GettextProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             GettextProcess.EnableRaisingEvents = true;
+            TLogging.Log("ParseWithGettext() Arguments: " + GettextProcess.StartInfo.Arguments);
             try
             {
                 if (!GettextProcess.Start())
@@ -69,14 +70,37 @@ namespace Ict.Tools.GenerateI18N
         public static void Main(string[] args)
         {
             new TAppSettingsManager(false);
+            
+            //enable execution without nant -> debugging easier
+            bool independentmode = false;
+            
+            if(independentmode)
+                TLogging.Log("started in independent-mode");
+
+            
+ /*           TLogging.Log("start slepping");
+            System.Threading.Thread.Sleep(10000);
+            TLogging.Log("stop slepping");
+  */          
+
 
             try
             {
-                if (TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "removeDoNotTranslate"))
+                if ((TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "removeDoNotTranslate")) || independentmode)
                 {
-                    string doNotTranslatePath = TAppSettingsManager.GetValue("dntFile");
-                    string poFilePath = TAppSettingsManager.GetValue("poFile");
-
+                   string doNotTranslatePath;
+                   string poFilePath;
+                    
+                    if(independentmode) 
+                    {
+                       doNotTranslatePath = "D:\\openpetra\\bzr\\work-690\\i18n\\doNotTranslate.po";
+                       poFilePath = "D:\\openpetra\\bzr\\work-690\\i18n\\template.pot";
+                    }
+                    else
+                    {
+                       doNotTranslatePath = TAppSettingsManager.GetValue("dntFile");
+                       poFilePath = TAppSettingsManager.GetValue("poFile");
+                    }
                     // remove all strings from po file that are listed in the "Do Not Translate" file
                     TDropUnwantedStrings.RemoveUnwantedStringsFromTranslation(doNotTranslatePath, poFilePath);
                 }

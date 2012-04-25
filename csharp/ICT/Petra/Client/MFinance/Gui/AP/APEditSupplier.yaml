@@ -53,6 +53,6 @@ RootNode:
         cmbDefaultPaymentType:
             Label: Default &Payment Type
             DataField: AApSupplier.PaymentType
-            OptionalValues: [CASH, CHEQUE, TRANSFER]
+            OptionalValues: [Cash, Cheque, Debit Card, Credit Card, Transfer]
         nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays, PositiveValueActivates=cndDiscountEnabled}
         txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled, Format=PercentDecimal(2)}

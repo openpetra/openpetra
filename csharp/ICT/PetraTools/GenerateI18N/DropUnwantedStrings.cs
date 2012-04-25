@@ -112,17 +112,40 @@ public class TDropUnwantedStrings
         StreamReader sr = new StreamReader(ATranslationFile);
         Encoding enc = new UTF8Encoding(false);
         StreamWriter sw = new StreamWriter(ATranslationFile + ".new", false, enc);
+        StreamWriter sw_all = new StreamWriter(ATranslationFile + ".withallsources", false, enc); //create a template in which all the source links are contained
 
         string line = sr.ReadLine();
+        int counter = 0;
 
         while (line != null)
         {
+            counter++;
             if (!line.StartsWith("msgid"))
             {
+                sw_all.WriteLine(line);
                 sw.WriteLine(line);
-                line = sr.ReadLine();
+                line = sr.ReadLine();   //get the empty line
+
+                if(line.StartsWith("#:"))   //take over the first source code line (if it exists)
+                {
+                    sw_all.WriteLine(line);
+                    sw.WriteLine(line);
+                    line = sr.ReadLine();
+                }
+               /* if(line.StartsWith("#:"))
+                {
+                    sw_all.WriteLine(line);
+                    sw.WriteLine(line);
+                    line = sr.ReadLine();
+                }
+                */
+               while(line.StartsWith("#:") || line.StartsWith("#,"))    //ignore all other source code lines
+                {
+                    sw_all.WriteLine(line);
+                    line = sr.ReadLine();
+                }
             }
-            else
+            else if(line.StartsWith("msgid"))
             {
                 StringCollection OriginalLines;
                 string messageId = ParsePoLine(sr, ref line, out OriginalLines);
@@ -140,6 +163,7 @@ public class TDropUnwantedStrings
                 {
                     foreach (string s in OriginalLines)
                     {
+                        sw_all.WriteLine(line);
                         sw.WriteLine(s);
                     }
                 }
@@ -147,6 +171,7 @@ public class TDropUnwantedStrings
         }
 
         sr.Close();
+        sw_all.Close();
         sw.Close();
         TTextFile.UpdateFile(ATranslationFile);
     }

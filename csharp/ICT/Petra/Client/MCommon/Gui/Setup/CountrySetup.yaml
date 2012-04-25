@@ -43,7 +43,7 @@ RootNode:
         txtDetailCountryName: {Width=247, OnLeave=UpdateCountryNameLocal}
         txtDetailCountryNameLocal: {Width=247}
         chkDetailUndercover: 
-        txtDetailInternatAccessCode: {Label=Int'l Access Code, Width=30}
+        txtDetailInternatAccessCode: {Label=Int'l Access Code, Width=30, Validation=true}
         txtDetailInternatTelephoneCode: {Label=Int'l Dialling Code, Format=Integer, Width=30, Align=right, Validation=true}
         cmbDetailAddressOrder: {Label=Address Display Order, List=AddressDisplayOrderList, Width=145}
         cmbDetailInternatPostalTypeCode: {Label=Int'l Postal Type, List=InternationalPostalTypeList, Validation=true}
