@@ -100,6 +100,12 @@ namespace Ict.Petra.Shared
         /// <summary>Concurrent changes to data happened.</summary>
         public const String ERR_CONCURRENTCHANGES = "GEN.00006E";
 
+        /// <summary>Value is not set (show error).</summary>
+        [ErrCodeAttribute("Value must be set.",
+             ErrorMessageText = "'{0}' cannot be left empty",
+             ErrorMessageTitle = "Value unassigned")]
+        public const String ERR_VALUEEMPTY_ERROR = "GEN.00008V";
+
         #endregion
 
         #region Partner Module-specific error codes
