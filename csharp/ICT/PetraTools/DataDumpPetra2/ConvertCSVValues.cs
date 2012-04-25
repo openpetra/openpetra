@@ -139,7 +139,7 @@ namespace Ict.Tools.DataDumpPetra2
                 value = FCurrentLine.Substring(FCurrentPosition, FCurrentLength);
             }
 
-            if (value.IndexOf("\"\"") != -1)
+            if (value.Contains("\"\""))
             {
                 value = value.Replace("\"\"", "\"");
             }
@@ -216,6 +216,39 @@ namespace Ict.Tools.DataDumpPetra2
 
             return true;
         }
+
+        private static string delim = "\t";
+
+        /// <summary>
+        /// concatenate a string using the tabulator as delimiter. slightly different from StringHelper.StrMerge
+        /// </summary>
+        /// <param name="l">the string array containing the strings that should be concatenated</param>
+        /// <returns>a string with the concatenated strings from the string array</returns>
+        public static StringBuilder StrMergeSpecial(String[] l)
+        {
+            StringBuilder builder = new StringBuilder();
+
+            for (int i = 0; i <= l.Length - 1; i += 1)
+            {
+                if (i != 0)
+                {
+                    builder.Append(delim);
+                }
+
+                // if the element already contains the delimiter, do something about it.
+                // strsplit and getNextCSV have to revert it
+                if (l[i].Contains(delim))
+                {
+                    builder.Append(l[i].Replace(delim, "\\t"));
+                }
+                else
+                {
+                    builder.Append(l[i]);
+                }
+            }
+
+            return builder;
+        }
     }
 
     /// <summary>
@@ -283,8 +316,8 @@ namespace Ict.Tools.DataDumpPetra2
 
                     for (int countColumn = 0; countColumn < FColumnCount; countColumn++)
                     {
-                        if ((csvfile.FCurrentRow[countColumn].IndexOf('\n') != -1)
-                            || (csvfile.FCurrentRow[countColumn].IndexOf('\r') != -1))
+                        if (csvfile.FCurrentRow[countColumn].Contains("\n")
+                            || csvfile.FCurrentRow[countColumn].Contains("\r"))
                         {
                             csvfile.FCurrentRow[countColumn] = csvfile.FCurrentRow[countColumn].Replace("\n", "\\n").Replace("\r", "\\r");
                         }

@@ -201,8 +201,8 @@ namespace Ict.Tools.DataDumpPetra2
             StringCollection NewColumnNames = GetColumnNames(ANewTable);
             int RowCounter = 0;
 
-            SortedList <string, TTableField>MappingOfFields = new SortedList <string, TTableField>();
-            SortedList <string, string>DefaultValues = new SortedList <string, string>();
+            List <TTableField>MappingOfFields = new List <TTableField>();
+            List <string>DefaultValues = new List <string>();
 
             foreach (TTableField newField in ANewTable.grpTableField)
             {
@@ -215,7 +215,7 @@ namespace Ict.Tools.DataDumpPetra2
                     oldField = AOldTable.GetField(oldname);
                 }
 
-                MappingOfFields.Add(newField.strName, oldField);
+                MappingOfFields.Add(oldField);
 
                 // prepare the default values once
                 // this is a new field. insert default value
@@ -247,7 +247,7 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                 }
 
-                DefaultValues.Add(newField.strName, defaultValue);
+                DefaultValues.Add(defaultValue);
             }
 
             string[] NewRow = CreateRow(NewColumnNames);
@@ -261,9 +261,11 @@ namespace Ict.Tools.DataDumpPetra2
                     break;
                 }
 
+                int fieldCounter = 0;
+
                 foreach (TTableField newField in ANewTable.grpTableField)
                 {
-                    TTableField oldField = MappingOfFields[newField.strName];
+                    TTableField oldField = MappingOfFields[fieldCounter];
 
                     if (oldField != null)
                     {
@@ -275,14 +277,16 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                     else
                     {
-                        SetValue(NewColumnNames, ref NewRow, newField.strName, DefaultValues[newField.strName]);
+                        SetValue(NewColumnNames, ref NewRow, newField.strName, DefaultValues[fieldCounter]);
                     }
+
+                    fieldCounter++;
                 }
 
                 if (FixData(ANewTable.strName, NewColumnNames, ref NewRow))
                 {
                     RowCounter++;
-                    AWriter.WriteLine(StringHelper.StrMerge(NewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriter.WriteLine(CSVFile.StrMergeSpecial(NewRow));
                 }
             }
 
