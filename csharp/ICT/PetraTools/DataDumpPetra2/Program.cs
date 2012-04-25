@@ -87,8 +87,8 @@ namespace Ict.Tools.DataDumpPetra2
 
                 // Step 1: dump from Progress Petra 2.3 to CSV files, write gz files to keep size of fulldump small
                 // this takes about 45 minutes for the german database
-                // just use the simple fulldump.p from progress/petra/compiler (slightly modified, fulldump23.p)
-                if ((TAppSettingsManager.GetValue("operation", "dump23") == "dump23") && File.Exists("fulldumpPetra23.r"))
+                // use the generated fulldump23.p
+                if ((TAppSettingsManager.GetValue("operation", "dump23") == "dump23") && File.Exists("fulldump23.r"))
                 {
                     TDumpProgressToPostgresql dumper = new TDumpProgressToPostgresql();
                     dumper.DumpTablesToCSV(table);

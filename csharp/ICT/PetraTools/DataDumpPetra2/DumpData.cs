@@ -432,65 +432,21 @@ namespace Ict.Tools.DataDumpPetra2
 
             if (ATableName.Length == 0)
             {
-                TRunProgress.RunProgress("fulldumpPetra23.r", "Sequences", TLogging.GetLogFileName());
+                string dumpFile = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "a_ledger.d.gz";
 
-                List <TTable>oldTables = storeOld.GetTables();
-
-                foreach (TTable oldTable in oldTables)
+                if (!File.Exists(dumpFile))
                 {
-                    string dumpFile = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + oldTable.strName;
-
-                    if (!File.Exists(dumpFile + ".d.gz"))
-                    {
-                        TLogging.Log("Exporting to CSV: table " + oldTable.strName);
-                        TRunProgress.RunProgress("fulldumpPetra23.r", oldTable.strName, TLogging.GetLogFileName());
-
-                        if (TLogging.DebugLevel >= 10)
-                        {
-                            // line numbers from exceptions in the ConvertCSVValues parser will not be completely correct in vi
-                            // if we do not call this. reason: some characters (^M is not considered as a newline character in vi, but in Notepad++ and also in StreamReader.ReadLine().
-                            // but this routine seems to cost a lot of memory, which makes all the other calculations even slower.
-                            // so only switch this on for debugging
-                            StringBuilder WholeFile = new StringBuilder();
-
-                            using (StreamReader fileReader = new StreamReader(dumpFile + ".d"))
-                            {
-                                // avoid single \r and \n newline characters. Convert all to the local line endings.
-                                // Fixes problems with line number differences in vi
-                                WholeFile.Append(fileReader.ReadToEnd());
-                            }
-
-                            WholeFile.Replace("\r\n", "\\r\\n").
-                            Replace("\n", Environment.NewLine).
-                            Replace("\r", Environment.NewLine).
-                            Replace("\\r\\n", Environment.NewLine);
-
-                            using (StreamWriter sw = new StreamWriter(dumpFile + ".d"))
-                            {
-                                sw.Write(WholeFile.ToString());
-                            }
-
-                            WholeFile = null;
-                        }
-
-                        // gzip the file, to keep the amount of data small on the harddrive
-                        Stream outStream = File.Create(dumpFile + ".d.gz");
-                        Stream gzoStream = new GZipOutputStream(outStream);
-
-                        using (Stream inputStream = File.OpenRead(dumpFile + ".d"))
-                        {
-                            byte[]  dataBuffer = new byte[4096];
-                            StreamUtils.Copy(inputStream, gzoStream, dataBuffer);
-                        }
-                        gzoStream.Close();
-
-                        File.Delete(dumpFile + ".d");
-                    }
+                    TRunProgress.RunProgress("fulldump23.r", "", TLogging.GetLogFileName());
                 }
             }
             else
             {
-                TRunProgress.RunProgress("fulldumpPetra23.r", ATableName, TLogging.GetLogFileName());
+                string dumpFile = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + ATableName + ".d.gz";
+
+                if (!File.Exists(dumpFile))
+                {
+                    TRunProgress.RunProgress("fulldump23.r", ATableName, TLogging.GetLogFileName());
+                }
             }
 
             TLogging.Log("Success: finished exporting the data");
