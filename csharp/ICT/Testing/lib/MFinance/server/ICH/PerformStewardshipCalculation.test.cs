@@ -287,20 +287,20 @@ namespace Tests.MFinance.Server.ICH
                 "We have to give everything apart from our 7% to ICH");
         }
         
-        /// <summary>
-        /// Test the creation of the ICH Stewardship batch
-        /// </summary>
-        [Test]
-        public void TestGenerateICHStewardshipBatch()
-        {
- 			//ImportAdminFees();
-
-        	int PeriodNumber = 5;
-        	
-        	TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
-        	
-        	Assert.IsTrue(TStewardshipCalculationWebConnector.GenerateICHStewardshipBatch(FLedgerNumber, PeriodNumber, ref VerificationResults),"Did not create ICH Stewardship Batch");
-        }
+//        /// <summary>
+//        /// Test the creation of the ICH Stewardship batch
+//        /// </summary>
+//        [Test]
+//        public void TestGenerateICHStewardshipBatch()
+//        {
+// 			//ImportAdminFees();
+//
+//        	int PeriodNumber = 5;
+//        	
+//        	TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+//        	
+//        	Assert.IsTrue(TStewardshipCalculationWebConnector.GenerateICHStewardshipBatch(FLedgerNumber, PeriodNumber, ref VerificationResults),"Did not create ICH Stewardship Batch");
+//        }
         
     }
 }

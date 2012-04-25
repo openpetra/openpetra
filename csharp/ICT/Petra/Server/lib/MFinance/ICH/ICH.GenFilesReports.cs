@@ -163,16 +163,17 @@ namespace Ict.Petra.Server.MFinance.ICH
                             {
                                 DataRow DR = (DataRow)TableForExport.NewRow();
 
-                                DR.ItemArray[0] = PeriodEndDate;
-                                DR.ItemArray[1] = StandardCostCentre;
-                                DR.ItemArray[2] = DateToday;
-                                DR.ItemArray[3] = Currency;
-                                DR.ItemArray[4] = CostCentre;
-                                DR.ItemArray[5] = IncomeAmount;
-                                DR.ItemArray[6] = ExpenseAmount;
-                                DR.ItemArray[7] = XferAmount;
+                                DR[0] = PeriodEndDate;
+                                DR[1] = StandardCostCentre;
+                                DR[2] = DateToday;
+                                DR[3] = Currency;
+                                DR[4] = CostCentre;
+                                DR[5] = IncomeAmount;
+                                DR[6] = ExpenseAmount;
+                                DR[7] = XferAmount;
 
                                 TableForExport.Rows.Add(DR);
+                                TableForExport.AcceptChanges();
                             }
 
                             IncomeAmount = 0;
@@ -201,16 +202,17 @@ namespace Ict.Petra.Server.MFinance.ICH
                 {
                     DataRow DR = (DataRow)TableForExport.NewRow();
 
-                    DR.ItemArray[0] = PeriodEndDate;
-                    DR.ItemArray[1] = StandardCostCentre;
-                    DR.ItemArray[2] = DateToday;
-                    DR.ItemArray[3] = Currency;
-                    DR.ItemArray[4] = CostCentre;
-                    DR.ItemArray[5] = IncomeAmount;
-                    DR.ItemArray[6] = ExpenseAmount;
-                    DR.ItemArray[7] = XferAmount;
+                    DR[0] = PeriodEndDate;
+                    DR[1] = StandardCostCentre;
+                    DR[2] = DateToday;
+                    DR[3] = Currency;
+                    DR[4] = CostCentre;
+                    DR[5] = IncomeAmount;
+                    DR[6] = ExpenseAmount;
+                    DR[7] = XferAmount;
 
                     TableForExport.Rows.Add(DR);
+                    TableForExport.AcceptChanges();
                 }
 
                 //Create the XMLDoc ready for export to CSV
@@ -220,7 +222,16 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if (AEmail)
                 {
-                    AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
+                    string EmailAddress = string.Empty;
+                    
+                    //TODO: swap lines below**************************************
+                    string SenderAddress = @"chris.thomas@om.org";
+                    //string SenderAddress = TAppSettingsManager.GetValue("SenderAddress");
+                    //*********************************************************
+                    string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
+                    string HTMLText = string.Empty;
+                	
+                	AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
                     AEmailDestinationRow TemplateRow2 = (AEmailDestinationRow)AEmailDestTable.NewRowTyped(false);
 
                     TemplateRow2.FileCode = MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP;
@@ -234,39 +245,41 @@ namespace Ict.Petra.Server.MFinance.ICH
                     
                     if (AEmailDestinationTable.Count == 0)
                     {
-	                    AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
-	
-	                    string SenderAddress = TAppSettingsManager.GetValue("SenderAddress");
-	                    string EmailAddress = EmailDestinationRow.EmailAddress;
-	                    string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
-	                    string HTMLText = string.Empty;
-	
-	                    //Read the file title
-	                    FileInfo FileDetails = new FileInfo(AFileName);
-	                    string FileTitle = FileDetails.Name;
-	
-	                    if (!File.Exists(AFileName))
-	                    {
-	                        HTMLText = "<html><body>" + String.Format(Catalog.GetString("Cannot find file {0}"), AFileName) + "</body></html>";
-	                    }
-	                    else
-	                    {
-	                        HTMLText = "<html><body>" + EmailSubject + ": " + FileTitle + Catalog.GetString(" is attached.") + "</body></html>";
-	                    }
-	
-	                    TSmtpSender SendMail = new TSmtpSender();
-	
-	                    MailMessage msg = new MailMessage(SenderAddress,
-	                        EmailAddress,
-	                        EmailSubject,
-	                        HTMLText);
-	
-	                    msg.Attachments.Add(new Attachment(AFileName));
-	                    //msg.Bcc.Add(BCCAddress);
-	
-	                    SendMail.SendMessage(ref msg);
-                    	
+	                    //TODO: replace below
+	                    EmailAddress = @"cmt1@talk21.com";
                     }
+                    else
+                    {
+	                    AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
+	                    EmailAddress = EmailDestinationRow.EmailAddress;
+                    }
+
+
+                    //Read the file title
+                    FileInfo FileDetails = new FileInfo(AFileName);
+                    string FileTitle = FileDetails.Name;
+
+                    if (!File.Exists(AFileName))
+                    {
+                        HTMLText = "<html><body>" + String.Format(Catalog.GetString("Cannot find file {0}"), AFileName) + "</body></html>";
+                    }
+                    else
+                    {
+                        HTMLText = "<html><body>" + EmailSubject + ": " + FileTitle + Catalog.GetString(" is attached.") + "</body></html>";
+                    }
+
+                    TSmtpSender SendMail = new TSmtpSender();
+
+                    MailMessage msg = new MailMessage(SenderAddress,
+                        EmailAddress,
+                        EmailSubject,
+                        HTMLText);
+
+                    msg.Attachments.Add(new Attachment(AFileName));
+                    //msg.Bcc.Add(BCCAddress);
+
+                    SendMail.SendMessage(ref msg);
+                    	
                 }
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
