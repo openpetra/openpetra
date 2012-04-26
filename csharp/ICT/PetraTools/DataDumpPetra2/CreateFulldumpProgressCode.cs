@@ -108,8 +108,7 @@ namespace Ict.Tools.DataDumpPetra2
                 return;
             }
 
-            string OutputFile =
-                TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "fulldump23.p";
+            string OutputFile = "fulldump23.p";
 
             System.Console.WriteLine("Writing file to {0}...", OutputFile);
             StreamWriter progressWriter = new StreamWriter(OutputFile);
@@ -133,7 +132,7 @@ namespace Ict.Tools.DataDumpPetra2
             DumpSequences(ref progressWriter);
             progressWriter.WriteLine();
             progressWriter.Close();
-            System.Console.WriteLine("Success: file written: {0}", OutputFile);
+            System.Console.WriteLine("Success: file written: {0}", Path.GetFullPath(OutputFile));
         }
     }
 }

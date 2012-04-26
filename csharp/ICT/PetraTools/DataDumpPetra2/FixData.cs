@@ -182,7 +182,7 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                     else
                     {
-                        // TODO: check for year format, or force all the same in the dump program dmy?
+                        // fulldump23.p does write all dates in format dmy
                         // 15/04/2010 => 2010-04-15
                         AValue = string.Format("{0}-{1}-{2}", AValue.Substring(6, 4), AValue.Substring(3, 2), AValue.Substring(0, 2));
                     }
