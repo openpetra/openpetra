@@ -593,5 +593,154 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
+
+        /// <summary>
+        /// Validates the previous experience data of a Person.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePreviousExperienceManual(object AContext, PmPastExperienceRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Start Date' must not be a future date
+            ValidationColumn = ARow.Table.Columns[PmPastExperienceTable.ColumnStartDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	VerificationResult = null;
+            	
+            	if (   !ARow.IsStartDateNull()
+            	    && ARow.StartDate > DateTime.Today)
+            	{
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR, new string[] { ValidationControlsData.ValidationControlLabel })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+            	}
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'End Date' must not be a future date
+            ValidationColumn = ARow.Table.Columns[PmPastExperienceTable.ColumnEndDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	VerificationResult = null;
+            	
+            	if (   !ARow.IsEndDateNull()
+            	    && ARow.EndDate > DateTime.Today)
+            	{
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR, new string[] { ValidationControlsData.ValidationControlLabel })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+            	}
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'End Date' must be later or equal 'Start Date'
+            ValidationColumn = ARow.Table.Columns[PmPastExperienceTable.ColumnEndDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	VerificationResult = null;
+
+            	VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.EndDate, ARow.StartDate,
+                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the progress report (evaluation) data of a Person.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateProgressReportManual(object AContext, PmPersonEvaluationRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Evaluator' must have a value
+            ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnEvaluatorId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Evaluator,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+            
+            // 'Evaluation Date' must have a value
+            ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnEvaluationDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.EvaluationDate,
+                    ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
+                    ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Next Evaluation Date' must have a value if evaluation type is not set to "Leaving"
+            ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnNextEvaluationDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	VerificationResult = null;
+            	
+            	if (ARow.EvaluationType != "Leaving")
+            	{
+	                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.NextEvaluationDate,
+	                    ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
+	                    ValidationControlsData.ValidationControl);
+            	}
+
+        		// Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            	
+            }
+            
+            // 'Report Type' must have a value
+            ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnEvaluationTypeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.EvaluationType,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+            
+        }
+
     }
 }
