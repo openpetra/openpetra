@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner;
@@ -38,6 +39,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Person;
+using Ict.Petra.Shared.MPersonnel.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -173,29 +175,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
         }
-
-        /*private void ShowLanguageLevelExplanation(System.Object sender, EventArgs e)
-         * {
-         *  PtLanguageLevelRow LangLevelDR;
-         *
-         *  if (FLanguageLevelDT == null)
-         *  {
-         *      FLanguageLevelDT = (PtLanguageLevelTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
-         *          TCacheablePersonTablesEnum.LanguageLevelList);
-         *  }
-         *
-         *  LangLevelDR = (PtLanguageLevelRow)FLanguageLevelDT.Rows.Find(new object[] { Convert.ToInt32(cmbLanguageLevel.cmbCombobox.SelectedValue) });
-         *
-         *  if (LangLevelDR != null)
-         *  {
-         *      MessageBox.Show(LangLevelDR.LanguageLevelDescr.Trim() + ":" + Environment.NewLine + LangLevelDR.LanguageComment,
-         *          Catalog.GetString("Language Level Explanation"));
-         *  }
-         *  else
-         *  {
-         *      MessageBox.Show(String.Format(Catalog.GetString("There is no explanation available for Language Level {0}."), cmbLanguageLevel.Text));
-         *  }
-         * }*/
 
         /// <summary>
         /// Gets the data from all controls on this UserControl.
@@ -338,6 +317,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.DeleteRow(this, null);
             }
+        }
+
+        private void ValidateDataDetailsManual(PmDocumentRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPersonnelValidation_Personnel.ValidatePersonalDocumentManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

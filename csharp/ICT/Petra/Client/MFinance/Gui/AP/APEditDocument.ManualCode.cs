@@ -390,13 +390,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 && (txtDetailAmount.NumberValueDecimal.HasValue))
             {
                 decimal ExchangeRate = 1.0m;
+
                 if (txtExchangeRateToBase.NumberValueDecimal.HasValue)
+                {
                     ExchangeRate = txtExchangeRateToBase.NumberValueDecimal.Value;
+                }
 
                 if (ExchangeRate != 0)
                 {
-                txtDetailBaseAmount.NumberValueDecimal =
-                    txtDetailAmount.NumberValueDecimal / ExchangeRate;
+                    txtDetailBaseAmount.NumberValueDecimal =
+                        txtDetailAmount.NumberValueDecimal / ExchangeRate;
                 }
             }
         }

@@ -425,7 +425,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             ADailyExchangeRateRow fittingRate = null;
 

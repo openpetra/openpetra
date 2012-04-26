@@ -27,7 +27,7 @@
 
 using System;
 
-namespace Ict.Petra.Shared.MPartner
+namespace Ict.Petra.Shared
 {
     /// <summary>
     /// Enums holding the possible cacheable tables for the Petra Partner Module, specifically Partner submodule

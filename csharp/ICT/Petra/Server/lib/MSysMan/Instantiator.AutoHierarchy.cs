@@ -2407,7 +2407,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -2417,7 +2417,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable)
+        public void RefreshCacheableTable(TCacheableSysManTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -2426,7 +2426,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode
@@ -2436,7 +2436,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public TSubmitChangesResult SaveChangedStandardCacheableTable(Ict.Petra.Shared.MSysMan.TCacheableSysManTablesEnum ACacheableTable,
+        public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
                                                                       ref TTypedDataTable ASubmitTable,
                                                                       out TVerificationResultCollection AVerificationResult)
         {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using Ict.Tools.DBXML;
 using Ict.Common;
 using Ict.Common.IO;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace Ict.Tools.CodeGeneration.DataStore
 {
@@ -50,15 +51,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             return DirectReferences.Contains(
                 AConstraint.strOtherTable + "," +
-                StringHelper.StrMerge(AConstraint.strThisFields, ",") + "," +
-                StringHelper.StrMerge(AConstraint.strOtherFields, ","));
+                StringHelper.StrMerge(AConstraint.strThisFields, ',') + "," +
+                StringHelper.StrMerge(AConstraint.strOtherFields, ','));
         }
 
         private static void AddDirectReference(TConstraint AConstraint)
         {
             DirectReferences.Add(AConstraint.strOtherTable + "," +
-                StringHelper.StrMerge(AConstraint.strThisFields, ",") + "," +
-                StringHelper.StrMerge(AConstraint.strOtherFields, ","));
+                StringHelper.StrMerge(AConstraint.strThisFields, ',') + "," +
+                StringHelper.StrMerge(AConstraint.strOtherFields, ','));
         }
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             }
 
             // for partners, show their names as well. This is used in function AddOrModifyRecord to show the users which values are different
-            foreach (TTableField column in ACurrentTable.grpTableField.List)
+            foreach (TTableField column in ACurrentTable.grpTableField)
             {
                 if (column.strName.Contains("_name_"))
                 {
@@ -364,7 +365,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             // check if other foreign key exists that references the same table, e.g.
             // PBankAccess.CountViaPPartnerPartnerKey
             // PBankAccess.CountViaPPartnerContactPartnerKey
-            string DifferentField = FindOtherConstraintSameOtherTable(ACurrentTable.grpConstraint.List, AConstraint);
+            string DifferentField = FindOtherConstraintSameOtherTable(ACurrentTable.grpConstraint, AConstraint);
 
             if (DifferentField.Length != 0)
             {
@@ -417,7 +418,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             ProcessTemplate ATemplate,
             ProcessTemplate ASnippet)
         {
-            foreach (TConstraint myConstraint in ACurrentTable.grpConstraint.List)
+            foreach (TConstraint myConstraint in ACurrentTable.grpConstraint)
             {
                 if (ValidForeignKeyConstraintForLoadVia(myConstraint))
                 {
@@ -476,7 +477,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <param name="AConstraints"></param>
         /// <param name="AConstraint"></param>
         /// <returns>the field that is different in the two keys; empty string if there is no other constraint or no different field</returns>
-        public static String FindOtherConstraintSameOtherTable(ArrayList AConstraints, TConstraint AConstraint)
+        public static String FindOtherConstraintSameOtherTable(List <TConstraint>AConstraints, TConstraint AConstraint)
         {
             foreach (TConstraint myConstraint in AConstraints)
             {
@@ -553,7 +554,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         TConstraint OtherLinkConstraint = null;
                         bool IsLinkTable = false;
 
-                        foreach (TConstraint LinkConstraint in LinkTable.grpConstraint.List)
+                        foreach (TConstraint LinkConstraint in LinkTable.grpConstraint)
                         {
                             // check if there is another constraint for the primary key of the link table.
                             if (ValidForeignKeyConstraintForLoadVia(LinkConstraint) && (LinkConstraint != Reference)
@@ -720,7 +721,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             ASnippet.SetCodelet("SEQUENCENAMEANDFIELD", "");
 
-            foreach (TTableField tablefield in ACurrentTable.grpTableField.List)
+            foreach (TTableField tablefield in ACurrentTable.grpTableField)
             {
                 // is there a field filled by a sequence?
                 // yes: get the next value of that sequence and assign to row

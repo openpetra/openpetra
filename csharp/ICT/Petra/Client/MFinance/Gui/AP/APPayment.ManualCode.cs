@@ -155,6 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (txtExchangeRate.NumberValueDecimal.HasValue)
             {
                 Decimal ExchangeRate = txtExchangeRate.NumberValueDecimal.Value;
+
                 if (ExchangeRate != 0)
                 {
                     FSelectedPaymentRow.ExchangeRateToBase = ExchangeRate;
