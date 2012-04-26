@@ -235,6 +235,12 @@ namespace Ict.Tools.DataDumpPetra2
                     builder.Append(delim);
                 }
 
+                if (l[i].Contains("\\"))
+                {
+                    // avoid Postgresql load error: ERROR:  invalid byte sequence for encoding "UTF8": 0x80
+                    l[i] = l[i].Replace("\\", "\\\\");
+                }
+
                 // if the element already contains the delimiter, do something about it.
                 // strsplit and getNextCSV have to revert it
                 if (l[i].Contains(delim))

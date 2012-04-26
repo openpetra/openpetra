@@ -124,6 +124,8 @@ CASE OPSYS:
     WHEN "UNIX" THEN pv_tablename_c = SESSION:PARAMETER.
 END CASE.
 
+SESSION:DATE-FORMAT = "dmy".
+
 DEFINE STREAM OutFile.
 
 /* returns NULL if the parameter is NULL, otherwise the trimmed uppercase string. useful for references to s_user_id_c */

@@ -52,7 +52,15 @@ namespace Ict.Tools.DataDumpPetra2
 
             foreach (TTableField field in oldTable.grpTableField)
             {
-                sw.Write("        " + field.strName + " ");
+                if (field.strName == "s_modification_id_c")
+                {
+                    // improve readability, safe space
+                    sw.Write(" ? ");
+                }
+                else
+                {
+                    sw.Write(" " + field.strName + " ");
+                }
             }
 
             sw.WriteLine(".");
