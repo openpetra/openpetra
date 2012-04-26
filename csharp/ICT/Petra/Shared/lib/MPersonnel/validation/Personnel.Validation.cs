@@ -272,9 +272,87 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 else
                 {
                 	// Position name must not be null
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEEMPTY_ERROR, new string[] {  PmJobAssignmentTable.GetLabel(PmJobAssignmentTable.TableId, PmJobAssignmentTable.ColumnPositionNameId) })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
+	                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.PositionName,
+	                    ValidationControlsData.ValidationControlLabel,
+	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+            	
+        }
+
+        /// <summary>
+        /// Validates the Passport data of a Partner.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePassportManual(object AContext, PmPassportDetailsRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Passport Number' must have a value
+            ValidationColumn = ARow.Table.Columns[PmPassportDetailsTable.ColumnPassportNumberId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.PassportNumber,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+            
+            // 'Expiry Date' must be later than 'Issue Date'
+            ValidationColumn = ARow.Table.Columns[PmPassportDetailsTable.ColumnDateOfExpirationId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.DateOfExpiration, ARow.DateOfIssue,
+                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Passport Type' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PmPassportDetailsTable.ColumnPassportDetailsTypeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	PtPassportTypeTable TypeTable;
+            	PtPassportTypeRow   TypeRow;
+            		
+                VerificationResult = null;
+
+                if ((!ARow.IsPassportDetailsTypeNull())
+                    && (ARow.PassportDetailsType != String.Empty))
+                {
+                    TypeTable = (PtPassportTypeTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
+                        TCacheablePersonTablesEnum.PassportTypeList);
+                    TypeRow = (PtPassportTypeRow)TypeTable.Rows.Find(ARow.PassportDetailsType);
+
+                    // 'Passport Type' must not be unassignable
+                    if ((TypeRow != null)
+                        && TypeRow.UnassignableFlag
+                        && (TypeRow.IsUnassignableDateNull()
+                            || (TypeRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PassportDetailsType })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
