@@ -173,33 +173,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// validate the data entered, so that the caller can cancel the current operation if data is missing
-        /// </summary>
-        /// <param name="ARow"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns>true if everything is fine</returns>
-        private bool ValidateDetailsManual(PmJobAssignmentRow ARow, out TVerificationResultCollection AVerifications)
-        {
-            AVerifications = new TVerificationResultCollection();
-
-            if (Convert.ToInt64(txtUnitKey.Text) == 0)
-            {
-                AVerifications.Add(new TVerificationResult(Catalog.GetString("Unit key"),
-                        Catalog.GetString("You need to select the unit that the person will work for"),
-                        TResultSeverity.Resv_Critical));
-            }
-
-            if (cmbPositionName.GetSelectedString().Length == 0)
-            {
-                AVerifications.Add(new TVerificationResult(Catalog.GetString("Position"),
-                        Catalog.GetString("You need to select the position"),
-                        TResultSeverity.Resv_Critical));
-            }
-
-            return !AVerifications.HasCriticalErrors;
-        }
-
-        /// <summary>
         /// Gets the data from all controls on this UserControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
         /// are mapped.

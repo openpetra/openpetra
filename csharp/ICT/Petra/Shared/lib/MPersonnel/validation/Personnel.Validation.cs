@@ -376,7 +376,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
-            TScreenVerificationResult VerificationResult;
+            TVerificationResult VerificationResult;
             PmDocumentTypeTable DocTypeTable;
             PmDocumentTypeRow DocTypeRow = null;
 
@@ -404,10 +404,63 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                             ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                 }
+                else
+                {
+                	// 'Document Code' must have a value
+	                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.DocCode,
+	                    ValidationControlsData.ValidationControlLabel,
+	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+            
+            // 'Document Id' must have a value
+            ValidationColumn = ARow.Table.Columns[PmDocumentTable.ColumnDocumentIdId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.DocumentId,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Issue Date' must not be a future date
+            ValidationColumn = ARow.Table.Columns[PmDocumentTable.ColumnDateOfStartId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	VerificationResult = null;
+            	
+            	if (   !ARow.IsDateOfIssueNull()
+            	    && ARow.DateOfIssue > DateTime.Today)
+            	{
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR, new string[] { ValidationControlsData.ValidationControlLabel })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+            	}
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+            
+            // 'Expiry Date' must be later or equal 'Start Date'
+            ValidationColumn = ARow.Table.Columns[PmDocumentTable.ColumnDateOfExpirationId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.DateOfExpiration, ARow.DateOfStart,
+                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+            
         }
 
         /// <summary>
@@ -425,7 +478,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
-            TScreenVerificationResult VerificationResult;
+            TVerificationResult VerificationResult;
             PtLanguageLevelTable LanguageLevelTable;
             PtLanguageLevelRow LanguageLevelRow = null;
 
@@ -450,6 +503,88 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.LanguageLevel.ToString() })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the skill data of a Person.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateSkillManual(object AContext, PmPersonSkillRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Skill Category' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PmPersonSkillTable.ColumnSkillCategoryCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	PtSkillCategoryTable CategoryTable;
+            	PtSkillCategoryRow   CategoryRow = null;
+	            
+                VerificationResult = null;
+
+                if (!ARow.IsSkillCategoryCodeNull())
+                {
+                    CategoryTable = (PtSkillCategoryTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(
+                        TCacheablePersonTablesEnum.SkillCategoryList);
+                    CategoryRow = (PtSkillCategoryRow)CategoryTable.Rows.Find(ARow.SkillCategoryCode);
+
+                    // 'Skill Category' must not be unassignable
+                    if ((CategoryRow != null)
+                        && CategoryRow.UnassignableFlag
+                        && (CategoryRow.IsUnassignableDateNull()
+                            || (CategoryRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.SkillCategoryCode })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Skill Level' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PmPersonSkillTable.ColumnSkillLevelId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	PtSkillLevelTable LevelTable;
+            	PtSkillLevelRow   LevelRow = null;
+	            
+                VerificationResult = null;
+
+                if (!ARow.IsSkillLevelNull())
+                {
+                    LevelTable = (PtSkillLevelTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(
+                        TCacheablePersonTablesEnum.SkillLevelList);
+                    LevelRow = (PtSkillLevelRow)LevelTable.Rows.Find(ARow.SkillLevel);
+
+                    // 'Skill Level' must not be unassignable
+                    if ((LevelRow != null)
+                        && LevelRow.UnassignableFlag
+                        && (LevelRow.IsUnassignableDateNull()
+                            || (LevelRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                    	                                                                           ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.SkillLevel.ToString() })),
                             ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                 }

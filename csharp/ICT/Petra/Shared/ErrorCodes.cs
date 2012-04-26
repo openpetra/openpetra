@@ -100,6 +100,12 @@ namespace Ict.Petra.Shared
         /// <summary>Concurrent changes to data happened.</summary>
         public const String ERR_CONCURRENTCHANGES = "GEN.00006E";
 
+        /// <summary>Value must not be future date (show error).</summary>
+        [ErrCodeAttribute("Value may not be future date.",
+             ErrorMessageText = "'{0}' may not be future date",
+             ErrorMessageTitle = "Invalid Data Entered")]
+        public const String ERR_FUTUREDATE_ERROR = "GEN.00008V";
+        
         #endregion
 
         #region Partner Module-specific error codes
