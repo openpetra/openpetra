@@ -235,22 +235,23 @@ namespace Ict.Tools.DataDumpPetra2
                     builder.Append(delim);
                 }
 
+                StringBuilder sb = new StringBuilder(l[i]);
+                
                 if (l[i].Contains("\\"))
                 {
                     // avoid Postgresql load error: ERROR:  invalid byte sequence for encoding "UTF8": 0x80
-                    l[i] = l[i].Replace("\\", "\\\\");
+                    sb.Replace("\\", "\\\\");
+                    sb.Replace("\\\\N", "\\N");
                 }
 
                 // if the element already contains the delimiter, do something about it.
                 // strsplit and getNextCSV have to revert it
                 if (l[i].Contains(delim))
                 {
-                    builder.Append(l[i].Replace(delim, "\\t"));
+                    sb.Replace(delim, "\\t");
                 }
-                else
-                {
-                    builder.Append(l[i]);
-                }
+
+                builder.Append(sb.ToString());
             }
 
             return builder;

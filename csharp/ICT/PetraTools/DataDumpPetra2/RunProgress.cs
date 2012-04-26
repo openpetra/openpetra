@@ -53,7 +53,7 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 ProgressProcess.StartInfo.FileName = "sh";         // . petra23env.sh should have been called
 
-                ProgressProcess.StartInfo.Arguments = "-c \"_progres -1 -b -pf " + petraHome + "/etc/batch.pf -p ./" +
+                ProgressProcess.StartInfo.Arguments = "-c \"_progres -1 -b -pf " + petraHome + "/etc/batch.pf -yy 1980 -yr4def -p ./" +
                                                       AProgram;
 
                 if (AParameters.Length > 0)

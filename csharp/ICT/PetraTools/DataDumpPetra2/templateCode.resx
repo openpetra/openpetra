@@ -118,13 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="progress_dump_functions" xml:space="preserve">
-    <value>define variable pv_tablename_c as character initial "".
-CASE OPSYS:
-    WHEN "WIN32" THEN IF INDEX(SESSION:PARAMETER, ",") GT 1 THEN pv_tablename_c = ENTRY(2,SESSION:PARAMETER,",").
-    WHEN "UNIX" THEN pv_tablename_c = SESSION:PARAMETER.
-END CASE.
+    <value>define variable pv_tablename_c as character.
+pv_tablename_c = SESSION:PARAMETER.
 
 SESSION:DATE-FORMAT = "dmy".
+SESSION:YEAR-OFFSET = 1980.
 
 DEFINE STREAM OutFile.
 
