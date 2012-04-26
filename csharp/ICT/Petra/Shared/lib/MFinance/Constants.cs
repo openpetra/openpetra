@@ -177,6 +177,10 @@ namespace Ict.Petra.Shared.MFinance
         /// Logical values for debit and credit transactions.
         public const bool POSTED = true;
 
+        /// Logical account & cost centre flags
+		public const bool ACTIVE = true;
+		public const bool POSTING =true;
+        
         /// standard account for earnings bf
         public const string EARNINGS_BF_ACCT = "9700";
 
