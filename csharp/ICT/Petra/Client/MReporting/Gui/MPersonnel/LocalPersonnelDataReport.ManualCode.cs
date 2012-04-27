@@ -112,8 +112,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         /// <param name="AReportAction"></param>
         private void ReadLocalDataLabel(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            ACalc.AddParameter("param_label_type", "application");
-            ACalc.AddParameter("param_labeluse", "Personnel,LongTermApp,ShortTermApp");
+            ACalc.AddParameter("param_label_type", "partner");
+            ACalc.AddParameter("param_labeluse", "Personnel");
+
+// TODO: do we need to cater here for applications as well?
+//            ACalc.AddParameter("param_label_type", "application");
+//            ACalc.AddParameter("param_labeluse", "LongTermApp,ShortTermApp");
 
             String SelectedColumns = "";
 

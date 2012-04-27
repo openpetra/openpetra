@@ -581,7 +581,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 string dependsOnType = FControlDataTypes.GetByIndex(index).ToString();
                 FTemplate.AddToCodelet("INITIALISE_" + dependsOn, InitialiseCodelet);
                 FTemplate.AddToCodelet("INITIALISESCREEN", StringHelper.UpperCamelCase(dependsOn,
-                        ",",
+                        ',',
                         false,
                         false) + "_Initialise(" + dependsOn + ".GetSelected" +
                     dependsOnType + "());" + Environment.NewLine);

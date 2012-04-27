@@ -1,8 +1,13 @@
-﻿//
-// @Authors:
-//       thomass
+// auto generated with nant generateORM
+// Do not modify this file manually!
 //
-// Copyright 2004-2011 by OM International
+//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       auto generated
+//
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,16 +27,16 @@
 
 using System;
 
-namespace SampleDataConstructor
-{
-/// <summary>
-/// Contains Values which control the Data Creation
-/// </summary>
-public class ConstructionStats
+namespace Ict.Petra.Shared
 {
     /// <summary>
-    /// Fraction of people who will have a location (a home) known for them
+    /// Enums holding the possible cacheable tables for the Petra Conference Module, specifically Conference submodule
     /// </summary>
-    public double PeopleWithHomeKnown = 0.8;
-}
+    public enum TCacheableConferenceTablesEnum
+    {
+        /// <summary>
+        /// Lists types of options that can be used for a conference
+        /// </summary>
+        ConferenceOptionTypeList
+    };
 }

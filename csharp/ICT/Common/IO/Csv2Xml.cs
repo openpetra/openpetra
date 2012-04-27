@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -264,11 +265,11 @@ namespace Ict.Common.IO
         /// the first line is expected to contain the column names/captions, in quotes.
         /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
-        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator)
+        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator, Encoding AEncoding = null)
         {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
 
-            StreamReader sr = new StreamReader(ACSVFilename, TTextFile.GetFileEncoding(ACSVFilename), false);
+            StreamReader sr = new StreamReader(ACSVFilename, TTextFile.GetFileEncoding(ACSVFilename, AEncoding), false);
 
             try
             {
@@ -304,7 +305,7 @@ namespace Ict.Common.IO
 
                     if (attrName.Length > 1)
                     {
-                        attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, " ", false, false).Substring(1);
+                        attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, ' ', false, false).Substring(1);
                     }
 
                     AllAttributes.Add(attrName);

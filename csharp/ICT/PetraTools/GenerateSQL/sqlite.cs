@@ -68,7 +68,7 @@ public class TSQLiteWriter
             string createStmt = "CREATE TABLE " + table.strName + " (";
             bool firstField = true;
 
-            foreach (TTableField field in table.grpTableField.List)
+            foreach (TTableField field in table.grpTableField)
             {
                 createStmt += TWriteSQL.WriteField(TWriteSQL.eDatabaseType.Sqlite, table, field, firstField, false);
                 firstField = false;
@@ -203,7 +203,7 @@ public class TSQLiteWriter
                 TTable table = ADataDefinition.GetTable(ATablename);
                 bool first = true;
 
-                foreach (TTableField field in table.grpTableField.List)
+                foreach (TTableField field in table.grpTableField)
                 {
                     if (!first)
                     {
@@ -221,7 +221,7 @@ public class TSQLiteWriter
                 stmt += ") VALUES (";
                 first = true;
 
-                for (int count = 0; count < table.grpTableField.List.Count; count++)
+                for (int count = 0; count < table.grpTableField.Count; count++)
                 {
                     if (!first)
                     {
@@ -250,7 +250,7 @@ public class TSQLiteWriter
                 {
                     int count = 0;
 
-                    foreach (TTableField field in table.grpTableField.List)
+                    foreach (TTableField field in table.grpTableField)
                     {
                         Object val = StringHelper.GetNextCSV(ref line, ",");
 

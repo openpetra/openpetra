@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -346,32 +347,14 @@ namespace Ict.Petra.Client.MFinance.Logic
             Int32 ALedgerNumber,
             bool AActiveOnly)
         {
-            AMotivationGroupTable groupTable = new AMotivationGroupTable();
-
-            DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
-
-            // since we get the details, we have duplicates for group; remove the duplicates
-            StringCollection groups = new StringCollection();
-
-            foreach (AMotivationDetailRow detail in detailTable.Rows)
-            {
-                if (((AActiveOnly && detail.MotivationStatus) || !AActiveOnly)
-                    && !groups.Contains(detail.MotivationGroupCode))
-                {
-                    groups.Add(detail.MotivationGroupCode);
-                    AMotivationGroupRow newGroup = groupTable.NewRowTyped(true);
-                    newGroup.MotivationGroupCode = detail.MotivationGroupCode;
-
-                    // also assign: description for group?
-
-                    groupTable.Rows.Add(newGroup);
-                }
-            }
+            DataTable groupTable =
+                (AMotivationGroupTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationGroupList, ALedgerNumber);
 
             AControl.InitialiseUserControl(groupTable,
                 AMotivationGroupTable.GetMotivationGroupCodeDBName(),
-                AMotivationGroupTable.GetMotivationGroupCodeDBName(),
+                AMotivationGroupTable.GetMotivationGroupDescriptionDBName(),
                 null);
+
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
         }
 

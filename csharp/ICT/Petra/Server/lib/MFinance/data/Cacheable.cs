@@ -93,6 +93,22 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         }
 #endif
 
+#region ManualCode
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Wrapper for other GetCacheableTable method
+        /// </summary>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <returns>DataTable</returns>
+        public DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable)
+        {
+            System.Type TmpType;
+            return GetCacheableTable(ACacheableTable, "", false, out TmpType);
+        }
+#endregion ManualCode
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
         /// rows of a specified table.
@@ -195,12 +211,6 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.MethodOfPaymentList:
                         {
                             DataTable TmpTable = AMethodOfPaymentAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
-                        case TCacheableFinanceTablesEnum.MotivationGroupList:
-                        {
-                            DataTable TmpTable = AMotivationGroupAccess.LoadAll(ReadTransaction);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -316,6 +326,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                 {
                     switch (ACacheableTable)
                     {
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                        {
+                            DataTable TmpTable = AMotivationGroupAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.MotivationList:
                         {
                             DataTable TmpTable = AMotivationDetailAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
@@ -571,23 +587,6 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             }
 
                             break;
-                        case TCacheableFinanceTablesEnum.MotivationGroupList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                ValidateMotivationGroupList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateMotivationGroupListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-
-                                if (AVerificationResult.Count == 0)
-                                {
-                                    if (AMotivationGroupAccess.SubmitChanges((AMotivationGroupTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
 
                         default:
 
@@ -669,10 +668,6 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         partial void ValidateMethodOfPaymentList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfPaymentListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMotivationGroupList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMotivationGroupListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
@@ -788,6 +783,10 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
         #region Data Validation
 
+                partial void ValidateMotivationGroupList(TValidationControlsDict ValidationControlsDict,
+                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+                partial void ValidateMotivationGroupListManual(TValidationControlsDict ValidationControlsDict,
+                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
                 partial void ValidateMotivationList(TValidationControlsDict ValidationControlsDict,
                     ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
                 partial void ValidateMotivationListManual(TValidationControlsDict ValidationControlsDict,

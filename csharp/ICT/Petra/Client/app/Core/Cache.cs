@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.App.Core
              * @return Chosen DataTable
              *
              */
-            public static DataTable GetCacheableCommonTable(TCacheableConferenceTablesEnum ACacheableTable)
+            public static DataTable GetCacheableConferenceTable(TCacheableConferenceTablesEnum ACacheableTable)
             {
                 return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
             }
@@ -317,6 +317,11 @@ namespace Ict.Petra.Client.App.Core
                     case TCacheableFinanceTablesEnum.LedgerDetails:
                         ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber,
                         out DataTableType);
+                        break;
+
+                    case TCacheableFinanceTablesEnum.MotivationGroupList:
+                        ReturnValue = GetBasedOnLedger(ACacheableTable,
+                        AMotivationGroupTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
                         break;
 
                     case TCacheableFinanceTablesEnum.MotivationList:

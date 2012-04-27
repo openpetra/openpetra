@@ -1294,8 +1294,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                                                                             giftDetail.MotivationGroupCode,
                                                                                             giftDetail.MotivationDetailCode });
 
-                // TODO: make sure the correct costcentres and accounts are used (check pm_staff_data for commitment period, and motivation details, etc)
-                // set custom column giftdetail.AccountCode motivation
+                // make sure the correct costcentres and accounts are used
+                PPartnerTable PartnerDT = LoadPartnerData(giftDetail.RecipientKey);
+
+                if (PartnerDT[0].PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
+                {
+                    // get the field that the key ministry belongs to. or it might be a field itself
+                    giftDetail.RecipientLedgerNumber = SearchRecipientLedgerKey(giftDetail.RecipientKey);
+                }
+                else if (PartnerDT[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                {
+                    // TODO make sure the correct costcentres and accounts are used, recipient ledger number
+                }
+
+                giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
+
+                // set column giftdetail.AccountCode motivation
                 giftDetail.AccountCode = motivationRow.AccountCode;
 
                 // TODO deal with different currencies; at the moment assuming base currency
@@ -1399,31 +1413,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         /// <summary>
         /// Load Partner Data
-        /// The data file contents from the client is sent as a string, imported in the database
-        /// and committed immediately
         /// </summary>
-        /// <param name="DonorKey">Partner Key </param>
-        /// <returns>GLSetupDS with Partnertable for the partner Key</returns>
+        /// <param name="PartnerKey">Partner Key </param>
+        /// <returns>Partnertable for the partner Key</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLSetupTDS LoadPartnerData(long DonorKey)
+        public static PPartnerTable LoadPartnerData(long PartnerKey)
         {
-            GLSetupTDS PartnerDS = new GLSetupTDS();
-            TDBTransaction Transaction = null;
-
-            try
-            {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-                PPartnerAccess.LoadByPrimaryKey(PartnerDS, DonorKey, Transaction);
-            }
-            finally
-            {
-                if (Transaction != null)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            return PartnerDS;
+            return PPartnerAccess.LoadByPrimaryKey(PartnerKey, null);
         }
 
         /// <summary>
@@ -1470,8 +1466,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         /// <summary>
         /// Load key Ministry
-        /// The data file contents from the client is sent as a string, imported in the database
-        /// and committed immediately
         /// </summary>
         /// <param name="partnerKey">Partner Key </param>
         /// <param name="fieldNumber">Field Number </param>
@@ -1571,7 +1565,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 switch (unitRow.UnitTypeCode)
                 {
                     case MPartnerConstants.UNIT_TYPE_KEYMIN:
-                        fieldNumber = SearchField(partnerKey, ref Transaction);
+                        fieldNumber = SearchRecipientLedgerKey(partnerKey);
                         LoadKeyMinistries(fieldNumber, ref unitTable, ref Transaction);
                         break;
 
@@ -1583,10 +1577,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        private static
-        Int64 SearchField(Int64 partnerKey, ref TDBTransaction Transaction)
+        /// <summary>
+        /// get the recipient ledger partner for a unit
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static Int64 SearchRecipientLedgerKey(Int64 partnerKey)
         {
-            PPartnerTypeTable ptt = PPartnerTypeAccess.LoadByPrimaryKey(partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER, Transaction);
+            PPartnerTypeTable ptt = PPartnerTypeAccess.LoadByPrimaryKey(partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER, null);
 
             if (ptt.Rows.Count == 1)
             {
@@ -1595,7 +1592,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             //This was taken from old Petra - perhaps we should better search for unit type = F in PUnit
 
-            UmUnitStructureTable uust = UmUnitStructureAccess.LoadViaPUnitChildUnitKey(partnerKey, Transaction);
+            UmUnitStructureTable uust = UmUnitStructureAccess.LoadViaPUnitChildUnitKey(partnerKey, null);
 
             if (uust.Rows.Count == 1)
             {
@@ -1604,7 +1601,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     return 0;
                 }
 
-                return SearchField(uust[0].ParentUnitKey, ref Transaction);
+                return SearchRecipientLedgerKey(uust[0].ParentUnitKey);
             }
 
             //TODO Warning on inactive Fund

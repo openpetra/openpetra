@@ -27,26 +27,21 @@
 
 using System;
 
-namespace Ict.Petra.Shared.MCommon
+namespace Ict.Petra.Shared
 {
     /// <summary>
-    /// Enums holding the possible cacheable tables for the Petra Common Module, specifically Common submodule
+    /// Enums holding the possible cacheable tables for the Petra SysMan Module, specifically SysMan submodule
     /// </summary>
-    public enum TCacheableCommonTablesEnum
+    public enum TCacheableSysManTablesEnum
     {
         /// <summary>
-        /// List of countries with their codes
+        /// List of users
         /// </summary>
-        CountryList,
+        UserList,
 
         /// <summary>
-        /// List of Frequencies (e.g. of Mailings, Publications, etc.)
+        /// Definitions of fields that are language specific.
         /// </summary>
-        FrequencyList,
-
-        /// <summary>
-        /// List of language codes
-        /// </summary>
-        LanguageCodeList
+        LanguageSpecificList
     };
 }

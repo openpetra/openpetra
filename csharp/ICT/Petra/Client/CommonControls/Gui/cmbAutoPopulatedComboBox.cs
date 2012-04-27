@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, markusm, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MCommon;
@@ -834,8 +835,13 @@ namespace Ict.Petra.Client.CommonControls
 
             // Pass on any set Tag
             cmbCombobox.Tag = this.Tag;
-            this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
-            this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
+
+            // only add event handlers once
+            if (!FUserControlInitialised)
+            {
+                this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+                this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
+            }
 
             if (FAddNotSetValue)
             {

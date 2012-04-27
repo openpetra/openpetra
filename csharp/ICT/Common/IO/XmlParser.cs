@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,58 +29,6 @@ using System.IO;
 
 namespace Ict.Common.IO
 {
-    /// <summary>
-    /// This class represents one single entity.
-    /// It is normally used as a super class to a specific object type
-    ///
-    /// </summary>
-    public class TXMLElement
-    {
-        /// <summary>
-        /// if the element is one of many in the group, here the order is saved
-        ///
-        /// </summary>
-        public int order;
-
-        /// <summary>
-        /// initialises the element with the given order
-        /// </summary>
-        /// <param name="order">the index of the element in the group it belongs to
-        /// </param>
-        /// <returns>void</returns>
-        public TXMLElement(int order) : base()
-        {
-            this.order = order;
-        }
-    }
-
-    /// <summary>
-    /// This class represents a group of entities.
-    ///
-    /// </summary>
-    public class TXMLGroup
-    {
-        /// <summary>
-        /// list of the entities in this group
-        /// </summary>
-        public ArrayList List;
-
-        /// <summary>
-        /// identifier for the group
-        /// </summary>
-        public int Id;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="id"></param>
-        public TXMLGroup(int id) : base()
-        {
-            List = new ArrayList();
-            this.Id = id;
-        }
-    }
-
     /// <summary>
     /// This class provides methods for parsing an XML document and assign the contents
     /// to a representation in memory.
@@ -690,103 +638,6 @@ namespace Ict.Common.IO
                 ReturnValue = -1;
             }
             return ReturnValue;
-        }
-    }
-
-    /// <summary>
-    /// a parser for a group of entities
-    /// </summary>
-    public class TXMLGroupParser : TXMLParser
-    {
-        /// <summary>
-        /// constructor; opens an xml document, with validation
-        /// </summary>
-        /// <param name="filename">name of the xml document</param>
-        public TXMLGroupParser(string filename) : base(filename)
-        {
-        }
-
-        /// <summary>
-        /// constructor; opens an xml document
-        /// </summary>
-        /// <param name="filename">name of the xml document</param>
-        /// <param name="withValidation">should the document be validated</param>
-        public TXMLGroupParser(string filename, Boolean withValidation) : base(filename, withValidation)
-        {
-        }
-
-        /// <summary>
-        /// This method needs to be implemented by a derived class,
-        /// because it needs to know how to parse all the entities in the document.
-        /// It is a template for reading a group of entities.
-        /// </summary>
-        /// <param name="cur2">The current node in the document that should be parsed</param>
-        /// <param name="groupId">The id of the previous group object of this type</param>
-        /// <param name="entity">The name of the elements that make up the group</param>
-        /// <param name="newcur">After parsing, the then current node is returned in this parameter</param>
-        /// <returns>The group of elements, or nil
-        /// </returns>
-        public virtual TXMLGroup ParseGroup(XmlNode cur2, ref int groupId, string entity, ref XmlNode newcur)
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// This method needs to be implemented by a derived class,
-        /// because it needs to know how to parse all the entities in the document.
-        /// It is a template for reading one or more entities of the same type.
-        /// </summary>
-        /// <param name="cur">The current node</param>
-        /// <param name="groupId">The id of the current group that the elements will belong to</param>
-        /// <param name="entity">The name of the entity that should be read</param>
-        /// <returns>the last of the read entities
-        /// </returns>
-        public virtual TXMLElement Parse(XmlNode cur, ref int groupId, string entity)
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// If the current node holds a entity of type groupentity,
-        /// then the contained elements of type entity are parsed.
-        /// </summary>
-        /// <param name="groupentity">The name of the entity that holds the group of elements</param>
-        /// <param name="cur">The current node</param>
-        /// <param name="groupId">The current id for the group.
-        /// This number will be increased and then used to create the new group.</param>
-        /// <param name="entity">The name of the entitiy that represents the elements</param>
-        /// <returns>The group of elements, or nil if node does not point to that group entity or the group entity is empty.
-        /// </returns>
-        TXMLGroup Parse(string groupentity, ref XmlNode cur, ref int groupId, string entity)
-        {
-            TXMLGroup ReturnValue;
-
-            ReturnValue = null;
-
-            if (cur.Name == groupentity)
-            {
-                cur = NextNotBlank(cur);
-                ReturnValue = ParseGroup(cur.FirstChild, ref groupId, entity);
-                cur = GetNextEntity(cur);
-            }
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// a wrapper for the other parseGroup method,
-        /// in case after the parsing the current node does not need to be known
-        /// </summary>
-        /// <param name="cur2">The current node in the document that should be parsed</param>
-        /// <param name="groupId">The id of the previous group object of this type</param>
-        /// <param name="entity">The name of the elements that make up the group</param>
-        /// <returns>The group of elements, or nil
-        /// </returns>
-        TXMLGroup ParseGroup(XmlNode cur2, ref int groupId, string entity)
-        {
-            XmlNode curTemp = null;
-
-            return ParseGroup(cur2, ref groupId, entity, ref curTemp);
         }
     }
 }

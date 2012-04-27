@@ -29,7 +29,7 @@ OpenPetra:
                     SearchBoxes: [Partner]
                     NewPartner:
                         AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
-                        #disabled until household/person thing implemented: AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
+                        AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
                         AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
                     MaintainPartner:
                         #ChangeAddress:
@@ -223,7 +223,7 @@ OpenPetra:
                         #ChangeNumberOfForwardingPeriods:
                     GiftReceipting: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         MotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
-                        MotivationGroup: {Description=Maintain Motivation Groups, ActionOpenScreen=TFrmMotivationGroupSetup}						
+                        MotivationGroup: {Description=Maintain Motivation Groups, ActionOpenScreen=Gift.TFrmMotivationGroupSetup}
                         SetupAdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
                         SetupAdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
         CrossLedgerSetup: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
@@ -305,10 +305,10 @@ OpenPetra:
                         EventRole: {Label=Setup Event Roles, Description=Maintain Event Roles, ActionOpenScreen=TFrmEventRoleSetup}
                     LocalDataRelated: {Label=Local Data-related}
                         LocalDataOptionListNames: {Label=Setup Local Data Option List Names, Description=Maintain Local Data Option List names, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
-                        LocalApplicationDataFields: {Label=Setup Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}
+                        #LocalApplicationDataFields: {Label=Setup Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}
                         LocalPersonnelDataFields: {Label=Setup Local Personnel Data Fields, Description=Maintain Local Personnel Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPersonnelDataFieldSetup}
-                        LocalDataFieldOrderLongTermApp: {Label=Setup Field Order for Long Term Applications, Description=Maintain Field Order for Long Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=LongTermApp}
-                        LocalDataFieldOrderShortTermApp: {Label=Setup Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
+                        #LocalDataFieldOrderLongTermApp: {Label=Setup Field Order for Long Term Applications, Description=Maintain Field Order for Long Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=LongTermApp}
+                        #LocalDataFieldOrderShortTermApp: {Label=Setup Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
                         LocalDataFieldOrderPersonnel: {Label=Setup Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
                         
         ConferenceManagement: {Icon=conference_small.ico, PermissionsRequired=CONFERENCE}
