@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,7 @@ using Ict.Common;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -50,25 +51,28 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// </summary>
     public partial class TPartnerNewDialogWinForm : System.Windows.Forms.Form, IFrmPetra
     {
-        /// <summary>todoComment</summary>
-        public const String StrCantCreateNewPartner = "New Partner can't be created because there are " + "no Installed Sites available!" + "\r\n" +
-                                                      "Please set up at least one Installed Site in the " + "System Manager Module!";
+        #region Resourcestrings
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyNeedsToBeSelected = "A Family needs to be selected when a new Par" +
-                                                         "tner of Partner Class 'PERSON' should be created!";
+        private static readonly string StrCantCreateNewPartner = Catalog.GetString(
+            "New Partner can't be created because there are no Installed Sites available!\r\n" +
+            "Please set up at least one Installed Site in the System Manager Module!");
 
-        /// <summary>todoComment</summary>
-        public const String StrFamilyNeedsToBeSelectedTitle = "Family Needed!";
+        private static readonly string StrFamilyNeedsToBeSelected = Catalog.GetString(
+            "A Family needs to be selected when a new Partner of Partner Class 'PERSON' should be created!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExists1 = "A Partner with Partner Key ";
+        private static readonly string StrFamilyNeedsToBeSelectedTitle = Catalog.GetString("Family Needed!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExists2 = " already exists." + "\r\n" + "Please choose a different Partner Key!";
+        private static readonly string StrCorrectFamilyKeyNeedsToBeEntered = Catalog.GetString(
+            "The correct key of an existing family needs to be entered when a new Partner of Partner Class 'PERSON' should be created!");
 
-        /// <summary>todoComment</summary>
-        public const String StrAPartnerKeyExistsTitle = "Partner Key already in use";
+        private static readonly string StrCorrectFamilyKeyNeedsToBeEnteredTitle = Catalog.GetString("A correct family key needs to be entered!");
+
+        private static readonly string StrAPartnerKeyExists = Catalog.GetString(
+            "A Partner with Partner Key {0} already exists.\r\nPlease choose a different Partner Key!");
+
+        private static readonly string StrAPartnerKeyExistsTitle = Catalog.GetString("Partner Key already in use");
+
+        #endregion
 
         private TPartnerNewDialogScreenLogic FLogic;
 
@@ -273,6 +277,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtFamilyPartnerBox.Focus();
                     return;
                 }
+                else //check if a family with the given familyPartnerKey exists; if this is not the case then diplay a message box
+                {
+                    TPartnerClass[] AValidPartnerClasses = new TPartnerClass[1];
+                    AValidPartnerClasses[0] = TPartnerClass.FAMILY;
+                    bool APartnerExists;
+                    String APartnerShortName;
+                    TPartnerClass APartnerClass;
+                    Boolean AIsMergedPartner;
+
+                    if (!TServerLookup.TMPartner.VerifyPartner(FFamilyPartnerKey, AValidPartnerClasses,
+                            out APartnerExists,
+                            out APartnerShortName,
+                            out APartnerClass,
+                            out AIsMergedPartner))
+                    {
+                        MessageBox.Show(StrCorrectFamilyKeyNeedsToBeEntered,
+                            StrCorrectFamilyKeyNeedsToBeEnteredTitle,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
+                        txtFamilyPartnerBox.Focus();
+                        return;
+                    }
+                }
             }
 
             NewPartnerKey = txtPartnerKey.PartnerKey;
@@ -285,7 +312,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                MessageBox.Show(StrAPartnerKeyExists1 + txtPartnerKey.PartnerKey.ToString() + StrAPartnerKeyExists2, StrAPartnerKeyExistsTitle);
+                MessageBox.Show(String.Format(StrAPartnerKeyExists, txtPartnerKey.PartnerKey, StrAPartnerKeyExistsTitle));
                 txtPartnerKey.Focus();
             }
         }
@@ -362,7 +389,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                MessageBox.Show(StrCantCreateNewPartner, CommonResourcestrings.StrErrorNoInstalledSites);
+                MessageBox.Show(StrCantCreateNewPartner, MCommonResourcestrings.StrErrorNoInstalledSites);
                 DialogResult = System.Windows.Forms.DialogResult.Cancel;
                 Close();
                 return;

@@ -835,7 +835,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         AddressAddedOrChangedRow.LocationChange = false;
                         AddressAddedOrChangedRow.PartnerLocationChange = true;
                         AddressAddedOrChangedRow.LocationAdded = false;
-                        AddressAddedOrChangedRow.ChangedFields = StringHelper.StrMerge(ChangedDetails, "|");
+                        AddressAddedOrChangedRow.ChangedFields = StringHelper.StrMerge(ChangedDetails, '|');
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {

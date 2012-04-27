@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Data.Common;
 using System.Collections;
+using System.Text;
 using Npgsql;
 using NpgsqlTypes;
 using System.Text.RegularExpressions;
@@ -213,13 +214,6 @@ namespace Ict.Common.DB
             NpgsqlParameter[] ReturnValue = new NpgsqlParameter[AParameterArray.Length];
             OdbcParameter[] AParameterArrayOdbc;
             string ParamName = "";
-            string SQLSelectBeforeQMark;
-            string SQLSelectAfterQMark;
-            string SQLSelectStatementRepl = "";
-            int QMarkPos = 0;
-            int LastQMarkPos = 0;
-            int NextQMarkPos = 0;
-            int ParamCounter = 0;
 
             if (!(AParameterArray is NpgsqlParameter[]))
             {
@@ -312,60 +306,32 @@ namespace Ict.Common.DB
 
             if (ASqlStatement.Contains("?"))
             {
+                StringBuilder SqlStatementBuilder = new StringBuilder();
+                int QMarkPos = 0;
+                int LastQMarkPos = -1;
+                int ParamCounter = 0;
+
                 /* SQL Syntax change from ODBC style to PostgreSQL style: Replace '?' with
                  * ':xxx' (where xxx is the name of the Parameter).
                  */
-                while (ASqlStatement.IndexOf("?", QMarkPos + 1) > 0)
+                while ((QMarkPos = ASqlStatement.IndexOf("?", QMarkPos + 1)) > 0)
                 {
-                    QMarkPos = ASqlStatement.IndexOf("?", QMarkPos + 1);
-
-                    ////                        TLogging.Log("QMarkPos: " + QMarkPos.ToString() +
-                    ////                            "; ParamCounter: " + ParamCounter.ToString() +
-                    ////                            "; LastQMarkPos: " + LastQMarkPos.ToString());
-
-                    if (ParamCounter > 0)
-                    {
-                        SQLSelectBeforeQMark = ASqlStatement.Substring(
-                            LastQMarkPos + 1, QMarkPos - LastQMarkPos - 1);
-                    }
-                    else
-                    {
-                        SQLSelectBeforeQMark = ASqlStatement.Substring(
-                            0, QMarkPos);
-                    }
-
-                    NextQMarkPos = ASqlStatement.IndexOf("?", QMarkPos + 1);
-
-                    if (NextQMarkPos > 0)
-                    {
-                        SQLSelectAfterQMark = "";
-                    }
-                    else
-                    {
-                        SQLSelectAfterQMark = ASqlStatement.Substring(
-                            QMarkPos + 1, ASqlStatement.Length - QMarkPos - 1);
-                    }
-
-                    SQLSelectStatementRepl = SQLSelectStatementRepl +
-                                             SQLSelectBeforeQMark +
-                                             ":" + ReturnValue[ParamCounter].ParameterName +
-                                             SQLSelectAfterQMark;
-
-                    LastQMarkPos = QMarkPos;
-
-                    ////                        TLogging.Log("QMarkPos: " + QMarkPos.ToString() +
-                    ////                            "; ParamCounter: " + ParamCounter.ToString() +
-                    ////                            "; LastQMarkPos: " + LastQMarkPos.ToString() + Environment.NewLine +
-                    ////                            "SQLSelectBeforeQMark: " + SQLSelectBeforeQMark + Environment.NewLine +
-                    ////                            "SQLSelectAfterQMark: " + SQLSelectAfterQMark + Environment.NewLine +
-                    ////                            "SQLSelectStatementRepl: " + SQLSelectStatementRepl + Environment.NewLine);
+                    SqlStatementBuilder.Append(ASqlStatement.Substring(
+                            LastQMarkPos + 1, QMarkPos - LastQMarkPos - 1));
+                    SqlStatementBuilder.Append(":").Append(ReturnValue[ParamCounter].ParameterName);
 
                     ParamCounter++;
+                    LastQMarkPos = QMarkPos;
                 }
 
-                ASqlStatement = SQLSelectStatementRepl;
+                SqlStatementBuilder.Append(ASqlStatement.Substring(
+                        LastQMarkPos + 1, ASqlStatement.Length - LastQMarkPos - 1));
 
-                //                TLogging.Log("new statement: " + SQLSelectStatementRepl);
+                // TLogging.Log("old statement: " + ASqlStatement);
+
+                ASqlStatement = SqlStatementBuilder.ToString();
+
+                // TLogging.Log("new statement: " + ASqlStatement);
             }
 
             return ReturnValue;

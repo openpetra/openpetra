@@ -424,7 +424,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             ADailyExchangeRateRow fittingRate = null;
 
@@ -493,7 +494,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 return fittingRate.RateOfExchange;
             }
 
-            TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
+            TLogging.Log("Cannot find exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
 
             return 1.0M;
         }

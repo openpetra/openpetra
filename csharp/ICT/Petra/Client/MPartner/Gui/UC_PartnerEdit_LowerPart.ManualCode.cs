@@ -347,6 +347,33 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        {
+            bool ReturnValue = false;
+
+            ReturnValue = ucoPartnerTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
+
+            if (ReturnValue)
+            {
+                ReturnValue = ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
+            }
+
+            if (ReturnValue)
+            {
+                // TODO Other TabSets (Finance Data)
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Gets the data from all controls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
         /// are mapped.

@@ -37,6 +37,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -47,7 +48,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FSelectedBatchNumber = -1;
-        private TFinanceBatchFilterEnum FLoadedData = TFinanceBatchFilterEnum.fbfNone;
+        private string FStatusFilter = "1 = 1";
+        private string FPeriodFilter = "1 = 1";
 
         private DateTime DefaultDate;
         private DateTime StartDateCurrentPeriod;
@@ -63,8 +65,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             rbtEditing.Checked = true;
 
+            FPetraUtilsObject.DisableDataChangedEvent();
+            TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYearFilter, FLedgerNumber);
+            FPetraUtilsObject.EnableDataChangedEvent();
+
             // this will load the batches from the server
-            SetBatchFilter();
+            RefreshFilter(null, null);
 
             ((TFrmGLBatch) this.ParentForm).DisableJournals();
             ((TFrmGLBatch) this.ParentForm).DisableTransactions();
@@ -85,6 +91,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchControlTotal.Enabled = false;
         }
 
+        void RefreshPeriods(Object sender, EventArgs e)
+        {
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
+            cmbPeriodFilter.SelectedIndex = 0;
+        }
+
+        /// reset the control
+        public void ClearCurrentSelection()
+        {
+            GetDataFromControls();
+            this.FPreviouslySelectedDetailRow = null;
+            ShowData();
+        }
+
         /// <summary>
         /// show ledger number
         /// </summary>
@@ -93,7 +113,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FLedgerNumber != -1)
             {
                 txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-                txtDetailBatchControlTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+
+                ALedgerRow ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                         TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                txtDetailBatchControlTotal.CurrencySymbol = ledger.BaseCurrency;
             }
         }
 
@@ -439,7 +464,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     int rowIndex = CurrentRowIndex();
 
-                    SetBatchFilter();
+                    RefreshFilter(null, null);
                     // TODO Select the actual row again in updated
                     SelectByIndex(rowIndex);
                     // UpdateChangeableStatus();
@@ -520,53 +545,59 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 //            ;
 //        }
 
-        /// <summary>
-        /// Program reaction of a change of the value of 3 nested radio buttons, which means
-        /// differnt filters to view the list o batches
-        /// </summary>
-
-        private void SetBatchFilter()
+        private void RefreshFilter(Object sender, EventArgs e)
         {
-            if (FMainDS == null)
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
 
-            // load data from database, if it has not been loaded yet
-            if (rbtAll.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfAll) == 0))
+            ClearCurrentSelection();
+
+            Int32 SelectedYear = cmbYearFilter.GetSelectedInt32();
+            Int32 SelectedPeriod = cmbPeriodFilter.GetSelectedInt32();
+
+            FPeriodFilter = String.Format(
+                "{0} = {1} AND ",
+                ABatchTable.GetBatchYearDBName(), SelectedYear);
+
+            if (SelectedPeriod == 0)
             {
-                // TODO: more criteria: period, etc
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
-                FLoadedData = TFinanceBatchFilterEnum.fbfAll;
+                ALedgerRow Ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                FPeriodFilter += String.Format(
+                    "{0} >= {1}",
+                    ABatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
             }
-            else if (rbtEditing.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfEditing) == 0))
+            else
             {
-                // TODO: more criteria: period, etc
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing));
-                FLoadedData |= TFinanceBatchFilterEnum.fbfEditing;
-            }
-            else if (rbtPosting.Checked && ((FLoadedData & TFinanceBatchFilterEnum.fbfReadyForPosting) == 0))
-            {
-                // TODO: more criteria: period, etc
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting));
-                FLoadedData |= TFinanceBatchFilterEnum.fbfReadyForPosting;
+                FPeriodFilter += String.Format(
+                    "{0} = {1}",
+                    ABatchTable.GetBatchPeriodDBName(), SelectedPeriod);
             }
 
-            if (rbtAll.Checked)
+            if (rbtEditing.Checked)
             {
-                FMainDS.ABatch.DefaultView.RowFilter = "";
-                btnNew.Enabled = true;
-            }
-            else if (rbtEditing.Checked)
-            {
-                FMainDS.ABatch.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, SelectedYear,
+                        SelectedPeriod));
+                FStatusFilter = String.Format("{0} = '{1}'",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
                 btnNew.Enabled = true;
             }
+            else if (rbtAll.Checked)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, SelectedYear,
+                        SelectedPeriod));
+                FStatusFilter = "1 = 1";
+                btnNew.Enabled = true;
+            }
             else if (rbtPosting.Checked)
             {
-                FMainDS.ABatch.DefaultView.RowFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2} ))",
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting, SelectedYear,
+                        SelectedPeriod));
+                FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2} ))",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED,
                     ABatchTable.GetBatchCreditTotalDBName(),
@@ -574,6 +605,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ABatchTable.GetBatchControlTotalDBName());
                 btnNew.Enabled = false;
             }
+
+            FMainDS.ABatch.DefaultView.RowFilter =
+                String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)
@@ -750,13 +784,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!NewTransaction.IsTransactionDateNull())
                 {
-                    NewTransaction.AmountInIntlCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
-                        ARefJournalRow.TransactionCurrency,
-                        FMainDS.ALedger[0].IntlCurrency,
-                        NewTransaction.TransactionDate);
                     NewTransaction.AmountInBaseCurrency = NewTransaction.TransactionAmount * TExchangeRateCache.GetDailyExchangeRate(
                         ARefJournalRow.TransactionCurrency,
                         FMainDS.ALedger[0].BaseCurrency,
+                        NewTransaction.TransactionDate);
+                    //
+                    // The International currency calculation is changed to "Base -> International", because it's likely
+                    // we won't have a "Transaction -> International" conversion rate defined.
+                    //
+                    NewTransaction.AmountInIntlCurrency = NewTransaction.AmountInBaseCurrency * TExchangeRateCache.GetDailyExchangeRate(
+                        FMainDS.ALedger[0].BaseCurrency,
+                        FMainDS.ALedger[0].IntlCurrency,
                         NewTransaction.TransactionDate);
                 }
             } while (!dataFile.EndOfStream);

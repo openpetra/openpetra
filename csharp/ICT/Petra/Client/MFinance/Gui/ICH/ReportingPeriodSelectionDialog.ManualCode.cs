@@ -4,7 +4,7 @@
 // @Authors:
 //       christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,13 +37,13 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.ICH
@@ -67,9 +67,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
     /// manual methods for the generated window
     public partial class TFrmReportingPeriodSelectionDialog : System.Windows.Forms.Form
     {
-        /// <summary>Reference to the screen's UIConnector (serverside Business Object)</summary>
-        private IICHUIConnectorsStewardshipCalculation FUIConnectorStewardshipCalc;
-
         /// <summary>
         /// Field to store the reporting period selection mode
         /// </summary>
@@ -79,47 +76,24 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /// </summary>
         public Int32 FLedgerNumber = 0;
 
-        private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (!CanClose())
-            {
-                // MessageBox.Show('TFrmReportingPeriodSelectionDialog.TFormPetra_Closing: e.Cancel := true');
-                e.Cancel = true;
-            }
-            else
-            {
-                UnRegisterUIConnector();
-
-                // Needs to be set to false because it got set to true in ancestor Form!
-                e.Cancel = false;
-
-                // Need to call the following method in the Base Form to remove this Form from the Open Forms List
-                FPetraUtilsObject.TFrmPetra_Closing(this, null);
-            }
-        }
-
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            TVerificationResultCollection VerificationResult;
+            TVerificationResultCollection VerificationResult = null;
 
             switch (this.ReportingPeriodSelectionMode)
             {
                 case TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc:
 
-                    if (GetStewardshipCalculationUIConnector(FLedgerNumber, cmbReportPeriod.GetSelectedInt32()))
+                    if (TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
+                            out VerificationResult))
                     {
-                        MessageBox.Show("TStewardshipCalculationUIConnector successfully acquired!");
-
-                        if (FUIConnectorStewardshipCalc.PerformStewardshipCalculation(out VerificationResult))
-                        {
-                            MessageBox.Show("PerformStewardshipCalculation ran successfully!");
-                        }
-                        else
-                        {
-                            MessageBox.Show(
-                                Messages.BuildMessageFromVerificationResult("PerformStewardshipCalculation was UNSUCCESSFUL",
-                                    VerificationResult));
-                        }
+                        MessageBox.Show("PerformStewardshipCalculation ran successfully!");
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            Messages.BuildMessageFromVerificationResult("PerformStewardshipCalculation was UNSUCCESSFUL",
+                                VerificationResult));
                     }
 
                     break;
@@ -168,73 +142,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 TFinanceControls.InitialiseOpenFinancialPeriodsList(
                     ref cmbReportPeriod,
                     FLedgerNumber);
-            }
-        }
-
-
-        /// <summary>
-        /// Instantiates the Screen's UIConnector.
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="APeriodNumber"></param>
-        /// <returns>true if successful, otherwise false
-        /// </returns>
-        private Boolean GetStewardshipCalculationUIConnector(int ALedgerNumber, int APeriodNumber)
-        {
-            System.Windows.Forms.DialogResult ServerBusyDialogResult;
-            Boolean ServerCallSuccessful = false;
-
-            do
-            {
-                try
-                {
-                    FUIConnectorStewardshipCalc = TRemote.MFinance.ICH.UIConnectors.StewardshipCalculation(ALedgerNumber, APeriodNumber);
-
-                    ServerCallSuccessful = true;
-                }
-                catch (EDBTransactionBusyException)
-                {
-                    ServerBusyDialogResult = MessageBox.Show(CommonResourcestrings.StrPetraServerTooBusy,
-                        CommonResourcestrings.StrPetraServerTooBusyTitle,
-                        MessageBoxButtons.RetryCancel,
-                        MessageBoxIcon.Warning,
-                        MessageBoxDefaultButton.Button1);
-
-                    if (ServerBusyDialogResult == System.Windows.Forms.DialogResult.Retry)
-                    {
-                        // retry will happen because of the repeat block
-                    }
-                    else
-                    {
-                        // break out of repeat block; this function will return false because of that.
-                        break;
-                    }
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            } while (!(ServerCallSuccessful));
-
-            if (ServerCallSuccessful)
-            {
-                // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-                TEnsureKeepAlive.Register(FUIConnectorStewardshipCalc);
-            }
-
-            return ServerCallSuccessful;
-        }
-
-        /// <summary>
-        /// Frees the UIConnector so it can be GC'ed on the server side.
-        /// </summary>
-        private void UnRegisterUIConnector()
-        {
-            if (FUIConnectorStewardshipCalc != null)
-            {
-                // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-                TEnsureKeepAlive.UnRegister(FUIConnectorStewardshipCalc);
-//                MessageBox.Show("Unregistered UIConnector.");
             }
         }
     }

@@ -1518,7 +1518,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 PartnerImportExportTDS MainDS = importer.ImportAllData(lines, AEventCode, true, out AVerificationResult);
 
-                if (AVerificationResult.HasCriticalError())
+                if (AVerificationResult.HasCriticalErrors)
                 {
                     return false;
                 }

@@ -40,6 +40,7 @@ using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 #region ManualCode
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -84,13 +85,13 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.Cacheable
     public interface ICacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable);
+        void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableCommonTablesEnum ACacheableTable,

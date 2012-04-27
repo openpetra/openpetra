@@ -60,14 +60,14 @@ RootNode:
                 Row5: [txtDetailExchangeRateToBase]
                 Row6: [cmbDetailMethodOfPaymentCode]
                 Row7: [rgrDetailGiftType]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3, Validation=true}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
         dtpDetailGlEffectiveDate: {Label=GL Effective Date}
         lblValidDateRange:
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, OnChange=HashTotalChanged}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
-        txtDetailExchangeRateToBase:
+        txtDetailExchangeRateToBase: {Validation=true, Format=Decimal}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList,OnChange=MethodOfPaymentChanged}
         rgrDetailGiftType:
             OptionalValues: [=Gift,Gift In Kind,Other]

@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.App.Core
                     TLogFileReader.Close();
                     txtLogFileContent.Text = Catalog.GetString("The Server log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent;
                 }
-                catch (Exception exp)
+                catch (Exception)
                 {
                     txtLogFileContent.Text = Catalog.GetString(
                         "Problem on opening logfile. The server log can (at the moment) only be displayed in this window if you are using the standalone version or the development environment.");
@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.App.Core
                     TLogFileReader.Close();
                     txtLogFileContent.Text = Catalog.GetString("The Client log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent;
                 }
-                catch (Exception exp)
+                catch (Exception)
                 {
                     txtLogFileContent.Text = Catalog.GetString("Problem on opening logfile");
                 }

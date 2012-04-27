@@ -25,18 +25,20 @@ RootNode:
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
                 Row1: [txtBranchCode]
-                Row2: [txtBIC]
+                Row2: [txtBic]
                 Row3: [txtEPFormatFile]
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
                 Row6: [txtContactPartnerKey]
 
         txtBranchCode:
-            Label: Bank/Branch Code      
-            Stretch: horizontally            
+            Label: Bank/Branch Code
+            Stretch: horizontally
+            Validation: Pair(txtBic)
             
-        txtBIC:
+        txtBic:
             Label: BIC/SWIFT Code
+            Validation: true
             
         txtEPFormatFile:
             ReadOnly: true

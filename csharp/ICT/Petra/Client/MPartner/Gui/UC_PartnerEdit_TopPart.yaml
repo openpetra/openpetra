@@ -59,7 +59,7 @@ RootNode:
             Height: 18
         Empty:
             
-        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100}
+        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100, Validation=true, OnChange=PartnerStatusCodeChangePromotion}
         txtStatusUpdated:
             ReadOnly: true
             Width: 100

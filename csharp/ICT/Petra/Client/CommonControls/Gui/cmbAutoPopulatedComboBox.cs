@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, markusm, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MCommon;
@@ -661,8 +662,32 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PostCodeRegionList:
 
-                    InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.PostCodeRegionList),
+                    /* Region table contains several records per actual region, depending on how many
+                    * postcode ranges there are in a region. Therefore it is important to remove "duplicate"
+                    * rows and just have one row per actual region code in the combobox. It is important
+                    *                     that region rows arrive in "order by Region" from server */
+                    PPostcodeRegionTable RegionTable = (PPostcodeRegionTable)TDataCache.TMPartner.GetCacheableMailingTable(
+                    TCacheableMailingTablesEnum.PostCodeRegionList);
+                    PPostcodeRegionRow RegionRow;
+                    int CountRegionRows = RegionTable.Rows.Count;
+                    string CurrentRegion = "";
+
+                    // go through table in reverse order so rows can be deleted and only one row per region code remains
+                    for (int Index = CountRegionRows - 1; Index >= 0; Index--)
+                    {
+                        RegionRow = (PPostcodeRegionRow)RegionTable.Rows[Index];
+
+                        if (RegionRow.Region != CurrentRegion)
+                        {
+                            CurrentRegion = RegionRow.Region;
+                        }
+                        else
+                        {
+                            RegionRow.Delete();
+                        }
+                    }
+
+                    InitialiseUserControl(RegionTable,
                     PPostcodeRegionTable.GetRegionDBName(),
                     null,
                     null);
@@ -810,8 +835,13 @@ namespace Ict.Petra.Client.CommonControls
 
             // Pass on any set Tag
             cmbCombobox.Tag = this.Tag;
-            this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
-            this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
+
+            // only add event handlers once
+            if (!FUserControlInitialised)
+            {
+                this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+                this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
+            }
 
             if (FAddNotSetValue)
             {

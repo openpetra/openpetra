@@ -17,3 +17,5 @@ FUco{#CONTROLNAMEWITHOUTPREFIX}.InitUserControl();
 OnTabPageEvent(new TTabPageEventArgs({#CONTROLNAME}, FUco{#CONTROLNAMEWITHOUTPREFIX}, "InitialActivation"));
 
 this.Cursor = Cursors.Default;
+
+FCurrentUserControl = FUco{#CONTROLNAMEWITHOUTPREFIX};

@@ -348,6 +348,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
             }
 
+#if TODO
             if (!MatchFound)
             {
                 /* look in previous periods (need to compare date of transactions to the month of the stewardship
@@ -427,6 +428,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
                 }
             }
+#endif
 
             return BatchNumber;
         }
@@ -508,6 +510,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 return ExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
             }
 
+#if TODO
             /* now check previous periods if batch wasn't in current period */
             AThisYearOldBatchTable ThisYearOldBatchTable = AThisYearOldBatchAccess.LoadByPrimaryKey(AICHLedgerNumber, ABatchNumber, ADBTransaction);
             AThisYearOldBatchRow ThisYearOldBatchRow = (AThisYearOldBatchRow)ThisYearOldBatchTable.Rows[0];
@@ -631,6 +634,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return ExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
             }
+#endif
 
             DBAccess.GDBAccessObj.RollbackTransaction();
             return false;
@@ -1594,6 +1598,7 @@ PostGenerateBatch:
                 return;
             }
 
+#if TODO
             /* if the batch wasn't in the current period try previous periods. In this case we can't assume
              * that the transaction reference will be in the "new style" (ie. LLLPPRRR). It might be in the
              * old style (ie. LLLPP). We are able to do more checks where it is in the new style as we can
@@ -1855,6 +1860,7 @@ PostGenerateBatch:
                     }
                 }
             }
+#endif
         }
 
         /// <summary>

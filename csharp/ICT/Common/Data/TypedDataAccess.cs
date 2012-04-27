@@ -405,7 +405,7 @@ namespace Ict.Common.Data
             }
             else
             {
-                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ",");
+                ReturnValue = ReturnValue + StringHelper.StrMerge(AFieldList, ',');
 
                 string[] PrimKeyColumnStringList = TTypedDataTable.GetPrimaryKeyColumnStringList(ATableID);
 
@@ -2052,7 +2052,7 @@ namespace Ict.Common.Data
             bool ExceptionReported = false;
             DataRow TheRow = null;
 
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
 
             // allow this method to be called with null values, eg. when saving complex TypedDataSets with some removed empty tables
             if (ATable == null)
@@ -2061,8 +2061,6 @@ namespace Ict.Common.Data
             }
 
             short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
-
-            AVerificationResult = new TVerificationResultCollection();
 
             for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount = (RowCount + 1))
             {

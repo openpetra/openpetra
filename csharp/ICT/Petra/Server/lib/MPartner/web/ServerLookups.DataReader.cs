@@ -28,11 +28,12 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Shared;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.App.Core.Security;
 
 
@@ -45,7 +46,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     public class TPartnerDataReader
     {
         /// <summary>
-        /// return TDS which contains conferences that match a given search string
+        /// return unit table which contains conferences that match a given search string
+        /// Only returns key, name and outreach code fields at the moment.
         /// </summary>
         /// <param name="AConferenceName">match string for conference name search</param>
         /// <returns></returns>
@@ -56,14 +58,106 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
-        /// return TDS which contains outreaches that match a given search string
+        /// return unit table which contains outreaches that match a given search string
+        /// Only returns key, name and outreach code fields at the moment.
         /// </summary>
-        /// <param name="AOutreachName">match string for conference name search</param>
+        /// <param name="AOutreachName">match string for outreach name search</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
         public static PUnitTable GetOutreachUnits(string AOutreachName)
         {
             return GetConferenceOrOutreachUnits(false, AOutreachName);
+        }
+
+        /// <summary>
+        /// Return unit table which contains fields (unit partners) that match a given search string and have
+        /// status ACTIVE.
+        /// Only returns key and name field at the moment.
+        /// </summary>
+        /// <param name="AFieldName">match string for field name search</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PUnitTable GetActiveFieldUnits(string AFieldName)
+        {
+            PUnitTable UnitTable = new PUnitTable();
+            PUnitRow UnitRow;
+
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+            if (AFieldName == "*")
+            {
+                AFieldName = "";
+            }
+            else if (AFieldName.EndsWith("*"))
+            {
+                AFieldName = AFieldName.Substring(0, AFieldName.Length - 1);
+            }
+
+#if DEBUGMODE
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine("GetActiveFieldUnits called!");
+            }
+#endif
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                // Load data
+                string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                 ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
+                                 " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTable.GetTableDBName() +
+                                 " WHERE ((" + PUnitTable.GetOutreachCodeDBName() + " IS NULL)" +
+                                 "        OR(" + PUnitTable.GetOutreachCodeDBName() + " = ''))" +
+                                 " AND " + PUnitTable.GetUnitTypeCodeDBName() + " <> 'KEY-MIN'" +
+                                 " AND pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                 " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
+                                 " AND " + PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE'";
+
+                if (AFieldName.Length > 0)
+                {
+                    // in case there is a filter set for the event name
+                    AFieldName = AFieldName.Replace('*', '%') + "%";
+                    SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
+                              " LIKE '" + AFieldName + "'";
+                }
+
+                // sort rows according to name
+                SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
+
+                DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "fields", ReadTransaction);
+
+                foreach (DataRow eventRow in events.Rows)
+                {
+                    UnitRow = (PUnitRow)UnitTable.NewRow();
+                    UnitRow.PartnerKey = Convert.ToInt64(eventRow[0]);
+                    UnitRow.UnitName = Convert.ToString(eventRow[1]);
+                    UnitTable.Rows.Add(UnitRow);
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine("GetActiveFieldUnits: committed own transaction.");
+                    }
+#endif
+                }
+            }
+
+            return UnitTable;
         }
 
         /// <summary>
@@ -157,6 +251,93 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     if (TLogging.DL >= 7)
                     {
                         Console.WriteLine("GetConferenceOrOutreachUnits: committed own transaction.");
+                    }
+#endif
+                }
+            }
+
+            return UnitTable;
+        }
+
+        /// <summary>
+        /// Return unit table which contains ledger records (unit partners) that match a given search string
+        /// Only returns key and name field at the moment.
+        /// </summary>
+        /// <param name="ALedgerName">match string for ledger name search</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PUnitTable GetLedgerUnits(string ALedgerName)
+        {
+            PUnitTable UnitTable = new PUnitTable();
+            PUnitRow UnitRow;
+
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+
+            if (ALedgerName == "*")
+            {
+                ALedgerName = "";
+            }
+            else if (ALedgerName.EndsWith("*"))
+            {
+                ALedgerName = ALedgerName.Substring(0, ALedgerName.Length - 1);
+            }
+
+#if DEBUGMODE
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine("GetLedgerUnits called!");
+            }
+#endif
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                // Load data
+                string SqlStmt = "SELECT pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                 ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
+                                 " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTypeTable.GetTableDBName() +
+                                 " WHERE pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
+                                 " = pub_" + PPartnerTypeTable.GetTableDBName() + "." + PPartnerTypeTable.GetPartnerKeyDBName() +
+                                 " AND " + PPartnerTypeTable.GetTypeCodeDBName() + " = '" + MPartnerConstants.PARTNERTYPE_LEDGER + "'";
+
+                if (ALedgerName.Length > 0)
+                {
+                    // in case there is a filter set for the event name
+                    ALedgerName = ALedgerName.Replace('*', '%') + "%";
+                    SqlStmt = SqlStmt + " AND " + PUnitTable.GetUnitNameDBName() +
+                              " LIKE '" + ALedgerName + "'";
+                }
+
+                // sort rows according to name
+                SqlStmt = SqlStmt + " ORDER BY " + PUnitTable.GetUnitNameDBName();
+
+                DataTable events = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "ledgers", ReadTransaction);
+
+                foreach (DataRow eventRow in events.Rows)
+                {
+                    UnitRow = (PUnitRow)UnitTable.NewRow();
+                    UnitRow.PartnerKey = Convert.ToInt64(eventRow[0]);
+                    UnitRow.UnitName = Convert.ToString(eventRow[1]);
+                    UnitTable.Rows.Add(UnitRow);
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine("GetLedgerUnits: committed own transaction.");
                     }
 #endif
                 }

@@ -28,6 +28,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 

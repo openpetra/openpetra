@@ -30,6 +30,7 @@ using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.CommonControls

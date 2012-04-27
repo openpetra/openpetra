@@ -133,8 +133,9 @@ begin
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../db30/demo.db', ExpandConstant('{app}\db30\demo.db'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../reports30', ExpandConstant('{app}\reports30'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../sql30', ExpandConstant('{app}\sql30'), true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../tmp30', '{userappdata}/' + Dirname + '\tmp30', true);
-    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '../tmp30', '{userappdata}/' + Dirname + '\tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerConsole-3.0.config'), '../tmp30', '{userappdata}\' + Dirname + '\tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraServerAdminConsole-3.0.config'), '../tmp30', '{userappdata}\' + Dirname + '\tmp30', true);
+    ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '../tmp30', '{userappdata}\' + Dirname + '\tmp30', true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '<add key="Reporting.PathReportSettings" value="../reports30/Settings" />', ExpandConstant('<add key="Reporting.PathReportSettings" value="{app}\reports30\Settings" />'), true);
     ReplaceInTextFile(ExpandConstant('{app}/PetraClient-3.0.config'), '<add key="Reporting.PathReportUserSettings" value="../reports30/Settings" />', '<add key="Reporting.PathReportUserSettings" value="{userappdata}\' + Dirname + '\reports30\Settings" />', true);
   end;

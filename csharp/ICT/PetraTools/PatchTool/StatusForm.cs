@@ -93,7 +93,7 @@ namespace Ict.Tools.PatchTool
             this.Controls.Add(this.btnOK);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TFrmStatus";
-            this.Text = "Installing the Petra patch";
+            this.Text = "Installing the OpenPetra patch";
             this.ResumeLayout(false);
         }
 

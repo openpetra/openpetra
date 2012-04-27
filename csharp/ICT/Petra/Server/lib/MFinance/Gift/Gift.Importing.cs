@@ -124,15 +124,21 @@ namespace Ict.Petra.Server.MFinance.Gift
                         if (RowType == "B")
                         {
                             previousGift = null;
+
+                            string BatchDescription = ImportString(Catalog.GetString("batch description"));
+                            string BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
+                            decimal HashTotal = ImportDecimal(Catalog.GetString("hash total"));
+                            DateTime GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
+
                             giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref FMainDS,
                                 ref FTransaction,
                                 ref LedgerTable,
                                 FLedgerNumber,
-                                DateTime.Today);
-                            giftBatch.BatchDescription = ImportString(Catalog.GetString("batch description"));
-                            giftBatch.BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
-                            giftBatch.HashTotal = ImportDecimal(Catalog.GetString("hash total"));
-                            giftBatch.GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
+                                GlEffectiveDate);
+
+                            giftBatch.BatchDescription = BatchDescription;
+                            giftBatch.BankAccountCode = BankAccountCode;
+                            giftBatch.HashTotal = HashTotal;
                             giftBatch.CurrencyCode = ImportString(Catalog.GetString("currency code"));
                             giftBatch.ExchangeRateToBase = ImportDecimal(Catalog.GetString("exchange rate to base"));
                             giftBatch.BankCostCentre = ImportString(Catalog.GetString("bank cost centre"));
@@ -148,7 +154,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                         else if (RowType == "T")
                         {
-                            int numberOfElements = FImportLine.Split(FDelimiter.ToCharArray()).Length;
+                            int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count;
+
                             //this is the format with extra columns
                             FExtraColumns = numberOfElements > 22;
 
@@ -267,6 +274,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             FMainDS.AGiftDetail.AcceptChanges();
                         }
+                        else
+                        {
+                            throw new Exception(Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"));
+                        }
                     }
                 }
 
@@ -285,9 +296,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             catch (Exception ex)
             {
+                TLogging.Log(ex.ToString());
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
-
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
@@ -394,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 return Catalog.GetString("Invalid cost centre");
             }
 
-            return ex.ToString();
+            return ex.Message;
         }
 
         private String ImportString(String message)
@@ -443,7 +454,17 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             FImportMessage = String.Format(Catalog.GetString("Parsing the {0}:"), message);
             String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-            DateTime dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
+            DateTime dtReturn;
+
+            try
+            {
+                dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Problem parsing " + sDate + " with format " + FCultureInfoDate.DateTimeFormat.ShortDatePattern);
+                throw;
+            }
             return dtReturn;
         }
     }

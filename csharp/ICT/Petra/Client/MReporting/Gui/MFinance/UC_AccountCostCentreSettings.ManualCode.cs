@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_account_code_end", cmbToAccountCode.GetSelectedString());
                 ACalculator.AddParameter("param_rgrAccounts", "AccountRange");
 
-                VerificationResult = TStringChecks.FirstLesserEqualThanSecond(
+                VerificationResult = TStringChecks.FirstLesserOrEqualThanSecondString(
                     cmbFromAccountCode.GetSelectedString(),
                     cmbToAccountCode.GetSelectedString(),
                     Catalog.GetString("Account Range From"),
@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_cost_centre_code_start", cmbFromCostCentre.GetSelectedString());
                 ACalculator.AddParameter("param_cost_centre_code_end", cmbToCostCentre.GetSelectedString());
 
-                VerificationResult = TStringChecks.FirstLesserEqualThanSecond(
+                VerificationResult = TStringChecks.FirstLesserOrEqualThanSecondString(
                     cmbFromCostCentre.GetSelectedString(),
                     cmbToCostCentre.GetSelectedString(),
                     Catalog.GetString("Cost Centre Range From"),

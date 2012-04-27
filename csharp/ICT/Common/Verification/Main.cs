@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,11 +34,14 @@
 using System;
 using System.Data;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
 
 namespace Ict.Common.Verification
 {
+    #region TResultSeverity
+
     /// <summary>
     /// a verification error can either be critical or non critical
     /// </summary>
@@ -57,9 +60,18 @@ namespace Ict.Common.Verification
         /// <summary>
         /// only a status message ...
         /// </summary>
-        Resv_Status
+        Resv_Status,
+
+        /// <summary>
+        /// purely information (without a warning connotation)
+        /// </summary>
+        Resv_Info
     };
 
+    #endregion
+
+
+    #region IResultInterface
 
     /// <summary>
     /// Properties that every 'Verification Result' needs to implement.
@@ -111,28 +123,47 @@ namespace Ict.Common.Verification
         }
     }
 
+    #endregion
+
+
+    #region TVerificationResult
+
     /// <summary>
     /// A TVerificationResult object stores information about failed data
     /// verification and is passed (serialised) from the Server to the Client.
     /// It is made to be stored in the TVerificationResultCollection.
     /// </summary>
     [Serializable]
-    public class TVerificationResult : object, IResultInterface
+    public class TVerificationResult : IResultInterface
     {
         /// <summary>DB Field or other context that describes where the data verification failed (use '[ODBC ...]' instead to signal a database error (such as a failed call to a stored procedure)</summary>
-        protected object FResultContext;
+        protected object FResultContext = String.Empty;
 
         /// <summary>Verification failure explanation</summary>
-        protected String FResultText;
+        protected String FResultText = String.Empty;
 
         /// <summary>Verification failure caption</summary>
-        protected String FResultTextCaption;
+        protected String FResultTextCaption = String.Empty;
 
         /// <summary>Error code if verification failure</summary>
-        protected String FResultCode;
+        protected String FResultCode = String.Empty;
 
         /// <summary>Signals whether the verification failure prevented saving of data (critical) or the verification result is only for information purposes (noncritical).</summary>
         protected TResultSeverity FResultSeverity;
+
+        /// <summary>
+        /// Is true (or set to true) if the data validation code requests that the validated
+        /// Control's value is undone. This is only useful for <see cref="TScreenVerificationResult" />s
+        /// but needs to be declared in this Class to make the handling easier.
+        /// </summary>
+        protected bool FControlValueUndoRequested = false;
+
+        /// <summary>
+        /// Is true (or set to true) if the data validation code requests that the validation
+        /// ToolTip should not be shown on the validated Control. This is only useful for <see cref="TScreenVerificationResult" />s
+        /// but needs to be declared in this Class to make the handling easier.
+        /// </summary>
+        protected bool FSuppressValidationToolTip = false;
 
         /// <summary>
         /// We need this constructor so that inherited Classes can get by not having a default constructor...
@@ -145,12 +176,64 @@ namespace Ict.Common.Verification
         /// Constructor
         /// </summary>
         /// <param name="AResultContext">context where this verification happens (e.g. DB field name)</param>
+        /// <param name="AErrorCodeInfo">An <see cref="ErrCodeInfo" /> that contains data which is used for populating the Verification Result's Properites.</param>
+        public TVerificationResult(object AResultContext, ErrCodeInfo AErrorCodeInfo)
+        {
+            FResultContext = AResultContext;
+            FResultCode = AErrorCodeInfo.ErrorCode;
+
+            if (AErrorCodeInfo.ErrorMessageText == String.Empty)
+            {
+                FResultText = AErrorCodeInfo.ShortDescription;
+            }
+            else
+            {
+                FResultText = AErrorCodeInfo.ErrorMessageText;
+            }
+
+            if (AErrorCodeInfo.ErrorMessageTitle != String.Empty)
+            {
+                FResultTextCaption = AErrorCodeInfo.ErrorMessageTitle;
+            }
+
+            if ((AErrorCodeInfo.Category == ErrCodeCategory.Error)
+                || (AErrorCodeInfo.Category == ErrCodeCategory.Validation))
+            {
+                FResultSeverity = TResultSeverity.Resv_Critical;
+            }
+            else if (AErrorCodeInfo.Category == ErrCodeCategory.NonCriticalError)
+            {
+                FResultSeverity = TResultSeverity.Resv_Noncritical;
+            }
+
+            FControlValueUndoRequested = AErrorCodeInfo.ControlValueUndoRequested;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AResultContext">context where this verification happens (e.g. DB field name)</param>
         /// <param name="AResultText">Verification failure explanation</param>
         /// <param name="AResultSeverity">is this an error or just a warning</param>
-        public TVerificationResult(String AResultContext, String AResultText, TResultSeverity AResultSeverity)
+        public TVerificationResult(object AResultContext, String AResultText, TResultSeverity AResultSeverity)
         {
             FResultContext = AResultContext;
             FResultText = AResultText;
+            FResultSeverity = AResultSeverity;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AResultContext">context where this verification happens (e.g. DB field name)</param>
+        /// <param name="AResultText">Verification failure explanation</param>
+        /// <param name="AResultCode">a result code to identify error messages</param>
+        /// <param name="AResultSeverity">is this an error or just a warning</param>
+        public TVerificationResult(object AResultContext, String AResultText, String AResultCode, TResultSeverity AResultSeverity)
+        {
+            FResultContext = AResultContext;
+            FResultText = AResultText;
+            FResultCode = AResultCode;
             FResultSeverity = AResultSeverity;
         }
 
@@ -176,6 +259,20 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <remarks>'Downgrades' a <see cref="TScreenVerificationResult" /> to a <see cref="TVerificationResult" />.</remarks>
+        /// <param name="AScreenVerificationResult">A <see cref="TScreenVerificationResult" />.</param>
+        public TVerificationResult(TScreenVerificationResult AScreenVerificationResult)
+        {
+            FResultContext = AScreenVerificationResult.ResultContext;
+            FResultText = AScreenVerificationResult.ResultText;
+            FResultTextCaption = AScreenVerificationResult.ResultTextCaption;
+            FResultCode = AScreenVerificationResult.ResultCode;
+            FResultSeverity = AScreenVerificationResult.ResultSeverity;
+        }
+
+        /// <summary>
         /// Context of the Verification Result (where the Verification Result originated from).
         /// </summary>
         public object ResultContext
@@ -189,6 +286,9 @@ namespace Ict.Common.Verification
         /// <summary>
         /// Text of the Verification Result.
         /// </summary>
+        /// <remarks>This Property cannot be written to in order to avoid accidental overwriting. However,
+        /// by calling the Method <see cref="OverrideResultText" /> the <see cref="ResultText" />
+        /// <em>can</em> be modified.</remarks>
         public String ResultText
         {
             get
@@ -197,10 +297,12 @@ namespace Ict.Common.Verification
             }
         }
 
-
         /// <summary>
         /// Caption of the Verification Result (e.g. for use in MessageBox Titles).
         /// </summary>
+        /// <remarks>This Property cannot be written to in order to avoid accidental overwriting. However,
+        /// by calling the Method <see cref="OverrideResultTextCaption" /> the <see cref="ResultTextCaption" />
+        /// <em>can</em> be modified.</remarks>
         public String ResultTextCaption
         {
             get
@@ -208,7 +310,6 @@ namespace Ict.Common.Verification
                 return FResultTextCaption;
             }
         }
-
 
         /// <summary>
         /// ResultCode of the Verification Result.
@@ -226,7 +327,6 @@ namespace Ict.Common.Verification
             }
         }
 
-
         /// <summary>
         /// Severity of the Verification Result.
         /// </summary>
@@ -237,8 +337,66 @@ namespace Ict.Common.Verification
                 return FResultSeverity;
             }
         }
+
+        /// <summary>
+        /// Is true (or set to true) if the data validation code requests that the validated
+        /// Control's value is undone.
+        /// </summary>
+        public bool ControlValueUndoRequested
+        {
+            get
+            {
+                return FControlValueUndoRequested;
+            }
+
+            set
+            {
+                FControlValueUndoRequested = value;
+            }
+        }
+
+        /// <summary>
+        /// Is true (or set to true) if the data validation code requests that the validation
+        /// ToolTip should not be shown on the validated Control.
+        /// </summary>
+        public bool SuppressValidationToolTip
+        {
+            get
+            {
+                return FSuppressValidationToolTip;
+            }
+
+            set
+            {
+                FSuppressValidationToolTip = value;
+            }
+        }
+
+        /// <summary>
+        /// Overrides the ResultText that the <see cref="TVerificationResult" /> was
+        /// originally populated with.
+        /// </summary>
+        /// <param name="ANewResultText">New ResultText.</param>
+        public void OverrideResultText(string ANewResultText)
+        {
+            FResultText = ANewResultText;
+        }
+
+        /// <summary>
+        /// Overrides the ResultTextCaption that the <see cref="TVerificationResult" /> was
+        /// originally populated with.
+        /// </summary>
+        /// <param name="ANewResultTextCaption">New ResultTextCaption.</param>
+        public void OverrideResultTextCaption(string ANewResultTextCaption)
+        {
+            FResultTextCaption = ANewResultTextCaption;
+        }
     }
 
+    #endregion
+
+
+    #region TScreenVerificationResult
 
     /// <summary>
     /// A TScreenVerificationResult object stores information about failed data
@@ -263,6 +421,28 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">context of verification</param>
         /// <param name="AResultColumn">which column failed</param>
         /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultCode">error code to identify the error message</param>
+        /// <param name="AResultControl">which control is involved</param>
+        public TScreenVerificationResult(object AResultContext,
+            DataColumn AResultColumn,
+            String AResultText,
+            String AResultCode,
+            Control AResultControl)
+        {
+            FResultContext = AResultContext;
+            FResultColumn = AResultColumn;
+            FResultText = AResultText;
+            FResultSeverity = TResultSeverity.Resv_Critical;
+            FResultCode = AResultCode;
+            FResultControl = AResultControl;
+        }
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="AResultContext">context of verification</param>
+        /// <param name="AResultColumn">which column failed</param>
+        /// <param name="AResultText">description and error message for the user</param>
         /// <param name="AResultControl">which control is involved</param>
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         public TScreenVerificationResult(object AResultContext,
@@ -276,6 +456,30 @@ namespace Ict.Common.Verification
             FResultText = AResultText;
             FResultSeverity = AResultSeverity;
             FResultControl = AResultControl;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AResultContext">context of verification</param>
+        /// <param name="AResultColumn">which column failed</param>
+        /// <param name="AResultText">description and error message for the user</param>
+        /// <param name="AResultCode">error code to identify the error message</param>
+        /// <param name="AResultControl">which control is involved</param>
+        /// <param name="AResultSeverity">is this serious, or just a warning</param>
+        public TScreenVerificationResult(object AResultContext,
+            DataColumn AResultColumn,
+            String AResultText,
+            String AResultCode,
+            Control AResultControl,
+            TResultSeverity AResultSeverity)
+        {
+            FResultContext = AResultContext;
+            FResultColumn = AResultColumn;
+            FResultText = AResultText;
+            FResultCode = AResultCode;
+            FResultControl = AResultControl;
+            FResultSeverity = AResultSeverity;
         }
 
         /// <summary>
@@ -306,6 +510,27 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="AVerificationResult"><see cref="TVerificationResult" /> which
+        /// contains the basic data to which the <paramref name="AResultColumn" /> and
+        /// <paramref name="AResultControl" /> are getting added.</param>
+        /// <param name="AResultColumn">which column failed</param>
+        /// <param name="AResultControl">which control is involved</param>
+        public TScreenVerificationResult(TVerificationResult AVerificationResult,
+            DataColumn AResultColumn, Control AResultControl)
+        {
+            FResultContext = AVerificationResult.ResultContext;
+            FResultColumn = AResultColumn;
+            FResultText = AVerificationResult.ResultText;
+            FResultTextCaption = AVerificationResult.ResultTextCaption;
+            FResultCode = AVerificationResult.ResultCode;
+            FResultControl = AResultControl;
+            FResultSeverity = AVerificationResult.ResultSeverity;
+            FControlValueUndoRequested = AVerificationResult.ControlValueUndoRequested;
+        }
+
+        /// <summary>
         /// the DataColumn of the verification failure
         /// </summary>
         /// <returns></returns>
@@ -330,23 +555,48 @@ namespace Ict.Common.Verification
         }
     }
 
+    #endregion
+
+
+    #region TVerificationResultCollection
 
     /// <summary>
-    /// A TVerificationResult object stores any number of TVerificationResult objects.
-    /// With this strongly-typed Collection it is for instance possible to perform
+    /// A TVerificationResultCollection object stores any number of TVerificationResult objects.
+    /// With this typed Collection it is for instance possible to perform
     /// several data verification steps on the Server and pass the results back to
     /// the Client in one object.
-    ///
+    /// </summary>
+    /// <remarks>
     /// NOTES on C# conversion:
     /// (1) The 'Item' method overloads have been renamed to 'FindBy' method
     /// overloads (couldn't do that as in Delphi.NET!);
     /// (2) The 'VerificationResultInfo' Indexed Property that we had in .NET has
     /// now become the Default Indexed Property of this Class because C# doesn't
     /// allow named Indexed Properties!
-    /// </summary>
+    /// </remarks>
     [Serializable]
     public class TVerificationResultCollection : CollectionBase
     {
+        #region Resourcestrings
+
+        private static readonly string StrMessageFooter = Catalog.GetString("  Context: {0}; Severity: {1}.\r\n    Problem: {2}\r\n    Code: {3}");
+
+        #endregion
+
+        /// <summary>
+        /// Control for which the first data validation error is recorded.
+        /// </summary>
+        /// <remarks>Updated when one of the overloads of Method
+        /// <see cref="M:BuildScreenVerificationResultList(out String, out Control, out Object, bool, Type)" /> or
+        /// <see cref="M:BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
+        /// except if their Argument 'AUpdateFirstErrorControl' is set to false.</remarks>
+        Control FFirstErrorControl = null;
+
+        /// <summary>
+        /// Should the Focus be set on the FirstErrorControl?
+        /// </summary>
+        bool FFocusOnFirstErrorControlRequested = false;
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -371,13 +621,113 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// add a new verification object
+        /// Checks whether there are any <see cref="TVerificationResult" />s  in the collection that denote a
+        /// critical error.
         /// </summary>
-        /// <param name="value">the verification object to be added</param>
+        /// <remarks>Does not check/count any <see cref="TVerificationResult" /> whose
+        /// <see cref="TVerificationResult.ResultSeverity" /> </remarks> is <see cref="TResultSeverity.Resv_Noncritical" />
+        /// or <see cref="TResultSeverity.Resv_Info" />.
+        public bool HasCriticalErrors
+        {
+            get
+            {
+                foreach (TVerificationResult v in List)
+                {
+                    if (v.ResultSeverity == TResultSeverity.Resv_Critical)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether there are any <see cref="TVerificationResult" />s in the collection that denote a
+        /// critical or non-critical error.
+        /// </summary>
+        /// <remarks>Does not check/count any <see cref="TVerificationResult" /> whose
+        /// <see cref="TVerificationResult.ResultSeverity" /> </remarks> is <see cref="TResultSeverity.Resv_Info" />.
+        public bool HasCriticalOrNonCriticalErrors
+        {
+            get
+            {
+                foreach (TVerificationResult v in List)
+                {
+                    if ((v.ResultSeverity == TResultSeverity.Resv_Critical)
+                        || (v.ResultSeverity == TResultSeverity.Resv_Noncritical))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Control for which the first data validation error is recorded.
+        /// </summary>
+        /// <remarks>Updated when one of the overloads of Method
+        /// <see cref="M:BuildScreenVerificationResultList(out String, out Control, out Object, bool, Type)" /> or
+        /// <see cref="M:BuildScreenVerificationResultList(object, out String, out Control, bool)" /> is called,
+        /// except if their Argument 'AUpdateFirstErrorControl' is set to false.</remarks>
+        public Control FirstErrorControl
+        {
+            get
+            {
+                return FFirstErrorControl;
+            }
+
+            set
+            {
+                FFirstErrorControl = value;
+            }
+        }
+
+        /// <summary>
+        /// Inspect this from outside this Class to inquire whether the Focus should be set on the FirstErrorControl.
+        /// </summary>
+        public bool FocusOnFirstErrorControlRequested
+        {
+            get
+            {
+                return FFocusOnFirstErrorControlRequested;
+            }
+
+            set
+            {
+                FFocusOnFirstErrorControlRequested = value;
+            }
+        }
+
+        /// <summary>
+        /// Adds a new verification object.
+        /// </summary>
+        /// <param name="value">the verification object to be added (must not be null)</param>
         /// <returns></returns>
         public int Add(IResultInterface value)
         {
             return List.Add(value);
+        }
+
+        /// <summary>
+        /// Adds a new verification object. Should the verification object be null,
+        /// nothing happens.
+        /// </summary>
+        /// <param name="value">the verification object to be added (can be null)</param>
+        /// <returns></returns>
+        public int AddAndIgnoreNullValue(IResultInterface value)
+        {
+            int ReturnValue = -1;
+
+            if (value != null)
+            {
+                ReturnValue = List.Add(value);
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -396,31 +746,25 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// check if there is any verification that shows a critical error
+        /// Generates text for a MessageBox showing all verification errors that are held in the
+        /// <see cref="TVerificationResultCollection" /> (optionally excluding some if the
+        /// <paramref name="ARestrictToTypeWhichRaisesError" /> Argument is not null).
         /// </summary>
-        /// <returns></returns>
-        public bool HasCriticalError()
-        {
-            foreach (TVerificationResult v in List)
-            {
-                if (v.ResultSeverity == TResultSeverity.Resv_Critical)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// generate the text for a message box showing all verification errors
-        /// </summary>
-        /// <param name="AErrorMessages">will have the list of error messages</param>
-        /// <param name="AFirstErrorControl">for focusing the first control that caused verification failure</param>
-        /// <param name="AFirstErrorContext">context of the first error</param>
-        public void BuildScreenVerificationResultList(out String AErrorMessages, out Control AFirstErrorControl, out object AFirstErrorContext)
+        /// <param name="AErrorMessages">String containing a formatted list of error messages that is taken from the
+        /// <see cref="TVerificationResultCollection" />.</param>
+        /// <param name="AFirstErrorControl">Control which the Focus should be set to as it is the first Control for which a
+        /// Verification failure is recorded against.</param>
+        /// <param name="AFirstErrorContext"><see cref="TVerificationResult.ResultContext" /> of the first error.</param>
+        /// <param name="AUpdateFirstErrorControl">Set to false to not update the <see cref="FirstErrorControl" /> Property
+        /// of this Class (defaults to true).</param>
+        /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that
+        /// are added to the result list to those whose <see cref="TVerificationResult.ResultContext" /> matches
+        /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref>.</param>
+        public void BuildScreenVerificationResultList(out String AErrorMessages, out Control AFirstErrorControl, out object AFirstErrorContext,
+            bool AUpdateFirstErrorControl = true, Type ARestrictToTypeWhichRaisesError = null)
         {
             TScreenVerificationResult si;
+            bool IncludeVerificationResult;
 
             AFirstErrorControl = null;
             AErrorMessages = "";
@@ -429,12 +773,44 @@ namespace Ict.Common.Verification
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
                 si = (TScreenVerificationResult)(List[Counter]);
-                AErrorMessages = AErrorMessages + si.ResultText + Environment.NewLine + Environment.NewLine;
 
-                if (AFirstErrorControl == null)
+                if (ARestrictToTypeWhichRaisesError != null)
                 {
-                    AFirstErrorControl = si.ResultControl;
-                    AFirstErrorContext = si.ResultContext;
+                    if (si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError)
+                    {
+                        IncludeVerificationResult = true;
+                    }
+                    else
+                    {
+                        IncludeVerificationResult = false;
+                    }
+                }
+                else
+                {
+                    IncludeVerificationResult = true;
+                }
+
+                if (IncludeVerificationResult)
+                {
+                    AErrorMessages = AErrorMessages + si.ResultText;
+
+                    if (si.ResultCode != String.Empty)
+                    {
+                        AErrorMessages += "  [" + si.ResultCode + "]";
+                    }
+
+                    AErrorMessages += Environment.NewLine + Environment.NewLine;
+
+                    if (AFirstErrorControl == null)
+                    {
+                        AFirstErrorControl = si.ResultControl;
+                        AFirstErrorContext = si.ResultContext;
+
+                        if (AUpdateFirstErrorControl)
+                        {
+                            FFirstErrorControl = AFirstErrorControl;
+                        }
+                    }
                 }
             }
         }
@@ -445,7 +821,10 @@ namespace Ict.Common.Verification
         /// <param name="AResultContext">only show errors of the given context</param>
         /// <param name="AErrorMessages">will have the list of error messages</param>
         /// <param name="AFirstErrorControl">for focusing the first control that caused verification failure</param>
-        public void BuildScreenVerificationResultList(object AResultContext, out String AErrorMessages, out Control AFirstErrorControl)
+        /// <param name="AUpdateFirstErrorControl" >Set to false to not update the <see cref="FirstErrorControl" /> Property
+        /// of this Class (defaults to true).</param>
+        public void BuildScreenVerificationResultList(object AResultContext, out String AErrorMessages, out Control AFirstErrorControl,
+            bool AUpdateFirstErrorControl = true)
         {
             TScreenVerificationResult si;
 
@@ -463,6 +842,11 @@ namespace Ict.Common.Verification
                     if (AFirstErrorControl == null)
                     {
                         AFirstErrorControl = si.ResultControl;
+
+                        if (AUpdateFirstErrorControl)
+                        {
+                            FFirstErrorControl = AFirstErrorControl;
+                        }
                     }
                 }
             }
@@ -476,7 +860,6 @@ namespace Ict.Common.Verification
         /// <see cref="TVerificationResult" />s in the <see cref="TVerificationResultCollection" />.</returns>
         public string BuildVerificationResultString()
         {
-            const String fmt = "  Context: {0}; Severity: {1}.\r\n    Problem: {2}\r\n    Code: {3}";
             TVerificationResult si;
             string ReturnValue = String.Empty;
 
@@ -485,7 +868,7 @@ namespace Ict.Common.Verification
                 si = (TVerificationResult)(List[i]);
 
                 ReturnValue = ReturnValue +
-                              (String.Format(fmt,
+                              (String.Format(StrMessageFooter,
                                    new object[] { si.ResultContext, si.ResultSeverity, si.ResultText, si.ResultCode })) +
                               Environment.NewLine + Environment.NewLine;
             }
@@ -529,9 +912,9 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// check if there is an error for this data column already
+        /// Checks if there is an error for this data column already.
         /// </summary>
-        /// <param name="AResultColumn">the column to check for</param>
+        /// <param name="AResultColumn">The <see cref="System.Data.DataColumn" /> to check for.</param>
         /// <returns>true if such an error already is part of the list</returns>
         public bool Contains(DataColumn AResultColumn)
         {
@@ -550,6 +933,121 @@ namespace Ict.Common.Verification
             }
 
             return Found;
+        }
+
+        /// <summary>
+        /// Adds a <see cref="TVerificationResult" /> for a <see cref="System.Data.DataColumn" />
+        /// specified with <paramref name="AResultColumn" />, or removes a
+        /// <see cref="TVerificationResult" /> that is stored in the collection for the
+        /// <see cref="System.Data.DataColumn" /> specified with <paramref name="AResultColumn" />.
+        /// If <paramref name="AVerificationResult" /> isn't null, this Method will add it, if
+        /// <paramref name="AVerificationResult" /> is null, this Method will remove *all* entries in
+        /// the <see cref="TVerificationResultCollection" /> that are recorded for <paramref name="AResultColumn" />.
+        /// </summary>
+        /// <remarks>
+        /// When adding a <see cref="TVerificationResult" />, a check is done if a <see cref="TVerificationResult" />
+        /// with exactly the same Property values is already stored. If this is the case, the
+        /// <see cref="TVerificationResult" /> is not added a second time.
+        /// </remarks>
+        /// <param name="AVerificationResult">The <see cref="TVerificationResult" /> to add,
+        /// or null if a <see cref="TVerificationResult" /> that is stored in the collection for the
+        /// <see cref="System.Data.DataColumn" /> <paramref name="AResultColumn" /> should get removed.</param>
+        /// <param name="AResultColumn">The <see cref="System.Data.DataColumn" /> to check for.</param>
+        /// <param name="AResultContext">Considered only when <paramref name="AVerificationResult"></paramref> is null:
+        /// removal from collection will only happen if <paramref name="AResultContext"></paramref>.ToString() matches an
+        /// <see cref="TVerificationResult" />'s ResultContext.ToString() that is stored in the collection for the
+        /// <see cref="System.Data.DataColumn" />.  (Default: null.)</param>
+        /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
+        /// where it is placed on as identical ResultContexts. (Default: false.)</param>
+        /// <returns>True if the <see cref="TVerificationResult" /> got added, otherwise false.</returns>
+        public bool AddOrRemove(TVerificationResult AVerificationResult, DataColumn AResultColumn, object AResultContext = null,
+            bool ATreatUserControlAndFormContextsAsIdentical = false)
+        {
+            List <TScreenVerificationResult>si = FindAllBy(AResultColumn);
+            bool IdenticalVResultFound = false;
+            bool ReturnValue = false;
+
+            if (AVerificationResult != null)
+            {
+                if (si == null)
+                {
+                    this.Add(AVerificationResult);
+                    ReturnValue = true;
+                }
+                else
+                {
+                    foreach (TScreenVerificationResult SingleEntry in si)
+                    {
+                        if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult, false,
+                                ATreatUserControlAndFormContextsAsIdentical))
+                        {
+                            IdenticalVResultFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!IdenticalVResultFound)
+                    {
+                        this.Add(AVerificationResult);
+                        ReturnValue = true;
+                    }
+                }
+            }
+            else if (si != null)
+            {
+                foreach (TScreenVerificationResult SingleEntry in si)
+                {
+                    if (AResultContext != null)
+                    {
+                        if (SingleEntry.ResultContext.ToString() == AResultContext.ToString())
+                        {
+                            this.Remove(SingleEntry);
+                        }
+                    }
+                    else
+                    {
+                        this.Remove(SingleEntry);
+                    }
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Calls either the <see cref="Add" /> or <see cref="AddOrRemove" /> Method. Which Method is
+        /// called is determined by evaluating the Type of <paramref name="AContext" />: if it is
+        /// <see cref="System.Windows.Forms.Form" /> then the <see cref="AddOrRemove" /> Method is
+        /// called, otherwise the <see cref="Add" /> Method.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data verification failed.</param>
+        /// <param name="AVerificationResult">An instance of <see cref="TVerificationResult" />
+        /// that is to be added/to be added or removed from the <see cref="TVerificationResultCollection" />.</param>
+        /// <param name="AValidationColumn">The <see cref="DataRow" /> which holds the the data against which
+        /// the validation was run. Only used if the <see cref="AddOrRemove" /> Methods is called.</param>
+        /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
+        /// where it is placed on as identical ResultContexts. (Default: false.)</param>
+        /// <returns>True if the <see cref="TVerificationResult" /> got added, otherwise false.</returns>
+        public bool Auto_Add_Or_AddOrRemove(object AContext, TVerificationResult AVerificationResult, DataColumn AValidationColumn,
+            bool ATreatUserControlAndFormContextsAsIdentical = false)
+        {
+            bool ReturnValue = false;
+
+            if ((AContext is System.Windows.Forms.Form)
+                || (AContext is System.Windows.Forms.UserControl))
+            {
+                ReturnValue = this.AddOrRemove(AVerificationResult, AValidationColumn, null, ATreatUserControlAndFormContextsAsIdentical);
+            }
+            else
+            {
+                if (AVerificationResult != null)
+                {
+                    this.Add(AVerificationResult);
+                    ReturnValue = true;
+                }
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -593,10 +1091,10 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// find result by column
+        /// Find a <see cref="TScreenVerificationResult" /> by ResultColumn.
         /// </summary>
-        /// <param name="AResultColumn">column to look for</param>
-        /// <returns>the first result for that column</returns>
+        /// <param name="AResultColumn">ResultColumn to look for.</param>
+        /// <returns>The first result for that ResultColumn, or null if no result was found.</returns>
         public TScreenVerificationResult FindBy(DataColumn AResultColumn)
         {
             TScreenVerificationResult ReturnValue;
@@ -619,7 +1117,38 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// find result by context
+        /// Finds all <see cref="TScreenVerificationResult" />s that are stored for a certain ResultColumn.
+        /// </summary>
+        /// <param name="AResultColumn">ResultColumn to look for.</param>
+        /// <returns>An List of <see cref="TScreenVerificationResult" /> that contains all the found
+        /// <see cref="TScreenVerificationResult" />s, or null if no result was found.</returns>
+        public List <TScreenVerificationResult>FindAllBy(DataColumn AResultColumn)
+        {
+            List <TScreenVerificationResult>ReturnValue = null;
+            TScreenVerificationResult si;
+
+            ReturnValue = null;
+
+            for (int Counter = 0; Counter <= Count - 1; Counter += 1)
+            {
+                si = (TScreenVerificationResult)(List[Counter]);
+
+                if (si.ResultColumn == AResultColumn)
+                {
+                    if (ReturnValue == null)
+                    {
+                        ReturnValue = new List <TScreenVerificationResult>();
+                    }
+
+                    ReturnValue.Add(si);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Find a <see cref="TScreenVerificationResult" /> by ResultContext
         /// </summary>
         /// <param name="AResultContext">context to look for</param>
         /// <returns>the first result for that context</returns>
@@ -645,10 +1174,10 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
-        /// find result by index
+        /// Returns the <see cref="TScreenVerificationResult" /> that is found at the index position.
         /// </summary>
-        /// <param name="index">index to identify the result</param>
-        /// <returns>the result</returns>
+        /// <param name="index">Tndex to identify the <see cref="TScreenVerificationResult" />.</param>
+        /// <returns>The <see cref="TScreenVerificationResult" /> at the index position.</returns>
         public IResultInterface FindBy(int index)
         {
             return (IResultInterface)(List[index]);
@@ -671,25 +1200,6 @@ namespace Ict.Common.Verification
         private new void OnValidate(object value)
         {
             VerifyType(value);
-        }
-
-        /// <summary>
-        /// print the results in the collection to the System Console
-        /// </summary>
-        public void PrintItems()
-        {
-            const String fmt = "ResultField: {0}, ResultText: {1}, ResultSeverity: {2}";
-            TVerificationResult si;
-
-            for (int i = 0; i <= Count - 1; i += 1)
-            {
-                si = (TVerificationResult)(List[i]);
-                System.Console.WriteLine(String.Format(
-                        fmt,
-                        new object[] { si.ResultContext, si.ResultText,
-                                       si.ResultSeverity }
-                        ));
-            }
         }
 
         /// <summary>
@@ -786,28 +1296,218 @@ namespace Ict.Common.Verification
                 throw new ArgumentException("Invalid Type");
             }
         }
+
+        /// <summary>
+        /// Downgrades all <see cref="TScreenVerificationResult" /> items in a <see cref="TVerificationResultCollection" />
+        /// to <see cref="TVerificationResult" /> items.
+        /// </summary>
+        /// <param name="AScreenVerificationResults">A <see cref="TVerificationResultCollection" /> holding <em>exclusively</em>
+        /// <see cref="TScreenVerificationResult" /> items.</param>
+        public static void DowngradeScreenVerificationResults(TVerificationResultCollection AScreenVerificationResults)
+        {
+            int NumberOfVerificationResults = AScreenVerificationResults.Count;
+
+            for (int Counter1 = 0; Counter1 < NumberOfVerificationResults; Counter1++)
+            {
+                AScreenVerificationResults.Add(new TVerificationResult((TScreenVerificationResult)AScreenVerificationResults[Counter1]));
+            }
+
+            for (int Counter2 = 0; Counter2 < NumberOfVerificationResults; Counter2++)
+            {
+                AScreenVerificationResults.RemoveAt(0);
+            }
+        }
     }
 
+    #endregion
+
+
+    #region TVerificationHelper
+
     /// <summary>
-    /// todoComment
+    /// Helper Methods for dealing with <see cref="TVerificationResult" />s.
     /// </summary>
-    public class Data
+    public static class TVerificationHelper
     {
         /// <summary>
-        /// todoComment
+        /// Checks whether two <see cref="TVerificationResult" />s are completely identical. The comparison
+        /// takes all the data they hold into consideration.
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="AVerificationResultEntry"></param>
-        /// <param name="AControlName"></param>
-        /// <param name="AResetValue"></param>
-        public static void SetColumnErrorText(DataColumnChangeEventArgs e,
+        /// <param name="AVerificationResult1">First <see cref="TVerificationResult" />.</param>
+        /// <param name="AVerificationResult2">Second <see cref="TVerificationResult" />.</param>
+        /// <param name="ACompareResultContextsAsStrings">Set to true to compare the ResultContexts not as objects, but
+        /// compare what a call of the .ToString() Method on the two object yields. (Default: false.)</param>
+        /// <param name="ATreatUserControlAndFormContextsAsIdentical">Set to true to treat a UserControl and the Form
+        /// where it is placed on as identical ResultContexts. (Default: false.)</param>
+        /// <returns>True if the two <see cref="TVerificationResult" />s are completely identical,
+        /// otherwise false.</returns>
+        public static bool AreVerificationResultsIdentical(TVerificationResult AVerificationResult1, TVerificationResult AVerificationResult2,
+            bool ACompareResultContextsAsStrings = false, bool ATreatUserControlAndFormContextsAsIdentical = false)
+        {
+            if ((AVerificationResult1 == null)
+                || (AVerificationResult2 == null))
+            {
+                if ((AVerificationResult1 == null)
+                    && (AVerificationResult2 == null))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (AVerificationResult1.ResultCode != AVerificationResult2.ResultCode)
+                {
+                    return false;
+                }
+
+                if (!ACompareResultContextsAsStrings)
+                {
+                    if (ATreatUserControlAndFormContextsAsIdentical)
+                    {
+                        if ((AVerificationResult1.ResultContext is UserControl)
+                            || (AVerificationResult2.ResultContext is UserControl))
+                        {
+                            if ((AVerificationResult1.ResultContext is UserControl)
+                                && (AVerificationResult2.ResultContext is Form))
+                            {
+                                if (((UserControl)AVerificationResult1.ResultContext)
+                                    != AVerificationResult2.ResultContext)
+                                {
+                                    return false;
+                                }
+                            }
+                            else if ((AVerificationResult2.ResultContext is UserControl)
+                                     && (AVerificationResult1.ResultContext is Form))
+                            {
+                                if (((UserControl)AVerificationResult2.ResultContext).ParentForm
+                                    != AVerificationResult1.ResultContext)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                        else if (AVerificationResult1.ResultContext != AVerificationResult2.ResultContext)
+                        {
+                            return false;
+                        }
+                    }
+                    else if (AVerificationResult1.ResultContext != AVerificationResult2.ResultContext)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (ATreatUserControlAndFormContextsAsIdentical)
+                    {
+                        if ((AVerificationResult1.ResultContext is UserControl)
+                            || (AVerificationResult2.ResultContext is UserControl))
+                        {
+                            if ((AVerificationResult1.ResultContext is UserControl)
+                                && (AVerificationResult2.ResultContext is Form))
+                            {
+                                if (((UserControl)AVerificationResult1.ResultContext).ParentForm.ToString()
+                                    != AVerificationResult2.ResultContext.ToString())
+                                {
+                                    return false;
+                                }
+                            }
+                            else if ((AVerificationResult2.ResultContext is UserControl)
+                                     && (AVerificationResult1.ResultContext is Form))
+                            {
+                                if (((UserControl)AVerificationResult2.ResultContext).ParentForm.ToString()
+                                    != AVerificationResult1.ResultContext.ToString())
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                        else if (AVerificationResult1.ResultContext.ToString() != AVerificationResult2.ResultContext.ToString())
+                        {
+                            return false;
+                        }
+                    }
+                    else if (AVerificationResult1.ResultContext.ToString() != AVerificationResult2.ResultContext.ToString())
+                    {
+                        return false;
+                    }
+                }
+
+                if (AVerificationResult1.ResultSeverity != AVerificationResult2.ResultSeverity)
+                {
+                    return false;
+                }
+
+                if (AVerificationResult1.ResultText != AVerificationResult2.ResultText)
+                {
+                    return false;
+                }
+
+                if (AVerificationResult1.ResultTextCaption != AVerificationResult2.ResultTextCaption)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Creates a string that contains the data of all the <see cref="TVerificationResult" />s in the Collection.
+        /// </summary>
+        /// <returns>
+        /// String that contains the data of all the <see cref="TVerificationResult" />s in the Collection. The
+        /// data of the <see cref="TVerificationResult" />s are separated by <see cref="System.Environment.NewLine" />s.
+        /// </returns>
+        public static string FormatVerificationCollectionItems(TVerificationResultCollection AVerifColl)
+        {
+            const String PRINTFORMAT = "ResultContext: {0}, ResultText: {1}, ResultTextCaption: {2}, ResultCode {3}, ResultSeverity: {4}.";
+            string ReturnValue = String.Empty;
+
+            TVerificationResult si;
+
+            for (int i = 0; i <= AVerifColl.Count - 1; i += 1)
+            {
+                si = (TVerificationResult)(AVerifColl[i]);
+
+                ReturnValue = ReturnValue + String.Format(PRINTFORMAT,
+                    si.ResultContext, si.ResultText, si.ResultTextCaption, si.ResultCode,
+                    si.ResultSeverity) + Environment.NewLine;
+            }
+
+            if (ReturnValue != String.Empty)
+            {
+                // Remove trailing Environment.NewLine
+                ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - Environment.NewLine.Length);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Calls the <see cref="M:DataRow.SetColumnError(DataColumn, String)" /> Method of a
+        /// DataRow's Column to the  <see cref="TVerificationResult.ResultText" /> Property
+        /// of the passed in <see cref="TVerificationResult" />.
+        /// </summary>
+        /// <param name="AEventArgs">An instance of DataColumnChangeEventArgs.</param>
+        /// <param name="AVerificationResultEntry"><see cref="TVerificationResult" /> which has
+        /// its <see cref="TVerificationResult.ResultText" /> Property set.</param>
+        /// <param name="AControlName">Name of the Control to which the <see cref="TVerificationResult" />
+        /// is related.</param>
+        /// <param name="AResetValue">Set this to true to retain the
+        /// <see cref="DataColumnChangeEventArgs.ProposedValue " />.</param>
+        public static void SetColumnErrorText(DataColumnChangeEventArgs AEventArgs,
             TVerificationResult AVerificationResultEntry,
             String AControlName,
             Boolean AResetValue)
         {
-            object PreviousProposedValue = e.ProposedValue;
+            object PreviousProposedValue = AEventArgs.ProposedValue;
 
-            e.Row.SetColumnError(e.Column,
+            AEventArgs.Row.SetColumnError(AEventArgs.Column,
                 AVerificationResultEntry.ResultText + "//[[" + AControlName + "]]");
 
             /*
@@ -816,12 +1516,17 @@ namespace Ict.Common.Verification
              */
             if (!AResetValue)
             {
-                MessageBox.Show("SetColumnErrorText: Before resetting the value: " + e.ProposedValue.ToString());
-                e.ProposedValue = PreviousProposedValue;
-                MessageBox.Show("SetColumnErrorText: After resetting the value: " + e.ProposedValue.ToString());
+                //            MessageBox.Show("SetColumnErrorText: Before resetting the value: " + AEventArgs.ProposedValue.ToString());
+                AEventArgs.ProposedValue = PreviousProposedValue;
+                //            MessageBox.Show("SetColumnErrorText: After resetting the value: " + AEventArgs.ProposedValue.ToString());
             }
         }
     }
+
+    #endregion
+
+
+    #region TVerificationException
 
     /// <summary>
     /// This exception transports the error message and if the reason was another exception
@@ -893,4 +1598,6 @@ namespace Ict.Common.Verification
             return collection;
         }
     }
+
+    #endregion
 }

@@ -78,6 +78,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return ctrl.controlName + ".Date = " + AFieldOrNull + ";";
         }
+
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return ctrl.controlName + ".Date = (DateTime)" + AFieldOrNull + ";";
+        }
     }
 
     /// <summary>
@@ -549,19 +557,33 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
                 }
-                else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
-                {
-                    if (AFieldOrNull == null)
-                    {
-                        return ctrl.controlName + ".NumberValueDecimal = null;";
-                    }
-
-                    return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
-                }
                 else
                 {
                     return "?????";
                 }
+            }
+        }
+
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet.ToLower() == "int32")
+            {
+                return ctrl.controlName + ".NumberValueInt = (Int32)" + AFieldOrNull + ";";
+            }
+            else if (AFieldTypeDotNet.ToLower() == "int64")
+            {
+                return ctrl.controlName + ".NumberValueLongInt = (Int64)" + AFieldOrNull + ";";
+            }
+            else if (AFieldTypeDotNet.ToLower().Contains("decimal"))
+            {
+                return ctrl.controlName + ".NumberValueDecimal = Convert.ToDecimal(" + AFieldOrNull + ");";
+            }
+            else
+            {
+                return "?????";
             }
         }
 

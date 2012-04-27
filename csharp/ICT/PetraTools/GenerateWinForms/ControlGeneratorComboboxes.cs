@@ -206,6 +206,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// how to assign a value to the control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == "Boolean")
+            {
+                return ctrl.controlName + ".SelectedIndex = (((bool)" + AFieldOrNull + ") ? 1 :0);";
+            }
+
+            if (AFieldTypeDotNet == "String")
+            {
+                return ctrl.controlName + ".SetSelectedString((" + AFieldTypeDotNet + ")" + AFieldOrNull + ", -1);";
+            }
+
+            return ctrl.controlName + ".SetSelected" + AFieldTypeDotNet + "((" + AFieldTypeDotNet + ")" + AFieldOrNull + ");";
+        }
+
+        /// <summary>
         /// how to get the value from the control
         /// </summary>
         protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)

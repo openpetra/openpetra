@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,12 +26,14 @@ using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -120,10 +122,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
+                //txtDetailCostCentreCode.Text
+
                 if (!FInKeyMinistryChanging)
                 {
-                    //...this does not work as expected, because the timer fires valuechanged event after this value is reset
                     TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
+
+                    long FieldNumber = Convert.ToInt64(txtField.Text);
+
+                    txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
                 }
             }
             finally
@@ -147,11 +154,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (APartnerKey != FLastDonor)
                 {
-                    GLSetupTDS PartnerDS = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+                    PPartnerTable PartnerDT = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
 
-                    if (PartnerDS.PPartner.Rows.Count > 0)
+                    if (PartnerDT.Rows.Count > 0)
                     {
-                        PPartnerRow pr = PartnerDS.PPartner[0];
+                        PPartnerRow pr = PartnerDT[0];
                         chkDetailConfidentialGiftFlag.Checked = pr.AnonymousDonor;
                     }
 
@@ -212,10 +219,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     // TODO: allow to select the cost centre here, which reports to the motivation cost centre
                     //txtDetailCostCentreCode.Text =
                 }
-                else
-                {
-                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
-                }
+
+                //Wrong
+//                else
+//                {
+//                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
+//                }
             }
         }
 
@@ -385,13 +394,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            NewGift(); // returns AGiftDetailRow
+            AGiftDetailRow GiftDetailRow = NewGift(); // returns AGiftDetailRow
 
-            FPetraUtilsObject.SetChangedFlag();
+            if (GiftDetailRow != null)
+            {
+                FPetraUtilsObject.SetChangedFlag();
 
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
-            grdDetails.Refresh();
-            SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+                grdDetails.Refresh();
+                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+            }
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
@@ -471,13 +483,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow); // returns AGiftDetailRow
+            AGiftDetailRow GiftDetailRow = NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow); // returns AGiftDetailRow
 
-            FPetraUtilsObject.SetChangedFlag();
+            if (GiftDetailRow != null)
+            {
+                FPetraUtilsObject.SetChangedFlag();
 
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
-            grdDetails.Refresh();
-            SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+                grdDetails.Refresh();
+                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+            }
         }
 
         /// <summary>
@@ -485,38 +500,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private AGiftDetailRow NewGift()
         {
-            AGiftBatchRow batchRow = GetBatchRow();
+            GiftBatchTDSAGiftDetailRow newRow = null;
 
-            AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
-
-            giftRow.LedgerNumber = batchRow.LedgerNumber;
-            giftRow.BatchNumber = batchRow.BatchNumber;
-            giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;
-            batchRow.LastGiftNumber++;
-            giftRow.LastDetailNumber = 1;
-
-            if (BatchHasMethodOfPayment())
+            if (ValidateAllData(true, true))
             {
-                giftRow.MethodOfPaymentCode = GetMethodOfPaymentFromBatch();
+                AGiftBatchRow batchRow = GetBatchRow();
+
+                AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
+
+                giftRow.LedgerNumber = batchRow.LedgerNumber;
+                giftRow.BatchNumber = batchRow.BatchNumber;
+                giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;
+                batchRow.LastGiftNumber++;
+                giftRow.LastDetailNumber = 1;
+
+                if (BatchHasMethodOfPayment())
+                {
+                    giftRow.MethodOfPaymentCode = GetMethodOfPaymentFromBatch();
+                }
+
+                FMainDS.AGift.Rows.Add(giftRow);
+
+                newRow = FMainDS.AGiftDetail.NewRowTyped(true);
+                newRow.LedgerNumber = batchRow.LedgerNumber;
+                newRow.BatchNumber = batchRow.BatchNumber;
+                newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
+                newRow.DetailNumber = 1;
+                newRow.DateEntered = giftRow.DateEntered;
+                newRow.DonorKey = 0;
+                newRow.CommentOneType = "Both";
+                newRow.CommentTwoType = "Both";
+                newRow.CommentThreeType = "Both";
+                FMainDS.AGiftDetail.Rows.Add(newRow);
+
+                // TODO: use previous gifts of donor?
+                //newRow.MotivationGroupCode = "GIFT";
+                //newRow.MotivationDetailCode = "SUPPORT";
             }
-
-            FMainDS.AGift.Rows.Add(giftRow);
-
-            GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
-            newRow.LedgerNumber = batchRow.LedgerNumber;
-            newRow.BatchNumber = batchRow.BatchNumber;
-            newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
-            newRow.DetailNumber = 1;
-            newRow.DateEntered = giftRow.DateEntered;
-            newRow.DonorKey = 0;
-            newRow.CommentOneType = "Both";
-            newRow.CommentTwoType = "Both";
-            newRow.CommentThreeType = "Both";
-            FMainDS.AGiftDetail.Rows.Add(newRow);
-
-            // TODO: use previous gifts of donor?
-            //newRow.MotivationGroupCode = "GIFT";
-            //newRow.MotivationDetailCode = "SUPPORT";
 
             return newRow;
         }
@@ -526,33 +546,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private AGiftDetailRow NewGiftDetail(GiftBatchTDSAGiftDetailRow ACurrentRow)
         {
-            if (ACurrentRow == null)
+            GiftBatchTDSAGiftDetailRow newRow = null;
+
+            if (ValidateAllData(true, true))
             {
-                return NewGift();
+                if (ACurrentRow == null)
+                {
+                    return NewGift();
+                }
+
+                // find gift row
+                AGiftRow giftRow = GetGiftRow(ACurrentRow.GiftTransactionNumber);
+
+                giftRow.LastDetailNumber++;
+
+                newRow = FMainDS.AGiftDetail.NewRowTyped(true);
+                newRow.LedgerNumber = giftRow.LedgerNumber;
+                newRow.BatchNumber = giftRow.BatchNumber;
+                newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
+                newRow.DetailNumber = giftRow.LastDetailNumber;
+                newRow.DonorKey = ACurrentRow.DonorKey;
+                newRow.DonorName = ACurrentRow.DonorName;
+                newRow.DateEntered = ACurrentRow.DateEntered;
+                FMainDS.AGiftDetail.Rows.Add(newRow);
+
+                // TODO: use previous gifts of donor?
+                // newRow.MotivationGroupCode = "GIFT";
+                // newRow.MotivationDetailCode = "SUPPORT";
+                newRow.CommentOneType = "Both";
+                newRow.CommentTwoType = "Both";
+                newRow.CommentThreeType = "Both";
             }
-
-            // find gift row
-            AGiftRow giftRow = GetGiftRow(ACurrentRow.GiftTransactionNumber);
-
-            giftRow.LastDetailNumber++;
-
-            GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
-            newRow.LedgerNumber = giftRow.LedgerNumber;
-            newRow.BatchNumber = giftRow.BatchNumber;
-            newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
-            newRow.DetailNumber = giftRow.LastDetailNumber;
-            newRow.DonorKey = ACurrentRow.DonorKey;
-            newRow.DonorName = ACurrentRow.DonorName;
-            newRow.DateEntered = ACurrentRow.DateEntered;
-            FMainDS.AGiftDetail.Rows.Add(newRow);
-
-            // TODO: use previous gifts of donor?
-            // newRow.MotivationGroupCode = "GIFT";
-            // newRow.MotivationDetailCode = "SUPPORT";
-            newRow.CommentOneType = "Both";
-            newRow.CommentTwoType = "Both";
-            newRow.CommentThreeType = "Both";
-
 
             return newRow;
         }
@@ -807,6 +831,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
                 }
             }
+        }
+
+        private void ValidateDataDetailsManual(AGiftDetailRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

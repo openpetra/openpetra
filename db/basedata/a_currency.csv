@@ -26,7 +26,7 @@ FRF,French Franc,FFR,FR,"->>>,>>>,>>>,>>9.99",true,?,?,?,?,?
 GBP,Pound Sterling,GBP,GB,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 GRD,Greek Drachma,GRD,GR,"->>,>>>,>>>,>>>,>>9",false,?,?,?,?,?
 GTQ,Guatemalan Quetzal,GTQ,GT,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
-HKD,Kong Kong Dollar,HK$,HK,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
+HKD,Hong Kong Dollar,HK$,HK,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 HRK,Croatian Kuna,HRK,HR,"->>>,>>>,>>>,>>9.99",false,?,?,?,?,?
 HUF,Hungarian Forint,HUF,HU,"->>,>>>,>>>,>>>,>>9",false,?,?,?,?,?
 IDR,Indonesian Rupiah,IDR,ID,"->>,>>>,>>>,>>>,>>9",false,?,?,?,?,?

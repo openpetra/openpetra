@@ -41,6 +41,14 @@ namespace Ict.Petra.Shared.MPartner
     /// </summary>
     public class Calculations
     {
+        #region Resourcestrings
+
+        /// <summary>
+        /// message for when no information is available
+        /// </summary>
+        private static readonly string StrNoNameInfoAvailable = Catalog.GetString("  No name information available");
+
+        #endregion
         /// <summary>
         /// column name for best address
         /// </summary>
@@ -52,11 +60,6 @@ namespace Ict.Petra.Shared.MPartner
         public const String PARTNERLOCATION_ICON_COLUMN = "Icon";
 
         /// <summary>
-        /// message for when no information is available
-        /// </summary>
-        public const String StrNoNameInfoAvailable = "  No name information available";
-
-        /// <summary>
         /// Specifies how to format the String that is returned by Method
         /// <see cref="M:Ict.Petra.Shared.MPartner.Calculations.DetermineLocationString(Ict.Petra.Shared.MPartner.Partner.Data.PLocationRow, Ict.Petra.Shared.MPartner.Calculations.TPartnerLocationFormatEnum)" />.
         /// </summary>
@@ -66,7 +69,10 @@ namespace Ict.Petra.Shared.MPartner
             plfCommaSeparated,
 
             /// <summary>Return Location Part Strings separated by CR+LF</summary>
-            plfLineBreakSeparated
+            plfLineBreakSeparated,
+
+            /// <summary>Return Location Part Strings separated by HTML br element</summary>
+            plfHtmlLineBreak
         }
 
         /// <summary>
@@ -495,6 +501,10 @@ namespace Ict.Petra.Shared.MPartner
 
                 case TPartnerLocationFormatEnum.plfLineBreakSeparated:
                     Separator = Environment.NewLine;
+                    break;
+
+                case TPartnerLocationFormatEnum.plfHtmlLineBreak:
+                    Separator = "<br/>";
                     break;
 
                 default:

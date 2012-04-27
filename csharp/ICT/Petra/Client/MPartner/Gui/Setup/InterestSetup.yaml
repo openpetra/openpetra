@@ -41,7 +41,7 @@ RootNode:
         pnlDescription:
             Controls:
                 Row0: [txtDetailDescription]
-        txtDetailInterest: {Label=Interest}
+        txtDetailInterest: {Label=Interest, CharacterCasing=Upper}
         cmbDetailCategory: {Label=Category, List=InterestCategoryList}
         txtDetailDescription: {Width=357}
     Toolbar:

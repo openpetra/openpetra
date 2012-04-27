@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -64,7 +64,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 string SequenceColumn = "";
                 string SequenceName = "";
 
-                foreach (TTableField tablefield in ASqltable.grpTableField.List)
+                foreach (TTableField tablefield in ASqltable.grpTableField)
                 {
                     // is there a field filled by a sequence?
                     // yes: get the next value of that sequence and assign to row
@@ -102,7 +102,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     //     now we should update p_partner_location, which still has negative values in p_location_key_i
                     foreach (TDataSetTable table in ATables)
                     {
-                        foreach (TConstraint constraint in table.grpConstraint.List)
+                        foreach (TConstraint constraint in table.grpConstraint)
                         {
                             if ((constraint.strType == "foreignkey")
                                 && (constraint.strOtherTable == ASqltable.strName)

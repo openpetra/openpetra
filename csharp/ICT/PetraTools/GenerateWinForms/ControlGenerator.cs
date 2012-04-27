@@ -309,6 +309,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return ctrl.controlName + ".Checked = (bool)" + AFieldOrNull + ";";
+        }
+
+        /// <summary>
         /// how to get the value from the control
         /// </summary>
         protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
@@ -378,6 +386,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
+        }
+
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return ctrl.controlName + ".Value = (decimal)" + AFieldOrNull + ";";
         }
 
         /// <summary>

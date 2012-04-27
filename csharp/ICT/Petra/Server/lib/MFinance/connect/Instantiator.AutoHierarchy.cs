@@ -71,7 +71,7 @@ using Ict.Petra.Shared.Interfaces.MFinance.Gift.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.GL.WebConnectors;
-using Ict.Petra.Shared.Interfaces.MFinance.ICH.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.PeriodEnd.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MFinance.Setup.UIConnectors;
@@ -97,7 +97,7 @@ using Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors;
-using Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors;
+using Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors;
 using Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors;
@@ -123,7 +123,7 @@ using Ict.Petra.Server.MFinance.ImportExport.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 //using Ict.Petra.Server.MFinance.GL.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Server.MFinance.ICH.UIConnectors;
+using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 //using Ict.Petra.Server.MFinance.PeriodEnd.UIConnectors;
 //using Ict.Petra.Server.MFinance.Reporting.UIConnectors;
 //using Ict.Petra.Server.MFinance.Setup.UIConnectors;
@@ -137,6 +137,7 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 #endregion ManualCode
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
@@ -1009,6 +1010,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         }
 
         /// generated method from connector
+        public String CheckAccountsAndCostCentres(Int32 ALedgerNumber,
+                                                  List<String>AccountCodesCostCentres)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "CheckAccountsAndCostCentres", ";INT;STRING?;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.CheckAccountsAndCostCentres(ALedgerNumber, AccountCodesCostCentres);
+        }
+
+        /// generated method from connector
         public System.Boolean DeleteAPDocuments(Int32 ALedgerNumber,
                                                 List<Int32>ADeleteTheseDocs,
                                                 out TVerificationResultCollection AVerifications)
@@ -1782,7 +1791,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -1792,7 +1801,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        System.Int32 ALedgerNumber,
                                                        out System.Type AType)
@@ -1803,7 +1812,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable)
+        public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -1812,7 +1821,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode
@@ -1822,7 +1831,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                           System.Int32 ALedgerNumber)
         {
             #region ManualCode
@@ -1832,7 +1841,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MFinance.TCacheableFinanceTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
                                           System.Int32 ALedgerNumber,
                                           out System.Data.DataTable ADataTable)
         {
@@ -2592,10 +2601,18 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public GLSetupTDS LoadPartnerData(System.Int64 DonorKey)
+        public PPartnerTable LoadPartnerData(System.Int64 PartnerKey)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadPartnerData", ";LONG;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadPartnerData(DonorKey);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadPartnerData(PartnerKey);
+        }
+
+        /// generated method from connector
+        public System.String IdentifyPartnerCostCentre(Int32 ledgerNumber,
+                                                       Int64 fieldNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "IdentifyPartnerCostCentre", ";INT;LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.IdentifyPartnerCostCentre(ledgerNumber, fieldNumber);
         }
 
         /// generated method from connector
@@ -2604,6 +2621,13 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadKeyMinistry", ";LONG;LONG;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadKeyMinistry(partnerKey, out fieldNumber);
+        }
+
+        /// generated method from connector
+        public Int64 SearchRecipientLedgerKey(Int64 partnerKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SearchRecipientLedgerKey", ";LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SearchRecipientLedgerKey(partnerKey);
         }
     }
 }
@@ -2993,10 +3017,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
 
         /// generated method from connector
         public GLBatchTDS LoadABatch(Int32 ALedgerNumber,
-                                     TFinanceBatchFilterEnum AFilterBatchStatus)
+                                     TFinanceBatchFilterEnum AFilterBatchStatus,
+                                     System.Int32 AYear,
+                                     System.Int32 APeriod)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "LoadABatch", ";INT;TFINANCEBATCHFILTERENUM;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadABatch(ALedgerNumber, AFilterBatchStatus);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "LoadABatch", ";INT;TFINANCEBATCHFILTERENUM;INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.LoadABatch(ALedgerNumber, AFilterBatchStatus, AYear, APeriod);
         }
 
         /// generated method from connector
@@ -3094,13 +3120,13 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean CancelGLBatch(out GLBatchTDS MainDS,
+        public System.Boolean CancelGLBatch(out GLBatchTDS AMainDS,
                                             Int32 ALedgerNumber,
                                             Int32 ABatchNumber,
                                             out TVerificationResultCollection AVerifications)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector), "CancelGLBatch", ";GLBATCHTDS;INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+            return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CancelGLBatch(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// generated method from connector
@@ -3131,7 +3157,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
-        private TICHUIConnectorsNamespace FICHUIConnectorsSubNamespace;
+        private TICHWebConnectorsNamespace FICHWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TICHNamespace()
@@ -3195,48 +3221,48 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
 
         // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
-        /// <summary>The 'ICHUIConnectors' subnamespace contains further subnamespaces.</summary>
-        public IICHUIConnectorsNamespace UIConnectors
+        /// <summary>The 'ICHWebConnectors' subnamespace contains further subnamespaces.</summary>
+        public IICHWebConnectorsNamespace WebConnectors
         {
             get
             {
                 //
                 // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'ICH.UIConnectors' sub-namespace.
+                // reside in the 'ICH.WebConnectors' sub-namespace.
                 // A call to this function is done everytime a Client uses an object of this
                 // sub-namespace - this is fully transparent to the Client.
                 //
                 // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'ICH.UIConnectors' sub-namespace
+                //         the 'ICH.WebConnectors' sub-namespace
                 //
 
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FICHUIConnectorsSubNamespace == null)
+                // accessing TWebConnectorsNamespace the first time? > instantiate the object
+                if (FICHWebConnectorsSubNamespace == null)
                 {
                     // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TICHUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.ICH.Instantiator.UIConnectors') should be automatically contructable.
-                    FICHUIConnectorsSubNamespace = new TICHUIConnectorsNamespace();
+                    //      * for the Generator: the name of this Type ('TICHWebConnectorsNamespace') needs to come out of the XML definition,
+                    //      * The Namespace where it resides in ('Ict.Petra.Server.ICH.Instantiator.WebConnectors') should be automatically contructable.
+                    FICHWebConnectorsSubNamespace = new TICHWebConnectorsNamespace();
                 }
 
-                return FICHUIConnectorsSubNamespace;
+                return FICHWebConnectorsSubNamespace;
             }
 
         }
     }
 }
 
-namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
+namespace Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TICHUIConnectorsNamespace : MarshalByRefObject, IICHUIConnectorsNamespace
+    public class TICHWebConnectorsNamespace : MarshalByRefObject, IICHWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
 #endif
 
         /// <summary>Constructor</summary>
-        public TICHUIConnectorsNamespace()
+        public TICHWebConnectorsNamespace()
         {
 #if DEBUGMODE
             if (TLogging.DL >= 9)
@@ -3251,7 +3277,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
         // NOTE AutoGeneration: This destructor is only needed for debugging...
 #if DEBUGMODE
         /// <summary>Destructor</summary>
-        ~TICHUIConnectorsNamespace()
+        ~TICHWebConnectorsNamespace()
         {
 #if DEBUGMODELONGRUNNINGFINALIZERS
             const Int32 MAX_ITERATIONS = 100000;
@@ -3292,14 +3318,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.UIConnectors
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
         {
-            return null; // make sure that the TICHUIConnectorsNamespace object exists until this AppDomain is unloaded!
+            return null; // make sure that the TICHWebConnectorsNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// generated method from interface
-        public IICHUIConnectorsStewardshipCalculation StewardshipCalculation(System.Int32 ALedgerNumber,
-                                                                             System.Int32 APeriodNumber)
+        /// generated method from connector
+        public System.Boolean PerformStewardshipCalculation(System.Int32 ALedgerNumber,
+                                                            System.Int32 APeriodNumber,
+                                                            out TVerificationResultCollection AVerificationResult)
         {
-            return new TStewardshipCalculationUIConnector(ALedgerNumber, APeriodNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector), "PerformStewardshipCalculation", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector.PerformStewardshipCalculation(ALedgerNumber, APeriodNumber, out AVerificationResult);
         }
     }
 }

@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TResultSeverity.Resv_Critical));
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// <summary>

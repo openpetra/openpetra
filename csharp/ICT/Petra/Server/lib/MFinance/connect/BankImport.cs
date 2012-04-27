@@ -33,6 +33,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Data; // Needed indirectly by Ict.Petra.Server.lib.MFinance.Common.dll and Ict.Petra.Shared.lib.data.dll
 using Ict.Common.DB;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -166,7 +167,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             TVerificationResultCollection VerificationResult;
             BankImportTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-            return !VerificationResult.HasCriticalError();
+            return !VerificationResult.HasCriticalErrors;
         }
 
         /// <summary>
@@ -508,7 +509,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 }
             }
 
-            if (AVerificationResult.HasCriticalError())
+            if (AVerificationResult.HasCriticalErrors)
             {
                 return -1;
             }

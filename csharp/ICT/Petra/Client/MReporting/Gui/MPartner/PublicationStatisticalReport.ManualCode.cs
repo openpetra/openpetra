@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             String PublicationCodeDBName = Ict.Petra.Shared.MPartner.Mailroom.Data.PPublicationTable.GetPublicationCodeDBName();
             DataTable SubscriptionTable = TDataCache.TMPartner.GetCacheableSubscriptionsTable(
-                Ict.Petra.Shared.MPartner.TCacheableSubscriptionsTablesEnum.PublicationList);
+                Ict.Petra.Shared.TCacheableSubscriptionsTablesEnum.PublicationList);
 
             foreach (DataRow row in SubscriptionTable.Rows)
             {
