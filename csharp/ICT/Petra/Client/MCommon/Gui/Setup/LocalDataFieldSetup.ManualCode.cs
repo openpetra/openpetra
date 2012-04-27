@@ -844,24 +844,41 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void ValidateDataDetailsManual(PDataLabelRow ARow)
         {
+            // For this validation we have to validate the UsedBy data here in the manual code.
+            // This is because it is not backed directly by a row in a data table.
+            // Nor is the control associated with a column in any data table
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            DataColumn ValidationColumn;
+            TVerificationResult VerificationResult = null;
 
+            // Personnel context is bound to be valid because it has no UsedBy UI
+            if (CurrentContext == Context.Partner || CurrentContext == Context.Application)
+            {
+                // The added column at the end of the table, which is a concatenated string of checkedListBox entries, must not be empty
+                ValidationColumn = ARow.Table.Columns[UsedByColumnOrdinal];
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow[UsedByColumnOrdinal].ToString(),
+                    GUIUsedBy,
+                    this, ValidationColumn, clbUsedBy);
+                if (VerificationResult != null)
+                {
+                    if (CurrentContext == Context.Partner)
+                    {
+                        VerificationResult.OverrideResultText(Catalog.GetString("You must check at least one box in the list of Partner classes."));
+                    }
+                    else if (CurrentContext == Context.Application)
+                    {
+                        VerificationResult.OverrideResultText(Catalog.GetString("You must check at least one box in the list of Application types."));
+                    }
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection.  In this case we ignore ResultText because it will have been over-ridden by the form
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, false);
+            }
+
+            
+            // Now call the central validation routine
             TSharedValidation_CacheableDataTables.ValidateLocalDataFieldSetup(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
-
-            // Over-ride the tool-tip text, depending on the context
-            TScreenVerificationResult result = VerificationResultCollection.FindBy(FMainDS.PDataLabel.Columns[UsedByColumnOrdinal]);
-            if (result != null)
-            {
-                if (CurrentContext == Context.Partner)
-                {
-                    result.OverrideResultText(Catalog.GetString("You must check at least one box in the list of Partner classes."));
-                }
-                else if (CurrentContext == Context.Application)
-                {
-                    result.OverrideResultText(Catalog.GetString("You must check at least one box in the list of Application types."));
-                }
-            }
         }
     }
 }

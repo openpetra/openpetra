@@ -361,19 +361,6 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
-            // The added column at the end of the table, which is a concatenated string of checkedListBox entries, must not be empty
-            ValidationColumn = ARow.Table.Columns[ARow.Table.Columns.Count - 1];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow[ARow.Table.Columns.Count - 1].ToString(),
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection.  In this case we ignore ResultText because it will have been over-ridden by the form
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, false, true);
-            }
-
             // If the 'DataType' is 'lookup' then categoryCode cannot be empty string (which would indicate no entries in the DataLabelCategory DB table)
             VerificationResult = null;
             ValidationColumn = ARow.Table.Columns[PDataLabelTable.ColumnLookupCategoryCodeId];
@@ -385,8 +372,11 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.LookupCategoryCode,
                         ValidationControlsData.ValidationControlLabel,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                    VerificationResult.OverrideResultText(Catalog.GetString(
-                        "You cannot use the option list until you have defined at least one option using the 'Local Data Option List Names' main menu selection"));
+                    if (VerificationResult != null)
+                    {
+                        VerificationResult.OverrideResultText(Catalog.GetString(
+                            "You cannot use the option list until you have defined at least one option using the 'Local Data Option List Names' main menu selection"));
+                    }
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection

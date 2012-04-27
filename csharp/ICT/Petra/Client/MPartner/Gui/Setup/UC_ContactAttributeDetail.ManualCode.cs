@@ -197,6 +197,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         }
 
         /// <summary>
+        /// Call this method from the parent page's GetDetailDataFromControlsManual method
+        /// </summary>
+        public void GetDetailsFromControls()
+        {
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        }
+
+        /// <summary>
         /// Call this method when the Contact Attribute changes in the Contact Attribute grid on the parent page
         /// </summary>
         /// <param name="NewValue">New value for the contact attribute</param>
