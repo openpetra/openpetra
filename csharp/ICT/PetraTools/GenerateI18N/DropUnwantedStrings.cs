@@ -120,32 +120,45 @@ public class TDropUnwantedStrings
         while (line != null)
         {
             counter++;
+
             if (!line.StartsWith("msgid"))
             {
                 sw_all.WriteLine(line);
                 sw.WriteLine(line);
                 line = sr.ReadLine();   //get the empty line
 
-                if(line.StartsWith("#:"))   //take over the first source code line (if it exists)
+                while (line.StartsWith("#."))   //take over the comments(if they exist)
+                {
+                    string line_part1 = AdaptString(line, "/");
+                    string line_part2 = AdaptString(line_part1, "<summary>");
+                    string line_part3 = AdaptString(line_part2, "</summary>");
+
+                    sw_all.WriteLine(line_part3);
+                    sw.WriteLine(line_part3);
+                    line = sr.ReadLine();
+                }
+
+                if (line.StartsWith("#:"))   //take over the first source code line (if it exists)
                 {
                     sw_all.WriteLine(line);
                     sw.WriteLine(line);
                     line = sr.ReadLine();
                 }
-               /* if(line.StartsWith("#:"))
-                {
-                    sw_all.WriteLine(line);
-                    sw.WriteLine(line);
-                    line = sr.ReadLine();
-                }
-                */
-               while(line.StartsWith("#:") || line.StartsWith("#,"))    //ignore all other source code lines
+
+                /* if(line.StartsWith("#:"))
+                 * {
+                 *   sw_all.WriteLine(line);
+                 *   sw.WriteLine(line);
+                 *   line = sr.ReadLine();
+                 * }
+                 */
+                while (line.StartsWith("#:") || line.StartsWith("#,"))  //ignore all other source code lines
                 {
                     sw_all.WriteLine(line);
                     line = sr.ReadLine();
                 }
             }
-            else if(line.StartsWith("msgid"))
+            else if (line.StartsWith("msgid"))
             {
                 StringCollection OriginalLines;
                 string messageId = ParsePoLine(sr, ref line, out OriginalLines);
@@ -174,6 +187,27 @@ public class TDropUnwantedStrings
         sw_all.Close();
         sw.Close();
         TTextFile.UpdateFile(ATranslationFile);
+    }
+
+    /// <summary>
+    /// remove a substring from a String
+    /// </summary>
+    /// <param name="ALine">String from which the substring should be removed</param>
+    /// <param name="ARemoveString">substring to remove</param>
+    private static string AdaptString(string ALine, string ARemoveString)
+    {
+        string ALine_part;
+
+        if (ALine.Contains(ARemoveString))
+        {
+            ALine_part = ALine.Remove(ALine.IndexOf(ARemoveString), ARemoveString.Length);
+        }
+        else
+        {
+            ALine_part = ALine;
+        }
+
+        return ALine_part;
     }
 }
 }

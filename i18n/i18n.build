@@ -154,12 +154,10 @@ ENDLOCAL
     <arg value="${template.pot.file}" />
   </exec>
   
-    <echo>-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;</echo>
-    <echo>before commented lines</echo>
-  <!-- remove all strings that should not be translated: demo labels, etc
-  <echo>-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;</echo>
-  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>   -->
-  <echo>after commented lines</echo>
+  <!-- remove all strings that should not be translated: demo labels, etc -->
+  <echo>arguments: -do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;</echo>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>
+
 </target>
 
 </project>

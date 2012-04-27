@@ -191,7 +191,7 @@ namespace Ict.Common.IO
         #region Resourcestrings
 
         private static readonly string StrProblemConnecting = Catalog.GetString("There is a problem connecting to {0}");
-        ///this is a test commment for patches on server
+
         private static readonly string StrProblemConnectingTitle = Catalog.GetString("Cannot find patches on server");
 
         #endregion

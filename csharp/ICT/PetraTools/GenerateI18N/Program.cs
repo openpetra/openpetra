@@ -70,37 +70,33 @@ namespace Ict.Tools.GenerateI18N
         public static void Main(string[] args)
         {
             new TAppSettingsManager(false);
-            
+
             //enable execution without nant -> debugging easier
             bool independentmode = false;
-            
-            if(independentmode)
+
+            if (independentmode)
+            {
                 TLogging.Log("started in independent-mode");
-
-            
- /*           TLogging.Log("start slepping");
-            System.Threading.Thread.Sleep(10000);
-            TLogging.Log("stop slepping");
-  */          
-
+            }
 
             try
             {
                 if ((TAppSettingsManager.HasValue("do") && (TAppSettingsManager.GetValue("do") == "removeDoNotTranslate")) || independentmode)
                 {
-                   string doNotTranslatePath;
-                   string poFilePath;
-                    
-                    if(independentmode) 
+                    string doNotTranslatePath;
+                    string poFilePath;
+
+                    if (independentmode)
                     {
-                       doNotTranslatePath = "D:\\openpetra\\bzr\\work-690\\i18n\\doNotTranslate.po";
-                       poFilePath = "D:\\openpetra\\bzr\\work-690\\i18n\\template.pot";
+                        doNotTranslatePath = "D:\\openpetra\\bzr\\work-690\\i18n\\doNotTranslate.po";
+                        poFilePath = "D:\\openpetra\\bzr\\work-690\\i18n\\template.pot";
                     }
                     else
                     {
-                       doNotTranslatePath = TAppSettingsManager.GetValue("dntFile");
-                       poFilePath = TAppSettingsManager.GetValue("poFile");
+                        doNotTranslatePath = TAppSettingsManager.GetValue("dntFile");
+                        poFilePath = TAppSettingsManager.GetValue("poFile");
                     }
+
                     // remove all strings from po file that are listed in the "Do Not Translate" file
                     TDropUnwantedStrings.RemoveUnwantedStringsFromTranslation(doNotTranslatePath, poFilePath);
                 }
