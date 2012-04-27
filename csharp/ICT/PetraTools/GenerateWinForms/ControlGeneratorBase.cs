@@ -981,7 +981,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet(targetCodelet, ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = " +
                     "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
-                    ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = AReadOnly;" + Environment.NewLine);
+                    ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly = " : "Enabled = !") + "AReadOnly;" + Environment.NewLine);
             }
 
             if (ctrl.GetAttribute("ReadOnly").ToLower() != "true")
