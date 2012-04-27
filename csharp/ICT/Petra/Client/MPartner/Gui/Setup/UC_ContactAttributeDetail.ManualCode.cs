@@ -202,6 +202,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// <param name="NewValue">New value for the contact attribute</param>
         public void SetContactAttribute(string NewValue)
         {
+            // Save the current data
+            ValidateAllData(true, true);
+
             // Save the current contact attribute in our member variable
             _currentContactAttribute = NewValue;
 
