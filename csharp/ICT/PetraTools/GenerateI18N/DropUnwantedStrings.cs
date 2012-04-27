@@ -176,7 +176,7 @@ public class TDropUnwantedStrings
                 {
                     foreach (string s in OriginalLines)
                     {
-                        sw_all.WriteLine(line);
+                        sw_all.WriteLine(s);
                         sw.WriteLine(s);
                     }
                 }

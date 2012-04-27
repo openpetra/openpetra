@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-27 17:36+0200\n"
+"POT-Creation-Date: 2012-04-27 20:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -106,7 +106,6 @@ msgstr ""
 msgid "There is a problem connecting to {0}"
 msgstr ""
 
-#. /this is a test commment for patches on server
 #: D:\openpetra\bzr\work-690\csharp\ICT\Common\IO\PatchTools.cs:195
 msgid "Cannot find patches on server"
 msgstr ""
@@ -29101,7 +29100,7 @@ msgid ""
 "New Family ID:    {2}"
 msgstr ""
 
-#: D:\openpetra\bzr\work-690\csharp\ICT\Petra\Server\lib\MPartner\connect\Partner.PartnerEdit.cs:634
+#: D:\openpetra\bzr\work-690\csharp\ICT\Petra\Server\lib\MPartner\connect\Partner.PartnerEdit.cs:636
 msgid ""
 "You do not have access to Partners of Partner Class 'ORGANISATION' that are "
 "'Foundations'!"
