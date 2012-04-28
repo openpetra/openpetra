@@ -1257,6 +1257,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ChildCtrl.parentName = ctrl.controlName;
                     ctrl.Children.Add(ChildCtrl);
 
+                    ChildCtrl.SetAttribute("DependsOnRadioButton", "true");
+
                     // use the label of the child control
                     if (ChildCtrl.HasAttribute("Label"))
                     {
@@ -1276,6 +1278,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         ChildCtrl.parentName = ctrl.controlName;
                         ctrl.Children.Add(ChildCtrl);
+
+                        ChildCtrl.SetAttribute("DependsOnRadioButton", "true");
 
                         IControlGenerator ctrlGenerator = writer.FindControlGenerator(ChildCtrl);
                         ctrlGenerator.GenerateControl(writer, ChildCtrl);

@@ -689,7 +689,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     foreach (string ChildControlName in childControls)
                     {
                         TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
-                        ChildControl.SetAttribute("DependsOnRadioButton", "true");
                         TlpGenerator.InsertControl(writer, ChildControl);
                     }
 
@@ -712,7 +711,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     // we don't need to add another table layout for just one other control
                     TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
-                    ChildCtrl.SetAttribute("DependsOnRadioButton", "true");
                     IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
                     ChildGenerator.GenerateControl(writer, ChildCtrl);
 
