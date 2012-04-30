@@ -199,6 +199,111 @@ namespace Ict.Petra.Shared.MPartner.Validation
             }
         }
 
+        /// <summary>
+        /// Validates the Relationship data of a Partner.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateRelationshipManual(object AContext, PPartnerRelationshipRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Partner' must have a valid partner key and must not be 0
+            ValidationColumn = ARow.Table.Columns[PPartnerRelationshipTable.ColumnPartnerKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+            		ARow.PartnerKey, new TPartnerClass[] {}, false, "",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                
+                
+	            // 'Partner Key' and 'Another Partner Key'must not be the same 
+	            // (Partner Key 0 will be dealt with by other checks)
+            	if (   ARow.PartnerKey != 0
+	                && ARow.PartnerKey == ARow.RelationKey)
+            	{
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+            		    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUESIDENTICAL_ERROR, new string[] { ARow.PartnerKey.ToString(), ARow.RelationKey.ToString() })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+            	}
+
+                // Handle addition to/removal from TVerificationResultCollection
+                //if (AVerificationResultCollection.Contains(ValidationColumn))
+                //{xxx
+	            AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                //}
+                
+            }
+
+            // 'Another Partner' must have a valid partner key and must not be 0
+            ValidationColumn = ARow.Table.Columns[PPartnerRelationshipTable.ColumnRelationKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+            		ARow.RelationKey, new TPartnerClass[] {}, false, "",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
+            // 'Relation' must be valid and have a value
+            ValidationColumn = ARow.Table.Columns[PPartnerRelationshipTable.ColumnRelationNameId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	PRelationTable RelationTable;
+            	PRelationRow   RelationRow;
+            		
+                VerificationResult = null;
+
+                if ((!ARow.IsRelationNameNull())
+                    && (ARow.RelationName != String.Empty))
+                {
+                    RelationTable = (PRelationTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.RelationList);
+                    RelationRow = (PRelationRow)RelationTable.Rows.Find(ARow.RelationName);
+
+                    // 'Relation' must be valid
+                    if (   RelationRow != null
+                        && !RelationRow.ValidRelation)
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.RelationName })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                }
+                else
+                {
+	            	VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.RelationName,
+	                    ValidationControlsData.ValidationControlLabel,
+	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+            
+        }
 
         /// <summary>
         /// Checks whether a Partner with a certain PartnerKey and a range of valid PartnerClasses exists.

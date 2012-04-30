@@ -105,6 +105,12 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "'{0}' may not be future date",
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_FUTUREDATE_ERROR = "GEN.00008V";
+
+        /// <summary>Values must not be the same.</summary>
+        [ErrCodeAttribute("Values must not be the same.",
+             ErrorMessageText = "Values '{0}' and '{1}' must not be the same",
+             ErrorMessageTitle = "Invalid Data Entered")]
+        public const String ERR_VALUESIDENTICAL_ERROR = "GEN.00009V";
         
         #endregion
 

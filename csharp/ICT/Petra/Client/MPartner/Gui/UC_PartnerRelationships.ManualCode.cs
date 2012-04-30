@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -34,6 +35,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -458,6 +460,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlDetails.Visible = !value;
         }
 
+        private void ValidateDataDetailsManual(PPartnerRelationshipRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidateRelationshipManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+        }
+       
         #endregion
     }
 }

@@ -41,8 +41,10 @@ RootNode:
         txtPPartnerRelationshipPartnerKey:
             Label: Partner
             Type: PartnerKey
-        cmbPPartnerRelationshipRelationName: {Label=Relation, List=RelationList}
+            Validation: true
+        cmbPPartnerRelationshipRelationName: {Label=Relation, List=RelationList, Validation=true}
         txtPPartnerRelationshipRelationKey:
             Label: Another Partner
             Type: PartnerKey
+            Validation: Pair(txtPPartnerRelationshipPartnerKey)
         txtPPartnerRelationshipComment: {Label=Comment, Multiline=true, Stretch=fully}
