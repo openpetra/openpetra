@@ -981,7 +981,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet(targetCodelet, ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = " +
                     "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
-                    ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = AReadOnly;" + Environment.NewLine);
+                    ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly = " : "Enabled = !") + "AReadOnly;" + Environment.NewLine);
             }
 
             if (ctrl.GetAttribute("ReadOnly").ToLower() != "true")
@@ -1202,24 +1202,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("CONTROLINITIALISATION",
                     "this." + controlName + ".Leave += new EventHandler(this." + StringHelper.UpperCamelCase(controlName,
-                        ",",
+                        ',',
                         false,
                         false) + "_SelectionChangeCommitted);" + Environment.NewLine +
                     "this." + controlName + ".SelectionChangeCommitted += new EventHandler(this." +
-                    StringHelper.UpperCamelCase(controlName, ",", false, false) + "_SelectionChangeCommitted);" + Environment.NewLine);
+                    StringHelper.UpperCamelCase(controlName, ',', false, false) + "_SelectionChangeCommitted);" + Environment.NewLine);
                 writer.CodeStorage.FEventHandlersImplementation +=
                     "private void " +
-                    StringHelper.UpperCamelCase(controlName, ",", false,
+                    StringHelper.UpperCamelCase(controlName, ',', false,
                         false) + "_SelectionChangeCommitted(System.Object sender, System.EventArgs e)" + Environment.NewLine +
                     "{" + Environment.NewLine +
                     "  " +
-                    StringHelper.UpperCamelCase(controlName, ",", false,
+                    StringHelper.UpperCamelCase(controlName, ',', false,
                         false) + "_Initialise(" + controlName + ".GetSelected" + TYml2Xml.GetAttribute(
                         curNode,
                         "OnChangeDataType") + "());" + Environment.NewLine +
                     "}" + Environment.NewLine + Environment.NewLine;
                 writer.CodeStorage.FEventHandlersImplementation +=
-                    "private void " + StringHelper.UpperCamelCase(controlName, ",", false, false) + "_Initialise(" + TYml2Xml.GetAttribute(curNode,
+                    "private void " + StringHelper.UpperCamelCase(controlName, ',', false, false) + "_Initialise(" + TYml2Xml.GetAttribute(curNode,
                         "OnChangeDataType") + " AParam)" + Environment.NewLine +
                     "{" + Environment.NewLine +
                     "  Int32 Index;" + Environment.NewLine +

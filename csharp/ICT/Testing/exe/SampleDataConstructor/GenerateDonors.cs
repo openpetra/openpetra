@@ -95,6 +95,29 @@ namespace Ict.Testing.SampleDataConstructor
             // we do not save person records for normal family partners
             MainDS.PPerson.Clear();
 
+            // need to clear all partner records of the PERSON partners as well
+            DataView PersonPartners = new DataView(MainDS.PPartner);
+            PersonPartners.RowFilter =
+                string.Format("{0} = '{1}'",
+                    PPartnerTable.GetPartnerClassDBName(),
+                    MPartnerConstants.PARTNERCLASS_PERSON);
+
+            DataView PartnerLocations = new DataView(MainDS.PPartnerLocation);
+
+            foreach (DataRowView rv in PersonPartners)
+            {
+                PPartnerRow partnerRow = (PPartnerRow)rv.Row;
+
+                PartnerLocations.RowFilter =
+                    string.Format("{0} = {1}",
+                        PPartnerLocationTable.GetPartnerKeyDBName(),
+                        partnerRow.PartnerKey);
+
+                PartnerLocations[0].Row.Delete();
+
+                partnerRow.Delete();
+            }
+
             TVerificationResultCollection VerificationResult;
             PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 

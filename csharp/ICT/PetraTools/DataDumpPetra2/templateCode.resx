@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="progress_dump_functions" xml:space="preserve">
     <value>define variable pv_tablename_c as character initial "".
@@ -164,7 +164,30 @@ END FUNCTION.
 FUNCTION WriteNumber RETURNS CHARACTER
     (pv_n AS DECIMAL) :
 	RETURN STRING(pv_n).
-END FUNCTION.	
+END FUNCTION.
+FUNCTION WantThisTable RETURNS LOGICAL
+    (pv_this_tablename_c AS CHAR) :
+    IF pv_tablename_c EQ "" OR pv_tablename_c EQ pv_this_tablename_c THEN DO:
+        /* check if table has been dumped already */
+        FILE-INFORMATION:FILE-NAME = pv_this_tablename_c + ".d".
+        IF (FILE-INFORMATION:FULL-PATHNAME EQ ?) THEN DO:
+            FILE-INFORMATION:FILE-NAME = pv_this_tablename_c + ".d.gz".
+            IF (FILE-INFORMATION:FULL-PATHNAME EQ ?) THEN DO:
+                RETURN TRUE.
+            END.
+        END.
+    END.
+    RETURN FALSE.
+END FUNCTION.
+PROCEDURE ZipThisTable.
+DEFINE INPUT PARAMETER pv_this_tablename_c  AS CHAR.
+    /* now if we are on Linux, gzip that file */
+    CASE OPSYS:
+        WHEN "UNIX" THEN DO:
+            OS-COMMAND SILENT VALUE("gzip fulldump/" + pv_this_tablename_c + ".d").
+        END.
+    END CASE.
+END PROCEDURE.
 </value>
   </data>
 </root>

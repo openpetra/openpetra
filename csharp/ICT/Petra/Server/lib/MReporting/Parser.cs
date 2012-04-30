@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using Ict.Common.IO;
 using System.Xml;
+using System.Collections.Generic;
 using Ict.Common;
 using System.Globalization;
 
@@ -77,9 +78,9 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="entity">The name of the elements that make up the group</param>
         /// <param name="newcur">After parsing, the then current node is returned in this parameter</param>
         /// <returns>The group of elements, or nil</returns>
-        protected TXMLGroup ParseGroup(XmlNode cur2, ref int groupId, string entity, out XmlNode newcur)
+        protected Object ParseGroup(XmlNode cur2, ref int groupId, string entity, out XmlNode newcur)
         {
-            TXMLGroup ReturnValue;
+            Object ReturnValue;
             int order;
             int currentGroup;
             XmlNode cur;
@@ -101,51 +102,51 @@ namespace Ict.Petra.Server.MReporting
             {
                 if (entity == "value")
                 {
-                    ReturnValue = ParseValueGroup(cur, (TRptGrpValue)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseValueGroup(cur, (List <TRptValue> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "calculation")
                 {
-                    ReturnValue = ParseCalculationGroup(cur, (TRptGrpCalculation)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseCalculationGroup(cur, (List <TRptCalculation> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "field")
                 {
-                    ReturnValue = ParseFieldGroup(cur, (TRptGrpField)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseFieldGroup(cur, (List <TRptField> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "fielddetail")
                 {
-                    ReturnValue = ParseFieldDetailGroup(cur, (TRptGrpFieldDetail)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseFieldDetailGroup(cur, (List <TRptFieldDetail> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "level")
                 {
-                    ReturnValue = ParseLevelGroup(cur, (TRptGrpLevel)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseLevelGroup(cur, (List <TRptLevel> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "lowerLevelReport")
                 {
-                    ReturnValue = ParseLowerLevelGroup(cur, (TRptGrpLowerLevel)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseLowerLevelGroup(cur, (List <TRptLowerLevel> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "switch")
                 {
-                    ReturnValue = ParseSwitchGroup(cur, (TRptGrpSwitch)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseSwitchGroup(cur, (List <TRptSwitch> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "if")
                 {
-                    ReturnValue = ParseIfGroup(cur, (TRptGrpSwitch)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseIfGroup(cur, (List <TRptSwitch> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "case")
                 {
-                    ReturnValue = ParseCaseGroup(cur, (TRptGrpCase)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseCaseGroup(cur, (List <TRptCase> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "queryDetail")
                 {
-                    ReturnValue = ParseQueryGroup(cur, (TRptGrpQuery)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseQueryGroup(cur, (List <TRptQuery> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "parameter")
                 {
-                    ReturnValue = ParseParameterGroup(cur, (TRptGrpParameter)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseParameterGroup(cur, (List <TRptParameter> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "detailreport")
                 {
-                    ReturnValue = ParseDetailReportGroup(cur, (TRptGrpDetailReport)ReturnValue, currentGroup, order);
+                    ReturnValue = ParseDetailReportGroup(cur, (List <TRptDetailReport> )ReturnValue, currentGroup, order);
                 }
                 else if (entity == "report")
                 {
@@ -177,7 +178,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="entity">The name of the elements that make up the group</param>
         /// <returns>The group of elements, or nil
         /// </returns>
-        protected TXMLGroup ParseGroup(XmlNode cur2, ref int groupId, string entity)
+        protected Object ParseGroup(XmlNode cur2, ref int groupId, string entity)
         {
             XmlNode newNode;
 
@@ -195,9 +196,9 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="entity">The name of the entitiy that represents the elements</param>
         /// <returns>The group of elements, or nil if node does not point to that group entity or the group entity is empty.
         /// </returns>
-        protected TXMLGroup Parse(string groupentity, ref XmlNode cur, ref int groupId, string entity)
+        protected Object Parse(string groupentity, ref XmlNode cur, ref int groupId, string entity)
         {
-            TXMLGroup ReturnValue;
+            Object ReturnValue;
 
             ReturnValue = null;
 
@@ -220,9 +221,9 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="entity">The name of the entity that should be read</param>
         /// <returns>the last of the read entities
         /// </returns>
-        protected TXMLElement Parse(XmlNode cur, ref int groupId, string entity)
+        protected Object Parse(XmlNode cur, ref int groupId, string entity)
         {
-            TXMLElement ReturnValue;
+            Object ReturnValue;
             int order;
 
             cur = NextNotBlank(cur);
@@ -331,11 +332,11 @@ namespace Ict.Petra.Server.MReporting
         /// specific for reports
         /// </summary>
         /// <returns>void</returns>
-        protected TXMLElement ParseReport(XmlNode cur2)
+        protected Object ParseReport(XmlNode cur2)
         {
             XmlNode cur;
             int dummy = -1;
-            TXMLGroup rg;
+            Object rg;
 
             cur = cur2;
             reportId = GetAttribute(cur, "id");
@@ -363,7 +364,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (rg != null)
                 {
-                    report.rptReport.rptGrpDetailReport = (TRptGrpDetailReport)rg;
+                    report.rptReport.rptGrpDetailReport = (List <TRptDetailReport> )rg;
                 }
 
                 cur = GetNextEntity(cur);
@@ -373,7 +374,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                report.rptReport.rptGrpCalculation = (TRptGrpCalculation)rg;
+                report.rptReport.rptGrpCalculation = (List <TRptCalculation> )rg;
             }
 
             cur = GetNextEntity(cur);
@@ -381,7 +382,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                report.rptReport.rptGrpLevel = (TRptGrpLevel)rg;
+                report.rptReport.rptGrpLevel = (List <TRptLevel> )rg;
             }
 
             return report.rptReport;
@@ -393,10 +394,10 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="cur2"></param>
         /// <param name="field"></param>
         /// <param name="ASwitch"></param>
-        protected void ParseFooterHeader(XmlNode cur2, out TRptGrpField field, out TRptGrpSwitch ASwitch)
+        protected void ParseFooterHeader(XmlNode cur2, out List <TRptField>field, out List <TRptSwitch>ASwitch)
         {
             XmlNode cur;
-            TXMLGroup rg;
+            Object rg;
 
             cur = cur2;
             field = null;
@@ -405,14 +406,14 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                field = (TRptGrpField)rg;
+                field = (List <TRptField> )rg;
             }
 
             rg = ParseGroup(cur, ref report.switchesId, "switch", out cur);
 
             if (rg != null)
             {
-                ASwitch = (TRptGrpSwitch)rg;
+                ASwitch = (List <TRptSwitch> )rg;
             }
             else
             {
@@ -420,7 +421,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (rg != null)
                 {
-                    ASwitch = (TRptGrpSwitch)rg;
+                    ASwitch = (List <TRptSwitch> )rg;
                 }
             }
         }
@@ -433,17 +434,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpField ParseFieldGroup(XmlNode cur, TRptGrpField group, int groupId, int order)
+        protected List <TRptField>ParseFieldGroup(XmlNode cur, List <TRptField>group, int groupId, int order)
         {
             TRptField element;
 
             if (group == null)
             {
-                group = new TRptGrpField(groupId);
+                group = new List <TRptField>(groupId);
             }
 
             element = ParseField(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -455,17 +456,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpFieldDetail ParseFieldDetailGroup(XmlNode cur, TRptGrpFieldDetail group, int groupId, int order)
+        protected List <TRptFieldDetail>ParseFieldDetailGroup(XmlNode cur, List <TRptFieldDetail>group, int groupId, int order)
         {
             TRptFieldDetail element;
 
             if (group == null)
             {
-                group = new TRptGrpFieldDetail(groupId);
+                group = new List <TRptFieldDetail>();
             }
 
             element = ParseFieldDetail(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -477,21 +478,21 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpSwitch ParseIfGroup(XmlNode cur, TRptGrpSwitch group, int groupId, int order)
+        protected List <TRptSwitch>ParseIfGroup(XmlNode cur, List <TRptSwitch>group, int groupId, int order)
         {
             TRptSwitch element;
             TRptCase ifcase;
 
             if (group == null)
             {
-                group = new TRptGrpSwitch(groupId);
+                group = new List <TRptSwitch>();
             }
 
             element = new TRptSwitch(order);
-            element.rptGrpCases = new TRptGrpCase(0);
+            element.rptGrpCases = new List <TRptCase>();
             ifcase = ParseCase(cur, 0);
-            element.rptGrpCases.List.Add(ifcase);
-            group.List.Add(element);
+            element.rptGrpCases.Add(ifcase);
+            group.Add(element);
             return group;
         }
 
@@ -503,17 +504,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpLevel ParseLevelGroup(XmlNode cur, TRptGrpLevel group, int groupId, int order)
+        protected List <TRptLevel>ParseLevelGroup(XmlNode cur, List <TRptLevel>group, int groupId, int order)
         {
             TRptLevel element;
 
             if (group == null)
             {
-                group = new TRptGrpLevel(groupId);
+                group = new List <TRptLevel>();
             }
 
             element = ParseLevel(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -525,17 +526,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpLowerLevel ParseLowerLevelGroup(XmlNode cur, TRptGrpLowerLevel group, int groupId, int order)
+        protected List <TRptLowerLevel>ParseLowerLevelGroup(XmlNode cur, List <TRptLowerLevel>group, int groupId, int order)
         {
             TRptLowerLevel element;
 
             if (group == null)
             {
-                group = new TRptGrpLowerLevel(groupId);
+                group = new List <TRptLowerLevel>();
             }
 
             element = ParseLowerLevel(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -547,17 +548,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpSwitch ParseSwitchGroup(XmlNode cur, TRptGrpSwitch group, int groupId, int order)
+        protected List <TRptSwitch>ParseSwitchGroup(XmlNode cur, List <TRptSwitch>group, int groupId, int order)
         {
             TRptSwitch element;
 
             if (group == null)
             {
-                group = new TRptGrpSwitch(groupId);
+                group = new List <TRptSwitch>();
             }
 
             element = ParseSwitch(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -565,17 +566,17 @@ namespace Ict.Petra.Server.MReporting
         /// groups
         /// </summary>
         /// <returns>void</returns>
-        protected TRptGrpCalculation ParseCalculationGroup(XmlNode cur, TRptGrpCalculation group, int groupId, int order)
+        protected List <TRptCalculation>ParseCalculationGroup(XmlNode cur, List <TRptCalculation>group, int groupId, int order)
         {
             TRptCalculation element;
 
             if (group == null)
             {
-                group = new TRptGrpCalculation(groupId);
+                group = new List <TRptCalculation>(groupId);
             }
 
             element = ParseCalculation(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -587,17 +588,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpCase ParseCaseGroup(XmlNode cur, TRptGrpCase group, int groupId, int order)
+        protected List <TRptCase>ParseCaseGroup(XmlNode cur, List <TRptCase>group, int groupId, int order)
         {
             TRptCase element;
 
             if (group == null)
             {
-                group = new TRptGrpCase(groupId);
+                group = new List <TRptCase>();
             }
 
             element = ParseCase(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -609,17 +610,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpParameter ParseParameterGroup(XmlNode cur, TRptGrpParameter group, int groupId, int order)
+        protected List <TRptParameter>ParseParameterGroup(XmlNode cur, List <TRptParameter>group, int groupId, int order)
         {
             TRptParameter element;
 
             if (group == null)
             {
-                group = new TRptGrpParameter(groupId);
+                group = new List <TRptParameter>();
             }
 
             element = ParseParameter(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -631,17 +632,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpDetailReport ParseDetailReportGroup(XmlNode cur, TRptGrpDetailReport group, int groupId, int order)
+        protected List <TRptDetailReport>ParseDetailReportGroup(XmlNode cur, List <TRptDetailReport>group, int groupId, int order)
         {
             TRptDetailReport element;
 
             if (group == null)
             {
-                group = new TRptGrpDetailReport(groupId);
+                group = new List <TRptDetailReport>();
             }
 
             element = ParseDetailReport(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -653,17 +654,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpQuery ParseQueryGroup(XmlNode cur, TRptGrpQuery group, int groupId, int order)
+        protected List <TRptQuery>ParseQueryGroup(XmlNode cur, List <TRptQuery>group, int groupId, int order)
         {
             TRptQuery element;
 
             if (group == null)
             {
-                group = new TRptGrpQuery(groupId);
+                group = new List <TRptQuery>(groupId);
             }
 
             element = ParseQuery(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -675,17 +676,17 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="groupId"></param>
         /// <param name="order"></param>
         /// <returns></returns>
-        protected TRptGrpValue ParseValueGroup(XmlNode cur, TRptGrpValue group, int groupId, int order)
+        protected List <TRptValue>ParseValueGroup(XmlNode cur, List <TRptValue>group, int groupId, int order)
         {
             TRptValue element;
 
             if (group == null)
             {
-                group = new TRptGrpValue(groupId);
+                group = new List <TRptValue>(groupId);
             }
 
             element = ParseValue(cur, order);
-            group.List.Add(element);
+            group.Add(element);
             return group;
         }
 
@@ -699,8 +700,8 @@ namespace Ict.Petra.Server.MReporting
         {
             TRptSwitch ReturnValue;
             XmlNode cur;
-            TXMLGroup rg;
-            TXMLElement r;
+            Object rg;
+            Object r;
             TRptSwitch element;
 
             ReturnValue = null;
@@ -714,7 +715,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (rg != null)
                 {
-                    element.rptGrpCases = ((TRptGrpCase)rg);
+                    element.rptGrpCases = ((List <TRptCase> )rg);
                 }
 
                 r = Parse(cur, ref report.casesId, "default");
@@ -739,7 +740,7 @@ namespace Ict.Petra.Server.MReporting
         protected TRptCalculation ParseCalculation(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
+            Object rg;
             TRptCalculation element;
 
             cur = cur2;
@@ -756,7 +757,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (rg != null)
                 {
-                    element.rptGrpCaption = ((TRptGrpValue)rg);
+                    element.rptGrpCaption = ((List <TRptValue> )rg);
                 }
 
                 cur = GetNextEntity(cur);
@@ -768,7 +769,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (rg != null)
                 {
-                    element.rptGrpShortCaption = ((TRptGrpValue)rg);
+                    element.rptGrpShortCaption = ((List <TRptValue> )rg);
                 }
 
                 cur = GetNextEntity(cur);
@@ -780,7 +781,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (rg != null)
                 {
-                    element.rptGrpTemplate = ((TRptGrpQuery)rg);
+                    element.rptGrpTemplate = ((List <TRptQuery> )rg);
                 }
 
                 cur = GetNextEntity(cur);
@@ -792,7 +793,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (rg != null)
                 {
-                    element.rptGrpQuery = ((TRptGrpQuery)rg);
+                    element.rptGrpQuery = ((List <TRptQuery> )rg);
                 }
 
                 cur = GetNextEntity(cur);
@@ -810,8 +811,8 @@ namespace Ict.Petra.Server.MReporting
         protected TRptCase ParseCase(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
-            TXMLElement r;
+            Object rg;
+            Object r;
             TRptCase element;
 
             cur = cur2;
@@ -822,21 +823,21 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                element.rptGrpLowerLevel = ((TRptGrpLowerLevel)rg);
+                element.rptGrpLowerLevel = ((List <TRptLowerLevel> )rg);
             }
 
             rg = ParseGroup(cur, ref report.fieldsId, "field", out cur);
 
             if (rg != null)
             {
-                element.rptGrpField = ((TRptGrpField)rg);
+                element.rptGrpField = ((List <TRptField> )rg);
             }
 
             rg = ParseGroup(cur, ref report.valuesId, "value", out cur);
 
             if (rg != null)
             {
-                element.rptGrpValue = ((TRptGrpValue)rg);
+                element.rptGrpValue = ((List <TRptValue> )rg);
             }
 
             r = Parse(cur, ref report.switchesId, "switch");
@@ -858,8 +859,8 @@ namespace Ict.Petra.Server.MReporting
         protected TRptDetail ParseDetail(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
-            TXMLElement r;
+            Object rg;
+            Object r;
             TRptDetail element;
 
             cur = cur2;
@@ -885,14 +886,14 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                element.rptGrpLowerLevel = ((TRptGrpLowerLevel)rg);
+                element.rptGrpLowerLevel = ((List <TRptLowerLevel> )rg);
             }
 
             rg = ParseGroup(cur, ref report.fieldsId, "field", out cur);
 
             if (rg != null)
             {
-                element.rptGrpField = ((TRptGrpField)rg);
+                element.rptGrpField = ((List <TRptField> )rg);
             }
 
             return element;
@@ -907,7 +908,7 @@ namespace Ict.Petra.Server.MReporting
         protected TRptDetailReport ParseDetailReport(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
+            Object rg;
             TRptDetailReport element;
 
             cur = cur2;
@@ -918,7 +919,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                element.rptGrpParameter = ((TRptGrpParameter)rg);
+                element.rptGrpParameter = ((List <TRptParameter> )rg);
             }
 
             // cur := nextNotBlank(cur.NextSibling);
@@ -939,7 +940,7 @@ namespace Ict.Petra.Server.MReporting
         protected TRptField ParseField(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
+            Object rg;
             TRptField element;
 
             cur = cur2;
@@ -958,14 +959,14 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                element.rptGrpValue = ((TRptGrpValue)rg);
+                element.rptGrpValue = ((List <TRptValue> )rg);
             }
 
             rg = ParseGroup(cur, ref report.fieldDetailsId, "fielddetail", out cur);
 
             if (rg != null)
             {
-                element.rptGrpFieldDetail = ((TRptGrpFieldDetail)rg);
+                element.rptGrpFieldDetail = ((List <TRptFieldDetail> )rg);
             }
 
             return element;
@@ -980,7 +981,7 @@ namespace Ict.Petra.Server.MReporting
         protected TRptLevel ParseLevel(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLElement r;
+            Object r;
             TRptLevel element;
 
             cur = cur2;
@@ -1023,7 +1024,7 @@ namespace Ict.Petra.Server.MReporting
         protected TRptLowerLevel ParseLowerLevel(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
+            Object rg;
             TRptLowerLevel element;
 
             cur = cur2;
@@ -1036,7 +1037,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                element.rptGrpParameter = ((TRptGrpParameter)rg);
+                element.rptGrpParameter = ((List <TRptParameter> )rg);
             }
 
             return element;
@@ -1051,8 +1052,8 @@ namespace Ict.Petra.Server.MReporting
         protected TRptFieldDetail ParseFieldDetail(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
-            TXMLElement r;
+            Object rg;
+            Object r;
             TRptFieldDetail element;
 
             cur = cur2;
@@ -1079,7 +1080,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                element.rptGrpValue = ((TRptGrpValue)rg);
+                element.rptGrpValue = ((List <TRptValue> )rg);
             }
 
             return element;
@@ -1094,7 +1095,7 @@ namespace Ict.Petra.Server.MReporting
         protected TRptParameter ParseParameter(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
+            Object rg;
             TRptParameter element;
 
             cur = cur2;
@@ -1106,7 +1107,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                element.rptGrpValue = ((TRptGrpValue)rg);
+                element.rptGrpValue = ((List <TRptValue> )rg);
             }
 
             return element;
@@ -1121,7 +1122,7 @@ namespace Ict.Petra.Server.MReporting
         protected TRptQuery ParseQuery(XmlNode cur2, int order)
         {
             XmlNode cur;
-            TXMLGroup rg;
+            Object rg;
             TRptQuery element;
 
             cur = cur2;
@@ -1132,21 +1133,21 @@ namespace Ict.Petra.Server.MReporting
 
             if (rg != null)
             {
-                element.rptGrpValue = ((TRptGrpValue)rg);
+                element.rptGrpValue = ((List <TRptValue> )rg);
             }
 
             rg = ParseGroup(cur, ref report.parametersId, "parameter", out cur);
 
             if (rg != null)
             {
-                element.rptGrpParameter = ((TRptGrpParameter)rg);
+                element.rptGrpParameter = ((List <TRptParameter> )rg);
             }
 
             rg = ParseGroup(cur, ref report.switchesId, "switch", out cur);
 
             if (rg != null)
             {
-                element.rptGrpSwitch = ((TRptGrpSwitch)rg);
+                element.rptGrpSwitch = ((List <TRptSwitch> )rg);
             }
 
             return element;

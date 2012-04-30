@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using Ict.Common;
@@ -60,14 +61,7 @@ namespace Ict.Tools.DataDumpPetra2
                     ProgressProcess.StartInfo.Arguments += " -param " + AParameters;
                 }
 
-                if (AOutput.Length == 0)
-                {
-                    ProgressProcess.StartInfo.Arguments += " | cat ";
-                }
-                else
-                {
-                    ProgressProcess.StartInfo.Arguments += " >> " + AOutput;
-                }
+                ProgressProcess.StartInfo.Arguments += " | cat ";
 
                 ProgressProcess.StartInfo.Arguments += "\"";
             }
@@ -91,10 +85,26 @@ namespace Ict.Tools.DataDumpPetra2
             ProgressProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
             ProgressProcess.EnableRaisingEvents = true;
+            ProgressProcess.StartInfo.UseShellExecute = false;
+            ProgressProcess.StartInfo.RedirectStandardOutput = true;
 
             if ((!ProgressProcess.Start()))
             {
                 return false;
+            }
+
+            string output = ProgressProcess.StandardOutput.ReadToEnd();
+
+            if (output.Contains("in use in multi-user mode. (276)"))
+            {
+                throw new Exception("Please stop the Petra 2.x database by running sysadm petra23 stop");
+            }
+
+            if (AOutput.Length > 0)
+            {
+                StreamWriter sw = new StreamWriter(AOutput, true);
+                sw.WriteLine(output);
+                sw.Close();
             }
 
             while ((!ProgressProcess.HasExited))

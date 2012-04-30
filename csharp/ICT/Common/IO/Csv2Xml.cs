@@ -305,7 +305,7 @@ namespace Ict.Common.IO
 
                     if (attrName.Length > 1)
                     {
-                        attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, " ", false, false).Substring(1);
+                        attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, ' ', false, false).Substring(1);
                     }
 
                     AllAttributes.Add(attrName);

@@ -214,12 +214,6 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
-                        case TCacheableFinanceTablesEnum.MotivationGroupList:
-                        {
-                            DataTable TmpTable = AMotivationGroupAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheableFinanceTablesEnum.LedgerNameList:
                         {
                             DataTable TmpTable = GetLedgerNameListTable(ReadTransaction, TableName);
@@ -332,6 +326,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                 {
                     switch (ACacheableTable)
                     {
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                        {
+                            DataTable TmpTable = AMotivationGroupAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
+                            FCacheableTablesManager.AddOrMergeCachedTable(TableName, TmpTable, DomainManager.GClientID, (object)ALedgerNumber);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.MotivationList:
                         {
                             DataTable TmpTable = AMotivationDetailAccess.LoadViaALedger(ALedgerNumber, ReadTransaction);
@@ -587,23 +587,6 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             }
 
                             break;
-                        case TCacheableFinanceTablesEnum.MotivationGroupList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                ValidateMotivationGroupList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateMotivationGroupListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-
-                                if (AVerificationResult.Count == 0)
-                                {
-                                    if (AMotivationGroupAccess.SubmitChanges((AMotivationGroupTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
 
                         default:
 
@@ -685,10 +668,6 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         partial void ValidateMethodOfPaymentList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfPaymentListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMotivationGroupList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMotivationGroupListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
@@ -804,6 +783,10 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
         #region Data Validation
 
+                partial void ValidateMotivationGroupList(TValidationControlsDict ValidationControlsDict,
+                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+                partial void ValidateMotivationGroupListManual(TValidationControlsDict ValidationControlsDict,
+                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
                 partial void ValidateMotivationList(TValidationControlsDict ValidationControlsDict,
                     ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
                 partial void ValidateMotivationListManual(TValidationControlsDict ValidationControlsDict,
