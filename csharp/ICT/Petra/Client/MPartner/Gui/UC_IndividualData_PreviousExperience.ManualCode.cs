@@ -323,7 +323,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.DeleteRow(this, null);
             }
         }
- 
+
         private void ValidateDataDetailsManual(PmPastExperienceRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -331,5 +331,5 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidatePreviousExperienceManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
-   }
+    }
 }

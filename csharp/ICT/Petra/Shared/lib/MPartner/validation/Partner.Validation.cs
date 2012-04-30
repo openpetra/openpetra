@@ -222,7 +222,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
-            		ARow.PartnerKey, new TPartnerClass[] {}, false, "",
+                    ARow.PartnerKey, new TPartnerClass[] { }, false, "",
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
@@ -230,24 +230,23 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 // ResultText!
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
-                
-                
-	            // 'Partner Key' and 'Another Partner Key'must not be the same 
-	            // (Partner Key 0 will be dealt with by other checks)
-            	if (   ARow.PartnerKey != 0
-	                && ARow.PartnerKey == ARow.RelationKey)
-            	{
+
+                // 'Partner Key' and 'Another Partner Key'must not be the same
+                // (Partner Key 0 will be dealt with by other checks)
+                if ((ARow.PartnerKey != 0)
+                    && (ARow.PartnerKey == ARow.RelationKey))
+                {
                     VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-            		    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUESIDENTICAL_ERROR, new string[] { ARow.PartnerKey.ToString(), ARow.RelationKey.ToString() })),
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUESIDENTICAL_ERROR,
+                                new string[] { ARow.PartnerKey.ToString(), ARow.RelationKey.ToString() })),
                         ValidationColumn, ValidationControlsData.ValidationControl);
-            	}
+                }
 
                 // Handle addition to/removal from TVerificationResultCollection
                 //if (AVerificationResultCollection.Contains(ValidationColumn))
                 //{xxx
-	            AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
                 //}
-                
             }
 
             // 'Another Partner' must have a valid partner key and must not be 0
@@ -256,7 +255,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
-            		ARow.RelationKey, new TPartnerClass[] {}, false, "",
+                    ARow.RelationKey, new TPartnerClass[] { }, false, "",
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
@@ -271,9 +270,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	PRelationTable RelationTable;
-            	PRelationRow   RelationRow;
-            		
+                PRelationTable RelationTable;
+                PRelationRow RelationRow;
+
                 VerificationResult = null;
 
                 if ((!ARow.IsRelationNameNull())
@@ -284,7 +283,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     RelationRow = (PRelationRow)RelationTable.Rows.Find(ARow.RelationName);
 
                     // 'Relation' must be valid
-                    if (   RelationRow != null
+                    if ((RelationRow != null)
                         && !RelationRow.ValidRelation)
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
@@ -294,15 +293,14 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 }
                 else
                 {
-	            	VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.RelationName,
-	                    ValidationControlsData.ValidationControlLabel,
-	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.RelationName,
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
         }
 
         /// <summary>

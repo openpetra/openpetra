@@ -181,10 +181,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_SpecialNeeds UCSpecialNeeds =
                         (TUC_IndividualData_SpecialNeeds)FUserControlSetup[TDynamicLoadableUserControls.dlucSpecialNeeds];
 
-	                if (!UCSpecialNeeds.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    if (!UCSpecialNeeds.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Personal Languages
@@ -193,10 +193,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_PersonalLanguages UCPersonalLanguage =
                         (TUC_IndividualData_PersonalLanguages)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalLanguages];
 
-	                if (!UCPersonalLanguage.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    if (!UCPersonalLanguage.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Abilities
@@ -205,10 +205,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_Abilities UCAbilities =
                         (TUC_IndividualData_Abilities)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalAbilities];
 
-	                if (!UCAbilities.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    if (!UCAbilities.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 //Passport Details
@@ -217,10 +217,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_Passport UCPassport =
                         (TUC_IndividualData_Passport)FUserControlSetup[TDynamicLoadableUserControls.dlucPassportDetails];
 
-	                if (!UCPassport.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    if (!UCPassport.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 //Personal Data
@@ -229,10 +229,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_PersonalData UCPersonalData =
                         (TUC_IndividualData_PersonalData)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalData];
 
-	                if (!UCPersonalData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    if (!UCPersonalData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 //Emergency Data
@@ -241,10 +241,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUC_IndividualData_EmergencyData UCEmergencyData =
                         (TUC_IndividualData_EmergencyData)FUserControlSetup[TDynamicLoadableUserControls.dlucEmergencyData];
 
-	                if (!UCEmergencyData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    if (!UCEmergencyData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Progress Reports (Person Evaluations)
@@ -254,9 +254,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         (TUC_IndividualData_ProgressReports)FUserControlSetup[TDynamicLoadableUserControls.dlucProgressReports];
 
                     if (!UCProgressReport.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Commitment Periods
@@ -266,9 +266,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         (TUC_IndividualData_CommitmentPeriods)FUserControlSetup[TDynamicLoadableUserControls.dlucCommitmentPeriods];
 
                     if (!UCCommitmentPeriod.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Person Skills
@@ -278,9 +278,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         (TUC_IndividualData_PersonSkills)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonSkills];
 
                     if (!UCPersonSkill.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Previous Experience
@@ -292,9 +292,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         (TUC_IndividualData_PreviousExperience)FUserControlSetup[TDynamicLoadableUserControls.dlucPreviousExperience];
 
                     if (!UCPreviousExperience.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Personal Documents
@@ -304,9 +304,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         (TUC_IndividualData_PersonalDocuments)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalDocuments];
 
                     if (!UCPersonalDocuments.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Job Assignments
@@ -316,9 +316,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         (TUC_IndividualData_JobAssignments)FUserControlSetup[TDynamicLoadableUserControls.dlucJobAssignments];
 
                     if (!UCJobAssignments.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                {
-	                    ReturnValue = false;
-	                }
+                    {
+                        ReturnValue = false;
+                    }
                 }
 
                 // Local Personnel Data
@@ -329,15 +329,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     //TODO: no proper validation in place yet for local personnel data control
                     //if (!UCLocalPersonnelData.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
-	                //{
-	                //    ReturnValue = false;
-	                //}
+                    //{
+                    //    ReturnValue = false;
+                    //}
                 }
             }
-            
+
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Gets the data from all UserControls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls

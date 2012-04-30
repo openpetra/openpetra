@@ -467,7 +467,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPartnerValidation_Partner.ValidateRelationshipManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
-       
+
         #endregion
     }
 }

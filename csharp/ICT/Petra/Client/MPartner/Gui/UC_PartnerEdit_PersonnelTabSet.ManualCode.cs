@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucIndividualData))
             {
-            	TUC_IndividualData UCIndividualData =
+                TUC_IndividualData UCIndividualData =
                     (TUC_IndividualData)FTabSetup[TDynamicLoadableUserControls.dlucIndividualData];
 
                 if (!UCIndividualData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))

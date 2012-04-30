@@ -328,7 +328,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //TODO THis is a workaround, where is the input of ReceivingFieldOffice?
             ARow.ReceivingFieldOffice = Convert.ToInt64(txtReceivingField.Text);
         }
-        
+
         private void ValidateDataDetailsManual(PmStaffDataRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -336,7 +336,5 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidateCommitmentManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
-        
     }
 }
-

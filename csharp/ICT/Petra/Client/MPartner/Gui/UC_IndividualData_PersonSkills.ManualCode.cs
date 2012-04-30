@@ -308,13 +308,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.DeleteRow(this, null);
             }
         }
-        
+
         private void ValidateDataDetailsManual(PmPersonSkillRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPersonnelValidation_Personnel.ValidateSkillManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
-        }        
+        }
     }
 }
