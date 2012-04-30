@@ -154,6 +154,191 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=null).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+            if (FUserControlSetup != null)
+            {
+                // Special Needs
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucSpecialNeeds))
+                {
+                    TUC_IndividualData_SpecialNeeds UCSpecialNeeds =
+                        (TUC_IndividualData_SpecialNeeds)FUserControlSetup[TDynamicLoadableUserControls.dlucSpecialNeeds];
+
+                    if (!UCSpecialNeeds.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Personal Languages
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalLanguages))
+                {
+                    TUC_IndividualData_PersonalLanguages UCPersonalLanguage =
+                        (TUC_IndividualData_PersonalLanguages)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalLanguages];
+
+                    if (!UCPersonalLanguage.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Abilities
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalAbilities))
+                {
+                    TUC_IndividualData_Abilities UCAbilities =
+                        (TUC_IndividualData_Abilities)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalAbilities];
+
+                    if (!UCAbilities.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                //Passport Details
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPassportDetails))
+                {
+                    TUC_IndividualData_Passport UCPassport =
+                        (TUC_IndividualData_Passport)FUserControlSetup[TDynamicLoadableUserControls.dlucPassportDetails];
+
+                    if (!UCPassport.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                //Personal Data
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalData))
+                {
+                    TUC_IndividualData_PersonalData UCPersonalData =
+                        (TUC_IndividualData_PersonalData)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalData];
+
+                    if (!UCPersonalData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                //Emergency Data
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucEmergencyData))
+                {
+                    TUC_IndividualData_EmergencyData UCEmergencyData =
+                        (TUC_IndividualData_EmergencyData)FUserControlSetup[TDynamicLoadableUserControls.dlucEmergencyData];
+
+                    if (!UCEmergencyData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Progress Reports (Person Evaluations)
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucProgressReports))
+                {
+                    TUC_IndividualData_ProgressReports UCProgressReport =
+                        (TUC_IndividualData_ProgressReports)FUserControlSetup[TDynamicLoadableUserControls.dlucProgressReports];
+
+                    if (!UCProgressReport.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Commitment Periods
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucCommitmentPeriods))
+                {
+                    TUC_IndividualData_CommitmentPeriods UCCommitmentPeriod =
+                        (TUC_IndividualData_CommitmentPeriods)FUserControlSetup[TDynamicLoadableUserControls.dlucCommitmentPeriods];
+
+                    if (!UCCommitmentPeriod.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Person Skills
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonSkills))
+                {
+                    TUC_IndividualData_PersonSkills UCPersonSkill =
+                        (TUC_IndividualData_PersonSkills)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonSkills];
+
+                    if (!UCPersonSkill.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Previous Experience
+                // dluc corresponds to enum above, UCPreviousExperience to UC_IndividualData_PreviousExperience.ManualCode,
+                //              PmPastExperienceTable to the DB table name
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPreviousExperience))
+                {
+                    TUC_IndividualData_PreviousExperience UCPreviousExperience =
+                        (TUC_IndividualData_PreviousExperience)FUserControlSetup[TDynamicLoadableUserControls.dlucPreviousExperience];
+
+                    if (!UCPreviousExperience.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Personal Documents
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucPersonalDocuments))
+                {
+                    TUC_IndividualData_PersonalDocuments UCPersonalDocuments =
+                        (TUC_IndividualData_PersonalDocuments)FUserControlSetup[TDynamicLoadableUserControls.dlucPersonalDocuments];
+
+                    if (!UCPersonalDocuments.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Job Assignments
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucJobAssignments))
+                {
+                    TUC_IndividualData_JobAssignments UCJobAssignments =
+                        (TUC_IndividualData_JobAssignments)FUserControlSetup[TDynamicLoadableUserControls.dlucJobAssignments];
+
+                    if (!UCJobAssignments.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
+                    }
+                }
+
+                // Local Personnel Data
+                if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucLocalPersonnelData))
+                {
+                    TUC_IndividualData_LocalPersonnelData UCLocalPersonnelData =
+                        (TUC_IndividualData_LocalPersonnelData)FUserControlSetup[TDynamicLoadableUserControls.dlucLocalPersonnelData];
+
+                    //TODO: no proper validation in place yet for local personnel data control
+                    //if (!UCLocalPersonnelData.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    //{
+                    //    ReturnValue = false;
+                    //}
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Gets the data from all UserControls on this TabControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
         /// are mapped.

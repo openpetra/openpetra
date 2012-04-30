@@ -51,8 +51,8 @@ RootNode:
                 Row7: [dtpDateOfIssue]
                 Row8: [dtpDateOfExpiration]
                 
-        txtPassportNumber: {Label=Passport Number, DataField=PmPassportDetails.PassportNumber, Width=180}
-        cmbPassportType: {Label=Type, DataField=PmPassportDetails.PassportDetailsType, List=PassportDetailsTypeList, Width=200}
+        txtPassportNumber: {Label=Passport Number, DataField=PmPassportDetails.PassportNumber, Width=180, Validation=true}
+        cmbPassportType: {Label=Type, DataField=PmPassportDetails.PassportDetailsType, List=PassportDetailsTypeList, Width=200, Validation=true}
         txtPassportName: {Label=Passport Name, DataField=PmPassportDetails.FullPassportName, Width=300, OnEnter=SuggestPassportName}
         btnPassportNameHelp: {NoLabel=true}
             Action: actPassportNameHelp
@@ -61,5 +61,6 @@ RootNode:
         dtpDateOfBirth: {Label=Date of Birth, DataField=PmPassportDetails.PassportDob, Enabled=false}
         cmbPassportNationality: {Label=Passport Nationality, DataField=PmPassportDetails.PassportNationalityCode, List=PassportNationalityCodeList, Width=300}
         txtPlaceOfIssue: {Label=Place of Issue, Width=160, DataField=PmPassportDetails.PlaceOfIssue}
-        dtpDateOfIssue: {Label=Date of Issue, DataField=PmPassportDetails.DateOfIssue}
-        dtpDateOfExpiration: {Label=Date of Expiration, DataField=PmPassportDetails.DateOfExpiration}
+        dtpDateOfIssue: {Label=Date of Issue, DataField=PmPassportDetails.DateOfIssue, Validation=true}
+        dtpDateOfExpiration: {Label=Date of Expiration, DataField=PmPassportDetails.DateOfExpiration, Validation=Pair(dtpDateOfIssue)}
+        

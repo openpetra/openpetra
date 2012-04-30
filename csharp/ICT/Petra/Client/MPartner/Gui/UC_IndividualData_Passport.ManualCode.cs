@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared;
@@ -39,6 +40,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Person;
+using Ict.Petra.Shared.MPersonnel.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -177,14 +179,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int32 countNewDetail = 0;
 
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-            newName = FPassportTypeDT[0].Code;
+            newName = "(Unspecified: " + countNewDetail.ToString() + ")";
 
             if (FMainDS.PmPassportDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
             {
                 while (FMainDS.PmPassportDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
                 {
                     countNewDetail++;
-                    newName = FPassportTypeDT[countNewDetail].Code;
+                    newName = "(Unspecified: " + countNewDetail.ToString() + ")";
                 }
             }
 
@@ -434,6 +436,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.DeleteRow(this, null);
             }
+        }
+
+        private void ValidateDataDetailsManual(PmPassportDetailsRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPersonnelValidation_Personnel.ValidatePassportManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

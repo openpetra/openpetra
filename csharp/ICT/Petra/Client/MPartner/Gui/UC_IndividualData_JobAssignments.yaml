@@ -28,7 +28,7 @@ RootNode:
             Columns: [UnitKey, PositionName, AssistantTo, FromDate, ToDate, AssignmentTypeCode]
             #Columns: [UnitKey, UnitName, PositionName, AssistantTo, FromDate, ToDate, AssignmentTypeCode]
             CustomColumns:
-                UnitKey: {Label=Unit Key}
+                UnitKey: {Label=Unit Key, Type=PartnerKey}
                 #UnitName: {Label=Unit}
                 PositionName: {Label=Position/Role}
                 AssistantTo: {Label=Assist.}
@@ -53,21 +53,25 @@ RootNode:
             List: JobAssignmentTypeList
             DataField: PmJobAssignment.AssignmentTypeCode
             ColSpan: 3
+            Validation: true
         
         dtpFromDate:
             Label: From Date
             DataField: PmJobAssignment.FromDate
             ColSpan: 1
+            Validation: true
         dtpToDate:
             Label: To Date
             DataField: PmJobAssignment.ToDate
             ColSpan: 1
+            Validation: Pair(dtpFromDate)
         
         txtUnitKey:
             DataField: PmJobAssignment.UnitKey
             Type: PartnerKey
             PartnerClass: UNIT
             ColSpan: 3
+            Validation: true
         
         cmbPositionName:
             Label: Position/Role
@@ -75,6 +79,7 @@ RootNode:
             Dock: Fill
             DataField: PmJobAssignment.PositionName
             ColSpan: 3
+            Validation: true
         
         chkAssistantTo:
             Label: Assistant to selected Position
