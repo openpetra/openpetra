@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.Columns["RelationDescription"]);
-            grdDetails.AddTextColumn("Partner Key", FMainDS.PPartnerRelationship.Columns["OtherPartnerKey"]);
+            grdDetails.AddPartnerKeyColumn("Partner Key", FMainDS.PPartnerRelationship.Columns["OtherPartnerKey"]);
             grdDetails.AddTextColumn("Partner Name",
                 FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerShortNameDBName()]);
             grdDetails.AddTextColumn("Class", FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerClassDBName()]);

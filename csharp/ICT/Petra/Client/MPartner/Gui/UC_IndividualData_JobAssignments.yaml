@@ -28,7 +28,7 @@ RootNode:
             Columns: [UnitKey, PositionName, AssistantTo, FromDate, ToDate, AssignmentTypeCode]
             #Columns: [UnitKey, UnitName, PositionName, AssistantTo, FromDate, ToDate, AssignmentTypeCode]
             CustomColumns:
-                UnitKey: {Label=Unit Key}
+                UnitKey: {Label=Unit Key, Type=PartnerKey}
                 #UnitName: {Label=Unit}
                 PositionName: {Label=Position/Role}
                 AssistantTo: {Label=Assist.}
