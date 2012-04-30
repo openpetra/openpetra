@@ -326,6 +326,12 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Email File Code Types
         public const string EMAIL_FILE_CODE_STEWARDSHIP = "STEWARDSHIP";
+        
+        /// Narratives
+        public const string NARRATIVE_YEAR_END_REALLOCATION = "Year end re-allocation";
+        public const string NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH = "Gifts received - Gift Batch";
+        public const string NARRATIVE_GB_GIFT_BATCH = "GB - Gift Batch";
+
     }
 
     /// <summary>

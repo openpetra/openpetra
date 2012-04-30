@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         
     	/// <summary>
         /// Performs the ICH code to generate HOSA Files/Reports.
-        ///  Relates to gl2120-1.i
+        ///  Relates to gi3200.p/gi3200-1.i
         /// </summary>
         /// <param name="ALedgerNumber">Ledger number</param>
         /// <param name="APeriodNumber">Period number</param>
@@ -102,6 +102,10 @@ namespace Ict.Petra.Server.MFinance.ICH
             string TransAmount1;  //FORMAT "X(19)"
             string TransAmount2;  //FORMAT "X(19)"
             int Choice;
+            
+            string StandardCostCentre = ALedgerNumber.ToString() + "00";
+
+			DataTable TableForExport = new DataTable();
 
         	AVerificationResult = new TVerificationResultCollection();
 
@@ -149,22 +153,23 @@ namespace Ict.Petra.Server.MFinance.ICH
 				//StoreNumericFormat = "";
 				MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(AccountingPeriodRow.PeriodEndDate.Month);
 				
-				//Create CSV File
-				                //First four fields are constant for each row
-                DataTable TableForExport = new DataTable();
+				//Create table definitions
+	            TableForExport.Columns.Add("CostCentre", typeof(string));
+	            TableForExport.Columns.Add("Account", typeof(string));
+	            TableForExport.Columns.Add("LedgerMonth", typeof(string));
+	            TableForExport.Columns.Add("ICHPeriod", typeof(string));
+	            TableForExport.Columns.Add("Date", typeof(DateTime));
+	            TableForExport.Columns.Add("IndividualDebitTotal", typeof(decimal));
+	            TableForExport.Columns.Add("IndividualCreditTotal", typeof(decimal));
 
-                TableForExport.Columns.Add("PeriodNumber", typeof(int));
-                TableForExport.Columns.Add("StandardCostCentre", typeof(string));
-                TableForExport.Columns.Add("CostCentre", typeof(string));
-                TableForExport.Columns.Add("DateToday", typeof(DateTime));
-                TableForExport.Columns.Add("Currency", typeof(string));
-
-                //AGeneralLedgerMasterTable GeneralLedgerMasterTable = AGeneralLedgerMasterAccess
+                string TableForExportHeader = "/** Header **" + ","
+                								+ APeriodNumber + ","
+                								+ StandardCostCentre + ","
+                								+ ACostCentre + ","
+							                	+ DateTime.Today + ","
+							                	+ Currency;
                 
-	            DataTable tab;
-	            DataRow row;
-	
-				//See gi3200.p ln: 170
+                //See gi3200.p ln: 170
 	            string strSql = "SELECT " +
 						  			"a_general_ledger_master.a_glm_sequence_i, " +
 						  			"a_general_ledger_master.a_ledger_number_i, " +
@@ -198,18 +203,155 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 foreach (DataRow untypedTransRow in TmpTable.Rows)
                 {
-                	if (untypedTransRow[5].ToString() == MFinanceConstants.ACCOUNT_TYPE_INCOME)
+                	//string gLMsEQ = untypedTransRow[0].ToString();
+                	//string gLMAcctCode = untypedTransRow[1].ToString();
+                	//string gLMAcctCode = untypedTransRow[2].ToString();
+                	string gLMAcctCode = untypedTransRow[3].ToString();
+                	string gLMCostCCode = untypedTransRow[4].ToString();
+                	string gLMAcctType = untypedTransRow[5].ToString();
+                	
+                	if (gLMAcctType == MFinanceConstants.ACCOUNT_TYPE_INCOME) //a_account.a_account_type_c
                 	{
-                		string gLMAcctCode = untypedTransRow[3].ToString();
                 		DateTime PeriodStartDate = AccountingPeriodRow.PeriodStartDate;
                 		DateTime PeriodEndDate = AccountingPeriodRow.PeriodEndDate;
                 		/*RUN Export_gifts(INPUT pv_ledger_number_i...*/
 
-                    	ExportGifts(ALedgerNumber, ACostCentre, gLMAcctCode, PeriodStartDate, PeriodEndDate, CurrencySelect, AIchNumber, ref DBTransaction, ref AVerificationResult);
-
-                    	 
+                    	//gi3200-1.i
+                		ExportGifts(ALedgerNumber, ACostCentre, gLMAcctCode, MonthName, APeriodNumber, PeriodStartDate, PeriodEndDate, CurrencySelect, AIchNumber,ref TableForExport, ref DBTransaction, ref AVerificationResult);
                     }
-                }
+                	
+                	/* Then see if there are any GL transactions to export */
+                	//gi3200.i
+		            strSql = "SELECT " +
+  								"  a_transaction.a_ledger_number_i, " + 
+								"  a_transaction.a_batch_number_i, " + 
+  								"  a_transaction.a_journal_number_i, " + 
+  								"  a_transaction.a_transaction_number_i, " + 
+  								"  a_transaction.a_account_code_c, " + 
+  								"  a_transaction.a_cost_centre_code_c, " + 
+  								"  a_transaction.a_transaction_date_d, " + 
+  								"  a_transaction.a_transaction_amount_n, " + 
+  								"  a_transaction.a_amount_in_base_currency_n, " + 
+  								"  a_transaction.a_amount_in_intl_currency_n, " + 
+  								"  a_transaction.a_ich_number_i, " + 
+  								"  a_transaction.a_system_generated_l, " + 
+  								"  a_transaction.a_narrative_c " + 
+		            			"  a_transaction.a_debit_credit_indicator_l " + 
+								"FROM " + 
+  								"  public.a_transaction, " + 
+  								"  public.a_journal " + 
+								"WHERE " + 
+  								"  a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i AND " + 
+  								"  a_transaction.a_batch_number_i = a_journal.a_batch_number_i AND " + 
+  								"  a_transaction.a_journal_number_i = a_journal.a_journal_number_i AND " + 
+  								"  a_transaction.a_ledger_number_i = ? AND " + 
+  								"  a_transaction.a_account_code_c = ? AND " + 
+  								"  a_transaction.a_cost_centre_code_c = ? AND " + 
+  								"  a_transaction.a_transaction_status_l = true AND " + 
+  								"  NOT (LEFT(a_transaction.a_narrative_c, 22) = ? AND " + 
+  								"       a_transaction.a_system_generated_l = true) AND " + 
+  								"  ((a_transaction.a_ich_number_i + ?) = a_transaction.a_ich_number_i OR " + 
+		            			"   a_transaction.a_ich_number_i = ?) AND " +
+		            			"  a_journal.a_journal_period_i = ?";
+
+	                DataTable TmpTransTable = DBAccess.GDBAccessObj.SelectDT(strSql, "Transactions", DBTransaction,
+	                new OdbcParameter[] {
+	                    new OdbcParameter("LedgerNumber", (object)ALedgerNumber),
+	                    new OdbcParameter("Account", (object)gLMAcctCode),
+	                    new OdbcParameter("CostCentre", gLMCostCCode),
+	                    new OdbcParameter("Narrative", (object)MFinanceConstants.NARRATIVE_YEAR_END_REALLOCATION),
+	                    new OdbcParameter("ICHNumber", (object)AIchNumber),
+	                    new OdbcParameter("ICHNumber2", (object)AIchNumber),
+	                    new OdbcParameter("PeriodNumber", (object)APeriodNumber)
+	                });	
+	
+	                foreach (DataRow untypedTransactRow in TmpTransTable.Rows)
+	                {
+	                	DebitTotal = 0;
+	                	CreditTotal	 = 0;
+	                	Choice = ACurrency;
+	                	
+	                	bool Debit = Convert.ToBoolean(untypedTransactRow[13]);  //a_transaction.a_debit_credit_indicator_l
+	                	bool SystemGenerated = Convert.ToBoolean(untypedTransactRow[11]);  //a_transaction.a_system_generated_l
+	                	decimal AmountInBaseCurrency = Convert.ToDecimal(untypedTransactRow[8]);  //a_transaction.a_amount_in_base_currency_n
+	                	decimal AmountInIntlCurrency = Convert.ToDecimal(untypedTransactRow[9]);  //a_transaction.a_amount_in_intl_currency_n
+	                	string Narrative = untypedTransactRow[12].ToString();  //a_transaction.a_narrative_c
+	                	DateTime TransactionDate = Convert.ToDateTime(untypedTransactRow[6]);  //a_transaction.a_transaction_date_d
+	                	
+	                	if (Choice == 1)
+	                	{
+                			/* find transaction amount and store as debit or credit */ 
+							if (Debit)
+							{
+								DebitTotal += AmountInBaseCurrency; 
+								TransAmount1 = AmountInBaseCurrency.ToString("#,##0.00");
+								TransAmount2 = " ";                                           
+							}
+							else
+							{
+								CreditTotal += AmountInBaseCurrency; 
+								TransAmount2 = AmountInBaseCurrency.ToString("#,##0.00");
+								TransAmount1 = " ";
+							}
+	                	}
+						else
+						{
+							if (Debit)
+							{
+								DebitTotal += AmountInIntlCurrency; 
+								TransAmount1 = AmountInIntlCurrency.ToString("#,##0.00");
+								TransAmount2 = " ";                                           
+							}
+							else
+							{
+								CreditTotal += AmountInIntlCurrency; 
+								TransAmount2 = AmountInIntlCurrency.ToString("#,##0.00");
+								TransAmount1 = " ";
+							}
+						}
+
+						Choice = 0;
+	                	
+						if (gLMAcctType != MFinanceConstants.ACCOUNT_TYPE_INCOME.ToUpper()
+						    || !(SystemGenerated && (Narrative.Substring(0,27) == MFinanceConstants.NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH
+						                             || Narrative.Substring(0,15) == MFinanceConstants.NARRATIVE_GB_GIFT_BATCH))
+						   )
+	                	{
+	               			/* Put transaction information
+							//TODO					        
+							EXPORT DELIMITER ","
+						         a_general_ledger_master.a_cost_centre_code_c
+						         ConvertAccount(a_general_ledger_master.a_account_code_c)
+						         STRING(pv_ledger_number_i) + cMonthName + ":" + {&TRANSACTION-TABLE-NAME}.a_narrative_c
+						         "ICH-":U + STRING(pv_period_number_i, "99")    // {&TRANSACTION-TABLE-NAME}.a_reference_c 
+						         {&TRANSACTION-TABLE-NAME}.a_transaction_date_d
+						         lv_debit_total_n
+						         lv_credit_total_n*/
+							DataRow DR = (DataRow)TableForExport.NewRow();
+	
+	                        DR[0] = gLMCostCCode;
+	                        DR[1] = ConvertAccount(gLMAcctCode);
+	                        DR[2] = ALedgerNumber.ToString() + MonthName + ":" + Narrative;
+	                        DR[3] = "ICH-" + APeriodNumber.ToString("00");
+	                        DR[4] = TransactionDate;
+	                        DR[5] = DebitTotal;
+	                        DR[6] = CreditTotal;
+	
+	                        TableForExport.Rows.Add(DR);
+	                	}
+	                }
+				}
+                
+				TableForExport.AcceptChanges();
+				
+				//DataTables to XML
+				//XML to CSV
+				//Combine CSV's
+				
+				/* Change number format back */
+				//TODO
+				
+				Successful = true;
 				
             }
             catch (Exception)
@@ -228,24 +370,32 @@ namespace Ict.Petra.Server.MFinance.ICH
 		/// <param name="ALedgerNumber"></param>
 		/// <param name="ACostCentre"></param>
 		/// <param name="AAcctCode"></param>
+		/// <param name="AMonthName"></param>
+		/// <param name="APeriodNumber"></param>
 		/// <param name="APeriodStartDate"></param>
 		/// <param name="APeriodEndDate"></param>
 		/// <param name="ABase"></param>
 		/// <param name="AIchNumber"></param>
+		/// <param name="AExportDataTable"></param>
+		/// <param name="ADBTransaction"></param>
+		/// <param name="AVerificationResult"></param>
         private static void ExportGifts(int ALedgerNumber,
                                  string ACostCentre,
                                  string AAcctCode,
+                                 string AMonthName,
+                                 int APeriodNumber,
                                  DateTime APeriodStartDate,
                                  DateTime APeriodEndDate,
                                  string ABase,
                                  int AIchNumber,
+                                 ref DataTable AExportDataTable,
                                 ref TDBTransaction ADBTransaction,
                                ref TVerificationResultCollection AVerificationResult)
         {
         
 			/* Define local variables */
 			bool FirstLoopFlag  = true;
-			long LastRecipKey = 0; //FORMAT "9999999999"
+			Int32 LastRecipKey = 0; //FORMAT "9999999999"
 			string LastGroup = string.Empty;
             string LastDetail = string.Empty;
             string LastDetailDesc = string.Empty; //FORMAT "X(15)"
@@ -253,13 +403,16 @@ namespace Ict.Petra.Server.MFinance.ICH
             string CurrentYearTotals = string.Empty;
             decimal IndividualDebitTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal IndividualCreditTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
-				
+
+			string ExportDescription = string.Empty;
+            
 			string SQLStmt = "SELECT " +
 							  "a_gift_detail.a_ledger_number_i, " +
 							  "a_gift_detail.a_batch_number_i, " +
 							  "a_gift_detail.a_gift_transaction_number_i, " +
 							  "a_gift_detail.a_detail_number_i, " +
-							  "a_gift_detail.a_gift_amount_n, " +
+							  "a_gift_detail.a_gift_amount_n, " + 
+							  "a_gift_detail.a_gift_amount_intl_n, " + 
 							  "a_gift_detail.a_motivation_group_code_c, " +
 							  "a_gift_detail.a_motivation_detail_code_c, " +
 							  "a_gift_detail.p_recipient_key_n, " +
@@ -307,10 +460,15 @@ namespace Ict.Petra.Server.MFinance.ICH
 	        {
 				/* Print totals etc. found for last recipient */
     			/* Only do after first loop due to last recipient key check */                         
+    			
+    			Int32 tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]); //a_gift_detail.p_recipient_key_n
+    			string tmpLastGroup = untypedTransRow[6].ToString(); //a_motivation_detail.a_motivation_group_code_c
+    			string tmpLastDetail = untypedTransRow[7].ToString(); //a_motivation_detail.a_motivation_detail_code_c
+    			
     			if (FirstLoopFlag == false
-    			    && (Convert.ToDecimal(untypedTransRow[7]) != LastRecipKey  	//a_gift_detail.p_recipient_key_n
-    			        || untypedTransRow[5].ToString() != LastGroup			//a_motivation_detail.a_motivation_group_code_c
-    			        || untypedTransRow[6].ToString() != LastDetail			//a_motivation_detail.a_motivation_detail_code_c
+    			    && (tmpLastRecipKey != LastRecipKey  	
+    			        || tmpLastGroup != LastGroup			
+    			        || tmpLastDetail != LastDetail			
     			       )
     			    
     			   )
@@ -318,8 +476,6 @@ namespace Ict.Petra.Server.MFinance.ICH
 					if (IndividualCreditTotal != 0
 	    				   || IndividualDebitTotal != 0)
 	    			{
-						string ExportDescription = string.Empty;
-						
     					if (LastRecipKey != 0)
 						{
 							/* Find partner short name details */
@@ -328,7 +484,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 							
 							LastDetailDesc += " : " + PartnerRow.PartnerShortName;
 							
-							ExportDescription = LastDetailDesc;
+							ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + LastDetailDesc;
 						}
 						else
 						{
@@ -337,7 +493,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 							
 							Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd(new Char[] { (' ') }) + "," + LastDetailDesc;
 
-							ExportDescription = Desc;
+							ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + Desc;
 						}
 						
 						//TODO: do export and use ExportDescription
@@ -350,10 +506,109 @@ namespace Ict.Petra.Server.MFinance.ICH
 				             lv_individual_debit_total_n
 				             lv_individual_credit_total_n*/
 
+ 						DataRow DR = (DataRow)AExportDataTable.NewRow();
+
+                        DR[0] = ACostCentre;
+                        DR[1] = ConvertAccount(AAcctCode);
+                        DR[2] = ExportDescription;
+                        DR[3] = "ICH-" + APeriodNumber.ToString("00");
+                        DR[4] = APeriodEndDate;
+                        DR[5] = IndividualDebitTotal;
+                        DR[6] = IndividualCreditTotal;
+
+                        AExportDataTable.Rows.Add(DR);
+ 						
+ 						/* Reset total */
+			            IndividualDebitTotal = 0;
+            			IndividualCreditTotal = 0;
 					}	    				
     			}
-
+    			
+    			decimal GiftAmount = Convert.ToDecimal(untypedTransRow[4]);  //a_gift_detail.a_gift_amount_n
+    			decimal IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);  //a_gift_detail.a_gift_amount_intl_n
+    			                                       
+    			if (ABase == MFinanceConstants.CURRENCY_BASE)
+    			{
+    				if (GiftAmount < 0)
+    				{
+    					IndividualDebitTotal -= GiftAmount;
+    				}
+    				else
+    				{
+    					IndividualCreditTotal += GiftAmount;
+    				}
+    			}
+    			else
+    			{
+    				if (IntlGiftAmount < 0)
+    				{
+    					IndividualDebitTotal -= IntlGiftAmount;
+    				}
+    				else
+    				{
+    					IndividualCreditTotal += IntlGiftAmount;
+    				}
+    			}
+    		
+    			/* Set loop variables */
+		        LastRecipKey = tmpLastRecipKey;
+		        LastGroup = tmpLastGroup;
+		        LastDetail = tmpLastDetail;
+		        LastDetailDesc = Convert.ToString(untypedTransRow[10]); //a_motivation_detail.a_motivation_detail_desc_c
+		        FirstLoopFlag = false;
 	        }
+	        
+	        /* Print totals etc. found for last recipient */
+			/* Only do after first loop due to last recipient key check */   
+			if (FirstLoopFlag == false)
+			{
+				if (IndividualCreditTotal != 0
+					|| IndividualDebitTotal != 0)
+				{
+					
+					if (LastRecipKey != 0)
+					{
+						/* Find partner short name details */ 
+						PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LastRecipKey, ADBTransaction);
+						PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
+						
+						LastDetailDesc += ":" + PartnerRow.PartnerShortName;
+						
+						ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + LastDetailDesc;					
+					}
+					else
+					{
+						AMotivationGroupTable MotivationGroupTable = AMotivationGroupAccess.LoadByPrimaryKey(ALedgerNumber, LastGroup, ADBTransaction);
+						AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
+						
+						Desc = MotivationGroupRow.MotivationGroupDescription.TrimEnd() + "," +  LastDetailDesc;
+						
+						ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + Desc;
+					}
+
+					//TODO: 
+					/*EXPORT DELIMITER ","
+			             lv_cost_centre_c
+			             ConvertAccount(lv_account_c)
+			             STRING(pv_ledger_number_i) + cMonthName + ":" + ExportDescription
+			             "ICH-":U + STRING(pv_period_number_i, "99")
+			             lv_end_d
+			             lv_individual_debit_total_n
+			             lv_individual_credit_total_n */
+					DataRow DR = (DataRow)AExportDataTable.NewRow();
+
+                    DR[0] = ACostCentre;
+                    DR[1] = ConvertAccount(AAcctCode);
+                    DR[2] = ExportDescription;
+                    DR[3] = "ICH-" + APeriodNumber.ToString("00");
+                    DR[4] = APeriodEndDate;;
+                    DR[5] = IndividualDebitTotal;
+                    DR[6] = IndividualCreditTotal;
+
+                    AExportDataTable.Rows.Add(DR);
+				}	
+			}
+			
         }
         
         
