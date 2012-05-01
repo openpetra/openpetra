@@ -223,15 +223,15 @@ namespace Ict.Petra.Server.MFinance.ICH
                 if (AEmail)
                 {
                     string EmailAddress = string.Empty;
-                    
+
                     //TODO: swap lines below**************************************
                     string SenderAddress = @"chris.thomas@om.org";
                     //string SenderAddress = TAppSettingsManager.GetValue("SenderAddress");
                     //*********************************************************
                     string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
                     string HTMLText = string.Empty;
-                	
-                	AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
+
+                    AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
                     AEmailDestinationRow TemplateRow2 = (AEmailDestinationRow)AEmailDestTable.NewRowTyped(false);
 
                     TemplateRow2.FileCode = MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP;
@@ -242,18 +242,17 @@ namespace Ict.Petra.Server.MFinance.ICH
                         operators2,
                         null,
                         DBTransaction);
-                    
+
                     if (AEmailDestinationTable.Count == 0)
                     {
-	                    //TODO: replace below
-	                    EmailAddress = @"cmt1@talk21.com";
+                        //TODO: replace below
+                        EmailAddress = @"cmt1@talk21.com";
                     }
                     else
                     {
-	                    AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
-	                    EmailAddress = EmailDestinationRow.EmailAddress;
+                        AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
+                        EmailAddress = EmailDestinationRow.EmailAddress;
                     }
-
 
                     //Read the file title
                     FileInfo FileDetails = new FileInfo(AFileName);
@@ -279,7 +278,6 @@ namespace Ict.Petra.Server.MFinance.ICH
                     //msg.Bcc.Add(BCCAddress);
 
                     SendMail.SendMessage(ref msg);
-                    	
                 }
 
                 DBAccess.GDBAccessObj.RollbackTransaction();

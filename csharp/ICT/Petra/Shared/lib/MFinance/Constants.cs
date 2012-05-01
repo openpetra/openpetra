@@ -178,9 +178,9 @@ namespace Ict.Petra.Shared.MFinance
         public const bool POSTED = true;
 
         /// Logical account & cost centre flags
-		public const bool ACTIVE = true;
-		public const bool POSTING =true;
-        
+        public const bool ACTIVE = true;
+        public const bool POSTING = true;
+
         /// standard account for earnings bf
         public const string EARNINGS_BF_ACCT = "9700";
 
@@ -326,12 +326,11 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Email File Code Types
         public const string EMAIL_FILE_CODE_STEWARDSHIP = "STEWARDSHIP";
-        
+
         /// Narratives
         public const string NARRATIVE_YEAR_END_REALLOCATION = "Year end re-allocation";
         public const string NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH = "Gifts received - Gift Batch";
         public const string NARRATIVE_GB_GIFT_BATCH = "GB - Gift Batch";
-
     }
 
     /// <summary>

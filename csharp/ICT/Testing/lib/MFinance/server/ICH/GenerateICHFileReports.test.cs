@@ -78,7 +78,7 @@ namespace Tests.MFinance.Server.ICH
             TPetraServerConnector.Disconnect();
         }
 
-                /// <summary>
+        /// <summary>
         /// this function will import admin fees if there are no admin fees in the database yet
         /// </summary>
         private void ImportAdminFees()
@@ -119,29 +119,34 @@ namespace Tests.MFinance.Server.ICH
             }
         }
 
-        
         /// <summary>
         /// this test loads the sample partners, imports a gift batch, and posts it, and then runs a stewardship calculation
         /// </summary>
         [Test]
         public void TestGenerateStewardshipFile()
         {
-        	ImportAdminFees();
-        	
+            ImportAdminFees();
+
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
-        
+
             int PeriodNumber = 5;
             int ICHProcessingNumber = 1;
             int CurrencyType = 1; //base
             string FileName = @"C:\Test.csv";
             bool SendEmail = true;
-            
-            TGenFilesReports.GenerateStewardshipFile(FLedgerNumber, PeriodNumber, ICHProcessingNumber, CurrencyType, FileName, SendEmail, out VerificationResults);
-            	
-        	Assert.IsFalse(VerificationResults.HasCriticalErrors, "Performing Stewardship File Generation Failed!" + VerificationResults.BuildVerificationResultString());
-            	
+
+            TGenFilesReports.GenerateStewardshipFile(FLedgerNumber,
+                PeriodNumber,
+                ICHProcessingNumber,
+                CurrencyType,
+                FileName,
+                SendEmail,
+                out VerificationResults);
+
+            Assert.IsFalse(VerificationResults.HasCriticalErrors,
+                "Performing Stewardship File Generation Failed!" + VerificationResults.BuildVerificationResultString());
         }
-        
+
         /// <summary>
         /// Test the generation of the email to send to ICH from a given centre
         /// </summary>
@@ -149,18 +154,45 @@ namespace Tests.MFinance.Server.ICH
         public void TestGenerateICHEmail()
         {
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
-            
+
             int PeriodNumber = 5;
             int ICHProcessingNumber = 1;
             int CurrencyType = 1; //base
             string FileName = @"C:\TestGenerateICHEmail.csv";
             bool SendEmail = true;
 
-            TGenFilesReports.GenerateStewardshipFile(FLedgerNumber, PeriodNumber, ICHProcessingNumber, CurrencyType, FileName, SendEmail, out VerificationResults);
+            TGenFilesReports.GenerateStewardshipFile(FLedgerNumber,
+                PeriodNumber,
+                ICHProcessingNumber,
+                CurrencyType,
+                FileName,
+                SendEmail,
+                out VerificationResults);
 
-        	Assert.IsFalse(VerificationResults.HasCriticalErrors, "Performing ICH Email File Generation Failed!" + VerificationResults.BuildVerificationResultString());
+            Assert.IsFalse(VerificationResults.HasCriticalErrors,
+                "Performing ICH Email File Generation Failed!" + VerificationResults.BuildVerificationResultString());
         }
-        
-        
+
+        /// <summary>
+        /// Test whether the code opens a text file and replaces the first line
+        ///  with the specified string
+        /// </summary>
+        [Test]
+        public void TestFileHeaderReplace()
+        {
+            string fileName = @"C:\Test.csv";
+            int PeriodNumber = 4;
+            string StandardCostCentre = "4300";
+            string CostCentre = "78";
+            string Currency = "USD";
+            string TableForExportHeader = "/** Header **" + "," +
+                                          PeriodNumber.ToString() + "," +
+                                          StandardCostCentre + "," +
+                                          CostCentre + "," +
+                                          DateTime.Today.ToShortDateString() + "," +
+                                          Currency;
+
+            TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader);
+        }
     }
 }

@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
             try
             {
-            	if (GenerateAdminFeeBatch(ALedgerNumber, APeriodNumber, false, DBTransaction, ref AVerificationResult))
+                if (GenerateAdminFeeBatch(ALedgerNumber, APeriodNumber, false, DBTransaction, ref AVerificationResult))
                 {
                     if (NewTransaction)
                     {
@@ -328,7 +328,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 DataRow[] FoundCCRows = MainDS.ACostCentre.Select(WhereClause, OrderBy);
 
                 AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
-                
+
                 foreach (DataRow untypedCCRow in FoundCCRows)
                 {
                     ACostCentreRow CostCentreRow = (ACostCentreRow)untypedCCRow;
@@ -507,7 +507,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         ICHTotal -= SettlementAmount;
                     }
 
-                    
                     if (SettlementAmount < 0)
                     {
                         DrCrIndicator = !AccountDrCrIndicator;
@@ -522,27 +521,27 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                      *  in the ICH settlement account. */
                     //RUN gl1130o.p ("new":U,
                     //Create a transaction
-	                if (SettlementAmount > 0)
-	                {
-	                    if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
-	                            MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator, "ICH", true, 0,
-	                            out GLTransactionNumber))
-	                    {
-	                        ErrorContext = "Generating the ICH batch";
-	                        ErrorMessage =
-	                            String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
-	                                ALedgerNumber,
-	                                GLBatchNumber,
-	                                GLJournalNumber);
-	                        ErrorType = TResultSeverity.Resv_Noncritical;
-	                        throw new System.InvalidOperationException(ErrorMessage);
-	                    }
-                    	
-	                    //Mark as processed
-	                    ATransactionRow TransRow =
-	                        (ATransactionRow)MainDS.ATransaction.Rows.Find(new object[] { ALedgerNumber, GLBatchNumber, GLJournalNumber,
-	                                                                                      GLTransactionNumber });
-	                    TransRow.IchNumber = ICHProcessing;
+                    if (SettlementAmount > 0)
+                    {
+                        if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
+                                MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator, "ICH", true, 0,
+                                out GLTransactionNumber))
+                        {
+                            ErrorContext = "Generating the ICH batch";
+                            ErrorMessage =
+                                String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                    ALedgerNumber,
+                                    GLBatchNumber,
+                                    GLJournalNumber);
+                            ErrorType = TResultSeverity.Resv_Noncritical;
+                            throw new System.InvalidOperationException(ErrorMessage);
+                        }
+
+                        //Mark as processed
+                        ATransactionRow TransRow =
+                            (ATransactionRow)MainDS.ATransaction.Rows.Find(new object[] { ALedgerNumber, GLBatchNumber, GLJournalNumber,
+                                                                                          GLTransactionNumber });
+                        TransRow.IchNumber = ICHProcessing;
                     }
 
                     /* can now create corresponding report row on stewardship table */
@@ -610,9 +609,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     if (PostICHBatch)
                     {
                         IsSuccessful = AIchStewardshipAccess.SubmitChanges(IchStewardshipTable, DBTransaction, out AVerificationResult);
+
                         if (IsSuccessful)
                         {
-                        	IsSuccessful = TGLPosting.PostGLBatch(MainDS, ALedgerNumber, GLBatchNumber, DBTransaction, out AVerificationResult);	
+                            IsSuccessful = TGLPosting.PostGLBatch(MainDS, ALedgerNumber, GLBatchNumber, DBTransaction, out AVerificationResult);
                         }
                     }
                     else
@@ -749,7 +749,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 ErrorType = TResultSeverity.Resv_Critical;
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
             }
-
         }
 
         /// <summary>

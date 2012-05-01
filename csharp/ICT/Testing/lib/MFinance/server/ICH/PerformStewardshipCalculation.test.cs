@@ -286,21 +286,20 @@ namespace Tests.MFinance.Server.ICH
             Assert.AreEqual(20.0m * (100.0m - 7.0m) / 100.0m, ClearingHouseAfter - ClearingHouseBefore,
                 "We have to give everything apart from our 7% to ICH");
         }
-        
+
 //        /// <summary>
 //        /// Test the creation of the ICH Stewardship batch
 //        /// </summary>
 //        [Test]
 //        public void TestGenerateICHStewardshipBatch()
 //        {
-// 			//ImportAdminFees();
+//                      //ImportAdminFees();
 //
-//        	int PeriodNumber = 5;
-//        	
-//        	TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
-//        	
-//        	Assert.IsTrue(TStewardshipCalculationWebConnector.GenerateICHStewardshipBatch(FLedgerNumber, PeriodNumber, ref VerificationResults),"Did not create ICH Stewardship Batch");
+//              int PeriodNumber = 5;
+//
+//              TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+//
+//              Assert.IsTrue(TStewardshipCalculationWebConnector.GenerateICHStewardshipBatch(FLedgerNumber, PeriodNumber, ref VerificationResults),"Did not create ICH Stewardship Batch");
 //        }
-        
     }
 }
