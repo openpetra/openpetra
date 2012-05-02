@@ -28,11 +28,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Tools.CodeGeneration;
 
-//using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common;
-
-//using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
@@ -98,9 +95,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
-        /// either null for no control, or TControlDef object, or string object for temporary controls.
+        /// either null for no control, or TControlDef object
         /// </summary>
-        private System.Object[, ] FGrid;
+        private TControlDef[, ] FGrid;
 
         /// <summary>
         /// tab order for the set of controls. Can be ByColumn, or default is ByRow
@@ -110,7 +107,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// first collect everything, in the end check for unnecessary columnspan, and then write the tablelayout
         public void InitTableLayoutGrid()
         {
-            FGrid = new System.Object[FColumnCount, FRowCount];
+            FGrid = new TControlDef[FColumnCount, FRowCount];
         }
 
         /// <summary>
@@ -128,20 +125,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             childctrl.colSpan = childctrl.HasAttribute("ColSpan") ? Convert.ToInt32(childctrl.GetAttribute("ColSpan")) : 1;
             childctrl.rowSpan = childctrl.HasAttribute("RowSpan") ? Convert.ToInt32(childctrl.GetAttribute("RowSpan")) : 1;
-        }
-
-        /// <summary>
-        /// add controls to the TableLayoutPanel, but don't write yet;
-        /// writing is done in WriteTableLayout, when the layout can be optimised
-        /// </summary>
-        /// <param name="tmpChildCtrlName"></param>
-        /// <param name="column"></param>
-        /// <param name="row"></param>
-        public void AddControl(
-            string tmpChildCtrlName,
-            Int32 column, Int32 row)
-        {
-            FGrid[column, row] = tmpChildCtrlName;
         }
 
         private static int FCurrentTabIndex = 0;
@@ -178,16 +161,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         if ((FGrid[columnCounter, rowCounter] != null))
                         {
-                            TControlDef ctrl;
-
-                            if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
-                            {
-                                ctrl = (TControlDef)FGrid[columnCounter, rowCounter];
-                            }
-                            else
-                            {
-                                ctrl = writer.CodeStorage.FindOrCreateControl(FGrid[columnCounter, rowCounter].ToString(), "");
-                            }
+                            TControlDef ctrl = FGrid[columnCounter, rowCounter];
 
                             int CellWidth = ctrl.Width;
 
@@ -253,17 +227,37 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
                 {
-                    if (FColWidths.ContainsKey(columnCounter))
+                    if (FColWidths.Count * 2 == FColumnCount)
                     {
-                        string[] ColWidthSpec = FColWidths[columnCounter].Split(':');
+                        // the specified width includes the label column
+                        if (FColWidths.ContainsKey(columnCounter / 2))
+                        {
+                            string[] ColWidthSpec = FColWidths[columnCounter / 2].Split(':');
 
-                        if (ColWidthSpec[0].ToLower() == "fixed")
-                        {
-                            ColumnWidth[columnCounter] = Convert.ToInt32(ColWidthSpec[1]);
+                            if (ColWidthSpec[0].ToLower() == "fixed")
+                            {
+                                ColumnWidth[columnCounter] = Convert.ToInt32(ColWidthSpec[1]) / 2;
+                            }
+                            else if (ColWidthSpec[0].ToLower() == "percent")
+                            {
+                                // TODO
+                            }
                         }
-                        else if (ColWidthSpec[0].ToLower() == "percent")
+                    }
+                    else
+                    {
+                        if (FColWidths.ContainsKey(columnCounter))
                         {
-                            // TODO
+                            string[] ColWidthSpec = FColWidths[columnCounter].Split(':');
+
+                            if (ColWidthSpec[0].ToLower() == "fixed")
+                            {
+                                ColumnWidth[columnCounter] = Convert.ToInt32(ColWidthSpec[1]);
+                            }
+                            else if (ColWidthSpec[0].ToLower() == "percent")
+                            {
+                                // TODO
+                            }
                         }
                     }
                 }
@@ -293,9 +287,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
             int Width = 0;
             int Height = 0;
 
+            if (LayoutCtrl.GetAttribute("MarginLeft") == "0")
+            {
+                CurrentLeftPosition = 0;
+            }
+
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
                 int CurrentTopPosition = MARGIN_TOP;
+
+                if (LayoutCtrl.GetAttribute("MarginTop") == "0")
+                {
+                    CurrentTopPosition = 0;
+                }
 
                 // only twice the margin for groupboxes
                 if ((LayoutCtrl.controlTypePrefix == "grp") || (LayoutCtrl.controlTypePrefix == "rgr"))
@@ -307,35 +311,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     if (FGrid[columnCounter, rowCounter] != null)
                     {
-                        string childCtrlName;
+                        TControlDef childctrl = FGrid[columnCounter, rowCounter];
 
-                        if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
-                        {
-                            TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
-                            childCtrlName = childctrl.controlName;
-                        }
-                        else
-                        {
-                            childCtrlName = (string)FGrid[columnCounter, rowCounter];
-                        }
-
-                        writer.SetControlProperty(childCtrlName,
+                        writer.SetControlProperty(childctrl.controlName,
                             "Location",
                             String.Format("new System.Drawing.Point({0},{1})",
                                 CurrentLeftPosition.ToString(),
                                 CurrentTopPosition.ToString()),
                             false);
                         writer.CallControlFunction(LayoutCtrl.controlName,
-                            "Controls.Add(this." + childCtrlName + ")");
+                            "Controls.Add(this." + childctrl.controlName + ")");
 
                         if (FTabOrder == "Horizontal")
                         {
-                            writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                            writer.SetControlProperty(childctrl.controlName, "TabIndex", FCurrentTabIndex.ToString(), false);
                             FCurrentTabIndex++;
                         }
                     }
 
-                    CurrentTopPosition += RowHeight[rowCounter] + VERTICAL_SPACE;
+                    CurrentTopPosition += RowHeight[rowCounter];
+
+                    if (LayoutCtrl.GetAttribute("VerticalSpace") != "0")
+                    {
+                        CurrentTopPosition += VERTICAL_SPACE;
+                    }
 
                     if (CurrentTopPosition > Height)
                     {
@@ -343,7 +342,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
 
-                CurrentLeftPosition += ColumnWidth[columnCounter] + HORIZONTAL_SPACE;
+                CurrentLeftPosition += ColumnWidth[columnCounter];
+
+                if (LayoutCtrl.GetAttribute("HorizontalSpace") != "0")
+                {
+                    CurrentLeftPosition += HORIZONTAL_SPACE;
+                }
 
                 if (CurrentLeftPosition > Width)
                 {
@@ -351,7 +355,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            Height += MARGIN_BOTTOM - VERTICAL_SPACE;
+            if (LayoutCtrl.GetAttribute("MarginBottom") != "0")
+            {
+                Height += MARGIN_BOTTOM - VERTICAL_SPACE;
+            }
 
             if (!LayoutCtrl.HasAttribute("Width"))
             {
@@ -383,19 +390,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         if (FGrid[columnCounter, rowCounter] != null)
                         {
-                            string childCtrlName;
+                            TControlDef childctrl = FGrid[columnCounter, rowCounter];
 
-                            if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
-                            {
-                                TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
-                                childCtrlName = childctrl.controlName;
-                            }
-                            else
-                            {
-                                childCtrlName = (string)FGrid[columnCounter, rowCounter];
-                            }
-
-                            writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                            writer.SetControlProperty(childctrl.controlName, "TabIndex", FCurrentTabIndex.ToString(), false);
                             FCurrentTabIndex++;
                         }
                     }
@@ -696,15 +693,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (FOrientation == eOrientation.Vertical)
                     {
-                        AddControl(subTlpControl.controlName, 1, FCurrentRow);
+                        AddControl(subTlpControl, 1, FCurrentRow);
                     }
                     else if (FOrientation == eOrientation.Horizontal)
                     {
-                        AddControl(subTlpControl.controlName, FCurrentColumn * 2 + 1, 0);
+                        AddControl(subTlpControl, FCurrentColumn * 2 + 1, 0);
                     }
                     else if (FOrientation == eOrientation.TableLayout)
                     {
-                        AddControl(subTlpControl.controlName, FCurrentColumn + 1, FCurrentRow);
+                        AddControl(subTlpControl, FCurrentColumn + 1, FCurrentRow);
                     }
                 }
                 else if (childControls.Count == 1)
@@ -750,7 +747,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 lblGenerator.RightAlign = true;
                 lblGenerator.SetControlProperties(writer, newLabel);
 
-                AddControl(lblName,
+                AddControl(newLabel,
                     FCurrentColumn * 2,
                     FCurrentRow);
                 AddControl(ctrl,

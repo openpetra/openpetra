@@ -431,6 +431,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         if (!childCtrl.controlName.StartsWith("Empty"))
                         {
                             ctrl.Children.Add(childCtrl);
+                            childCtrl.parentName = ctrl.controlName;
                             IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
                             ctrlGenerator.GenerateControl(writer, childCtrl);
                         }
@@ -459,6 +460,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                     ctrl.controlName);
                             }
 
+                            childCtrl.parentName = ctrl.controlName;
                             ctrl.Children.Add(childCtrl);
                         }
                     }
@@ -472,12 +474,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            // set the parent control for all children
-            foreach (TControlDef childCtrl in ctrl.Children)
-            {
-                childCtrl.parentName = ctrl.controlName;
-            }
-
             // don't use a tablelayout for controls where all children have the Dock property set
             foreach (TControlDef ChildControl in ctrl.Children)
             {
@@ -489,6 +485,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.GetAttribute("UseTableLayout") == "true")
             {
+                if ((ctrl.controlTypePrefix == "pnl")
+                    && ctrl.parentName.StartsWith("pnl") || ctrl.parentName.StartsWith("grp"))
+                {
+                    if (!ctrl.HasAttribute("MarginTop"))
+                    {
+                        ctrl.SetAttribute("MarginTop", "0");
+                        ctrl.SetAttribute("MarginBottom", "0");
+                        ctrl.SetAttribute("MarginLeft", "0");
+                    }
+                }
+
                 PanelLayoutGenerator TlpGenerator = new PanelLayoutGenerator();
                 TlpGenerator.SetOrientation(ctrl);
                 TlpGenerator.CreateLayout(writer, ctrl, null, -1, -1);
