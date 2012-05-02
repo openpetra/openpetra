@@ -179,6 +179,8 @@ namespace Ict.Tools.GenerateWinForms
 
         void btnPreviewClick(object sender, EventArgs e)
         {
+            TParseYAMLFormsDefinition.ClearCachedYamlFiles();
+
             // generate the code
             TFrmYamlPreview.ProcessFile(FFilename, FSelectedLocalisation);
 
