@@ -29,6 +29,6 @@ System.Web*=${csharpStdLibs}/System.Web.dll
 System.Windows.Forms=${csharpStdLibs}/System.Windows.Forms.dll
 System.Xml=${csharpStdLibs}/System.Xml.dll
 Microsoft.Win32=${csharpStdLibs}/System.dll
-Microsoft.CSharp=${csharpStdLibs}/System.dll
+Microsoft.CSharp=${csharpStdLibs}/Microsoft.CSharp.dll
 # System* must always be last
 System*=${csharpStdLibs}/System.dll

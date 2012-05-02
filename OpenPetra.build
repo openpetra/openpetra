@@ -44,6 +44,8 @@ compat:
   generateWinform: generate a single yaml file, and optionally compile and start the client
        nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
        nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
+  previewWinform: preview a single yaml file
+       nant previewWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translation: download new language files, and create the dlls required to be delivered with a new release
@@ -278,6 +280,10 @@ useful parameters
 
 <target name="generateWinform">
   <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="previewWinform">
+  <nant inheritall="true" target="previewWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
 </target>
 
 <target name="test" depends="initConfigFiles">

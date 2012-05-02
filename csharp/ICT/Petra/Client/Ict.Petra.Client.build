@@ -26,6 +26,13 @@
   <CompileProject CSFile="${ClientPath}/${string::replace(file,'.yaml', '-generated.cs')}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
 </target>
 
+<target name="previewWinform">
+  <!-- Generate winforms -->
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
+  <ExecDotNet program="${tool-generateWinForms}" commandline="-op:preview -ymlfile:${file} ${generateWinformsParameters}"/>
+</target>
+
 <include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
  
 </project>

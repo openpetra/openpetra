@@ -87,6 +87,7 @@ namespace Ict.Tools.GenerateWinForms
                     Console.WriteLine("call: GenerateWinForms -op:generate -ymlfile:c:\\test.yaml -petraxml:petra.xml -localisation:en");
                     Console.WriteLine("  or: GenerateWinForms -op:generate -ymldir:c:\\myclient -petraxml:petra.xml -localisation:en");
                     Console.WriteLine("  or: GenerateWinForms -op:clean -ymldir:c:\\myclient");
+                    Console.WriteLine("  or: GenerateWinForms -op:preview");
                     Console.Write("Press any key to continue . . . ");
                     Console.ReadLine();
                     Environment.Exit(-1);
@@ -120,6 +121,27 @@ namespace Ict.Tools.GenerateWinForms
                         DeleteGeneratedFile(file, "-generated.Designer.cs");
                         DeleteGeneratedFile(file, "-generated.resx");
                     }
+                }
+                else if (TAppSettingsManager.GetValue("op") == "preview")
+                {
+                    string SelectedLocalisation = null;         // none selected by default; winforms autosize works quite well
+
+                    if (TAppSettingsManager.HasValue("localisation"))
+                    {
+                        SelectedLocalisation = TAppSettingsManager.GetValue("localisation");
+                    }
+
+                    TDataBinding.FPetraXMLStore = new TDataDefinitionStore();
+                    Console.WriteLine("parsing " + TAppSettingsManager.GetValue("petraxml", true));
+                    TDataDefinitionParser parser = new TDataDefinitionParser(TAppSettingsManager.GetValue("petraxml", true));
+                    parser.ParseDocument(ref TDataBinding.FPetraXMLStore, true, true);
+
+                    TFrmYamlPreview PreviewWindow = new TFrmYamlPreview(
+                        TAppSettingsManager.GetValue("ymlfile"),
+                        SelectedLocalisation);
+                    PreviewWindow.ShowDialog();
+
+                    return;
                 }
                 else if (TAppSettingsManager.GetValue("op") == "generate")
                 {
