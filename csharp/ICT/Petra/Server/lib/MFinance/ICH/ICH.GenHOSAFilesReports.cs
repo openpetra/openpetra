@@ -120,12 +120,6 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 //Load tables needed: AccountingPeriod, Ledger, Account, Cost Centre, Transaction, Gift Batch, ICHStewardship
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, DBTransaction);
-                //AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                ATransactionAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                //AIchStewardshipAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                //AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                AJournalAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
 
                 /* Retrieve info on the ledger. */
                 ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
@@ -142,7 +136,12 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
 
                 //TODO: get number of decimal places for Currency and set format below
-                StoreNumericFormat = string.Empty;
+                StoreNumericFormat = "#" + CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator + "##0";
+            	if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits > 0)
+            	{
+            		string DecPls = new String('0', CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits);
+            		StoreNumericFormat += CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + DecPls;
+            	}
                 //NumDecPl = 2;
 
                 AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, DBTransaction);
@@ -203,9 +202,6 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 foreach (DataRow untypedTransRow in TmpTable.Rows)
                 {
-                    //string gLMsEQ = untypedTransRow[0].ToString();
-                    //string gLMAcctCode = untypedTransRow[1].ToString();
-                    //string gLMAcctCode = untypedTransRow[2].ToString();
                     string gLMAcctCode = untypedTransRow[3].ToString();
                     string gLMCostCCode = untypedTransRow[4].ToString();
                     string gLMAcctType = untypedTransRow[5].ToString();
@@ -329,16 +325,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                                      || (Narrative.Substring(0, 15) == MFinanceConstants.NARRATIVE_GB_GIFT_BATCH)))
                             )
                         {
-                            /* Put transaction information
-                             *              //TODO
-                             *              EXPORT DELIMITER ","
-                             *               a_general_ledger_master.a_cost_centre_code_c
-                             *               ConvertAccount(a_general_ledger_master.a_account_code_c)
-                             *               STRING(pv_ledger_number_i) + cMonthName + ":" + {&TRANSACTION-TABLE-NAME}.a_narrative_c
-                             *               "ICH-":U + STRING(pv_period_number_i, "99")    // {&TRANSACTION-TABLE-NAME}.a_reference_c
-                             *               {&TRANSACTION-TABLE-NAME}.a_transaction_date_d
-                             *               lv_debit_total_n
-                             *               lv_credit_total_n*/
+                            // Put transaction information
                             DataRow DR = (DataRow)TableForExport.NewRow();
 
                             DR[0] = gLMCostCCode;
@@ -422,7 +409,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AExportDataTable"></param>
         /// <param name="ADBTransaction"></param>
         /// <param name="AVerificationResult"></param>
-        private static void ExportGifts(int ALedgerNumber,
+        public static void ExportGifts(int ALedgerNumber,
             string ACostCentre,
             string AAcctCode,
             string AMonthName,
@@ -540,17 +527,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                             ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + Desc;
                         }
 
-                        //TODO: do export and use ExportDescription
-
-                        /*EXPORT DELIMITER ","
-                         * lv_cost_centre_c
-                         * ConvertAccount(lv_account_c)
-                         * STRING(pv_ledger_number_i) + cMonthName + ":" + ExportDescription
-                         * "ICH-":U + STRING(pv_period_number_i, "99")
-                         * lv_end_d
-                         * lv_individual_debit_total_n
-                         * lv_individual_credit_total_n*/
-
+						//Add data to export table
                         DataRow DR = (DataRow)AExportDataTable.NewRow();
 
                         DR[0] = ACostCentre;
@@ -630,16 +607,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + Desc;
                     }
 
-                    //TODO:
-
-                    /*EXPORT DELIMITER ","
-                     * lv_cost_centre_c
-                     * ConvertAccount(lv_account_c)
-                     * STRING(pv_ledger_number_i) + cMonthName + ":" + ExportDescription
-                     * "ICH-":U + STRING(pv_period_number_i, "99")
-                     * lv_end_d
-                     * lv_individual_debit_total_n
-                     * lv_individual_credit_total_n */
+					//Add rows to export table
                     DataRow DR = (DataRow)AExportDataTable.NewRow();
 
                     DR[0] = ACostCentre;

@@ -173,26 +173,5 @@ namespace Tests.MFinance.Server.ICH
                 "Performing ICH Email File Generation Failed!" + VerificationResults.BuildVerificationResultString());
         }
 
-        /// <summary>
-        /// Test whether the code opens a text file and replaces the first line
-        ///  with the specified string
-        /// </summary>
-        [Test]
-        public void TestFileHeaderReplace()
-        {
-            string fileName = @"C:\Test.csv";
-            int PeriodNumber = 4;
-            string StandardCostCentre = "4300";
-            string CostCentre = "78";
-            string Currency = "USD";
-            string TableForExportHeader = "/** Header **" + "," +
-                                          PeriodNumber.ToString() + "," +
-                                          StandardCostCentre + "," +
-                                          CostCentre + "," +
-                                          DateTime.Today.ToShortDateString() + "," +
-                                          Currency;
-
-            TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader);
-        }
     }
 }
