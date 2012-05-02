@@ -365,9 +365,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            writer.Template.AddToCodelet("CONTROLINITIALISATION",
-                "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
-
             if (FLocation && !ctrl.HasAttribute("Dock"))
             {
                 writer.SetControlProperty(ctrl, "Location", "new System.Drawing.Point(2,2)");
