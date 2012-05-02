@@ -67,13 +67,12 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="ALedgerNumber">ICH Ledger number</param>
         /// <param name="APeriodNumber">Period</param>
-        /// <param name="AICHNumber"></param>
-        /// <param name="ACurrencyType">Currency type</param>
+        /// <param name="AICHNumber">ICH Processing Number</param>
+        /// <param name="ACurrencyType">Currency type: 1 = base, 2 = intl</param>
         /// <param name="AFileName">File name to process</param>
         /// <param name="AEmail">If true then send email</param>
         /// <param name="AVerificationResult">Error messaging</param>
-        /// <returns></returns>
-        public void GenerateStewardshipFile(int ALedgerNumber,
+        public static void GenerateStewardshipFile(int ALedgerNumber,
             int APeriodNumber,
             int AICHNumber,
             int ACurrencyType,
@@ -164,16 +163,17 @@ namespace Ict.Petra.Server.MFinance.ICH
                             {
                                 DataRow DR = (DataRow)TableForExport.NewRow();
 
-                                DR.ItemArray[0] = PeriodEndDate;
-                                DR.ItemArray[1] = StandardCostCentre;
-                                DR.ItemArray[2] = DateToday;
-                                DR.ItemArray[3] = Currency;
-                                DR.ItemArray[4] = CostCentre;
-                                DR.ItemArray[5] = IncomeAmount;
-                                DR.ItemArray[6] = ExpenseAmount;
-                                DR.ItemArray[7] = XferAmount;
+                                DR[0] = PeriodEndDate;
+                                DR[1] = StandardCostCentre;
+                                DR[2] = DateToday;
+                                DR[3] = Currency;
+                                DR[4] = CostCentre;
+                                DR[5] = IncomeAmount;
+                                DR[6] = ExpenseAmount;
+                                DR[7] = XferAmount;
 
                                 TableForExport.Rows.Add(DR);
+                                TableForExport.AcceptChanges();
                             }
 
                             IncomeAmount = 0;
@@ -202,16 +202,17 @@ namespace Ict.Petra.Server.MFinance.ICH
                 {
                     DataRow DR = (DataRow)TableForExport.NewRow();
 
-                    DR.ItemArray[0] = PeriodEndDate;
-                    DR.ItemArray[1] = StandardCostCentre;
-                    DR.ItemArray[2] = DateToday;
-                    DR.ItemArray[3] = Currency;
-                    DR.ItemArray[4] = CostCentre;
-                    DR.ItemArray[5] = IncomeAmount;
-                    DR.ItemArray[6] = ExpenseAmount;
-                    DR.ItemArray[7] = XferAmount;
+                    DR[0] = PeriodEndDate;
+                    DR[1] = StandardCostCentre;
+                    DR[2] = DateToday;
+                    DR[3] = Currency;
+                    DR[4] = CostCentre;
+                    DR[5] = IncomeAmount;
+                    DR[6] = ExpenseAmount;
+                    DR[7] = XferAmount;
 
                     TableForExport.Rows.Add(DR);
+                    TableForExport.AcceptChanges();
                 }
 
                 //Create the XMLDoc ready for export to CSV
@@ -221,6 +222,11 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if (AEmail)
                 {
+                    string EmailAddress = string.Empty;
+                    string SenderAddress = TAppSettingsManager.GetValue("SenderAddress");
+                    string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
+                    string HTMLText = string.Empty;
+
                     AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
                     AEmailDestinationRow TemplateRow2 = (AEmailDestinationRow)AEmailDestTable.NewRowTyped(false);
 
@@ -232,12 +238,17 @@ namespace Ict.Petra.Server.MFinance.ICH
                         operators2,
                         null,
                         DBTransaction);
-                    AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
 
-                    string SenderAddress = "";
-                    string EmailAddress = EmailDestinationRow.EmailAddress;
-                    string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
-                    string HTMLText = string.Empty;
+                    if (AEmailDestinationTable.Count == 0)
+                    {
+                        //EmailAddress = TAppSettingsManager.GetValue("Sender.Email");
+                        throw new Exception("No destination email addresses found!");
+                    }
+                    else
+                    {
+                        AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
+                        EmailAddress = EmailDestinationRow.EmailAddress;
+                    }
 
                     //Read the file title
                     FileInfo FileDetails = new FileInfo(AFileName);
@@ -905,7 +916,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if ((LedgerNo != PreviousLedger) || (PeriodNo != PreviousPeriod) || (RunNo != PreviousRunNumber))
                 {
-                    Successful = GenerateStewardshipBatch(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
+                    Successful = GenerateStewardshipBatchFromReportFile(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
                             "00") + "00", FileName, ref ALogWriter);
                 }
                 else
@@ -954,7 +965,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AFromCostCentre">Fund to which stewardship relates</param>
         /// <param name="AFileName">Filename of stewardship report to process</param>
         /// <param name="ALogWriter">TextWriter for log file</param>
-        private bool GenerateStewardshipBatch(int ALedgerNumber,
+        private bool GenerateStewardshipBatchFromReportFile(int ALedgerNumber,
             int AYear,
             int APeriod,
             int ARunNumber,
