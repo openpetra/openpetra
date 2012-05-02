@@ -137,11 +137,13 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 //TODO: get number of decimal places for Currency and set format below
                 StoreNumericFormat = "#" + CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator + "##0";
-            	if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits > 0)
-            	{
-            		string DecPls = new String('0', CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits);
-            		StoreNumericFormat += CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + DecPls;
-            	}
+
+                if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits > 0)
+                {
+                    string DecPls = new String('0', CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits);
+                    StoreNumericFormat += CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + DecPls;
+                }
+
                 //NumDecPl = 2;
 
                 AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, DBTransaction);
@@ -527,7 +529,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                             ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + Desc;
                         }
 
-						//Add data to export table
+                        //Add data to export table
                         DataRow DR = (DataRow)AExportDataTable.NewRow();
 
                         DR[0] = ACostCentre;
@@ -607,7 +609,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + Desc;
                     }
 
-					//Add rows to export table
+                    //Add rows to export table
                     DataRow DR = (DataRow)AExportDataTable.NewRow();
 
                     DR[0] = ACostCentre;

@@ -99,54 +99,52 @@ namespace Tests.MFinance.Server.ICH
 
             TGenHOSAFilesReports.ReplaceHeaderInFile(fileName, TableForExportHeader);
         }
-        
-        
+
         /// <summary>
         /// Test generation of HOSA files
         /// </summary>
         [Test]
         public void TestGenerateHOSAFiles()
         {
-        	int LedgerNumber = FLedgerNumber;
+            int LedgerNumber = FLedgerNumber;
             int PeriodNumber = 4;
             int IchNumber = 1;
             string CostCentre = "73";
             int Currency = 0;  //0 = base 1 = intl
             string FileName = Path.GetTempPath() + @"\TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
-            
-            TGenHOSAFilesReports.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
-            
-			Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "Performing HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
 
+            TGenHOSAFilesReports.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
+
+            Assert.IsFalse(VerificationResults.HasCriticalErrors,
+                "Performing HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
         }
-        
+
         /// <summary>
         /// Test generation of HOSA reports
         /// </summary>
         [Test]
         public void TestGenerateHOSAReports()
         {
-        	int LedgerNumber = FLedgerNumber;
+            int LedgerNumber = FLedgerNumber;
             int PeriodNumber = 4;
             int IchNumber = 1;
             string Currency = "USD";
             TVerificationResultCollection VerificationResults;
-            
-           	TGenHOSAFilesReports.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
-           	
-			Assert.IsFalse(VerificationResults.HasCriticalErrors,
+
+            TGenHOSAFilesReports.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
+
+            Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "Performing HOSA Report Generation Failed!" + VerificationResults.BuildVerificationResultString());
         }
-        
+
         /// <summary>
         /// Test the exporting of gifts as part of the HOSA process
         /// </summary>
         [Test]
         public void TestExportGifts()
         {
-        	int LedgerNumber = FLedgerNumber;
+            int LedgerNumber = FLedgerNumber;
             string CostCentre = "73";
             string AcctCode = "10001";
             string MonthName = "April";
@@ -156,39 +154,49 @@ namespace Tests.MFinance.Server.ICH
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 1;
             DataTable TableForExport = new DataTable();
-            
+
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
-        	
+
             bool NewTransaction = false;
 
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             //Create DataTable to receive exported transactions
-			TableForExport.Columns.Add("CostCentre", typeof(string));
+            TableForExport.Columns.Add("CostCentre", typeof(string));
             TableForExport.Columns.Add("Account", typeof(string));
             TableForExport.Columns.Add("LedgerMonth", typeof(string));
             TableForExport.Columns.Add("ICHPeriod", typeof(string));
             TableForExport.Columns.Add("Date", typeof(DateTime));
             TableForExport.Columns.Add("IndividualDebitTotal", typeof(decimal));
             TableForExport.Columns.Add("IndividualCreditTotal", typeof(decimal));
-            
-            TGenHOSAFilesReports.ExportGifts(LedgerNumber, CostCentre, AcctCode, MonthName, PeriodNumber, PeriodStartDate, PeriodEndDate, Base, IchNumber, ref TableForExport, ref DBTransaction, ref VerificationResults);
-            
+
+            TGenHOSAFilesReports.ExportGifts(LedgerNumber,
+                CostCentre,
+                AcctCode,
+                MonthName,
+                PeriodNumber,
+                PeriodStartDate,
+                PeriodEndDate,
+                Base,
+                IchNumber,
+                ref TableForExport,
+                ref DBTransaction,
+                ref VerificationResults);
+
             TableForExport.AcceptChanges();
-            
+
             DataRow[] DR = TableForExport.Select();
-            
-			Assert.IsFalse(VerificationResults.HasCriticalErrors,
+
+            Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "HOSA - Performing Export of gifts Failed!" + VerificationResults.BuildVerificationResultString());
-            
+
             Assert.IsTrue((DR.Length > 0),
-                         "HOSA - Performing Export of gifts Failed to return any rows!");
+                "HOSA - Performing Export of gifts Failed to return any rows!");
 
             if (NewTransaction)
             {
-            	DBAccess.GDBAccessObj.RollbackTransaction();
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
         }
-        
     }
 }

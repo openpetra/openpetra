@@ -172,6 +172,5 @@ namespace Tests.MFinance.Server.ICH
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
                 "Performing ICH Email File Generation Failed!" + VerificationResults.BuildVerificationResultString());
         }
-
     }
 }
