@@ -55,38 +55,11 @@ namespace Ict.Tools.GenerateWinForms
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmYamlPreview));
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.txtYamlSrc = new System.Windows.Forms.TextBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnPreview = new System.Windows.Forms.ToolStripButton();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            this.pnlWindow = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            //
-            // splitContainer1
-            //
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            //
-            // splitContainer1.Panel1
-            //
-            this.splitContainer1.Panel1.Controls.Add(this.txtYamlSrc);
-            this.splitContainer1.Size = new System.Drawing.Size(660, 334);
-            this.splitContainer1.SplitterDistance = 220;
-            this.splitContainer1.TabIndex = 0;
-            //
-            // txtYamlSrc
-            //
-            this.txtYamlSrc.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtYamlSrc.Location = new System.Drawing.Point(0, 0);
-            this.txtYamlSrc.Multiline = true;
-            this.txtYamlSrc.Name = "txtYamlSrc";
-            this.txtYamlSrc.Size = new System.Drawing.Size(660, 220);
-            this.txtYamlSrc.TabIndex = 0;
             //
             // toolStrip1
             //
@@ -106,31 +79,37 @@ namespace Ict.Tools.GenerateWinForms
             this.btnPreview.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.Size = new System.Drawing.Size(49, 22);
-            this.btnPreview.Text = "Preview";
+            this.btnPreview.Text = "Refresh";
+            this.btnPreview.ToolTipText = "Refresh";
             this.btnPreview.Click += new System.EventHandler(this.btnPreviewClick);
+            //
+            // pnlWindow
+            //
+            this.pnlWindow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlWindow.Location = new System.Drawing.Point(0, 25);
+            this.pnlWindow.Name = "pnlWindow";
+            this.pnlWindow.Size = new System.Drawing.Size(660, 309);
+            this.pnlWindow.TabIndex = 2;
             //
             // TFrmYamlPreview
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(660, 334);
+            this.Controls.Add(this.pnlWindow);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.splitContainer1);
             this.Name = "TFrmYamlPreview";
             this.Text = "YamlPreview";
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
+            this.Activated += new System.EventHandler(this.TFrmYamlPreviewActivated);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.Panel pnlWindow;
+
         private System.Windows.Forms.ToolStripButton btnPreview;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.TextBox txtYamlSrc;
-        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }

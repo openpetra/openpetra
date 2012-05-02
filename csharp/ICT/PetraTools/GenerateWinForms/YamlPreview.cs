@@ -28,6 +28,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
+using System.Threading;
 using System.Resources;
 using System.CodeDom.Compiler;
 using Microsoft.CSharp;
@@ -88,12 +89,22 @@ namespace Ict.Tools.GenerateWinForms
             parameters.ReferencedAssemblies.Add("System.dll");
             parameters.ReferencedAssemblies.Add("System.Drawing.dll");
             parameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
-            parameters.ReferencedAssemblies.Add(Path.GetDirectoryName(Application.ExecutablePath) + Path.DirectorySeparatorChar +
-                "Ict.Common.Controls.dll");
-            parameters.ReferencedAssemblies.Add(Path.GetDirectoryName(Application.ExecutablePath) + Path.DirectorySeparatorChar +
-                "Ict.Petra.Client.CommonControls.Gui.dll");
+
+            string binDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+
+            // reference all dlls in the bin directory
+            string[] dllnames = Directory.GetFiles(binDirectory, "*.dll");
+
+            foreach (string dllName in dllnames)
+            {
+                if (!dllName.EndsWith("sqlite3.dll"))
+                {
+                    parameters.ReferencedAssemblies.Add(dllName);
+                }
+            }
 
             string ResourceXFile = FFilename.Replace(".yaml", "-generated.resx");
+            //"../../../../tmp/" +
             string ResourcesFile = NamespaceAndClass + ".resources";
 
             if (File.Exists(ResourceXFile))
@@ -127,28 +138,22 @@ namespace Ict.Tools.GenerateWinForms
             return results;
         }
 
-        bool ShowScreen(Assembly AAssembly)
+        Form WindowToOpen;
+
+        void ShowWindow()
+        {
+            WindowToOpen.ShowDialog();
+        }
+
+        bool ShowScreen(Assembly AAssembly, string strTypeName)
         {
             try
             {
-                string typeName = "T" + Path.GetFileNameWithoutExtension(FFilename);
-
-                Type type = AAssembly.GetType(typeName);
+                Type type = AAssembly.GetType(strTypeName);
 
                 if (type == null)
                 {
-                    foreach (Type t in AAssembly.GetTypes())
-                    {
-                        if (t.ToString().EndsWith(typeName))
-                        {
-                            type = t;
-                        }
-                    }
-                }
-
-                if (type == null)
-                {
-                    TLogging.Log("cannot find type " + typeName);
+                    TLogging.Log("cannot find type " + strTypeName);
 
                     foreach (Type t in AAssembly.GetTypes())
                     {
@@ -158,15 +163,22 @@ namespace Ict.Tools.GenerateWinForms
                     return false;
                 }
 
-                Object obj = Activator.CreateInstance(type);
+                Control obj = (Control)Activator.CreateInstance(type);
 
-                MethodInfo method = type.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
-                    new Type[] { }, null);
-
-                if (method != null)
+                if (obj is Form)
                 {
-                    method.Invoke(obj, null);
-                    return true;
+                    WindowToOpen = (Form)obj;
+
+                    Thread t = new Thread(new ThreadStart(ShowWindow));
+                    t.SetApartmentState(ApartmentState.STA);
+                    t.Start();
+                }
+                else
+                {
+                    obj.Dock = DockStyle.Fill;
+
+                    pnlWindow.Controls.Clear();
+                    pnlWindow.Controls.Add(obj);
                 }
             }
             catch (Exception e)
@@ -188,7 +200,7 @@ namespace Ict.Tools.GenerateWinForms
             StreamReader sr = new StreamReader(FFilename.Replace(".yaml", "-generated.Designer.cs"));
             StringBuilder DesignerCode = new StringBuilder();
 
-            string NamespaceAndClass = string.Empty;
+            string Namespace = string.Empty;
             string ClassName = "T" + Path.GetFileNameWithoutExtension(FFilename);
 
             while (!sr.EndOfStream)
@@ -197,7 +209,7 @@ namespace Ict.Tools.GenerateWinForms
 
                 if (line.StartsWith("namespace "))
                 {
-                    NamespaceAndClass = line.Substring("namespace ".Length) + "." + ClassName;
+                    Namespace = line.Substring("namespace ".Length);
                 }
 
                 // ignore event handlers
@@ -206,7 +218,17 @@ namespace Ict.Tools.GenerateWinForms
                 }
                 else if (line.Contains("partial class"))
                 {
-                    line = line.Replace("partial", string.Empty) + ": Form {";
+                    ClassName = line.Substring("    partial class ".Length);
+
+                    if (Path.GetFileNameWithoutExtension(FFilename).StartsWith("UC"))
+                    {
+                        line = line.Replace("partial", string.Empty) + ": UserControl {";
+                    }
+                    else
+                    {
+                        line = line.Replace("partial", string.Empty) + ": Form {";
+                    }
+
                     DesignerCode.Append(line).Append(Environment.NewLine);
                     line = "public " + ClassName + "() : base()     { InitializeComponent(); }";
                     DesignerCode.Append(line).Append(Environment.NewLine);
@@ -221,8 +243,15 @@ namespace Ict.Tools.GenerateWinForms
 
             sr.Close();
 
+            if (TLogging.DebugLevel > 0)
+            {
+                StreamWriter sw = new StreamWriter("../../../../log/tempPreviewWinforms.cs");
+                sw.WriteLine(DesignerCode.ToString());
+                sw.Close();
+            }
+
             // compile the designer code
-            CompilerResults results = CompileForm(DesignerCode.ToString(), NamespaceAndClass);
+            CompilerResults results = CompileForm(DesignerCode.ToString(), Namespace + "." + ClassName);
 
             if (results.Errors.HasErrors)
             {
@@ -231,7 +260,18 @@ namespace Ict.Tools.GenerateWinForms
             }
 
             // open the form
-            ShowScreen(results.CompiledAssembly);
+            ShowScreen(results.CompiledAssembly, Namespace + "." + ClassName);
+        }
+
+        bool RunOnlyOnce = true;
+
+        void TFrmYamlPreviewActivated(object sender, EventArgs e)
+        {
+            if (RunOnlyOnce)
+            {
+                RunOnlyOnce = false;
+                btnPreviewClick(null, null);
+            }
         }
     }
 }
