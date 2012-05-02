@@ -223,11 +223,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 if (AEmail)
                 {
                     string EmailAddress = string.Empty;
-
-                    //TODO: swap lines below**************************************
-                    string SenderAddress = @"chris.thomas@om.org";
-                    //string SenderAddress = TAppSettingsManager.GetValue("SenderAddress");
-                    //*********************************************************
+                    string SenderAddress = TAppSettingsManager.GetValue("SenderAddress");
                     string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
                     string HTMLText = string.Empty;
 
@@ -245,8 +241,8 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     if (AEmailDestinationTable.Count == 0)
                     {
-                        //TODO: replace below
-                        EmailAddress = @"cmt1@talk21.com";
+                        //EmailAddress = TAppSettingsManager.GetValue("Sender.Email");
+                        throw new Exception("No destination email addresses found!");
                     }
                     else
                     {

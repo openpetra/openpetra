@@ -112,7 +112,7 @@ namespace Tests.MFinance.Server.ICH
             int IchNumber = 1;
             string CostCentre = "73";
             int Currency = 0;  //0 = base 1 = intl
-            string FileName = @"C:\TestGenHOSAFile.csv";
+            string FileName = Path.GetTempPath() + @"\TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
             
             TGenHOSAFilesReports.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
