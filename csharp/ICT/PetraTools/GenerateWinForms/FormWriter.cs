@@ -193,7 +193,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                     else
                     {
-                        attributes += line;
+                        if (((propertyName == "Location") || (propertyName == "Size"))
+                            && FControlProperties[controlName].ContainsKey("Dock")
+                            && FControlProperties[controlName]["Dock"].Contains("DockStyle.Fill"))
+                        {
+                            // do not write Location and Size for Dock Fill
+                        }
+                        else
+                        {
+                            attributes += line;
+                        }
                     }
                 }
 

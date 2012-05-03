@@ -609,7 +609,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.HasAttribute("Margin"))
             {
-                writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(" + ctrl.GetAttribute("Margin") + ")");
+                string margin = ctrl.GetAttribute("Margin");
+
+                if (margin != "0")
+                {
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(" + margin + ")");
+                }
             }
 
             if (ctrl.HasAttribute("BackColor"))

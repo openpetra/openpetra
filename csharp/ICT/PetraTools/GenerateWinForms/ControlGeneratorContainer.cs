@@ -485,8 +485,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.GetAttribute("UseTableLayout") == "true")
             {
-                if ((ctrl.controlTypePrefix == "pnl")
-                    && ctrl.parentName.StartsWith("pnl") || ctrl.parentName.StartsWith("grp"))
+                if (ctrl.GetAttribute("Margin") == "0")
                 {
                     if (!ctrl.HasAttribute("MarginTop"))
                     {
