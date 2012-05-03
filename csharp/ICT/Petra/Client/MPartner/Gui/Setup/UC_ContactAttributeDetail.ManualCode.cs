@@ -197,11 +197,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         }
 
         /// <summary>
-        /// Call this method from the parent page's GetDetailDataFromControlsManual method
+        /// Call this method from the parent page's GetDetailDataFromControlsManual method. This will trigger a call to this control's method below
         /// </summary>
         public void GetDetailsFromControls()
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        }
+
+        private void GetDetailDataFromControlsManual(PContactAttributeDetailRow ARow)
+        {
         }
 
         /// <summary>
