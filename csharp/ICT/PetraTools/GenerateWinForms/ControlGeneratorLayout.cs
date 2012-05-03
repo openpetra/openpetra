@@ -313,6 +313,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         TControlDef childctrl = FGrid[columnCounter, rowCounter];
 
+                        if (childctrl.GetAttribute("Stretch") == "horizontally")
+                        {
+                            // use the full column width
+                            // add up spanning columns
+                            int concatenatedColumnWidth = ColumnWidth[columnCounter];
+
+                            for (int colSpanCounter = 1; colSpanCounter < childctrl.colSpan; colSpanCounter++)
+                            {
+                                concatenatedColumnWidth += ColumnWidth[columnCounter + colSpanCounter];
+                            }
+
+                            if (concatenatedColumnWidth > 0)
+                            {
+                                writer.SetControlProperty(childctrl, "Size",
+                                    String.Format("new System.Drawing.Size({0}, {1})", concatenatedColumnWidth, childctrl.Height));
+                            }
+                        }
+
                         writer.SetControlProperty(childctrl.controlName,
                             "Location",
                             String.Format("new System.Drawing.Point({0},{1})",
