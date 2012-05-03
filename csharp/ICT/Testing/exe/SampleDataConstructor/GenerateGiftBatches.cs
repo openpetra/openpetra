@@ -30,6 +30,7 @@ using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -63,8 +64,44 @@ namespace Ict.Testing.SampleDataConstructor
             {
                 throw new Exception(VerificationResult.BuildVerificationResultString());
             }
+        }
 
-            // TODO post all gift batches??? apart from last open period?
+        /// <summary>
+        /// post all gift batches in the given period, but leave some (or none) unposted
+        /// </summary>
+        public static bool PostBatches(int AYear, int APeriod, int ALeaveBatchesUnposted = 0)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            AGiftBatchRow GiftBatchTemplateRow = MainDS.AGiftBatch.NewRowTyped(false);
+
+            GiftBatchTemplateRow.LedgerNumber = FLedgerNumber;
+            GiftBatchTemplateRow.BatchYear = AYear;
+            GiftBatchTemplateRow.BatchPeriod = APeriod;
+            GiftBatchTemplateRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
+            AGiftBatchAccess.LoadUsingTemplate(MainDS, GiftBatchTemplateRow, null);
+
+            int countUnPosted = MainDS.AGiftBatch.Count;
+
+            foreach (AGiftBatchRow batch in MainDS.AGiftBatch.Rows)
+            {
+                if (countUnPosted <= ALeaveBatchesUnposted)
+                {
+                    break;
+                }
+
+                countUnPosted--;
+
+                TVerificationResultCollection VerificationResult;
+
+                if (!TTransactionWebConnector.PostGiftBatch(batch.LedgerNumber, batch.BatchNumber, out VerificationResult))
+                {
+                    TLogging.Log(VerificationResult.BuildVerificationResultString());
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private static SortedList <DateTime, List <XmlNode>>SortGiftsByDate(string AInputBeneratorFile)
@@ -109,6 +146,8 @@ namespace Ict.Testing.SampleDataConstructor
                     GiftsPerDate[dateForGift].Add(RecordNode);
 
                     dateForGift = dateForGift.AddMonths(monthStep);
+
+                    // TODO support more than just one year?
                 } while (monthStep > 0 && startdate.Year == dateForGift.Year);
 
                 RecordNode = RecordNode.NextSibling;

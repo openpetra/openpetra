@@ -122,6 +122,22 @@ namespace Ict.Testing.SampleDataConstructor
                     SampleDataGiftBatches.GenerateBatches(Path.Combine(datadirectory, "donations.csv"));
                 }
 
+                TLogging.Log("(6) Post gift batches");
+
+                operation = TAppSettingsManager.GetValue("operation", "postDonations");
+
+                if ((operation == "postDonations") || (operation == "all"))
+                {
+                    for (int periodCounter = 1; periodCounter < 6; periodCounter++)
+                    {
+                        TLogging.Log("posting gift batches of period " + periodCounter.ToString());
+                        SampleDataGiftBatches.PostBatches(0, periodCounter);
+                    }
+
+                    TLogging.Log("posting gift batches of period 6");
+                    SampleDataGiftBatches.PostBatches(0, 6, 1);
+                }
+
                 TLogging.Log("Completed.");
             }
             catch (Exception e)
