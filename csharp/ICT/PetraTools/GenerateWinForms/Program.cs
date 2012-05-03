@@ -23,9 +23,11 @@
 //
 using System;
 using System.Xml;
+using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Ict.Common;
 using Ict.Common.IO; // Implicit reference
 using Ict.Tools.DBXML;
@@ -139,6 +141,10 @@ namespace Ict.Tools.GenerateWinForms
                     TFrmYamlPreview PreviewWindow = new TFrmYamlPreview(
                         TAppSettingsManager.GetValue("ymlfile"),
                         SelectedLocalisation);
+
+                    AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
+                    Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler);
+
                     PreviewWindow.ShowDialog();
 
                     return;
@@ -225,6 +231,16 @@ namespace Ict.Tools.GenerateWinForms
 
                 Environment.Exit(-1);
             }
+        }
+
+        private static void UnhandledExceptionHandler(object ASender, UnhandledExceptionEventArgs AEventArgs)
+        {
+            TLogging.Log(AEventArgs.ExceptionObject.ToString());
+        }
+
+        private static void UnhandledThreadExceptionHandler(object ASender, ThreadExceptionEventArgs AEventArgs)
+        {
+            TLogging.Log(AEventArgs.Exception.ToString());
         }
     }
 
