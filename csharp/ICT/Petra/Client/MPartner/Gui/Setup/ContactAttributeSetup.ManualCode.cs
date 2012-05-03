@@ -252,9 +252,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             VerificationResult = TNumericalChecks.IsPositiveInteger(Convert.ToInt32(ARow[NumDetailCodesColumnOrdinal]),
                 "Contact Detail",
                 this, ValidationColumn, chkDetailActive);
+
             if (VerificationResult != null)
             {
-                VerificationResult.OverrideResultText(Catalog.GetString("You must create at least one 'Attribute Detail Code' for each 'Contact Attribute'."));
+                VerificationResult.OverrideResultText(Catalog.GetString(
+                        "You must create at least one 'Attribute Detail Code' for each 'Contact Attribute'."));
             }
 
             // Handle addition to/removal from TVerificationResultCollection.

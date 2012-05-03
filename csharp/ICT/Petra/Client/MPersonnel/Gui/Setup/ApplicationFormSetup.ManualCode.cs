@@ -70,11 +70,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             DataColumn ValidationColumn = ARow.Table.Columns[PtAppFormTypesTable.ColumnFormSentIndicatorId];
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TVerificationResult VerificationResult = TGuiChecks.ValidateCheckBoxPairIsChecked(chkDetailFormSentIndicator, chkDetailFormReceivedIndicator);
+            TVerificationResult VerificationResult = TGuiChecks.ValidateCheckBoxPairIsChecked(chkDetailFormSentIndicator,
+                chkDetailFormReceivedIndicator);
+
             if (VerificationResult != null)
             {
-                VerificationResult = new TScreenVerificationResult(this, ValidationColumn, VerificationResult.ResultText, Catalog.GetString("Sending/Receiving"), 
-                    VerificationResult.ResultCode, chkDetailFormSentIndicator, TResultSeverity.Resv_Critical);
+                VerificationResult =
+                    new TScreenVerificationResult(this, ValidationColumn, VerificationResult.ResultText, Catalog.GetString("Sending/Receiving"),
+                        VerificationResult.ResultCode, chkDetailFormSentIndicator, TResultSeverity.Resv_Critical);
             }
 
             // Handle addition to/removal from TVerificationResultCollection

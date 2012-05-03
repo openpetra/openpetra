@@ -327,6 +327,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             contextView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
+
             if (contextView.Count > 0)
             {
                 grdDetails.Selection.SelectRow(1, true);
@@ -466,7 +467,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
                 FPetraUtilsObject.SetChangedFlag();
 
-                DataView contextView = new DataView(FMainDS.PDataLabel, "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
+                DataView contextView = new DataView(FMainDS.PDataLabel,
+                    "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
                 contextView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
                 grdDetails.Refresh();
@@ -852,13 +854,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             TVerificationResult VerificationResult = null;
 
             // Personnel context is bound to be valid because it has no UsedBy UI
-            if (CurrentContext == Context.Partner || CurrentContext == Context.Application)
+            if ((CurrentContext == Context.Partner) || (CurrentContext == Context.Application))
             {
                 // The added column at the end of the table, which is a concatenated string of checkedListBox entries, must not be empty
                 ValidationColumn = ARow.Table.Columns[UsedByColumnOrdinal];
                 VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow[UsedByColumnOrdinal].ToString(),
                     GUIUsedBy,
                     this, ValidationColumn, clbUsedBy);
+
                 if (VerificationResult != null)
                 {
                     if (CurrentContext == Context.Partner)
