@@ -37,9 +37,10 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Common;
-using Ict.Petra.Server.MFinance.Gift.WebConnectors;
-using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.ICH;
+using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -285,5 +286,20 @@ namespace Tests.MFinance.Server.ICH
             Assert.AreEqual(20.0m * (100.0m - 7.0m) / 100.0m, ClearingHouseAfter - ClearingHouseBefore,
                 "We have to give everything apart from our 7% to ICH");
         }
+
+//        /// <summary>
+//        /// Test the creation of the ICH Stewardship batch
+//        /// </summary>
+//        [Test]
+//        public void TestGenerateICHStewardshipBatch()
+//        {
+//                      //ImportAdminFees();
+//
+//              int PeriodNumber = 5;
+//
+//              TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+//
+//              Assert.IsTrue(TStewardshipCalculationWebConnector.GenerateICHStewardshipBatch(FLedgerNumber, PeriodNumber, ref VerificationResults),"Did not create ICH Stewardship Batch");
+//        }
     }
 }

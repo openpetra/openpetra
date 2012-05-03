@@ -200,7 +200,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
-        /// Validates the Personnel Staff data of a Partner.
+        /// Validates the Relationship data of a Partner.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
@@ -209,21 +209,53 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>void</returns>
-        public static void ValidatePersonnelStaffDataManual(object AContext, PmStaffDataRow ARow,
+        public static void ValidateRelationshipManual(object AContext, PPartnerRelationshipRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
-            // 'Receiving Field' must be a Partner of Class 'UNIT' and must not be 0
-            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnReceivingFieldId];
+            // 'Partner' must have a valid partner key and must not be 0
+            ValidationColumn = ARow.Table.Columns[PPartnerRelationshipTable.ColumnPartnerKeyId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = IsValidUNITPartner(
-                    ARow.ReceivingField, false, THelper.NiceValueDescription(
-                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                    ARow.PartnerKey, new TPartnerClass[] { }, false, "",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+
+                // 'Partner Key' and 'Another Partner Key'must not be the same
+                // (Partner Key 0 will be dealt with by other checks)
+                if ((ARow.PartnerKey != 0)
+                    && (ARow.PartnerKey == ARow.RelationKey))
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUESIDENTICAL_ERROR,
+                                new string[] { ARow.PartnerKey.ToString(), ARow.RelationKey.ToString() })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                //if (AVerificationResultCollection.Contains(ValidationColumn))
+                //{xxx
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                //}
+            }
+
+            // 'Another Partner' must have a valid partner key and must not be 0
+            ValidationColumn = ARow.Table.Columns[PPartnerRelationshipTable.ColumnRelationKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                    ARow.RelationKey, new TPartnerClass[] { }, false, "",
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
@@ -233,74 +265,40 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
 
-            // 'Home Office' must be a Partner of Class 'UNIT'
-            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnHomeOfficeId];
+            // 'Relation' must be valid and have a value
+            ValidationColumn = ARow.Table.Columns[PPartnerRelationshipTable.ColumnRelationNameId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = IsValidUNITPartner(ARow.HomeOffice, true,
-                    THelper.NiceValueDescription(ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                PRelationTable RelationTable;
+                PRelationRow RelationRow;
 
-                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
-                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
-                // ResultText!
-                AVerificationResultCollection.Remove(ValidationColumn);
-                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
-            }
+                VerificationResult = null;
 
-            // 'Recruiting Office' must be a Partner of Class 'UNIT'
-            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnOfficeRecruitedById];
+                if ((!ARow.IsRelationNameNull())
+                    && (ARow.RelationName != String.Empty))
+                {
+                    RelationTable = (PRelationTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.RelationList);
+                    RelationRow = (PRelationRow)RelationTable.Rows.Find(ARow.RelationName);
 
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = IsValidUNITPartner(ARow.OfficeRecruitedBy, true,
-                    THelper.NiceValueDescription(ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    // 'Relation' must be valid
+                    if ((RelationRow != null)
+                        && !RelationRow.ValidRelation)
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.RelationName })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                }
+                else
+                {
+                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.RelationName,
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
 
-                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
-                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
-                // ResultText!
-                AVerificationResultCollection.Remove(ValidationColumn);
-                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
-            }
-
-            // 'Start of Commitment' must be defined
-            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnStartOfCommitmentId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.StartOfCommitment,
-                    ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
-                    ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-
-            // 'End of Commitment' must be later than 'Start of Commitment'
-            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnEndOfCommitmentId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TDateChecks.FirstGreaterThanSecondDate(ARow.EndOfCommitment, ARow.StartOfCommitment,
-                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-
-            // 'Status' must have a value
-            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnStatusCodeId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.StatusCode,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
+                // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
