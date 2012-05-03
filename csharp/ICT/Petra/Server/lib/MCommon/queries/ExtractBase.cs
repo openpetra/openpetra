@@ -248,41 +248,39 @@ namespace Ict.Petra.Server.MCommon.queries
             }
 
             // add date clause if address should only be valid at a certain date
-            if (AParameters.Exists("param_only_addresses_valid_on"))
-            {
-                if (AParameters.Get("param_only_addresses_valid_on").ToBool())
+            if (AParameters.Exists("param_only_addresses_valid_on")
+                && (AParameters.Get("param_only_addresses_valid_on").ToBool()))
+           	{
+                if (AParameters.Exists("param_address_date_valid_on")
+                    && !AParameters.Get("param_address_date_valid_on").IsZeroOrNull())
                 {
-                    if (AParameters.Exists("param_address_date_valid_on")
-                        && !AParameters.Get("param_address_date_valid_on").IsZeroOrNull())
-                    {
-                        DateValue = AParameters.Get("param_address_date_valid_on").ToDate();
-                    }
-                    else
-                    {
-                        // if date not given then use "Today"
-                        DateValue = DateTime.Today;
-                    }
-
-                    AOdbcParameterList.Add(new OdbcParameter("param_address_date_valid_on_1", OdbcType.Date)
-                        {
-                            Value = DateValue
-                        });
-                    AOdbcParameterList.Add(new OdbcParameter("param_address_date_valid_on_2", OdbcType.Date)
-                        {
-                            Value = DateValue
-                        });
-                    AOdbcParameterList.Add(new OdbcParameter("param_address_date_valid_on_3", OdbcType.Date)
-                        {
-                            Value = DateValue
-                        });
-
-                    WhereClause = WhereClause +
-                                  " AND (   (    pub_p_partner_location.p_date_effective_d <= ?" +
-                                  "      AND pub_p_partner_location.p_date_good_until_d IS NULL)" +
-                                  "  OR (    pub_p_partner_location.p_date_effective_d <= ?" +
-                                  "      AND pub_p_partner_location.p_date_good_until_d >= ?))";
-                    LocationTableNeeded = true;
+                    DateValue = AParameters.Get("param_address_date_valid_on").ToDate();
                 }
+                else
+                {
+                    // if date not given then use "Today"
+                    DateValue = DateTime.Today;
+                }
+
+                AOdbcParameterList.Add(new OdbcParameter("param_address_date_valid_on_1", OdbcType.Date)
+                    {
+                        Value = DateValue
+                    });
+                AOdbcParameterList.Add(new OdbcParameter("param_address_date_valid_on_2", OdbcType.Date)
+                    {
+                        Value = DateValue
+                    });
+                AOdbcParameterList.Add(new OdbcParameter("param_address_date_valid_on_3", OdbcType.Date)
+                    {
+                        Value = DateValue
+                    });
+
+                WhereClause = WhereClause +
+                              " AND (   (    pub_p_partner_location.p_date_effective_d <= ?" +
+                              "      AND pub_p_partner_location.p_date_good_until_d IS NULL)" +
+                              "  OR (    pub_p_partner_location.p_date_effective_d <= ?" +
+                              "      AND pub_p_partner_location.p_date_good_until_d >= ?))";
+                LocationTableNeeded = true;
             }
             else
             {
