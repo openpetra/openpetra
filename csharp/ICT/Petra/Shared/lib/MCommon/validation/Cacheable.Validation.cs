@@ -32,6 +32,8 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MPersonnel.Units.Data;
 
 namespace Ict.Petra.Shared.MCommon.Validation
 {
@@ -377,6 +379,765 @@ namespace Ict.Petra.Shared.MCommon.Validation
                         VerificationResult.OverrideResultText(Catalog.GetString(
                             "You cannot use the option list until you have defined at least one option using the 'Local Data Option List Names' main menu selection"));
                     }
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Application Type screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateApplicationType(object AContext, PtApplicationTypeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtApplicationTypeTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Applicant Status screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateApplicantStatus(object AContext, PtApplicantStatusRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtApplicantStatusTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel LeadershipRating screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateLeadershipRating(object AContext, PtLeadershipRatingRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtLeadershipRatingTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Event Role screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateEventRole(object AContext, PtCongressCodeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtCongressCodeTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Arrival/Departure Point screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateArrivalDeparturePoint(object AContext, PtArrivalPointRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtArrivalPointTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Ability Area screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateAbilityArea(object AContext, PtAbilityAreaRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtAbilityAreaTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Ability Level screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateAbilityLevel(object AContext, PtAbilityLevelRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtAbilityLevelTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Professional Area screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateProfessionalArea(object AContext, PtQualificationAreaRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtQualificationAreaTable.ColumnQualificationDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.QualificationFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.QualificationDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Qualification Level screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateQualificationLevel(object AContext, PtQualificationLevelRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtQualificationLevelTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Vision Area screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateVisionArea(object AContext, PtVisionAreaRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtVisionAreaTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Vision Level screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateVisionLevel(object AContext, PtVisionLevelRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtVisionLevelTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Driver Status screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateDriverStatus(object AContext, PtDriverStatusRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtDriverStatusTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Positions screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidatePositions(object AContext, PtPositionRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtPositionTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Job Assignment Type screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateJobAssignmentTypes(object AContext, PtAssignmentTypeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtAssignmentTypeTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Leaving Code screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateLeavingCode(object AContext, PtLeavingCodeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtLeavingCodeTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Language Level screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateLanguageLevel(object AContext, PtLanguageLevelRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtLanguageLevelTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Passport Type screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidatePassportType(object AContext, PtPassportTypeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtPassportTypeTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Document Type screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateDocumentType(object AContext, PmDocumentTypeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PmDocumentTypeTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Document Type Category screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateDocumentTypeCategory(object AContext, PmDocumentCategoryRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PmDocumentCategoryTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Valuable Item screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateValuableItem(object AContext, PtValuableItemRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtValuableItemTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Skill Category screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateSkillCategory(object AContext, PtSkillCategoryRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtSkillCategoryTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Skill Level screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateSkillLevel(object AContext, PtSkillLevelRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtSkillLevelTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MPersonnel Country Event Level screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateCountryEventLevel(object AContext, PtOutreachPreferenceLevelRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // 'AssignableDate' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PtOutreachPreferenceLevelTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.UnassignableFlag)
+                {
+                    VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel,
+                        true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection

@@ -41,7 +41,7 @@ RootNode:
         txtDetailCode: {Label=Document Type Category, CharacterCasing=Upper, Width=120}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         txtDetailDescription: {Width=250}
-        dtpDetailUnassignableDate: {Label=Unassignable Date}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

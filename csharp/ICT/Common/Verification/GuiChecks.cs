@@ -111,5 +111,26 @@ namespace Ict.Common.Verification
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// Checks if at least one of a pair of checkboxes is checked.
+        /// </summary>
+        /// <param name="ACheckBox1">First CheckBox Control that should be verified.</param>
+        /// <param name="ACheckBox2">Second CheckBox Control that should be verified.</param>
+        /// <returns>TVerificationResult Nil if validation succeeded, otherwise it contains
+        /// details about the problem.
+        /// </returns>
+        public static TVerificationResult ValidateCheckBoxPairIsChecked(System.Windows.Forms.CheckBox ACheckBox1, System.Windows.Forms.CheckBox ACheckBox2)
+        {
+            TVerificationResult ReturnValue = null;
+
+            if (!ACheckBox1.Checked && !ACheckBox2.Checked)
+            {
+                ReturnValue = new TVerificationResult(ACheckBox1.Name, ErrorCodes.GetErrorInfo(
+                        CommonErrorCodes.ERR_INFORMATIONMISSING, StrItemNeedsToBeChecked));
+            }
+
+            return ReturnValue;
+        }
     }
 }

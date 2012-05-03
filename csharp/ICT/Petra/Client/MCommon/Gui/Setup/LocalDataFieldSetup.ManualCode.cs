@@ -871,12 +871,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     }
                 }
 
-                // Handle addition to/removal from TVerificationResultCollection.  In this case we ignore ResultText because it will have been over-ridden by the form
+                // Handle addition to/removal from TVerificationResultCollection.
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, false);
             }
 
-            
-            // Now call the central validation routine
+            // Now call the central validation routine for the other verification tasks
             TSharedValidation_CacheableDataTables.ValidateLocalDataFieldSetup(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }

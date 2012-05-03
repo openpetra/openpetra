@@ -47,7 +47,7 @@ RootNode:
         txtDetailCode: {Label=Role, CharacterCasing=Upper, Width=120}
         txtDetailDescription: {Label=Description, Width=290}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
         pnlCanBeAssignedAs: {ColSpan=3}
             Dock: Fill
