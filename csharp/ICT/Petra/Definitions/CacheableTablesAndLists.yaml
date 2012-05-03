@@ -124,5 +124,6 @@ CachedTables:
     SysMan:
         SysMan:
             DatabaseTables:
-                SUser:
                 SLanguageSpecific:
+            CalculatedLists:
+                UserList:

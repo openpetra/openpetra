@@ -34,6 +34,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     public class TPartnerExtractsMain
     {
         /// <summary>
+        /// open General Extract screen
+        /// </summary>
+        public static void PartnerByGeneralCriteriaExtract(Form AParentForm)
+        {
+            TFrmPartnerByGeneralCriteria frm = new TFrmPartnerByGeneralCriteria(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
         /// open screen to create Publication Extract
         /// </summary>
         public static void PartnerBySubscriptionExtract(Form AParentForm)

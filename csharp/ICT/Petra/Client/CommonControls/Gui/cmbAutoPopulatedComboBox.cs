@@ -39,6 +39,8 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
 using System.Globalization;
@@ -213,7 +215,10 @@ namespace Ict.Petra.Client.CommonControls
             SubscriptionStatus,
 
             /// <summary>todoComment</summary>
-            UnitTypeList
+            UnitTypeList,
+
+            /// <summary>todoComment</summary>
+            UserList
         };
 
         private DataTable FDataCache_ListTable = null;
@@ -811,6 +816,15 @@ namespace Ict.Petra.Client.CommonControls
                     UUnitTypeTable.GetUnitTypeNameDBName(),
                     null);
                     break;
+
+                case TListTableEnum.UserList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMSysMan.GetCacheableSysManTable(TCacheableSysManTablesEnum.UserList),
+                    SUserTable.GetUserIdDBName(),
+                    MSysManConstants.USER_LAST_AND_FIRST_NAME_COLUMNNAME,
+                    null);
+                    break;
             }
         }
 
@@ -1196,6 +1210,10 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.UnitTypeList:
                     this.ColumnWidthCol1 = 90;
                     this.ColumnWidthCol2 = 200;
+                    break;
+
+                case TListTableEnum.UserList:
+                    this.ColumnWidthCol1 = 120;
                     this.ColumnWidthCol2 = 200;
                     break;
             }
