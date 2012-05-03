@@ -651,7 +651,7 @@ namespace Ict.Petra.WebServer.MConference
                 SecondSibling.Clear();
                 CancelledByFinanceOffice.Clear();
 
-                if (rawDataObject["RegistrationCountryCode"].ToString() == "sv-SE")
+                if (rawDataObject.Contains("RegistrationCountryCode") && rawDataObject["RegistrationCountryCode"].ToString() == "sv-SE")
                 {
                     X.Js.Call("SetDateFormat", "Y-m-d");
                 }

@@ -511,7 +511,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     newRow.JSONData = GeneralApplication.RawApplicationData;
                 }
 
-                if (AApplicationStatus == null || AApplicationStatus.Length == 0)
+                if ((AApplicationStatus == null) || (AApplicationStatus.Length == 0))
                 {
                     AApplicationStatus = "on hold";
                 }
@@ -1301,15 +1301,16 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr = myDoc.CreateAttribute("EmailAddress");
                     attr.Value = PartnerLocationRow.EmailAddress;
                     newNode.Attributes.Append(attr);
-                    attr = myDoc.CreateAttribute("DateOfBirth");
-                    attr.Value = new TVariant(PersonRow.DateOfBirth.Value).EncodeToString();
-                    newNode.Attributes.Append(attr);
-                    attr = myDoc.CreateAttribute("DayOfBirth");
-                    attr.Value = PersonRow.DateOfBirth.Value.ToString("MMdd");
-                    newNode.Attributes.Append(attr);
 
                     if (PersonRow.DateOfBirth.HasValue)
                     {
+                        attr = myDoc.CreateAttribute("DateOfBirth");
+                        attr.Value = new TVariant(PersonRow.DateOfBirth.Value).EncodeToString();
+                        newNode.Attributes.Append(attr);
+                        attr = myDoc.CreateAttribute("DayOfBirth");
+                        attr.Value = PersonRow.DateOfBirth.Value.ToString("MMdd");
+                        newNode.Attributes.Append(attr);
+
                         Int32 AgeAtStartOfConference = CalculateAge(PersonRow.DateOfBirth.Value, ConferenceStartDate);
                         Int32 AgeAtEndOfConference = CalculateAge(PersonRow.DateOfBirth.Value, ConferenceEndDate);
 
