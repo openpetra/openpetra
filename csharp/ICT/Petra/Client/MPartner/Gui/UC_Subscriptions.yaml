@@ -16,9 +16,8 @@ RootNode:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
-            Dock: Top
+            Dock: Fill
             Controls: [grdDetails,pnlButtons]
-            Height: 100
         pnlButtons:
             Dock: Right
             Controls: [btnNew, btnDelete, btnCancelAllSubscriptions]
@@ -33,7 +32,9 @@ RootNode:
             Columns: [PSubscription.PublicationCode, PSubscription.SubscriptionStatus, PSubscription.GratisSubscription]
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
-            Dock: Fill
+            Dock: Bottom
+            Height: 300
             Controls: [ucoDetails]
         ucoDetails:
+            Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.TUC_Subscription

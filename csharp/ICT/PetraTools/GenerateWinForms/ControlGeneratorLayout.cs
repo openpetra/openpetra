@@ -50,7 +50,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>the space from the left of a panel</summary>
         public static Int32 MARGIN_LEFT = 5;
         /// <summary>the default font used on the forms</summary>
-        public static Font DEFAULT_FONT = new Font("Tahoma", 8.25f);
+        public static Font DEFAULT_FONT = new Font("Verdana", 8.25f);
 
         private Int32 FColumnCount = -1, FRowCount = -1;
 

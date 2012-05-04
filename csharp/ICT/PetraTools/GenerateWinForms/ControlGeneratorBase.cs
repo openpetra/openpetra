@@ -655,7 +655,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
                 }
             }
-            else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() == "fill"))
+            else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock", "None").ToLower() != "none"))
             {
                 if ((ctrl.controlTypePrefix == "pnl") || (ctrl.controlTypePrefix == "grp")
                     || ctrl.controlName.StartsWith("layoutPanel"))
