@@ -80,7 +80,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            // TODO this does not work yet. see EventRole Maintain screen
+            if (!ctrl.HasAttribute("Align"))
+            {
+                ctrl.SetAttribute("Stretch", "horizontally");
+            }
+
             base.SetControlProperties(writer, ctrl);
+
+            // stretch at design time, but do not align to the right
+            writer.SetControlProperty(ctrl, "Anchor",
+                "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)))");
 
             string labelText = "";
 
@@ -96,12 +106,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ctrl.SetAttribute("Width", (labelText.Length * PanelLayoutGenerator.LETTER_WIDTH).ToString());
 
             writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");
-            writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 7, 3, 0)");
+            writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
 
             if (FRightAlign)
             {
-// TextAlign does not work anymore, since we cannot use Docking anymore. Or we would need panels for each label
-//                writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
+                writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.TopRight");
             }
 
             return writer.FTemplate;
@@ -175,6 +184,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
+                ctrl.SetAttribute("Width", (ctrl.Label.Length * PanelLayoutGenerator.LETTER_WIDTH).ToString());
                 writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
             }
 
