@@ -787,6 +787,19 @@ namespace Ict.Tools.CodeGeneration
             return TYml2Xml.GetAttribute(xmlNode, name);
         }
 
+        /// <summary>
+        /// get value of attribute from yaml
+        /// </summary>
+        public string GetAttribute(string name, string ADefaultValue)
+        {
+            if (!TYml2Xml.HasAttribute(xmlNode, name))
+            {
+                return ADefaultValue;
+            }
+
+            return TYml2Xml.GetAttribute(xmlNode, name);
+        }
+
         /// simple string function to return the prefix that is in lowercase letters
         public static string GetLowerCasePrefix(string s)
         {

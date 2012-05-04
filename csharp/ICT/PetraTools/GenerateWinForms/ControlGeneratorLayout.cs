@@ -283,23 +283,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            int CurrentLeftPosition = MARGIN_LEFT;
             int Width = 0;
             int Height = 0;
 
-            if (LayoutCtrl.GetAttribute("MarginLeft") == "0")
-            {
-                CurrentLeftPosition = 0;
-            }
+            int CurrentLeftPosition = Convert.ToInt32(LayoutCtrl.GetAttribute("MarginLeft", MARGIN_LEFT.ToString()));
 
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
-                int CurrentTopPosition = MARGIN_TOP;
-
-                if (LayoutCtrl.GetAttribute("MarginTop") == "0")
-                {
-                    CurrentTopPosition = 0;
-                }
+                int CurrentTopPosition = Convert.ToInt32(LayoutCtrl.GetAttribute("MarginTop", MARGIN_TOP.ToString()));
 
                 // only twice the margin for groupboxes
                 if ((LayoutCtrl.controlTypePrefix == "grp") || (LayoutCtrl.controlTypePrefix == "rgr"))
@@ -349,10 +340,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     CurrentTopPosition += RowHeight[rowCounter];
 
-                    if (LayoutCtrl.GetAttribute("VerticalSpace") != "0")
-                    {
-                        CurrentTopPosition += VERTICAL_SPACE;
-                    }
+                    CurrentTopPosition += Convert.ToInt32(LayoutCtrl.GetAttribute("VerticalSpace", VERTICAL_SPACE.ToString()));
 
                     if (CurrentTopPosition > Height)
                     {
@@ -362,10 +350,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 CurrentLeftPosition += ColumnWidth[columnCounter];
 
-                if (LayoutCtrl.GetAttribute("HorizontalSpace") != "0")
-                {
-                    CurrentLeftPosition += HORIZONTAL_SPACE;
-                }
+                CurrentLeftPosition += Convert.ToInt32(LayoutCtrl.GetAttribute("HorizontalSpace", HORIZONTAL_SPACE.ToString()));
 
                 if (CurrentLeftPosition > Width)
                 {
@@ -373,10 +358,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            if (LayoutCtrl.GetAttribute("MarginBottom") != "0")
-            {
-                Height += MARGIN_BOTTOM - VERTICAL_SPACE;
-            }
+            Height +=
+                Convert.ToInt32(LayoutCtrl.GetAttribute("MarginBottom", MARGIN_BOTTOM.ToString())) -
+                Convert.ToInt32(LayoutCtrl.GetAttribute("VerticalSpace", VERTICAL_SPACE.ToString()));
 
             if (!LayoutCtrl.HasAttribute("Width"))
             {
