@@ -104,7 +104,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ctrl.Label + ":";
             }
 
-            ctrl.SetAttribute("Width", TextRenderer.MeasureText(labelText, PanelLayoutGenerator.DEFAULT_FONT).Width.ToString());
+            ctrl.SetAttribute("Width", (TextRenderer.MeasureText(labelText, PanelLayoutGenerator.DEFAULT_FONT).Width + 10).ToString());
 
             writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");
             writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
@@ -172,7 +172,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            ctrl.SetAttribute("Width", TextRenderer.MeasureText(ctrl.Label, PanelLayoutGenerator.DEFAULT_FONT).Width.ToString());
+            ctrl.SetAttribute("Width", (TextRenderer.MeasureText(ctrl.Label, PanelLayoutGenerator.DEFAULT_FONT).Width + 15).ToString());
+            ctrl.SetAttribute("Height", FDefaultHeight.ToString());
             base.SetControlProperties(writer, ctrl);
 
             if (ctrl.GetAttribute("AcceptButton").ToLower() == "true")
@@ -459,6 +460,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("uco", typeof(System.Windows.Forms.Control))
         {
             FGenerateLabel = false;
+            FAutoSize = true;
         }
 
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
