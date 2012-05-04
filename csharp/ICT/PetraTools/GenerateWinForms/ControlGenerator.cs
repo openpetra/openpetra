@@ -192,6 +192,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
             }
 
+            if (ctrl.GetAction() != null)
+            {
+                string img = ctrl.GetAction().actionImage;
+
+                if (img.Length > 0)
+                {
+                    ctrl.SetAttribute("Width", (Convert.ToInt32(ctrl.GetAttribute("Width")) +
+                                                Convert.ToInt32(ctrl.GetAttribute("IconWidth", "15"))).ToString());
+                    writer.SetControlProperty(ctrl, "Size", "new System.Drawing.Size(" +
+                        ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
+                    writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleLeft");
+                    writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.MiddleRight");
+                }
+            }
+
             return writer.FTemplate;
         }
     }
@@ -272,8 +287,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 base.FGenerateLabel = false;
                 base.FAutoSize = true;
 
-                base.SetControlProperties(writer, ctrl);
-
                 if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
                 {
                     writer.SetControlProperty(ctrl, "Text", "\"\"");
@@ -292,7 +305,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
 
                     writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 6, 3, 0)");
+
+                    ctrl.SetAttribute("Width", (TextRenderer.MeasureText(ctrl.Label, PanelLayoutGenerator.DEFAULT_FONT).Width + 30).ToString());
                 }
+
+                base.SetControlProperties(writer, ctrl);
             }
             else
             {
