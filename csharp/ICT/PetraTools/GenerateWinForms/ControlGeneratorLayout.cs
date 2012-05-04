@@ -728,7 +728,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
             }
-            else if (ctrl.controlName.StartsWith("Empty"))
+            else if (ctrl.controlName == "pnlEmpty")
             {
                 // don't do anything here!
             }

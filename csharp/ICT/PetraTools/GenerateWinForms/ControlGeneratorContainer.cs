@@ -420,21 +420,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         TControlDef childCtrl = writer.CodeStorage.GetControl(ctrlname);
 
-                        if ((childCtrl == null)
-                            && (!ctrlname.StartsWith("Empty")))
+                        if (ctrlname.StartsWith("Empty"))
+                        {
+                            childCtrl = writer.CodeStorage.FindOrCreateControl("pnlEmpty", ctrl.controlName);
+                        }
+
+                        if (childCtrl == null)
                         {
                             throw new Exception("cannot find control with name " + ctrlname + "; it belongs to " +
                                 ctrl.controlName);
                         }
 
                         // add control itself
-                        if (!childCtrl.controlName.StartsWith("Empty"))
-                        {
-                            ctrl.Children.Add(childCtrl);
-                            childCtrl.parentName = ctrl.controlName;
-                            IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
-                            ctrlGenerator.GenerateControl(writer, childCtrl);
-                        }
+                        ctrl.Children.Add(childCtrl);
+                        childCtrl.parentName = ctrl.controlName;
+                        IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
+                        ctrlGenerator.GenerateControl(writer, childCtrl);
 
                         childCtrl.rowNumber = countRow;
                     }
@@ -452,25 +453,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         TControlDef childCtrl = writer.CodeStorage.GetControl(childCtrlName);
 
-                        if (!childCtrlName.StartsWith("Empty"))
+                        if (childCtrlName.StartsWith("Empty"))
                         {
-                            if (childCtrl == null)
-                            {
-                                throw new Exception("cannot find control with name " + childCtrlName + "; it belongs to " +
-                                    ctrl.controlName);
-                            }
-
-                            childCtrl.parentName = ctrl.controlName;
-                            ctrl.Children.Add(childCtrl);
+                            childCtrl = writer.CodeStorage.FindOrCreateControl("pnlEmpty", ctrl.controlName);
                         }
+
+                        if (childCtrl == null)
+                        {
+                            throw new Exception("cannot find control with name " + childCtrlName + "; it belongs to " +
+                                ctrl.controlName);
+                        }
+
+                        childCtrl.parentName = ctrl.controlName;
+                        ctrl.Children.Add(childCtrl);
                     }
                 }
 
                 foreach (TControlDef childCtrl in ctrl.Children)
                 {
-                    // process the control itself
-                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
-                    ctrlGenerator.GenerateControl(writer, childCtrl);
+                    if (childCtrl.controlName != "pnlEmpty")
+                    {
+                        // process the control itself
+                        IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);
+                        ctrlGenerator.GenerateControl(writer, childCtrl);
+                    }
                 }
             }
 
