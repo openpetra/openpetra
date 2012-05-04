@@ -41,7 +41,7 @@ RootNode:
                 Row3: [grpExtraDetails]
         txtDetailContactAttributeCode: {Label=Attribute Code, CharacterCasing=Upper}
         txtDetailContactAttributeDescr: {Label=Description, Width=465}
-        chkDetailActive:
+        chkDetailActive: {Validation=true}
         grpExtraDetails: {Label=Attribute Detail Codes}
             Height: 315
             Dock: Fill

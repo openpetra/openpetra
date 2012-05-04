@@ -43,7 +43,7 @@ RootNode:
                 Row5: [chkDetailDisplayed]
             RowHeights: [3=Fixed:32]
         txtDetailText: {Label=Label}
-        clbUsedBy: {NoLabel=true}
+        clbUsedBy: {NoLabel=true, Validation=True}
             RowSpan: 6
             Width: 190
             Height: 170
@@ -77,7 +77,7 @@ RootNode:
         txtDetailCharLength: {NoLabel=true, Width=70, Format=Integer}
         txtDetailNumDecimalPlaces: {NoLabel=true, Width=70, Format=Integer}
         cmbDetailCurrencyCode: {NoLabel=true, List=CurrencyCodeList, ComboBoxWidth=70, Width=330}
-        cmbDetailLookupCategoryCode: {NoLabel=true, List=DataLabelLookupCategoryList, ComboBoxWidth=160, Width=330}
+        cmbDetailLookupCategoryCode: {NoLabel=true, List=DataLabelLookupCategoryList, ComboBoxWidth=160, Width=330, Validation=True}
     Toolbar:
         tbbNew:
             Label: New Field
