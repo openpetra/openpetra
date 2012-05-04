@@ -148,4 +148,7 @@
   </if>
 </target> 
 
+<target name="start" depends="initConfigFiles, startPetraServer, startPetraClient">
+</target>
+
 </project>
