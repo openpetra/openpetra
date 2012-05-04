@@ -193,11 +193,34 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                     else
                     {
-                        if (((propertyName == "Location") || (propertyName == "Size"))
+                        if ((propertyName == "Size")
                             && FControlProperties[controlName].ContainsKey("Dock")
                             && FControlProperties[controlName]["Dock"].Contains("DockStyle.Fill"))
                         {
-                            // do not write Location and Size for Dock Fill
+                            // do not write Size for Dock Fill
+                        }
+
+                        if ((propertyName == "Location")
+                            && FControlProperties[controlName].ContainsKey("Dock"))
+                        {
+                            // do not write Location for Dock
+                        }
+                        else if ((propertyName == "Anchor")
+                                 && FControlProperties[controlName].ContainsKey("Dock")
+                                 && FControlProperties[controlName]["Dock"].Contains("DockStyle.Fill"))
+                        {
+                            // no anchor for Dock Fill
+                        }
+                        else if ((propertyName == "AutoSize")
+                                 && FControlProperties[controlName].ContainsKey("Dock")
+                                 && FControlProperties[controlName]["Dock"].Contains("DockStyle.Fill"))
+                        {
+                            // do not write AutoSize for Dock Fill
+                        }
+                        else if ((propertyName == "AutoSize")
+                                 && FControlProperties[controlName].ContainsKey("Size"))
+                        {
+                            // do not write AutoSize
                         }
                         else
                         {

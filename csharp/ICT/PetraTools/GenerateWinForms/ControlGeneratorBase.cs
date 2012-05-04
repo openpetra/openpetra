@@ -663,10 +663,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.SetControlProperty(ctrl, "AutoSize", "true");
                 }
             }
-            else if (FAutoSize)
-            {
-                writer.SetControlProperty(ctrl, "AutoSize", "true");
-            }
             else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() != "fill"))
             {
                 writer.SetControlProperty(ctrl, "Size",

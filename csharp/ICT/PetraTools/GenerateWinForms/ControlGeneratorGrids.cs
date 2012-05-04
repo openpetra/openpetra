@@ -44,6 +44,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("grd", "Ict.Common.Controls.TSgrdDataGridPaged")
         {
             FGenerateLabel = false;
+            FDefaultHeight = 100;
+            FDefaultWidth = 200;
         }
 
         /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
@@ -164,6 +166,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            ctrl.SetAttribute("Width", FDefaultWidth.ToString());
             base.SetControlProperties(writer, ctrl);
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SelectedRowActivates"))

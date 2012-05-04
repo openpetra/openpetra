@@ -22,18 +22,19 @@ RootNode:
         pnlDetails:
             Dock: Fill
             Controls: [grpFamily, grpFamilyMembers]
-        grpFamily: {Label=Family, Stretch=horizontally, ControlsOrientation = horizontal}
+        grpFamily: {Label=Family, ControlsOrientation = horizontal}
             Dock: Top
             Controls: [txtFamilyPartnerKey, btnEditFamily, btnChangeFamily]
-        grpFamilyMembers: {Label=Family Members, Stretch=horizontally}
+        grpFamilyMembers: {Label=Family Members}
             Dock: Fill
-            Controls: [pnlGrid, pnlButtons]
+            Controls: [grdFamilyMembers, pnlBottomButtons, pnlRightButtons]
             
-        pnlGrid: {ControlsOrientation = horizontal}
-            Controls: [grdFamilyMembers, pnlGridActions, btnFamilyIDHelp]
-            
+        pnlRightButtons:
+            Dock: Right
+            ControlsOrientation: horizontal
+            Controls: [pnlGridActions, btnFamilyIDHelp]
+        
         pnlGridActions:
-            #Dock: Right
             Controls: [grpChangeFamilyID, btnRefreshGrid]
             
         grdFamilyMembers:
@@ -54,22 +55,23 @@ RootNode:
             Action: actChangeFamily
             
         btnFamilyMemberDemote: {NoLabel=true}
-            Align: center
             Action: actFamilyMemberDemote
+            Stretch: horizontally
             Help: Demote Family ID
         btnFamilyMemberPromote: {NoLabel=true}
-            Align: center
             Action: actFamilyMemberPromote
+            Stretch: horizontally
             Help: Promote Family ID
         btnEditFamilyID:
-            Align: center
+            Stretch: horizontally
             Action: actEditFamilyID
         btnRefreshGrid: {NoLabel=true}
             Action: actRefreshGrid
             Help: Refresh Family Members List (e.g. after moving Persons from/to Family)
 
-        pnlButtons:
+        pnlBottomButtons:
             Controls: [btnEditPerson, grpFamilyMembersModify]
+            Dock: Bottom
         
         btnEditPerson:
             Action: actEditPerson

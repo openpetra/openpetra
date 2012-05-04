@@ -26,6 +26,7 @@ using System.Xml;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Drawing;
 using Ict.Tools.CodeGeneration;
 
 using Ict.Common.IO;
@@ -48,8 +49,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public static Int32 MARGIN_BOTTOM = 5;
         /// <summary>the space from the left of a panel</summary>
         public static Int32 MARGIN_LEFT = 5;
-        /// <summary>pixel per letter</summary>
-        public static Int32 LETTER_WIDTH = 7;
+        /// <summary>the default font used on the forms</summary>
+        public static Font DEFAULT_FONT = new Font("Arial", 10.0f);
 
         private Int32 FColumnCount = -1, FRowCount = -1;
 

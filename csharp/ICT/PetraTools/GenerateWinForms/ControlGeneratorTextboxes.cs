@@ -340,6 +340,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             Int32 buttonWidth = 40;
             Int32 textBoxWidth = 80;
 
+            // seems to be hardcoded in csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.Designer.cs
+            Int32 controlWidth = 390;
+
             base.SetControlProperties(writer, ctrl);
 
             if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
@@ -373,6 +376,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "BorderStyle", "System.Windows.Forms.BorderStyle.None");
                 writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
             }
+
+            ctrl.SetAttribute("Width", controlWidth.ToString());
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {

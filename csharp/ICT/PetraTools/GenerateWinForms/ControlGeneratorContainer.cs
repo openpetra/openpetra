@@ -474,6 +474,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            bool hasDockingChildren = false;
+
             // don't use a tablelayout for controls where all children have the Dock property set
             foreach (TControlDef ChildControl in ctrl.Children)
             {
@@ -481,10 +483,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     ctrl.SetAttribute("UseTableLayout", "true");
                 }
+                else
+                {
+                    hasDockingChildren = true;
+                }
             }
 
             if (ctrl.GetAttribute("UseTableLayout") == "true")
             {
+                // show a warning if there are some controls with Docking, and some without
+                if (hasDockingChildren)
+                {
+                    StringCollection clearDockAttributeChildren = new StringCollection();
+
+                    foreach (TControlDef ChildControl in ctrl.Children)
+                    {
+                        if (ChildControl.HasAttribute("Dock"))
+                        {
+                            ChildControl.ClearAttribute("Dock");
+                            clearDockAttributeChildren.Add(ChildControl.controlName);
+                        }
+                    }
+
+                    TLogging.Log("Warning: please remove the Dock attribute from control(s) " + StringHelper.StrMerge(clearDockAttributeChildren, ','));
+                }
+
                 if (ctrl.GetAttribute("Margin") == "0")
                 {
                     if (!ctrl.HasAttribute("MarginTop"))
