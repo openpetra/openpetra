@@ -104,7 +104,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ctrl.Label + ":";
             }
 
-            ctrl.SetAttribute("Width", (TextRenderer.MeasureText(labelText, PanelLayoutGenerator.DEFAULT_FONT).Width + 10).ToString());
+            ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(labelText) + 10).ToString());
 
             writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");
             writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
@@ -172,7 +172,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            ctrl.SetAttribute("Width", (TextRenderer.MeasureText(ctrl.Label, PanelLayoutGenerator.DEFAULT_FONT).Width + 15).ToString());
+            ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 15).ToString());
             ctrl.SetAttribute("Height", FDefaultHeight.ToString());
             base.SetControlProperties(writer, ctrl);
 
@@ -235,7 +235,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (GenerateLabel(ctrl))
             {
                 writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
-                ctrl.SetAttribute("Width", (TextRenderer.MeasureText(ctrl.Label, PanelLayoutGenerator.DEFAULT_FONT).Width + 30).ToString());
+                ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 30).ToString());
             }
 
             base.SetControlProperties(writer, ctrl);
@@ -306,7 +306,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 6, 3, 0)");
 
-                    ctrl.SetAttribute("Width", (TextRenderer.MeasureText(ctrl.Label, PanelLayoutGenerator.DEFAULT_FONT).Width + 30).ToString());
+                    ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 30).ToString());
                 }
 
                 base.SetControlProperties(writer, ctrl);

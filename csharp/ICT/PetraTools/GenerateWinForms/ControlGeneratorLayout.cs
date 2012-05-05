@@ -49,8 +49,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public static Int32 MARGIN_BOTTOM = 5;
         /// <summary>the space from the left of a panel</summary>
         public static Int32 MARGIN_LEFT = 5;
-        /// <summary>the default font used on the forms</summary>
-        public static Font DEFAULT_FONT = new Font("Verdana", 8.25f);
 
         private Int32 FColumnCount = -1, FRowCount = -1;
 
@@ -67,6 +65,39 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// count the number of generated table layout panels for the names
         /// </summary>
         public static Int32 countTableLayoutPanel = 0;
+
+        private static bool HaveTestedForTextRenderer = false;
+        private static bool TextRendererAvailable = false;
+        private static Int32 LETTER_WIDTH = 7;
+        private static Font DEFAULT_FONT = new Font("Verdana", 8.25f);
+
+        /// <summary>
+        /// measure the width of a text
+        /// </summary>
+        /// <param name="AText"></param>
+        /// <returns></returns>
+        public static Int32 MeasureTextWidth(string AText)
+        {
+            if (!HaveTestedForTextRenderer)
+            {
+                try
+                {
+                    TextRenderer.MeasureText("test", DEFAULT_FONT);
+                    TextRendererAvailable = true;
+                }
+                catch (Exception)
+                {
+                    TextRendererAvailable = false;
+                }
+            }
+
+            if (!TextRendererAvailable)
+            {
+                return AText.Length * LETTER_WIDTH;
+            }
+
+            return TextRenderer.MeasureText(AText, PanelLayoutGenerator.DEFAULT_FONT).Width;
+        }
 
         /// <summary>
         /// generate the name for the layout panel
