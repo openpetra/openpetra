@@ -170,31 +170,9 @@ namespace Ict.Petra.Server.MFinance.ICH
                                               Currency;
 
                 //See gi3200.p ln: 170
-                string strSql = "SELECT " +
-                                "a_general_ledger_master.a_glm_sequence_i, " +
-                                "a_general_ledger_master.a_ledger_number_i, " +
-                                "a_general_ledger_master.a_year_i, " +
-                                "a_general_ledger_master.a_account_code_c, " +
-                                "a_general_ledger_master.a_cost_centre_code_c, " +
-                                "a_account.a_account_type_c " +
-                                "FROM  " +
-                                "public.a_general_ledger_master, " +
-                                "public.a_cost_centre, " +
-                                "public.a_account " +
-                                "WHERE " +
-                                "a_general_ledger_master.a_ledger_number_i = a_cost_centre.a_ledger_number_i AND " +
-                                "a_general_ledger_master.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c AND " +
-                                "a_general_ledger_master.a_ledger_number_i = a_account.a_ledger_number_i AND " +
-                                "a_general_ledger_master.a_account_code_c = a_account.a_account_code_c AND " +
-                                "a_account.a_posting_status_l = True AND " +
-                                "a_cost_centre.a_posting_cost_centre_flag_l = True AND " +
-                                "a_general_ledger_master.a_ledger_number_i = ? AND " +
-                                "a_general_ledger_master.a_year_i = ? AND " +
-                                "a_general_ledger_master.a_cost_centre_code_c = ? " +
-                                "ORDER BY " +
-                                "a_general_ledger_master.a_account_code_c ASC;";
-
-
+                //Select any gift transactions to export
+                string strSql = TDataBase.ReadSqlFile("ICH.HOSAExportGifts.sql");
+                
                 OdbcParameter parameter;
 
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
@@ -239,38 +217,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
 
                     /* Then see if there are any GL transactions to export */
-                    //gi3200.i
-                    strSql = "SELECT " +
-                             "  a_transaction.a_ledger_number_i, " +
-                             "  a_transaction.a_batch_number_i, " +
-                             "  a_transaction.a_journal_number_i, " +
-                             "  a_transaction.a_transaction_number_i, " +
-                             "  a_transaction.a_account_code_c, " +
-                             "  a_transaction.a_cost_centre_code_c, " +
-                             "  a_transaction.a_transaction_date_d, " +
-                             "  a_transaction.a_transaction_amount_n, " +
-                             "  a_transaction.a_amount_in_base_currency_n, " +
-                             "  a_transaction.a_amount_in_intl_currency_n, " +
-                             "  a_transaction.a_ich_number_i, " +
-                             "  a_transaction.a_system_generated_l, " +
-                             "  a_transaction.a_narrative_c " +
-                             "  a_transaction.a_debit_credit_indicator_l " +
-                             "FROM " +
-                             "  public.a_transaction, " +
-                             "  public.a_journal " +
-                             "WHERE " +
-                             "  a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i AND " +
-                             "  a_transaction.a_batch_number_i = a_journal.a_batch_number_i AND " +
-                             "  a_transaction.a_journal_number_i = a_journal.a_journal_number_i AND " +
-                             "  a_transaction.a_ledger_number_i = ? AND " +
-                             "  a_transaction.a_account_code_c = ? AND " +
-                             "  a_transaction.a_cost_centre_code_c = ? AND " +
-                             "  a_transaction.a_transaction_status_l = true AND " +
-                             "  NOT (LEFT(a_transaction.a_narrative_c, 22) = ? AND " +
-                             "       a_transaction.a_system_generated_l = true) AND " +
-                             "  ((a_transaction.a_ich_number_i + ?) = a_transaction.a_ich_number_i OR " +
-                             "   a_transaction.a_ich_number_i = ?) AND " +
-                             "  a_journal.a_journal_period_i = ?";
+                    //gi3200.i ln:33
+                    strSql = TDataBase.ReadSqlFile("ICH.HOSAExportGLTrans.sql");
 
                     DataTable TmpTransTable = DBAccess.GDBAccessObj.SelectDT(strSql, "Transactions", DBTransaction,
                         new OdbcParameter[] {
@@ -449,44 +397,9 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             string ExportDescription = string.Empty;
 
-            string SQLStmt = "SELECT " +
-                             "a_gift_detail.a_ledger_number_i, " +
-                             "a_gift_detail.a_batch_number_i, " +
-                             "a_gift_detail.a_gift_transaction_number_i, " +
-                             "a_gift_detail.a_detail_number_i, " +
-                             "a_gift_detail.a_gift_amount_n, " +
-                             "a_gift_detail.a_gift_amount_intl_n, " +
-                             "a_gift_detail.a_motivation_group_code_c, " +
-                             "a_gift_detail.a_motivation_detail_code_c, " +
-                             "a_gift_detail.p_recipient_key_n, " +
-                             "a_gift.a_gift_status_c, " +
-                             "a_motivation_detail.a_motivation_detail_desc_c, " +
-                             "a_gift_batch.a_batch_description_c " +
-                             "FROM " +
-                             "public.a_gift_detail, " +
-                             "public.a_gift_batch, " +
-                             "public.a_motivation_detail, " +
-                             "public.a_gift " +
-                             "WHERE " +
-                             "a_gift_detail.a_ledger_number_i = a_gift_batch.a_ledger_number_i AND " +
-                             "a_gift_detail.a_batch_number_i = a_gift_batch.a_batch_number_i AND " +
-                             "a_gift_detail.a_ledger_number_i = a_motivation_detail.a_ledger_number_i AND " +
-                             "a_gift_detail.a_motivation_group_code_c = a_motivation_detail.a_motivation_group_code_c AND " +
-                             "a_gift_detail.a_motivation_detail_code_c = a_motivation_detail.a_motivation_detail_code_c AND " +
-                             "a_gift_detail.a_ledger_number_i = a_gift.a_ledger_number_i AND " +
-                             "a_gift_detail.a_batch_number_i = a_gift.a_batch_number_i AND " +
-                             "a_gift_detail.a_gift_transaction_number_i = a_gift.a_gift_transaction_number_i AND " +
-                             "a_gift_detail.a_ledger_number_i = ? AND " +
-                             "a_gift_detail.a_cost_centre_code_c = ? AND " +
-                             "a_gift_detail.a_ich_number_i = ? AND " +
-                             "a_gift_batch.a_batch_status_c = ? AND " +
-                             "a_gift_batch.a_gl_effective_date_d >= ? AND " +
-                             "a_gift_batch.a_gl_effective_date_d <= ? AND " +
-                             "a_motivation_detail.a_account_code_c = ? " +
-                             "ORDER BY " +
-                             "a_gift_detail.p_recipient_key_n ASC, " +
-                             "a_gift_detail.a_motivation_group_code_c ASC, " +
-                             "a_gift_detail.a_motivation_detail_code_c ASC;";
+            //Export Gifts gi3200-1.i
+            //Find and total each gift transaction
+            string SQLStmt = TDataBase.ReadSqlFile("ICH.HOSAExportGiftsInner.sql");
 
             OdbcParameter parameter;
 
@@ -836,5 +749,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 throw Exp;
             }
         }
+        
+        
     }
 }
