@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -120,7 +120,8 @@ namespace Ict.Common.Verification
         /// <returns>TVerificationResult Nil if validation succeeded, otherwise it contains
         /// details about the problem.
         /// </returns>
-        public static TVerificationResult ValidateCheckBoxPairIsChecked(System.Windows.Forms.CheckBox ACheckBox1, System.Windows.Forms.CheckBox ACheckBox2)
+        public static TVerificationResult ValidateCheckBoxPairIsChecked(System.Windows.Forms.CheckBox ACheckBox1,
+            System.Windows.Forms.CheckBox ACheckBox2)
         {
             TVerificationResult ReturnValue = null;
 
