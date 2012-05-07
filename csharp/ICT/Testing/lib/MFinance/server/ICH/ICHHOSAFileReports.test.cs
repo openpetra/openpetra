@@ -85,7 +85,7 @@ namespace Tests.MFinance.Server.ICH
         [Test]
         public void TestFileHeaderReplace()
         {
-            string fileName = @"C:\Test.csv";
+            string fileName = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "Test.csv";
             int PeriodNumber = 4;
             string StandardCostCentre = "4300";
             string CostCentre = "78";

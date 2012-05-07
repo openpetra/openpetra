@@ -222,37 +222,16 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if (AEmail)
                 {
-                    string EmailAddress = string.Empty;
-                    string SenderAddress = TAppSettingsManager.GetValue("SenderAddress");
+                    string SenderAddress = TAppSettingsManager.GetValue("LocalFieldFinance.EmailAddress");
                     string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
                     string HTMLText = string.Empty;
 
-                    AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
-                    AEmailDestinationRow TemplateRow2 = (AEmailDestinationRow)AEmailDestTable.NewRowTyped(false);
+                    string EmailAddress = GetICHEmailAddress(DBTransaction);
 
-                    TemplateRow2.FileCode = MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP;
-
-                    StringCollection operators2 = StringHelper.InitStrArr(new string[] { "=" });
-
-                    AEmailDestinationTable AEmailDestinationTable = AEmailDestinationAccess.LoadUsingTemplate(TemplateRow2,
-                        operators2,
-                        null,
-                        DBTransaction);
-
-                    if (AEmailDestinationTable.Count == 0)
+                    if (EmailAddress.Length == 0)
                     {
-                        //EmailAddress = TAppSettingsManager.GetValue("Sender.Email");
                         throw new Exception("No destination email addresses found!");
                     }
-                    else
-                    {
-                        AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
-                        EmailAddress = EmailDestinationRow.EmailAddress;
-                    }
-
-                    //Read the file title
-                    FileInfo FileDetails = new FileInfo(AFileName);
-                    string FileTitle = FileDetails.Name;
 
                     if (!File.Exists(AFileName))
                     {
@@ -260,7 +239,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
                     else
                     {
-                        HTMLText = "<html><body>" + EmailSubject + ": " + FileTitle + Catalog.GetString(" is attached.") + "</body></html>";
+                        HTMLText = "<html><body>" + EmailSubject + ": " + Path.GetFileName(AFileName) + Catalog.GetString(" is attached.") +
+                                   "</body></html>";
                     }
 
                     TSmtpSender SendMail = new TSmtpSender();
@@ -1872,6 +1852,30 @@ PostGenerateBatch:
                 }
             }
 #endif
+        }
+
+        /// <summary>
+        /// get the Email address for the International Clearing House, where the stewardship should be sent to
+        /// </summary>
+        /// <param name="ADBTransaction"></param>
+        /// <returns></returns>
+        public static string GetICHEmailAddress(TDBTransaction ADBTransaction)
+        {
+            AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
+            AEmailDestinationRow TemplateRow2 = (AEmailDestinationRow)AEmailDestTable.NewRowTyped(false);
+
+            TemplateRow2.FileCode = MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP;
+
+            AEmailDestinationTable AEmailDestinationTable = AEmailDestinationAccess.LoadUsingTemplate(TemplateRow2, ADBTransaction);
+
+            if (AEmailDestinationTable.Count == 0)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return ((AEmailDestinationRow)AEmailDestinationTable.Rows[0]).EmailAddress;
+            }
         }
 
         /// <summary>

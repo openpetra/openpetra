@@ -132,8 +132,8 @@ namespace Tests.MFinance.Server.ICH
             int PeriodNumber = 5;
             int ICHProcessingNumber = 1;
             int CurrencyType = 1; //base
-            string FileName = @"C:\Test.csv";
-            bool SendEmail = true;
+            string FileName = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "Test.csv";
+            bool SendEmail = false;
 
             TGenFilesReports.GenerateStewardshipFile(FLedgerNumber,
                 PeriodNumber,
@@ -158,8 +158,27 @@ namespace Tests.MFinance.Server.ICH
             int PeriodNumber = 5;
             int ICHProcessingNumber = 1;
             int CurrencyType = 1; //base
-            string FileName = @"C:\TestGenerateICHEmail.csv";
+            string FileName = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "TestGenerateICHEmail.csv";
             bool SendEmail = true;
+
+            // make sure there is a valid email destination
+            if (TGenFilesReports.GetICHEmailAddress(null).Length == 0)
+            {
+                TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                string sqlStatement =
+                    String.Format("INSERT INTO PUB_{0}({1},{2},{3}) VALUES ({4},{5},{6})",
+                        AEmailDestinationTable.GetTableDBName(),
+                        AEmailDestinationTable.GetFileCodeDBName(),
+                        AEmailDestinationTable.GetPartnerKeyDBName(),
+                        AEmailDestinationTable.GetEmailAddressDBName(),
+                        MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP,
+                        Convert.ToInt64(MFinanceConstants.ICH_COST_CENTRE) * 10000,
+                        TAppSettingsManager.GetValue("ClearingHouse.EmailAddress"));
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sqlStatement, DBTransaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
 
             TGenFilesReports.GenerateStewardshipFile(FLedgerNumber,
                 PeriodNumber,
