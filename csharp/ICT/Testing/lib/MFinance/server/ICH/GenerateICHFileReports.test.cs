@@ -23,6 +23,8 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
+using System.Collections.Generic;
 using System.Configuration;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -132,8 +134,8 @@ namespace Tests.MFinance.Server.ICH
             int PeriodNumber = 5;
             int ICHProcessingNumber = 1;
             int CurrencyType = 1; //base
-            string FileName = @"C:\Test.csv";
-            bool SendEmail = true;
+            string FileName = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "Test.csv";
+            bool SendEmail = false;
 
             TGenFilesReports.GenerateStewardshipFile(FLedgerNumber,
                 PeriodNumber,
@@ -158,8 +160,41 @@ namespace Tests.MFinance.Server.ICH
             int PeriodNumber = 5;
             int ICHProcessingNumber = 1;
             int CurrencyType = 1; //base
-            string FileName = @"C:\TestGenerateICHEmail.csv";
+            string FileName = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "TestGenerateICHEmail.csv";
             bool SendEmail = true;
+
+            // make sure there is a valid email destination
+            if (TGenFilesReports.GetICHEmailAddress(null).Length == 0)
+            {
+                TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                string sqlStatement =
+                    String.Format("INSERT INTO PUB_{0}({1},{2},{3},{4}) VALUES (?,?,?,?)",
+                        AEmailDestinationTable.GetTableDBName(),
+                        AEmailDestinationTable.GetFileCodeDBName(),
+                        AEmailDestinationTable.GetConditionalValueDBName(),
+                        AEmailDestinationTable.GetPartnerKeyDBName(),
+                        AEmailDestinationTable.GetEmailAddressDBName());
+
+                OdbcParameter parameter;
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                parameter = new OdbcParameter("name", OdbcType.VarChar);
+                parameter.Value = MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("condition", OdbcType.VarChar);
+                parameter.Value = Convert.ToInt64(MFinanceConstants.ICH_COST_CENTRE) / 100;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("partnerkey", OdbcType.Int);
+                parameter.Value = Convert.ToInt64(MFinanceConstants.ICH_COST_CENTRE) * 10000;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("email", OdbcType.VarChar);
+                parameter.Value = TAppSettingsManager.GetValue("ClearingHouse.EmailAddress");
+                parameters.Add(parameter);
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sqlStatement, DBTransaction, parameters.ToArray());
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
 
             TGenFilesReports.GenerateStewardshipFile(FLedgerNumber,
                 PeriodNumber,

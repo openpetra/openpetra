@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, wolfgangu
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -177,8 +177,9 @@ namespace Ict.Petra.Shared.MFinance
         /// Logical values for debit and credit transactions.
         public const bool POSTED = true;
 
-        /// Logical account & cost centre flags
+        /// Logical account and cost centre flags
         public const bool ACTIVE = true;
+        /// Logical account and cost centre flags
         public const bool POSTING = true;
 
         /// standard account for earnings bf
@@ -332,7 +333,9 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Narratives
         public const string NARRATIVE_YEAR_END_REALLOCATION = "Year end re-allocation";
+        /// Narratives
         public const string NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH = "Gifts received - Gift Batch";
+        /// Narratives
         public const string NARRATIVE_GB_GIFT_BATCH = "GB - Gift Batch";
     }
 
