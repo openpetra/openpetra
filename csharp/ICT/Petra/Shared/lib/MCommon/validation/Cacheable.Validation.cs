@@ -374,10 +374,11 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.LookupCategoryCode,
                         ValidationControlsData.ValidationControlLabel,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
                     if (VerificationResult != null)
                     {
                         VerificationResult.OverrideResultText(Catalog.GetString(
-                            "You cannot use the option list until you have defined at least one option using the 'Local Data Option List Names' main menu selection"));
+                                "You cannot use the option list until you have defined at least one option using the 'Local Data Option List Names' main menu selection"));
                     }
                 }
 

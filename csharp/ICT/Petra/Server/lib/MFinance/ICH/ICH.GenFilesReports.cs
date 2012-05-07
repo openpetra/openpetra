@@ -359,9 +359,9 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
             }
 
-#if TODO
             if (!MatchFound)
             {
+#if TODO
                 /* look in previous periods (need to compare date of transactions to the month of the stewardship
                  *             because there may be a batch present which was for last years stewardship - eg. Dec 2007
                  *             Stewardship for US may have been processed in Jan 2008) */
@@ -438,8 +438,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                         }
                     }
                 }
-            }
 #endif
+            }
 
             return BatchNumber;
         }

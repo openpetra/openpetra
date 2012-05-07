@@ -99,8 +99,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             string CurrencySelect;
             decimal DebitTotal;  //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal CreditTotal;  //FORMAT "->>>,>>>,>>>,>>9.99"
-            string TransAmount1;  //FORMAT "X(19)"
-            string TransAmount2;  //FORMAT "X(19)"
             int Choice;
 
             string StandardCostCentre = ALedgerNumber.ToString() + "00";
@@ -288,20 +286,24 @@ namespace Ict.Petra.Server.MFinance.ICH
                         string Narrative = untypedTransactRow[12].ToString();          //a_transaction.a_narrative_c
                         DateTime TransactionDate = Convert.ToDateTime(untypedTransactRow[6]);          //a_transaction.a_transaction_date_d
 
+                        // the following variables are not actually used anywhere at the moment
+                        // string TransAmount1;  //FORMAT "X(19)"
+                        // string TransAmount2;  //FORMAT "X(19)"
+
                         if (Choice == 1)
                         {
                             /* find transaction amount and store as debit or credit */
                             if (Debit)
                             {
                                 DebitTotal += AmountInBaseCurrency;
-                                TransAmount1 = AmountInBaseCurrency.ToString("#,##0.00");
-                                TransAmount2 = " ";
+                                // TransAmount1 = AmountInBaseCurrency.ToString("#,##0.00");
+                                // TransAmount2 = " ";
                             }
                             else
                             {
                                 CreditTotal += AmountInBaseCurrency;
-                                TransAmount2 = AmountInBaseCurrency.ToString("#,##0.00");
-                                TransAmount1 = " ";
+                                // TransAmount2 = AmountInBaseCurrency.ToString("#,##0.00");
+                                // TransAmount1 = " ";
                             }
                         }
                         else
@@ -309,14 +311,14 @@ namespace Ict.Petra.Server.MFinance.ICH
                             if (Debit)
                             {
                                 DebitTotal += AmountInIntlCurrency;
-                                TransAmount1 = AmountInIntlCurrency.ToString("#,##0.00");
-                                TransAmount2 = " ";
+                                // TransAmount1 = AmountInIntlCurrency.ToString("#,##0.00");
+                                // TransAmount2 = " ";
                             }
                             else
                             {
                                 CreditTotal += AmountInIntlCurrency;
-                                TransAmount2 = AmountInIntlCurrency.ToString("#,##0.00");
-                                TransAmount1 = " ";
+                                // TransAmount2 = AmountInIntlCurrency.ToString("#,##0.00");
+                                // TransAmount1 = " ";
                             }
                         }
 
@@ -431,7 +433,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             string LastDetail = string.Empty;
             string LastDetailDesc = string.Empty; //FORMAT "X(15)"
             string Desc = string.Empty; //FORMAT "X(44)"
-            string CurrentYearTotals = string.Empty;
+            // string CurrentYearTotals = string.Empty;
             decimal IndividualDebitTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal IndividualCreditTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
 
@@ -747,6 +749,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                         foreach (DataRow untypedTransRow in FoundTransRows)
                         {
+#if TODO
                             ATransactionRow TransactionRow = (ATransactionRow)untypedTransRow;
 
                             TransactionExists = true;
@@ -775,6 +778,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                              *                               lv_report_title_c,
                              *                               lv_default_data_c).*/
                             //TODO: call code to produce reports
+#endif
                             break;
                         }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -171,8 +171,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucApplications))
             {
-                TUC_Applications UCApplications =
-                    (TUC_Applications)FTabSetup[TDynamicLoadableUserControls.dlucApplications];
+                // TUC_Applications UCApplications =
+                //    (TUC_Applications)FTabSetup[TDynamicLoadableUserControls.dlucApplications];
 
                 //TODO: UCApplications not implemented yet
                 //if (!UCApplications.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
