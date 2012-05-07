@@ -294,6 +294,8 @@
 <!-- smtp -->
 <property name="smtp.host" value="smtp.example.org"
           overwrite="false"/>
+<property name="smtp.port" value="25"
+          overwrite="false"/>
 <property name="smtp.username" value="smtpuser"
           overwrite="false"/>
 <property name="smtp.password" value="YourSmtpPassword"
