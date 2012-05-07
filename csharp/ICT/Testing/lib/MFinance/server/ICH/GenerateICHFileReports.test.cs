@@ -150,9 +150,10 @@ namespace Tests.MFinance.Server.ICH
         }
 
         /// <summary>
-        /// Test the generation of the email to send to ICH from a given centre
+        /// Test the generation of the email to send to ICH from a given centre.
+        /// marked as Excplicit, so that this test will not be run on Jenkins, due to email configuration issues.
         /// </summary>
-        [Test]
+        [Test, Explicit]
         public void TestGenerateICHEmail()
         {
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
