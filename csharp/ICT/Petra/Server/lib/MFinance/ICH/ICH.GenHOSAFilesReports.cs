@@ -698,11 +698,13 @@ namespace Ict.Petra.Server.MFinance.ICH
             {
                 ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
 
+#if TODO
                 //Find the Ledger Name = Partner Short Name
                 PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LedgerRow.PartnerKey, DBTransaction);
                 PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                 string LedgerName = PartnerRow.PartnerShortName;
+#endif
 
                 //Iterate through the cost centres
                 string WhereClause = ACostCentreTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
