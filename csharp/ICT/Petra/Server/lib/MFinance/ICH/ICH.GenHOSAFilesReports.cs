@@ -696,9 +696,9 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             try
             {
+#if TODO
                 ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
 
-#if TODO
                 //Find the Ledger Name = Partner Short Name
                 PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LedgerRow.PartnerKey, DBTransaction);
                 PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
