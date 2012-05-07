@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Globalization;
@@ -193,12 +194,21 @@ namespace Ict.Petra.Server.MFinance.ICH
                                 "ORDER BY " +
                                 "a_general_ledger_master.a_account_code_c ASC;";
 
-                DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(strSql, "table", DBTransaction,
-                    new OdbcParameter[] {
-                        new OdbcParameter("LedgerNumber", (object)ALedgerNumber),
-                        new OdbcParameter("Year", (object)LedgerRow.CurrentFinancialYear),
-                        new OdbcParameter("CostCentre", ACostCentre)
-                    });
+
+                OdbcParameter parameter;
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                parameter = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                parameter.Value = ALedgerNumber;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("Year", OdbcType.Int);
+                parameter.Value = LedgerRow.CurrentFinancialYear;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("CostCentre", OdbcType.VarChar);
+                parameter.Value = ACostCentre;
+                parameters.Add(parameter);
+
+                DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(strSql, "table", DBTransaction, parameters.ToArray());
 
                 foreach (DataRow untypedTransRow in TmpTable.Rows)
                 {
@@ -478,16 +488,32 @@ namespace Ict.Petra.Server.MFinance.ICH
                              "a_gift_detail.a_motivation_group_code_c ASC, " +
                              "a_gift_detail.a_motivation_detail_code_c ASC;";
 
-            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", ADBTransaction,
-                new OdbcParameter[] {
-                    new OdbcParameter("LedgerNumber", (object)ALedgerNumber),
-                    new OdbcParameter("CostCentre", ACostCentre),
-                    new OdbcParameter("ICHNumber", (object)AIchNumber),
-                    new OdbcParameter("BatchStatus", MFinanceConstants.BATCH_POSTED),
-                    new OdbcParameter("StartDate", APeriodStartDate),
-                    new OdbcParameter("EndDate", APeriodEndDate),
-                    new OdbcParameter("AccountCode", AAcctCode)
-                });
+            OdbcParameter parameter;
+
+            List <OdbcParameter>parameters = new List <OdbcParameter>();
+            parameter = new OdbcParameter("LedgerNumber", OdbcType.Int);
+            parameter.Value = ALedgerNumber;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("CostCentre", OdbcType.VarChar);
+            parameter.Value = ACostCentre;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("ICHNumber", OdbcType.Int);
+            parameter.Value = AIchNumber;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("BatchStatus", OdbcType.VarChar);
+            parameter.Value = MFinanceConstants.BATCH_POSTED;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("StartDate", OdbcType.DateTime);
+            parameter.Value = APeriodStartDate;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("EndDate", OdbcType.DateTime);
+            parameter.Value = APeriodEndDate;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("AccountCode", OdbcType.VarChar);
+            parameter.Value = AAcctCode;
+            parameters.Add(parameter);
+
+            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", ADBTransaction, parameters.ToArray());
 
             foreach (DataRow untypedTransRow in TmpTable.Rows)
             {
@@ -744,7 +770,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                       " AND " + ATransactionTable.GetJournalNumberDBName() + " = " + JournalNumber.ToString() +
                                       " AND " + ATransactionTable.GetCostCentreCodeDBName() + " = '" + CostCentreCode + "'" +
                                       " AND (" + ATransactionTable.GetIchNumberDBName() + " = 0" +
-                                      "      OR " + ATransactionTable.GetIchNumberDBName() + AIchNumber.ToString() +
+                                      "      OR " + ATransactionTable.GetIchNumberDBName() + " = " + AIchNumber.ToString() +
                                       ")";
 
                         DataRow[] FoundTransRows = MainDS.ATransaction.Select(WhereClause);

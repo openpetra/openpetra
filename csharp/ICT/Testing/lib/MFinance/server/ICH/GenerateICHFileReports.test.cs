@@ -23,6 +23,8 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
+using System.Collections.Generic;
 using System.Configuration;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -167,16 +169,30 @@ namespace Tests.MFinance.Server.ICH
                 TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
                 string sqlStatement =
-                    String.Format("INSERT INTO PUB_{0}({1},{2},{3}) VALUES ({4},{5},{6})",
+                    String.Format("INSERT INTO PUB_{0}({1},{2},{3},{4}) VALUES (?,?,?,?)",
                         AEmailDestinationTable.GetTableDBName(),
                         AEmailDestinationTable.GetFileCodeDBName(),
+                        AEmailDestinationTable.GetConditionalValueDBName(),
                         AEmailDestinationTable.GetPartnerKeyDBName(),
-                        AEmailDestinationTable.GetEmailAddressDBName(),
-                        MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP,
-                        Convert.ToInt64(MFinanceConstants.ICH_COST_CENTRE) * 10000,
-                        TAppSettingsManager.GetValue("ClearingHouse.EmailAddress"));
+                        AEmailDestinationTable.GetEmailAddressDBName());
 
-                DBAccess.GDBAccessObj.ExecuteNonQuery(sqlStatement, DBTransaction);
+                OdbcParameter parameter;
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                parameter = new OdbcParameter("name", OdbcType.VarChar);
+                parameter.Value = MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("condition", OdbcType.VarChar);
+                parameter.Value = Convert.ToInt64(MFinanceConstants.ICH_COST_CENTRE) / 100;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("partnerkey", OdbcType.Int);
+                parameter.Value = Convert.ToInt64(MFinanceConstants.ICH_COST_CENTRE) * 10000;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("email", OdbcType.VarChar);
+                parameter.Value = TAppSettingsManager.GetValue("ClearingHouse.EmailAddress");
+                parameters.Add(parameter);
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sqlStatement, DBTransaction, parameters.ToArray());
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
 
