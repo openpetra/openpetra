@@ -42,7 +42,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>the space between two controls, that are beside each other</summary>
         public static Int32 HORIZONTAL_SPACE = 5;
         /// <summary>the space between two controls, that are above each other</summary>
-        public static Int32 VERTICAL_SPACE = 5;
+        public static Int32 VERTICAL_SPACE = 3;
         /// <summary>the space from the top of a panel</summary>
         public static Int32 MARGIN_TOP = 7;
         /// <summary>the space from the bottom of a panel</summary>

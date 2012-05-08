@@ -29,12 +29,12 @@ RootNode:
         pnlClassSpecificName:
             Controls: [pnlFamily, pnlPerson, pnlChurch, pnlOrganisation, pnlUnit, pnlBank, pnlVenue]
             Margin: 0
-            Width: 520
-            Height: 30
+            Height: 22
+            Width: 540
         pnlClassSpecificDetails:
             Controls: [pnlFamily2ndLine, pnlPerson2ndLine, pnlOther2ndLine]
             Margin: 0
-            Height: 35
+            Height: 22
             Width: 540
             
 # Right-hand Panel (misc. information)            
@@ -90,7 +90,6 @@ RootNode:
         pnlAdditionalInfo: {ControlsOrientation=horizontal}
             Controls: [txtLastGiftDetailsDate, txtLastGiftDetails]
             ColWidths: [0=Fixed:80]
-            RowHeights: [0=Fixed:20]
             Margin: 0
 
         txtLastGiftDetailsDate:
@@ -148,10 +147,9 @@ RootNode:
         pnlPerson:
             Controls: 
                 Row1: [txtPersonTitle, txtPersonFirstName, txtPersonMiddleName, txtPersonFamilyName]
-            Height: 25
             Dock: Fill
             Margin: 0
-            Visible: false
+            Visible: true
  
         txtPersonTitle:
             Label: Title/Na&me
@@ -174,8 +172,7 @@ RootNode:
             Controls: [cmbPersonGender, cmbPersonAddresseeTypeCode, chkPersonNoSolicitations]
             ControlsOrientation: horizontal
             ColWidths: [0=Fixed:80, 1=Fixed:100, 2=Fixed:100, 3=Fixed:100, 4=Fixed:60, 5=Fixed:50]
-            Height: 28
-            Visible: false
+            Visible: true
             Margin: 0
             Dock: Fill
 

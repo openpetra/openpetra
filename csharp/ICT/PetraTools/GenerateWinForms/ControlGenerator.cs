@@ -50,6 +50,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FAutoSize = true;
             FGenerateLabel = false;
+            // when the top margin is 5 pixel, and the overall height should be 22, then 17 is the height for the label
+            FDefaultHeight = 17;
         }
 
         /// <summary>
@@ -283,6 +285,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("chk", typeof(CheckBox))
         {
             this.FChangeEventName = "CheckedChanged";
+            FDefaultHeight = 17;
         }
 
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
@@ -312,7 +315,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         writer.SetControlProperty(ctrl, "CheckAlign", "System.Drawing.ContentAlignment.MiddleLeft");
                     }
 
-                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, -1, 3, 0)");
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 4, 3, 0)");
 
                     ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 30).ToString());
                 }

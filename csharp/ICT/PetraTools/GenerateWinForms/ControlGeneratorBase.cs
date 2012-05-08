@@ -629,7 +629,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "AutoScroll", ctrl.GetAttribute("AutoScroll"));
             }
 
+            // needed so that ctrl.Height and ctrl.Width return correct values
             ctrl.SetAttribute("DefaultWidth", FDefaultWidth.ToString());
+            ctrl.SetAttribute("DefaultHeight", FDefaultHeight.ToString());
 
             if ((ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height")) && (ctrl.GetAttribute("GenerateWithOtherControls") != "yes"))
             {
@@ -640,15 +642,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (!ctrl.HasAttribute("Height"))
                 {
-                    if ((ctrl.GetAttribute("Dock") == "Left") || (ctrl.GetAttribute("Dock") == "Right"))
-                    {
-                        // this is useful for AP Payments, left dock list of suppliers
-                        writer.SetControlProperty(ctrl, "Width", ctrl.GetAttribute("Width"));
-                    }
-                    else
-                    {
-                        ctrl.SetAttribute("Height", FDefaultHeight.ToString());
-                    }
+                    ctrl.SetAttribute("Height", FDefaultHeight.ToString());
                 }
 
                 if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
@@ -657,15 +651,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
                 }
             }
-            else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock", "None").ToLower() != "none"))
+            else if (ctrl.GetAttribute("Dock").ToLower() == "fill")
             {
-                if ((ctrl.controlTypePrefix == "pnl") || (ctrl.controlTypePrefix == "grp")
-                    || ctrl.controlName.StartsWith("layoutPanel"))
-                {
-                    writer.SetControlProperty(ctrl, "AutoSize", "true");
-                }
+                // no size information for Dock Fill
             }
-            else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() != "fill"))
+            else
             {
                 writer.SetControlProperty(ctrl, "Size",
                     "new System.Drawing.Size(" + FDefaultWidth.ToString() + ", " + FDefaultHeight.ToString() + ")");

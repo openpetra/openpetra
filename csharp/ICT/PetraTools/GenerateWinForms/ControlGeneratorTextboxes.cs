@@ -99,6 +99,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FChangeEventName = "TextChanged";
             FHasReadOnlyProperty = true;
+            FDefaultHeight = 22;
         }
 
         /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>

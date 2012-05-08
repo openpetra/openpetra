@@ -929,6 +929,10 @@ namespace Ict.Tools.CodeGeneration
                 {
                     return Convert.ToInt32(GetAttribute("Height"));
                 }
+                else if (HasAttribute("DefaultHeight"))
+                {
+                    return Convert.ToInt32(GetAttribute("DefaultHeight"));
+                }
 
                 return 20;
             }

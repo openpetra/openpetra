@@ -160,6 +160,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("cmb", "Ict.Common.Controls.TCmbAutoComplete")
         {
             this.FChangeEventName = "SelectedValueChanged";
+            FDefaultHeight = 22;
         }
 
         /// <summary>constructor</summary>
@@ -167,6 +168,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base(APrefix, AType)
         {
             this.FChangeEventName = "SelectedValueChanged";
+            FDefaultHeight = 22;
         }
 
         /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
