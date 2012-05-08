@@ -82,7 +82,7 @@ namespace Ict.Tools.GenerateWinForms
                     new TLogging("generatewinforms.log");
                 }
 
-                TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 10);
+                TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
                 if (!TAppSettingsManager.HasValue("op"))
                 {

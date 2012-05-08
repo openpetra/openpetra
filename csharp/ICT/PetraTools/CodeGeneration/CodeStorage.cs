@@ -460,6 +460,21 @@ namespace Ict.Tools.CodeGeneration
                 return result;
             }
 
+            if (AControlName == "pnlEmpty")
+            {
+                int countEmpty = 1;
+
+                foreach (string name in FControlList.Keys)
+                {
+                    if (name.StartsWith("pnlEmpty"))
+                    {
+                        countEmpty++;
+                    }
+                }
+
+                AControlName += countEmpty.ToString();
+            }
+
             XmlNode collectionNode = GetCorrectCollection(AControlName, AParentName);
 
             XmlElement newNode = FXmlDocument.CreateElement(AControlName);
@@ -471,7 +486,7 @@ namespace Ict.Tools.CodeGeneration
             FSortedControlList.Add(FSortedControlList.Count, result);
             TControlDef parentCtrl = GetControl(AParentName);
 
-            if (parentCtrl != null)
+            if ((parentCtrl != null) && !AControlName.StartsWith("pnlEmpty"))
             {
                 XmlNode parentNode = parentCtrl.xmlNode;
                 XmlNode controls = TXMLParser.GetChild(parentNode, "Controls");
@@ -747,6 +762,10 @@ namespace Ict.Tools.CodeGeneration
         public int colSpan = 1;
         /// <summary>if this controls spans several rows in the grid layout</summary>
         public int rowSpan = 1;
+        /// <summary>if this controls spans several columns in the grid layout, and has no label, this will include the label columns as well</summary>
+        public int colSpanWithLabel = 1;
+        /// <summary>if this controls has no label, we need one more column</summary>
+        public bool hasLabel = true;
 
         /// <summary>
         /// write attribute value to the yaml

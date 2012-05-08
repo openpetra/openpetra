@@ -111,9 +111,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
             {
+                ctrl.hasLabel = false;
                 return false;
             }
 
+            ctrl.hasLabel = FGenerateLabel;
             return FGenerateLabel;
         }
 

@@ -471,7 +471,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (TControlDef childCtrl in ctrl.Children)
                 {
-                    if (childCtrl.controlName != "pnlEmpty")
+                    if (!childCtrl.controlName.StartsWith("pnlEmpty"))
                     {
                         // process the control itself
                         IControlGenerator ctrlGenerator = writer.FindControlGenerator(childCtrl);

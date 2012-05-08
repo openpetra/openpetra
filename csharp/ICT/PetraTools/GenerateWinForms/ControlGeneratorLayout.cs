@@ -157,6 +157,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             childctrl.colSpan = childctrl.HasAttribute("ColSpan") ? Convert.ToInt32(childctrl.GetAttribute("ColSpan")) : 1;
             childctrl.rowSpan = childctrl.HasAttribute("RowSpan") ? Convert.ToInt32(childctrl.GetAttribute("RowSpan")) : 1;
+
+            if (childctrl.rowSpan > 1)
+            {
+                TLogging.Log("Warning: we currently cannot support RowSpan > 1. control is " + childctrl.controlName);
+            }
+
+            if (!childctrl.hasLabel)
+            {
+                childctrl.colSpanWithLabel = childctrl.colSpan * 2;
+            }
+            else
+            {
+                childctrl.colSpanWithLabel = childctrl.colSpan * 2 - 1;
+            }
         }
 
         private static int FCurrentTabIndex = 0;
@@ -195,9 +209,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             TControlDef ctrl = FGrid[columnCounter, rowCounter];
 
+                            int colSpanWithLabel = ctrl.colSpanWithLabel;
+
                             int CellWidth = ctrl.Width;
 
-                            if ((spanRunCounter == 0) && (ctrl.colSpan == 1))
+                            if ((spanRunCounter == 0) && (colSpanWithLabel == 1))
                             {
                                 if (CellWidth > ColumnWidth[columnCounter])
                                 {
@@ -208,27 +224,27 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             {
                                 int CurrentSpanWidth = 0;
 
-                                if (columnCounter + ctrl.colSpan > FColumnCount)
+                                if (columnCounter + colSpanWithLabel > FColumnCount)
                                 {
-                                    throw new Exception("invalid colspan in control " + ctrl.controlName +
+                                    throw new Exception("invalid colspan " + ctrl.colSpan.ToString() + " in control " + ctrl.controlName +
                                         ". There are only " +
-                                        FColumnCount.ToString() + " columns overall");
+                                        (FColumnCount / 2).ToString() + " columns overall");
                                 }
 
-                                for (int columnCounter2 = columnCounter; columnCounter2 < columnCounter + ctrl.colSpan; columnCounter2++)
+                                for (int columnCounter2 = columnCounter; columnCounter2 < columnCounter + colSpanWithLabel; columnCounter2++)
                                 {
                                     CurrentSpanWidth += ColumnWidth[columnCounter2];
                                 }
 
                                 if (CurrentSpanWidth < CellWidth)
                                 {
-                                    ColumnWidth[columnCounter + ctrl.colSpan - 1] += CellWidth - CurrentSpanWidth;
+                                    ColumnWidth[columnCounter + colSpanWithLabel - 1] += CellWidth - CurrentSpanWidth;
                                 }
                             }
 
                             int CellHeight = ctrl.Height;
 
-                            if ((spanRunCounter == 0) && (ctrl.rowSpan == 1))
+                            if ((spanRunCounter == 0) && (colSpanWithLabel == 1))
                             {
                                 if (CellHeight > RowHeight[rowCounter])
                                 {
@@ -315,6 +331,40 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            if (TLogging.DebugLevel >= 4)
+            {
+                StringCollection widthStringCollection = new StringCollection();
+
+                for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                {
+                    widthStringCollection.Add(ColumnWidth[columnCounter].ToString());
+                }
+
+                TLogging.Log("column width for " + LayoutCtrl.controlName + ": " + StringHelper.StrMerge(widthStringCollection, ','));
+
+                for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                {
+                    string rowText = string.Empty;
+
+                    for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                    {
+                        if (FGrid[columnCounter, rowCounter] != null)
+                        {
+                            TControlDef childctrl = FGrid[columnCounter, rowCounter];
+
+                            int colSpanWithLabel = childctrl.colSpanWithLabel;
+
+                            for (int countspan = 0; countspan < colSpanWithLabel; countspan++)
+                            {
+                                rowText += string.Format("{0}:{1} ", columnCounter + countspan, childctrl.controlName);
+                            }
+                        }
+                    }
+
+                    TLogging.Log(String.Format(" Row{0}: {1}", rowCounter, rowText));
+                }
+            }
+
             int Width = 0;
             int Height = 0;
 
@@ -342,7 +392,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             // add up spanning columns
                             int concatenatedColumnWidth = ColumnWidth[columnCounter];
 
-                            for (int colSpanCounter = 1; colSpanCounter < childctrl.colSpan; colSpanCounter++)
+                            int colSpanWithLabel = childctrl.colSpanWithLabel;
+
+                            for (int colSpanCounter = 1; colSpanCounter < colSpanWithLabel; colSpanCounter++)
                             {
                                 concatenatedColumnWidth += ColumnWidth[columnCounter + colSpanCounter];
                             }
@@ -519,10 +571,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
 
-            if ((childNodes.Count > 0) && childNodes[0].Name.StartsWith("Row"))
+            if ((childNodes.Count > 0) && TYml2Xml.GetElementName(childNodes[0]).StartsWith("Row"))
             {
                 // create a layout using the defined rows in Controls
-                // create TableLayoutPanel that has as many columns and rows as needed
+                // create TableLayoutPanel that has as many columns (including the labels) and rows as needed
                 FOrientation = eOrientation.TableLayout;
                 FCurrentRow = 0;
                 FCurrentColumn = 0;
@@ -759,7 +811,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
             }
-            else if (ctrl.controlName == "pnlEmpty")
+            else if (ctrl.controlName.StartsWith("pnlEmpty"))
             {
                 // don't do anything here!
             }
@@ -790,16 +842,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
-                // checkbox, radiobutton, groupbox, label control: no label
-                // no label: merge cells
-                Int32 colSpan = 1;
-
-                if (ctrl.HasAttribute("ColSpan"))
-                {
-                    colSpan = Convert.ToInt32(ctrl.GetAttribute("ColSpan"));
-                }
-
-                ctrl.SetAttribute("ColSpan", (colSpan + 1).ToString());
                 AddControl(ctrl,
                     FCurrentColumn * 2,
                     FCurrentRow);
@@ -816,7 +858,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (FOrientation == eOrientation.TableLayout)
             {
-                FCurrentColumn++;
+                FCurrentColumn += ctrl.colSpan;
             }
         }
     }
