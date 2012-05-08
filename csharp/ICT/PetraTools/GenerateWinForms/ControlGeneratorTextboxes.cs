@@ -374,7 +374,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.SetControlProperty(ctrl, "ButtonWidth", "0");
                 writer.SetControlProperty(ctrl, "BorderStyle", "System.Windows.Forms.BorderStyle.None");
-                writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 2, 0, 0)");
+                writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 4, 0, 0)");
             }
 
             ctrl.SetAttribute("Width", controlWidth.ToString());

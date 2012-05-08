@@ -312,7 +312,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         writer.SetControlProperty(ctrl, "CheckAlign", "System.Drawing.ContentAlignment.MiddleLeft");
                     }
 
-                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 3, 3, 0)");
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, -1, 3, 0)");
 
                     ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 30).ToString());
                 }
