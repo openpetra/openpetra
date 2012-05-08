@@ -22,10 +22,8 @@ RootNode:
         txtPreferredName: {DataField=PPerson.PreferedName}            
             Width: 240
         txtPreviousName: {DataField=PPartner.PreviousName}
-            Dock: Top
         txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
             ColSpan: 3
-            Dock: Top
 
         grpMisc: {Label=Miscellaneous, Dock=Top}
             Controls: 
@@ -40,17 +38,14 @@ RootNode:
 
         dtpDateOfBirth:
         txtDecorations:
-            Dock: Top
-        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
+        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Width:200}
         txtAcademicTitle:
-            Dock: Top
         dtpMaritalStatusSince:
         txtMaritalStatusComment:
             ColSpan: 3
             Height: 46
             Multiline: true
             ScrollBars: Vertical            
-            Dock: Top
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
         txtOccupationCode: {Label=Occupation, Type=Occupation, ColSpan=3}

@@ -403,11 +403,35 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             }
                         }
 
+                        int ControlTopPosition = CurrentTopPosition;
+                        int ControlLeftPosition = CurrentLeftPosition;
+
+                        // add margin or padding
+                        string padding = writer.GetControlProperty(childctrl.controlName, "Padding");
+
+                        if (padding.Length > 0)
+                        {
+                            string[] values = padding.Substring(padding.IndexOf("(") + 1).Replace(")", "").Split(new char[] { ',' });
+                            ControlLeftPosition += Convert.ToInt32(values[0]);
+                            ControlTopPosition += Convert.ToInt32(values[1]);
+                            writer.ClearControlProperty(childctrl.controlName, "Padding");
+                        }
+
+                        string margin = writer.GetControlProperty(childctrl.controlName, "Margin");
+
+                        if (margin.Length > 0)
+                        {
+                            string[] values = margin.Substring(margin.IndexOf("(") + 1).Replace(")", "").Split(new char[] { ',' });
+                            ControlLeftPosition += Convert.ToInt32(values[0]);
+                            ControlTopPosition += Convert.ToInt32(values[1]);
+                            writer.ClearControlProperty(childctrl.controlName, "Margin");
+                        }
+
                         writer.SetControlProperty(childctrl.controlName,
                             "Location",
                             String.Format("new System.Drawing.Point({0},{1})",
-                                CurrentLeftPosition.ToString(),
-                                CurrentTopPosition.ToString()),
+                                ControlLeftPosition.ToString(),
+                                ControlTopPosition.ToString()),
                             false);
                         writer.CallControlFunction(LayoutCtrl.controlName,
                             "Controls.Add(this." + childctrl.controlName + ")");

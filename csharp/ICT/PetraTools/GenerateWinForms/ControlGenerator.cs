@@ -172,8 +172,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 15).ToString());
-            ctrl.SetAttribute("Height", FDefaultHeight.ToString());
+            if (!ctrl.HasAttribute("Width"))
+            {
+                ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 15).ToString());
+            }
+
+            if (!ctrl.HasAttribute("Height"))
+            {
+                ctrl.SetAttribute("Height", FDefaultHeight.ToString());
+            }
+
             base.SetControlProperties(writer, ctrl);
 
             if (ctrl.GetAttribute("AcceptButton").ToLower() == "true")
@@ -304,7 +312,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         writer.SetControlProperty(ctrl, "CheckAlign", "System.Drawing.ContentAlignment.MiddleLeft");
                     }
 
-                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 6, 3, 0)");
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 3, 3, 0)");
 
                     ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 30).ToString());
                 }

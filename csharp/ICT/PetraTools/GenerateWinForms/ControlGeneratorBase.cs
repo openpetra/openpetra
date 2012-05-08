@@ -600,7 +600,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (ctrl.GetAttribute("BorderStyle").ToLower() == "none")
                 {
-                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(0, 7, 0, 0)");
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(0, 5, 0, 0)");
                 }
             }
 

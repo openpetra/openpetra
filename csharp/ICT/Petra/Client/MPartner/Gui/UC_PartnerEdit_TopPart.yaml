@@ -69,6 +69,7 @@ RootNode:
             Controls: [txtPartnerKey, txtPartnerClass]      
             ColWidths: [0=Fixed:80, 1=Fixed:218]
             Height: 30
+            Margin: 0
 
         txtPartnerKey:
             ReadOnly: true
@@ -80,6 +81,7 @@ RootNode:
         txtPartnerClass:
             ReadOnly: true
             Label: Class
+            #DefaultValue: test
             BorderStyle: None
             Width: 100
 
@@ -89,6 +91,7 @@ RootNode:
             Controls: [txtLastGiftDetailsDate, txtLastGiftDetails]
             ColWidths: [0=Fixed:80]
             RowHeights: [0=Fixed:20]
+            Margin: 0
 
         txtLastGiftDetailsDate:
             Label: Last Gift
@@ -127,8 +130,9 @@ RootNode:
         pnlFamily2ndLine:        
             Controls: [EmptyFamily, cmbFamilyAddresseeTypeCode, chkFamilyNoSolicitations]
             ControlsOrientation: horizontal
-            ColWidths: [0=Fixed:80, 2=Fixed:220, 3=Fixed:120, 4=Fixed:120]
+            ColWidths: [0=Fixed:80, 1=Fixed:220, 2=Fixed:120]
             Visible: false
+            Margin: 0
             Dock: Fill
 
         cmbFamilyAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
@@ -172,6 +176,7 @@ RootNode:
             ColWidths: [0=Fixed:80, 1=Fixed:100, 2=Fixed:100, 3=Fixed:100, 4=Fixed:60, 5=Fixed:50]
             Height: 28
             Visible: false
+            Margin: 0
             Dock: Fill
 
         cmbPersonGender: {Label=&Gender, DataField=PPerson.Gender, List=GenderList, Width=88}
@@ -246,6 +251,7 @@ RootNode:
         pnlOther2ndLine: {ControlsOrientation=horizontal, Visible=false}
             Controls: [Empty, cmbOtherAddresseeTypeCode, chkOtherNoSolicitations]
             ColWidths: [0=Fixed:80, 1=Fixed:220, 2=Fixed:120]
+            Margin: 0
             Dock: Fill
 
         cmbOtherAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}

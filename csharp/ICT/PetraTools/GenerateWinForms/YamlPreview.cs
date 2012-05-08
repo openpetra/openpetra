@@ -212,9 +212,13 @@ namespace Ict.Tools.GenerateWinForms
                     Namespace = line.Substring("namespace ".Length);
                 }
 
-                // ignore event handlers
                 if (line.Contains("+= new "))
                 {
+                    // ignore event handlers
+                }
+                else if (line.Contains(".ListTable = "))
+                {
+                    // ignore TtxtAutoPopulatedButtonLabel.set_ListTable
                 }
                 else if (line.Contains("partial class"))
                 {

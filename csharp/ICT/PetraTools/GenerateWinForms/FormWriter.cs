@@ -235,6 +235,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        /// <summary>
+        /// remove the current value of a control property
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="APropertyName"></param>
+        /// <returns></returns>
+        public override void ClearControlProperty(string AControlName, string APropertyName)
+        {
+            if (FControlProperties.ContainsKey(AControlName) && FControlProperties[AControlName].ContainsKey(APropertyName))
+            {
+                FControlProperties[AControlName].Remove(APropertyName);
+            }
+        }
+
+        /// <summary>
+        /// retrieve the current value of a control property
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="APropertyName"></param>
+        /// <returns></returns>
+        public override string GetControlProperty(string AControlName, string APropertyName)
+        {
+            if (FControlProperties.ContainsKey(AControlName) && FControlProperties[AControlName].ContainsKey(APropertyName))
+            {
+                return FControlProperties[AControlName][APropertyName];
+            }
+
+            return string.Empty;
+        }
+
         /// this can be used for properties, event handlers, etc
         private void SetControlProperty(string AControlName, string APropertyName, string APropertyValue)
         {
