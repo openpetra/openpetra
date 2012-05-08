@@ -1,5 +1,5 @@
 -- gi3200-1.i ln48. Export Gift transactions
-            //Find and total each gift transaction
+--Find and total each gift transaction
 
 SELECT
 		GiftDetail.a_ledger_number_i,

@@ -85,7 +85,7 @@ namespace Tests.MFinance.Server.ICH
         [Test]
         public void TestFileHeaderReplace()
         {
-            string fileName = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + Path.DirectorySeparatorChar + "Test.csv";
+            string fileName = Path.GetTempPath() + @"\TestGenHOSAFile.csv";
             int PeriodNumber = 4;
             string StandardCostCentre = "4300";
             string CostCentre = "78";
@@ -117,7 +117,10 @@ namespace Tests.MFinance.Server.ICH
             TGenHOSAFilesReports.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "Performing HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
+                "HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
+
+            Assert.IsTrue(File.Exists(FileName),
+                "HOSA File did not create!");
         }
 
         /// <summary>
@@ -142,22 +145,21 @@ namespace Tests.MFinance.Server.ICH
         /// Test the exporting of gifts as part of the HOSA process
         /// </summary>
         [Test]
-        [Ignore("still fails and needs a review")]
         public void TestExportGifts()
         {
             int LedgerNumber = FLedgerNumber;
             string CostCentre = "7300";
             string AcctCode = "0400";
             string MonthName = "January";
-            int PeriodNumber = 1;
+            int PeriodNumber = 0;
             DateTime PeriodStartDate = Convert.ToDateTime("1-Jan-2012");
             DateTime PeriodEndDate = Convert.ToDateTime("31-Jan-2012");
             string Base = MFinanceConstants.CURRENCY_BASE;
-            int IchNumber = 1;
+            int IchNumber = 0;
             DataTable TableForExport = new DataTable();
 
             // need to create gifts first
-            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
+            //TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
 
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
