@@ -146,12 +146,12 @@ namespace Tests.MFinance.Server.ICH
         public void TestExportGifts()
         {
             int LedgerNumber = FLedgerNumber;
-            string CostCentre = "73";
-            string AcctCode = "10001";
-            string MonthName = "April";
-            int PeriodNumber = 4;
-            DateTime PeriodStartDate = Convert.ToDateTime("1-Apr-2012");
-            DateTime PeriodEndDate = Convert.ToDateTime("30-Apr-2012");
+            string CostCentre = "7300";
+            string AcctCode = "0400";
+            string MonthName = "January";
+            int PeriodNumber = 1;
+            DateTime PeriodStartDate = Convert.ToDateTime("1-Jan-2012");
+            DateTime PeriodEndDate = Convert.ToDateTime("31-Jan-2012");
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 1;
             DataTable TableForExport = new DataTable();
