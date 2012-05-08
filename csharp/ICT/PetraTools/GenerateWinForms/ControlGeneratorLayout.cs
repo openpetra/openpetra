@@ -209,11 +209,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             TControlDef ctrl = FGrid[columnCounter, rowCounter];
 
-                            int colSpanWithLabel = ctrl.colSpanWithLabel;
-
                             int CellWidth = ctrl.Width;
 
-                            if ((spanRunCounter == 0) && (colSpanWithLabel == 1))
+                            if ((spanRunCounter == 0) && (ctrl.colSpanWithLabel == 1))
                             {
                                 if (CellWidth > ColumnWidth[columnCounter])
                                 {
@@ -224,27 +222,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             {
                                 int CurrentSpanWidth = 0;
 
-                                if (columnCounter + colSpanWithLabel > FColumnCount)
+                                if (columnCounter + ctrl.colSpanWithLabel > FColumnCount)
                                 {
-                                    throw new Exception("invalid colspan " + ctrl.colSpan.ToString() + " in control " + ctrl.controlName +
+                                    // TODO: make an exception again?
+                                    TLogging.Log("Warning: invalid colspan " + ctrl.colSpan.ToString() + " in control " + ctrl.controlName +
                                         ". There are only " +
                                         (FColumnCount / 2).ToString() + " columns overall");
+
+                                    ctrl.colSpanWithLabel = ctrl.colSpan;
                                 }
 
-                                for (int columnCounter2 = columnCounter; columnCounter2 < columnCounter + colSpanWithLabel; columnCounter2++)
+                                for (int columnCounter2 = columnCounter; columnCounter2 < columnCounter + ctrl.colSpanWithLabel; columnCounter2++)
                                 {
                                     CurrentSpanWidth += ColumnWidth[columnCounter2];
                                 }
 
                                 if (CurrentSpanWidth < CellWidth)
                                 {
-                                    ColumnWidth[columnCounter + colSpanWithLabel - 1] += CellWidth - CurrentSpanWidth;
+                                    ColumnWidth[columnCounter + ctrl.colSpanWithLabel - 1] += CellWidth - CurrentSpanWidth;
                                 }
                             }
 
                             int CellHeight = ctrl.Height;
 
-                            if ((spanRunCounter == 0) && (colSpanWithLabel == 1))
+                            if ((spanRunCounter == 0) && (ctrl.colSpanWithLabel == 1))
                             {
                                 if (CellHeight > RowHeight[rowCounter])
                                 {
@@ -352,9 +353,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             TControlDef childctrl = FGrid[columnCounter, rowCounter];
 
-                            int colSpanWithLabel = childctrl.colSpanWithLabel;
-
-                            for (int countspan = 0; countspan < colSpanWithLabel; countspan++)
+                            for (int countspan = 0; countspan < childctrl.colSpanWithLabel; countspan++)
                             {
                                 rowText += string.Format("{0}:{1} ", columnCounter + countspan, childctrl.controlName);
                             }
@@ -392,9 +391,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             // add up spanning columns
                             int concatenatedColumnWidth = ColumnWidth[columnCounter];
 
-                            int colSpanWithLabel = childctrl.colSpanWithLabel;
-
-                            for (int colSpanCounter = 1; colSpanCounter < colSpanWithLabel; colSpanCounter++)
+                            for (int colSpanCounter = 1; colSpanCounter < childctrl.colSpanWithLabel; colSpanCounter++)
                             {
                                 concatenatedColumnWidth += ColumnWidth[columnCounter + colSpanCounter];
                             }
