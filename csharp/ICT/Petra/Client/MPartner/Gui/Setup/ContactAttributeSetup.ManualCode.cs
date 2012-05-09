@@ -58,7 +58,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // We need to capture the 'DataSaved' event, so we can save our Extra DataSet
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
-            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
 
             // we also want to know if the number of rows in our user control changes
             ucContactDetail.CountChanged += new CountChangedEventHandler(ucContactDetail_CountChanged);
@@ -183,7 +182,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void GetDetailDataFromControlsManual(PContactAttributeRow ARow)
         {
             // Tell the user control to get its data too
-            ucContactDetail.GetDataFromControls();
+            ucContactDetail.GetDetailsFromControls();
         }
 
         private void txtDetailContactAttributeCode_LostFocus(object sender, EventArgs e)
@@ -221,39 +220,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ucContactDetail.ModifyAttributeCode(newCode);
         }
 
-        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
-        {
-            // We need to check that there is at least one detail attribute in the user control.
-            // This is because, when an attribute is used to apply to a partner,
-            //   the attribute and detail attribute are both required for the primary key
-            // We will go through all the rows in the table making sure that we have non-zero values in our extra column
-            bool bFoundError = false;
-            string msg = String.Empty;
-
-            for (int i = 0; i < FMainDS.PContactAttribute.Rows.Count; i++)
-            {
-                int NumDetailAttributes = Convert.ToInt32(FMainDS.PContactAttribute.Rows[i][NumDetailCodesColumnOrdinal]);
-
-                if (NumDetailAttributes == 0)
-                {
-                    msg = String.Format(
-                        Catalog.GetString("There are no detail codes associated with the '{0}' contact attribute.  No data has been saved."),
-                        FMainDS.PContactAttribute.Rows[i][0]);
-                    TVerificationResult result = new TVerificationResult(FMainDS.PContactAttribute.ColumnContactAttributeCode.ColumnName,
-                        msg,
-                        TResultSeverity.Resv_Critical);
-                    FPetraUtilsObject.VerificationResultCollection.Add(result);
-                    bFoundError = true;
-                    break;
-                }
-            }
-
-            if (bFoundError)
-            {
-                MessageBox.Show(msg, Catalog.GetString("Error Saving Data"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-        }
-
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
             // Save the changes in the user control
@@ -268,6 +234,33 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             // something has changed in our user control (add/delete rows)
             FPreviouslySelectedDetailRow[NumDetailCodesColumnOrdinal] = e.NewCount;
+        }
+
+        private void ValidateDataDetailsManual(PContactAttributeRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            DataColumn ValidationColumn;
+            TVerificationResult VerificationResult = null;
+
+            // The added column at the end of the table, which is the number of detail codes for this attribute, must not be zero
+            // Our problem is that the control that is really the correct one to verify is the details grid of the user control.
+            // This control is not one that can be verified.
+            // We can do the verification here - either by using the Active checkbox as a proxy (the nearest control) in which case we get a tooltip
+            // but when we tab away from the checkbox, wich is not quite right...
+            // or we can just use htis code without the Validation=true in the YAML - in which case we just get the validation dialog
+            ValidationColumn = ARow.Table.Columns[PContactAttributeTable.ColumnActiveId];
+            VerificationResult = TNumericalChecks.IsPositiveInteger(Convert.ToInt32(ARow[NumDetailCodesColumnOrdinal]),
+                "Contact Detail",
+                this, ValidationColumn, chkDetailActive);
+
+            if (VerificationResult != null)
+            {
+                VerificationResult.OverrideResultText(Catalog.GetString(
+                        "You must create at least one 'Attribute Detail Code' for each 'Contact Attribute'."));
+            }
+
+            // Handle addition to/removal from TVerificationResultCollection.
+            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, false);
         }
     }
 }

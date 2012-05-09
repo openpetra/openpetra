@@ -42,7 +42,7 @@ RootNode:
             BorderVisible: false
             ControlsOrientation: horizontal
         txtDetailFormName: {Label=Application Form Name, CharacterCasing=Upper, Width=160}
-        chkDetailFormSentIndicator: {Label=For Sending}
+        chkDetailFormSentIndicator: {Label=For Sending, Validation=true}
         chkDetailFormReceivedIndicator: {Label=For Receiving}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:

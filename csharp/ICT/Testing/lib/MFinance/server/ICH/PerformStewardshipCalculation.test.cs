@@ -37,9 +37,10 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Common;
-using Ict.Petra.Server.MFinance.Gift.WebConnectors;
-using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.ICH;
+using Ict.Petra.Server.MFinance.ICH.WebConnectors;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -52,7 +53,7 @@ namespace Tests.MFinance.Server.ICH
     [TestFixture]
     public class TStewardshipCalculationTest
     {
-        Int32 FLedgerNumber = -1;
+        static Int32 FLedgerNumber = 43;
 
         const string MainFeesPayableCode = "GIF2";
         const string MainFeesReceivableCode = "HO_ADMIN2";
@@ -65,7 +66,6 @@ namespace Tests.MFinance.Server.ICH
         {
             //new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
-            FLedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
         }
 
         /// <summary>
@@ -80,11 +80,13 @@ namespace Tests.MFinance.Server.ICH
         /// <summary>
         /// This will import a test gift batch, and post it.
         /// </summary>
-        public int ImportAndPostGiftBatch(DateTime AGiftDateEffective)
+        public static int ImportAndPostGiftBatch(DateTime AGiftDateEffective)
         {
             TGiftImporting importer = new TGiftImporting();
 
-            string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+            string testFile = TAppSettingsManager.GetValue("GiftBatch.file",
+                CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
 
@@ -285,5 +287,20 @@ namespace Tests.MFinance.Server.ICH
             Assert.AreEqual(20.0m * (100.0m - 7.0m) / 100.0m, ClearingHouseAfter - ClearingHouseBefore,
                 "We have to give everything apart from our 7% to ICH");
         }
+
+//        /// <summary>
+//        /// Test the creation of the ICH Stewardship batch
+//        /// </summary>
+//        [Test]
+//        public void TestGenerateICHStewardshipBatch()
+//        {
+//                      //ImportAdminFees();
+//
+//              int PeriodNumber = 5;
+//
+//              TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+//
+//              Assert.IsTrue(TStewardshipCalculationWebConnector.GenerateICHStewardshipBatch(FLedgerNumber, PeriodNumber, ref VerificationResults),"Did not create ICH Stewardship Batch");
+//        }
     }
 }

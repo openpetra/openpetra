@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -78,6 +79,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 dtpDetailUnassignableDate.Date = DateTime.Now.Date;
             }
+        }
+
+        private void ValidateDataDetailsManual(PRelationCategoryRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedValidation_CacheableDataTables.ValidateRelationCategory(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

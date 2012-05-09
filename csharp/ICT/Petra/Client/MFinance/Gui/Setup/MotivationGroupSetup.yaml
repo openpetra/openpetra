@@ -1,12 +1,12 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Motivation Groups
-    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup.Gift
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: AMotivationGroup
-    CacheableTable: MotivationGroupList
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: edit
-    Template: windowMaintainCacheableTable
+    Template: windowEdit
     WindowWidth: 660
     WindowHeight: 500
     Actions:

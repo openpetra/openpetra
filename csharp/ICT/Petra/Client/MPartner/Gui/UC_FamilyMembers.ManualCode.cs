@@ -920,8 +920,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdFamilyMembers.AddTextColumn("Date of Birth",
                     FFamilyMembersDT.Columns[PartnerEditTDSFamilyMembersTable.GetDateOfBirthDBName()], -1, FSpecialCellController, l_editorDt2, null,
                     null);
-                grdFamilyMembers.AddTextColumn("Partner Key",
-                    FFamilyMembersDT.Columns[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()], -1, FSpecialCellController, null, null, null);
+                grdFamilyMembers.AddPartnerKeyColumn("Partner Key",
+                    FFamilyMembersDT.Columns[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()]);
                 FamilyIDDropDownValues = new Int32[] {
                     1, 2, 3, 4, 5, 6, 7, 8, 9, 0
                 };

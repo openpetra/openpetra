@@ -73,9 +73,11 @@ RootNode:
         dtpStartDate:
             Label: Start Date
             DataField: PmPastExperience.StartDate
+            Validation: true
         dtpEndDate:
             Label: End Date
             DataField: PmPastExperience.EndDate
+            Validation: Pair(dtpStartDate)
         
         txtComment:
             DataField: PmPastExperience.PastExpComments

@@ -32,10 +32,8 @@
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.ICH.dll" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.AP.dll" />
 
-        <!-- TODO https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=578 
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
-        -->
-        
+
         <!-- 
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" />
         -->

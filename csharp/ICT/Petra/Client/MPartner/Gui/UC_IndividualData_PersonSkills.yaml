@@ -56,12 +56,14 @@ RootNode:
             List: SkillCategoryList
             Width: 200
             ColSpan: 3
+            Validation: true
         cmbSkillLevel:
             Label: Skill Level
             DataField: PmPersonSkill.SkillLevel
             List: SkillLevelList
             Width: 200
             ColSpan: 3
+            Validation: true
         txtDescriptEnglish: {Label=Description, DataField=PmPersonSkill.DescriptionEnglish, Width=380, ColSpan=3}
         cmbLocalLanguage: 
             Label: Local Language
