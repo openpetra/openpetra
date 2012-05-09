@@ -217,7 +217,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                                 Convert.ToInt32(ctrl.GetAttribute("IconWidth", "15"))).ToString());
                     writer.SetControlProperty(ctrl, "Size", "new System.Drawing.Size(" +
                         ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
-                    writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleLeft");
+
+                    if (writer.GetControlProperty(ctrl.controlName, "Text") == "\"\"")
+                    {
+                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleLeft");
+                    }
+                    else
+                    {
+                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+                    }
+
                     writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.MiddleRight");
                 }
             }

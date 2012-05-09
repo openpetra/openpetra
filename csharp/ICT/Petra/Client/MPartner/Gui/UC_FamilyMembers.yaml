@@ -30,23 +30,28 @@ RootNode:
             Controls: [grdFamilyMembers, pnlBottomButtons, pnlRightButtons]
             
         pnlRightButtons:
+            Controls: [pnlGridActions, pnlDockFamilyIDHelp]
+            Width: 300
             Dock: Right
-            ControlsOrientation: horizontal
-            Controls: [pnlGridActions, btnFamilyIDHelp]
         
         pnlGridActions:
-            Controls: [grpChangeFamilyID, btnRefreshGrid]
+            Controls: [grpChangeFamilyID, pnlDockRefreshGrid]
+            Dock: Left
             
         grdFamilyMembers:
             Dock: Fill
+
         grpChangeFamilyID: {Label=Change Family ID}
-            Controls: [btnFamilyMemberDemote, btnFamilyMemberPromote, btnEditFamilyID, lblJustToExtendWidth]
+            Dock: Top
+            Width: 130
+            Controls: [btnFamilyMemberDemote, btnFamilyMemberPromote, btnEditFamilyID]
+        pnlDockFamilyIDHelp:
+            Controls: [btnFamilyIDHelp]
+            Dock: Right
+        
         btnFamilyIDHelp: {NoLabel=true}
             Action: actFamilyIDHelp
             Help: Family ID explained
-        lblJustToExtendWidth: {NoLabel=true}
-            Width: 130
-            Height: 2
 
         txtFamilyPartnerKey: {NoLabel=true, ReadOnly=true, Type=PartnerKey}
         btnEditFamily:
@@ -56,17 +61,22 @@ RootNode:
             
         btnFamilyMemberDemote: {NoLabel=true}
             Action: actFamilyMemberDemote
-            Stretch: horizontally
+            Width: 110
             Help: Demote Family ID
         btnFamilyMemberPromote: {NoLabel=true}
             Action: actFamilyMemberPromote
-            Stretch: horizontally
+            Width: 110
             Help: Promote Family ID
         btnEditFamilyID:
-            Stretch: horizontally
+            # more width because there is no icon
+            Width: 130
             Action: actEditFamilyID
+        pnlDockRefreshGrid:
+            Dock: Top
+            Controls: [btnRefreshGrid]
         btnRefreshGrid: {NoLabel=true}
             Action: actRefreshGrid
+            Width: 110
             Help: Refresh Family Members List (e.g. after moving Persons from/to Family)
 
         pnlBottomButtons:
@@ -86,4 +96,3 @@ RootNode:
             Action: actAddExistingPersonToThisFamily
         btnAddNewPersonToThisFamily: {Stretch=horizontally}
             Action: actAddNewPersonToThisFamily
-		
