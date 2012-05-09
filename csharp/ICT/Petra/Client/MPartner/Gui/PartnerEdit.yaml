@@ -71,7 +71,7 @@ RootNode:
             
         ucoUpperPart:
             Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerEdit_TopPart
-            Height: 122
+            Height: 121
             Dock: Top
             
         ucoLowerPart:

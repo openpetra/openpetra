@@ -535,11 +535,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 TlpGenerator.WriteTableLayout(writer, ctrl);
 
-                if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock") == "Fill"))
+                if (ctrl.GetAttribute("Dock", "None") != "None")
                 {
-                    writer.SetControlProperty(ctrl.controlName, "Dock", "Fill", false);
+                    writer.SetControlProperty(ctrl.controlName, "Dock", ctrl.GetAttribute("Dock"), false);
 
-                    if (this.FPrefix != "grp")
+                    // groupboxes do not have AutoScroll property (grp, rgr)
+                    if ((this.FPrefix == "pnl") || (this.FPrefix == "tab") || (this.FPrefix == "rng"))
                     {
                         writer.SetControlProperty(ctrl.controlName, "AutoScroll", "true", false);
                     }

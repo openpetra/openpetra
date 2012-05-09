@@ -106,10 +106,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ctrl.Label + ":";
             }
 
-            ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(labelText) + 10).ToString());
+            int width = PanelLayoutGenerator.MeasureTextWidth(labelText) + 5;
+
+            if (Convert.ToInt32(ctrl.GetAttribute("Width", "1")) < width)
+            {
+                ctrl.SetAttribute("Width", width.ToString());
+            }
 
             writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");
-            writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(3, 5, 3, 0)");
+            writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 5, 0, 0)");
 
             if (FRightAlign)
             {

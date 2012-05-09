@@ -46,6 +46,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             this.FChangeEventName = "DateChanged";
             this.FChangeEventHandlerType = "TPetraDateChangedEventHandler";
             FDefaultWidth = 94;
+            FDefaultHeight = 22;
         }
 
         /// <summary>
@@ -246,6 +247,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("txt", "Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel")
         {
             this.FChangeEventHandlerType = "TDelegatePartnerChanged";
+            FDefaultHeight = 22;
         }
 
         /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
@@ -349,6 +351,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if ((ctrl.HasAttribute("ShowLabel") && (ctrl.GetAttribute("ShowLabel").ToLower() == "false")))
             {
                 writer.SetControlProperty(ctrl, "ShowLabel", "false");
+                controlWidth = 120;
             }
 
             // Note: the control defaults to 'ShowLabel' true, so this doesn't need to be set to 'true' in code.
@@ -378,7 +381,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 4, 0, 0)");
             }
 
-            ctrl.SetAttribute("Width", controlWidth.ToString());
+            if (!ctrl.HasAttribute("Width"))
+            {
+                ctrl.SetAttribute("Width", controlWidth.ToString());
+            }
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
             {
@@ -406,6 +412,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FChangeEventName = "TextChanged";
             FHasReadOnlyProperty = true;
+            FDefaultHeight = 22;
         }
 
         /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>

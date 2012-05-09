@@ -45,7 +45,7 @@ RootNode:
         btnWorkerField:
             Action: actMaintainWorkerField
             Width: 100
-            Height: 20
+            Height: 22
         txtWorkerField:
             ReadOnly: true
             NoLabel: true
@@ -67,13 +67,14 @@ RootNode:
 # Header (Partner 'Head' Data)
         pnlPartnerInfo: {ControlsOrientation=horizontal}
             Controls: [txtPartnerKey, txtPartnerClass]      
-            ColWidths: [0=Fixed:80, 1=Fixed:218]
-            Height: 30
+            ColWidths: [0=Fixed:80,1=Fixed:100,2=Fixed:80,3=Fixed:100]
+            Height: 22
             Margin: 0
 
         txtPartnerKey:
             ReadOnly: true
             Label: Key
+            LabelWidth: 80
             Type: PartnerKey
             ShowLabel: false
             TabStop: false
@@ -94,6 +95,7 @@ RootNode:
 
         txtLastGiftDetailsDate:
             Label: Last Gift
+            LabelWidth: 80
             DataField: MiscellaneousData.LastGiftDate
             ReadOnly: true
             Width: 88
@@ -115,6 +117,7 @@ RootNode:
 
         txtFamilyTitle:
             Label: Title/Na&me            
+            LabelWidth: 80
             Width: 90
             DataField: PFamily.Title
 
@@ -149,7 +152,7 @@ RootNode:
                 Row1: [txtPersonTitle, txtPersonFirstName, txtPersonMiddleName, txtPersonFamilyName]
             Dock: Fill
             Margin: 0
-            Visible: true
+            Visible: false
  
         txtPersonTitle:
             Label: Title/Na&me
@@ -171,12 +174,12 @@ RootNode:
         pnlPerson2ndLine:        
             Controls: [cmbPersonGender, cmbPersonAddresseeTypeCode, chkPersonNoSolicitations]
             ControlsOrientation: horizontal
-            ColWidths: [0=Fixed:80, 1=Fixed:100, 2=Fixed:100, 3=Fixed:100, 4=Fixed:60, 5=Fixed:50]
-            Visible: true
+            ColWidths: [0=Fixed:80, 1=Fixed:100, 2=Fixed:120, 3=Fixed:80, 4=Fixed:60, 5=Fixed:50]
+            Visible: false
             Margin: 0
             Dock: Fill
 
-        cmbPersonGender: {Label=&Gender, DataField=PPerson.Gender, List=GenderList, Width=88}
+        cmbPersonGender: {Label=&Gender, LabelWidth: 80, DataField=PPerson.Gender, List=GenderList, Width=88}
         cmbPersonAddresseeTypeCode: {Label=&Addressee Type, DataField=AddresseeTypeCode, List=AddresseeTypeList, Width=105}
         chkPersonNoSolicitations:
             Label: No Solicitations
@@ -206,6 +209,7 @@ RootNode:
             Margin: 0
         txtOrganisationName:
             Label: Na&me            
+            LabelWidth: 80
             Width: 428
             LabelWidth: 80
             Stretch: horizontally

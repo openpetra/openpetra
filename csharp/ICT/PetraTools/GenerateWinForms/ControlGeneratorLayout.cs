@@ -274,9 +274,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // now apply settings about the column width and row height
             if (FColWidths != null)
             {
+                bool simpleColumnWidth = false;
+
+                // for the simple column width specification, you need to provide a width for each column, without the label columns
+                if (FColWidths.Count * 2 == FColumnCount)
+                {
+                    simpleColumnWidth = true;
+
+                    for (int columnCounter = 0; columnCounter < FColWidths.Count; columnCounter++)
+                    {
+                        if (!FColWidths.ContainsKey(columnCounter))
+                        {
+                            simpleColumnWidth = false;
+                        }
+                    }
+                }
+
                 for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
                 {
-                    if (FColWidths.Count * 2 == FColumnCount)
+                    if (simpleColumnWidth)
                     {
                         // the specified width includes the label column
                         if (FColWidths.ContainsKey(columnCounter / 2))
@@ -306,6 +322,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             else if (ColWidthSpec[0].ToLower() == "percent")
                             {
                                 // TODO
+                                TLogging.Log("Warning: we currently don't support colwidth in percentage, control " + LayoutCtrl);
                             }
                         }
                     }
@@ -327,6 +344,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         else if (RowHeightSpec[0].ToLower() == "percent")
                         {
                             // TODO
+                            TLogging.Log("Warning: we currently don't support rowheight in percentage, control " + LayoutCtrl);
                         }
                     }
                 }
@@ -843,6 +861,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 string lblName = lblGenerator.CalculateName(controlName);
                 TControlDef newLabel = writer.CodeStorage.FindOrCreateControl(lblName, ctrl.controlName);
                 newLabel.Label = ctrl.Label;
+
+                if (ctrl.HasAttribute("LabelWidth"))
+                {
+                    newLabel.SetAttribute("Width", ctrl.GetAttribute("LabelWidth"));
+                }
 
                 if (ctrl.HasAttribute("LabelUnit"))
                 {
