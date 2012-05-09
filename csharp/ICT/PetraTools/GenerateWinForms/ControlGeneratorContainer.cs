@@ -647,6 +647,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("pnl", typeof(Panel))
         {
         }
+
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            if (ctrl.GetAttribute("Label", string.Empty).Length > 0)
+            {
+                FGenerateLabel = true;
+            }
+
+            base.SetControlProperties(writer, ctrl);
+
+            return writer.FTemplate;
+        }
     }
 
     /// <summary>

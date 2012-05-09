@@ -158,11 +158,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             childctrl.colSpan = childctrl.HasAttribute("ColSpan") ? Convert.ToInt32(childctrl.GetAttribute("ColSpan")) : 1;
             childctrl.rowSpan = childctrl.HasAttribute("RowSpan") ? Convert.ToInt32(childctrl.GetAttribute("RowSpan")) : 1;
 
-            if (childctrl.rowSpan > 1)
-            {
-                TLogging.Log("Warning: we currently cannot support RowSpan > 1. control is " + childctrl.controlName);
-            }
-
             if (!childctrl.hasLabel)
             {
                 childctrl.colSpanWithLabel = childctrl.colSpan * 2;
