@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             //Begin the transaction
             bool NewTransaction = false;
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -619,7 +619,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             //Begin the transaction
             bool NewTransaction = false;
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
