@@ -263,6 +263,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
                             {
+                                if (NewTransaction)
+                                {
+                                	DBAccess.GDBAccessObj.RollbackTransaction();
+                                }
                                 return false;
                             }
 
@@ -271,7 +275,11 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (!AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out AMessages))
                             {
-                                return false;
+                                if (NewTransaction)
+                                {
+                                	DBAccess.GDBAccessObj.RollbackTransaction();
+                                }
+                            	return false;
                             }
 
                             FMainDS.AGiftDetail.AcceptChanges();
