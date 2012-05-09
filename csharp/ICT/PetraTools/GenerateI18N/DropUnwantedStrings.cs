@@ -112,7 +112,8 @@ public class TDropUnwantedStrings
         StreamReader sr = new StreamReader(ATranslationFile);
         Encoding enc = new UTF8Encoding(false);
         StreamWriter sw = new StreamWriter(ATranslationFile + ".new", false, enc);
-        StreamWriter sw_all = new StreamWriter(ATranslationFile + ".withallsources", false, enc); //create a template in which all the source links are contained
+        //create a template in which all the source links are contained
+        StreamWriter sw_all = new StreamWriter(ATranslationFile + ".withallsources", false, enc);
 
         string line = sr.ReadLine();
         int counter = 0;
@@ -140,8 +141,15 @@ public class TDropUnwantedStrings
 
                 if (line.StartsWith("#:"))   //take over the first source code line (if it exists)
                 {
+                    if(line.contains("GenerateI18N.CollectedGettext.cs"))
+                    {
+                        sw.WriteLine("#. This item was created automatically from a designer file");
+                    }
+                    else
+                    {
+                        sw.WriteLine(line);
+                    }
                     sw_all.WriteLine(line);
-                    sw.WriteLine(line);
                     line = sr.ReadLine();
                 }
 
