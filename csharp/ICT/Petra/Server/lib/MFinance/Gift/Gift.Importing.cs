@@ -101,7 +101,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             bool NewTransaction = false;
             
-            FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             AGiftBatchRow giftBatch = null;
             //AGiftRow gift = null;
