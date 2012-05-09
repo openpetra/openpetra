@@ -144,7 +144,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodNumber"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>True if successful</returns>
-        private static bool GenerateICHStewardshipBatch(int ALedgerNumber,
+        public static bool GenerateICHStewardshipBatch(int ALedgerNumber,
             int APeriodNumber,
             ref TVerificationResultCollection AVerificationResult)
         {
@@ -156,8 +156,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             bool ExpenseDrCrIndicator;
             bool AccountDrCrIndicator;
 
-            string IncomeAccounts;
-            string ExpenseAccounts;
+            string IncomeAccounts = string.Empty;
+            string ExpenseAccounts = string.Empty;
 
             int ICHProcessing;
             decimal ICHTotal = 0;
@@ -262,9 +262,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     throw new System.InvalidOperationException(ErrorMessage);
                 }
 
-                IncomeAccounts = BuildChildAccountList(ALedgerNumber,
+                BuildChildAccountList(ALedgerNumber,
                     AccountRow,
                     DBTransaction,
+                    ref IncomeAccounts,
                     ref AVerificationResult);
 
 
@@ -287,9 +288,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     throw new System.InvalidOperationException(ErrorMessage);
                 }
 
-                ExpenseAccounts = BuildChildAccountList(ALedgerNumber,
+                BuildChildAccountList(ALedgerNumber,
                     AccountRow,
                     DBTransaction,
+                    ref ExpenseAccounts,
                     ref AVerificationResult);
 
 
@@ -324,6 +326,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 string OrderBy = ACostCentreTable.GetCostCentreCodeDBName();
 
                 DataRow[] FoundCCRows = MainDS.ACostCentre.Select(WhereClause, OrderBy);
+
+                AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
 
                 foreach (DataRow untypedCCRow in FoundCCRows)
                 {
@@ -515,39 +519,39 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     /* Generate the transction to 'balance' the foreign fund -
                      *  in the ICH settlement account. */
-                    //IF lv_settlement_amount_n GT 0 THEN DO:
                     //RUN gl1130o.p ("new":U,
-
                     //Create a transaction
-                    if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
-                            MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator, "ICH", true, 0,
-                            out GLTransactionNumber))
+                    if (SettlementAmount > 0)
                     {
-                        ErrorContext = "Generating the ICH batch";
-                        ErrorMessage =
-                            String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
-                                ALedgerNumber,
-                                GLBatchNumber,
-                                GLJournalNumber);
-                        ErrorType = TResultSeverity.Resv_Noncritical;
-                        throw new System.InvalidOperationException(ErrorMessage);
-                    }
+                        if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
+                                MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator, "ICH", true, 0,
+                                out GLTransactionNumber))
+                        {
+                            ErrorContext = "Generating the ICH batch";
+                            ErrorMessage =
+                                String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                    ALedgerNumber,
+                                    GLBatchNumber,
+                                    GLJournalNumber);
+                            ErrorType = TResultSeverity.Resv_Noncritical;
+                            throw new System.InvalidOperationException(ErrorMessage);
+                        }
 
-                    //Mark as processed
-                    ATransactionRow TransRow =
-                        (ATransactionRow)MainDS.ATransaction.Rows.Find(new object[] { ALedgerNumber, GLBatchNumber, GLJournalNumber,
-                                                                                      GLTransactionNumber });
-                    TransRow.IchNumber = ICHProcessing;
+                        //Mark as processed
+                        ATransactionRow TransRow =
+                            (ATransactionRow)MainDS.ATransaction.Rows.Find(new object[] { ALedgerNumber, GLBatchNumber, GLJournalNumber,
+                                                                                          GLTransactionNumber });
+                        TransRow.IchNumber = ICHProcessing;
+                    }
 
                     /* can now create corresponding report row on stewardship table */
                     if ((IncomeAmount != 0)
                         || (ExpenseAmount != 0)
                         || (XferAmount != 0))
                     {
-                        AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
                         AIchStewardshipRow IchStewardshipRow = IchStewardshipTable.NewRowTyped(true);
 
-                        MainDS.Tables.Add(IchStewardshipTable);
+                        //MainDS.Tables.Add(IchStewardshipTable);
 
                         IchStewardshipRow.LedgerNumber = ALedgerNumber;
                         IchStewardshipRow.PeriodNumber = APeriodNumber;
@@ -604,7 +608,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     //Post the batch
                     if (PostICHBatch)
                     {
-                        IsSuccessful = TGLPosting.PostGLBatch(MainDS, ALedgerNumber, GLBatchNumber, DBTransaction, out AVerificationResult);
+                        IsSuccessful = AIchStewardshipAccess.SubmitChanges(IchStewardshipTable, DBTransaction, out AVerificationResult);
+
+                        if (IsSuccessful)
+                        {
+                            IsSuccessful = TGLPosting.PostGLBatch(MainDS, ALedgerNumber, GLBatchNumber, DBTransaction, out AVerificationResult);
+                        }
                     }
                     else
                     {
@@ -654,17 +663,16 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountRowFirst"></param>
         /// <param name="DBTransaction"></param>
+        /// <param name="AChildAccounts"></param>
         /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        private static string BuildChildAccountList(int ALedgerNumber,
+        private static void BuildChildAccountList(int ALedgerNumber,
             AAccountRow AAccountRowFirst,
             TDBTransaction DBTransaction,
+            ref string AChildAccounts,
             ref TVerificationResultCollection AVerificationResult)
         {
             //Return value
-            string ChildAccounts = string.Empty;
             string AccountCode = AAccountRowFirst.AccountCode;
-
 
             //Error handling
             string ErrorContext = "List Child Accounts";
@@ -676,7 +684,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             {
                 if (AAccountRowFirst.PostingStatus)
                 {
-                    ChildAccounts += AccountCode + ",";
+                    AChildAccounts += AccountCode + ",";
                 }
                 else
                 {
@@ -708,9 +716,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             {
                                 AAccountRow AccountRow = (AAccountRow)AccountTable.Rows[0];
 
-                                ChildAccounts = BuildChildAccountList(ALedgerNumber,
+                                BuildChildAccountList(ALedgerNumber,
                                     AccountRow,
                                     DBTransaction,
+                                    ref AChildAccounts,
                                     ref AVerificationResult);
                             }
                             else
@@ -740,8 +749,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 ErrorType = TResultSeverity.Resv_Critical;
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
             }
-
-            return ChildAccounts;
         }
 
         /// <summary>

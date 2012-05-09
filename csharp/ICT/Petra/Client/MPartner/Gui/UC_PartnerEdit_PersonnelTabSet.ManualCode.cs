@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -156,11 +156,30 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
         public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
         {
-            bool ReturnValue = false;
+            bool ReturnValue = true;
 
-            // TODO
-            ReturnValue = true;
-            // TODO
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucIndividualData))
+            {
+                TUC_IndividualData UCIndividualData =
+                    (TUC_IndividualData)FTabSetup[TDynamicLoadableUserControls.dlucIndividualData];
+
+                if (!UCIndividualData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucApplications))
+            {
+                // TUC_Applications UCApplications =
+                //    (TUC_Applications)FTabSetup[TDynamicLoadableUserControls.dlucApplications];
+
+                //TODO: UCApplications not implemented yet
+                //if (!UCApplications.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                //{
+                //    ReturnValue = false;
+                //}
+            }
 
             return ReturnValue;
         }

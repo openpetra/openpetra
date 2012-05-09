@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -943,6 +943,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public static void FinishExtractFromListOfPartnerKeys(bool ACommitTransaction)
         {
+#if TODO
             Boolean NewTransaction;
 
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
@@ -956,6 +957,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
+#endif
         }
 
         /// <summary>

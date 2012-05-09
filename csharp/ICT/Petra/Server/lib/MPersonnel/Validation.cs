@@ -29,7 +29,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MPersonnel.Validation;
 
 namespace Ict.Petra.Server.MPersonnel.WebConnectors
 {
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedPartnerValidation_Partner.ValidatePersonnelStaffDataManual("TPersonnelWebConnector" +
+                TSharedPersonnelValidation_Personnel.ValidateCommitmentManual("TPersonnelWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
                     (PmStaffDataRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
                     ValidationControlsDict);

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -682,6 +682,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
+        private PtArrivalPointTable FArrivalPointTable = null;
+
         private void ReadShortApplicationForm(TFileVersionInfo APetraVersion,
             PmGeneralApplicationRow AGeneralApplicationRow,
             TDBTransaction ATransaction)
@@ -763,6 +765,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
 //                Int64? StOption1 = ReadNullableInt64();
 //                Int64? StOption2 = ReadNullableInt64();
+                ReadNullableInt64();
+                ReadNullableInt64();
 
                 /*          // Fields removed.
                  *
@@ -815,6 +819,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.ContactNumber = ReadString();
             ShortTermApplicationRow.ArrivalDetailsStatus = ReadString();
             ShortTermApplicationRow.ArrivalTransportNeeded = ReadBoolean();
+
+            if (FArrivalPointTable == null)
+            {
+                FArrivalPointTable = PtArrivalPointAccess.LoadAll(StringHelper.StrSplit(PtArrivalPointTable.GetCodeDBName(), ","), ATransaction);
+            }
+
+            // clear unknown arrival points
+            if (FArrivalPointTable.Rows.Find(ShortTermApplicationRow.ArrivalPointCode) == null)
+            {
+                ShortTermApplicationRow.SetArrivalPointCodeNull();
+            }
+
+            if (FArrivalPointTable.Rows.Find(ShortTermApplicationRow.DeparturePointCode) == null)
+            {
+                ShortTermApplicationRow.SetDeparturePointCodeNull();
+            }
 
             if (APetraVersion.FileMajorPart < 3)
             {
@@ -1401,19 +1421,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
+        private PTypeTable FTypeTable = null;
+
         private void ImportPartnerType(TDBTransaction ATransaction)
         {
             PPartnerTypeRow PartnerTypeRow = FMainDS.PPartnerType.NewRowTyped();
 
             PartnerTypeRow.PartnerKey = FPartnerKey;
 
-            string s = ReadString();
-
-            PartnerTypeRow.TypeCode = s;
+            PartnerTypeRow.TypeCode = ReadString();
             PartnerTypeRow.ValidFrom = ReadNullableDate();
             PartnerTypeRow.ValidUntil = ReadNullableDate();
 
-            if (!FIgnorePartner)
+            if (FTypeTable == null)
+            {
+                FTypeTable = PTypeAccess.LoadAll(StringHelper.StrSplit(PTypeTable.GetTypeCodeDBName(), ","), ATransaction);
+            }
+
+            // ignore types that are not in the database. avoid constraint violation
+            if (!FIgnorePartner && (FTypeTable.Rows.Find(PartnerTypeRow.TypeCode) != null))
             {
                 PPartnerTypeAccess.AddOrModifyRecord(PartnerTypeRow.PartnerKey,
                     PartnerTypeRow.TypeCode,

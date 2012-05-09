@@ -36,7 +36,7 @@ RootNode:
                 Row1: [dtpDetailMailingDate, txtDetailMailingCost]
         txtDetailMailingCode: {Label=Mailing Code, CharacterCasing=Upper, Width=180}
         txtDetailMailingDescription: {Label=Description, Width=350}
-        dtpDetailMailingDate: {Label=Mailing Date}
+        dtpDetailMailingDate: {Label=Mailing Date, Validation=True}
         txtDetailMailingCost: {Label=Mailing Cost, Format=Decimal}
 
     Toolbar:

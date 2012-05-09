@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, TimIngham
 //
 // Copyright 2004-2012 by OM International
 //
@@ -336,9 +336,9 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
                 MainDS.AApSupplier[0].DefaultBankAccount,
                 MainDS.AApSupplier[0].DefaultCostCentre).YtdForeign;
-            decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultExpAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+            // decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
+            //    MainDS.AApSupplier[0].DefaultExpAccount,
+            //    MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
             decimal RevalAccountBefore = new TGet_GLM_Info(intLedgerNumber,
                 LedgerTable[0].ForexGainsLossesAccount,
                 MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;

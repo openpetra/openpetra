@@ -30,11 +30,15 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Shared;
 
 // The TFrmLocalDataFieldSetup class acts as a base class for three derived classes.
 // This is because this screen (and the database table behind it) is used by three different parts
@@ -297,6 +301,10 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
+            // Call for validation on the checked list box (which is not associated with the database, so the auto-generated code does not pick this up)
+            FPetraUtilsObject.ValidationControlsDict.Add(FMainDS.PDataLabel.Columns[UsedByColumnOrdinal],
+                new TValidationControlsData(clbUsedBy, GUIUsedBy));
+
             // This is the point at which we can add our additional column to the details grid
             if (CurrentContext != Context.Personnel)
             {
@@ -312,6 +320,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             contextView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
+
+            if (contextView.Count > 0)
+            {
+                grdDetails.Selection.SelectRow(1, true);
+            }
 
             // The details panel will likely be showing data from the wrong context now that we have applied a rowfilter
             // So we have to make sure the panel is displaying data from the first row
@@ -438,22 +451,26 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // We use non-standard code here because of our three contexts
             // We cannot call CreateNewPDataLabel() because it won't have the correct RowFilter
             // So we use a modified version of the auto-generated code
-            PDataLabelRow NewRow = FMainDS.PDataLabel.NewRowTyped();
+            if (ValidateAllData(true, true))
+            {
+                PDataLabelRow NewRow = FMainDS.PDataLabel.NewRowTyped();
 
-            NewRowManual(ref NewRow);
-            FMainDS.PDataLabel.Rows.Add(NewRow);
+                NewRowManual(ref NewRow);
+                FMainDS.PDataLabel.Rows.Add(NewRow);
 
-            FPetraUtilsObject.SetChangedFlag();
+                FPetraUtilsObject.SetChangedFlag();
 
-            DataView contextView = new DataView(FMainDS.PDataLabel, "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
-            contextView.AllowNew = false;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
-            grdDetails.Refresh();
-            SelectDetailRowByDataTableIndex(FMainDS.PDataLabel.Rows.Count - 1);
+                DataView contextView = new DataView(FMainDS.PDataLabel,
+                    "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
+                contextView.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
+                grdDetails.Refresh();
+                SelectDetailRowByDataTableIndex(FMainDS.PDataLabel.Rows.Count - 1);
 
-            //CreateNewPDataLabel();
-            txtDetailText.SelectAll();
-            txtDetailText.Focus();
+                //CreateNewPDataLabel();
+                txtDetailText.SelectAll();
+                txtDetailText.Focus();
+            }
         }
 
         private void ShowDetailsManual(PDataLabelRow ARow)
@@ -595,44 +612,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 ARow.SetLookupCategoryCodeNull();
             }
 
-            // Validate that there is a local data option category if 'lookup' was selected.
-            // If not, use char for now until the user creates a new category
-            if ((cmbDetailDataType.SelectedIndex == 6) && (ARow.LookupCategoryCode == String.Empty))
-            {
-                // That's bad!  Must be no data in the Category Code table
-                ARow.DataType = "char";
-                ARow.CharLength = DefaultCharLength;
-                ARow.SetLookupCategoryCodeNull();
-                MessageBox.Show(Catalog.GetString(
-                        "You cannot select the 'Lookup Option' because there are no options defined. The application will choose 'Text'.  Then go to the 'Local Data Options' menu item and define some options.  Then return to this menu and reconfigure this entry."),
-                    Catalog.GetString("Error in Data Input"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-            }
-
             // Get the checked items from the UsedBy ListBox and update our UsedBy column
-            // Validate that at least one checkbox is chaecked
-            string stringList = clbUsedBy.GetCheckedStringList();
-
-            if (stringList == String.Empty)
-            {
-                if (CurrentContext == Context.Partner)
-                {
-                    stringList = "Church";
-                }
-                else if (CurrentContext == Context.Application)
-                {
-                    stringList = "LongTermApp";
-                }
-
-                MessageBox.Show(Catalog.GetString(
-                        "You must check at least one box in the 'Used By' list. The system will check one box for you, but you should validate the entry yourself."),
-                    Catalog.GetString("Error in Data Input"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-            }
-
-            ARow[UsedByColumnOrdinal] = stringList;
+            ARow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
         }
 
         void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
@@ -734,21 +715,22 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             {
                 SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("DataLabelUseList", ref SubmitDT, out VerificationResult);
             }
-            catch (System.Net.Sockets.SocketException)
+            catch (ESecurityDBTableAccessDeniedException Exp)
             {
-                MessageBox.Show(Catalog.GetString("The PETRA Server cannot be reached! Data cannot be saved!"),
-                    Catalog.GetString("No Server response"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
+                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
+                this.Cursor = Cursors.Default;
+
+                TMessages.MsgSecurityException(Exp, this.GetType());
+
                 return;
             }
-            catch (EDBConcurrencyException)
+            catch (EDBConcurrencyException Exp)
             {
-                MessageBox.Show(Catalog.GetString(
-                        "The 'UsedBy' part of the data could not be saved! There has been a conflict with another user's data entry."),
-                    Catalog.GetString("Cached Table Data Conflict"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
+                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
+                this.Cursor = Cursors.Default;
+
+                TMessages.MsgDBConcurrencyException(Exp, this.GetType());
+
                 return;
             }
             catch (Exception exp)
@@ -761,7 +743,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     Catalog.GetString("For details see the log file: ") + TLogging.GetLogFileName(),
                     Catalog.GetString("Failed to Save 'Used By' Data"),
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
+                    MessageBoxIcon.Warning);
 
                 return;
             }
@@ -791,7 +773,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                         "The 'UsedBy' part of the data could not be saved! There has been an error while making changes to the table."),
                     Catalog.GetString("Submit Changes to Table Error"),
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
+                    MessageBoxIcon.Warning);
                     break;
 
                 case TSubmitChangesResult.scrInfoNeeded:
@@ -800,7 +782,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                         "The 'UsedBy' part of the data could not be saved! Insufficient information was provided when making changes to the table."),
                     Catalog.GetString("Submit Changes to Table Error"),
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Stop);
+                    MessageBoxIcon.Warning);
                     break;
             }
         }
@@ -853,6 +835,45 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     lblDataSubType.Text = Catalog.GetString("Option list name") + ":";
                     break;
             }
+        }
+
+        private void ValidateDataDetailsManual(PDataLabelRow ARow)
+        {
+            // For this validation we have to validate the UsedBy data here in the manual code.
+            // This is because it is not backed directly by a row in a data table.
+            // Nor is the control associated with a column in any data table
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            DataColumn ValidationColumn;
+            TVerificationResult VerificationResult = null;
+
+            // Personnel context is bound to be valid because it has no UsedBy UI
+            if ((CurrentContext == Context.Partner) || (CurrentContext == Context.Application))
+            {
+                // The added column at the end of the table, which is a concatenated string of checkedListBox entries, must not be empty
+                ValidationColumn = ARow.Table.Columns[UsedByColumnOrdinal];
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow[UsedByColumnOrdinal].ToString(),
+                    GUIUsedBy,
+                    this, ValidationColumn, clbUsedBy);
+
+                if (VerificationResult != null)
+                {
+                    if (CurrentContext == Context.Partner)
+                    {
+                        VerificationResult.OverrideResultText(Catalog.GetString("You must check at least one box in the list of Partner classes."));
+                    }
+                    else if (CurrentContext == Context.Application)
+                    {
+                        VerificationResult.OverrideResultText(Catalog.GetString("You must check at least one box in the list of Application types."));
+                    }
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection.
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, false);
+            }
+
+            // Now call the central validation routine for the other verification tasks
+            TSharedValidation_CacheableDataTables.ValidateLocalDataFieldSetup(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }
