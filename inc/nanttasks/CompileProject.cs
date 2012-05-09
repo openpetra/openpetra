@@ -107,6 +107,148 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private bool FUseCSC = false;
+        /// <summary>
+        /// should we use the csc task, or generate a mini solution and use msbuild for that?
+        /// </summary>
+        [TaskAttribute("UseCSC", Required = false)]
+        public bool UseCSC {
+            set
+            {
+                FUseCSC = value;
+            }
+            get
+            {
+                return FUseCSC;
+            }
+        }
+
+        protected void RunCscTask()
+        {
+            CscTask csc = new CscTask();
+
+            this.CopyTo(csc);
+
+            if (this.Project.PlatformName == "unix")
+            {
+                // on Windows this is csc, but on Mono on Linux or Mac we need dmcs
+                csc.ExeName = "dmcs";
+            }
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(FCSProjFile);
+
+            XmlNode propertyGroup = doc.DocumentElement.FirstChild;
+            Dictionary <string, string>mainProperties = new Dictionary <string, string>();
+
+            foreach (XmlNode propNode in propertyGroup.ChildNodes)
+            {
+                mainProperties.Add(propNode.Name, propNode.InnerText);
+            }
+
+            string OutputFile = mainProperties["OutputPath"];
+
+            OutputFile += "/" + mainProperties["AssemblyName"];
+
+            if (mainProperties["OutputType"].ToLower() == "library")
+            {
+                OutputFile += ".dll";
+            }
+            else
+            {
+                OutputFile += ".exe";
+            }
+
+            csc.OutputFile = new FileInfo(OutputFile);
+            csc.DocFile = new FileInfo(mainProperties["DocumentationFile"]);
+            csc.OutputTarget = mainProperties["OutputType"];
+
+            csc.Define = "DEBUGMODE";
+
+            String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
+
+            foreach (XmlNode ProjectNodeChild in doc.DocumentElement)
+            {
+                if (ProjectNodeChild.Name == "ItemGroup")
+                {
+                    foreach (XmlNode ItemNode in ProjectNodeChild)
+                    {
+                        if (ItemNode.Name == "Reference")
+                        {
+                            if (ItemNode.HasChildNodes && (ItemNode.ChildNodes[0].Name == "HintPath"))
+                            {
+                                csc.References.AsIs.Add(ItemNode.ChildNodes[0].InnerText);
+                            }
+                            else
+                            {
+                                // .net dlls
+                                csc.References.AsIs.Add(
+                                    FrameworkDLLPath + Path.DirectorySeparatorChar +
+                                    ItemNode.Attributes["Include"].Value + ".dll");
+                            }
+                        }
+                        else if (ItemNode.Name == "ProjectReference")
+                        {
+                            string ReferencedProjectName = ItemNode.ChildNodes[1].InnerText;
+                            csc.References.AsIs.Add(
+                                Path.GetDirectoryName(OutputFile) + Path.DirectorySeparatorChar +
+                                ReferencedProjectName + ".dll");
+                        }
+                        else if (ItemNode.Name == "Compile")
+                        {
+                            csc.Sources.AsIs.Add(ItemNode.Attributes["Include"].Value);
+                        }
+                        else if (ItemNode.Name == "EmbeddedResource")
+                        {
+                            ResourceFileSet fs = new ResourceFileSet();
+                            fs.AsIs.Add(ItemNode.Attributes["Include"].Value);
+                            csc.ResourcesList.Add(fs);
+                        }
+                    }
+                }
+            }
+
+            csc.Execute();
+        }
+
+        protected void RunSolutionTask()
+        {
+            // create a copy of OpenPetra.sln, and remove all projects but FCSProjFile
+            StreamReader sr = new StreamReader(FProjectFilesDir + Path.DirectorySeparatorChar + "OpenPetra.sln");
+            StreamWriter sw = new StreamWriter(FProjectFilesDir + Path.DirectorySeparatorChar + "OpenPetra.Mini.sln");
+
+            string projFile = Path.GetFileName(FCSProjFile).ToLower();
+
+            while (!sr.EndOfStream)
+            {
+                string line = sr.ReadLine();
+
+                if (line.StartsWith("Project("))
+                {
+                    if (line.ToLower().Contains(projFile))
+                    {
+                        sw.WriteLine(line);
+                        sw.WriteLine("EndProject");
+                    }
+                }
+                else if (!line.StartsWith("EndProject"))
+                {
+                    sw.WriteLine(line);
+                }
+            }
+
+            sr.Close();
+            sw.Close();
+
+            // compile solution OpenPetra.Mini.sln
+            CompileSolution sln = new CompileSolution();
+            this.CopyTo(sln);
+
+            sln.SolutionFile = FProjectFilesDir + Path.DirectorySeparatorChar + "OpenPetra.Mini.sln";
+
+            sln.Execute();
+        }
+
         /// <summary>
         /// compile the project
         /// </summary>
@@ -127,89 +269,14 @@ namespace Ict.Tools.NAntTasks
                 // could call msbuild or xbuild with the project files as parameter
                 // OR: process csproj file, and call csc task directly. might avoid some warnings, and work around xbuild issues
 
-                CscTask csc = new CscTask();
-                this.CopyTo(csc);
-
-                if (this.Project.PlatformName == "unix")
+                if (FUseCSC)
                 {
-                    // on Windows this is csc, but on Mono on Linux or Mac we need dmcs
-                    csc.ExeName = "dmcs";
-                }
-
-                XmlDocument doc = new XmlDocument();
-                doc.Load(FCSProjFile);
-
-                XmlNode propertyGroup = doc.DocumentElement.FirstChild;
-                Dictionary <string, string>mainProperties = new Dictionary <string, string>();
-
-                foreach (XmlNode propNode in propertyGroup.ChildNodes)
-                {
-                    mainProperties.Add(propNode.Name, propNode.InnerText);
-                }
-
-                string OutputFile = mainProperties["OutputPath"];
-
-                OutputFile += "/" + mainProperties["AssemblyName"];
-
-                if (mainProperties["OutputType"].ToLower() == "library")
-                {
-                    OutputFile += ".dll";
+                    RunCscTask();
                 }
                 else
                 {
-                    OutputFile += ".exe";
+                    RunSolutionTask();
                 }
-
-                csc.OutputFile = new FileInfo(OutputFile);
-                csc.DocFile = new FileInfo(mainProperties["DocumentationFile"]);
-                csc.OutputTarget = mainProperties["OutputType"];
-
-                csc.Define = "DEBUGMODE";
-
-                String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
-
-                foreach (XmlNode ProjectNodeChild in doc.DocumentElement)
-                {
-                    if (ProjectNodeChild.Name == "ItemGroup")
-                    {
-                        foreach (XmlNode ItemNode in ProjectNodeChild)
-                        {
-                            if (ItemNode.Name == "Reference")
-                            {
-                                if (ItemNode.HasChildNodes && (ItemNode.ChildNodes[0].Name == "HintPath"))
-                                {
-                                    csc.References.AsIs.Add(ItemNode.ChildNodes[0].InnerText);
-                                }
-                                else
-                                {
-                                    // .net dlls
-                                    csc.References.AsIs.Add(
-                                        FrameworkDLLPath + Path.DirectorySeparatorChar +
-                                        ItemNode.Attributes["Include"].Value + ".dll");
-                                }
-                            }
-                            else if (ItemNode.Name == "ProjectReference")
-                            {
-                                string ReferencedProjectName = ItemNode.ChildNodes[1].InnerText;
-                                csc.References.AsIs.Add(
-                                    Path.GetDirectoryName(OutputFile) + Path.DirectorySeparatorChar +
-                                    ReferencedProjectName + ".dll");
-                            }
-                            else if (ItemNode.Name == "Compile")
-                            {
-                                csc.Sources.AsIs.Add(ItemNode.Attributes["Include"].Value);
-                            }
-                            else if (ItemNode.Name == "EmbeddedResource")
-                            {
-                                ResourceFileSet fs = new ResourceFileSet();
-                                fs.AsIs.Add(ItemNode.Attributes["Include"].Value);
-                                csc.ResourcesList.Add(fs);
-                            }
-                        }
-                    }
-                }
-
-                csc.Execute();
             }
             else
             {
