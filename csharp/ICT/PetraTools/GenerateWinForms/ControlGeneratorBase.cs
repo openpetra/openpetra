@@ -107,7 +107,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// </summary>
         /// <param name="ctrl"></param>
         /// <returns></returns>
-        public bool GenerateLabel(TControlDef ctrl)
+        public virtual bool GenerateLabel(TControlDef ctrl)
         {
             if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
             {
@@ -116,7 +116,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             ctrl.hasLabel = FGenerateLabel;
-            return FGenerateLabel;
+            return ctrl.hasLabel;
         }
 
         /// <summary>
@@ -367,13 +367,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            writer.SetControlProperty(ctrl, "Name", "\"" + ctrl.controlName + "\"");
+
             if (FLocation && !ctrl.HasAttribute("Dock"))
             {
                 writer.SetControlProperty(ctrl, "Location", "new System.Drawing.Point(2,2)");
             }
-
-            writer.SetControlProperty(ctrl, "Name", "\"" + ctrl.controlName + "\"");
-
 
             #region Aligning and stretching
 
