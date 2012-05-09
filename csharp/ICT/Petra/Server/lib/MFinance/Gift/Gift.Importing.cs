@@ -305,7 +305,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                	DBAccess.GDBAccessObj.RollbackTransaction();	
+                }
                 return false;
             }
             finally
@@ -323,9 +326,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            else if (NewTransaction)
+            else
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                	DBAccess.GDBAccessObj.RollbackTransaction();
+                }
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         Catalog.GetString("Data could not be saved."),
                         TResultSeverity.Resv_Critical));

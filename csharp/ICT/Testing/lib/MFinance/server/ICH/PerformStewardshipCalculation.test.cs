@@ -176,10 +176,8 @@ namespace Tests.MFinance.Server.ICH
                     "test-sql\\gl-test-feesreceivable-data.sql");
             }
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            //don't check for new transaction here, just commit to current
+            DBAccess.GDBAccessObj.CommitTransaction();
         }
 
         /// <summary>

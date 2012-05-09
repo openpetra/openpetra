@@ -158,15 +158,15 @@ namespace Tests.MFinance.Server.ICH
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();
 
-            // need to create gifts first
-            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
-
-            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
-
             bool NewTransaction = false;
 
             //TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            // need to create gifts first
+            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
+
+            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
             //Create DataTable to receive exported transactions
             TableForExport.Columns.Add("CostCentre", typeof(string));
