@@ -322,6 +322,9 @@ namespace Ict.Petra.Server.MFinance.ICH
             {
             }
 
+            // rollback the reading transaction
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
             return Successful;
         }
 
