@@ -99,7 +99,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
-            FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction = false;
+            
+            FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             AGiftBatchRow giftBatch = null;
             //AGiftRow gift = null;
@@ -317,11 +319,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                 };
             }
 
-            if (ok)
+            if (ok && NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            else
+            else if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
