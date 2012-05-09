@@ -149,7 +149,7 @@ namespace Tests.MFinance.Server.ICH
         {
             int LedgerNumber = FLedgerNumber;
             string CostCentre = "7300";
-            string AcctCode = "0400";
+            string AcctCode = "0200";
             string MonthName = "January";
             int PeriodNumber = 0;
             DateTime PeriodStartDate = Convert.ToDateTime("1-Jan-2012");
@@ -159,7 +159,7 @@ namespace Tests.MFinance.Server.ICH
             DataTable TableForExport = new DataTable();
 
             // need to create gifts first
-            //TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
+            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
 
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
