@@ -128,46 +128,53 @@ public class TDropUnwantedStrings
                 sw.WriteLine(line);
                 line = sr.ReadLine();   //get the empty line
 
-                while (line.StartsWith("#."))   //take over the comments(if they exist)
+                if(line != null)
                 {
-                    string line_part1 = AdaptString(line, "/");
-                    string line_part2 = AdaptString(line_part1, "<summary>");
-                    string line_part3 = AdaptString(line_part2, "</summary>");
-
-                    sw_all.WriteLine(line_part3);
-                    sw.WriteLine(line_part3);
-                    line = sr.ReadLine();
-                }
-
-                if (line.StartsWith("#:"))   //take over the first source code line (if it exists)
-                {
-                    if(line.contains("GenerateI18N.CollectedGettext.cs"))
+                    while (line.StartsWith("#."))   //take over the comments(if they exist)
                     {
-                        sw.WriteLine("#. This item was created automatically from a designer file");
+                        string line_part1 = AdaptString(line, "/");
+                        string line_part2 = AdaptString(line_part1, "<summary>");
+                        string line_part3 = AdaptString(line_part2, "</summary>");
+    
+                        sw_all.WriteLine(line_part3);
+                        sw.WriteLine(line_part3);
+                        line = sr.ReadLine();
                     }
-                    else
+    
+                    if (line.StartsWith("#:"))   //take over the first source code line (if it exists)
                     {
-                        sw.WriteLine(line);
+                        if(line.Contains("GenerateI18N.CollectedGettext.cs"))
+                        {
+                            //sw.WriteLine("#: This item was created automatically from a designer file");
+                        }
+                        else
+                        {
+                            sw.WriteLine(line);
+                        }
+                        sw_all.WriteLine(line);
+                        line = sr.ReadLine();
                     }
-                    sw_all.WriteLine(line);
-                    line = sr.ReadLine();
-                }
-
-                /* if(line.StartsWith("#:"))
-                 * {
-                 *   sw_all.WriteLine(line);
-                 *   sw.WriteLine(line);
-                 *   line = sr.ReadLine();
-                 * }
-                 */
-                while (line.StartsWith("#:") || line.StartsWith("#,"))  //ignore all other source code lines
-                {
-                    sw_all.WriteLine(line);
-                    line = sr.ReadLine();
+    
+                    /* if(line.StartsWith("#:"))
+                     * {
+                     *   sw_all.WriteLine(line);
+                     *   sw.WriteLine(line);
+                     *   line = sr.ReadLine();
+                     * }
+                     */
+                    while (line.StartsWith("#:") || line.StartsWith("#,"))  //ignore all other source code lines
+                    {
+                        sw_all.WriteLine(line);
+                        line = sr.ReadLine();
+                    }
                 }
             }
-            else if (line.StartsWith("msgid"))
+            else if (line != null && line.StartsWith("msgid"))
             {
+                if(line.Contains("Maintain Month Names for Different Languages"))
+               {
+                   Console.WriteLine("here");
+               }
                 StringCollection OriginalLines;
                 string messageId = ParsePoLine(sr, ref line, out OriginalLines);
 

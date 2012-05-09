@@ -72,7 +72,7 @@ namespace Ict.Tools.GenerateI18N
             new TAppSettingsManager(false);
 
             //enable execution without nant -> debugging easier
-            bool independentmode = false;
+            bool independentmode = true;
 
             if (independentmode)
             {
@@ -88,8 +88,8 @@ namespace Ict.Tools.GenerateI18N
 
                     if (independentmode)
                     {
-                        doNotTranslatePath = "D:\\openpetra\\bzr\\work-690\\i18n\\doNotTranslate.po";
-                        poFilePath = "D:\\openpetra\\bzr\\work-690\\i18n\\template.pot";
+                        doNotTranslatePath = "E:\\openpetra\\bzr\\work-690\\i18n\\doNotTranslate.po";
+                        poFilePath = "E:\\openpetra\\bzr\\work-690\\i18n\\template.pot";
                     }
                     else
                     {
