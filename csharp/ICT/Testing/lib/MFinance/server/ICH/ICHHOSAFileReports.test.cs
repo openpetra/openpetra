@@ -165,7 +165,8 @@ namespace Tests.MFinance.Server.ICH
 
             bool NewTransaction = false;
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            //TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             //Create DataTable to receive exported transactions
             TableForExport.Columns.Add("CostCentre", typeof(string));
