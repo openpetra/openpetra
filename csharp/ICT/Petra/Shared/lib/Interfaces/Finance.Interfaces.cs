@@ -829,6 +829,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors
                                                      out TVerificationResultCollection AVerificationResult);
     }
 
+ 	   
+    
+    
+    
 }
 
 

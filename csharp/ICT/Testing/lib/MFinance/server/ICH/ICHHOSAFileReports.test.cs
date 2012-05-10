@@ -161,9 +161,8 @@ namespace Tests.MFinance.Server.ICH
             bool NewTransaction = false;
 
 			//Perform stewardship calculation
-            TStewardshipCalculationTest NewTests = new TStewardshipCalculationTest();
-            NewTests.TestPerformStewardshipCalculation();
-
+			//TODO:
+				
             // need to create gifts first
             TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
             
