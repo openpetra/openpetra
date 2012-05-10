@@ -317,7 +317,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             else if (ColWidthSpec[0].ToLower() == "percent")
                             {
                                 // TODO
-                                TLogging.Log("Warning: we currently don't support colwidth in percentage, control " + LayoutCtrl);
+                                TLogging.Log("Warning: we currently don't support colwidth in percentage, control " + LayoutCtrl.controlName);
                             }
                         }
                     }
@@ -339,7 +339,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         else if (RowHeightSpec[0].ToLower() == "percent")
                         {
                             // TODO
-                            TLogging.Log("Warning: we currently don't support rowheight in percentage, control " + LayoutCtrl);
+                            TLogging.Log("Warning: we currently don't support rowheight in percentage, control " + LayoutCtrl.controlName);
                         }
                     }
                 }
