@@ -113,8 +113,6 @@ namespace Ict.Tools.GenerateWinForms
                 FileStream fs = new FileStream(ResourcesFile, FileMode.OpenOrCreate, FileAccess.Write);
                 IResourceWriter writer = new ResourceWriter(fs);
 
-                IDictionaryEnumerator id = ResXReader.GetEnumerator();
-
                 foreach (DictionaryEntry d in ResXReader)
                 {
                     writer.AddResource(d.Key.ToString(), d.Value);
