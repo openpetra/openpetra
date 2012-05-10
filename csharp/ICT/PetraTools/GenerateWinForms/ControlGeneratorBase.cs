@@ -632,7 +632,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ctrl.SetAttribute("DefaultWidth", FDefaultWidth.ToString());
             ctrl.SetAttribute("DefaultHeight", FDefaultHeight.ToString());
 
-            if ((ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height")) && (ctrl.GetAttribute("GenerateWithOtherControls") != "yes"))
+            if (ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height"))
             {
                 if (!ctrl.HasAttribute("Width"))
                 {

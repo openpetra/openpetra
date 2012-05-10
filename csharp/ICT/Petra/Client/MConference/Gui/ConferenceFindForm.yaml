@@ -21,7 +21,11 @@ RootNode:
             Dock: Fill
             Controls: [grpFindConference, pnlButtons]
         grpFindConference:
-            Controls:[txtConference, txtPrefix, btnSearch, grdConferences]
+            Dock: Fill
+            Controls:[pnlFilter, grdConferences]
+        pnlFilter:
+            Dock: Top
+            Controls: [txtConference, txtPrefix, btnSearch]
         txtConference:
             Label: Conference
         txtPrefix:
@@ -40,6 +44,7 @@ RootNode:
             Width: 500
             Height: 200
         pnlButtons:
+            Dock: Bottom
             Controls:
                 Row1: [btnAccept, btnCancel]
         btnAccept:
