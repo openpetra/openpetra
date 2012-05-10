@@ -303,7 +303,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             : base("chk", typeof(CheckBox))
         {
             this.FChangeEventName = "CheckedChanged";
-            FDefaultHeight = 17;
+            FDefaultHeight = 22;
         }
 
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
@@ -336,6 +336,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(3, 4, 3, 0)");
 
                     ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 30).ToString());
+                    ctrl.SetAttribute("Height", "17");
                 }
 
                 base.SetControlProperties(writer, ctrl);
