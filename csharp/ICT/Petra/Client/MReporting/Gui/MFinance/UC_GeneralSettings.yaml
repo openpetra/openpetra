@@ -16,7 +16,6 @@ RootNode:
             ControlsOrientation: horizontal
         grpCurrency:
             Controls: [cmbCurrency]
-            Dock: Top
         txtLedger: 
             ReadOnly: true
             NoParameter: true

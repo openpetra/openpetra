@@ -261,6 +261,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
                 ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 30).ToString());
             }
+            else
+            {
+                ctrl.SetAttribute("Width", "15");
+            }
 
             base.SetControlProperties(writer, ctrl);
 

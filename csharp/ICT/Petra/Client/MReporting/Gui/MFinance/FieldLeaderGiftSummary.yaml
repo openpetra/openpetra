@@ -74,7 +74,6 @@ RootNode:
                 Row1: [clbFields]
                 Row2: [pnlFieldButtons]
         pnlFieldButtons:
-            Dock: Bottom
             Controls: [btnSelectAllFields, btnUnselectAllFields]
             ControlsOrientation: horizontal
         clbFields:
