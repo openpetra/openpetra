@@ -160,9 +160,12 @@ namespace Tests.MFinance.Server.ICH
 
             bool NewTransaction = false;
 
+			//Perform stewardship calculation
+            TStewardshipCalculationTest NewTests = new TStewardshipCalculationTest();
+            NewTests.TestPerformStewardshipCalculation();
+
             // need to create gifts first
-            //TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
-            TStewardshipCalculationTest.ImportAndPostGiftBatch(true);
+            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
             
             //TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);

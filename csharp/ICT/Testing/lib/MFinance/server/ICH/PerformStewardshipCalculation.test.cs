@@ -79,20 +79,6 @@ namespace Tests.MFinance.Server.ICH
 
         
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="APerformStewardshipFirst"></param>
-        /// <returns></returns>
-        public static void ImportAndPostGiftBatch(bool APerformStewardshipFirst)
-        {
-        	if (APerformStewardshipFirst)
-        	{
-        		TestPerformStewardshipCalculation();
-        	}
-        }
-        
-        
-        /// <summary>
         /// This will import a test gift batch, and post it.
         /// </summary>
         public static int ImportAndPostGiftBatch(DateTime AGiftDateEffective)
