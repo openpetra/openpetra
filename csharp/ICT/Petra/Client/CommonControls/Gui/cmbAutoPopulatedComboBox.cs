@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.CommonControls
             ProposalSubmitFrequencyList,
 
             /// <summary>todoComment</summary>
-            PublicationList,
+            PublicationInfoList,
 
             /// <summary>todoComment</summary>
             ReasonSubscriptionCancelledList,
@@ -752,10 +752,10 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
-                case TListTableEnum.PublicationList:
+                case TListTableEnum.PublicationInfoList:
 
                     InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationList),
+                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationInfoList),
                     PPublicationTable.GetPublicationCodeDBName(),
                     PPublicationTable.GetPublicationDescriptionDBName(),
                     null);
@@ -1178,7 +1178,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 450;
                     break;
 
-                case TListTableEnum.PublicationList:
+                case TListTableEnum.PublicationInfoList:
                     this.ColumnWidthCol1 = 110;
                     this.ColumnWidthCol2 = 350;
                     this.ColumnWidthCol3 = 80;

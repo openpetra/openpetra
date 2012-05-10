@@ -46,11 +46,12 @@ CachedTables:
                 PostCodeRegionList:
         Subscriptions:
             DatabaseTables:
+                PPublication:
                 PPublicationCost:
                 PReasonSubscriptionGiven:
                 PReasonSubscriptionCancelled:
             CalculatedLists:
-                PublicationList: {Comment=available publications}
+                PublicationInfoList: {Comment=available publications}
     Common:
         Common:
             DatabaseTables:
