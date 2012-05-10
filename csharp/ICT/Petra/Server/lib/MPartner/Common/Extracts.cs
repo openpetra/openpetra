@@ -714,7 +714,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// (can also contain DB call exceptions).</param>
         /// <param name="APartnerKeysTable"></param>
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
-        /// <param name="AddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
+        /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
         /// <param name="ACommitTransaction">true if transaction should committed at end of method</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public static bool CreateExtractFromListOfPartnerKeys(
@@ -724,10 +724,10 @@ namespace Ict.Petra.Server.MPartner.Extracts
             out TVerificationResultCollection AVerificationResults,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
-            bool AddressFilterAdded,
+            bool AAddressFilterAdded,
             bool ACommitTransaction)
         {
-            if (AddressFilterAdded)
+            if (AAddressFilterAdded)
             {
                 // if address filter was added then site key is in third and location in fourth column
                 return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
@@ -799,7 +799,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// (can also contain DB call exceptions).</param>
         /// <param name="APartnerKeysTable"></param>
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
-        /// <param name="AddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
+        /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
         /// <param name="AIgnoreDuplicates">true if duplicates should be looked out for. Can be set to false if called only once and not several times per extract.</param>
         /// <param name="ACommitTransaction">true if transaction should be committed at end of method</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
@@ -808,11 +808,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
             out TVerificationResultCollection AVerificationResults,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
-            bool AddressFilterAdded,
+            bool AAddressFilterAdded,
             bool AIgnoreDuplicates,
             bool ACommitTransaction)
         {
-            if (AddressFilterAdded)
+            if (AAddressFilterAdded)
             {
                 // if address filter was added then site key is in third and location in fourth column
                 return ExtendExtractFromListOfPartnerKeys(AExtractId,
