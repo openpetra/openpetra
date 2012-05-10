@@ -306,6 +306,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FDefaultHeight = 22;
         }
 
+        /// <summary>
+        /// make sure there is a label or not
+        /// </summary>
+        public override bool GenerateLabel(TControlDef ctrl)
+        {
+            if ((ctrl.HasAttribute("CheckBoxAttachedLabel"))
+                && ((ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "left")
+                    || (ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "right")))
+            {
+                return false;
+            }
+
+            return base.GenerateLabel(ctrl);
+        }
+
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
