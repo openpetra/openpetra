@@ -31,19 +31,11 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [pnlInterest]
-                Row1: [pnlDescription]            
-        pnlInterest:
-            Dock: Bottom
-            Controls:
-                Row0: [txtDetailInterest, cmbDetailCategory]                
-            Margin: 22,0,0,0
-        pnlDescription:
-            Controls:
-                Row0: [txtDetailDescription]
+                Row0: [txtDetailInterest, cmbDetailCategory]
+                Row1: [txtDetailDescription]            
         txtDetailInterest: {Label=Interest, CharacterCasing=Upper}
         cmbDetailCategory: {Label=Category, List=InterestCategoryList}
-        txtDetailDescription: {Width=357}
+        txtDetailDescription: {Width=357, ColSpan=2}
     Toolbar:
         tbbNew: 
             Label: New Partner Interest
