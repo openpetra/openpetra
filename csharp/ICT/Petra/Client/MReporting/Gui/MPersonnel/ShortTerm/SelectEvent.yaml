@@ -19,6 +19,7 @@ RootNode:
             Controls: [grpEvents, grdEvent, pnlBottom]
             # add to Controls: pnlStatementInfo
         grpEvents:
+            Dock: Top
             Label: Events
             Controls:
                 Row1: [rbtOutreach, rbtConference, rbtTeenstreet, rbtAll]
@@ -30,7 +31,7 @@ RootNode:
             Label: Conferences Only
             OnChange: EventTypeChanged
         rbtTeenstreet:
-            Label: Teenstreet Only
+            Label: TeenStreet Only
             OnChange: EventTypeChanged
         rbtAll:
             Label: All
@@ -44,7 +45,7 @@ RootNode:
             Height: 300
             ActionDoubleClick: grdEventDoubleClick
         pnlBottom:
-            Dock: Top
+            Dock: Bottom
             Controls:
                 Row1: [btnAccept, btnCancel]
         btnAccept:

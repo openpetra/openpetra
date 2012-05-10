@@ -27,13 +27,13 @@
             Label: General Settings
             Controls: [pnlFilter, pnlMiddle, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
-            Dock: Fill
+            Dock: Top
             Controls: [txtFilter, btnFilter]
         pnlMiddle: {ControlsOrientation=horizontal}
-            #Dock: Fill
+            Dock: Fill
             Controls: [pnlGrid, pnlOptions]
         pnlBottom: {ControlsOrientation=horizontal}
-            #Dock: Bottom
+            Dock: Bottom
             Controls: [ucoAddress, ucoChkFilter]
         pnlGrid:
             Dock: Fill
@@ -48,8 +48,7 @@
         clbField:
             NoLabel: true 
             ParameterName: param_fields
-            Width: 400
-            Height: 280
+            Dock: Fill
             
         rgrFieldDates: {Label=Partners at Field, ParameterName=param_field_dates}
             Controls: [rbtNow, rbtEver, rbtDateRange]
@@ -77,7 +76,10 @@
         btnFilter:
             Action: actFilter
         ucoAddress:
-            Dock: Left
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Width: 500
+            Height: 180
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Width: 200
+            Height: 150

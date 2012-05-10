@@ -11,7 +11,6 @@ RootNode:
             Controls: [grpLedger, grpCurrency, grpPeriodRange]
         grpLedger:
             Label: Ledger Details
-            Dock: Top
             Controls: [txtLedger, cmbAccountHierarchy]
             ControlsOrientation: horizontal
         grpCurrency:

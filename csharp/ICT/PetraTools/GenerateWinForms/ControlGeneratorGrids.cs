@@ -166,7 +166,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            ctrl.SetAttribute("Width", FDefaultWidth.ToString());
+            if (!ctrl.HasAttribute("Width"))
+            {
+                ctrl.SetAttribute("Width", FDefaultWidth.ToString());
+            }
+
             base.SetControlProperties(writer, ctrl);
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SelectedRowActivates"))
