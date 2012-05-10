@@ -85,7 +85,7 @@ namespace Tests.MFinance.Server.ICH
         [Test]
         public void TestFileHeaderReplace()
         {
-            string fileName = Path.GetTempPath() + @"\TestGenHOSAFile.csv";
+            string fileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             int PeriodNumber = 4;
             string StandardCostCentre = "4300";
             string CostCentre = "78";
@@ -111,7 +111,7 @@ namespace Tests.MFinance.Server.ICH
             int IchNumber = 1;
             string CostCentre = "73";
             int Currency = 0;  //0 = base 1 = intl
-            string FileName = Path.GetTempPath() + @"\TestGenHOSAFile.csv";
+            string FileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
 
             TGenHOSAFilesReports.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
