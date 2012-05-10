@@ -82,7 +82,7 @@ namespace Tests.MFinance.Server.ICH
         /// Test whether the code opens a text file and replaces the first line
         ///  with the specified string
         /// </summary>
-        [Test]
+        [Test, Explicit]
         public void TestFileHeaderReplace()
         {
             string fileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
@@ -161,8 +161,9 @@ namespace Tests.MFinance.Server.ICH
             bool NewTransaction = false;
 
             // need to create gifts first
-            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
-
+            //TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
+            TStewardshipCalculationTest.ImportAndPostGiftBatch(true);
+            
             //TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
