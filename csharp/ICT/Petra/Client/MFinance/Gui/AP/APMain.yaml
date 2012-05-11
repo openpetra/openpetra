@@ -69,10 +69,15 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [cmbSupplierCode, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
+            Controls: [pnlDockSupplierCode, pnlSearchFilter, pnlSearchButtons, tabSearchResult]
+        pnlDockSupplierCode:
+            Controls: [cmbSupplierCode]
+            Dock: Top
+            Margin: 0
         cmbSupplierCode: {Label=S&earch Supplier, AutoComplete=SupplierSearchHistory, Tooltip=Search by supplier name or partner key}
         pnlSearchFilter:
             Dock: Top
+            Margin: 0
             Controls: [chkDueToday, chkOverdue, chkDueFuture]
             ControlsOrientation: horizontal
         chkDueToday: {OnChange=SetDueFilters, Label=Due &Today}
@@ -93,6 +98,8 @@ RootNode:
         pnlSearchButtons:
             Controls: [btnSearch]
             ControlsOrientation: horizontal
+            Dock: Top
+            Margin: 0
         btnSearch: {Action=actSearch, AcceptButton=true}
         tabSearchResult:
             Controls: [tpgSuppliers, tpgOutstandingInvoices]
@@ -103,17 +110,23 @@ RootNode:
         tpgOutstandingInvoices:
             Controls: [pnlTaggingOptions, grdInvoiceResult]
         pnlSupplierOptions:
-            Controls: [chkShowOutstandingAmounts, chkHideInactiveSuppliers, cmbSupplierCurrency]
             ControlsOrientation: horizontal
+            Controls: [chkShowOutstandingAmounts, chkHideInactiveSuppliers, cmbSupplierCurrency]
+            Dock: Top
+            Height: 30
+            Margin: 0
         grdSupplierResult: {Dock=Fill, ActionDoubleClick=actSupplierTransactions, SelectedRowActivates=cndSelectedSupplier}
 
         grdInvoiceResult: {Dock=Fill, ActionDoubleClick=actShowInvoice}
         chkShowOutstandingAmounts: {Label=Show Outstanding &Amounts, CheckBoxAttachedLabel=right,  OnChange=SupplierOutstandingOpt, Enabled=false}
         chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right,  OnChange=SetSupplierFilters}
-        cmbSupplierCurrency: {Label=C&urrency, List=CurrencyCodeList, OnChange=SetSupplierFilters}
+        cmbSupplierCurrency: {Label=C&urrency, List=CurrencyCodeList, OnChange=SetSupplierFilters, Width=200}
         pnlTaggingOptions:
-            Controls: [btnTagAllApprovable, btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged]
+            Controls: [btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged, btnTagAllApprovable]
             ControlsOrientation: horizontal
+            Dock: Top
+            Height: 30
+            Margin: 0
         btnTagAllApprovable: {Label=Tag all Appro&vable, Visible=false}
         btnTagAllPostable: {Label=Tag a&ll Postable}
             Action: actTagAllPostable
