@@ -172,7 +172,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 //See gi3200.p ln: 170
                 //Select any gift transactions to export
                 string strSql = TDataBase.ReadSqlFile("ICH.HOSAExportGifts.sql");
-                
+
                 OdbcParameter parameter;
 
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
@@ -752,7 +752,5 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 throw Exp;
             }
         }
-        
-        
     }
 }

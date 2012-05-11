@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
             bool NewTransaction = false;
-            
+
             FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             AGiftBatchRow giftBatch = null;
@@ -265,8 +265,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                             {
                                 if (NewTransaction)
                                 {
-                                	DBAccess.GDBAccessObj.RollbackTransaction();
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
+
                                 return false;
                             }
 
@@ -277,9 +278,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                             {
                                 if (NewTransaction)
                                 {
-                                	DBAccess.GDBAccessObj.RollbackTransaction();
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
-                            	return false;
+
+                                return false;
                             }
 
                             FMainDS.AGiftDetail.AcceptChanges();
@@ -313,10 +315,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
+
                 if (NewTransaction)
                 {
-                	DBAccess.GDBAccessObj.RollbackTransaction();	
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
+
                 return false;
             }
             finally
@@ -338,8 +342,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 if (NewTransaction)
                 {
-                	DBAccess.GDBAccessObj.RollbackTransaction();
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
+
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         Catalog.GetString("Data could not be saved."),
                         TResultSeverity.Resv_Critical));

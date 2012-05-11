@@ -77,7 +77,6 @@ namespace Tests.MFinance.Server.ICH
             TPetraServerConnector.Disconnect();
         }
 
-        
         /// <summary>
         /// This will import a test gift batch, and post it.
         /// </summary>
@@ -179,9 +178,8 @@ namespace Tests.MFinance.Server.ICH
 
             if (NewTransaction)
             {
-            	DBAccess.GDBAccessObj.CommitTransaction();	
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
-            
         }
 
         /// <summary>
