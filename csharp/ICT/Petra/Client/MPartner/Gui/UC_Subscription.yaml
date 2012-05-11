@@ -11,13 +11,12 @@ RootNode:
         actEditIssues: {Label=Edit I&ssues, ActionClick=EditIssues}
     Controls:
         pnlDetails:
-            Controls: [pnlDetailsLeft, pnlDetailsRight]
+            Controls: 
+                Row0: [pnlDetailsLeft, pnlDetailsRight]
             Dock: Fill
         pnlDetailsLeft:
-            Dock: Fill
             Controls: [grpSubscription, grpMisc]
         pnlDetailsRight:
-            Dock: Right
             Controls: [grpDates, grpIssues]
                 
         grpSubscription: {Label=Subscription, Stretch=horizontally}
