@@ -151,7 +151,7 @@ namespace Tests.MFinance.Server.ICH
             string CostCentre = "7300";
             string AcctCode = "0200";
             string MonthName = "January";
-            int PeriodNumber = 0;
+            int PeriodNumber = 1;
             DateTime PeriodStartDate = Convert.ToDateTime("1-Jan-2012");
             DateTime PeriodEndDate = Convert.ToDateTime("31-Jan-2012");
             string Base = MFinanceConstants.CURRENCY_BASE;
@@ -160,16 +160,18 @@ namespace Tests.MFinance.Server.ICH
 
             bool NewTransaction = false;
 
-			//Perform stewardship calculation
-			//TODO:
-				
             // need to create gifts first
             TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
+
+            //Perform stewardship calculation
+            TVerificationResultCollection VerificationResults;
+            TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
+                PeriodNumber, out VerificationResults);
             
             //TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
-            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
+            VerificationResults = new TVerificationResultCollection();
 
             //Create DataTable to receive exported transactions
             TableForExport.Columns.Add("CostCentre", typeof(string));
