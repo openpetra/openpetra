@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Common
     FormType: browse
     Template: window
-    WindowWidth: 754
+    WindowWidth: 810
     WindowHeight: 623
     Actions:
         actAddGiftDetail:
@@ -22,10 +22,13 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [cmbBankAccount, txtBankStatement, pnlFilter, sptTransactionDetails]
+            Controls: [pnlFilterTop1, pnlFilter, sptTransactionDetails]
             # add to Controls: pnlStatementInfo
         cmbBankAccount: {List=UserDefinedList}
         txtBankStatement: {ReadOnly=true}
+        pnlFilterTop1:
+            Dock: Top
+            Controls: [cmbBankAccount, txtBankStatement]
         pnlFilter:
             Dock: Top
             Controls:

@@ -23,9 +23,11 @@
 //
 using System;
 using System.Xml;
+using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Ict.Common;
 using Ict.Common.IO; // Implicit reference
 using Ict.Tools.DBXML;
@@ -80,13 +82,14 @@ namespace Ict.Tools.GenerateWinForms
                     new TLogging("generatewinforms.log");
                 }
 
-                TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 10);
+                TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
                 if (!TAppSettingsManager.HasValue("op"))
                 {
                     Console.WriteLine("call: GenerateWinForms -op:generate -ymlfile:c:\\test.yaml -petraxml:petra.xml -localisation:en");
                     Console.WriteLine("  or: GenerateWinForms -op:generate -ymldir:c:\\myclient -petraxml:petra.xml -localisation:en");
                     Console.WriteLine("  or: GenerateWinForms -op:clean -ymldir:c:\\myclient");
+                    Console.WriteLine("  or: GenerateWinForms -op:preview");
                     Console.Write("Press any key to continue . . . ");
                     Console.ReadLine();
                     Environment.Exit(-1);
@@ -120,6 +123,31 @@ namespace Ict.Tools.GenerateWinForms
                         DeleteGeneratedFile(file, "-generated.Designer.cs");
                         DeleteGeneratedFile(file, "-generated.resx");
                     }
+                }
+                else if (TAppSettingsManager.GetValue("op") == "preview")
+                {
+                    string SelectedLocalisation = null;         // none selected by default; winforms autosize works quite well
+
+                    if (TAppSettingsManager.HasValue("localisation"))
+                    {
+                        SelectedLocalisation = TAppSettingsManager.GetValue("localisation");
+                    }
+
+                    TDataBinding.FPetraXMLStore = new TDataDefinitionStore();
+                    Console.WriteLine("parsing " + TAppSettingsManager.GetValue("petraxml", true));
+                    TDataDefinitionParser parser = new TDataDefinitionParser(TAppSettingsManager.GetValue("petraxml", true));
+                    parser.ParseDocument(ref TDataBinding.FPetraXMLStore, true, true);
+
+                    TFrmYamlPreview PreviewWindow = new TFrmYamlPreview(
+                        TAppSettingsManager.GetValue("ymlfile"),
+                        SelectedLocalisation);
+
+                    AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
+                    Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler);
+
+                    PreviewWindow.ShowDialog();
+
+                    return;
                 }
                 else if (TAppSettingsManager.GetValue("op") == "generate")
                 {
@@ -203,6 +231,16 @@ namespace Ict.Tools.GenerateWinForms
 
                 Environment.Exit(-1);
             }
+        }
+
+        private static void UnhandledExceptionHandler(object ASender, UnhandledExceptionEventArgs AEventArgs)
+        {
+            TLogging.Log(AEventArgs.ExceptionObject.ToString());
+        }
+
+        private static void UnhandledThreadExceptionHandler(object ASender, ThreadExceptionEventArgs AEventArgs)
+        {
+            TLogging.Log(AEventArgs.Exception.ToString());
         }
     }
 

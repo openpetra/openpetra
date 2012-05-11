@@ -113,8 +113,6 @@ namespace Ict.Tools.CodeGeneration
                 TCodeStorage codeStorage = new TCodeStorage(myDoc, FXmlNodes);
                 TParseYAMLFormsDefinition yamlParser = new TParseYAMLFormsDefinition(ref codeStorage);
 
-                codeStorage.FTargetWinforms = TAppSettingsManager.GetValue("TargetPlatformGUI", "net");
-
                 // should not need to be specific to special forms
                 yamlParser.LoadRecursively(FYamlFilename, FSelectedLocalisation);
 

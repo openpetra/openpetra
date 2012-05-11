@@ -45,7 +45,7 @@ RootNode:
                 Row2: [cmbAbilityLevel]
                 Row3: [txtComment]
                 
-        cmbAbilityAreaName: {Label=Ability, DataField=PmPersonAbility.AbilityAreaName, List=AbilityAreaNameList, Width=200, ColSpan=3}
+        cmbAbilityAreaName: {Label=Ability, DataField=PmPersonAbility.AbilityAreaName, List=AbilityAreaNameList, Width=200, ColSpan=2}
         txtYearsOfExperience: {DataField=PmPersonAbility.YearsOfExperience, Width=25, Format=Integer}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonAbility.YearsOfExperienceAsOf}
         cmbAbilityLevel: {Label=Level, List=AbilityLevelList, Width=300, ColSpan=2}
@@ -55,4 +55,4 @@ RootNode:
             ScrollBars: Vertical
             Height: 110
             Width: 380
-            ColSpan: 3
+            ColSpan: 2

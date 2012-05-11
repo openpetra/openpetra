@@ -729,7 +729,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 textboxName = "txtPeriod" + i.ToString("00") + "Amount";
 
-                foreach (Control ctrl in tableLayoutPanel5.Controls)
+                foreach (Control ctrl in pnlBudgetTypeAdhoc.Controls[0].Controls)
                 {
                     if (ctrl is TTxtNumericTextBox && (ctrl.Name == textboxName))
                     {

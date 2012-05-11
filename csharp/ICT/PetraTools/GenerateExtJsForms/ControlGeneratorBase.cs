@@ -157,6 +157,27 @@ namespace Ict.Tools.CodeGeneration.ExtJs
         /// <summary>
         /// not implemented here
         /// </summary>
+        public virtual void ProcessChildren(TFormWriter writer, TControlDef ctrl)
+        {
+        }
+
+        /// <summary>
+        /// not implemented here
+        /// </summary>
+        public virtual void AddChildren(TFormWriter writer, TControlDef ctrl)
+        {
+        }
+
+        /// <summary>
+        /// not implemented here
+        /// </summary>
+        public virtual void GenerateControl(TFormWriter writer, TControlDef ctrl)
+        {
+        }
+
+        /// <summary>
+        /// not implemented here
+        /// </summary>
         public virtual void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
         {
         }

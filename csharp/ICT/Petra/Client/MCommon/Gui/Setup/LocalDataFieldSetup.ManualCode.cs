@@ -271,18 +271,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             clbUsedBy.DataBindGrid(DTUsedBy, DBCol3, DBCol1, DBCol2, DBCol2, false, false, false);
             FPetraUtilsObject.SetStatusBarText(clbUsedBy, Catalog.GetString("Choose the screens when this label will be used"));
 
-            // Set up the label control that we will use to indicate the current sub-type of data
-            // We need to right align the text so it looks nice when we change it
-            lblDataSubType.AutoSize = false;
-            lblDataSubType.Left = 0;
-            lblDataSubType.Width = 170;                         // 5 less than the column width in the YAML file
-            lblDataSubType.TextAlign = System.Drawing.ContentAlignment.TopRight;
-
             // Now we have to deal with the form controls that depend on the selection of DataType
             // and we only want one visible at a time - so hide these three
             pnlCurrencyCode.Visible = false;
-            pnlCategoryCode.Visible = false;
-            txtDetailNumDecimalPlaces.Visible = false;
+            pnlLookupCategoryCode.Visible = false;
+            pnlNumDecimalPlaces.Visible = false;
 
             // We can prevent screen 'flicker' by setting the DefaultView RowFilter to some stupid setting that finds no rows
             // This stops the auto-genertaed code populating the list with incorrect data before we get it right in our code
@@ -609,12 +602,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 ARow.SetNumDecimalPlacesNull();
             }
 
-            if (!pnlCurrencyCode.Visible)
+            if (!cmbDetailCurrencyCode.Visible)
             {
                 ARow.SetCurrencyCodeNull();
             }
 
-            if (!pnlCategoryCode.Visible)
+            if (!cmbDetailLookupCategoryCode.Visible)
             {
                 ARow.SetLookupCategoryCodeNull();
             }
@@ -807,21 +800,21 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
 
             // Start by hiding everything
-            txtDetailCharLength.Visible = false;
-            txtDetailNumDecimalPlaces.Visible = false;
+            pnlCharLength.Visible = false;
+            pnlNumDecimalPlaces.Visible = false;
             pnlCurrencyCode.Visible = false;
-            pnlCategoryCode.Visible = false;
+            pnlLookupCategoryCode.Visible = false;
 
             // Show the relevant panel or text box and modify the label text
             switch (cmbDetailDataType.SelectedIndex)
             {
                 case 0:                 // Text
-                    txtDetailCharLength.Visible = true;
+                    pnlCharLength.Visible = true;
                     lblDataSubType.Text = Catalog.GetString("Maximum length") + ":";
                     break;
 
                 case 1:                 // Numeric
-                    txtDetailNumDecimalPlaces.Visible = true;
+                    pnlNumDecimalPlaces.Visible = true;
                     lblDataSubType.Text = Catalog.GetString("Decimal places") + ":";
                     break;
 
@@ -838,7 +831,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     break;
 
                 case 6:                 // OptionList
-                    pnlCategoryCode.Visible = true;
+                    pnlLookupCategoryCode.Visible = true;
                     lblDataSubType.Text = Catalog.GetString("Option list name") + ":";
                     break;
             }
