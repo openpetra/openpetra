@@ -144,6 +144,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodNumber"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>True if successful</returns>
+        [RequireModulePermission("FINANCE-3")]
         public static bool GenerateICHStewardshipBatch(int ALedgerNumber,
             int APeriodNumber,
             ref TVerificationResultCollection AVerificationResult)
