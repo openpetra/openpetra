@@ -315,6 +315,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 && ((ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "left")
                     || (ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "right")))
             {
+                ctrl.hasLabel = false;
                 return false;
             }
 
