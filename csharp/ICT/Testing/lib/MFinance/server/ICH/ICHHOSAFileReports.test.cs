@@ -152,13 +152,16 @@ namespace Tests.MFinance.Server.ICH
             string AcctCode = "0200";
             string MonthName = "January";
             int PeriodNumber = 1;
-            DateTime PeriodStartDate = Convert.ToDateTime("1-Jan-2012");
-            DateTime PeriodEndDate = Convert.ToDateTime("31-Jan-2012");
+            DateTime PeriodStartDate = new DateTime(2012, 1, 1);
+            DateTime PeriodEndDate = new DateTime(2012, 1, 31);
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();
 
             bool NewTransaction = false;
+
+            // otherwise period 1 might have been closed already
+            CommonNUnitFunctions.ResetDatabase();
 
             // need to create gifts first
             TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
