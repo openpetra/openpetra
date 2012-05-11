@@ -16,25 +16,19 @@ RootNode:
         actSelectAllBudgets: {ActionClick=SelectAllBudgets}
     Controls:
         pnlContent:
-            Controls: [pnlSettings]
+            Controls: [pnlSettings, pnlGrid]
             Dock: Fill
         pnlSettings:
             Dock: Top
             Controls:
                 Row0: [rgrBudgetScope]
-                Row1:
-                Row2: [txtForecast]
-                Row3:
-                Row4: [rgrRemainingPeriods]
-                Row5:
-                Row6: [pnlGrid]
+                Row1: [txtForecast]
+                Row2: [rgrRemainingPeriods]
         pnlGrid:
             Dock: Fill
-            Controls: 
-                Row0: [clbCostCentreAccountCodes, pnlGridSelection]
-                Row1: [pnlButtons]
+            Controls: [clbCostCentreAccountCodes, pnlButtons, pnlGridSelection]
         pnlGridSelection:
-            #Dock: Fill
+            Dock: Right
             Controls: 
                 Row0: [btnSelectAllBudgets]
                 Row1: [btnUnselectAllBudgets]

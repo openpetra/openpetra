@@ -240,6 +240,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                             int CellHeight = ctrl.Height;
 
+                            if (CellHeight == 17)
+                            {
+                                // for labels, we should consider the margin top as well.
+                                CellHeight = 22;
+                            }
+
                             if ((spanRunCounter == 0) && (ctrl.colSpanWithLabel == 1))
                             {
                                 if (CellHeight > RowHeight[rowCounter])
