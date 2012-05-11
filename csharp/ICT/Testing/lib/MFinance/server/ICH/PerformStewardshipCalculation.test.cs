@@ -77,6 +77,7 @@ namespace Tests.MFinance.Server.ICH
             TPetraServerConnector.Disconnect();
         }
 
+        
         /// <summary>
         /// This will import a test gift batch, and post it.
         /// </summary>

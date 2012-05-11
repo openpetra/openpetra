@@ -54,7 +54,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
 
-namespace Ict.Petra.Server.MFinance.ICH
+namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 {
     /// <summary>
     /// Class for the performance of the Stewardship Calculation
@@ -282,7 +282,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ACurrentYear">Current year of ICH ledger</param>
         /// <param name="ADBTransaction">Current database transaction</param>
         /// <returns>The batch number of the matching batch or 0 if there is no match.</returns>
-        public int FindMatchingStewardshipBatch(int AICHLedgerNumber,
+        public static int FindMatchingStewardshipBatch(int AICHLedgerNumber,
             string ABatchRef,
             int AYear,
             int AMonth,
@@ -436,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ATransferAmount">Transfer total to check against</param>
         /// <param name="ADBTransaction">Current database transaction</param>
         /// <returns>True if transasctions match, false otherwise</returns>
-        public bool SummaryStewardshipTransactionsMatch(int AICHLedgerNumber,
+        public static bool SummaryStewardshipTransactionsMatch(int AICHLedgerNumber,
             int ABatchNumber,
             string ACostCentre,
             decimal AIncomeAmount,
@@ -637,7 +637,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="ALedgerNumber">THe ICH Ledger number</param>
         /// <param name="AICHFolder">The ICH folder</param>
-        public void ImportAllAvailableStewardshipReports(int ALedgerNumber, string AICHFolder)
+        public static void ImportAllAvailableStewardshipReports(int ALedgerNumber, string AICHFolder)
         {
             string LogFile;
             string PendingDir;
@@ -856,7 +856,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AUnsuccessfulFileList">List of files that failed</param>
         /// <param name="ANewDir"></param>
         /// <param name="ADBTransaction"></param>
-        private void GenerateStewardshipBatchFromFileList(int ALedgerNumber,
+        private static void GenerateStewardshipBatchFromFileList(int ALedgerNumber,
             ref DataTable AFileList,
             ref TextWriter ALogWriter,
             ref string AUnsuccessfulFileList,
@@ -945,7 +945,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AFromCostCentre">Fund to which stewardship relates</param>
         /// <param name="AFileName">Filename of stewardship report to process</param>
         /// <param name="ALogWriter">TextWriter for log file</param>
-        private bool GenerateStewardshipBatchFromReportFile(int ALedgerNumber,
+        private static bool GenerateStewardshipBatchFromReportFile(int ALedgerNumber,
             int AYear,
             int APeriod,
             int ARunNumber,
@@ -1466,7 +1466,7 @@ PostGenerateBatch:
         /// <param name="ALogWriter">TextWriter for log file</param>
         /// <param name="ADBTransaction">Current database transaction</param>
         /// <param name="AProcessFile">Set to True if processing of the stewardship should go ahead or False if it should be rejected (ie. if a duplicate or possible duplicate</param>
-        private void DealWithMatchingStewardshipBatch(int ALedgerNumber, int ABatchNumber, int ARunNumber,
+        private static void DealWithMatchingStewardshipBatch(int ALedgerNumber, int ABatchNumber, int ARunNumber,
             int AYear, string AFileName, string AFromCostCentre,
             string AFromCostCentreName, string APeriodName, decimal ATotalIncome,
             decimal ATotalExpense, decimal ATotalTransfer, ref TextWriter ALogWriter, ref TDBTransaction ADBTransaction, out bool AProcessFile)
@@ -1894,7 +1894,7 @@ PostGenerateBatch:
         /// <param name="ASummary">Is this a summary transaction or a detail transaction</param>
         /// <param name="ALogWriter">TextWriter for log file</param>
         /// <param name="ADBTransaction">Current database transaction</param>
-        private bool CreateStewardshipTransaction(
+        private static bool CreateStewardshipTransaction(
             GLBatchTDS AMainDS,
             int ALedgerNumber, int ABatchNumber, int AJournalNumber,
             string ATransactionType, string ACostCentre, string ANarrative,
@@ -2019,7 +2019,7 @@ PostGenerateBatch:
         /// </summary>
         /// <param name="AUnsuccessfulFileList"></param>
         /// <returns>Returns the list of all files that failed</returns>
-        private string ListUnprocessedFiles(string AUnsuccessfulFileList)
+        private static string ListUnprocessedFiles(string AUnsuccessfulFileList)
         {
             string UnprocessedFileList = "The following files could not be processed. Please see the logfile for details.\r\n";
 
@@ -2044,7 +2044,7 @@ PostGenerateBatch:
         /// </summary>
         /// <param name="AValue"></param>
         /// <returns></returns>
-        private string ChangeToAmericanFormat(string AValue)
+        private static string ChangeToAmericanFormat(string AValue)
         {
             return AValue;
         }

@@ -58,7 +58,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
 
-namespace Ict.Petra.Server.MFinance.ICH
+namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 {
     /// <summary>
     /// Class for the generation of "Home Office Statement of Accounts" reports for each
