@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -425,6 +425,27 @@ namespace Ict.Common.Printing
             {
                 return FPageFooterSpace;
             }
+        }
+
+        /// <summary>
+        /// save the state before a rotation etc
+        /// </summary>
+        public virtual void SaveState()
+        {
+        }
+
+        /// <summary>
+        /// restore the state after a rotation etc
+        /// </summary>
+        public virtual void RestoreState()
+        {
+        }
+
+        /// <summary>
+        /// rotate the following output by some degrees
+        /// </summary>
+        public virtual void Rotate(Int32 ADegrees)
+        {
         }
 
         /// <summary>

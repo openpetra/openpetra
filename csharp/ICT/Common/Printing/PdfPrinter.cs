@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -515,6 +515,38 @@ namespace Ict.Common.Printing
             }
 
             return (float)FXGraphics.MeasureString(ATxt, GetXFont(AFont), XStringFormats.Default).Width;
+        }
+
+        /// remember the rotation and transformation
+        protected Stack <XGraphicsState>FGraphicsStateStack = new Stack <XGraphicsState>();
+
+
+        /// <summary>
+        /// save the state
+        /// </summary>
+        public override void SaveState()
+        {
+            base.SaveState();
+
+            FGraphicsStateStack.Push(FXGraphics.Save());
+        }
+
+        /// <summary>
+        /// restore the state
+        /// </summary>
+        public override void RestoreState()
+        {
+            base.RestoreState();
+
+            FXGraphics.Restore(FGraphicsStateStack.Pop());
+        }
+
+        /// <summary>
+        /// rotate the following output by some degrees
+        /// </summary>
+        public override void Rotate(Int32 ADegrees)
+        {
+            FXGraphics.RotateTransform(ADegrees);
         }
 
         /// <summary>

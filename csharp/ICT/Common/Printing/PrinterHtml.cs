@@ -660,6 +660,20 @@ namespace Ict.Common.Printing
                     {
                         AWidthAvailable = ToInch(Styles[StyleName], eResolution.eHorizontal);
                     }
+                    else if (StyleName.ToLower() == "transform")
+                    {
+                        // see also http://www.w3schools.com/cssref/css3_pr_transform.asp
+                        string transformValue = Styles[StyleName].Trim().ToLower();
+
+                        if (transformValue.StartsWith("rotate(") && transformValue.EndsWith("deg)"))
+                        {
+                            FPrinter.Rotate(Convert.ToInt32(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length)));
+                        }
+                        else
+                        {
+                            TLogging.Log("TPrinterHtml: unsupported transform style. we only support rotation at the moment");
+                        }
+                    }
                 }
             }
 
@@ -691,6 +705,9 @@ namespace Ict.Common.Printing
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
                 AWidthAvailable = OrigWidthAvailable;
+
+                FPrinter.SaveState();
+
                 bool HasPositionInfo = SetPositionFromStyle(curNode, ref AWidthAvailable);
 
                 if (HasPositionInfo)
@@ -1003,6 +1020,8 @@ namespace Ict.Common.Printing
                     // reset to top of paper, so that there is no unintended page break
                     FPrinter.CurrentYPos = 0;
                 }
+
+                FPrinter.RestoreState();
 
                 // todo: h1, etc headings???
                 // todo: code, fixed width font (for currency amounts?) ???
