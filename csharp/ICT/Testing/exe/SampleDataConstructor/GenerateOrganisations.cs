@@ -30,9 +30,12 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
@@ -44,6 +47,8 @@ namespace Ict.Testing.SampleDataConstructor
     /// </summary>
     public class SampleDataOrganisations
     {
+        const int FLedgerNumber = 43;
+
         /// <summary>
         /// generate the partners from a text file that was generated with Benerator
         /// </summary>
@@ -51,6 +56,7 @@ namespace Ict.Testing.SampleDataConstructor
         public static void GenerateOrganisationPartners(string AInputBeneratorFile)
         {
             PartnerEditTDS MainDS = new PartnerEditTDS();
+            AApSupplierTable supplierTable = new AApSupplierTable();
 
             XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AInputBeneratorFile, ",", Encoding.UTF8);
 
@@ -101,6 +107,29 @@ namespace Ict.Testing.SampleDataConstructor
 
                 //organisationLocationRow.EmailAddress = TXMLParser.GetAttribute(RecordNode, "Email");
 
+                if (TXMLParser.GetAttribute(RecordNode, "IsSupplier") == "yes")
+                {
+                    AApSupplierRow supplierRow = supplierTable.NewRowTyped(true);
+
+                    supplierRow.PartnerKey = organisationRecord.PartnerKey;
+                    supplierRow.CurrencyCode = TXMLParser.GetAttribute(RecordNode, "Currency");
+
+                    if (supplierRow.CurrencyCode == "GBP")
+                    {
+                        supplierRow.DefaultBankAccount = "6210";
+                    }
+                    else
+                    {
+                        supplierRow.DefaultBankAccount = "6200";
+                    }
+
+                    supplierRow.DefaultApAccount = "9100";
+                    supplierRow.DefaultCostCentre = (FLedgerNumber * 100).ToString("0000");
+                    supplierRow.DefaultExpAccount = "4200";
+
+                    supplierTable.Rows.Add(supplierRow);
+                }
+
                 MainDS.PPartnerLocation.Rows.Add(organisationLocationRow);
 
                 RecordNode = RecordNode.NextSibling;
@@ -108,6 +137,13 @@ namespace Ict.Testing.SampleDataConstructor
 
             TVerificationResultCollection VerificationResult;
             PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+
+            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            {
+                throw new Exception(VerificationResult.BuildVerificationResultString());
+            }
+
+            AApSupplierAccess.SubmitChanges(supplierTable, null, out VerificationResult);
 
             if (VerificationResult.HasCriticalOrNonCriticalErrors)
             {
