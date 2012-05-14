@@ -25,6 +25,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
@@ -36,7 +37,9 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MCommon.WebConnectors;
+using Ict.Petra.Server.MFinance.AP.WebConnectors;
 
 namespace Ict.Testing.SampleDataConstructor
 {
@@ -84,7 +87,7 @@ namespace Ict.Testing.SampleDataConstructor
                 invoiceRow.PartnerKey = SupplierKey;
                 invoiceRow.Reference = "something";
                 invoiceRow.DateIssued = Convert.ToDateTime(TXMLParser.GetAttribute(RecordNode, "DateIssued"));
-                invoiceRow.DateIssued = invoiceRow.DateEntered;
+                invoiceRow.DateEntered = invoiceRow.DateIssued;
                 invoiceRow.TotalAmount = Convert.ToDecimal(TXMLParser.GetAttribute(RecordNode, "Amount")) / 100.0m;
                 invoiceRow.ApAccount = "9100";
                 invoiceRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
@@ -116,6 +119,64 @@ namespace Ict.Testing.SampleDataConstructor
             {
                 throw new Exception(VerificationResult.BuildVerificationResultString());
             }
+        }
+
+        /// <summary>
+        /// post and pay all invoices in the given period, but leave some (or none) unposted
+        /// </summary>
+        public static bool PostAndPayInvoices(int AYear, int APeriod, int ALeaveInvoicesUnposted = 0)
+        {
+            AccountsPayableTDS MainDS = new AccountsPayableTDS();
+
+            string sqlLoadDocuments =
+                "SELECT * FROM PUB_a_ap_document WHERE a_ledger_number_i = ? AND a_date_issued_d >= ? AND a_date_issued_d <= ? AND a_document_status_c='APPROVED'";
+
+            DateTime PeriodStartDate, PeriodEndDate;
+
+            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, APeriod, out PeriodStartDate, out PeriodEndDate, null);
+
+            List <OdbcParameter>parameters = new List <OdbcParameter>();
+
+            OdbcParameter parameter;
+            parameter = new OdbcParameter("ledgernumber", OdbcType.Int);
+            parameter.Value = FLedgerNumber;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("startDate", OdbcType.DateTime);
+            parameter.Value = PeriodStartDate;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("endDate", OdbcType.DateTime);
+            parameter.Value = PeriodEndDate;
+            parameters.Add(parameter);
+
+            DBAccess.GDBAccessObj.SelectDT(MainDS.AApDocument, sqlLoadDocuments, null, parameters.ToArray(), -1, -1);
+
+            int countUnPosted = MainDS.AApDocument.Count;
+
+            List <int>DocumentIdsToPost = new List <int>();
+
+            foreach (AApDocumentRow invoice in MainDS.AApDocument.Rows)
+            {
+                if (countUnPosted <= ALeaveInvoicesUnposted)
+                {
+                    break;
+                }
+
+                DocumentIdsToPost.Add(invoice.ApDocumentId);
+
+                countUnPosted--;
+            }
+
+            TVerificationResultCollection VerificationResult;
+
+            if (!TTransactionWebConnector.PostAPDocuments(FLedgerNumber, DocumentIdsToPost, PeriodEndDate, false, out VerificationResult))
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+                return false;
+            }
+
+            // TODO pay the invoices as well
+
+            return true;
         }
     }
 }
