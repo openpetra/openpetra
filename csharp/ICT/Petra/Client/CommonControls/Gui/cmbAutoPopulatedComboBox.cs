@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan;
@@ -152,10 +153,22 @@ namespace Ict.Petra.Client.CommonControls
             LeavingCodeList,
 
             /// <summary>todoComment</summary>
+            LedgerNameList,
+
+            /// <summary>todoComment</summary>
             LocationTypeList,
 
             /// <summary>todoComment</summary>
+            MailingList,
+
+			/// <summary>todoComment</summary>
             MaritalStatusList,
+
+            /// <summary>todoComment</summary>
+            MethodOfGivingList,
+
+            /// <summary>todoComment</summary>
+            MethodOfPaymentList,
 
             /// <summary>todoComment</summary>
             PartnerClassList,
@@ -599,12 +612,30 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.LedgerNameList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList),
+                    "LedgerNumber",
+                    "LedgerName",
+                    null);
+                    break;
+
                 case TListTableEnum.LocationTypeList:
 
                     InitialiseUserControl(
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
                     PLocationTypeTable.GetCodeDBName(),
                     null,
+                    null);
+                    break;
+
+                case TListTableEnum.MailingList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.MailingList),
+                    PMailingTable.GetMailingCodeDBName(),
+                    PMailingTable.GetMailingDescriptionDBName(),
                     null);
                     break;
 
@@ -617,6 +648,23 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.MethodOfGivingList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfGivingList),
+                    AMethodOfGivingTable.GetMethodOfGivingCodeDBName(),
+                    AMethodOfGivingTable.GetMethodOfGivingDescDBName(),
+                    null);
+                    break;
+                    
+                case TListTableEnum.MethodOfPaymentList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfPaymentList),
+                    AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
+                    AMethodOfPaymentTable.GetMethodOfPaymentDescDBName(),
+                    null);
+                    break;
 
                 case TListTableEnum.PartnerClassList:
 
@@ -1125,8 +1173,18 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 200;
                     break;
 
+                case TListTableEnum.LedgerNameList:
+                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
                 case TListTableEnum.LocationTypeList:
                     this.ColumnWidthCol1 = 110;
+                    break;
+
+                case TListTableEnum.MailingList:
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 250;
                     break;
 
                 case TListTableEnum.MaritalStatusList:

@@ -101,5 +101,14 @@ namespace Ict.Petra.Client.MFinance.Gui
             frm.CalledFromExtracts = true;
             frm.Show();
         }
+
+        /// Open screen for creating "Donor by Miscellaneous" Extract
+        public static void DonorByMiscellaneousExtract(Form AParentForm)
+        {
+            TFrmDonorByMiscellaneous frm = new TFrmDonorByMiscellaneous(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
     }
 }

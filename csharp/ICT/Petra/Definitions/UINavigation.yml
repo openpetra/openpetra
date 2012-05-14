@@ -57,6 +57,7 @@ OpenPetra:
                         RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFrmFinanceMain.RecipientByFieldExtract}
                         DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Field, ActionClick=TFrmFinanceMain.DonorByFieldExtract}
                         DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFrmFinanceMain.DonorByAmountExtract}
+                        DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFrmFinanceMain.DonorByMiscellaneousExtract}
                 Reports: {Icon=printer.ico, Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
@@ -199,6 +200,7 @@ OpenPetra:
                         RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Recipient by Field, ActionClick=TFrmFinanceMain.RecipientByFieldExtract}
                         DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Field, ActionClick=TFrmFinanceMain.DonorByFieldExtract}
                         DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Amount, ActionClick=TFrmFinanceMain.DonorByAmountExtract}
+                        DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Generate Extract - Donor by Miscellaneous, ActionClick=TFrmFinanceMain.DonorByMiscellaneousExtract}
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                     GeneralLedgerSetup:

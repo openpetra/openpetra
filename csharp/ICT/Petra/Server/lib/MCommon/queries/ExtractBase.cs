@@ -357,6 +357,7 @@ namespace Ict.Petra.Server.MCommon.queries
                                   " AND (    pub_p_postcode_region.p_range_c  = pub_p_postcode_range.p_range_c" +
                                   " AND pub_p_postcode_region.p_region_c = ?)";
                     RegionTableNeeded = true;
+                    LocationTableNeeded = true;
                 }
             }
 
