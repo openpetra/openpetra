@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-09 19:00+0200\n"
+"POT-Creation-Date: 2012-05-14 21:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -725,19 +725,19 @@ msgstr ""
 msgid "Date underrun ..."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #.  String for the title
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:37
 msgid "Partner"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:40
 msgid "Partner Class"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:43
 msgid "PartnerKey"
 msgstr ""
@@ -964,7 +964,7 @@ msgstr ""
 msgid "No valid Extract selected"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.cs:1163
 msgid "Error"
 msgstr ""
@@ -1652,12 +1652,12 @@ msgstr ""
 msgid "You must check at least one box in the list of Application types."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:89
 msgid "&New"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:90
 msgid "&Delete"
 msgstr ""
@@ -1702,7 +1702,7 @@ msgstr ""
 msgid "Opening of Field Of Service screen got cancelled by user."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:55
 msgid "Screen opening cancelled"
 msgstr ""
@@ -1727,7 +1727,7 @@ msgstr ""
 msgid "Reset Search"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\UC_CollapsibleSearchPane.cs:484
 msgid "&Search"
 msgstr ""
@@ -1956,47 +1956,47 @@ msgid ""
 "abort."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\FieldOfService.cs:50
 msgid "OpenPetra Server Too Busy"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:37
 msgid "Information"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:40
 msgid "Warning"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:46
 msgid "Ready"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:49
 msgid "Details: "
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:52
 msgid " (inactive)"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:55
 msgid "Functionality not available"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:58
 msgid "This window has changes that have not been saved."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:61
 msgid "Save changes before closing?"
 msgstr ""
@@ -2016,12 +2016,12 @@ msgstr ""
 msgid "Data could not be saved because an unexpected error occured!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:73
 msgid "Data could not be saved because an error occured!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:76
 msgid "Saving of data cancelled by user!"
 msgstr ""
@@ -2031,7 +2031,7 @@ msgstr ""
 msgid "There was nothing to be saved."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:82
 msgid ""
 "The OpenPetra Server is currently too busy to {0}.\r\n"
@@ -2040,12 +2040,12 @@ msgid ""
 "abort."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:89
 msgid "Opening of {0} screen got cancelled by user."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:95
 msgid "This only works for Partners of Partner Class PERSON"
 msgstr ""
@@ -2058,34 +2058,34 @@ msgstr ""
 msgid "This only works for Partners of Partner Classes PERSON or UNIT"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:106
 msgid "No Installed Sites!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:112
 msgid "Edi&t"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:118
 msgid "D&one"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:121
 msgid ""
 "The Partner's Status is currently '{0}'.\r\n"
 "OpenPetra will change it automatically to '{1}'"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:125
 msgid "Partner Gets Re-activated!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:128
 msgid "Unassignable Value"
 msgstr ""
@@ -2101,7 +2101,7 @@ msgid ""
 "Please check if this is the correct one!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:63
 msgid "Multiple Mailing Addresses"
 msgstr ""
@@ -2120,27 +2120,27 @@ msgid ""
 "which you do not have."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:76
 msgid "Security Violation - Explanation"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:79
 msgid "Are you sure you want to remove this address"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:82
 msgid "from this partner?"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:85
 msgid "from the database (it is not used elsewhere)?"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:88
 msgid "Delete Address?"
 msgstr ""
@@ -2151,12 +2151,12 @@ msgid ""
 "record with this address!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:96
 msgid "Duplicate Address"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:99
 msgid ""
 " because you have added\r\n"
@@ -2176,7 +2176,7 @@ msgid ""
 "before the Valid-From date!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs:108
 msgid "Address Cannot be Expired"
 msgstr ""
@@ -6896,7 +6896,7 @@ msgstr ""
 msgid "&Worker Field..."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind-generated.cs:111
 msgid "&Personnel/Individual Data..."
 msgstr ""
@@ -7589,7 +7589,7 @@ msgstr ""
 msgid " to "
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_FamilyMembers.ManualCode.cs:58
 msgid "Family ID Change Done"
 msgstr ""
@@ -8994,10 +8994,6 @@ msgstr ""
 msgid "Promote Partner Status Change to All Family Members?"
 msgstr ""
 
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerEdit_TopPart.ManualCode.cs:829
-msgid "FDelegateMaintainWorkerField"
-msgstr ""
-
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:196
 msgid " &Search"
 msgstr ""
@@ -9018,12 +9014,12 @@ msgstr ""
 msgid "Custom Criteria Demo"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:202
 msgid "Fin&d Result"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:203
 msgid "Searching..."
 msgstr ""
@@ -9250,30 +9246,26 @@ msgid "Partner Updated:"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:370
-msgid "guages):"
+msgid "Speaks (Languages):"
 msgstr ""
 
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:371
-msgid "Speaks (Lan-"
-msgstr ""
-
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:373
+#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:372
 msgid "Person / Family"
 msgstr ""
 
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:374
+#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:373
 msgid "Family:"
 msgstr ""
 
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:376
+#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:375
 msgid "Family Members:"
 msgstr ""
 
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:377
+#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:376
 msgid "No Partner to display."
 msgstr ""
 
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:385
+#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerInfo.cs:384
 msgid "Please wait."
 msgstr ""
 
@@ -9485,7 +9477,7 @@ msgstr ""
 msgid "No e-mail address for this Partner in the selected address record."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:575
 msgid "Cannot Send E-mail To Partner"
 msgstr ""
@@ -9529,92 +9521,92 @@ msgid ""
 "RemoveRowFromFamilyMembersPromotionTable"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:37
 msgid "You have to save the Partner first, before "
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:40
 msgid "First Save the Partner"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:43
 msgid "finding a new Address"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:46
 msgid "exporting the Partner"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:49
 msgid "printing the Partner"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:52
 msgid "changing the Family"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:55
 msgid "maintaining Contacts"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:58
 msgid "deleting the Partner"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:61
 msgid "changing the Field"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:64
 msgid "maintaining Family Members"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:67
 msgid "maintaining Finance Details"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:70
 msgid "showing the Donor Gift History"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:73
 msgid "showing the Recipient Gift History"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:76
 msgid "maintaining Interests"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:79
 msgid "maintaining Individual Data"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:82
 msgid "maintaining Relationships"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:85
 msgid "maintaining Reminders"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:88
 msgid "copying an Address"
 msgstr ""
@@ -9626,7 +9618,7 @@ msgid ""
 "Choose 'Cancel' to cancel the operation that you were in."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:113
 msgid "Enter an email address"
 msgstr ""
@@ -9637,92 +9629,92 @@ msgid ""
 "usually contains a business' name)"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:120
 msgid "Enter a second line of an address (this usually contains the street)"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:123
 msgid "Enter a third line of an address (eg. district of the city)"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:126
 msgid "Enter a city or town"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:129
 msgid "Enter an international postal/zip code"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:132
 msgid "Enter a county/province/state/district/canton"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:135
 msgid "Select a country from the list or type the 2 digit code"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:138
 msgid "Enter a Location Key"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:141
 msgid " (use button to the left to find a Location Key)"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:144
 msgid "Finds a Location Key"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:147
 msgid "Restricts returned Addresses to Mailing Addresses if ticked"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:150
 msgid "Searches for a phone number or an alternate phone number"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:160
 msgid "Stopping search..."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:163
 msgid "Search stopped!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:169
 msgid "No Search Criteria Specified"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:172
 msgid "Searches the OpenPetra database with above criteria"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:175
 msgid "Clears the search criteria fields and the search result"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:178
 msgid "Accepts the selected "
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:181
 msgid "Closes the window without selecting a "
 msgstr ""
@@ -9739,17 +9731,17 @@ msgid ""
 "remote connections)."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:192
 msgid "Transferring data...    (for Page "
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:195
 msgid "found"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:198
 msgid "No"
 msgstr ""
@@ -9761,37 +9753,37 @@ msgid ""
 "Please check your search criteria or broaden your conditions!"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:208
 msgid "&Stop"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:211
 msgid "&Stop Search"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:218
 msgid "Partner+Location combination"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:224
 msgid "Partner+Location combinations"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:231
 msgid "Family &Members..."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:234
 msgid "Fa&mily..."
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:240
 msgid "&Personnel/Unit Maintenance..."
 msgstr ""
@@ -9803,12 +9795,12 @@ msgid ""
 "    {3} was changed from {4} to {5}"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\UC_PartnerInterests.cs:54
 msgid "Are you sure you want to remove the Interest {0} from the database?"
 msgstr ""
 
-#.  todoComment
+#. / <summary>todoComment</summary>
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\UC_PartnerInterests.cs:57
 msgid "Delete Interest?"
 msgstr ""
@@ -11326,8 +11318,6 @@ msgid "Payments for Conference"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\MFinance\ARConferencePayments-generated.cs:124
-msgid "eg. \"TEN,01\",\"TEN,02\""
-msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\MFinance\BalanceSheetMultiLedger-generated.cs:79
 msgid "Standard"
@@ -12659,8 +12649,6 @@ msgid "Text Preview"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\PrintPreview.cs:104
-msgid "Text Output"
-msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\PrintPreview.cs:106
 msgid ""

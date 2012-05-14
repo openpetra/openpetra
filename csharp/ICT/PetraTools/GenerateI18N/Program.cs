@@ -72,7 +72,7 @@ namespace Ict.Tools.GenerateI18N
             new TAppSettingsManager(false);
 
             //enable execution without nant -> debugging easier
-            bool independentmode = true;
+            bool independentmode = false;
 
             if (independentmode)
             {

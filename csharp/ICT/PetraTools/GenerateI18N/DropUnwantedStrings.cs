@@ -130,7 +130,7 @@ public class TDropUnwantedStrings
 
                 if(line != null)
                 {
-                    while (line.StartsWith("#."))   //take over the comments(if they exist)
+                    while (line.StartsWith("#.") && !line.Contains("todoComment"))   //take over the comments(if they exist)
                     {
                         string line_part1 = AdaptString(line, "/");
                         string line_part2 = AdaptString(line_part1, "<summary>");
@@ -173,7 +173,7 @@ public class TDropUnwantedStrings
             {
                 if(line.Contains("Maintain Month Names for Different Languages"))
                {
-                   Console.WriteLine("here");
+                  // Console.WriteLine("here");
                }
                 StringCollection OriginalLines;
                 string messageId = ParsePoLine(sr, ref line, out OriginalLines);

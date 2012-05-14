@@ -194,3 +194,9 @@ msgstr "do not translate"
 
 msgid "NEWCODE"
 msgstr "do not translate"
+
+msgid "Text Output"
+msgstr "do not translate"
+
+msgid "eg. \"TEN,01\",\"TEN,02\""
+msgstr "do not translate"
