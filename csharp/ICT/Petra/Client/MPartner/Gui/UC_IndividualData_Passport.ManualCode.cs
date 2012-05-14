@@ -5,7 +5,7 @@
 //       christiank
 //       thomasw
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        private PtPassportTypeTable FPassportTypeDT;
+        // private PtPassportTypeTable FPassportTypeDT;
         private DataColumn FPassportCountryNameColumn;
 
         #region Properties
@@ -93,8 +93,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddDateColumn("Expiration Date", FMainDS.PmPassportDetails.ColumnDateOfExpiration);
             grdDetails.AddDateColumn("Issue Date", FMainDS.PmPassportDetails.ColumnDateOfIssue);
 
-
-            FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
+            //FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);

@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Globalization;
@@ -99,8 +100,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             string CurrencySelect;
             decimal DebitTotal;  //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal CreditTotal;  //FORMAT "->>>,>>>,>>>,>>9.99"
-            string TransAmount1;  //FORMAT "X(19)"
-            string TransAmount2;  //FORMAT "X(19)"
             int Choice;
 
             string StandardCostCentre = ALedgerNumber.ToString() + "00";
@@ -112,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             //Begin the transaction
             bool NewTransaction = false;
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             try
             {
@@ -171,36 +170,23 @@ namespace Ict.Petra.Server.MFinance.ICH
                                               Currency;
 
                 //See gi3200.p ln: 170
-                string strSql = "SELECT " +
-                                "a_general_ledger_master.a_glm_sequence_i, " +
-                                "a_general_ledger_master.a_ledger_number_i, " +
-                                "a_general_ledger_master.a_year_i, " +
-                                "a_general_ledger_master.a_account_code_c, " +
-                                "a_general_ledger_master.a_cost_centre_code_c, " +
-                                "a_account.a_account_type_c " +
-                                "FROM  " +
-                                "public.a_general_ledger_master, " +
-                                "public.a_cost_centre, " +
-                                "public.a_account " +
-                                "WHERE " +
-                                "a_general_ledger_master.a_ledger_number_i = a_cost_centre.a_ledger_number_i AND " +
-                                "a_general_ledger_master.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c AND " +
-                                "a_general_ledger_master.a_ledger_number_i = a_account.a_ledger_number_i AND " +
-                                "a_general_ledger_master.a_account_code_c = a_account.a_account_code_c AND " +
-                                "a_account.a_posting_status_l = True AND " +
-                                "a_cost_centre.a_posting_cost_centre_flag_l = True AND " +
-                                "a_general_ledger_master.a_ledger_number_i = ? AND " +
-                                "a_general_ledger_master.a_year_i = ? AND " +
-                                "a_general_ledger_master.a_cost_centre_code_c = ? " +
-                                "ORDER BY " +
-                                "a_general_ledger_master.a_account_code_c ASC;";
+                //Select any gift transactions to export
+                string strSql = TDataBase.ReadSqlFile("ICH.HOSAExportGifts.sql");
 
-                DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(strSql, "table", DBTransaction,
-                    new OdbcParameter[] {
-                        new OdbcParameter("LedgerNumber", (object)ALedgerNumber),
-                        new OdbcParameter("Year", (object)LedgerRow.CurrentFinancialYear),
-                        new OdbcParameter("CostCentre", ACostCentre)
-                    });
+                OdbcParameter parameter;
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                parameter = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                parameter.Value = ALedgerNumber;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("Year", OdbcType.Int);
+                parameter.Value = LedgerRow.CurrentFinancialYear;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("CostCentre", OdbcType.VarChar);
+                parameter.Value = ACostCentre;
+                parameters.Add(parameter);
+
+                DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(strSql, "table", DBTransaction, parameters.ToArray());
 
                 foreach (DataRow untypedTransRow in TmpTable.Rows)
                 {
@@ -231,38 +217,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
 
                     /* Then see if there are any GL transactions to export */
-                    //gi3200.i
-                    strSql = "SELECT " +
-                             "  a_transaction.a_ledger_number_i, " +
-                             "  a_transaction.a_batch_number_i, " +
-                             "  a_transaction.a_journal_number_i, " +
-                             "  a_transaction.a_transaction_number_i, " +
-                             "  a_transaction.a_account_code_c, " +
-                             "  a_transaction.a_cost_centre_code_c, " +
-                             "  a_transaction.a_transaction_date_d, " +
-                             "  a_transaction.a_transaction_amount_n, " +
-                             "  a_transaction.a_amount_in_base_currency_n, " +
-                             "  a_transaction.a_amount_in_intl_currency_n, " +
-                             "  a_transaction.a_ich_number_i, " +
-                             "  a_transaction.a_system_generated_l, " +
-                             "  a_transaction.a_narrative_c " +
-                             "  a_transaction.a_debit_credit_indicator_l " +
-                             "FROM " +
-                             "  public.a_transaction, " +
-                             "  public.a_journal " +
-                             "WHERE " +
-                             "  a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i AND " +
-                             "  a_transaction.a_batch_number_i = a_journal.a_batch_number_i AND " +
-                             "  a_transaction.a_journal_number_i = a_journal.a_journal_number_i AND " +
-                             "  a_transaction.a_ledger_number_i = ? AND " +
-                             "  a_transaction.a_account_code_c = ? AND " +
-                             "  a_transaction.a_cost_centre_code_c = ? AND " +
-                             "  a_transaction.a_transaction_status_l = true AND " +
-                             "  NOT (LEFT(a_transaction.a_narrative_c, 22) = ? AND " +
-                             "       a_transaction.a_system_generated_l = true) AND " +
-                             "  ((a_transaction.a_ich_number_i + ?) = a_transaction.a_ich_number_i OR " +
-                             "   a_transaction.a_ich_number_i = ?) AND " +
-                             "  a_journal.a_journal_period_i = ?";
+                    //gi3200.i ln:33
+                    strSql = TDataBase.ReadSqlFile("ICH.HOSAExportGLTrans.sql");
 
                     DataTable TmpTransTable = DBAccess.GDBAccessObj.SelectDT(strSql, "Transactions", DBTransaction,
                         new OdbcParameter[] {
@@ -288,20 +244,24 @@ namespace Ict.Petra.Server.MFinance.ICH
                         string Narrative = untypedTransactRow[12].ToString();          //a_transaction.a_narrative_c
                         DateTime TransactionDate = Convert.ToDateTime(untypedTransactRow[6]);          //a_transaction.a_transaction_date_d
 
+                        // the following variables are not actually used anywhere at the moment
+                        // string TransAmount1;  //FORMAT "X(19)"
+                        // string TransAmount2;  //FORMAT "X(19)"
+
                         if (Choice == 1)
                         {
                             /* find transaction amount and store as debit or credit */
                             if (Debit)
                             {
                                 DebitTotal += AmountInBaseCurrency;
-                                TransAmount1 = AmountInBaseCurrency.ToString("#,##0.00");
-                                TransAmount2 = " ";
+                                // TransAmount1 = AmountInBaseCurrency.ToString("#,##0.00");
+                                // TransAmount2 = " ";
                             }
                             else
                             {
                                 CreditTotal += AmountInBaseCurrency;
-                                TransAmount2 = AmountInBaseCurrency.ToString("#,##0.00");
-                                TransAmount1 = " ";
+                                // TransAmount2 = AmountInBaseCurrency.ToString("#,##0.00");
+                                // TransAmount1 = " ";
                             }
                         }
                         else
@@ -309,14 +269,14 @@ namespace Ict.Petra.Server.MFinance.ICH
                             if (Debit)
                             {
                                 DebitTotal += AmountInIntlCurrency;
-                                TransAmount1 = AmountInIntlCurrency.ToString("#,##0.00");
-                                TransAmount2 = " ";
+                                // TransAmount1 = AmountInIntlCurrency.ToString("#,##0.00");
+                                // TransAmount2 = " ";
                             }
                             else
                             {
                                 CreditTotal += AmountInIntlCurrency;
-                                TransAmount2 = AmountInIntlCurrency.ToString("#,##0.00");
-                                TransAmount1 = " ";
+                                // TransAmount2 = AmountInIntlCurrency.ToString("#,##0.00");
+                                // TransAmount1 = " ";
                             }
                         }
 
@@ -361,6 +321,9 @@ namespace Ict.Petra.Server.MFinance.ICH
             catch (Exception)
             {
             }
+
+            // rollback the reading transaction
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
             return Successful;
         }
@@ -431,61 +394,42 @@ namespace Ict.Petra.Server.MFinance.ICH
             string LastDetail = string.Empty;
             string LastDetailDesc = string.Empty; //FORMAT "X(15)"
             string Desc = string.Empty; //FORMAT "X(44)"
-            string CurrentYearTotals = string.Empty;
+            // string CurrentYearTotals = string.Empty;
             decimal IndividualDebitTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
             decimal IndividualCreditTotal = 0; //FORMAT "->>>,>>>,>>>,>>9.99"
 
             string ExportDescription = string.Empty;
 
-            string SQLStmt = "SELECT " +
-                             "a_gift_detail.a_ledger_number_i, " +
-                             "a_gift_detail.a_batch_number_i, " +
-                             "a_gift_detail.a_gift_transaction_number_i, " +
-                             "a_gift_detail.a_detail_number_i, " +
-                             "a_gift_detail.a_gift_amount_n, " +
-                             "a_gift_detail.a_gift_amount_intl_n, " +
-                             "a_gift_detail.a_motivation_group_code_c, " +
-                             "a_gift_detail.a_motivation_detail_code_c, " +
-                             "a_gift_detail.p_recipient_key_n, " +
-                             "a_gift.a_gift_status_c, " +
-                             "a_motivation_detail.a_motivation_detail_desc_c, " +
-                             "a_gift_batch.a_batch_description_c " +
-                             "FROM " +
-                             "public.a_gift_detail, " +
-                             "public.a_gift_batch, " +
-                             "public.a_motivation_detail, " +
-                             "public.a_gift " +
-                             "WHERE " +
-                             "a_gift_detail.a_ledger_number_i = a_gift_batch.a_ledger_number_i AND " +
-                             "a_gift_detail.a_batch_number_i = a_gift_batch.a_batch_number_i AND " +
-                             "a_gift_detail.a_ledger_number_i = a_motivation_detail.a_ledger_number_i AND " +
-                             "a_gift_detail.a_motivation_group_code_c = a_motivation_detail.a_motivation_group_code_c AND " +
-                             "a_gift_detail.a_motivation_detail_code_c = a_motivation_detail.a_motivation_detail_code_c AND " +
-                             "a_gift_detail.a_ledger_number_i = a_gift.a_ledger_number_i AND " +
-                             "a_gift_detail.a_batch_number_i = a_gift.a_batch_number_i AND " +
-                             "a_gift_detail.a_gift_transaction_number_i = a_gift.a_gift_transaction_number_i AND " +
-                             "a_gift_detail.a_ledger_number_i = ? AND " +
-                             "a_gift_detail.a_cost_centre_code_c = ? AND " +
-                             "a_gift_detail.a_ich_number_i = ? AND " +
-                             "a_gift_batch.a_batch_status_c = ? AND " +
-                             "a_gift_batch.a_gl_effective_date_d >= ? AND " +
-                             "a_gift_batch.a_gl_effective_date_d <= ? AND " +
-                             "a_motivation_detail.a_account_code_c = ? " +
-                             "ORDER BY " +
-                             "a_gift_detail.p_recipient_key_n ASC, " +
-                             "a_gift_detail.a_motivation_group_code_c ASC, " +
-                             "a_gift_detail.a_motivation_detail_code_c ASC;";
+            //Export Gifts gi3200-1.i
+            //Find and total each gift transaction
+            string SQLStmt = TDataBase.ReadSqlFile("ICH.HOSAExportGiftsInner.sql");
 
-            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", ADBTransaction,
-                new OdbcParameter[] {
-                    new OdbcParameter("LedgerNumber", (object)ALedgerNumber),
-                    new OdbcParameter("CostCentre", ACostCentre),
-                    new OdbcParameter("ICHNumber", (object)AIchNumber),
-                    new OdbcParameter("BatchStatus", MFinanceConstants.BATCH_POSTED),
-                    new OdbcParameter("StartDate", APeriodStartDate),
-                    new OdbcParameter("EndDate", APeriodEndDate),
-                    new OdbcParameter("AccountCode", AAcctCode)
-                });
+            OdbcParameter parameter;
+
+            List <OdbcParameter>parameters = new List <OdbcParameter>();
+            parameter = new OdbcParameter("LedgerNumber", OdbcType.Int);
+            parameter.Value = ALedgerNumber;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("CostCentre", OdbcType.VarChar);
+            parameter.Value = ACostCentre;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("ICHNumber", OdbcType.Int);
+            parameter.Value = AIchNumber;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("BatchStatus", OdbcType.VarChar);
+            parameter.Value = MFinanceConstants.BATCH_POSTED;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("StartDate", OdbcType.DateTime);
+            parameter.Value = APeriodStartDate;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("EndDate", OdbcType.DateTime);
+            parameter.Value = APeriodEndDate;
+            parameters.Add(parameter);
+            parameter = new OdbcParameter("AccountCode", OdbcType.VarChar);
+            parameter.Value = AAcctCode;
+            parameters.Add(parameter);
+
+            DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", ADBTransaction, parameters.ToArray());
 
             foreach (DataRow untypedTransRow in TmpTable.Rows)
             {
@@ -678,7 +622,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             //Begin the transaction
             bool NewTransaction = false;
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
@@ -694,6 +638,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             try
             {
+#if TODO
                 ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
 
                 //Find the Ledger Name = Partner Short Name
@@ -701,6 +646,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 PPartnerRow PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                 string LedgerName = PartnerRow.PartnerShortName;
+#endif
 
                 //Iterate through the cost centres
                 string WhereClause = ACostCentreTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
@@ -740,13 +686,14 @@ namespace Ict.Petra.Server.MFinance.ICH
                                       " AND " + ATransactionTable.GetJournalNumberDBName() + " = " + JournalNumber.ToString() +
                                       " AND " + ATransactionTable.GetCostCentreCodeDBName() + " = '" + CostCentreCode + "'" +
                                       " AND (" + ATransactionTable.GetIchNumberDBName() + " = 0" +
-                                      "      OR " + ATransactionTable.GetIchNumberDBName() + AIchNumber.ToString() +
+                                      "      OR " + ATransactionTable.GetIchNumberDBName() + " = " + AIchNumber.ToString() +
                                       ")";
 
                         DataRow[] FoundTransRows = MainDS.ATransaction.Select(WhereClause);
 
                         foreach (DataRow untypedTransRow in FoundTransRows)
                         {
+#if TODO
                             ATransactionRow TransactionRow = (ATransactionRow)untypedTransRow;
 
                             TransactionExists = true;
@@ -775,6 +722,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                              *                               lv_report_title_c,
                              *                               lv_default_data_c).*/
                             //TODO: call code to produce reports
+#endif
                             break;
                         }
 

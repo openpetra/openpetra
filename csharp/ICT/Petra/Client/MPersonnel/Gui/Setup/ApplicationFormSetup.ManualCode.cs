@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -62,6 +63,25 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPtAppFormTypes();
+        }
+
+        private void ValidateDataDetailsManual(PtAppFormTypesRow ARow)
+        {
+            DataColumn ValidationColumn = ARow.Table.Columns[PtAppFormTypesTable.ColumnFormSentIndicatorId];
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TVerificationResult VerificationResult = TGuiChecks.ValidateCheckBoxPairIsChecked(chkDetailFormSentIndicator,
+                chkDetailFormReceivedIndicator);
+
+            if (VerificationResult != null)
+            {
+                VerificationResult =
+                    new TScreenVerificationResult(this, ValidationColumn, VerificationResult.ResultText, Catalog.GetString("Sending/Receiving"),
+                        VerificationResult.ResultCode, chkDetailFormSentIndicator, TResultSeverity.Resv_Critical);
+            }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
         }
     }
 }

@@ -41,7 +41,7 @@ RootNode:
         txtDetailCode: {Label=Driver Status Code, CharacterCasing=Upper}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         txtDetailDescription: {Width=256}
-        dtpDetailUnassignableDate: {Label=Unassignable Date}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

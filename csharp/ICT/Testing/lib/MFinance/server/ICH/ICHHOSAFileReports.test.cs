@@ -82,10 +82,10 @@ namespace Tests.MFinance.Server.ICH
         /// Test whether the code opens a text file and replaces the first line
         ///  with the specified string
         /// </summary>
-        [Test]
+        [Test, Explicit]
         public void TestFileHeaderReplace()
         {
-            string fileName = @"C:\Test.csv";
+            string fileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             int PeriodNumber = 4;
             string StandardCostCentre = "4300";
             string CostCentre = "78";
@@ -111,13 +111,16 @@ namespace Tests.MFinance.Server.ICH
             int IchNumber = 1;
             string CostCentre = "73";
             int Currency = 0;  //0 = base 1 = intl
-            string FileName = Path.GetTempPath() + @"\TestGenHOSAFile.csv";
+            string FileName = Path.GetTempPath() + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
             TVerificationResultCollection VerificationResults;
 
             TGenHOSAFilesReports.GenerateHOSAFiles(LedgerNumber, PeriodNumber, IchNumber, CostCentre, Currency, FileName, out VerificationResults);
 
             Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "Performing HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
+                "HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
+
+            Assert.IsTrue(File.Exists(FileName),
+                "HOSA File did not create!");
         }
 
         /// <summary>
@@ -145,21 +148,33 @@ namespace Tests.MFinance.Server.ICH
         public void TestExportGifts()
         {
             int LedgerNumber = FLedgerNumber;
-            string CostCentre = "73";
-            string AcctCode = "10001";
-            string MonthName = "April";
-            int PeriodNumber = 4;
-            DateTime PeriodStartDate = Convert.ToDateTime("1-Apr-2012");
-            DateTime PeriodEndDate = Convert.ToDateTime("30-Apr-2012");
+            string CostCentre = "7300";
+            string AcctCode = "0200";
+            string MonthName = "January";
+            int PeriodNumber = 1;
+            DateTime PeriodStartDate = new DateTime(2012, 1, 1);
+            DateTime PeriodEndDate = new DateTime(2012, 1, 31);
             string Base = MFinanceConstants.CURRENCY_BASE;
-            int IchNumber = 1;
+            int IchNumber = 0;
             DataTable TableForExport = new DataTable();
-
-            TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
             bool NewTransaction = false;
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            // otherwise period 1 might have been closed already
+            CommonNUnitFunctions.ResetDatabase();
+
+            // need to create gifts first
+            TStewardshipCalculationTest.ImportAndPostGiftBatch(PeriodEndDate);
+
+            //Perform stewardship calculation
+            TVerificationResultCollection VerificationResults;
+            TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
+                PeriodNumber, out VerificationResults);
+
+            //TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            VerificationResults = new TVerificationResultCollection();
 
             //Create DataTable to receive exported transactions
             TableForExport.Columns.Add("CostCentre", typeof(string));

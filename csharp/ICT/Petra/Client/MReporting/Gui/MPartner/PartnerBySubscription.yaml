@@ -68,7 +68,7 @@ RootNode:
 #        dtpExpiryDateTo:
 #            Label:  To
         ucoAddress:
-            ColSpan: 2
+#            ColSpan: 2
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting

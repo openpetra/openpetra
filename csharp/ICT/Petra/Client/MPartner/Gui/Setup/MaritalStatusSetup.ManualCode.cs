@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -78,6 +79,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 dtpDetailAssignableDate.Date = DateTime.Now.Date;
             }
+        }
+
+        private void ValidateDataDetailsManual(PtMaritalStatusRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedValidation_CacheableDataTables.ValidateMaritalStatus(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

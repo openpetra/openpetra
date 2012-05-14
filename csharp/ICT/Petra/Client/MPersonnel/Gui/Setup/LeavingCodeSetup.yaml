@@ -39,7 +39,7 @@ RootNode:
         txtDetailLeavingCodeInd: {Label=Leaving Code}
         txtDetailLeavingCodeDescr: {Label=Description, CharacterCasing=Upper, Width=288}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

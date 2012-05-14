@@ -53,7 +53,7 @@ namespace Tests.MFinance.Server.ICH
     [TestFixture]
     public class TStewardshipCalculationTest
     {
-        Int32 FLedgerNumber = -1;
+        static Int32 FLedgerNumber = 43;
 
         const string MainFeesPayableCode = "GIF2";
         const string MainFeesReceivableCode = "HO_ADMIN2";
@@ -66,7 +66,6 @@ namespace Tests.MFinance.Server.ICH
         {
             //new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
-            FLedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
         }
 
         /// <summary>
@@ -81,11 +80,13 @@ namespace Tests.MFinance.Server.ICH
         /// <summary>
         /// This will import a test gift batch, and post it.
         /// </summary>
-        public int ImportAndPostGiftBatch(DateTime AGiftDateEffective)
+        public static int ImportAndPostGiftBatch(DateTime AGiftDateEffective)
         {
             TGiftImporting importer = new TGiftImporting();
 
-            string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+            string testFile = TAppSettingsManager.GetValue("GiftBatch.file",
+                CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
 

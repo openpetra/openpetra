@@ -33,6 +33,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -74,6 +75,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 dtpDetailUnassignableDate.Date = DateTime.Now.Date;
             }
+        }
+
+        private void ValidateDataDetailsManual(PtArrivalPointRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedValidation_CacheableDataTables.ValidateArrivalDeparturePoint(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }
