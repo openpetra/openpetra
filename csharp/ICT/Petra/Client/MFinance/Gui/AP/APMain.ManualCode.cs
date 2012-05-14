@@ -212,15 +212,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdInvoiceResult.Columns.Clear();
                 grdInvoiceResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Selected"], 25, false);
-                grdInvoiceResult.AddTextColumn("AP#", FPagedDataTable.Columns[0], 55);
-                grdInvoiceResult.AddTextColumn("Inv#", FPagedDataTable.Columns[1], 90);
-                grdInvoiceResult.AddTextColumn("Supplier", FPagedDataTable.Columns[2], 240);
-                grdInvoiceResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns[4], 2);
+                grdInvoiceResult.AddTextColumn("AP#", FPagedDataTable.Columns[AApDocumentTable.GetApNumberDBName()], 55);
+                grdInvoiceResult.AddTextColumn("Inv#", FPagedDataTable.Columns[AApDocumentTable.GetDocumentCodeDBName()], 90);
+                grdInvoiceResult.AddTextColumn("Supplier", FPagedDataTable.Columns[PPartnerTable.GetPartnerShortNameDBName()], 240);
+                grdInvoiceResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns[AApDocumentTable.GetTotalAmountDBName()], 2);
                 grdInvoiceResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"], 2);
-                grdInvoiceResult.AddTextColumn("Currency", FPagedDataTable.Columns[3], 70);
-                grdInvoiceResult.AddDateColumn("Due Date", FPagedDataTable.Columns[7]);
-                grdInvoiceResult.AddTextColumn("Status", FPagedDataTable.Columns[5], 100);
-                grdInvoiceResult.AddDateColumn("Issued", FPagedDataTable.Columns[6]);
+                grdInvoiceResult.AddTextColumn("Currency", FPagedDataTable.Columns[AApSupplierTable.GetCurrencyCodeDBName()], 70);
+                grdInvoiceResult.AddDateColumn("Due Date", FPagedDataTable.Columns["DateDue"]);
+                grdInvoiceResult.AddTextColumn("Status", FPagedDataTable.Columns[AApDocumentTable.GetDocumentStatusDBName()], 100);
+                grdInvoiceResult.AddDateColumn("Issued", FPagedDataTable.Columns[AApDocumentTable.GetDateIssuedDBName()]);
                 grdInvoiceResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
 
                 grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
@@ -417,32 +417,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 else
                 {
                     FInvoiceTable = FSupplierFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
-                    FInvoiceTable.Columns.Add("DiscountMsg", typeof(string));
-                    FInvoiceTable.Columns.Add("Selected", typeof(bool));
-
-                    foreach (DataRow Row in FInvoiceTable.Rows)
-                    {
-                        Row["DiscountMsg"] = "None";
-                        Row["Selected"] = false;
-
-                        if ((Row[8].GetType() == typeof(Decimal))
-                            && (Row[9].GetType() == typeof(DateTime)))
-                        {
-                            Decimal DiscountPercent = (Decimal)Row[8];
-                            DateTime DiscountUntil = (DateTime)Row[9];
-
-                            if (DiscountUntil > DateTime.Now)
-                            {
-                                Row["DiscountMsg"] =
-                                    String.Format("{0:n0}% until {1}", DiscountPercent, TDate.DateTimeToLongDateString2(DiscountUntil));
-                            }
-                            else
-                            {
-                                Row["DiscountMsg"] = "Expired";
-                            }
-                        }
-                    }
-
                     return FInvoiceTable;
                 }
             }
@@ -768,7 +742,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         true,
                         out Verifications))
                 {
-                    System.Windows.Forms.MessageBox.Show("Ivoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                    System.Windows.Forms.MessageBox.Show("Invoice reversed to Approved status.", Catalog.GetString("Reversal"));
                     return;
                 }
                 else
