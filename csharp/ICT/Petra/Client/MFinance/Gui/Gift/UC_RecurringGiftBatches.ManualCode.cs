@@ -126,7 +126,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void DeleteRow(System.Object sender, System.EventArgs e)
         {
-            //TODO
+            // ask if the user really wants to cancel the batch
+            if (MessageBox.Show(Catalog.GetString("Do you really want to cancel this recurring gift batch?"),
+                    Catalog.GetString("Confirm cancelling of Recurring Gift Batch"),
+                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            FPreviouslySelectedDetailRow.Delete();
+
+            FPetraUtilsObject.SetChangedFlag();
+            grdDetails.Refresh();
+
+            if (grdDetails.Rows.Count <= 1)
+            {
+                FPreviouslySelectedDetailRow = null;
+                // hide details part and disable buttons if no record in grid (first row for headings)
+                btnDelete.Enabled = false;
+            }
+            else
+            {
+            	FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+				ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            
+            //grdDetails.Selection.ResetSelection(false);
+            //grdDetails.Selection.SelectRow(1, true);
+            //FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+
+
         }
 
         private void Submit(System.Object sender, System.EventArgs e)

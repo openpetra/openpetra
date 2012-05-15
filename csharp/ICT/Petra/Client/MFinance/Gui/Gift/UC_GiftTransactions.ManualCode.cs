@@ -122,11 +122,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                //txtDetailCostCentreCode.Text
-
                 if (!FInKeyMinistryChanging)
                 {
-                    TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
+                    //
+                	TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
 
                     long FieldNumber = Convert.ToInt64(txtField.Text);
 
@@ -201,16 +200,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
             TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
+            RetrieveMotivationDetailAccountCode();
         }
 
-        private void MotivationDetailChanged(object sender, EventArgs e)
+		/// <summary>
+		/// To be called on the display of a new record
+		/// </summary>
+        private void RetrieveMotivationDetailAccountCode()
         {
-            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                new object[] { FLedgerNumber, cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString() });
+            string MotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            string MotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+            string AcctCode = string.Empty;
+        	
+        	AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
 
             if (motivationDetail != null)
             {
-                txtDetailAccountCode.Text = motivationDetail.AccountCode;
+            	AcctCode = motivationDetail.AccountCode.ToString();
+            }
+			
+            txtDetailAccountCode.Text = AcctCode;
+        }
+        
+        private void MotivationDetailChanged(object sender, EventArgs e)
+        {
+            string MotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            string MotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+        	
+        	AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
+
+            if (motivationDetail != null)
+            {
+            	RetrieveMotivationDetailAccountCode();
 
                 // TODO: calculation of cost centre also depends on the recipient partner key; can be a field key or ministry key, or determined by pm_staff_data: foreign cost centre
                 if (motivationDetail.CostCentreCode.EndsWith("S"))
@@ -226,6 +249,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 //                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
 //                }
             }
+            
+            long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            
+			TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, PartnerKey);
+
+            long FieldNumber = Convert.ToInt64(txtField.Text);
+
+            txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
+
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -403,6 +435,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
                 grdDetails.Refresh();
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                //RetrieveMotivationDetailAccountCode();
             }
         }
 
@@ -492,6 +525,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
                 grdDetails.Refresh();
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                RetrieveMotivationDetailAccountCode();
             }
         }
 
@@ -638,8 +672,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // this is a special case - normally these lines would be produced by the generator
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
-
-            if (giftRow.IsMethodOfGivingCodeNull())
+            
+			if (giftRow.IsMethodOfGivingCodeNull())
             {
                 cmbDetailMethodOfGivingCode.SelectedIndex = -1;
             }

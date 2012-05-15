@@ -107,6 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FinRecipientKeyChanging = true;
             FPetraUtilsObject.SuppressChangeDetection = true;
+            
             try
             {
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
@@ -125,6 +126,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     //...this does not work as expected, because the timer fires valuechanged event after this value is reset
                     TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
+
+                    long FieldNumber = Convert.ToInt64(txtField.Text);
+
+                    txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
                 }
             }
             finally
@@ -195,6 +200,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
             TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
+            RetrieveMotivationDetailAccountCode();
+        }
+
+        /// <summary>
+		/// To be called on the display of a new record
+		/// </summary>
+        private void RetrieveMotivationDetailAccountCode()
+        {
+            string MotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            string MotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+            string AcctCode = string.Empty;
+        	
+        	AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
+
+            if (motivationDetail != null)
+            {
+            	AcctCode = motivationDetail.AccountCode.ToString();
+            }
+			
+            txtDetailAccountCode.Text = AcctCode;
         }
 
         private void MotivationDetailChanged(object sender, EventArgs e)
@@ -213,11 +239,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     // TODO: allow to select the cost centre here, which reports to the motivation cost centre
                     //txtDetailCostCentreCode.Text =
                 }
-                else
-                {
-                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
-                }
+				//Wrong
+//                else
+//                {
+//                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
+//                }
             }
+            
+            long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            
+			TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, PartnerKey);
+
+            long FieldNumber = Convert.ToInt64(txtField.Text);
+
+            txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -508,6 +543,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailGiftAmount.CurrencySymbol = batchRow.CurrencyCode;
             }
 
+            //----Set Cost Centre Code
+            long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, PartnerKey);
+
+            long FieldNumber = Convert.ToInt64(txtField.Text);
+            
+            txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
+            //----
+            
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfPaymentCode, Catalog.GetString("Enter the method of payment"));
             FPetraUtilsObject.SetStatusBarText(txtDetailReference, Catalog.GetString("Enter a reference code."));
@@ -640,7 +685,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GetDetailDataFromControlsManual(ARecurringGiftDetailRow ARow)
         {
-            //ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+            //Not present in recurring gifts details table
+        	//ARow.CostCentreCode = txtDetailCostCentreCode.Text;
 
             if (ARow.DetailNumber != 1)
             {
