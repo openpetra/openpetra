@@ -107,8 +107,8 @@ namespace Ict.Common.Data
             int[] APrimKeyColumnOrdList,
             DataRow ADataRow,
             DB.TDBTransaction ATransaction,
-            ref DateTime AModificationID,
-            ref String AModifiedBy,
+            out DateTime AModificationID,
+            out String AModifiedBy,
             out System.DateTime AModifiedDate)
         {
             Int32 Counter;
@@ -139,10 +139,17 @@ namespace Ict.Common.Data
 
             Counter = 0;
 
+            DataRowVersion WhichVersion = DataRowVersion.Original;
+
+            if (ADataRow.RowState == DataRowState.Added)
+            {
+                WhichVersion = DataRowVersion.Current;
+            }
+
             foreach (int i in APrimKeyColumnOrdList)
             {
-                Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, DataRowVersion.Original]);
-                Parameters[Counter].Value = ADataRow[i, DataRowVersion.Original];
+                Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, WhichVersion]);
+                Parameters[Counter].Value = ADataRow[i, WhichVersion];
                 Counter = Counter + 1;
             }
 
@@ -191,6 +198,22 @@ namespace Ict.Common.Data
                     Columns,
                     ADataRow), ATransaction, false,
                 GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser));
+
+            int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
+            DateTime LastModificationId;
+            string LastModifiedBy;
+            DateTime LastModifiedDate;
+
+            GetStoredModification(ATableId,
+                Columns,
+                PrimKeyColumnOrdList,
+                ADataRow,
+                ATransaction,
+                out LastModificationId,
+                out LastModifiedBy,
+                out LastModifiedDate);
+
+            ADataRow[MODIFICATION_ID] = LastModificationId;
         }
 
         /// <summary>
@@ -219,9 +242,8 @@ namespace Ict.Common.Data
                 // the database has a different modification id on that row.
                 // trying now the other way
 
-                DateTime LastModificationId = DateTime.MinValue;
-                String LastModifiedBy = "";
-
+                DateTime LastModificationId;
+                String LastModifiedBy;
                 System.DateTime LastModifiedDate;
                 DateTime OriginalModificationID;
                 DateTime CurrentModificationID;
@@ -232,8 +254,8 @@ namespace Ict.Common.Data
                     PrimKeyColumnOrdList,
                     ADataRow,
                     ATransaction,
-                    ref LastModificationId,
-                    ref LastModifiedBy,
+                    out LastModificationId,
+                    out LastModifiedBy,
                     out LastModifiedDate);
 
                 if (LastModificationId != MODIFICATION_ID_DELETEDROW_INDICATOR)
@@ -304,6 +326,17 @@ namespace Ict.Common.Data
                         "",
                         DateTime.MinValue);
                 }
+
+                GetStoredModification(ATableId,
+                    Columns,
+                    PrimKeyColumnOrdList,
+                    ADataRow,
+                    ATransaction,
+                    out LastModificationId,
+                    out LastModifiedBy,
+                    out LastModifiedDate);
+
+                ADataRow[MODIFICATION_ID] = LastModificationId;
             }
         }
 
@@ -317,13 +350,12 @@ namespace Ict.Common.Data
             DataRow ADataRow,
             DB.TDBTransaction ATransaction)
         {
-            DateTime LastModificationId = DateTime.MinValue;
-            String LastModifiedBy = "";
-
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
             int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
             string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
 
+            DateTime LastModificationId;
+            String LastModifiedBy = "";
             System.DateTime LastModifiedDate;
 
             // check if modification id of the changed row is the same as currently stored in the database
@@ -332,8 +364,8 @@ namespace Ict.Common.Data
                 PrimKeyColumnOrdList,
                 ADataRow,
                 ATransaction,
-                ref LastModificationId,
-                ref LastModifiedBy,
+                out LastModificationId,
+                out LastModifiedBy,
                 out LastModifiedDate);
 
             // check the modification ID (if the row was already there in the base database, it will have no modification ID, NULL)
