@@ -266,15 +266,6 @@ namespace Ict.Common.Data
                             ADataRow[MODIFICATION_ID] = LastModificationId;
                             CurrentModificationID = LastModificationId;
                         }
-                        else
-                        {
-                            // it is safe to store the record, but the Postgresql Timestamp is more detailed than System.DateTime;
-                            // we could use the data type NpgsqlTimestamp instead, but would have problems with Mysql/Sqlite;
-                            TLogging.Log(
-                                "PostgreSQL has problems comparing timestamps... " + CurrentModificationID.ToString() + " " +
-                                LastModificationId.ToString());
-                            ADataRow[MODIFICATION_ID] = DBNull.Value;
-                        }
                     }
 
                     // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
@@ -1446,7 +1437,11 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
                 }
 
-                if (!ADataRow.IsNull(MODIFICATION_ID))
+                if (ADataRow.IsNull(MODIFICATION_ID))
+                {
+                    ReturnValue += " AND " + MODIFICATION_ID + " IS NULL";
+                }
+                else
                 {
                     ReturnValue += " AND " + MODIFICATION_ID + " = ?";
                 }
