@@ -14,7 +14,6 @@ RootNode:
         actNew: {Label=New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}      
         actImport: {Label=&Import, ActionClick=ImportBudget}      
-        actExport: {Label=E&xport, ActionClick=ExportBudget}      
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlFilter]
@@ -25,7 +24,7 @@ RootNode:
                 Row0: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete, btnImport, btnExport]
+            Controls: [btnNew, btnDelete, btnImport]
         pnlFilter:
             Dock: Bottom
             Controls:
@@ -44,8 +43,6 @@ RootNode:
             Action: actDelete
         btnImport:
             Action: actImport
-        btnExport:
-            Action: actExport
         grdDetails:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]

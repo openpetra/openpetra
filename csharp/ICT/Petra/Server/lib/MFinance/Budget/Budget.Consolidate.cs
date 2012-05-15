@@ -88,7 +88,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AConsolidateAll"></param>
         /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+        /// <returns>false (always!)</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll,
             out TVerificationResultCollection AVerificationResult)
@@ -103,7 +103,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string CurrentGLMAccountCode;
             int CurrentGLMSequence;
 
-
+            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out IsMyOwnTransaction);
             AVerificationResult = null;
 
             //Create the temp table
@@ -125,6 +126,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     BudgetRow.BudgetStatus = false;
                     BudgetRow.EndEdit();
                 }
+                ABudgetAccess.SubmitChanges(BudgetTable, SubmitChangesTransaction, out AVerificationResult);
 
                 for (int i = 0; i <= 1; i++)
                 {
@@ -188,14 +190,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 }
             }
 
-            FinishConsolidateBudget(ALedgerNumber, ref PeriodDataTempTable, ref BudgetTable);
-
-            //Check for any unclosed transactions
-            if (DBAccess.GDBAccessObj.Transaction != null)
+            FinishConsolidateBudget(ALedgerNumber, ref PeriodDataTempTable, ref BudgetTable, SubmitChangesTransaction, out AVerificationResult);
+            if (IsMyOwnTransaction)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
-
             return retVal;
         }
 
@@ -205,14 +204,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APeriodDataTable"></param>
         /// <param name="ABudgetTable"></param>
-        private static void FinishConsolidateBudget(int ALedgerNumber, ref DataTable APeriodDataTable, ref ABudgetTable ABudgetTable)
+        /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
+        private static void FinishConsolidateBudget(int ALedgerNumber, 
+            ref DataTable APeriodDataTable, ref ABudgetTable ABudgetTable, 
+            TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
             decimal IntlExchangeRate;
             int PreviousSequence = 0;
             int CurrentSequence;
-
-            bool NewTransaction = false;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            AVerificationResult = null;
 
             if (TExchangeRateTools.GetLatestIntlCorpExchangeRate(ALedgerNumber, out IntlExchangeRate))
             {
@@ -232,7 +233,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         PreviousSequence = CurrentSequence;
                     }
 
-                    GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(PreviousSequence, Convert.ToInt32(DR.ItemArray[1]), transaction);
+                    GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(PreviousSequence, Convert.ToInt32(DR.ItemArray[1]), ATransaction);
                     GLMPRow = (AGeneralLedgerMasterPeriodRow)GLMPTable.Rows[0];
 
                     GLMPRow.BeginEdit();
@@ -240,6 +241,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     GLMPRow.BudgetIntl = Math.Round(Convert.ToDecimal(DR.ItemArray[2]) / IntlExchangeRate);
                     GLMPRow.EndEdit();
                 }
+                AGeneralLedgerMasterPeriodAccess.SubmitChanges(GLMPTable, ATransaction, out AVerificationResult);
 
                 ABudgetRow BudgetRow = null;
 
@@ -251,16 +253,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     BudgetRow.BudgetStatus = true;
                     BudgetRow.EndEdit();
                 }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                ABudgetAccess.SubmitChanges(ABudgetTable, ATransaction, out AVerificationResult);
             }
         }
 
         /// <summary>
-        /// Return the budget amount from the temp table wtPeriodData.
+        /// Return the budget amount from the temp table APeriodDataTable.
         ///   if the record is not already in the temp table, it is fetched
         /// </summary>
         /// <param name="APeriodDataTable"></param>
@@ -308,7 +306,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="APeriodDataTable"></param>
         /// <param name="ABudgetRow"></param>
         /// <param name="ALedgerNumber"></param>
-        /// <returns></returns>
+        /// <returns>true if it seemed to go OK</returns>
         private static bool UnPostBudget(ref DataTable APeriodDataTable, ref ABudgetRow ABudgetRow, int ALedgerNumber)
         {
             decimal[] TempAmountsThisYear = new decimal[19];                 // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
@@ -380,6 +378,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 if (BudgetValueExists)
                 {
                     ABudgetPeriodTable BPT = ABudgetPeriodAccess.LoadViaABudget(ABudgetRow.BudgetSequence, null);
+                    bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+                    TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out IsMyOwnTransaction);
+                    TVerificationResultCollection VerificationResult = null;
 
                     for (int i = 0; i < BPT.Count; i++)
                     {
@@ -392,6 +393,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         BPR.BudgetNextYear = -1 * GetBudgetValue(ref APeriodDataTable, GLMSequenceNextYear, BPR.PeriodNumber);
                         BPR.EndEdit();
                     }
+                    ABudgetPeriodAccess.SubmitChanges(BPT, SubmitChangesTransaction, out VerificationResult);
 
                     /* post the negative budget, which will result in an empty a_glm_period.budget */
                     PostBudget(ref APeriodDataTable, ref ABudgetRow, ALedgerNumber);
@@ -407,6 +409,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         BPR.BudgetThisYear = TempAmountsThisYear[BPR.PeriodNumber];
                         BPR.BudgetNextYear = TempAmountsNextYear[BPR.PeriodNumber];
                         BPR.EndEdit();
+                    }
+                    ABudgetPeriodAccess.SubmitChanges(BPT, SubmitChangesTransaction, out VerificationResult);
+                    if (IsMyOwnTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
                     }
                 }
 
@@ -475,9 +482,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             AAccountHierarchyDetailTable AccountHierarchyDetailTable = null;
             AAccountHierarchyDetailRow AccountHierarchyDetailRow = null;
 
-            //bool NewTransaction = false;
-            //TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
             //Locate the row for the current account
             GLBatchTDS GLBatchDS = new GLBatchTDS();
 
@@ -515,7 +519,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 }
 
                 /* If the account has the same db/cr indicator as the original
-                 *          account for which the budget was created, add the budget amount.
+                 *         account for which the budget was created, add the budget amount.
                  *         Otherwise, subtract. */
                 if (AccountRow.DebitCreditIndicator = ADebitCreditIndicator)
                 {
@@ -581,7 +585,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string CostCentreList = ACurrentCostCentreList;
 
             bool NewTransaction = false;
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             GLBatchTDS GLBatchDS = new GLBatchTDS();
 
