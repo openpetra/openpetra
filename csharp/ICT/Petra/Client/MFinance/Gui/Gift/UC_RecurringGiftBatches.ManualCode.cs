@@ -151,6 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 btnDelete.Enabled = false;
             	FPreviouslySelectedDetailRow = null;
+            	ClearControls();
             }
 
 //            if (grdDetails.Rows.Count <= 1)
@@ -172,7 +173,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             
         }
-
+        
+        private void ClearControls()
+        {
+        	txtDetailBatchDescription.Clear();
+        	txtDetailHashTotal.NumberValueDecimal = 0;
+        	cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+        }
+        
         private void Submit(System.Object sender, System.EventArgs e)
         {
             if (FPreviouslySelectedDetailRow == null)

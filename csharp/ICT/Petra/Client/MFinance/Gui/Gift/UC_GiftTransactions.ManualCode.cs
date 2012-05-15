@@ -136,6 +136,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FinRecipientKeyChanging = false;
                 FPetraUtilsObject.SuppressChangeDetection = false;
+                if (APartnerKey == 0)
+                {
+                	txtDetailCostCentreCode.Text = string.Empty;
+                }
             }
         }
 
@@ -423,6 +427,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 	            ShowDetails(FPreviouslySelectedDetailRow);
             }
+            else
+            {
+            	ClearControls();
+            }
 
 
             //Select first row
@@ -432,6 +440,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 //            }
         }
 
+        
+        private void ClearControls()
+        {
+        	txtDetailDonorKey.Text = string.Empty;
+        	txtDetailReference.Clear();
+        	dtpDateEntered.Clear();
+        	txtGiftTotal.NumberValueDecimal = 0;
+        	txtDetailGiftTransactionAmount.NumberValueDecimal = 0;
+        	txtDetailRecipientKey.Text = string.Empty;
+        	txtField.Text = string.Empty;
+        	txtDetailAccountCode.Clear();
+        	txtDetailGiftCommentOne.Clear();
+        	txtDetailGiftCommentTwo.Clear();
+        	txtDetailGiftCommentThree.Clear();
+        	cmbDetailReceiptLetterCode.SelectedIndex = -1;
+        	cmbDetailMotivationGroupCode.SelectedIndex = -1;
+        	cmbDetailCommentOneType.SelectedIndex = -1;
+        	cmbDetailCommentTwoType.SelectedIndex = -1;
+        	cmbDetailCommentThreeType.SelectedIndex = -1;
+        	cmbDetailMailingCode.SelectedIndex = -1;
+        	cmbDetailMethodOfGivingCode.SelectedIndex = -1;
+        	cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+        	cmbMinistry.SelectedIndex = -1;
+        	txtDetailCostCentreCode.Text = string.Empty;
+        }
+
+
+        
         /// <summary>
         /// add a new gift
         /// </summary>
@@ -647,6 +683,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtBatchStatus.Text = batchRow.BatchStatus;
             }
 
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            {
+            	txtDetailCostCentreCode.Text = string.Empty;
+            }
+
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfPaymentCode, Catalog.GetString("Enter the method of payment"));
             FPetraUtilsObject.SetStatusBarText(txtDetailReference, Catalog.GetString("Enter a reference code."));
@@ -677,6 +718,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailDonorKey.Text = ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey.ToString();
             }
 
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            {
+            	
+            	txtDetailCostCentreCode.Text = string.Empty;
+            }
+            
             UpdateControlsProtection(ARow);
 
             ShowDetailsForGift(ARow);

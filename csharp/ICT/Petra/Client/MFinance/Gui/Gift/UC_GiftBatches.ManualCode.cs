@@ -271,8 +271,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
             	FPreviouslySelectedDetailRow = null;
+            	ClearControls();
             }
 
+        }
+
+		private void ClearControls()
+        {
+        	txtDetailBatchDescription.Clear();
+        	txtDetailHashTotal.NumberValueDecimal = 0;
+        	dtpDetailGlEffectiveDate.Clear();
+        	cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
 
         private void PostBatch(System.Object sender, EventArgs e)

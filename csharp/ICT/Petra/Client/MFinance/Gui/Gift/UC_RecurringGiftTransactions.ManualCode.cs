@@ -136,6 +136,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FinRecipientKeyChanging = false;
                 FPetraUtilsObject.SuppressChangeDetection = false;
+                if (APartnerKey == 0)
+                {
+                	txtDetailCostCentreCode.Text = string.Empty;
+                }
+
             }
         }
 
@@ -425,13 +430,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                //btnDelete.Enabled = false;
+            	ClearControls();
+            	//btnDelete.Enabled = false;
             	//FPreviouslySelectedDetailRow = null;
             }
 
             
         }
 
+        private void ClearControls()
+        {
+        	txtDetailDonorKey.Text = string.Empty;
+        	txtDetailReference.Clear();
+        	txtGiftTotal.NumberValueDecimal = 0;
+        	txtDetailGiftAmount.NumberValueDecimal = 0;
+        	dtpStartDonations.Clear();
+        	dtpEndDonations.Clear();
+        	txtDetailRecipientKey.Text = string.Empty;
+        	txtField.Text = string.Empty;
+        	txtDetailAccountCode.Clear();
+        	txtDetailGiftCommentOne.Clear();
+        	txtDetailGiftCommentTwo.Clear();
+        	txtDetailGiftCommentThree.Clear();
+        	cmbDetailReceiptLetterCode.SelectedIndex = -1;
+        	cmbDetailMotivationGroupCode.SelectedIndex = -1;
+        	cmbDetailCommentOneType.SelectedIndex = -1;
+        	cmbDetailCommentTwoType.SelectedIndex = -1;
+        	cmbDetailCommentThreeType.SelectedIndex = -1;
+        	cmbDetailMailingCode.SelectedIndex = -1;
+        	cmbDetailMethodOfGivingCode.SelectedIndex = -1;
+        	cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+        	cmbMinistry.SelectedIndex = -1;
+        	txtDetailCostCentreCode.Text = string.Empty;
+        }
+
+        
         /// <summary>
         /// add a new gift
         /// </summary>
@@ -593,6 +626,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
             txtDetailDonorKey.Text = ((RecurringGiftBatchTDSARecurringGiftDetailRow)ARow).DonorKey.ToString();
 
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            {
+            	txtDetailCostCentreCode.Text = string.Empty;
+            }
 
             UpdateControlsProtection(ARow);
 
@@ -605,6 +642,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // this is a special case - normally these lines would be produced by the generator
             ARecurringGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            {
+            	txtDetailCostCentreCode.Text = string.Empty;
+            }
 
             if (giftRow.IsActiveNull())
             {
