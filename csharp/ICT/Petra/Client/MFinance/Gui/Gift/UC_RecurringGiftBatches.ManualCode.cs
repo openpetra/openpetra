@@ -139,23 +139,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.SetChangedFlag();
             grdDetails.Refresh();
 
-            if (grdDetails.Rows.Count <= 1)
+            
+            if (grdDetails.Rows.Count > 1)
             {
-                FPreviouslySelectedDetailRow = null;
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
+		        grdDetails.Selection.ResetSelection(false);
+	        	grdDetails.Selection.SelectRow(1, true);
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
             }
             else
             {
-            	FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-				ShowDetails(FPreviouslySelectedDetailRow);
+                btnDelete.Enabled = false;
+            	FPreviouslySelectedDetailRow = null;
             }
+
+//            if (grdDetails.Rows.Count <= 1)
+//            {
+//                FPreviouslySelectedDetailRow = null;
+//                // hide details part and disable buttons if no record in grid (first row for headings)
+//                btnDelete.Enabled = false;
+//            }
+//            else
+//            {
+//				//SelectDetailRowByDataTableIndex(0);
+//            	FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+//				ShowDetails(FPreviouslySelectedDetailRow);
+//            }
             
             //grdDetails.Selection.ResetSelection(false);
             //grdDetails.Selection.SelectRow(1, true);
             //FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
 
-
+            
         }
 
         private void Submit(System.Object sender, System.EventArgs e)

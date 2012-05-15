@@ -260,6 +260,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
             FPetraUtilsObject.SetChangedFlag();
             grdDetails.Refresh();
+            
+            if (grdDetails.Rows.Count > 1)
+            {
+		        grdDetails.Selection.ResetSelection(false);
+	        	grdDetails.Selection.SelectRow(1, true);
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+            	FPreviouslySelectedDetailRow = null;
+            }
+
         }
 
         private void PostBatch(System.Object sender, EventArgs e)

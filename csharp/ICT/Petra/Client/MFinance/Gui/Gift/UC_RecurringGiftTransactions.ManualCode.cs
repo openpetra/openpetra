@@ -409,6 +409,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
             grdDetails.Refresh();
+            
+            //Select first row
+//            if (grdDetails.Rows.Count > 1)
+//            {
+//            	SelectDetailRowByDataTableIndex(0);
+//            }
+
+            if (grdDetails.Rows.Count > 1)
+            {
+		        grdDetails.Selection.ResetSelection(false);
+	        	grdDetails.Selection.SelectRow(1, true);
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                //btnDelete.Enabled = false;
+            	//FPreviouslySelectedDetailRow = null;
+            }
+
+            
         }
 
         /// <summary>
