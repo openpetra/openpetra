@@ -266,6 +266,15 @@ namespace Ict.Common.Data
                             ADataRow[MODIFICATION_ID] = LastModificationId;
                             CurrentModificationID = LastModificationId;
                         }
+                        else
+                        {
+                            // it is safe to store the record, but the Postgresql Timestamp is more detailed than System.DateTime;
+                            // we could use the data type NpgsqlTimestamp instead, but would have problems with Mysql/Sqlite;
+                            TLogging.Log(
+                                "PostgreSQL has problems comparing timestamps... " + CurrentModificationID.ToString() + " " +
+                                LastModificationId.ToString());
+                            ADataRow[MODIFICATION_ID] = DBNull.Value;
+                        }
                     }
 
                     // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
@@ -285,11 +294,16 @@ namespace Ict.Common.Data
                             LastModifiedDate);
                     }
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+                    int RowsChanged = DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                             Columns,
                             ADataRow,
                             PrimKeyColumnOrdList), ATransaction, false,
                         GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
+
+                    if (RowsChanged == 0)
+                    {
+                        throw new Exception("cannot UPDATE row due to problems most likely with the timestamp");
+                    }
                 }
                 else
                 {
@@ -1432,11 +1446,7 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
                 }
 
-                if (ADataRow.IsNull(MODIFICATION_ID))
-                {
-                    ReturnValue += " AND " + MODIFICATION_ID + " IS NULL";
-                }
-                else
+                if (!ADataRow.IsNull(MODIFICATION_ID))
                 {
                     ReturnValue += " AND " + MODIFICATION_ID + " = ?";
                 }
