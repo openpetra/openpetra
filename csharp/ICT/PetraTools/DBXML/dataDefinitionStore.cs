@@ -292,7 +292,7 @@ namespace Ict.Tools.DBXML
             if (ReturnValue == null)
             {
                 // should be disabled for creating the diff between two Petra versions.
-                if ((GEnabledLoggingMissingFields) && (s != "s_modification_id_c") && AShowWarningNonExistingField)
+                if ((GEnabledLoggingMissingFields) && (s != "s_modification_id_t") && AShowWarningNonExistingField)
                 {
                     System.Console.WriteLine("Warning: TTable.GetField: cannot find field " + strName + '.' + s);
                 }
@@ -670,13 +670,10 @@ namespace Ict.Tools.DBXML
             }
 
             field = new TTableField();
-            field.strName = "s_modification_id_c";
+            field.strName = "s_modification_id_t";
             field.strTableName = this.strName;
-            field.strType = "varchar";
+            field.strType = "timestamp";
             field.strDescription = "This identifies the current version of the record.";
-            field.strFormat = "X(150)";
-            field.iLength = 150;
-            field.iCharLength = 150;
             field.bNotNull = false;
             field.iOrder = grpTableField.Count;
             grpTableField.Add(field);
@@ -1117,6 +1114,10 @@ namespace Ict.Tools.DBXML
                 return "Int64";
             }
             else if (strType.ToLower() == "datetime")
+            {
+                return "DateTime";
+            }
+            else if (strType.ToLower() == "timestamp")
             {
                 return "DateTime";
             }

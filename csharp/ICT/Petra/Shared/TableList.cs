@@ -398,8 +398,6 @@ namespace Ict.Petra.Shared
             list.Add("seq_foundation_proposal");
             list.Add("seq_proposal_detail");
             list.Add("seq_form_letter_insert");
-            list.Add("seq_modification1");
-            list.Add("seq_modification2");
             list.Add("seq_workflow");
             list.Add("seq_file_info");
             list.Add("seq_person_skill");

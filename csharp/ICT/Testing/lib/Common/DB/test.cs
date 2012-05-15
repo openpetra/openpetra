@@ -153,21 +153,5 @@ namespace Ict.Common.DB.Testing
             Int64 NextSequenceAfterReset = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_statement_number", t);
             Assert.AreEqual(CurrentSequence + 1, NextSequenceAfterReset, "after reset we don't want the previous last sequence number to be repeated");
         }
-
-        /// test of sequences speed
-        [Test]
-        public void TestMassSequence()
-        {
-            TDBTransaction t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            DateTime before = DateTime.Now;
-
-            for (int i = 0; i < 10000; i++)
-            {
-                TTypedDataAccess.GetNextModificationID(t);
-            }
-
-            TLogging.Log("TestMassSequence takes " + DateTime.Now.Subtract(before).ToString());
-        }
     }
 }
