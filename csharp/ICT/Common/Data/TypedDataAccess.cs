@@ -188,32 +188,39 @@ namespace Ict.Common.Data
         /// <returns>void</returns>
         public static void InsertRow(
             short ATableId,
+            bool AThrowAwayAfterSubmitChanges,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
         {
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
-            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId),
                     Columns,
                     ADataRow), ATransaction, false,
-                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser));
+                    GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser)))
+            {
+                throw new Exception("problems inserting a row");
+            }
 
-            int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
-            DateTime LastModificationId;
-            string LastModifiedBy;
-            DateTime LastModifiedDate;
+            if (!AThrowAwayAfterSubmitChanges)
+            {
+                DateTime LastModificationId;
+                string LastModifiedBy;
+                DateTime LastModifiedDate;
+                int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
 
-            GetStoredModification(ATableId,
-                Columns,
-                PrimKeyColumnOrdList,
-                ADataRow,
-                ATransaction,
-                out LastModificationId,
-                out LastModifiedBy,
-                out LastModifiedDate);
+                GetStoredModification(ATableId,
+                    Columns,
+                    PrimKeyColumnOrdList,
+                    ADataRow,
+                    ATransaction,
+                    out LastModificationId,
+                    out LastModifiedBy,
+                    out LastModifiedDate);
 
-            ADataRow[MODIFICATION_ID] = LastModificationId;
+                ADataRow[MODIFICATION_ID] = LastModificationId;
+            }
         }
 
         /// <summary>
@@ -223,6 +230,7 @@ namespace Ict.Common.Data
         /// <returns>void</returns>
         public static void UpdateRow(
             short ATableId,
+            bool AThrowAwayAfterSubmitChanges,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
@@ -230,6 +238,9 @@ namespace Ict.Common.Data
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
             int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
             string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
+            DateTime LastModificationId;
+            String LastModifiedBy;
+            System.DateTime LastModifiedDate;
 
             // First try to update with a where clause with the modification id
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
@@ -242,9 +253,6 @@ namespace Ict.Common.Data
                 // the database has a different modification id on that row.
                 // trying now the other way
 
-                DateTime LastModificationId;
-                String LastModifiedBy;
-                System.DateTime LastModifiedDate;
                 DateTime OriginalModificationID;
                 DateTime CurrentModificationID;
 
@@ -326,7 +334,10 @@ namespace Ict.Common.Data
                         "",
                         DateTime.MinValue);
                 }
+            }
 
+            if (!AThrowAwayAfterSubmitChanges)
+            {
                 GetStoredModification(ATableId,
                     Columns,
                     PrimKeyColumnOrdList,
@@ -2076,7 +2087,7 @@ namespace Ict.Common.Data
                             }
                         }
 
-                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId);
+                        TTypedDataAccess.InsertRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
                     }
                     else
                     {
@@ -2093,7 +2104,7 @@ namespace Ict.Common.Data
                             }
                             else
                             {
-                                TTypedDataAccess.UpdateRow(TableId, ref TheRow, ATransaction, AUserId);
+                                TTypedDataAccess.UpdateRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
                             }
                         }
 

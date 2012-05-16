@@ -613,7 +613,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         if (IsSuccessful)
                         {
-                            IsSuccessful = TGLPosting.PostGLBatch(MainDS, ALedgerNumber, GLBatchNumber, DBTransaction, out AVerificationResult);
+                            IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(MainDS, out AVerificationResult));
+
+                            if (IsSuccessful)
+                            {
+                                IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
+                            }
                         }
                     }
                     else
@@ -1109,8 +1114,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         //Post the batch just created
 
-                        /*RUN gl1210.p (pvedgerumber,lv_gl_batch_number,TRUE,OUTPUT IsSuccessful).*/
-                        IsSuccessful = TGLPosting.PostGLBatch(AdminFeeDS, ALedgerNumber, AdminFeeBatch.BatchNumber, ADBTransaction, out Verification);
+                        IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(AdminFeeDS, out Verification));
+
+                        if (IsSuccessful)
+                        {
+                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AdminFeeBatch.BatchNumber, out Verification);
+                        }
 
                         if (IsSuccessful)
                         {

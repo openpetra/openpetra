@@ -197,6 +197,30 @@ namespace Ict.Common.Data
         /// </summary>
         public abstract void InitVars();
 
+        private bool FThrowAwayAfterSubmitChanges = false;
+
+        /// <summary>
+        /// if you want the dataset to be cleared after submitchanges.
+        /// This will increase the speed significantly: no updating of modificationID, no slow AcceptChanges.
+        /// </summary>
+        public bool ThrowAwayAfterSubmitChanges
+        {
+            set
+            {
+                FThrowAwayAfterSubmitChanges = value;
+
+                foreach (TTypedDataTable table in this.Tables)
+                {
+                    table.ThrowAwayAfterSubmitChanges = value;
+                }
+            }
+
+            get
+            {
+                return FThrowAwayAfterSubmitChanges;
+            }
+        }
+
         /// <summary>
         /// default constructor
         /// </summary>
@@ -745,6 +769,8 @@ namespace Ict.Common.Data
 
             ds.InitVars();
             ds.MapTables();
+
+            ds.ThrowAwayAfterSubmitChanges = ThrowAwayAfterSubmitChanges;
 
             // need to copy over the enabled/disabled status of relations
             foreach (TTypedRelation relNew in ds.FRelations)
