@@ -122,6 +122,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewARecurringGiftBatch();
+            txtDetailBatchDescription.Text = "PLEASE ENTER A DESCRIPTION";
+            txtDetailBatchDescription.Focus();
         }
 
         private void DeleteRow(System.Object sender, System.EventArgs e)

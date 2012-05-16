@@ -239,7 +239,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            this.CreateNewAGiftBatch();
+        	this.CreateNewAGiftBatch();
+        	txtDetailBatchDescription.Focus();
         }
 
         /// <summary>
