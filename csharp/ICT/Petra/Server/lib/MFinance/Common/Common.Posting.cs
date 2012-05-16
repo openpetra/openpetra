@@ -1241,6 +1241,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 MainDS.ALedger[0].LastBatchNumber++;
                 NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
                 NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
                 MainDS.ABatch.Rows.Add(NewRow);
 
                 if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)

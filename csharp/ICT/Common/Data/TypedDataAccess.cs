@@ -194,19 +194,21 @@ namespace Ict.Common.Data
             String ACurrentUser)
         {
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
-            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId),
                     Columns,
                     ADataRow), ATransaction, false,
-                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser));
-
-            int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
+                    GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser)))
+            {
+                throw new Exception("problems inserting a row");
+            }
 
             if (!AThrowAwayAfterSubmitChanges)
             {
                 DateTime LastModificationId;
                 string LastModifiedBy;
                 DateTime LastModifiedDate;
+                int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
 
                 GetStoredModification(ATableId,
                     Columns,
@@ -2133,11 +2135,6 @@ namespace Ict.Common.Data
                                 ex.Errors[0].NativeError.ToString(), TResultSeverity.Resv_Critical));
                     }
                 }
-            }
-
-            if ((ResultValue == true) && ATable.ThrowAwayAfterSubmitChanges)
-            {
-                ATable.Clear();
             }
 
             return ResultValue;
