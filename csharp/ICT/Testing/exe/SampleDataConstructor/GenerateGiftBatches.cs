@@ -159,6 +159,7 @@ namespace Ict.Testing.SampleDataConstructor
         private static GiftBatchTDS CreateGiftBatches(SortedList <DateTime, List <XmlNode>>AGiftsPerDate)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            ALedgerTable LedgerTable = null;
 
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -181,7 +182,7 @@ namespace Ict.Testing.SampleDataConstructor
                 string sqlGetKeyMinPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_unit WHERE u_unit_type_code_c = 'KEY-MIN'";
                 DataTable KeyMinKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetKeyMinPartnerKeys, "keys", ReadTransaction);
 
-                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);
+                LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);
 
                 // create a gift batch for each day.
                 // TODO: could create one batch per month, if there are not so many gifts (less than 100 per month)
@@ -291,6 +292,18 @@ namespace Ict.Testing.SampleDataConstructor
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            // need to save the last gift batch number in a_ledger
+            if (LedgerTable != null)
+            {
+                TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                TVerificationResultCollection VerificationResult;
+
+                ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction, out VerificationResult);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
 
             return MainDS;
