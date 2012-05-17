@@ -62,6 +62,51 @@ namespace Ict.Tools.NAntTasks
         /// </summary>
         protected override void ExecuteTask()
         {
+            if (!PlatformHelper.IsWindows)
+            {
+                // on linux, xbuild could work as well.
+                // but it shows so many warnings, and the return code is not reliable...
+                CompileSolutionCSC();
+
+                // <property name="solution.file" value="${path::combine(dir.projectfiles,
+                //                  path::combine(devenv-xbuild, 'OpenPetra.'+solution+'.sln'))}"/>
+                // <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
+                // <exec program="xbuild" commandline="/verbosity:quiet ${solution.file}"/>
+            }
+            else
+            {
+                string msBuildTaskFilename = Project.Properties["msbuildtask.file"].Replace("\\", "/").Replace("//", "/").Replace('/',
+                    Path.DirectorySeparatorChar);
+
+                if (File.Exists(msBuildTaskFilename))
+                {
+                    // use a target, which is easier than to load the NAnt.Contrib.Tasks.dll by reflection
+                    NAnt.Core.Tasks.CallTask callTask = new NAnt.Core.Tasks.CallTask();
+                    this.CopyTo(callTask);
+                    callTask.TargetName = "MsBuildTarget";
+
+                    if (!callTask.Properties.Contains("solution.file"))
+                    {
+                        callTask.Properties.Add("solution.file", SolutionFile);
+                    }
+
+                    callTask.Execute();
+                }
+                else
+                {
+                    // CompileSolution is quite slower than msbuild. so only use CompileSolution if msbuild is not available
+                    CompileSolutionCSC();
+
+                    Console.WriteLine("For faster compile, you need the NAnt.Contrib.Tasks.dll for msbuild");
+                }
+            }
+        }
+
+        /// <summary>
+        /// compile the solution
+        /// </summary>
+        protected void CompileSolutionCSC()
+        {
             Console.WriteLine("compiling " + Path.GetFileNameWithoutExtension(FSolutionFile));
 
             StreamReader sr = new StreamReader(FSolutionFile);
@@ -77,6 +122,7 @@ namespace Ict.Tools.NAntTasks
 
                     string[] projDef = line.Substring(line.IndexOf("=") + 1).Split(new char[] { ',' });
                     compileProject.CSProjFile = projDef[1].Trim().Trim(new char[] { '"' });
+                    compileProject.UseCSC = true;
 
                     compileProject.Execute();
                 }

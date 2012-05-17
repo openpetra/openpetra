@@ -15,7 +15,7 @@ RootNode:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
-        pnlGrid: {Stretch=horizontally}
+        pnlGrid:
             Dock: Fill
             Controls: [grdDetails,pnlButtons]
         pnlButtons:
@@ -33,6 +33,8 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
             Dock: Bottom
+            Height: 300
             Controls: [ucoDetails]
-        ucoDetails: {Stretch=horizontally}
+        ucoDetails:
+            Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.TUC_Subscription

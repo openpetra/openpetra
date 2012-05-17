@@ -52,7 +52,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="ACostCentreCode"></param>
-        /// <returns>the glm sequence</returns>
+        /// <returns>The new glm sequence, which is negative until SubmitChanges</returns>
         private static Int32 CreateGLMYear(
             ref GLBatchTDS AMainDS,
             Int32 ALedgerNumber,

@@ -19,7 +19,6 @@ RootNode:
         pnlPartnerInfo:
             Controls: [txtPartnerKey, btnEditPartner]
             ControlsOrientation: horizontal
-            Dock:Top
         btnEditPartner: {Label=&Edit Partner info of Supplier, ActionClick=EditPartner}
         txtOurReference:
             Label: Our Ref
@@ -27,13 +26,11 @@ RootNode:
         pnlDefaults:
             Controls: [grpGeneralInformation, grpMiscDefaults]
             ControlsOrientation: horizontal
-            Dock:Top
         grpGeneralInformation:
             Label: General Information
             Controls: [cmbCurrency, cmbSupplierType, txtOurReference]
         grpMiscDefaults:
             Label: Misc Defaults
-            ColWidths: [1=Fixed:95]
             Controls: [nudInvoiceAging, nudCreditTerms, cmbDefaultPaymentType, nudDiscountDays, txtDiscountValue]
         grpAccountInformation:
             Label: Account Information

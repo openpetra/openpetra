@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,6 +50,17 @@ namespace Ict.Tools.CodeGeneration
         public abstract string CalculateDestinationFilename(string AYamlFilename);
         /// <summary>get the name of the file with the manual code</summary>
         public abstract string CalculateManualCodeFilename(string AYamlFilename);
+        /// <summary>remove the current value of a control property</summary>
+        public virtual void ClearControlProperty(string AControlName, string APropertyName)
+        {
+        }
+
+        /// <summary>get the property of a control</summary>
+        public virtual string GetControlProperty(string AControlName, string APropertyName)
+        {
+            return string.Empty;
+        }
+
         /// <summary>set the property of a control</summary>
         public abstract void SetControlProperty(string AControlName, string APropertyName, string APropertyValue, bool ACreateTranslationForLabel);
         /// <summary>set the property of a control</summary>

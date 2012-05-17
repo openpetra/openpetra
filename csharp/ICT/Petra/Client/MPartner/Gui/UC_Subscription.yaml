@@ -11,13 +11,12 @@ RootNode:
         actEditIssues: {Label=Edit I&ssues, ActionClick=EditIssues}
     Controls:
         pnlDetails:
-            Controls: [pnlDetailsLeft, pnlDetailsRight]
+            Controls: 
+                Row0: [pnlDetailsLeft, pnlDetailsRight]
             Dock: Fill
         pnlDetailsLeft:
-            Dock: Fill
             Controls: [grpSubscription, grpMisc]
-        pnlDetailsRight: {Stretch=horizontally}
-            Dock: Right
+        pnlDetailsRight:
             Controls: [grpDates, grpIssues]
                 
         grpSubscription: {Label=Subscription, Stretch=horizontally}
@@ -31,9 +30,8 @@ RootNode:
         
         grpIssues: {Label=Issues, Stretch=horizontally}
             Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue, btnEditIssues]
-		
+
         cmbPSubscriptionPublicationCode: {List=PublicationList, OnChange=PublicationCodeChanged}
-            Dock: Fill
             Label: Pub&lication Code
         cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
             Label: S&ubscription Status
@@ -49,10 +47,8 @@ RootNode:
         txtPSubscriptionPublicationCopies: {Format=Integer}
             Label: &Copies
         cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList}
-            Dock: Fill
             Label: Reason &Given
         cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
-            Dock: Fill
             Label: Reason Ended
         txtPSubscriptionGiftFromKey:
             Label: Gift Given By
@@ -78,4 +74,3 @@ RootNode:
         btnEditIssues: {Stretch=horizontally}
             Label: Edit Issues
             Action: actEditIssues
-		

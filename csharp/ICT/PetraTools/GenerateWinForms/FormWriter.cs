@@ -165,6 +165,122 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        private Dictionary <string, Dictionary <string, string>>FControlProperties = new Dictionary <string, Dictionary <string, string>>();
+
+        private void WriteAllControls()
+        {
+            foreach (string controlName in FControlProperties.Keys)
+            {
+                FTemplate.AddToCodelet("CONTROLINITIALISATION",
+                    Environment.NewLine + "//" + Environment.NewLine +
+                    "// " + controlName + Environment.NewLine + "//" + Environment.NewLine);
+
+                string attributes = string.Empty;
+                string events = string.Empty;
+                string addControls = string.Empty;
+
+                foreach (string propertyName in FControlProperties[controlName].Keys)
+                {
+                    string line = FControlProperties[controlName][propertyName] + ";" + Environment.NewLine;
+
+                    if (line.Contains("Controls.Add("))
+                    {
+                        addControls += line;
+                    }
+                    else if (line.Contains(" += new "))
+                    {
+                        events += line;
+                    }
+                    else
+                    {
+                        if ((propertyName == "Size")
+                            && FControlProperties[controlName].ContainsKey("Dock")
+                            && FControlProperties[controlName]["Dock"].Contains("DockStyle.Fill"))
+                        {
+                            // do not write Size for Dock Fill
+                        }
+
+                        if ((propertyName == "Location")
+                            && FControlProperties[controlName].ContainsKey("Dock"))
+                        {
+                            // do not write Location for Dock
+                        }
+                        else if ((propertyName == "Anchor")
+                                 && FControlProperties[controlName].ContainsKey("Dock")
+                                 && FControlProperties[controlName]["Dock"].Contains("DockStyle.Fill"))
+                        {
+                            // no anchor for Dock Fill
+                        }
+                        else if ((propertyName == "AutoSize")
+                                 && FControlProperties[controlName].ContainsKey("Dock")
+                                 && FControlProperties[controlName]["Dock"].Contains("DockStyle.Fill"))
+                        {
+                            // do not write AutoSize for Dock Fill
+                        }
+                        else if ((propertyName == "AutoSize")
+                                 && FControlProperties[controlName].ContainsKey("Size"))
+                        {
+                            // do not write AutoSize
+                        }
+                        else
+                        {
+                            attributes += line;
+                        }
+                    }
+                }
+
+                FTemplate.AddToCodelet("CONTROLINITIALISATION", attributes);
+                FTemplate.AddToCodelet("CONTROLINITIALISATION", events);
+                FTemplate.AddToCodelet("CONTROLINITIALISATION", addControls);
+            }
+        }
+
+        /// <summary>
+        /// remove the current value of a control property
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="APropertyName"></param>
+        /// <returns></returns>
+        public override void ClearControlProperty(string AControlName, string APropertyName)
+        {
+            if (FControlProperties.ContainsKey(AControlName) && FControlProperties[AControlName].ContainsKey(APropertyName))
+            {
+                FControlProperties[AControlName].Remove(APropertyName);
+            }
+        }
+
+        /// <summary>
+        /// retrieve the current value of a control property
+        /// </summary>
+        /// <param name="AControlName"></param>
+        /// <param name="APropertyName"></param>
+        /// <returns></returns>
+        public override string GetControlProperty(string AControlName, string APropertyName)
+        {
+            if (FControlProperties.ContainsKey(AControlName) && FControlProperties[AControlName].ContainsKey(APropertyName))
+            {
+                return FControlProperties[AControlName][APropertyName];
+            }
+
+            return string.Empty;
+        }
+
+        /// this can be used for properties, event handlers, etc
+        private void SetControlProperty(string AControlName, string APropertyName, string APropertyValue)
+        {
+            if (!FControlProperties.ContainsKey(AControlName))
+            {
+                FControlProperties.Add(AControlName, new Dictionary <string, string>());
+            }
+
+            if (!FControlProperties[AControlName].ContainsKey(APropertyName))
+            {
+                FControlProperties[AControlName].Add(APropertyName, string.Empty);
+            }
+
+            FControlProperties[AControlName][APropertyName] = APropertyValue;
+        }
+
         /// <summary>
         /// set the properties of the controls in the Designer file
         /// </summary>
@@ -182,8 +298,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            FTemplate.AddToCodelet("CONTROLINITIALISATION",
-                "this." + AControlName + "." + APropertyName + " = " + APropertyValue + ";" + Environment.NewLine);
+            SetControlProperty(AControlName, APropertyName,
+                "this." + AControlName + "." + APropertyName + " = " + APropertyValue);
 
             if (APropertyName.EndsWith("Text") && ACreateTranslationForLabel)
             {
@@ -215,9 +331,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AEventHandlingMethod = "this." + AEventHandlingMethod;
             }
 
-            FTemplate.AddToCodelet(CodeletName,
-                "this." + AControlName + "." + AEvent +
-                " += new " + AEventHandlerType + "(" + AEventHandlingMethod + ");" + Environment.NewLine);
+            if (CodeletName == "CONTROLINITIALISATION")
+            {
+                SetControlProperty(AControlName, AEvent,
+                    "this." + AControlName + "." + AEvent +
+                    " += new " + AEventHandlerType + "(" + AEventHandlingMethod + ")");
+            }
+            else
+            {
+                FTemplate.AddToCodelet(CodeletName,
+                    "this." + AControlName + "." + AEvent +
+                    " += new " + AEventHandlerType + "(" + AEventHandlingMethod + ");" + Environment.NewLine);
+            }
         }
 
         private void SetEventHandlerForForm(TEventHandler handler)
@@ -533,8 +658,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="AFunctionCall"></param>
         public override void CallControlFunction(string AControlName, string AFunctionCall)
         {
-            FTemplate.AddToCodelet("CONTROLINITIALISATION",
-                "this." + AControlName + "." + AFunctionCall + ";" + Environment.NewLine);
+            SetControlProperty(AControlName, AFunctionCall,
+                "this." + AControlName + "." + AFunctionCall);
         }
 
         /// <summary>
@@ -623,7 +748,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FSuspendLayout = "";
             FResumePerformLayout = "";
             FControlDataTypes = new SortedList();
-            TableLayoutPanelGenerator.countTableLayoutPanel = 0;
+            PanelLayoutGenerator.countTableLayoutPanel = 0;
         }
 
         /// <summary>
@@ -652,8 +777,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            generator.GenerateDeclaration(this, ctrl);
-            generator.SetControlProperties(this, ctrl);
+            generator.GenerateControl(this, ctrl);
 
             if (generator.AddControlToContainer)
             {
@@ -1083,6 +1207,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "FPetraUtilsObject.EnableAction(\"" + handler.actionName + "\", e.Enabled);" + Environment.NewLine);
                 }
             }
+
+            WriteAllControls();
 
             FinishUpInitialisingControls();
 

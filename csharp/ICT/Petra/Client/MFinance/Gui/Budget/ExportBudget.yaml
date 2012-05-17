@@ -12,13 +12,16 @@ RootNode:
         actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
         pnlContent:
+            Controls: [pnlTop, pnlButtons]
+            Dock: Fill
+        pnlTop:
+            Dock: Top
             Controls:
                 Row0: [pnlFilename]
                 Row1: [cmbDelimiter]
                 Row2: [cmbDateFormat]
                 Row3: [cmbNumberFormat]
-                Row4: [pnlButtons]
-            Dock: Fill
+        
         pnlFilename:
             Controls:
                 Row0: [txtFilename, btnBrowseFilename]

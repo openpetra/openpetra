@@ -148,10 +148,13 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("pub.", "");
             ReturnValue = ReturnValue.Replace("\"", "'");
 
+            ReturnValue = ReturnValue.Replace("NOW()", "datetime('now')");
+
             ReturnValue = ReturnValue.Replace("= false", "= 0");
             ReturnValue = ReturnValue.Replace("= true", "= 1");
             ReturnValue = ReturnValue.Replace("=false", "=0");
             ReturnValue = ReturnValue.Replace("=true", "=1");
+            ReturnValue = ReturnValue.Replace("true as ", "1 as ");
 
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");

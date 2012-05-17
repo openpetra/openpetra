@@ -12,6 +12,10 @@ RootNode:
         actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
         pnlContent:
+            Controls: [pnlTop, pnlButtons]
+            Dock: Fill
+        pnlTop:
+            Dock: Top
             Controls:
                 Row0: [rgrDetailSummary]
                 Row0b: [rgrCurrency]
@@ -24,8 +28,6 @@ RootNode:
                 Row7: [cmbDelimiter]
                 Row8: [cmbDateFormat]
                 Row9: [cmbNumberFormat]
-                Row10: [pnlButtons]
-            Dock: Fill
         rgrDetailSummary:
             Label: Detail or Summary
             Controls: [rbtDetail, rbtSummary]

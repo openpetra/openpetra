@@ -50,39 +50,33 @@ RootNode:
             Label: Document Type
             List: DocumentTypeList
             DataField: PmDocument.DocCode
-            ColSpan: 3
+            ColSpan: 2
             Validation: true
         
         txtDocumentID:
             Label: Document ID
             DataField: PmDocument.DocumentId
-            ColSpan: 1
         txtDocumentAssociatedID:
             Label: Associated Document ID
             DataField: PmDocument.AssocDocId
-            ColSpan: 1
         
         txtPlaceOfIssue:
             Label: Place of Issue
             DataField: PmDocument.PlaceOfIssue
-            ColSpan: 1
         dtpDateOfIssue:
             Label: Date of Issue
             DataField: PmDocument.DateOfIssue
-            ColSpan: 1
         
         dtpDateOfStart:
             Label: Start Date
             DataField: PmDocument.DateOfStart
-            ColSpan: 1
         dtpDateOfExpiry:
             Label: Expiration Date
             DataField: PmDocument.DateOfExpiration
-            ColSpan: 1
         
         txtContact:
             Type: PartnerKey
-            ColSpan: 3
+            ColSpan: 2
         
         txtComment:
             DataField: PmDocument.DocComment
@@ -90,4 +84,4 @@ RootNode:
             ScrollBars: Vertical
             Height: 110
             Width: 380
-            ColSpan: 3
+            ColSpan: 2

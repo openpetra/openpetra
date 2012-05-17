@@ -127,6 +127,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     BudgetRow.EndEdit();
                 }
                 ABudgetAccess.SubmitChanges(BudgetTable, SubmitChangesTransaction, out AVerificationResult);
+                BudgetTable.AcceptChanges();
 
                 for (int i = 0; i <= 1; i++)
                 {
@@ -213,48 +214,61 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             decimal IntlExchangeRate;
             int PreviousSequence = 0;
             int CurrentSequence;
+            Int32 PeriodNumber;
+            Decimal BudgetBase;
             AVerificationResult = null;
 
-            if (TExchangeRateTools.GetLatestIntlCorpExchangeRate(ALedgerNumber, out IntlExchangeRate))
+            bool IntlExchRateOk = TExchangeRateTools.GetLatestIntlCorpExchangeRate(ALedgerNumber, out IntlExchangeRate);
+            /*Consolidate_Budget*/
+
+            AGeneralLedgerMasterPeriodTable GLMPTable = null;
+            AGeneralLedgerMasterPeriodRow GLMPRow = null;
+            DataRow DR = null;
+
+            for (int i = 0; i < APeriodDataTable.Rows.Count; i++)
             {
-                /*Consolidate_Budget*/
-
-                AGeneralLedgerMasterPeriodTable GLMPTable = null;
-                AGeneralLedgerMasterPeriodRow GLMPRow = null;
-                DataRow DR = null;
-
-                for (int i = 0; i < APeriodDataTable.Rows.Count; i++)
+                DR = (DataRow)APeriodDataTable.Rows[i];
+                CurrentSequence = Convert.ToInt32(DR["GLMSequence"]);
+                if (PreviousSequence != CurrentSequence)
                 {
-                    DR = (DataRow)APeriodDataTable.Rows[i];
-                    CurrentSequence = Convert.ToInt32(DR.ItemArray[0]);
-
-                    if (PreviousSequence != CurrentSequence)
-                    {
-                        PreviousSequence = CurrentSequence;
-                    }
-
-                    GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(PreviousSequence, Convert.ToInt32(DR.ItemArray[1]), ATransaction);
-                    GLMPRow = (AGeneralLedgerMasterPeriodRow)GLMPTable.Rows[0];
-
-                    GLMPRow.BeginEdit();
-                    GLMPRow.BudgetBase = Convert.ToDecimal(DR.ItemArray[2]);
-                    GLMPRow.BudgetIntl = Math.Round(Convert.ToDecimal(DR.ItemArray[2]) / IntlExchangeRate);
-                    GLMPRow.EndEdit();
+                    PreviousSequence = CurrentSequence;
                 }
-                AGeneralLedgerMasterPeriodAccess.SubmitChanges(GLMPTable, ATransaction, out AVerificationResult);
+                PeriodNumber = Convert.ToInt32(DR["PeriodNumber"]);
+                BudgetBase = Convert.ToDecimal(DR["BudgetBase"]);
 
-                ABudgetRow BudgetRow = null;
+                AGeneralLedgerMasterPeriodTable TempGLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey
+                    (PreviousSequence, PeriodNumber, ATransaction);
+                GLMPRow = (AGeneralLedgerMasterPeriodRow)TempGLMPTable.Rows[0];
 
-                for (int i = 0; i < ABudgetTable.Count; i++)
+                GLMPRow.BeginEdit();
+                GLMPRow.BudgetBase = BudgetBase;
+                if (IntlExchRateOk)
                 {
-                    BudgetRow = (ABudgetRow)ABudgetTable.Rows[i];
-
-                    BudgetRow.BeginEdit();
-                    BudgetRow.BudgetStatus = true;
-                    BudgetRow.EndEdit();
+                    GLMPRow.BudgetIntl = Math.Round(BudgetBase / IntlExchangeRate, 2);
                 }
-                ABudgetAccess.SubmitChanges(ABudgetTable, ATransaction, out AVerificationResult);
+                GLMPRow.EndEdit();
+                if (GLMPTable == null)
+                {
+                    GLMPTable = TempGLMPTable;
+                }
+                else
+                {
+                    GLMPTable.Merge(TempGLMPTable);
+                }
             }
+            AGeneralLedgerMasterPeriodAccess.SubmitChanges(GLMPTable, ATransaction, out AVerificationResult);
+
+            ABudgetRow BudgetRow = null;
+
+            for (int i = 0; i < ABudgetTable.Count; i++)
+            {
+                BudgetRow = (ABudgetRow)ABudgetTable.Rows[i];
+
+                BudgetRow.BeginEdit();
+                BudgetRow.BudgetStatus = true;
+                BudgetRow.EndEdit();
+            }
+            ABudgetAccess.SubmitChanges(ABudgetTable, ATransaction, out AVerificationResult);
         }
 
         /// <summary>
@@ -284,9 +298,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
 
                     DataRow DR = (DataRow)APeriodDataTable.NewRow();
-                    DR.ItemArray[0] = AGLMSequence;
-                    DR.ItemArray[1] = APeriodNumber;
-                    DR.ItemArray[2] = GeneralLedgerMasterPeriodRow.BudgetBase;
+                    DR["GLMSequence"] = AGLMSequence;
+                    DR["PeriodNumber"] = APeriodNumber;
+                    DR["BudgetBase"] = GeneralLedgerMasterPeriodRow.BudgetBase;
 
                     APeriodDataTable.Rows.Add(DR);
                 }
@@ -294,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             else
             {
                 //Set to budget base
-                GetBudgetValue = Convert.ToDecimal(TempRow.ItemArray[2]);
+                GetBudgetValue = Convert.ToDecimal(TempRow["BudgetBase"]);
             }
 
             return GetBudgetValue;
@@ -533,25 +547,31 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 string[] CostCentres = ACostCentreList.Split(':');
                 string AccCode = AccountRow.AccountCode;
                 int CurrYear = LedgerRow.CurrentFinancialYear;
+                TVerificationResultCollection Verifications = null;
 
                 /* For each associated Cost Centre, update the General Ledger Master. */
-                for (int i = 1; i < CostCentres.Length; i++)
+                for (int i = 0; i < CostCentres.Length; i++)
                 {
                     CostCentreCode = CostCentres[i];
 
                     GLMThisYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear);
-                    GLMNextYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear + 1);
-
-                    /* If the posting CC/AC combination doesn't exist create it. */
                     if (GLMThisYear == -1)
                     {
-                        GLMThisYear = TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear, AccCode, CostCentreCode);
+                        TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear, AccCode, CostCentreCode);
+                        GLBatchTDSAccess.SubmitChanges(GLBatchDS, out Verifications);
+                        GLMThisYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear);
+                        GLBatchDS.AGeneralLedgerMaster.Rows.Clear();            // Leaving these rows should be fine
+                        GLBatchDS.AGeneralLedgerMasterPeriod.Rows.Clear();      // but it causes problems below.
                     }
 
+                    GLMNextYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear + 1);
                     if (GLMNextYear == -1)
                     {
-                        GLMNextYear = TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear + 1, AccCode, CostCentreCode);
+                        TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear + 1, AccCode, CostCentreCode);
+                        GLBatchTDSAccess.SubmitChanges(GLBatchDS, out Verifications);
+                        GLMNextYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear + 1);
                     }
+
 
                     /* Update totals for the General Ledger Master record. */
                     ABudgetPeriodTable BPT = ABudgetPeriodAccess.LoadViaABudget(ABudgetSequence, null);
@@ -653,20 +673,18 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 {
                     GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
 
-                    DataRow DR = (DataRow)APeriodDataTable.NewRow();
-                    DR.ItemArray[0] = AGLMSequence;
-                    DR.ItemArray[1] = APeriodNumber;
-                    DR.ItemArray[2] = GeneralLedgerMasterPeriodRow.BudgetBase;
+                    TempRow = (DataRow)APeriodDataTable.NewRow();
+                    TempRow["GLMSequence"] = AGLMSequence;
+                    TempRow["PeriodNumber"] = APeriodNumber;
+                    TempRow["BudgetBase"] = GeneralLedgerMasterPeriodRow.BudgetBase;
 
-                    APeriodDataTable.Rows.Add(DR);
+                    APeriodDataTable.Rows.Add(TempRow);
                 }
             }
-            else
-            {
-                TempRow.BeginEdit();
-                TempRow.ItemArray[2] = Convert.ToDecimal(TempRow.ItemArray[2]) + APeriodAmount;
-                TempRow.EndEdit();
-            }
+
+            TempRow.BeginEdit();
+            TempRow["BudgetBase"] = Convert.ToDecimal(TempRow["BudgetBase"]) + APeriodAmount;
+            TempRow.EndEdit();
         }
 
         /// <summary>

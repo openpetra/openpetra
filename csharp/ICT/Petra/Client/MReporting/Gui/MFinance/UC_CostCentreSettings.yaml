@@ -29,7 +29,6 @@ RootNode:
         clbCostCentres: 
             List: UserDefinedList
             NoLabel:true
-            Dock: Fill
             ParameterName: param_cost_centre_codes
             Width: 365
         btnUnselectAllCostCentres: 
@@ -40,7 +39,6 @@ RootNode:
             Help: group not by costcentre but by account
             CheckBoxAttachedLabel: right
         rgrDepth:
-            Dock: Top
             ParameterName: param_depth
             OptionalValues: [detail, standard, summary]
             

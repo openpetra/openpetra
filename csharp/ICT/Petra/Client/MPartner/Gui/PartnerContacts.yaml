@@ -16,6 +16,7 @@ RootNode:
             Dock: Fill
             Controls: [pnlParameters, grdDetails]
         pnlParameters:
+            Dock: Top
             Controls:
                 Row0: [dtpContactDate]
                 Row1: [txtContactor]

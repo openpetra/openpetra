@@ -513,7 +513,7 @@ namespace Ict.Common.Data
 
                 if ((columnName != "s_created_by_c") && (columnName != "s_modified_by_c")
                     && (columnName != "s_date_created_d") && (columnName != "s_date_modified_d")
-                    && (columnName != "s_modification_id_c")
+                    && (columnName != TTypedDataAccess.MODIFICATION_ID)
                     && ADestinationRow.Table.Columns.Contains(columnName))
                 {
                     object SourceValue = ASourceRow[col];

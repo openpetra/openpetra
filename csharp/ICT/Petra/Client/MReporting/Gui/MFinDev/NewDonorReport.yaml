@@ -30,11 +30,9 @@
             Dock: Fill
             ParameterName: param_partner_source
         grpDateSelection:
-            Dock: Top
             Label: Selection
             Controls: [dtpStartDate, dtpEndDate, txtMinimumAmount, cmbCurrency]
         rgrSorting:
-            Dock: Top
             Label: Sort by
             Controls: [rbtPartnerName, rbtPartnerKey, rbtAmount]
         lblLedger:

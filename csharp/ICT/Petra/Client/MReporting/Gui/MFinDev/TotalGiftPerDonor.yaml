@@ -37,9 +37,11 @@
         uco_Selection:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Dock: Top
+            Height: 240
         grpLimitResults:
             Label: Limit the results to one country
             Controls: [chkOnlyFromCountry]
+            Dock: Top
         chkOnlyFromCountry:
             Controls: [cmbCountry]
         cmbCountry:
