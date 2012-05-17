@@ -518,11 +518,11 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
         }
 
-		/// <summary>
-		/// Returns the current row index of a grid control
-		/// </summary>
-		/// <param name="AGrid"></param>
-		/// <returns></returns>
+        /// <summary>
+        /// Returns the current row index of a grid control
+        /// </summary>
+        /// <param name="AGrid"></param>
+        /// <returns></returns>
         public static int GridCurrentRowIndex(TSgrdDataGridPaged AGrid)
         {
             int rowIndex = -1;
@@ -537,41 +537,41 @@ namespace Ict.Petra.Client.MFinance.Logic
             return rowIndex;
         }
 
-		/// <summary>
-		/// Select and scroll to the specified row index
-		/// </summary>
-		/// <param name="AGrid"></param>
-		/// <param name="ACurrentRowIndex"></param>
+        /// <summary>
+        /// Select and scroll to the specified row index
+        /// </summary>
+        /// <param name="AGrid"></param>
+        /// <param name="ACurrentRowIndex"></param>
         public static void ViewAndSelectRowInGrid(TSgrdDataGridPaged AGrid, int ACurrentRowIndex)
         {
-        	int NumRows = AGrid.Rows.Count;
-        	
-        	if (NumRows == 1)
-        	{
-        		return;
-        	}
-        	else if (ACurrentRowIndex < 1 || ACurrentRowIndex >= NumRows)
-        	{
-        		return;
-        	}
-        	
-			//Select and show specified row
-        	AGrid.Selection.SelectRow(ACurrentRowIndex, true);
-        	AGrid.ShowCell(new SourceGrid.Position(ACurrentRowIndex, 0), true);
+            int NumRows = AGrid.Rows.Count;
+
+            if (NumRows == 1)
+            {
+                return;
+            }
+            else if ((ACurrentRowIndex < 1) || (ACurrentRowIndex >= NumRows))
+            {
+                return;
+            }
+
+            //Select and show specified row
+            AGrid.Selection.SelectRow(ACurrentRowIndex, true);
+            AGrid.ShowCell(new SourceGrid.Position(ACurrentRowIndex, 0), true);
         }
-        
-		/// <summary>
-		/// Scroll the data grid to view the currently selected row
-		/// </summary>
-		/// <param name="AGrid"></param>
+
+        /// <summary>
+        /// Scroll the data grid to view the currently selected row
+        /// </summary>
+        /// <param name="AGrid"></param>
         public static void ViewRowInGrid(TSgrdDataGridPaged AGrid)
         {
-        	int currentRowIndex = GridCurrentRowIndex(AGrid);
-        	
-        	if (currentRowIndex > 0)
-        	{
-	        	AGrid.ShowCell(new SourceGrid.Position(currentRowIndex, 0), true);
-        	}
+            int currentRowIndex = GridCurrentRowIndex(AGrid);
+
+            if (currentRowIndex > 0)
+            {
+                AGrid.ShowCell(new SourceGrid.Position(currentRowIndex, 0), true);
+            }
         }
 
         /// <summary>

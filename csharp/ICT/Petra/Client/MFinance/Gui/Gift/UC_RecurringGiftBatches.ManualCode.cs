@@ -125,27 +125,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailBatchDescription.Focus();
         }
 
-
         private void DeleteRow(System.Object sender, System.EventArgs e)
         {
             int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
 
-			//Check if any rows exist
-        	if (grdDetails.Rows.Count < 2)
-        	{
-        		return;
-        	}
-			//Check if any row is selected
-        	else if (newCurrentRowPos == -1 || FPreviouslySelectedDetailRow == null)
+            //Check if any rows exist
+            if (grdDetails.Rows.Count < 2)
             {
-        		MessageBox.Show(Catalog.GetString("No batch is selected to delete."),
-                    Catalog.GetString("Deleting Recurring Gift Batch"));
-        		return;
+                return;
             }
-        	// ask if the user really wants to delete the recurring batch
+            //Check if any row is selected
+            else if ((newCurrentRowPos == -1) || (FPreviouslySelectedDetailRow == null))
+            {
+                MessageBox.Show(Catalog.GetString("No batch is selected to delete."),
+                    Catalog.GetString("Deleting Recurring Gift Batch"));
+                return;
+            }
+            // ask if the user really wants to delete the recurring batch
             else if (MessageBox.Show(Catalog.GetString("Do you really want to delete this recurring gift batch?"),
-                    Catalog.GetString("Confirm deletion of Recurring Gift Batch"),
-                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+                         Catalog.GetString("Confirm deletion of Recurring Gift Batch"),
+                         MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
             {
                 return;
             }
@@ -158,34 +157,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //If some row(s) still exist after deletion
             if (grdDetails.Rows.Count > 1)
             {
-            	//If last row just deleted, select row at old position - 1
-            	if (newCurrentRowPos == grdDetails.Rows.Count)
-        		{
-        			newCurrentRowPos--;
-        		}
+                //If last row just deleted, select row at old position - 1
+                if (newCurrentRowPos == grdDetails.Rows.Count)
+                {
+                    newCurrentRowPos--;
+                }
 
-		        grdDetails.Selection.ResetSelection(false);
-				TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
-	        	FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                grdDetails.Selection.ResetSelection(false);
+                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
-	        	ShowDetails(FPreviouslySelectedDetailRow);
+                ShowDetails(FPreviouslySelectedDetailRow);
             }
             else
             {
                 //btnDelete.Enabled = false;
-            	FPreviouslySelectedDetailRow = null;
-            	ClearControls();
+                FPreviouslySelectedDetailRow = null;
+                ClearControls();
             }
-
         }
-        
+
         private void ClearControls()
         {
-        	txtDetailBatchDescription.Clear();
-        	txtDetailHashTotal.NumberValueDecimal = 0;
-        	cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+            txtDetailBatchDescription.Clear();
+            txtDetailHashTotal.NumberValueDecimal = 0;
+            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
-        
+
         private void Submit(System.Object sender, System.EventArgs e)
         {
             if (FPreviouslySelectedDetailRow == null)
