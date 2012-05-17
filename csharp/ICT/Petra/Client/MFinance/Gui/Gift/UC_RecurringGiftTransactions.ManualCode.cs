@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Windows.Forms;
 using System.Collections;
 using System.Collections.Specialized;
 
@@ -370,6 +371,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return (ARecurringGiftRow)FMainDS.ARecurringGift.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, ARecurringGiftTransactionNumber });
         }
 
+        private int CurrentRowIndex()
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
+
         /// <summary>
         /// delete a gift detail, and if it is the last detail, delete the whole gift
         /// </summary>
@@ -377,9 +393,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void DeleteDetail(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            int newCurrentRowPos = CurrentRowIndex();
+
+			//Check if any rows exist
+        	if (grdDetails.Rows.Count < 2)
+        	{
+        		return;
+        	}
+			//Check if any row is selected
+        	else if (newCurrentRowPos == -1 || FPreviouslySelectedDetailRow == null)
             {
-                return;
+        		MessageBox.Show(Catalog.GetString("No recurring gift detail is selected to delete."),
+                    Catalog.GetString("Deletion of Recurring Gift Detail"));
+        		return;
             }
 
             int oldDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
@@ -441,29 +467,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
             grdDetails.Refresh();
             
-            //Select first row
-//            if (grdDetails.Rows.Count > 1)
-//            {
-//            	SelectDetailRowByDataTableIndex(0);
-//            }
-
             if (grdDetails.Rows.Count > 1)
             {
-		        grdDetails.Selection.ResetSelection(false);
-	        	grdDetails.Selection.SelectRow(1, true);
+               	//If last row just deleted, select row at old position - 1
+            	if (newCurrentRowPos == grdDetails.Rows.Count)
+        		{
+        			newCurrentRowPos--;
+        		}
+
+            	grdDetails.Selection.ResetSelection(false);
+	        	grdDetails.Selection.SelectRow(newCurrentRowPos, true);
 	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+	            //If not in view, scroll to current row
+				//grdDetails.ShowCell(new SourceGrid.Position(newCurrentRowPos, 0), true);
+				TFinanceControls.ViewSelectedRowInGrid(grdDetails, newCurrentRowPos);
+				
 	            ShowDetails(FPreviouslySelectedDetailRow);
             }
             else
             {
             	ClearControls();
-            	//btnDelete.Enabled = false;
-            	//FPreviouslySelectedDetailRow = null;
             }
-
             
         }
 
+       	 
+        
         private void ClearControls()
         {
         	txtDetailDonorKey.Text = string.Empty;

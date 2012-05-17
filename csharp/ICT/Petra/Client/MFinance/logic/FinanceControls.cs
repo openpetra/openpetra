@@ -518,7 +518,16 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
         }
 
-
+		/// <summary>
+		/// Scroll the data grid to view the currently selected row
+		/// </summary>
+		/// <param name="AGrid"></param>
+		/// <param name="ACurrentRowIndex"></param>
+        public static void ViewSelectedRowInGrid(TSgrdDataGridPaged AGrid, int ACurrentRowIndex)
+        {
+        	AGrid.ShowCell(new SourceGrid.Position(ACurrentRowIndex, 0), true);
+        }
+        
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey
         /// </summary>
