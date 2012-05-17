@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             if (FSearchTransactions)
             {
-                FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITablesTransactionListTable());
+                FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSTransactionListTable());
             }
             else if (FSearchSupplierOrInvoice)
             {
@@ -187,7 +187,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             }
             else
             {
-                FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITablesInvoiceListTable());
+                FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSInvoiceListTable());
             }
 
             // Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
@@ -359,10 +359,10 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             if (!FSearchTransactions && !FSearchSupplierOrInvoice)
             {
                 // initvars on typed table
-                AccountsPayableGUITablesInvoiceListTable table = (AccountsPayableGUITablesInvoiceListTable)ReturnValue;
+                AccountsPayableGUITDSInvoiceListTable table = (AccountsPayableGUITDSInvoiceListTable)ReturnValue;
                 table.InitVars();
 
-                foreach (AccountsPayableGUITablesInvoiceListRow Row in ReturnValue.Rows)
+                foreach (AccountsPayableGUITDSInvoiceListRow Row in ReturnValue.Rows)
                 {
                     // calculate DateDue and DateDiscountUntil
                     // add creditTerms to dateIssued to get DateDue
