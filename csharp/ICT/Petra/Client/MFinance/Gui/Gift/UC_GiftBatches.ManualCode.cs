@@ -243,21 +243,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         	txtDetailBatchDescription.Focus();
         }
 
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        
+       
         /// <summary>
         /// cancel a batch (there is no deletion of batches)
         /// </summary>
@@ -265,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            int newCurrentRowPos = CurrentRowIndex();
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
 
 			//Check if any rows exist
         	if (grdDetails.Rows.Count < 2)
@@ -301,12 +287,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         		}
 
 		        grdDetails.Selection.ResetSelection(false);
-	        	grdDetails.Selection.SelectRow(newCurrentRowPos, true);
+				TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
 	        	FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-	        	//If not in view, scroll to current row
-				//grdDetails.ShowCell(new SourceGrid.Position(newCurrentRowPos, 0), true);
-				TFinanceControls.ViewSelectedRowInGrid(grdDetails, newCurrentRowPos);
 				
 	        	ShowDetails(FPreviouslySelectedDetailRow);
             }

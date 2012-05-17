@@ -125,25 +125,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailBatchDescription.Focus();
         }
 
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        
 
         private void DeleteRow(System.Object sender, System.EventArgs e)
         {
-            int newCurrentRowPos = CurrentRowIndex();
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
 
 			//Check if any rows exist
         	if (grdDetails.Rows.Count < 2)
@@ -180,18 +165,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         		}
 
 		        grdDetails.Selection.ResetSelection(false);
-	        	grdDetails.Selection.SelectRow(newCurrentRowPos, true);
+				TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
 	        	FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
-	        	//If not in view, scroll to current row
-				//grdDetails.ShowCell(new SourceGrid.Position(newCurrentRowPos, 0), true);
-				TFinanceControls.ViewSelectedRowInGrid(grdDetails, newCurrentRowPos);
-				
 	        	ShowDetails(FPreviouslySelectedDetailRow);
             }
             else
             {
-                btnDelete.Enabled = false;
+                //btnDelete.Enabled = false;
             	FPreviouslySelectedDetailRow = null;
             	ClearControls();
             }
