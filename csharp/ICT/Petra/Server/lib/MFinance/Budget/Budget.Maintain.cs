@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             string Separator = AFdlgSeparator[0];
             //string DateFormat = AFdlgSeparator[1];
-            //string NumberFormat = AFdlgSeparator[2] == "0" ? "American" : "European";
+            //string NumberFormat = AFdlgSeparator[2];
 
             //CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
             //MyCultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormat;
