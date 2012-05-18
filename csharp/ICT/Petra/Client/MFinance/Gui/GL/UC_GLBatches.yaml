@@ -21,7 +21,7 @@ RootNode:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
         pnlInfo: 
             ControlsOrientation: horizontal
-            Controls: [pnlLedgerInfo, rgrShowBatches, cmbYearFilter, cmbPeriodFilter]
+            Controls: [rgrShowBatches, pnlPeriodFilter]
             Dock: Top
         rgrShowBatches: 
             Label: Show batches available for
@@ -31,9 +31,8 @@ RootNode:
             OnChange: ChangeBatchFilter
         cmbYearFilter: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
         cmbPeriodFilter: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
-        pnlLedgerInfo:
-            Controls: [txtLedgerNumber]
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        pnlPeriodFilter:
+            Controls: [cmbYearFilter, cmbPeriodFilter]
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
