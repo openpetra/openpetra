@@ -194,10 +194,11 @@ namespace Ict.Common.Data
             String ACurrentUser)
         {
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
+
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
-                    TTypedDataTable.GetTableNameSQL(ATableId),
-                    Columns,
-                    ADataRow), ATransaction, false,
+                        TTypedDataTable.GetTableNameSQL(ATableId),
+                        Columns,
+                        ADataRow), ATransaction, false,
                     GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser)))
             {
                 throw new Exception("problems inserting a row");
