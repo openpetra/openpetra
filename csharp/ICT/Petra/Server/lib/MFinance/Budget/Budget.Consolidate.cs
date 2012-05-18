@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <summary>
         /// Main Budget tables dataset
         /// </summary>
-        public static BudgetTDS BudgetTDS = new BudgetTDS();
+        public static BudgetTDS FBudgetTDS = new BudgetTDS();
 
         /// <summary>
         /// load budgets
@@ -67,17 +67,17 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         public static bool LoadBudgetForConsolidate(Int32 ALedgerNumber)
         {
             //TODO: need to filter on Year
-            ABudgetAccess.LoadViaALedger(BudgetTDS, ALedgerNumber, null);
-            ABudgetRevisionAccess.LoadViaALedger(BudgetTDS, ALedgerNumber, null);
+            ABudgetAccess.LoadViaALedger(FBudgetTDS, ALedgerNumber, null);
+            ABudgetRevisionAccess.LoadViaALedger(FBudgetTDS, ALedgerNumber, null);
             //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
-            ABudgetPeriodAccess.LoadAll(BudgetTDS, null);
-            ALedgerAccess.LoadByPrimaryKey(BudgetTDS, ALedgerNumber, null);
+            ABudgetPeriodAccess.LoadAll(FBudgetTDS, null);
+            ALedgerAccess.LoadByPrimaryKey(FBudgetTDS, ALedgerNumber, null);
 
             // Accept row changes here so that the Client gets 'unmodified' rows
-            BudgetTDS.AcceptChanges();
+            FBudgetTDS.AcceptChanges();
 
             // Remove all Tables that were not filled with data before remoting them.
-            BudgetTDS.RemoveEmptyTables();
+            FBudgetTDS.RemoveEmptyTables();
 
             return true;
         }
@@ -111,10 +111,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             // Same as the wtPeriodData table in 4GL
             DataTable PeriodDataTempTable = CreateTempTable();
 
-            ABudgetTable BudgetTable = BudgetTDS.ABudget;
+            ABudgetTable BudgetTable = FBudgetTDS.ABudget;
             ABudgetRow BudgetRow = null;
 
-            ALedgerTable LedgerTable = BudgetTDS.ALedger;
+            ALedgerTable LedgerTable = FBudgetTDS.ALedger;
             ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
 
             if (AConsolidateAll)
@@ -122,12 +122,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 for (int i = 0; i < BudgetTable.Count; i++)
                 {
                     BudgetRow = (ABudgetRow)BudgetTable.Rows[i];
-                    BudgetRow.BeginEdit();
                     BudgetRow.BudgetStatus = false;
-                    BudgetRow.EndEdit();
                 }
-                ABudgetAccess.SubmitChanges(BudgetTable, SubmitChangesTransaction, out AVerificationResult);
-                BudgetTable.AcceptChanges();
+                ABudgetAccess.SubmitChanges(BudgetTable, SubmitChangesTransaction, out AVerificationResult); // Do I need to be doing this?
 
                 for (int i = 0; i <= 1; i++)
                 {
@@ -329,7 +326,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             int GLMSequenceThisYear;
             int GLMSequenceNextYear;
 
-            ALedgerRow LedgerRow = (ALedgerRow)BudgetTDS.ALedger.Rows[0];
+            ALedgerRow LedgerRow = (ALedgerRow)FBudgetTDS.ALedger.Rows[0];
 
             GLMSequenceThisYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber,
                 ABudgetRow.AccountCode,
@@ -560,8 +557,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear, AccCode, CostCentreCode);
                         GLBatchTDSAccess.SubmitChanges(GLBatchDS, out Verifications);
                         GLMThisYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear);
-                        GLBatchDS.AGeneralLedgerMaster.Rows.Clear();            // Leaving these rows should be fine
-                        GLBatchDS.AGeneralLedgerMasterPeriod.Rows.Clear();      // but it causes problems below.
+                        GLBatchDS.AGeneralLedgerMaster.Rows.Clear();            // Leaving these new rows ought to be fine
+                        GLBatchDS.AGeneralLedgerMasterPeriod.Rows.Clear();      // but it causes problems below so I'm removing them.
                     }
 
                     GLMNextYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear + 1);
@@ -658,20 +655,19 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="APeriodAmount"></param>
         private static void AddBudgetValue(ref DataTable APeriodDataTable, int AGLMSequence, int APeriodNumber, decimal APeriodAmount)
         {
-            /*  add a budget amount to the temp table wtPeriodData.
-             *          if the record is not already in the temp table, it is fetched */
+            /*  Add a budget amount to the temp table APeriodDataTable.
+             *          If the record is not already in the temp table, it is created.
+             */
             DataRow TempRow = (DataRow)APeriodDataTable.Rows.Find(new object[] { AGLMSequence, APeriodNumber });
 
             if (TempRow == null)
             {
-                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
-                    APeriodNumber,
-                    null);
-                AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = 
+                    AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence, APeriodNumber, null);
 
                 if (GeneralLedgerMasterPeriodTable.Count > 0)
                 {
-                    GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+                    AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
 
                     TempRow = (DataRow)APeriodDataTable.NewRow();
                     TempRow["GLMSequence"] = AGLMSequence;
@@ -682,9 +678,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 }
             }
 
-            TempRow.BeginEdit();
             TempRow["BudgetBase"] = Convert.ToDecimal(TempRow["BudgetBase"]) + APeriodAmount;
-            TempRow.EndEdit();
         }
 
         /// <summary>
@@ -702,17 +696,17 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             {
                 if (TempRow == null)
                 {
-                    AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
-                        APeriodNumber,
-                        null);
-                    AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+                    AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = 
+                        AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey (AGLMSequence, APeriodNumber, null);
 
                     if (GeneralLedgerMasterPeriodTable.Count > 0)
                     {
-                        GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+                        AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
 
-                        /* only create records for periods which have a value. try to keep the number of records low,
-                         * to make the lock count in the write transaction smaller */
+                        /* Only create records for periods which have a value. 
+                         * Try to keep the number of records low,
+                         * to make the lock count in the write transaction smaller.
+                         */
                         if (GeneralLedgerMasterPeriodRow.BudgetBase != 0)
                         {
                             DataRow DR = (DataRow)ATempTable.NewRow();
@@ -726,9 +720,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 }
                 else
                 {
-                    TempRow.BeginEdit();
-                    TempRow.ItemArray[2] = 0;
-                    TempRow.EndEdit();
+                    TempRow["BudgetBase"] = 0;
                 }
             }
             catch (Exception)
