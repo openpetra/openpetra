@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             dialog.Title = Catalog.GetString("Import batches from spreadsheet file");
             dialog.Filter = Catalog.GetString("Gift Batches files (*.csv)|*.csv");
-            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
             if (dialog.ShowDialog() == DialogResult.OK)
             {
@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (impOptions.Length > 1)
                 {
-                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
                 }
 
                 FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
-                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
 
                     String importString;
@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
             impOptions = FdlgSeparator.SelectedSeparator;
-            impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
+            impOptions += FdlgSeparator.NumberFormat;
             TUserDefaults.SetDefault("Imp Options", impOptions);
             TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
             TUserDefaults.SaveChangedUserDefaults();

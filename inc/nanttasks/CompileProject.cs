@@ -218,6 +218,7 @@ namespace Ict.Tools.NAntTasks
             StreamWriter sw = new StreamWriter(FProjectFilesDir + Path.DirectorySeparatorChar + "OpenPetra.Mini.sln");
 
             string projFile = Path.GetFileName(FCSProjFile).ToLower();
+            bool foundProject = false;
 
             while (!sr.EndOfStream)
             {
@@ -229,6 +230,7 @@ namespace Ict.Tools.NAntTasks
                     {
                         sw.WriteLine(line);
                         sw.WriteLine("EndProject");
+                        foundProject = true;
                     }
                 }
                 else if (!line.StartsWith("EndProject"))
@@ -239,6 +241,13 @@ namespace Ict.Tools.NAntTasks
 
             sr.Close();
             sw.Close();
+
+            if (!foundProject)
+            {
+                throw new Exception(
+                    "cannot compile " + projFile + " because it cannot be found in " + FProjectFilesDir + Path.DirectorySeparatorChar +
+                    "OpenPetra.sln");
+            }
 
             // compile solution OpenPetra.Mini.sln
             CompileSolution sln = new CompileSolution();

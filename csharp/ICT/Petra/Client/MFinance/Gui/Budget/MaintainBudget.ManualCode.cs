@@ -321,7 +321,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 if (impOptions.Length > 1)
                 {
-                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
                 }
 
                 FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
@@ -331,7 +331,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     TVerificationResultCollection AMessages;
 
                     string[] FdlgSeparatorVal = new string[] {
-                        FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormatIndex.ToString()
+                        FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
                     };
 
                     //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());

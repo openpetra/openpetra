@@ -64,7 +64,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return ctrl.controlName + ".Date";
             }
 
-            return ctrl.controlName + ".Date.Value";
+            return "(" + ctrl.controlName + ".Date.HasValue?" + ctrl.controlName + ".Date.Value:DateTime.MinValue)";
         }
 
         /// <summary>
