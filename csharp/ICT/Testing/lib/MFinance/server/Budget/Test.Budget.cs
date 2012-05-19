@@ -164,6 +164,82 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             decimal consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
             Assert.AreEqual(23.0m, consolidatedBudgetValue, "budget should now be consolidated");
+            
+            // TODO: also check some summary account and cost centre for summed up budget values
+            
+            // check how reposting a budget works
+            string sqlChangeBudget = String.Format("UPDATE PUB_{0} SET {1} = 44 WHERE a_period_number_i = 1 AND " +
+                "EXISTS (SELECT * FROM PUB_{2} WHERE {0}.a_budget_sequence_i = {2}.a_budget_sequence_i AND a_ledger_number_i = {3} " +
+                "AND a_year_i = 0 AND a_revision_i = 0 AND a_account_code_c = '0300' AND a_cost_centre_code_c = '4300')",
+                ABudgetPeriodTable.GetTableDBName(),
+                ABudgetPeriodTable.GetBudgetBaseDBName(),
+                ABudgetTable.GetTableDBName(),
+                intLedgerNumber);
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction, false);
+            
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            // post all budgets again            
+            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(intLedgerNumber);
+            consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(intLedgerNumber, true, out VerificationResult);
+            
+            if (VerificationResult != null)
+            {
+                Assert.AreEqual(false,
+                    VerificationResult.HasCriticalErrors,
+                    "2nd ConsolidateBudget has critical errors: " + VerificationResult.BuildVerificationResultString());
+            }
+
+            Assert.AreEqual(true, consolidated, "consolidating the budgets for the second time");
+
+            consolidatedBudgetValue =
+                Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
+            Assert.AreEqual(44.0m, consolidatedBudgetValue, "budget should be consolidated with the new value");
+            
+            // post only a modified budget (testing UnPostBudget)
+            sqlChangeBudget = String.Format("UPDATE PUB_{0} SET {1} = 65 WHERE a_period_number_i = 1 AND " +
+                "EXISTS (SELECT * FROM PUB_{2} WHERE {0}.a_budget_sequence_i = {2}.a_budget_sequence_i AND a_ledger_number_i = {3} " +
+                "AND a_year_i = 0 AND a_revision_i = 0 AND a_account_code_c = '0300' AND a_cost_centre_code_c = '4300')",
+                ABudgetPeriodTable.GetTableDBName(),
+                ABudgetPeriodTable.GetBudgetBaseDBName(),
+                ABudgetTable.GetTableDBName(),
+                intLedgerNumber);
+
+            string sqlMarkBudgetForConsolidation = String.Format("UPDATE PUB_{0} SET {1} = false WHERE " +
+                "a_ledger_number_i = {2} " +
+                "AND a_year_i = 0 AND a_revision_i = 0 AND a_account_code_c = '0300' AND a_cost_centre_code_c = '4300'",
+                ABudgetTable.GetTableDBName(),
+                ABudgetTable.GetBudgetStatusDBName(),
+                intLedgerNumber);
+            
+            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlChangeBudget, Transaction, false);
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sqlMarkBudgetForConsolidation, Transaction, false);
+            
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            // post only modified budget again           
+            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(intLedgerNumber);
+            consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(intLedgerNumber, false, out VerificationResult);
+            
+            if (VerificationResult != null)
+            {
+                Assert.AreEqual(false,
+                    VerificationResult.HasCriticalErrors,
+                    "3rd ConsolidateBudget has critical errors: " + VerificationResult.BuildVerificationResultString());
+            }
+
+            Assert.AreEqual(true, consolidated, "consolidating the budgets for the third time");
+
+            consolidatedBudgetValue =
+                Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
+            Assert.AreEqual(65.0m, consolidatedBudgetValue, "budget should be consolidated with the new value, after UnPostBudget");
+            
+            // TODO: test forwarding periods. what happens to next year values, when there is no next year glm record yet?
         }
     }
 }
