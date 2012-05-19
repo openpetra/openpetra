@@ -544,7 +544,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
             ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
@@ -624,7 +624,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
             ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];

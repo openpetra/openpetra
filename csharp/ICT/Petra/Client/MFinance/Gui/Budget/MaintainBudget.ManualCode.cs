@@ -499,6 +499,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     DisplayBudgetTypeInflateBase();
                 }
             }
+
             grdDetails.Refresh();
         }
 
@@ -1070,6 +1071,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, ARow.Year);
                 ARow.EndEdit();
             }
+
             grdDetails.Refresh();
             return true;
         }
