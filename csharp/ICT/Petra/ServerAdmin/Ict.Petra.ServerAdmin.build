@@ -2,6 +2,6 @@
 <project name="Ict.Petra.Server-Build">
 
 <!-- Include default implementation -->
-<include buildfile="../../../../inc/nant/OpenPetra.subdirs.xml"/>  
+<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
  
 </project>
