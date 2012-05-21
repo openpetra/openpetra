@@ -890,6 +890,7 @@ namespace Ict.Petra.WebServer.MConference
                 this.Response.AddHeader("Content-Length", (new FileInfo(pdfFilename)).Length.ToString());
                 this.Response.AddHeader("Content-Disposition", "attachment; filename=" + row.PartnerKey.ToString() + ".pdf");
                 this.Response.WriteFile(pdfFilename);
+                this.Response.Flush();
                 // this.Response.End(); avoid System.Threading.ThreadAbortException
             }
             catch (Exception ex2)
@@ -918,6 +919,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=Badge_" + row.FirstName + "_" + row.FamilyName + ".pdf");
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1079,6 +1081,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1136,6 +1139,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1181,6 +1185,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1225,6 +1230,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1269,6 +1275,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
