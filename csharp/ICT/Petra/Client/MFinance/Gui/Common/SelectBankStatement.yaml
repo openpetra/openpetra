@@ -10,23 +10,22 @@ RootNode:
     Controls:
         pnlDialogContent:
             Dock: Fill
-            # TODO: dtpFilterStatementsByDate
             Controls: 
                 Row0: [pnlTop]
                 Row1: [pnlGridWithButtons]
         pnlTop:
             Dock: Top
-            Height: 80
+            Height: 40
             Controls: [pnlTopLeftButtons, pnlTopRightButtons]
         pnlTopLeftButtons:
             Dock: Left
-            Controls:
-                Row0: [btnSplitStatements]
-                Row1: [btnImportNewStatement]
+            Margin: 0
+            Controls: [btnImportNewStatement]
         pnlTopRightButtons:
             Dock: Right
+            Margin: 0
             Controls:
-                Row0: [btnTrainMatching]
+                Row0: [dtpShowStatementsFrom]
         pnlGridWithButtons:
             Dock: Fill
             Controls: [grdSelectStatement, pnlButtons]
@@ -41,9 +40,7 @@ RootNode:
             ActionClick: LoadStatement
         btnImportNewStatement:
             ActionClick: ImportNewStatement
-        btnSplitStatements:
-            ActionClick: SplitStatements
-        btnTrainMatching:
-            ActionClick: TrainMatching
+        dtpShowStatementsFrom:
+            OnChange: PopulateStatementGrid
     Menu:
     Toolbar:

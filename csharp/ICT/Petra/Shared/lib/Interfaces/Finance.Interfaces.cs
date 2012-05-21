@@ -479,7 +479,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
                                                    AEpTransactionTable ATransTable,
                                                    out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
-        AEpStatementTable GetImportedBankStatements(DateTime AStartDate);
+        AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber,
+                                                    DateTime AStartDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         System.Boolean DropBankStatement(Int32 AEpStatementKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
@@ -827,6 +828,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors
         System.Boolean PerformStewardshipCalculation(System.Int32 ALedgerNumber,
                                                      System.Int32 APeriodNumber,
                                                      out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector)</summary>
+        System.Boolean GenerateICHStewardshipBatch(System.Int32 ALedgerNumber,
+                                                   System.Int32 APeriodNumber,
+                                                   ref TVerificationResultCollection AVerificationResult);
     }
 
 }

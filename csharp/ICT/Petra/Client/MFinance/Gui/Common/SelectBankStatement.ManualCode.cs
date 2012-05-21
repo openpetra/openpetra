@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 {
     public partial class TFrmSelectBankStatement
     {
-        private Int32 FLedgerNumber;
+        private Int32 FLedgerNumber = -1;
         private Int32 FStatementKey = -1;
 
         /// <summary>
@@ -57,9 +57,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         {
             set
             {
-                btnOK.Visible = false;
-                FLedgerNumber = value;
-                PopulateStatementGrid();
+                if (FLedgerNumber != value)
+                {
+                    btnOK.Visible = false;
+                    FLedgerNumber = value;
+                    dtpShowStatementsFrom.Date = DateTime.Now.AddMonths(-2);
+                    // will be called by dtp event: PopulateStatementGrid(null, null);
+
+                    if (((DevAge.ComponentModel.BoundDataView)grdSelectStatement.DataSource).Count == 0)
+                    {
+                        dtpShowStatementsFrom.Clear();
+                        PopulateStatementGrid(null, null);
+                    }
+                }
             }
         }
 
@@ -74,17 +84,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private void PopulateStatementGrid()
+        private bool RunningPopulateStatementGrid = false;
+
+        private void PopulateStatementGrid(object sender, EventArgs e)
         {
-            // TODO: add datetimepicker to toolstrip
-            // see http://www.daniweb.com/forums/thread109966.html#
-            // dtTScomponent = new ToolStripControlHost(dtMyDateTimePicker);
-            // MainToolStrip.Items.Add(dtTScomponent);
-            // DateTime.Now.AddMonths(-100);
+            if (RunningPopulateStatementGrid)
+            {
+                return;
+            }
+
+            // somehow, the datetimepicker throws an event, when we are reading the Date property
+            RunningPopulateStatementGrid = true;
+
             DateTime dateStatementsFrom = DateTime.MinValue;
 
+            if (dtpShowStatementsFrom.Date.HasValue)
+            {
+                dateStatementsFrom = dtpShowStatementsFrom.Date.Value;
+            }
+
             // update the grid with the bank statements
-            AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(dateStatementsFrom);
+            AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(FLedgerNumber, dateStatementsFrom);
 
             grdSelectStatement.Columns.Clear();
             grdSelectStatement.AddTextColumn(Catalog.GetString("Bank statement"), stmts.ColumnFilename);
@@ -92,6 +112,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             stmts.DefaultView.AllowNew = false;
             grdSelectStatement.DataSource = new DevAge.ComponentModel.BoundDataView(stmts.DefaultView);
+
+            RunningPopulateStatementGrid = false;
         }
 
         private void LoadStatement(object sender, EventArgs e)
@@ -163,7 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 {
                     if (TRemote.MFinance.ImportExport.WebConnectors.DropBankStatement(toDelete.StatementKey))
                     {
-                        PopulateStatementGrid();
+                        PopulateStatementGrid(null, null);
                     }
                 }
             }
@@ -172,14 +194,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private void BtnOK_Click(object sender, EventArgs e)
         {
             // dummy implementation
-        }
-
-        private void SplitStatements(object sender, EventArgs e)
-        {
-        }
-
-        private void TrainMatching(object sender, EventArgs e)
-        {
         }
     }
 }

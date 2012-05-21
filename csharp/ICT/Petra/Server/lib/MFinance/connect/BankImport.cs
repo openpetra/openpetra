@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -118,16 +118,18 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <param name="AStartDate"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static AEpStatementTable GetImportedBankStatements(DateTime AStartDate)
+        public static AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber, DateTime AStartDate)
         {
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             AEpStatementTable localTable = new AEpStatementTable();
             AEpStatementRow row = localTable.NewRowTyped(false);
 
+            row.LedgerNumber = ALedgerNumber;
             row.Date = AStartDate;
 
             StringCollection operators = new StringCollection();
+            operators.Add("=");
             operators.Add(">=");
 
             localTable = AEpStatementAccess.LoadUsingTemplate(row, operators, null, ReadTransaction);

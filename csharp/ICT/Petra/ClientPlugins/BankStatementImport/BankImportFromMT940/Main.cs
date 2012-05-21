@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,6 +49,9 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         /// </summary>
         public string GetFileFilter()
         {
+            // each time the button btnImportNewStatement is clicked, do a split and move action
+            SplitFilesAndMove();
+
             return "MT940 Datei (*.sta)|*.sta";
         }
 
@@ -201,28 +204,27 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
                 if (AFilename.Length > AEpStatementTable.GetFilenameLength())
                 {
-                    epstmt.Filename = 
+                    epstmt.Filename =
                         TAppSettingsManager.GetValue("BankNameFor" + stmt.bankCode + "/" + stmt.accountCode,
-                                                     stmt.bankCode + "/" + stmt.accountCode, true);
+                            stmt.bankCode + "/" + stmt.accountCode, true);
                 }
 
                 epstmt.EndBalance = stmt.endBalance;
 
                 AMainDS.AEpStatement.Rows.Add(epstmt);
-                
-                
+
                 // sort by amount, and by accountname; this is the order of the paper statements and attachments
                 AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetTransactionAmountDBName() + "," +
                                                           BankImportTDSAEpTransactionTable.GetOrderDBName();
                 AMainDS.AEpTransaction.DefaultView.RowFilter = BankImportTDSAEpTransactionTable.GetStatementKeyDBName() + "=" +
-                    epstmt.StatementKey.ToString();
-                
+                                                               epstmt.StatementKey.ToString();
+
                 Int32 countOrderOnStatement = 1;
-    
+
                 foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
                 {
                     BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)rv.Row;
-    
+
                     if (row.TransactionAmount < 0)
                     {
                         // TODO: sort by absolute amount, ignoring debit/credit?
@@ -236,7 +238,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                         countOrderOnStatement++;
                     }
                 }
-                
+
                 statementCounter++;
             }
 
@@ -276,9 +278,15 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         /// there are files from several banks, possibly for several legal entities
         /// one file can contain several bank statements from several days
         /// split the files into one file per statement, and move the file to a separate directory for each legal entity
-        static public void SplitFilesAndMove()
+        private bool SplitFilesAndMove()
         {
-            // BankAccounts contains a comma separated list of bank accounts, each with bank account number, bank id, name for legal entity
+            if (!TAppSettingsManager.HasValue("BankAccounts"))
+            {
+                return false;
+            }
+
+            // BankAccounts contains a comma separated list of bank accounts,
+            // each with bank account number, bank id, name for legal entity
             string[] bankAccountData = TAppSettingsManager.GetValue("BankAccounts").Split(new char[] { ',' });
             string RawPath = TAppSettingsManager.GetValue("RawMT940.Path");
             string OutputPath = TAppSettingsManager.GetValue("MT940.Output.Path");
@@ -340,6 +348,8 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     }
                 }
             }
+
+            return true;
         }
     }
 }
