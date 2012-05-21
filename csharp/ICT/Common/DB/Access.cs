@@ -1727,6 +1727,11 @@ namespace Ict.Common.DB
                 {
                     int NumberOfRowsAffected = TransactionCommand.ExecuteNonQuery();
 
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log("Number of rows affected: " + NumberOfRowsAffected.ToString());
+                    }
+
                     if (ACommitTransaction)
                     {
                         CommitTransaction();

@@ -10,6 +10,7 @@
     <property name="workers_count" value="100" overwrite="false"/>
     <property name="keyminsperfield_count" value="10" overwrite="false"/>
     <property name="donations_count" value="3000" overwrite="false"/>
+    <property name="invoices_count" value="1000" overwrite="false"/>
     <property name="dir.data.output" value="${string::replace(dir.root,'\','/')}/demodata/generated" overwrite="false"/>
 
     <copy file="${dir.incdir.cfg + '/benerator/create-data.ben.xml'}"

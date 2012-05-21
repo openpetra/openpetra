@@ -38,7 +38,7 @@
       <Table sqltable="p_location"/>
     </DataSet> 
 
-    <DataSet name="AccountsPayableGUITables">
+    <DataSet name="AccountsPayableGUITDS">
       <CustomTable name="TransactionList">
           <CustomField name="ApNum" type="string"/>
           <CustomField name="InvNum" type="string"/>

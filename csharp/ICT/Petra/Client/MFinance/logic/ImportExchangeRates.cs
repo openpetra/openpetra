@@ -4,7 +4,7 @@
 // @Authors:
 //       chris, christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,46 +60,29 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (DialogBox.ShowDialog() == DialogResult.OK)
             {
-                string Directory = Path.GetDirectoryName(DialogBox.FileName);
-                string[] YmlFiles = System.IO.Directory.GetFiles(Directory, "*.yaml");
-                string DefinitionFileName = String.Empty;
+                String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+                String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
-                if (YmlFiles.Length == 1)
+                TDlgSelectCSVSeparator DlgSeparator = new TDlgSelectCSVSeparator(false);
+                DlgSeparator.CSVFileName = DialogBox.FileName;
+
+                DlgSeparator.DateFormat = dateFormatString;
+
+                if (impOptions.Length > 1)
                 {
-                    DefinitionFileName = YmlFiles[0];
-                }
-                else
-                {
-                    YmlFiles = System.IO.Directory.GetFiles(Directory, "*.yml");
-
-                    if (YmlFiles.Length == 1)
-                    {
-                        DefinitionFileName = YmlFiles[0];
-                    }
-                    else
-                    {
-                        // show another open file dialog for the description file
-                        OpenFileDialog DialogDefinitionFile = new OpenFileDialog();
-                        DialogDefinitionFile.Title = Catalog.GetString("Please select a yml file that describes the content of the spreadsheet");
-                        DialogDefinitionFile.Filter = Catalog.GetString("Data description files (*.yaml,*.yml)|*.yaml;*.yml");
-
-                        if (DialogDefinitionFile.ShowDialog() == DialogResult.OK)
-                        {
-                            DefinitionFileName = DialogDefinitionFile.FileName;
-                        }
-                    }
+                    DlgSeparator.NumberFormat = impOptions.Substring(1);
                 }
 
-                if (File.Exists(DefinitionFileName))
-                {
-                    TYml2Xml parser = new TYml2Xml(DefinitionFileName);
-                    XmlDocument dataDescription = parser.ParseYML2XML();
-                    XmlNode RootNode = TXMLParser.FindNodeRecursive(dataDescription.DocumentElement, "RootNode");
+                DlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
 
-                    if (Path.GetExtension(DialogBox.FileName).ToLower() == ".csv")
-                    {
-                        ImportCurrencyExRatesFromCSV(AExchangeRateDT, DialogBox.FileName, RootNode, AImportMode);
-                    }
+                if (DlgSeparator.ShowDialog() == DialogResult.OK)
+                {
+                    ImportCurrencyExRatesFromCSV(AExchangeRateDT,
+                        DialogBox.FileName,
+                        DlgSeparator.SelectedSeparator,
+                        DlgSeparator.NumberFormat,
+                        DlgSeparator.DateFormat,
+                        AImportMode);
                 }
             }
         }
@@ -110,9 +93,16 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AExchangeRDT">Daily or Corporate exchange rate table</param>
         /// <param name="ADataFilename">The .CSV file to process</param>
-        /// <param name="ARootNode">Used in parsing the CSV</param>
+        /// <param name="ACSVSeparator"></param>
+        /// <param name="ANumberFormat"></param>
+        /// <param name="ADateFormat"></param>
         /// <param name="AImportMode">Daily or Corporate</param>
-        private static void ImportCurrencyExRatesFromCSV(TTypedDataTable AExchangeRDT, string ADataFilename, XmlNode ARootNode, string AImportMode)
+        private static void ImportCurrencyExRatesFromCSV(TTypedDataTable AExchangeRDT,
+            string ADataFilename,
+            string ACSVSeparator,
+            string ANumberFormat,
+            string ADateFormat,
+            string AImportMode)
         {
             bool IsShortFileFormat;
             int x, y;
@@ -134,13 +124,11 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             StreamReader DataFile = new StreamReader(ADataFilename, System.Text.Encoding.Default);
 
-            string Separator = TXMLParser.GetAttribute(ARootNode, "Separator");
-            string DateFormat = TXMLParser.GetAttribute(ARootNode, "DateFormat");
-            string ThousandsSeparator = TXMLParser.GetAttribute(ARootNode, "ThousandsSeparator");
-            string DecimalSeparator = TXMLParser.GetAttribute(ARootNode, "DecimalSeparator");
+            string ThousandsSeparator = (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? "," : ".");
+            string DecimalSeparator = (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? "." : ",");
 
             CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
-            MyCultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormat;
+            MyCultureInfoDate.DateTimeFormat.ShortDatePattern = ADateFormat;
 
             // TODO: check for valid currency codes? at the moment should fail on foreign key
             // TODO: disconnect the grid from the datasource to avoid flickering?
@@ -170,7 +158,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 string Line = DataFile.ReadLine();
 
                 //Convert separator to a char
-                char Sep = Separator[0];
+                char Sep = ACSVSeparator[0];
                 //Turn current line into string array of column values
                 string[] CsvColumns = Line.Split(Sep);
 
@@ -206,16 +194,16 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     //Read the values for the current line
                     //From currency
-                    Currencies[0] = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
+                    Currencies[0] = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false).ToString();
                     //To currency
-                    Currencies[1] = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
+                    Currencies[1] = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false).ToString();
                 }
 
-                //TODO: Perform validation on the From and To currencies at ths point!!
+                //TODO: Perform validation on the From and To currencies at this point!!
                 //TODO: Date parsing as in Petra 2.x instead of using XML date format!!!
-                string DateEffectiveStr = StringHelper.GetNextCSV(ref Line, Separator, false);
+                string DateEffectiveStr = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false);
                 DateTime DateEffective = Convert.ToDateTime(DateEffectiveStr, MyCultureInfoDate);
-                string ExchangeRateString = StringHelper.GetNextCSV(ref Line, Separator, false).Replace(ThousandsSeparator, "").Replace(
+                string ExchangeRateString = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false).Replace(ThousandsSeparator, "").Replace(
                     DecimalSeparator,
                     ".");
 

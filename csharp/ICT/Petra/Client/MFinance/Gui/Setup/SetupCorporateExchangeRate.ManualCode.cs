@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -153,12 +153,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ACorporateExRateRow.DateEffectiveFrom = NewDateEffectiveFrom;
-
-/*
- * // It seems weird to set the date as the first of this month, but the time as now?
- *          ACorporateExRateRow.TimeEffectiveFrom =
- *              (DateTime.Now.Hour * 60 + DateTime.Now.Minute) * 60 + DateTime.Now.Second;
- */
             ACorporateExRateRow.TimeEffectiveFrom = 0;
 
             FMainDS.ACorporateExchangeRate.Rows.Add(ACorporateExRateRow);

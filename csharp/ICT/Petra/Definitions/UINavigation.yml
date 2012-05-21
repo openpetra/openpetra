@@ -151,6 +151,11 @@ OpenPetra:
                         MaintainBudget: {ActionOpenScreen=TFrmMaintainBudget}
                         AutoGenerateBudget: {ActionOpenScreen=TFrmAutoGenerateBudget}
                         ConsolidateBudgets: {ActionClick=TConsolidateBudgets.ConsolidateBudgets}
+                        ExportBudget: {ActionOpenScreen=TFrmExportBudget}
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}
+                        IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
+                        IncomeExpenseStatementMultiPeriod: {ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
+                        IncomeExpenseStatementMultiLedger: {ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                     SearchBoxes: [Transaction, Batch]
                     General:

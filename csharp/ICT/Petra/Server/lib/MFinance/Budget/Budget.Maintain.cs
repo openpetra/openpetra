@@ -162,7 +162,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             string Separator = AFdlgSeparator[0];
             //string DateFormat = AFdlgSeparator[1];
-            //string NumberFormat = AFdlgSeparator[2] == "0" ? "American" : "European";
+            //string NumberFormat = AFdlgSeparator[2];
 
             //CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
             //MyCultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormat;
@@ -182,25 +182,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             decimal[] BudgetPeriods = new decimal[12];
             int YearForBudgetRevision = 0;
             int BdgRevision = 0;  //not currently implementing versioning so always zero
-            bool HasRunOnce = false;
-
-            int newSequence = -1;
-
-            //Find the next budget sequence
-            if (AImportDS.ABudget.Rows.Find(new object[] { newSequence }) != null)
-            {
-                newSequence = newSequence * (AImportDS.ABudget.Rows.Count);
-            }
 
             int rowNumber = 0;
 
             while (!DataFile.EndOfStream)
             {
-                if (HasRunOnce)
-                {
-                    newSequence--;
-                }
-
                 decimal totalBudgetRowAmount = 0;
 
                 try
@@ -214,7 +200,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         //Read the next line
                         Line = DataFile.ReadLine();
                         CostCentre = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
-                        //newSequence--;
                     }
 
                     //Increment row number
@@ -264,26 +249,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                     YearForBudgetRevision = YearFromCSV - CurrentYearEnd.Year + LedgerRow.CurrentFinancialYear;
 
-                    //Add the budget revision sequence. Only need to do once
-                    if (!HasRunOnce)
+                    //Add budget revision record if there's not one already.
+                    if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, YearForBudgetRevision, BdgRevision }) == null)
                     {
-                        HasRunOnce = true;
-
-                        //Check if in correct year
-                        if (ACurrentBudgetYear != YearForBudgetRevision)
-                        {
-                            return -1;
-                        }
-
-                        if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, YearForBudgetRevision, BdgRevision }) == null)
-                        {
-                            ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)AImportDS.ABudgetRevision.NewRowTyped();
-                            BudgetRevisionRow.LedgerNumber = ALedgerNumber;
-                            BudgetRevisionRow.Year = YearForBudgetRevision;
-                            BudgetRevisionRow.Revision = BdgRevision;
-                            BudgetRevisionRow.Description = "Budget Import from: " + ACSVFileName;
-                            AImportDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
-                        }
+                        ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)AImportDS.ABudgetRevision.NewRowTyped();
+                        BudgetRevisionRow.LedgerNumber = ALedgerNumber;
+                        BudgetRevisionRow.Year = YearForBudgetRevision;
+                        BudgetRevisionRow.Revision = BdgRevision;
+                        BudgetRevisionRow.Description = "Budget Import from: " + ACSVFileName;
+                        AImportDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
                     }
 
                     //Read the budgetperiod values to check if valid according to type
@@ -417,6 +391,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     {
                         //Add the new budget row
                         ABudgetRow BudgetRow = (ABudgetRow)AImportDS.ABudget.NewRowTyped();
+                        int newSequence = -1 * (AImportDS.ABudget.Rows.Count + 1);
+
                         BudgetRow.BudgetSequence = newSequence;
                         BudgetRow.LedgerNumber = ALedgerNumber;
                         BudgetRow.Year = YearForBudgetRevision;
