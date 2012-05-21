@@ -139,6 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     CurrentStatement.StatementKey);
                 cmbBankAccount.SetSelectedString(CurrentStatement.BankAccountCode);
                 txtBankStatement.Text = CurrentStatement.Filename;
+                dtpBankStatementDate.Date = CurrentStatement.Date;
                 FMainDS.AEpStatement.DefaultView.RowFilter = string.Empty;
             }
 

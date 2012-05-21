@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             {
                 btnOK.Visible = false;
                 FLedgerNumber = value;
-                PopulateStatementCombobox();
+                PopulateStatementGrid();
             }
         }
 
@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private void PopulateStatementCombobox()
+        private void PopulateStatementGrid()
         {
             // TODO: add datetimepicker to toolstrip
             // see http://www.daniweb.com/forums/thread109966.html#
@@ -83,24 +83,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             // DateTime.Now.AddMonths(-100);
             DateTime dateStatementsFrom = DateTime.MinValue;
 
-            // update the combobox with the bank statements
+            // update the grid with the bank statements
             AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(dateStatementsFrom);
 
-            cmbSelectStatement.BeginUpdate();
-            cmbSelectStatement.DisplayMember = AEpStatementTable.GetFilenameDBName();
-            cmbSelectStatement.ValueMember = AEpStatementTable.GetStatementKeyDBName();
-            cmbSelectStatement.DataSource = stmts.DefaultView;
-            cmbSelectStatement.DropDownWidth = 300;
-            cmbSelectStatement.EndUpdate();
+            grdSelectStatement.Columns.Clear();
+            grdSelectStatement.AddTextColumn(Catalog.GetString("Bank statement"), stmts.ColumnFilename);
+            grdSelectStatement.AddDateColumn(Catalog.GetString("Date"), stmts.ColumnDate);
 
-            cmbSelectStatement.SelectedIndex = -1;
+            stmts.DefaultView.AllowNew = false;
+            grdSelectStatement.DataSource = new DevAge.ComponentModel.BoundDataView(stmts.DefaultView);
         }
 
         private void LoadStatement(object sender, EventArgs e)
         {
-            if (cmbSelectStatement.SelectedIndex != -1)
+            DataRowView[] SelectedGridRow = grdSelectStatement.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
             {
-                FStatementKey = cmbSelectStatement.GetSelectedInt32();
+                FStatementKey = ((AEpStatementRow)SelectedGridRow[0].Row).StatementKey;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -148,18 +148,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
         private void DeleteStatement(object sender, EventArgs e)
         {
-            if (cmbSelectStatement.SelectedIndex != -1)
+            DataRowView[] SelectedGridRow = grdSelectStatement.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
             {
+                AEpStatementRow toDelete = (AEpStatementRow)SelectedGridRow[0].Row;
+
                 if (MessageBox.Show(
                         String.Format(Catalog.GetString("Do you really want to delete the bank statement {0}?"),
-                            cmbSelectStatement.GetSelectedDescription()),
+                            toDelete.Filename),
                         Catalog.GetString("Confirmation"),
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    if (TRemote.MFinance.ImportExport.WebConnectors.DropBankStatement(cmbSelectStatement.GetSelectedInt32()))
+                    if (TRemote.MFinance.ImportExport.WebConnectors.DropBankStatement(toDelete.StatementKey))
                     {
-                        PopulateStatementCombobox();
+                        PopulateStatementGrid();
                     }
                 }
             }
@@ -168,6 +172,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private void BtnOK_Click(object sender, EventArgs e)
         {
             // dummy implementation
+        }
+
+        private void SplitStatements(object sender, EventArgs e)
+        {
+        }
+
+        private void TrainMatching(object sender, EventArgs e)
+        {
         }
     }
 }
