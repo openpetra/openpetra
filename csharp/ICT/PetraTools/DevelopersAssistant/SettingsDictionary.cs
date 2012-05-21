@@ -148,6 +148,19 @@ namespace Ict.Tools.DevelopersAssistant
             get; set;
         }
 
+        /// <summary>
+        /// True if the code generator should add a pre-build action to the Ict.Common dll
+        /// </summary>
+        public bool DoPreBuildOnIctCommon {
+            get; set;
+        }
+
+        /// <summary>
+        /// True if the code generator should add a post-build action to PetraClient exe
+        /// </summary>
+        public bool DoPostBuildOnPetraClient {
+            get; set;
+        }
 
         // Private members
         private string _path;       // path to local settings file
@@ -181,6 +194,8 @@ namespace Ict.Tools.DevelopersAssistant
             AutoStopServer = true;
             MinimiseServerAtStartup = true;
             TreatWarningsAsErrors = true;
+            DoPreBuildOnIctCommon = false;
+            DoPostBuildOnPetraClient = false;
 
             // Add items to our dictionary
             this.Add("AltSequence", AltSequence);
@@ -200,6 +215,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.Add("AutoStopServer", AutoStopServer ? "1" : "0");
             this.Add("MinimiseServerAtStartup", MinimiseServerAtStartup ? "1" : "0");
             this.Add("TreatWarningsAsErrors", TreatWarningsAsErrors ? "1" : "0");
+            this.Add("DoPreBuildOnIctCommon", DoPreBuildOnIctCommon ? "1" : "0");
+            this.Add("DoPostBuildOnPetraClient", DoPostBuildOnPetraClient ? "1" : "0");
         }
 
         /// <summary>
@@ -228,6 +245,11 @@ namespace Ict.Tools.DevelopersAssistant
             AutoStopServer = (this["AutoStopServer"] != "0");
             MinimiseServerAtStartup = (this["MinimiseServerAtStartup"] != "0");
             TreatWarningsAsErrors = (this["TreatWarningsAsErrors"] != "0");
+            DoPreBuildOnIctCommon = (this["DoPreBuildOnIctCommon"] != "0");
+            DoPostBuildOnPetraClient = (this["DoPostBuildOnPetraClient"] != "0");
+
+            // Set up the OS environment variables
+            Environment.SetEnvironmentVariable("OPDA_PATH", System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
         }
 
         /// <summary>
@@ -253,6 +275,8 @@ namespace Ict.Tools.DevelopersAssistant
             this["AutoStopServer"] = AutoStopServer ? "1" : "0";
             this["MinimiseServerAtStartup"] = MinimiseServerAtStartup ? "1" : "0";
             this["TreatWarningsAsErrors"] = TreatWarningsAsErrors ? "1" : "0";
+            this["DoPreBuildOnIctCommon"] = DoPreBuildOnIctCommon ? "1" : "0";
+            this["DoPostBuildOnPetraClient"] = DoPostBuildOnPetraClient ? "1" : "0";
 
             // Add our appVersion key/value
             if (!this.ContainsKey("ApplicationVersion"))

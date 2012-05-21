@@ -191,7 +191,11 @@ namespace Ict.Tools.DevelopersAssistant
                         else if (itemID == 3)
                         {
                             // exception must not be ExceptionDetailsDialog
-                            bIsValid = (_verboseOutput.LastIndexOf('\\', p, 24) == -1 && _verboseOutput.IndexOf("DetailsDialog", p, 24) == -1);
+                            // or ExceptionLogFileDialog-
+                            bIsValid =
+                                (_verboseOutput.LastIndexOf('\\', p, 24) == -1
+                                 && _verboseOutput.IndexOf("DetailsDialog", p, 24) == -1
+                                 && _verboseOutput.IndexOf("LogFileDialog", p, 24) == -1);
                         }
 
                         if (bIsValid)

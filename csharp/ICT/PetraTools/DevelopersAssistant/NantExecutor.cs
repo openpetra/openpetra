@@ -220,9 +220,29 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
+        /// <summary>
+        /// Specific call to run the previewWinform task
+        /// </summary>
+        /// <param name="BranchLocation">The path to the openPetra branch for which the task is to be run</param>
+        /// <param name="YAMLPath">The sub-path to the YAML file, eg MPartner\Gui\Setup\myForm.yaml</param>
+        /// <returns>True if nant.bat was launched successfully.  Check the log file to see if the command actually succeeded.</returns>
+        public static bool RunPreviewWinform(string BranchLocation, string YAMLPath)
+        {
+            string initialDir = System.IO.Path.Combine(BranchLocation, "csharp\\ICT\\Petra\\Client");
+
+            // This is one of the tasks where we don't wait for exit - so we write a dummy output file
+            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(System.IO.Path.Combine(initialDir, "opda.txt")))
+            {
+                sw.WriteLine("This task does not generate a log file.");
+                sw.Close();
+            }
+
+            return LaunchExe("nant.bat", String.Format("previewWinform  -D:file={0}", YAMLPath), initialDir, false);
+        }
+
         //  Helper function to launch an executable file.
         //  Returns true if the executable is launched successfully.
-        private static bool LaunchExe(string ExeName, string Params, string StartDirectory)
+        private static bool LaunchExe(string ExeName, string Params, string StartDirectory, bool WaitForExit = true)
         {
             bool ret = true;
             ProcessStartInfo si = new ProcessStartInfo(ExeName, Params);
@@ -233,7 +253,10 @@ namespace Ict.Tools.DevelopersAssistant
             try
             {
                 Process p = Process.Start(si);
-                p.WaitForExit();
+                if (WaitForExit)
+                {
+                    p.WaitForExit();
+                }
             }
             catch (Exception ex)
             {

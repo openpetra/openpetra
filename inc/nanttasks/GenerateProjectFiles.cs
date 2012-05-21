@@ -419,6 +419,25 @@ namespace Ict.Tools.NAntTasks
                 }
             }
 
+            // Now, for selected solutions, we add some solution files
+            // This functionality is not available for all IDE's at present
+            if (ASolutionFilename == "OpenPetra.Client.sln" || ASolutionFilename == "OpenPetra.Server.sln" || ASolutionFilename == "OpenPetra.sln")
+            {
+                if (File.Exists(ATemplateDir + "template.sln.folder"))
+                {
+                    // Add the following files to the Definitions folder
+                    string folderName = "Definitions";
+                    StringBuilder temp = GetTemplateFile(ATemplateDir + "template.sln.folder");
+                    temp.Replace("${FolderName}", folderName);
+                    temp.Replace("${ProjectGuid}", GetProjectGUID(folderName));
+
+                    string fileList = GetAdditionalSolutionFile(folderName, "CacheableTablesAndLists.yaml");
+                    if (ASolutionFilename != "OpenPetra.Server.sln") fileList += GetAdditionalSolutionFile(folderName, "UINavigation.yml");
+                    temp.Replace("${FileList}", fileList);
+                    Projects += temp.ToString();
+                }
+            }
+
             template.Replace("${TemplateProject}", Projects);
             template.Replace("${TemplateConfiguration}", ProjectConfiguration);
 
@@ -526,6 +545,50 @@ namespace Ict.Tools.NAntTasks
 
             StringBuilder temp;
 
+            // Set the application icon for WinExe projects, if an icon file exists
+            string replaceWith = String.Empty;
+            if (String.Compare(AProjectType, "WinExe", true) == 0)
+            {
+                string[] iconFiles = Directory.GetFiles(ASrcPath, "*.ico", SearchOption.TopDirectoryOnly);
+                if (iconFiles.Length > 0)
+                {
+                    temp = GetTemplateFile(ATemplateDir + "template.csproj.appicon");
+                    temp.Replace("${application-Icon}", iconFiles[0]);
+                    replaceWith = temp.ToString();
+                }
+            }
+            template.Replace("${ApplicationIcon}", replaceWith);
+
+            // Set the Pre-build event if required by the environment and if the project is Ict.Common
+            replaceWith = String.Empty;
+            if (AProjectName == "Ict.Common" && Environment.GetEnvironmentVariable("OPDA_StopServer") != null)
+            {
+                string path = Environment.GetEnvironmentVariable("OPDA_PATH");
+                if (path != null)
+                {
+                    Uri u = new Uri(path);
+                    temp = GetTemplateFile(ATemplateDir + "template.csproj.preBuildEvent");
+                    temp = temp.Replace("${opda-path}", String.Format("\"{0}\"", u.LocalPath));
+                    replaceWith = temp.ToString();
+                }
+            }
+            template.Replace("${PreBuildEvent}", replaceWith);
+
+            // Set the Post-build event if required by the environment and if the project is PetraClient
+            replaceWith = String.Empty;
+            if (AProjectName == "PetraClient" && Environment.GetEnvironmentVariable("OPDA_StartServer") != null)
+            {
+                string path = Environment.GetEnvironmentVariable("OPDA_PATH");
+                if (path != null)
+                {
+                    Uri u = new Uri(path);
+                    temp = GetTemplateFile(ATemplateDir + "template.csproj.postBuildEvent");
+                    temp = temp.Replace("${opda-path}", String.Format("\"{0}\"", u.LocalPath));
+                    replaceWith = temp.ToString();
+                }
+            }
+            template.Replace("${PostBuildEvent}", replaceWith);
+
             // replace references
             StringBuilder ProjectReferences = new StringBuilder();
             StringBuilder OtherReferences = new StringBuilder();
@@ -621,6 +684,16 @@ namespace Ict.Tools.NAntTasks
                         temp.Replace("${DependentUpon}", ContainedFile);
                         temp.Replace("${relative-DependentUpon}", Path.GetFileName(relativeFilename));
                         CompileFile.Append(temp.ToString());
+
+                        // Add the YAML file as a dependent non-compile file
+                        OtherFile = ContainedFile.Replace("-generated.cs", ".yaml");
+                        if (File.Exists(OtherFile) && File.Exists(ATemplateDir + "template.csproj.none.DependentUpon"))
+                        {
+                            temp = GetTemplateFile(ATemplateDir + "template.csproj.none.DependentUpon");
+                            temp.Replace("${filename}", OtherFile);
+                            temp.Replace("${relative-DependentUpon}", Path.GetFileName(relativeFilename));
+                            CompileFile.Append(temp.ToString());
+                        }
                     }
                 }
             }
@@ -779,6 +852,16 @@ namespace Ict.Tools.NAntTasks
             }
 
             sr.Close();
+        }
+
+        private string GetAdditionalSolutionFile(string FolderName, string FileName)
+        {
+            if (FolderName == "Definitions")
+            {
+                return String.Format("\t\t..\\..\\..\\csharp\\ICT\\Petra\\{0}\\{1} = ..\\..\\..\\csharp\\ICT\\Petra\\{0}\\{1}{2}",
+                    FolderName, FileName, Environment.NewLine);
+            }
+            return String.Empty;
         }
     }
 }

@@ -31,7 +31,7 @@
     <DefineConstants>TRACE;DEBUGMODE</DefineConstants>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
-  <ItemGroup>
+${ApplicationIcon}${PreBuildEvent}${PostBuildEvent}  <ItemGroup>
 ${TemplateReferences}  </ItemGroup>
   <ItemGroup>
 ${TemplateCompile}${TemplateResource}  </ItemGroup>

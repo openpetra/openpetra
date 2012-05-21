@@ -71,6 +71,10 @@ namespace Ict.Tools.DevelopersAssistant
             /// Generate a Windows Form
             /// </summary>
             generateWinform,
+            /// <summary>
+            /// Preview a previously generated Windows Form
+            /// </summary>
+            previewWinform,
             // Code generation ---------------------------------------
             /// <summary>
             /// Generate the solution without compilation
@@ -308,6 +312,10 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     _taskItem = TaskItem.uncrustify;
                 }
+                else if (TaskName.IndexOf("preview", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.previewWinform;
+                }
                 else if (TaskName.IndexOf("Mapper", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     _taskItem = TaskItem.generateORM;
@@ -429,6 +437,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.generateWinform: return "Generating Windows form from YAML ...";
 
+                    case TaskItem.previewWinform: return "Creating a preview of a Windows form ...";
+
                     case TaskItem.initConfigFiles: return "Initialising configuration files.  Please be patient ...";
 
                     case TaskItem.quickClean: return "Performing Quick clean ...";
@@ -515,6 +525,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.generateWinform: return "Starting generation of Windows form from YAML";
 
+                    case TaskItem.previewWinform: return "Starting generation of Windows form preview";
+
                     case TaskItem.initConfigFiles: return "Starting initConfigFiles";
 
                     case TaskItem.quickClean: return "Starting quickClean";
@@ -576,6 +588,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.generateSolutionNoCompile: return "Generate the solution with no compile";
 
                     case TaskItem.generateWinform: return "Generate a Windows form";
+
+                    case TaskItem.previewWinform: return "Preview a Windows form";
 
                     case TaskItem.initConfigFiles: return "Initialise the configuration files";
 
@@ -640,6 +654,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.generateSolutionNoCompile: return "Generate the solution with no compile";
 
                     case TaskItem.generateWinform: return "Generate a Windows form";
+
+                    case TaskItem.previewWinform: return "Preview a Windows form";
 
                     case TaskItem.initConfigFiles: return "Initialise the configuration files";
 
