@@ -34,12 +34,10 @@
             Label: Ledger
         grpDateSelection:
             Label: Select Date
-            Dock: Top
             Controls: [dtpFromDate, dtpToDate]
         
         grpAccountSelection:
             Label: Select Accounts
-            Dock: Top
             Controls: [cmbAccountFrom, cmbAccountTo]
         
         dtpFromDate:

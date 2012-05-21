@@ -34,16 +34,13 @@
             Label: Ledger
         grpDateSelection:
             Label: Select Date
-            Dock: Top
             Controls: [dtpFromDate, dtpToDate]
         rgrPartnerSelection:
             Label: Select Recipient
-            Dock: Top
             Controls: [rbtAllPartner, rbtExtract, rbtPartner]
             ParameterName: param_donor
         grpCurrencySelection:
             Label: Currency
-            Dock: Top
             Controls: [cmbCurrency]
         dtpFromDate:
             Label: From

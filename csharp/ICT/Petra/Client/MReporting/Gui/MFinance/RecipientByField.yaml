@@ -22,21 +22,17 @@
     Controls:
         tpgGeneralSettings: {ControlsOrientation=vertical}
             Label: General Settings
-            Controls: [pnlFilter, pnlMiddle, pnlBottom]
+            Controls: [pnlFilter, clbLedger, pnlBottom]
         pnlFilter: {ControlsOrientation=horizontal}
-            Dock: Fill
+            Dock: Top
             Controls: [txtFilter, btnFilter]
-        pnlMiddle:
-            #Dock: Fill
-            Controls: [clbLedger]
         pnlBottom:
-            #Dock: Bottom
+            Dock: Bottom
             Controls: [dtpDateFrom, dtpDateTo, chkAllLedgers]
         clbLedger:
+            Dock: Fill
             NoLabel: true 
             ParameterName: param_ledgers
-            Width: 550
-            Height: 200
         txtFilter:
             NoLabel: true
             Width: 300

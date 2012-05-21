@@ -26,13 +26,11 @@
             Controls: [lblLedger, grpLevel, grpDateSelection]
       
         grpLevel:
-            Dock: Top
             Label: Select Level
             Controls:
                 Row1: [rbtTopDonor, rbtMiddleDonor, rbtBottomDonor]
                 Row2: [txtPercentage, lblPercent1, txtToPercentage, lblPercent2, cmbCurrency]
         grpDateSelection:
-            Dock: Top
             Label: Selection
             Controls: [dtpStartDate, dtpEndDate, txtMotivationGroup, txtMotivationDetail, txtRecipient, rbtAllPartners, rbtExtract]
 

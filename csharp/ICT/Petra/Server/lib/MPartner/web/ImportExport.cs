@@ -1385,7 +1385,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             TDBTransaction Transaction)
         {
             Int64 PartnerKey = MainDS.PPartner[0].PartnerKey;
-            String MyModifId = MainDS.PPartner[0].ModificationId; // This ModificationId was read at start of import.
+            DateTime MyModifId = MainDS.PPartner[0].ModificationId; // This ModificationId was read at start of import.
 
             PPartnerTable Table = PPartnerAccess.LoadByPrimaryKey(PartnerKey, Transaction);
 
@@ -1394,7 +1394,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 return true; // I don't have this Partner on the database, but that's OK..
             }
 
-            String OrignModified = Table[0].ModificationId;
+            DateTime OrignModified = Table[0].ModificationId;
 
             if (MyModifId != OrignModified)
             {

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,10 +88,6 @@ namespace Ict.Tools.CodeGeneration
         public string FActionHandlers = "";
         /// <summary>store code in this variable for the report parameters</summary>
         public string FReportParametersImplementation = "";
-
-        /// can be net for Windows .net, or mono for Mono; mainly to resolve issues with TableLayoutPanel and AutoSize etc
-        public string FTargetWinforms = "net";
-
         /// <summary>height of the generate window</summary>
         public Int32 FHeight = 500;
         /// <summary>width of the generate window</summary>
@@ -230,7 +226,7 @@ namespace Ict.Tools.CodeGeneration
                     {
                         // root control has no parent
                     }
-                    else
+                    else if (!ctrl.controlName.StartsWith("Empty"))
                     {
                         result.Add(ctrl);
                     }
@@ -464,6 +460,21 @@ namespace Ict.Tools.CodeGeneration
                 return result;
             }
 
+            if (AControlName == "pnlEmpty")
+            {
+                int countEmpty = 1;
+
+                foreach (string name in FControlList.Keys)
+                {
+                    if (name.StartsWith("pnlEmpty"))
+                    {
+                        countEmpty++;
+                    }
+                }
+
+                AControlName += countEmpty.ToString();
+            }
+
             XmlNode collectionNode = GetCorrectCollection(AControlName, AParentName);
 
             XmlElement newNode = FXmlDocument.CreateElement(AControlName);
@@ -475,7 +486,7 @@ namespace Ict.Tools.CodeGeneration
             FSortedControlList.Add(FSortedControlList.Count, result);
             TControlDef parentCtrl = GetControl(AParentName);
 
-            if (parentCtrl != null)
+            if ((parentCtrl != null) && !AControlName.StartsWith("pnlEmpty"))
             {
                 XmlNode parentNode = parentCtrl.xmlNode;
                 XmlNode controls = TXMLParser.GetChild(parentNode, "Controls");
@@ -743,12 +754,18 @@ namespace Ict.Tools.CodeGeneration
         public XmlNode xmlNode = null;
         /// <summary>control belongs to this storage</summary>
         public TCodeStorage FCodeStorage = null;
+        /// <summary>the children of this control</summary>
+        public List <TControlDef>Children = new List <TControlDef>();
         /// <summary>in the grid layout, the row number where this control appears</summary>
         public int rowNumber = -1;
         /// <summary>if this controls spans several columns in the grid layout</summary>
         public int colSpan = 1;
         /// <summary>if this controls spans several rows in the grid layout</summary>
         public int rowSpan = 1;
+        /// <summary>if this controls spans several columns in the grid layout, and has no label, this will include the label columns as well</summary>
+        public int colSpanWithLabel = 1;
+        /// <summary>if this controls has no label, we need one more column</summary>
+        public bool hasLabel = true;
 
         /// <summary>
         /// write attribute value to the yaml
@@ -786,6 +803,19 @@ namespace Ict.Tools.CodeGeneration
         /// <returns></returns>
         public string GetAttribute(string name)
         {
+            return TYml2Xml.GetAttribute(xmlNode, name);
+        }
+
+        /// <summary>
+        /// get value of attribute from yaml
+        /// </summary>
+        public string GetAttribute(string name, string ADefaultValue)
+        {
+            if (!TYml2Xml.HasAttribute(xmlNode, name))
+            {
+                return ADefaultValue;
+            }
+
             return TYml2Xml.GetAttribute(xmlNode, name);
         }
 
@@ -865,6 +895,46 @@ namespace Ict.Tools.CodeGeneration
             set
             {
                 SetAttribute("Label", value);
+            }
+        }
+
+        /// <summary>
+        /// get the width
+        /// </summary>
+        public int Width
+        {
+            get
+            {
+                if (HasAttribute("Width"))
+                {
+                    return Convert.ToInt32(GetAttribute("Width"));
+                }
+                else if (HasAttribute("DefaultWidth"))
+                {
+                    return Convert.ToInt32(GetAttribute("DefaultWidth"));
+                }
+
+                return 20;
+            }
+        }
+
+        /// <summary>
+        /// get the height
+        /// </summary>
+        public int Height
+        {
+            get
+            {
+                if (HasAttribute("Height"))
+                {
+                    return Convert.ToInt32(GetAttribute("Height"));
+                }
+                else if (HasAttribute("DefaultHeight"))
+                {
+                    return Convert.ToInt32(GetAttribute("DefaultHeight"));
+                }
+
+                return 20;
             }
         }
 

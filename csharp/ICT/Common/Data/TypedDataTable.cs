@@ -105,6 +105,12 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// if you want the datatable to be cleared after submitchanges.
+        /// This will increase the speed significantly: no updating of modificationID, no slow AcceptChanges.
+        /// </summary>
+        public bool ThrowAwayAfterSubmitChanges = false;
+
+        /// <summary>
         /// our own version of GetChanges
         /// </summary>
         /// <returns>returns a typed table with the changes</returns>

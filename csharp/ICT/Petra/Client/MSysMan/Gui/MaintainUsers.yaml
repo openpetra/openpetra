@@ -40,7 +40,7 @@
         txtDetailLastName:
         clbUserGroup:
             Label: This User can access
-            ColSpan: 3
+            ColSpan: 2
             Width: 500
             Height: 250
             #Enabled: cndChangePermissions

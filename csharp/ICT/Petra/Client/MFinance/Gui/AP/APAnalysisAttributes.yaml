@@ -12,10 +12,12 @@ RootNode:
     Actions:
     Controls:
         pnlDialogContent:
+            Dock: Fill
             Controls: [grdDetails,pnlDetails]
         grdDetails:
             Dock: Fill
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-          Controls: [cmbDetailAttrib]
+            Dock: Bottom
+            Controls: [cmbDetailAttrib]
         cmbDetailAttrib: { OnChange=UnloadDetails, AcceptNewValues=false }

@@ -63,7 +63,8 @@
   <copy file="${path::combine(dir.db.patches, 'version.txt')}"
       tofile="${path::combine(dir.bin, 'version.txt')}" 
       overwrite="true"/>
-  
+
+  <mkdir dir="${dir.log}" />
 </target>
 
 <target name="startPetraServer" depends="initConfigFiles" description="Starts a local Petra Server">
@@ -146,5 +147,8 @@
    </exec>
   </if>
 </target> 
+
+<target name="start" depends="initConfigFiles, startPetraServer, startPetraClient">
+</target>
 
 </project>

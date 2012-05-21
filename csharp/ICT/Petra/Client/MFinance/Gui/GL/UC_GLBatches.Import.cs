@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (impOptions.Length > 1)
                 {
-                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
                 }
 
                 FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
-                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European");
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
 
 
@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
             impOptions = FdlgSeparator.SelectedSeparator;
-            impOptions += FdlgSeparator.NumberFormatIndex == 0 ? "American" : "European";
+            impOptions += FdlgSeparator.NumberFormat;
             TUserDefaults.SetDefault("Imp Options", impOptions);
             TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);
             TUserDefaults.SaveChangedUserDefaults();

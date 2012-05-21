@@ -14,7 +14,7 @@ RootNode:
             Controls: 
                 Row0: [cmbSelectStatement]
                 Row1: [btnImportNewStatement, btnDeleteStatement, btnLoadStatement]
-        cmbSelectStatement: {Width=350, ColSpan=4}
+        cmbSelectStatement: {Width=350, ColSpan=3}
         btnDeleteStatement:
             ActionClick: DeleteStatement
         btnLoadStatement:

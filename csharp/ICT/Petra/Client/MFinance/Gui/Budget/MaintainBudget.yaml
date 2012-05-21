@@ -14,7 +14,6 @@ RootNode:
         actNew: {Label=New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}      
         actImport: {Label=&Import, ActionClick=ImportBudget}      
-        actExport: {Label=E&xport, ActionClick=ExportBudget}      
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlFilter]
@@ -25,7 +24,7 @@ RootNode:
                 Row0: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete, btnImport, btnExport]
+            Controls: [btnNew, btnDelete, btnImport]
         pnlFilter:
             Dock: Bottom
             Controls:
@@ -44,14 +43,11 @@ RootNode:
             Action: actDelete
         btnImport:
             Action: actImport
-        btnExport:
-            Action: actExport
         grdDetails:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Dock: Bottom
             Controls:
                 Row0: [cmbDetailCostCentreCode]
                 Row1: [cmbDetailAccountCode]
@@ -95,7 +91,7 @@ RootNode:
                 Row3: [txtPeriod04Index, txtPeriod10Index]
                 Row4: [txtPeriod05Index, txtPeriod11Index]
                 Row5: [txtPeriod06Index, txtPeriod12Index, lblInflateBaseTotalAmount]
-        grpBudgetDetails: {ColSpan=5, Width:775, Height: 190}
+        grpBudgetDetails: {ColSpan=2, Width:775, Height: 190}
             Align: top-left
             Controls: 
                 Row0: [pnlBudgetTypeAdhoc]
