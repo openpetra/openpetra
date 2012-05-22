@@ -852,6 +852,39 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void AddBankingDetails(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
+        {
+            FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetPartnerKeyDBName();
+            int indexPartnerBankingDetails = FMainDS.PPartnerBankingDetails.DefaultView.Find(AOrigPartnerKey);
+
+            if (indexPartnerBankingDetails != -1)
+            {
+                PPartnerBankingDetailsRow partnerdetailsRow =
+                    (PPartnerBankingDetailsRow)FMainDS.PPartnerBankingDetails.DefaultView[indexPartnerBankingDetails].Row;
+                partnerdetailsRow.PartnerKey = ANewPartnerKey;
+                ANewPartnerDS.PPartnerBankingDetails.ImportRow(partnerdetailsRow);
+
+                // need to copy the associated PBankingDetails as well
+                FMainDS.PBankingDetails.DefaultView.Sort = PBankingDetailsTable.GetBankingDetailsKeyDBName();
+                PBankingDetailsRow OrigBankingDetailsRow =
+                    (PBankingDetailsRow)FMainDS.PBankingDetails.DefaultView[
+                        FMainDS.PBankingDetails.DefaultView.Find(partnerdetailsRow.BankingDetailsKey)].Row;
+
+                PBankRow bankRow = (PBankRow)FMainDS.PBank.Rows.Find(OrigBankingDetailsRow.BankKey);
+
+                // create the PBank record as well, if it does not exist yet
+                OrigBankingDetailsRow.BankKey = TRemote.MPartner.Partner.WebConnectors.GetBankBySortCode(bankRow.BranchCode);
+
+                ANewPartnerDS.PBankingDetails.ImportRow(OrigBankingDetailsRow);
+
+                TLogging.Log(ANewPartnerDS.PBankingDetails.Rows.Count.ToString() +
+                    " " + ANewPartnerDS.PPartnerBankingDetails.Rows.Count.ToString());
+
+                TLogging.Log(ANewPartnerDS.PBankingDetails[0].BankingDetailsKey.ToString() +
+                    ANewPartnerDS.PPartnerBankingDetails[0].BankingDetailsKey.ToString());
+            }
+        }
+
         private void AddBuilding(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
             ImportRecordsByPartnerKey(ANewPartnerDS.PcBuilding, FMainDS.PcBuilding,
@@ -1033,6 +1066,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             AddRoom(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddSubscriptions(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddContacts(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
+
+            AddBankingDetails(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
 
 
             TVerificationResultCollection VerificationResult;

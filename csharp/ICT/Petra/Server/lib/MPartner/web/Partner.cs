@@ -23,14 +23,17 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
@@ -91,6 +94,68 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 out AVerificationResult);
 
             return ResultValue;
+        }
+
+        /// <summary>
+        /// get the correct bank partner, according to the sortcode/branchcode.
+        /// if it does not exist yet, create a new bank partner with empty location
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static Int64 GetBankBySortCode(string ABranchCode)
+        {
+            string sqlFindBankBySortCode =
+                String.Format("SELECT * FROM PUB_{0} WHERE {1}=?",
+                    PBankTable.GetTableDBName(),
+                    PBankTable.GetBranchCodeDBName());
+
+            OdbcParameter param = new OdbcParameter("branchcode", OdbcType.VarChar);
+
+            param.Value = ABranchCode;
+            PBankTable bank = new PBankTable();
+            DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, null, new OdbcParameter[] {
+                    param
+                }, -1, -1);
+
+            if (bank.Count > 0)
+            {
+                return bank[0].PartnerKey;
+            }
+            else
+            {
+                // create new bank partner, with empty location
+                PartnerEditTDS MainDS = new PartnerEditTDS();
+
+                PPartnerRow newPartner = MainDS.PPartner.NewRowTyped();
+                Int64 BankPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey);
+                TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, BankPartnerKey, ref BankPartnerKey);
+                newPartner.PartnerKey = BankPartnerKey;
+                newPartner.PartnerShortName = "Bank " + ABranchCode;
+                newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+                MainDS.PPartner.Rows.Add(newPartner);
+
+                PBankRow newBank = MainDS.PBank.NewRowTyped(true);
+                newBank.PartnerKey = newPartner.PartnerKey;
+                newBank.BranchCode = ABranchCode;
+                newBank.BranchName = newPartner.PartnerShortName;
+                MainDS.PBank.Rows.Add(newBank);
+
+                PPartnerLocationRow partnerlocation = MainDS.PPartnerLocation.NewRowTyped(true);
+                partnerlocation.SiteKey = DomainManager.GSiteKey;
+                partnerlocation.PartnerKey = newPartner.PartnerKey;
+                partnerlocation.DateEffective = DateTime.Now;
+                partnerlocation.LocationType = "HOME";
+                partnerlocation.SendMail = false;
+                MainDS.PPartnerLocation.Rows.Add(partnerlocation);
+
+                TVerificationResultCollection VerificationResult;
+
+                if (PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                {
+                    return newPartner.PartnerKey;
+                }
+            }
+
+            throw new Exception("problem for GetBankBySortCode, cannot find or create bank");
         }
     }
 }
