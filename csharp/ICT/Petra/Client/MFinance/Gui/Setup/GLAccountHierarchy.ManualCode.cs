@@ -36,6 +36,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -367,6 +368,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
                     new object[] { FLedgerNumber, AccountCode });
                 AccountToBeDeleted.Delete();
+                FPetraUtilsObject.SetChangedFlag();
 
                 // if parent of deleted node has no children, mark as posting account
                 // TODO: this also works only if there is just one account hierarchy
