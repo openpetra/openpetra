@@ -41,9 +41,8 @@ RootNode:
                 Row0: [txtDetailFeeCode, txtDetailFeeDescription]
                 Row1: [cmbDetailChargeOption, txtDetailChargePercentage, txtDetailChargeAmount]
                 Row2: [grpAssignment]
-            ColWidths: [4=Fixed:123]
         txtDetailFeeCode: {Label=Fee Code, CharacterCasing=Upper}
-        txtDetailFeeDescription: {Label=Description, ColSpan=3, Width=320}
+        txtDetailFeeDescription: {Label=Description, ColSpan=2, Width=320}
         cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged}
             OptionalValues: [Minimum, Maximum, Fixed, Percentage]
         txtDetailChargePercentage:  {Label=Charge Percentage, Format=PercentDecimal}
@@ -55,12 +54,11 @@ RootNode:
         lblToBeDebited: 
             Padding:96,0,0,0
         lblToBeCredited:
-        grpAssignment: {ColSpan=5}
+        grpAssignment: {ColSpan=3}
             Controls: 
                 Row0: [lblToBeDebited, lblToBeCredited]
                 Row1: [txtReceivingFund, cmbDetailCostCentreCode]
                 Row2: [cmbDetailDrAccountCode, cmbDetailAccountCode]
-            ColWidths: [0=Fixed:96, 1=Fixed:284, 2=Fixed:319]
 
     Toolbar:
         tbbNew:

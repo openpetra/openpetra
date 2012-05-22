@@ -266,25 +266,11 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetraorg -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion}"/>
 </target>
 
-<target name="compileMonoClient">
-  <delete file="${dir.bin}/dont_compile.txt"/>
-
-  <property name="OrigTargetPlatformGUI" value="${TargetPlatformGUI}" overwrite="true"/>
-  <property name="OrigGUILocalisation" value="${GUILocalisation}" overwrite="true"/>
-  <property name="TargetPlatformGUI" value="mono" overwrite="true"/>
-  <property name="GUILocalisation" value="en" overwrite="true"/>
-  
-  <call target="generateWinforms"/>
-  <property name="solution" value="Client"/>
-  <call target="quickCompile"/>
-
-  <property name="TargetPlatformGUI" value="${OrigTargetPlatformGUI}" overwrite="true"/>
-  <property name="GUILocalisation" value="${OrigGUILocalisation}" overwrite="true"/>
-</target>
-
 <!-- Linux -->
 <target name="buildLinuxClient" help="build a Linux client compiled for mono">
-  <call target="compileMonoClient"/>  
+  <delete file="${dir.bin}/dont_compile.txt"/>
+  <property name="solution" value="Client"/>
+  <call target="quickCompile"/>
 
   <call target="translation" unless="${target::has-executed('translation')}"/>
   <property name="BuildArchive" value="client" overwrite="true"/>

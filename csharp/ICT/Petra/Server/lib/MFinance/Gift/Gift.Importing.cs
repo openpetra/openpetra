@@ -105,6 +105,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             AGiftBatchRow giftBatch = null;
             //AGiftRow gift = null;
+            decimal totalBatchAmount = 0;
             FImportMessage = Catalog.GetString("Parsing first line");
             Int32 RowNumber = 0;
             bool ok = false;
@@ -125,7 +126,21 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         if (RowType == "B")
                         {
-                            previousGift = null;
+                            //Check if
+                        	if (previousGift != null && giftBatch != null)
+                            {
+                            	//New batch so set total amount of Batch for previous batch
+                        		giftBatch.BatchTotal = totalBatchAmount;
+	                            if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+	                            {
+	                                return false;
+	                            }
+	
+	                            FMainDS.AGiftBatch.AcceptChanges();
+                            	previousGift = null;
+                            }
+                        	
+                          	totalBatchAmount = 0;
 
                             string BatchDescription = ImportString(Catalog.GetString("batch description"));
                             string BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
@@ -225,8 +240,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 giftDetails.RecipientLedgerNumber = ImportInt32(Catalog.GetString("recipient ledger number"));
                             }
 
-                            giftDetails.GiftAmount = ImportDecimal(Catalog.GetString("Gift amount"));
-                            giftDetails.GiftTransactionAmount = giftDetails.GiftAmount;
+							decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"));
+                            giftDetails.GiftAmount = currentGiftAmount;
+                            giftDetails.GiftTransactionAmount = currentGiftAmount;
+                            totalBatchAmount += currentGiftAmount;
                             // TODO: currency translation
 
                             if (FExtraColumns)
@@ -292,6 +309,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                     }
                 }
+                
+				//Update batch total for the last batch entered.
+				if (giftBatch != null)
+				{
+	                giftBatch.BatchTotal = totalBatchAmount;
+				}
 
                 FImportMessage = Catalog.GetString("Saving all data into the database");
 

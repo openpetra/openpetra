@@ -250,7 +250,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 string rbtName = "rbt" + controlName.Substring(3);
 
-                if (controlName.StartsWith("tableLayoutPanel"))
+                if (controlName.StartsWith("layoutPanel"))
                 {
                     // the table layouts of sub controls for each radio button need to be skipped
                     continue;
@@ -271,6 +271,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     foreach (string childName in childControlNames)
                     {
+                        if (childName.StartsWith("layoutPanel"))
+                        {
+                            continue;
+                        }
+
                         TControlDef childCtrl = writer.CodeStorage.GetControl(childName);
                         IControlGenerator generator = writer.FindControlGenerator(childCtrl);
 
@@ -301,6 +306,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     foreach (string childName in childControlNames)
                     {
+                        if (childName.StartsWith("layoutPanel"))
+                        {
+                            continue;
+                        }
+
                         TControlDef childCtrl = writer.CodeStorage.GetControl(childName);
                         IControlGenerator generator = writer.FindControlGenerator(childCtrl);
 

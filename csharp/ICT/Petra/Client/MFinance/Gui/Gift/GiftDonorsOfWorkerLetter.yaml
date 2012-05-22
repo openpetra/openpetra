@@ -19,6 +19,7 @@
             Dock: Fill
             Controls: [pnlParameters, sptResult]
         pnlParameters:
+            Dock: Top
             Controls:
                 Row0: [txtWorkerPartnerKey]
         sptResult:

@@ -39,7 +39,7 @@ namespace Ict.Common.Data
     public class TTypedDataAccess
     {
         /// name of the column used for tracking changes, one ID per change
-        public const string MODIFICATION_ID = "s_modification_id_c";
+        public const string MODIFICATION_ID = "s_modification_id_t";
 
         /// <summary>
         /// who has last modified the row
@@ -64,7 +64,7 @@ namespace Ict.Common.Data
         /// <summary>
         /// indicates whether a row has been deleted
         /// </summary>
-        public const string MODIFICATION_ID_DELETEDROW_INDICATOR = "[DELETED ROW!!!]";
+        public static DateTime MODIFICATION_ID_DELETEDROW_INDICATOR = DateTime.MaxValue;
 
         private static int FRowCount;
 
@@ -98,40 +98,6 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
-        /// This function returns the next available modification ID.
-        /// It uses the next-value of the sequences seq_modification1 and seq_modification2
-        /// (first counting up seq_modification1, then increasing once seq_modification2,
-        /// and cycling through seq_modification1 again)
-        /// The string is made up by the two values of the sequences, formatted as Hex numbers, and
-        /// separated by a semicolon.
-        ///
-        /// </summary>
-        /// <returns>the next modification ID</returns>
-        public static String GetNextModificationID(DB.TDBTransaction ATransaction)
-        {
-            Int64 value1;
-            Int64 value2;
-
-            value1 = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_modification1", ATransaction);
-
-            if (value1 == 0)
-            {
-                value2 = DBAccess.GDBAccessObj.GetNextSequenceValue("seq_modification2", ATransaction);
-            }
-            else
-            {
-                value2 = DBAccess.GDBAccessObj.GetCurrentSequenceValue("seq_modification2", ATransaction);
-            }
-
-            // this has been tested with an upper limit of 32;
-            // those were the numbers generated:
-            // 13 December 2006, 15:39:42 : Next modification ID: ...00000;...00020
-            // 13 December 2006, 15:39:51 : Next modification ID: ...00001;...00000
-            // 13 December 2006, 15:39:51 : Next modification ID: ...00001;...00001
-            return String.Format("{0:x70}", ((object)value2)) + ';' + String.Format("{0:x70}", ((object)value1));
-        }
-
-        /// <summary>
         /// This function returns the modification details of a row
         ///
         /// </summary>
@@ -141,8 +107,8 @@ namespace Ict.Common.Data
             int[] APrimKeyColumnOrdList,
             DataRow ADataRow,
             DB.TDBTransaction ATransaction,
-            ref String AModificationID,
-            ref String AModifiedBy,
+            out DateTime AModificationID,
+            out String AModifiedBy,
             out System.DateTime AModifiedDate)
         {
             Int32 Counter;
@@ -173,15 +139,22 @@ namespace Ict.Common.Data
 
             Counter = 0;
 
+            DataRowVersion WhichVersion = DataRowVersion.Original;
+
+            if (ADataRow.RowState == DataRowState.Added)
+            {
+                WhichVersion = DataRowVersion.Current;
+            }
+
             foreach (int i in APrimKeyColumnOrdList)
             {
-                Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, DataRowVersion.Original]);
-                Parameters[Counter].Value = ADataRow[i, DataRowVersion.Original];
+                Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, WhichVersion]);
+                Parameters[Counter].Value = ADataRow[i, WhichVersion];
                 Counter = Counter + 1;
             }
 
             table = DBAccess.GDBAccessObj.SelectDT(SqlString, TTypedDataTable.GetTableNameSQL(ATableId), ATransaction, Parameters);
-            AModificationID = "";
+            AModificationID = DateTime.MinValue;
             AModifiedBy = "";
             AModifiedDate = DateTime.MinValue;
 
@@ -189,7 +162,7 @@ namespace Ict.Common.Data
             {
                 if (table.Rows[0][0] != System.DBNull.Value)
                 {
-                    AModificationID = (string)table.Rows[0][0];
+                    AModificationID = Convert.ToDateTime(table.Rows[0][0]);
                 }
 
                 if (table.Rows[0][1] != System.DBNull.Value)
@@ -215,16 +188,39 @@ namespace Ict.Common.Data
         /// <returns>void</returns>
         public static void InsertRow(
             short ATableId,
+            bool AThrowAwayAfterSubmitChanges,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
         {
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
-            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateInsertClause("PUB_" +
                     TTypedDataTable.GetTableNameSQL(ATableId),
                     Columns,
                     ADataRow), ATransaction, false,
-                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser));
+                    GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser)))
+            {
+                throw new Exception("problems inserting a row");
+            }
+
+            if (!AThrowAwayAfterSubmitChanges)
+            {
+                DateTime LastModificationId;
+                string LastModifiedBy;
+                DateTime LastModifiedDate;
+                int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
+
+                GetStoredModification(ATableId,
+                    Columns,
+                    PrimKeyColumnOrdList,
+                    ADataRow,
+                    ATransaction,
+                    out LastModificationId,
+                    out LastModifiedBy,
+                    out LastModifiedDate);
+
+                ADataRow[MODIFICATION_ID] = LastModificationId;
+            }
         }
 
         /// <summary>
@@ -234,6 +230,7 @@ namespace Ict.Common.Data
         /// <returns>void</returns>
         public static void UpdateRow(
             short ATableId,
+            bool AThrowAwayAfterSubmitChanges,
             ref DataRow ADataRow,
             DB.TDBTransaction ATransaction,
             String ACurrentUser)
@@ -241,6 +238,9 @@ namespace Ict.Common.Data
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
             int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
             string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
+            DateTime LastModificationId;
+            String LastModifiedBy;
+            System.DateTime LastModifiedDate;
 
             // First try to update with a where clause with the modification id
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
@@ -253,12 +253,8 @@ namespace Ict.Common.Data
                 // the database has a different modification id on that row.
                 // trying now the other way
 
-                String LastModificationId = "";
-                String LastModifiedBy = "";
-
-                System.DateTime LastModifiedDate;
-                String OriginalModificationID;
-                String CurrentModificationID;
+                DateTime OriginalModificationID;
+                DateTime CurrentModificationID;
 
                 // check if modification id of the changed row is the same as currently stored in the database
                 GetStoredModification(ATableId,
@@ -266,8 +262,8 @@ namespace Ict.Common.Data
                     PrimKeyColumnOrdList,
                     ADataRow,
                     ATransaction,
-                    ref LastModificationId,
-                    ref LastModifiedBy,
+                    out LastModificationId,
+                    out LastModifiedBy,
                     out LastModifiedDate);
 
                 if (LastModificationId != MODIFICATION_ID_DELETEDROW_INDICATOR)
@@ -275,21 +271,21 @@ namespace Ict.Common.Data
                     if ((ADataRow[MODIFICATION_ID,
                                   DataRowVersion.Original] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Original] == null))
                     {
-                        OriginalModificationID = "";
+                        OriginalModificationID = DateTime.MinValue;
                     }
                     else
                     {
-                        OriginalModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Original].ToString();
+                        OriginalModificationID = Convert.ToDateTime(ADataRow[MODIFICATION_ID, DataRowVersion.Original]);
                     }
 
                     if ((ADataRow[MODIFICATION_ID,
                                   DataRowVersion.Current] == System.DBNull.Value) || (ADataRow[MODIFICATION_ID, DataRowVersion.Current] == null))
                     {
-                        CurrentModificationID = "";
+                        CurrentModificationID = DateTime.MinValue;
                     }
                     else
                     {
-                        CurrentModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Current].ToString();
+                        CurrentModificationID = Convert.ToDateTime(ADataRow[MODIFICATION_ID, DataRowVersion.Current]);
                     }
 
                     if (OriginalModificationID == LastModificationId)
@@ -306,8 +302,7 @@ namespace Ict.Common.Data
                     if (OriginalModificationID != CurrentModificationID)
                     {
                         throw new Exception(
-                            "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName + " (OriginalModificationID: '" +
-                            OriginalModificationID + "', CurrentModificationID: '" + CurrentModificationID + "'");
+                            "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName);
                     }
 
                     if (LastModificationId != OriginalModificationID)
@@ -320,11 +315,16 @@ namespace Ict.Common.Data
                             LastModifiedDate);
                     }
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
+                    int RowsChanged = DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateUpdateClause("PUB_" + DBTableName,
                             Columns,
                             ADataRow,
                             PrimKeyColumnOrdList), ATransaction, false,
                         GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
+
+                    if (RowsChanged == 0)
+                    {
+                        throw new Exception("cannot UPDATE row due to problems most likely with the timestamp");
+                    }
                 }
                 else
                 {
@@ -334,6 +334,20 @@ namespace Ict.Common.Data
                         "",
                         DateTime.MinValue);
                 }
+            }
+
+            if (!AThrowAwayAfterSubmitChanges)
+            {
+                GetStoredModification(ATableId,
+                    Columns,
+                    PrimKeyColumnOrdList,
+                    ADataRow,
+                    ATransaction,
+                    out LastModificationId,
+                    out LastModifiedBy,
+                    out LastModifiedDate);
+
+                ADataRow[MODIFICATION_ID] = LastModificationId;
             }
         }
 
@@ -347,13 +361,12 @@ namespace Ict.Common.Data
             DataRow ADataRow,
             DB.TDBTransaction ATransaction)
         {
-            String LastModificationId = "";
-            String LastModifiedBy = "";
-
             string[] Columns = TTypedDataTable.GetColumnStringList(ATableId);
             int[] PrimKeyColumnOrdList = TTypedDataTable.GetPrimaryKeyColumnOrdList(ATableId);
             string DBTableName = TTypedDataTable.GetTableNameSQL(ATableId);
 
+            DateTime LastModificationId;
+            String LastModifiedBy = "";
             System.DateTime LastModifiedDate;
 
             // check if modification id of the changed row is the same as currently stored in the database
@@ -362,14 +375,14 @@ namespace Ict.Common.Data
                 PrimKeyColumnOrdList,
                 ADataRow,
                 ATransaction,
-                ref LastModificationId,
-                ref LastModifiedBy,
+                out LastModificationId,
+                out LastModifiedBy,
                 out LastModifiedDate);
 
             // check the modification ID (if the row was already there in the base database, it will have no modification ID, NULL)
-            Object OriginalLastModificationID = ADataRow[MODIFICATION_ID, DataRowVersion.Original];
+            DateTime OriginalLastModificationID = Convert.ToDateTime(ADataRow[MODIFICATION_ID, DataRowVersion.Original]);
 
-            if ((OriginalLastModificationID.GetType() != typeof(System.DBNull)) && (LastModificationId != (string)OriginalLastModificationID))
+            if ((OriginalLastModificationID.GetType() != typeof(System.DBNull)) && (LastModificationId != OriginalLastModificationID))
             {
                 throw new EDBConcurrencyException(
                     "Cannot delete row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
@@ -1199,8 +1212,8 @@ namespace Ict.Common.Data
                 }
             }
 
-            // for the modification ID, createdby and datecreated
-            Counter = Counter + 3;
+            // for createdby and datecreated
+            Counter = Counter + 2;
             ReturnValue = new OdbcParameter[Counter];
             Counter = 0;
 
@@ -1216,10 +1229,6 @@ namespace Ict.Common.Data
                 }
             }
 
-            ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 150);
-            ReturnValue[Counter].Value = GetNextModificationID(ATransaction);
-            ADataRow[MODIFICATION_ID] = ReturnValue[Counter].Value;
-            Counter = Counter + 1;
             ReturnValue[Counter] = new OdbcParameter("", OdbcType.VarChar, 20);
             ReturnValue[Counter].Value = ACurrentUser;
             ADataRow[CREATED_BY] = ReturnValue[Counter].Value;
@@ -1272,11 +1281,8 @@ namespace Ict.Common.Data
             }
 
             // modification id
-            string OldModificationId = (ADataRow.IsNull(MODIFICATION_ID) ? null : (string)ADataRow[MODIFICATION_ID]);
-            parameter = new OdbcParameter("", OdbcType.VarChar, 150);
-            parameter.Value = GetNextModificationID(ATransaction);
-            ADataRow[MODIFICATION_ID] = parameter.Value;
-            ReturnValue.Add(parameter);
+            DateTime OldModificationId = (ADataRow.IsNull(MODIFICATION_ID) ? DateTime.MinValue : Convert.ToDateTime(ADataRow[MODIFICATION_ID]));
+
             parameter = new OdbcParameter("", OdbcType.VarChar, 20);
             parameter.Value = ACurrentUser;
             ADataRow[MODIFIED_BY] = parameter.Value;
@@ -1297,10 +1303,10 @@ namespace Ict.Common.Data
                 }
             }
 
-            if (OldModificationId != null)
+            if (OldModificationId != DateTime.MinValue)
             {
                 // modification id for the where clause
-                parameter = new OdbcParameter("", OdbcType.VarChar, 150);
+                parameter = new OdbcParameter("", OdbcType.DateTime);
                 parameter.Value = OldModificationId;
                 ReturnValue.Add(parameter);
             }
@@ -1394,7 +1400,7 @@ namespace Ict.Common.Data
             }
 
             // add modification id, created by, date created
-            ReturnValue = ReturnValue + "?, ?, ?";
+            ReturnValue = ReturnValue + "NOW(), ?, ?";
             return ReturnValue + ")";
         }
 
@@ -1452,7 +1458,7 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + ", ";
                 }
 
-                ReturnValue = ReturnValue + MODIFICATION_ID + " = ?, ";
+                ReturnValue = ReturnValue + MODIFICATION_ID + " = NOW(), ";
                 ReturnValue = ReturnValue + MODIFIED_BY + " = ?, ";
                 ReturnValue = ReturnValue + MODIFIED_DATE + " = ? ";
 
@@ -2081,7 +2087,7 @@ namespace Ict.Common.Data
                             }
                         }
 
-                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId);
+                        TTypedDataAccess.InsertRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
                     }
                     else
                     {
@@ -2098,7 +2104,7 @@ namespace Ict.Common.Data
                             }
                             else
                             {
-                                TTypedDataAccess.UpdateRow(TableId, ref TheRow, ATransaction, AUserId);
+                                TTypedDataAccess.UpdateRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
                             }
                         }
 

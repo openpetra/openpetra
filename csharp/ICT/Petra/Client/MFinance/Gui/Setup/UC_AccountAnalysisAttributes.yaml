@@ -13,9 +13,9 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
         pnlGrid:
-            Width: 300
-            Height: 250
+            Dock: Fill
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
