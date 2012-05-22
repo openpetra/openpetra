@@ -245,10 +245,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    int rowIndex = CurrentRowIndex();
+	                int rowIndex = grdDetails.SelectedRowIndex();
                     FPreviouslySelectedDetailRow.Delete();
                     FPetraUtilsObject.SetChangedFlag();
-                    SelectByIndex(rowIndex);
+
+                    // temporarily reset selected row to avoid interference with validation
+	                FPreviouslySelectedDetailRow = null;
+	                grdDetails.SelectRowInGrid(rowIndex, true);
+	                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 }
             }
             // delete single selected record from extract
@@ -260,7 +264,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
                     DataRowView RowView;
-                    int rowIndex = CurrentRowIndex();
+	                int rowIndex = grdDetails.SelectedRowIndex();
 
                     // build a collection of objects to be deleted before actually deleting them (as otherwise
                     // indexes may not be valid any longer)
@@ -280,7 +284,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     }
 
                     FPetraUtilsObject.SetChangedFlag();
-                    SelectByIndex(rowIndex);
+
+                    // temporarily reset selected row to avoid interference with validation
+	                FPreviouslySelectedDetailRow = null;
+	                grdDetails.SelectRowInGrid(rowIndex, true);
+	                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 }
             }
 
@@ -309,6 +317,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 this.LoadData();
 
+                // data can have changed completely, so easiest for now is to select first row
+                grdDetails.SelectRowInGrid(1, true);
+                
                 // enable/disable buttons
                 UpdateButtonStatus();
             }
@@ -361,6 +372,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FMainDS.Tables.Add(new MExtractMasterTable());
                     FMainDS.InitVars();
                 }
+                else
+                {
+                	// clear table so a load also works if records on the server have been removed
+                	FMainDS.MExtractMaster.Clear();
+                }
 
                 FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetAllExtractHeaders());
 
@@ -398,44 +414,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // enable/disable buttons
             UpdateButtonStatus();
-        }
-
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
         }
 
         /// <summary>

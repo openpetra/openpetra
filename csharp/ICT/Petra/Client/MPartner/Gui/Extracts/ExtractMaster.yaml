@@ -9,7 +9,8 @@ RootNode:
     Template: window
     Actions:
         actMaintainExtract: {ActionClick=MaintainExtract}      
-        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}      
+        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}     
+        actPurgeExtracts: {ActionClick=PurgeExtracts}     
     Controls:
         pnlContent:
             Controls: [pnlFilter, pnlExtractMasterList]
@@ -31,6 +32,9 @@ RootNode:
             Label: &Maintain
             mniMaintainExtract: {Label=Maintain Extract, Action=actMaintainExtract}
             mniVerifyExtract: {Label=Verify and Update Extract, Action=actVerifyAndUpdateExtract}
+            mniPurgeExtracts: {Label=Purge Extracts, Action=actPurgeExtracts}
+        mniUpdatePartners:
+            Label: &Update Partners
 
     Toolbar:
         tbbNew:

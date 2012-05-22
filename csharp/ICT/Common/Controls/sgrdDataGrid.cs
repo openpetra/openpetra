@@ -1299,7 +1299,7 @@ namespace Ict.Common.Controls
         ///
         /// DataSourceRowToIndex2 manually iterates through the Grid's DataView and compares Rows objects. This works!
         /// </summary>
-        /// <returns>void</returns>
+        /// <returns>int</returns>
         public int DataSourceRowToIndex2(DataRowView ADataRowView)
         {
             int RowIndex = -1;
@@ -1315,9 +1315,46 @@ namespace Ict.Common.Controls
             return RowIndex;
         }
 
+        /// <summary>
+        /// Returns the index of the currently selected row or -1 if no row is selected
+        /// </summary>
+        /// <returns>int</returns>
+        public int SelectedRowIndex()
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
         /// select a row in the grid, and invoke the even for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid)
         {
+        	SelectRowInGrid (ARowNumberInGrid, false);
+        }
+
+        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
+        {
+        	if (ASelectBorderIfOutsideLimit)
+        	{
+	            if (ARowNumberInGrid >= Rows.Count)
+	            {
+	                ARowNumberInGrid = Rows.Count - 1;
+	            }
+	
+	            if ((ARowNumberInGrid < 1) && (Rows.Count > 1))
+	            {
+	                ARowNumberInGrid = 1;
+	            }
+        	}
+        	
             this.Selection.ResetSelection(false);
             this.Selection.SelectRow(ARowNumberInGrid, true);
 
@@ -1330,6 +1367,13 @@ namespace Ict.Common.Controls
             //FocusRowEntered.Invoke(this, new SourceGrid.RowEventArgs(ARowNumberInGrid));
         }
 
+        /// make sure the grid scrolls to the selected row to have it in the visible area
+        public void ViewSelectedRow()
+        {
+            // scroll to the row
+            this.ShowCell(new SourceGrid.Position(this.SelectedRowIndex(), 0), true);
+        }
+        
         /// <summary>
         /// Performs selection of rows with a matching first character as the user
         /// presses certain keys that produce characters that this procedure can search

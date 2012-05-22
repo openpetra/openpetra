@@ -345,6 +345,34 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ucoExtractMasterList.VerifyAndUpdateExtract(sender, e);
         }
 
+        /// <summary>
+        /// Purge Extracts (open a screen for user to set parameters)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PurgeExtracts(System.Object sender, EventArgs e)
+        {
+            // open dialog to prompt the user to enter a name for new extract
+            TFrmExtractPurgingDialog ExtractPurgingDialog = new TFrmExtractPurgingDialog(this.ParentForm);
+            Boolean PurgingSuccessful = false;
+
+            // purging of extracts happens in the dialog
+            ExtractPurgingDialog.ShowDialog();
+            
+            if (ExtractPurgingDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractPurgingDialog.GetReturnedParameters(out PurgingSuccessful);
+                
+                if (PurgingSuccessful)
+                {
+		            ucoExtractMasterList.RefreshExtractList(sender, e);
+                }
+            }
+                
+            ExtractPurgingDialog.Dispose();
+        }
+
         #endregion
     }
 }
