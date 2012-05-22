@@ -876,12 +876,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 OrigBankingDetailsRow.BankKey = TRemote.MPartner.Partner.WebConnectors.GetBankBySortCode(bankRow.BranchCode);
 
                 ANewPartnerDS.PBankingDetails.ImportRow(OrigBankingDetailsRow);
-
-                TLogging.Log(ANewPartnerDS.PBankingDetails.Rows.Count.ToString() +
-                    " " + ANewPartnerDS.PPartnerBankingDetails.Rows.Count.ToString());
-
-                TLogging.Log(ANewPartnerDS.PBankingDetails[0].BankingDetailsKey.ToString() +
-                    ANewPartnerDS.PPartnerBankingDetails[0].BankingDetailsKey.ToString());
             }
         }
 
