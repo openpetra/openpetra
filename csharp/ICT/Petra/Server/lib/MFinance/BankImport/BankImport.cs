@@ -26,7 +26,6 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using System.Collections.Specialized;
-using System.Security.Cryptography;
 using System.Text;
 using GNU.Gettext;
 using Ict.Common;
@@ -45,6 +44,7 @@ using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.ImportExport;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 {
@@ -64,7 +64,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                // TODO: search for already posted gift batches, and do the matching for these imported statements
+                // search for already posted gift batches, and do the matching for these imported statements
+                TBankImportMatching.Train(AStatementAndTransactionsDS);
             }
 
             return SubmissionResult;
@@ -129,48 +130,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         }
 
         /// <summary>
-        /// match text should uniquely identify a gift from a certain donor with a certain purpose;
-        /// use account name, description, and amount;
-        /// remove umlaut and spaces, because the banks sometimes play around with them
-        /// </summary>
-        private static string CalculateMatchText(string ABankAccount, AEpTransactionRow tr)
-        {
-            string matchtext = ABankAccount + tr.AccountName + tr.Description;
-
-            matchtext += tr.TransactionAmount.ToString("0.##");
-
-            matchtext = matchtext.Replace(",", "").Replace("/", "").Replace("-", "").Replace(";", "").Replace(".", "");
-
-            string oldMatchText = String.Empty;
-
-            while (oldMatchText != matchtext)
-            {
-                oldMatchText = matchtext;
-                matchtext = matchtext.ToUpper();
-                matchtext = matchtext.Replace("UE", "");
-                matchtext = matchtext.Replace("AE", "");
-                matchtext = matchtext.Replace("OE", "");
-                matchtext = matchtext.Replace("SS", "");
-                matchtext = matchtext.Replace("Ü", "");
-                matchtext = matchtext.Replace("Ä", "");
-                matchtext = matchtext.Replace("Ö", "");
-                matchtext = matchtext.Replace("ß", "");
-                matchtext = matchtext.Replace(" ", "");
-            }
-
-            if (matchtext.Length > AEpTransactionTable.GetMatchTextLength())
-            {
-                // calculate unique check sum which is shorter than the whole match text
-                MD5CryptoServiceProvider cr = new MD5CryptoServiceProvider();
-                System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
-                byte[] matchbytes = encoding.GetBytes(matchtext);
-                matchtext = BitConverter.ToString(cr.ComputeHash(matchbytes)).Replace("-", "").ToLower();
-            }
-
-            return matchtext;
-        }
-
-        /// <summary>
         /// returns the transactions of the bank statement, and the matches if they exist;
         /// tries to find matches too
         /// </summary>
@@ -207,7 +166,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     // find a match with the same match text, or create a new one
                     if (row.IsMatchTextNull() || (row.MatchText.Length == 0) || !row.MatchText.StartsWith(BankAccountCode))
                     {
-                        row.MatchText = CalculateMatchText(BankAccountCode, row);
+                        row.MatchText = TBankImportMatching.CalculateMatchText(BankAccountCode, row);
                     }
 
                     AEpMatchTable tempTable = new AEpMatchTable();
