@@ -2469,10 +2469,11 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
 
         /// generated method from connector
         public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
-                                             DateTime ADateEffective)
+                                             DateTime ADateEffective,
+                                             System.String ABatchDescription)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateAGiftBatch", ";INT;DATETIME;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, ADateEffective);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateAGiftBatch", ";INT;DATETIME;STRING;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, ADateEffective, ABatchDescription);
         }
 
         /// generated method from connector

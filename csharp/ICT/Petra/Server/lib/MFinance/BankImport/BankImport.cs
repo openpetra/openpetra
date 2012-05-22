@@ -359,10 +359,12 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 ALedgerNumber,
                 out typeofTable);
 
-            GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, stmt.Date);
+            GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(
+                ALedgerNumber,
+                stmt.Date,
+                String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
-            giftbatchRow.BatchDescription = String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString());
 
             decimal HashTotal = 0.0M;
 

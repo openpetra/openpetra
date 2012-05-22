@@ -57,11 +57,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// create a new batch with a consecutive batch number in the ledger,
         /// and immediately store the batch and the new number in the database
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ADateEffective"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective)
+        public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective, string ABatchDescription)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -71,6 +68,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
 
             TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
+            MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
 
             TVerificationResultCollection VerificationResult;
             bool success = false;
@@ -105,7 +103,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
         {
-            return CreateAGiftBatch(ALedgerNumber, DateTime.Today);
+            return CreateAGiftBatch(ALedgerNumber, DateTime.Today, Catalog.GetString("Please enter batch description"));
         }
 
         /// <summary>
