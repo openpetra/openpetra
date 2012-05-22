@@ -830,8 +830,27 @@ namespace Ict.Petra.Client.MPartner.Gui
  */
         private void AddUnitstructure(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(ANewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
-                UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+            bool recordAlreadyExists = false;
+
+            FMainDS.UmUnitStructure.DefaultView.RowFilter = String.Format("{0}={1}",
+                UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey);
+
+            if (FMainDS.UmUnitStructure.DefaultView.Count > 0)
+            {
+                UmUnitStructureRow unitStructureRow = (UmUnitStructureRow)FMainDS.UmUnitStructure.DefaultView[0].Row;
+
+                // only import row if it does not exist yet in the new partner DS
+                if (null != ANewPartnerDS.UmUnitStructure.Rows.Find(new object[] { unitStructureRow.ParentUnitKey, unitStructureRow.ChildUnitKey }))
+                {
+                    recordAlreadyExists = true;
+                }
+            }
+
+            if (!recordAlreadyExists)
+            {
+                ImportRecordsByPartnerKey(ANewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
+                    UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+            }
         }
 
         private void AddBuilding(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
