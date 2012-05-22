@@ -83,6 +83,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
             DialogOpen.Filter = Catalog.GetString("bank statement MT940 (*.sta)|*.sta");
             DialogOpen.RestoreDirectory = true;
+            DialogOpen.Multiselect = true;
             DialogOpen.Title = Catalog.GetString("Please select the bank statement to import");
 
             if (DialogOpen.ShowDialog() != DialogResult.OK)
@@ -90,13 +91,20 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 return false;
             }
 
-            string BankStatementFilename = DialogOpen.FileName;
-
             BankImportTDS MainDS = new BankImportTDS();
 
-            if (ImportFromFile(BankStatementFilename,
-                    ABankAccountCode,
-                    ref MainDS) && (MainDS.AEpStatement.Count > 0))
+            // import several files at once
+            foreach (string BankStatementFilename in DialogOpen.FileNames)
+            {
+                if (!ImportFromFile(BankStatementFilename,
+                        ABankAccountCode,
+                        ref MainDS))
+                {
+                    return false;
+                }
+            }
+
+            if (MainDS.AEpStatement.Count > 0)
             {
                 foreach (AEpStatementRow stmt in MainDS.AEpStatement.Rows)
                 {
@@ -124,14 +132,12 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 TVerificationResultCollection VerificationResult;
                 TLogging.Log("writing to db");
 
-                AEpStatementTable refStmt = MainDS.AEpStatement;
-
-                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(ref refStmt,
-                        MainDS.AEpTransaction,
+                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
+                        MainDS,
                         out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
-                    AStatementKey = refStmt[0].StatementKey;
-                    return AStatementKey != -1;
+                    AStatementKey = MainDS.AEpStatement[0].StatementKey;
+                    return true;
                 }
             }
 

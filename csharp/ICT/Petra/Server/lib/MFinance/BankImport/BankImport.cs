@@ -44,6 +44,7 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 {
@@ -55,58 +56,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <summary>
         /// upload new bank statement so that it can be used for matching etc.
         /// </summary>
-        /// <param name="AStmtTable"></param>
-        /// <param name="ATransTable"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
-            AEpTransactionTable ATransTable,
+        public static TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction;
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TSubmitChangesResult SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
 
-            // TODO: check for existing statement with same filename? to avoid duplicate statements? delete older statement?
-
-            AVerificationResult = new TVerificationResultCollection();
-            SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            try
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                if (AEpStatementAccess.SubmitChanges(AStmtTable, SubmitChangesTransaction, out AVerificationResult))
-                {
-                    // update statement key reference
-                    // supports committing several bank statements at once
-                    foreach (AEpTransactionRow row in ATransTable.Rows)
-                    {
-                        if (row.StatementKey < 0)
-                        {
-                            row.StatementKey = AStmtTable[(row.StatementKey + 1) * -1].StatementKey;
-                        }
-                    }
-
-                    if (AEpTransactionAccess.SubmitChanges(ATransTable, SubmitChangesTransaction, out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("after submitchanges: exception " + e.Message);
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw new Exception(e.ToString() + " " + e.Message);
+                // TODO: search for already posted gift batches, and do the matching for these imported statements
             }
 
             return SubmissionResult;
@@ -115,8 +73,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <summary>
         /// returns the bank statements that are from or newer than the given date
         /// </summary>
-        /// <param name="AStartDate"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber, DateTime AStartDate)
         {

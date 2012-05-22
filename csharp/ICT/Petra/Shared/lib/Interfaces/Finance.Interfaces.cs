@@ -475,8 +475,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
     public interface IImportExportWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
-        TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
-                                                   AEpTransactionTable ATransTable,
+        TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
                                                    out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber,
