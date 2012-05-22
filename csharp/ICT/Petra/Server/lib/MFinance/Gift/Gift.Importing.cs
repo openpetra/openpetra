@@ -99,10 +99,15 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
-            bool NewTransaction = false;
+            //Assume it is a new trnasaction
+            bool NewTransaction = true;
 
+            //TDBTransaction FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
+            //Set this to true to committ or rollback the calling transaction at this point
+            NewTransaction = true;
+            
             AGiftBatchRow giftBatch = null;
             //AGiftRow gift = null;
             decimal totalBatchAmount = 0;
@@ -133,7 +138,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                         		giftBatch.BatchTotal = totalBatchAmount;
 	                            if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
 	                            {
-	                                return false;
+	                                if (NewTransaction)
+	                                {
+	                                    DBAccess.GDBAccessObj.RollbackTransaction();
+	                                }
+	                            	sr.Close();
+	                            	return false;
 	                            }
 	
 	                            FMainDS.AGiftBatch.AcceptChanges();
@@ -164,7 +174,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
                             {
-                                return false;
+                            	if (NewTransaction)
+                                {
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
+                                }
+
+                            	sr.Close();
+                            	return false;
                             }
 
                             FMainDS.AGiftBatch.AcceptChanges();
@@ -285,6 +301,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                sr.Close();
                                 return false;
                             }
 
@@ -298,6 +315,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                               	sr.Close();
                                 return false;
                             }
 
@@ -328,6 +346,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                         ok = true;
                     }
                 }
+                
+                sr.Close();
             }
             catch (Exception ex)
             {
@@ -344,18 +364,19 @@ namespace Ict.Petra.Server.MFinance.Gift
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
+                sr.Close();
                 return false;
             }
-            finally
-            {
-                try
-                {
-                    sr.Close();
-                }
-                catch
-                {
-                };
-            }
+//            finally  //Can't use return with Finally
+//            {
+//                try
+//                {
+//                    sr.Close();
+//                }
+//                catch
+//                {
+//                };
+//            }
 
             if (ok && NewTransaction)
             {
