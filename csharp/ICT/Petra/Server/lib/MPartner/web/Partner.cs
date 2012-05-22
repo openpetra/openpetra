@@ -131,6 +131,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 newPartner.PartnerKey = BankPartnerKey;
                 newPartner.PartnerShortName = "Bank " + ABranchCode;
                 newPartner.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+                newPartner.PartnerClass = MPartnerConstants.PARTNERCLASS_BANK;
                 MainDS.PPartner.Rows.Add(newPartner);
 
                 PBankRow newBank = MainDS.PBank.NewRowTyped(true);
