@@ -162,8 +162,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
                 if (ImportBankStatement.ImportBankStatement(out FStatementKey, FLedgerNumber, DlgImport.FAccountCode))
                 {
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
+                    if (FStatementKey > -1)
+                    {
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    }
                 }
             }
         }

@@ -212,9 +212,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 transactionRow.GiftBatchNumber = giftDetail.BatchNumber;
                 transactionRow.GiftTransactionNumber = giftDetail.GiftTransactionNumber;
                 transactionRow.GiftDetailNumber = giftDetail.DetailNumber;
-                transactionRow.DonorShortName = giftDetail.DonorShortName;
                 transactionRow.DonorKey = giftDetail.DonorKey;
-                transactionRow.RecipientDescription = giftDetail.RecipientDescription;
             }
             else
             {
@@ -223,7 +221,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 BankImportTDSAEpTransactionRow newRow = AMainDS.AEpTransaction.NewRowTyped();
                 newRow.StatementKey = transactionRow.StatementKey;
                 newRow.Order = transactionRow.Order;
-                newRow.NumberOnStatement = transactionRow.NumberOnStatement;
+                newRow.NumberOnPaperStatement = transactionRow.NumberOnPaperStatement;
                 newRow.DetailKey = giftDetail.DetailNumber;
                 newRow.AccountName = transactionRow.AccountName;
                 newRow.BankAccountNumber = transactionRow.BankAccountNumber;
@@ -231,7 +229,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 newRow.Description = transactionRow.Description;
                 newRow.TransactionTypeCode = transactionRow.TransactionTypeCode;
                 newRow.MatchAction = Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED;
-                newRow.DonorShortName = giftDetail.DonorShortName;
                 newRow.DonorKey = giftDetail.DonorKey;
                 newRow.GiftLedgerNumber = giftDetail.LedgerNumber;
                 newRow.GiftBatchNumber = giftDetail.BatchNumber;

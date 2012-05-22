@@ -137,7 +137,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                         out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
                     AStatementKey = MainDS.AEpStatement[0].StatementKey;
-                    return true;
+                    return AStatementKey != -1;
                 }
             }
 
@@ -155,7 +155,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
             parser.ProcessFile(AFilename);
 
-            Int32 statementCounter = 0;
+            Int32 statementCounter = AMainDS.AEpStatement.Rows.Count;
             TLogging.Log(parser.statements.Count.ToString());
 
             foreach (TStatement stmt in parser.statements)
