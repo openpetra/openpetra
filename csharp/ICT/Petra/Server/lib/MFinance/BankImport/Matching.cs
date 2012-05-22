@@ -34,6 +34,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Server.MFinance.ImportExport
 {
@@ -533,13 +534,28 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             foreach (DataRowView gv in AMainDS.AGiftDetail.DefaultView)
             {
                 BankImportTDSAGiftDetailRow giftRow = (BankImportTDSAGiftDetailRow)gv.Row;
-                AEpMatchRow newMatch = AMatchDS.AEpMatch.NewRowTyped();
 
-                // matchkey will be set properly on save, by sequence
-                newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + 1);
-                newMatch.MatchText = AMatchText;
+                AEpMatchRow newMatch;
+
+                AMatchDS.AEpMatch.DefaultView.RowFilter = AEpMatchTable.GetMatchTextDBName() + " = '" + AMatchText + "' and " +
+                                                          AEpMatchTable.GetDetailDBName() + " = " + giftRow.DetailNumber.ToString();
+
+                if (AMatchDS.AEpMatch.DefaultView.Count == 0)
+                {
+                    newMatch = AMatchDS.AEpMatch.NewRowTyped();
+
+                    // matchkey will be set properly on save, by sequence
+                    newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + 1);
+                    newMatch.MatchText = AMatchText;
+                    AMatchDS.AEpMatch.Rows.Add(newMatch);
+                }
+                else
+                {
+                    newMatch = (AEpMatchRow)AMatchDS.AEpMatch.DefaultView[0].Row;
+                }
+
                 newMatch.Detail = giftRow.DetailNumber;
-                newMatch.Action = "GIFT";                 // TODO: use constant for GIFT
+                newMatch.Action = MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT;
 
                 newMatch.RecipientKey = giftRow.RecipientKey;
                 newMatch.RecipientLedgerNumber = giftRow.RecipientLedgerNumber;
@@ -560,14 +576,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 newMatch.ConfidentialGiftFlag = giftRow.ConfidentialGiftFlag;
                 newMatch.GiftTransactionAmount = giftRow.GiftTransactionAmount;
 
-                AMatchDS.AEpMatch.DefaultView.RowFilter = AEpMatchTable.GetMatchTextDBName() + " = '" + newMatch.MatchText + "' and " +
-                                                          AEpMatchTable.GetDetailDBName() + " = " + newMatch.Detail.ToString();
-
-                if (AMatchDS.AEpMatch.DefaultView.Count == 0)
-                {
-                    AMatchDS.AEpMatch.Rows.Add(newMatch);
-                }
-
                 AMatchDS.AEpMatch.DefaultView.RowFilter = "";
             }
         }
@@ -583,21 +591,12 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             AMainDS.AEpTransaction.DefaultView.RowFilter += " AND " + BankImportTDSAEpTransactionTable.GetMatchActionDBName() + " = '" +
                                                             Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED + "'";
 
-            // first delete all existing matches with the same match texts
-            // TODO: this is not very efficient; on the other hand, there can be split gifts, and if the splitting changes, how is it ensured that the match is updated?
-            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
-            {
-                BankImportTDSAEpTransactionRow tr = (BankImportTDSAEpTransactionRow)rv.Row;
-
-                // create a match text which uniquely identifies this transaction
-                string MatchText = CalculateMatchText(((AEpStatementRow)AMainDS.AEpStatement.DefaultView[0].Row).BankAccountCode, tr);
-
-                string deleteMatch = "DELETE FROM " + AEpMatchTable.GetTableDBName() + " WHERE " + AEpMatchTable.GetMatchTextDBName() + " = '" +
-                                     MatchText + "'";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(deleteMatch, dbtransaction, false);
-            }
-
             BankImportTDS MatchDS = new BankImportTDS();
+
+            // TODO: would it help not to load all?
+            AEpMatchAccess.LoadAll(MatchDS, dbtransaction);
+
+            MatchDS.AEpMatch.AcceptChanges();
 
             foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
             {
@@ -616,7 +615,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             }
 
             TVerificationResultCollection Verification;
-            AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch, dbtransaction, out Verification);
+            AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch.GetChangesTyped(), dbtransaction, out Verification);
             DBAccess.GDBAccessObj.CommitTransaction();
         }
     }
