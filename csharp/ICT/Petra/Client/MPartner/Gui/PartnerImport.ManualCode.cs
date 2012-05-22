@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -698,51 +698,50 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)rv.Row;
                 bool importingAlready = false;
 
-                if (PartnerLocationRow.LocationKey != 0)
+                FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                    PLocationTable.GetLocationKeyDBName(),
+                    PartnerLocationRow.LocationKey,
+                    PLocationTable.GetSiteKeyDBName(),
+                    PartnerLocationRow.SiteKey);
+
+                if ((FMainDS.PLocation.DefaultView.Count == 0) && (PartnerLocationRow.LocationKey >= 0))
                 {
-                    FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
-                        PLocationTable.GetLocationKeyDBName(),
-                        PartnerLocationRow.LocationKey,
-                        PLocationTable.GetSiteKeyDBName(),
-                        PartnerLocationRow.SiteKey);
+                    PartnerLocationRow.PartnerKey = ANewPartnerKey;
 
-                    if ((FMainDS.PLocation.DefaultView.Count == 0) && (PartnerLocationRow.LocationKey > 0))
+                    // If this PartnerLocation has a real database key or points to location 0, import it anyway!
+                    ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
+                }
+                else
+                {
+                    foreach (DataRowView NewLocationRv in FMainDS.PLocation.DefaultView)
                     {
-                        PartnerLocationRow.PartnerKey = ANewPartnerKey;
-                        ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow); // If this PartnerLocation has a real database key, import it anyway!
-                    }
-                    else
-                    {
-                        foreach (DataRowView NewLocationRv in FMainDS.PLocation.DefaultView)
+                        PLocationRow NewLocation = (PLocationRow)NewLocationRv.Row;
+                        // Check address already being imported, comparing StreetName and PostalCode
+                        // If I'm already importing it, I'll ignore this row.
+                        // (The address may still be already in the database.)
+
+                        foreach (DataRowView plrv in ANewPartnerDS.PLocation.DefaultView)
                         {
-                            PLocationRow NewLocation = (PLocationRow)NewLocationRv.Row;
-                            // Check address already being imported, comparing StreetName and PostalCode
-                            // If I'm already importing it, I'll ignore this row.
-                            // (The address may still be already in the database.)
+                            PLocationRow ExistingLocation = (PLocationRow)plrv.Row;
 
-                            foreach (DataRowView plrv in ANewPartnerDS.PLocation.DefaultView)
+                            if (
+                                (ExistingLocation.Locality == NewLocation.Locality)
+                                && (ExistingLocation.StreetName == NewLocation.StreetName)
+                                && (ExistingLocation.PostalCode == NewLocation.PostalCode)
+                                )
                             {
-                                PLocationRow ExistingLocation = (PLocationRow)plrv.Row;
-
-                                if (
-                                    (ExistingLocation.Locality == NewLocation.Locality)
-                                    && (ExistingLocation.StreetName == NewLocation.StreetName)
-                                    && (ExistingLocation.PostalCode == NewLocation.PostalCode)
-                                    )
-                                {
-                                    importingAlready = true;
-                                    break;
-                                }
+                                importingAlready = true;
+                                break;
                             }
+                        }
 
-                            if (!importingAlready) // This row is not already on my list
-                            {
-                                ANewPartnerDS.PLocation.ImportRow(NewLocation);
-                                ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
-                                // Set the PartnerKey for the new Row
-                                int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
-                                ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;;
-                            }
+                        if (!importingAlready) // This row is not already on my list
+                        {
+                            ANewPartnerDS.PLocation.ImportRow(NewLocation);
+                            ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
+                            // Set the PartnerKey for the new Row
+                            int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
+                            ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;;
                         }
                     }
                 }
