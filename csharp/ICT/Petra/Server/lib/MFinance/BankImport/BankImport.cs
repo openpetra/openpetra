@@ -58,12 +58,17 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
+            out Int32 AFirstStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
 
+            AFirstStatementKey = -1;
+
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
+                AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
+
                 // search for already posted gift batches, and do the matching for these imported statements
                 TBankImportMatching.Train(AStatementAndTransactionsDS);
             }

@@ -476,6 +476,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
+                                                   out Int32 AFirstStatementKey,
                                                    out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber,

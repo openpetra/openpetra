@@ -224,11 +224,12 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
 
             TVerificationResultCollection VerificationResult;
 
-            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(MainDS,
+            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
+                    MainDS,
+                    out AStatementKey,
                     out VerificationResult) == TSubmitChangesResult.scrOK)
             {
-                AStatementKey = MainDS.AEpStatement[0].StatementKey;
-                return true;
+                return AStatementKey != -1;
             }
 
             AStatementKey = -1;

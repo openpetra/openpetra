@@ -2048,10 +2048,11 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
 
         /// generated method from connector
         public TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
+                                                          out Int32 AFirstStatementKey,
                                                           out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "StoreNewBankStatement", ";BANKIMPORTTDS;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(AStatementAndTransactionsDS, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "StoreNewBankStatement", ";BANKIMPORTTDS;INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(AStatementAndTransactionsDS, out AFirstStatementKey, out AVerificationResult);
         }
 
         /// generated method from connector

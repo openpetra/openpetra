@@ -134,9 +134,9 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
                 if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
                         MainDS,
+                        out AStatementKey,
                         out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
-                    AStatementKey = MainDS.AEpStatement[0].StatementKey;
                     return AStatementKey != -1;
                 }
             }
