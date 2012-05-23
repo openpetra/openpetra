@@ -25,12 +25,14 @@ using System;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using System.Drawing;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Printing;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
@@ -695,7 +697,163 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
         private void PrintReport(System.Object sender, EventArgs e)
         {
-            // TODO
+            if (FMainDS.AEpTransaction.DefaultView.Count == 0)
+            {
+                return;
+            }
+
+            System.Drawing.Printing.PrintDocument doc = new System.Drawing.Printing.PrintDocument();
+            bool PrinterInstalled = doc.PrinterSettings.IsValid;
+
+            if (!PrinterInstalled)
+            {
+                MessageBox.Show("The program cannot find a printer, and therefore cannot print!", "Problem with printing");
+                return;
+            }
+
+            string ShortCodeOfBank = txtBankStatement.Text;
+            string DateOfStatement = StringHelper.DateToLocalizedString(dtpBankStatementDate.Date.Value);
+            string HtmlDocument = String.Empty;
+
+            if (rbtListAll.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Full bank statement") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+            else if (rbtListUnmatched.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Unmatched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+            else if (rbtListGift.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Matched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+
+            if (HtmlDocument.Length == 0)
+            {
+                MessageBox.Show(Catalog.GetString("nothing to print"));
+                return;
+            }
+
+            TGfxPrinter GfxPrinter = new TGfxPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(HtmlDocument,
+                String.Empty,
+                GfxPrinter);
+            GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.eDefaultMargins);
+
+            PrintDialog dlg = new PrintDialog();
+            dlg.Document = GfxPrinter.Document;
+            dlg.AllowCurrentPage = true;
+            dlg.AllowSomePages = true;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                dlg.Document.Print();
+            }
+        }
+
+        /// <summary>
+        /// dump unmatched gifts or other transactions to a HTML table for printing
+        /// </summary>
+        private static string PrintHTML(DataView AEpTransactions, string ATitle)
+        {
+            string letterTemplateFilename = TAppSettingsManager.GetValue("BankImport.ReportHTMLTemplate", false);
+
+            if ((letterTemplateFilename.Length == 0) || !File.Exists(letterTemplateFilename))
+            {
+                OpenFileDialog DialogOpen = new OpenFileDialog();
+                DialogOpen.Filter = "Report template (*.html)|*.html";
+                DialogOpen.RestoreDirectory = true;
+                DialogOpen.Title = "Open Report Template";
+
+                if (DialogOpen.ShowDialog() == DialogResult.OK)
+                {
+                    letterTemplateFilename = DialogOpen.FileName;
+                }
+            }
+
+            // message body from HTML template
+            StreamReader reader = new StreamReader(letterTemplateFilename);
+            string msg = reader.ReadToEnd();
+
+            reader.Close();
+
+            msg = msg.Replace("#TITLE", ATitle);
+            msg = msg.Replace("#PRINTDATE", DateTime.Now.ToShortDateString());
+
+            // recognise detail lines automatically
+            string RowTemplate;
+            msg = TPrinterHtml.GetTableRow(msg, "#DESCRIPTION", out RowTemplate);
+            string rowTexts = "";
+
+            BankImportTDSAEpTransactionRow row = null;
+
+            AEpTransactions.Sort = BankImportTDSAEpTransactionTable.GetNumberOnPaperStatementDBName();
+
+            Decimal Sum = 0.0m;
+
+            foreach (DataRowView rv in AEpTransactions)
+            {
+                row = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                string rowToPrint = RowTemplate;
+
+                rowToPrint = rowToPrint.Replace("#NAME", row.AccountName);
+                rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.Description);
+
+#if TODO
+                if (row.IsDonorKeyNull())
+                {
+                    rowToPrint = rowToPrint.Replace("#NAME", row.AccountName);
+                }
+                else
+                {
+                    rowToPrint = rowToPrint.Replace("#NAME", row.DonorShortName);
+                }
+
+                if (row.IsRecipientDescriptionNull() || (row.RecipientDescription.Length == 0))
+                {
+                    rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.Description);
+                }
+                else
+                {
+                    rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.RecipientDescription);
+                }
+#endif
+
+                //                if (row.IsRecipientKeyNull() || row.RecipientKey <= 0)
+                //                {
+                //                      rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", row.RecipientKey.ToString());
+                //                }
+                // TODO: print recipientkey
+                rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", "");
+
+                if (row.IsDonorKeyNull() || (row.DonorKey <= 0))
+                {
+                    rowToPrint = rowToPrint.Replace("#DONORKEY", "");
+                }
+                else
+                {
+                    rowToPrint = rowToPrint.Replace("#DONORKEY", row.DonorKey.ToString());
+                }
+
+                rowTexts += rowToPrint.
+                            Replace("#NRONSTATEMENT", row.NumberOnPaperStatement.ToString()).
+                            Replace("#AMOUNT", String.Format("{0:C}", row.TransactionAmount)).
+                            Replace("#ACCOUNTNUMBER", row.BankAccountNumber).
+                            Replace("#BANKSORTCODE", row.BranchCode);
+
+                Sum += Convert.ToDecimal(row.TransactionAmount);
+            }
+
+            Sum = Math.Round(Sum, 2);
+
+            return msg.Replace("#ROWTEMPLATE", rowTexts).Replace("#TOTALAMOUNT", String.Format("{0:C}", Sum));
         }
 
         private void TransactionFilterChanged(System.Object sender, EventArgs e)
