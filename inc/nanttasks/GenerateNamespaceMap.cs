@@ -201,9 +201,14 @@ namespace Ict.Tools.NAntTasks
         /// using the path of the file
         public static string GetProjectNameFromCSFile(string filename, string ACodeRootDir)
         {
-            string DllName =
-                Path.GetDirectoryName(filename).Substring(ACodeRootDir.Length + 1).
-                Replace('/', '.').Replace('\\', '.');
+            string DllName = Path.GetDirectoryName(filename);
+
+            if (DllName.Contains(ACodeRootDir))
+            {
+                DllName = DllName.Substring(ACodeRootDir.Length + 1);
+            }
+
+            DllName = DllName.Replace('/', '.').Replace('\\', '.');
 
             if (DllName.StartsWith("ICT."))
             {

@@ -222,7 +222,8 @@ namespace {#NAMESPACE}
         bool ReturnValue = false;
         {#DETAILTABLE}Row CurrentRow;
 
-        CurrentRow = GetSelectedDetailRow();
+        // AlanP chnaged this from = GetSelectedDetailRow() because that caused errors when the sort headers of the grid were clicked       
+        CurrentRow = FPreviouslySelectedDetailRow;
 
         if (CurrentRow != null)
         {

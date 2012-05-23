@@ -13,5 +13,5 @@ RootNode:
                 Row0: [cmbLanguage]
                 Row1: [cmbCulture]
 
-        cmbLanguage: {ColSpan=2, Width=204}
-        cmbCulture: {ColSpan=2, Width=204}
+        cmbLanguage: {Width=204}
+        cmbCulture: {Width=204}

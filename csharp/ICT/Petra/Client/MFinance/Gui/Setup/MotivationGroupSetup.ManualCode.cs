@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,20 +34,43 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
-namespace Ict.Petra.Client.MFinance.Gui.Setup
+namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
     public partial class TFrmMotivationGroupSetup
     {
+        private Int32 FLedgerNumber;
+
+        /// <summary>
+        /// maintain motivation details for this ledger
+        /// </summary>
+        public Int32 LedgerNumber
+        {
+            set
+            {
+                FLedgerNumber = value;
+
+                FMainDS = TRemote.MFinance.Gift.WebConnectors.LoadMotivationDetails(FLedgerNumber);
+
+                FMainDS.Merge(new GiftBatchTDS());
+
+                DataView myDataView = FMainDS.AMotivationGroup.DefaultView;
+                myDataView.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                grdDetails.AutoSizeCells();
+
+                this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
+            }
+        }
+
         private void NewRowManual(ref AMotivationGroupRow ARow)
         {
-            // Deal with primary key.  MotivationGroupCode is unique and is 8 characters.
-            // LedgerNumber part of the primary key is always 0
+            // Deal with primary key. MotivationGroupCode is unique and is 8 characters.
             string newName = Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.AMotivationGroup.Rows.Find(new object[] { 0, newName }) != null)
+            if (FMainDS.AMotivationGroup.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
             {
-                while (FMainDS.AMotivationGroup.Rows.Find(new object[] { 0, newName + countNewDetail.ToString() }) != null)
+                while (FMainDS.AMotivationGroup.Rows.Find(new object[] { FLedgerNumber, newName + countNewDetail.ToString() }) != null)
                 {
                     countNewDetail++;
                 }
@@ -56,11 +79,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ARow.MotivationGroupCode = newName;
+            ARow.LedgerNumber = FLedgerNumber;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewAMotivationGroup();
+        }
+
+        private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
+        {
+            return TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges, out AVerificationResult);
         }
     }
 }

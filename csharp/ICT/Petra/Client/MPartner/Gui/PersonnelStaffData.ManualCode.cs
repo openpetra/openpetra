@@ -31,7 +31,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Verification;
-using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MPersonnel.Validation;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedPartnerValidation_Partner.ValidatePersonnelStaffDataManual(this, ARow, ref VerificationResultCollection,
+            TSharedPersonnelValidation_Personnel.ValidateCommitmentManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
 

@@ -96,7 +96,7 @@ namespace Ict.Tools.DataDumpPetra2
 
         private static string FixValue(string AValue, TTableField ANewField)
         {
-            if (ANewField.strName == "s_modification_id_c")
+            if (ANewField.strName == "s_modification_id_t")
             {
                 AValue = "\\N";
             }
@@ -584,7 +584,7 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
                 SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
                 SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
-                SetValue(AColumnNames, ref ANewRow, "s_modification_id_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                 while (true)
                 {

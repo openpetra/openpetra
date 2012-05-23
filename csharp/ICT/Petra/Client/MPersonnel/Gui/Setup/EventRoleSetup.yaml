@@ -43,20 +43,18 @@ RootNode:
                 Row2: [chkDetailDiscounted, chkDetailParticipant]
                 Row3: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row4: [chkDetailDeletableFlag]
-            ColWidths: [0=Fixed:150]
+            ColWidths: [0=Fixed:150, 2=Fixed:155]
         txtDetailCode: {Label=Role, CharacterCasing=Upper, Width=120}
         txtDetailDescription: {Label=Description, Width=290}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
-        pnlCanBeAssignedAs: {ColSpan=3}
-            Dock: Fill
-            Padding: 0,10,0,10
+        pnlCanBeAssignedAs: {ColSpan=2}
+            Label: Can be assigned as
             Margin: 0
             Controls:
-                Row0: [lblCanBeAssignedAs, chkDetailPreCongress, chkDetailConference, chkDetailOutreach]
+                Row0: [chkDetailPreCongress, chkDetailConference, chkDetailOutreach]
             ColWidths: [0=Fixed:150, 2=Fixed:155]
-        lblCanBeAssignedAs: {Align=right}
         chkDetailPreCongress: {Label=Pre-Conference Role, CheckBoxAttachedLabel=right}
         chkDetailConference: {Label=Conference Role, CheckBoxAttachedLabel=right}
         chkDetailOutreach: {Label=Outreach Role, CheckBoxAttachedLabel=right}

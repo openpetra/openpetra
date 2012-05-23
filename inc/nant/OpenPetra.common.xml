@@ -292,10 +292,20 @@
           overwrite="false"/>
 
 <!-- smtp -->
-<property name="smtp.host" value="smtp.example.org"/>
-<property name="smtp.username" value="smtpuser"/>
-<property name="smtp.password" value="YourSmtpPassword"/>
-<property name="smtp.enablessl" value="true"/>
+<property name="smtp.host" value="smtp.example.org"
+          overwrite="false"/>
+<property name="smtp.port" value="25"
+          overwrite="false"/>
+<property name="smtp.username" value="smtpuser"
+          overwrite="false"/>
+<property name="smtp.password" value="YourSmtpPassword"
+          overwrite="false"/>
+<property name="smtp.enablessl" value="true"
+          overwrite="false"/>
+<property name="LocalFieldFinance.EmailAddress" value="finance@myfield.example.org"
+          overwrite="false"/>
+<property name="ClearingHouse.EmailAddress" value="ich@example.org"
+          overwrite="false"/>
 
 <!-- Set correct .NET platform -->
 <property name="NETframework-version" value ="4.0" overwrite="false" />
@@ -320,10 +330,7 @@
 
 <!-- generateWinforms -->
 <property name="tool-generateWinForms" value="${dir.bin}/Ict.Tools.GenerateWinForms.exe" overwrite="false" />
-<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-x.x needs GUILocalisation value en! -->
 <property name="GUILocalisation" value="" overwrite="false"/> 
-<!-- the gui is either generated for mono or net. This is due to some problems with AutoSize of filled docking panels -->
-<property name="TargetPlatformGUI" value="net" overwrite="false"/>
 
 <property name="tool-generateEncryptionKey" value="${dir.bin}/Ict.Tools.GenerateEncryptionKey.exe" overwrite="false" />
 

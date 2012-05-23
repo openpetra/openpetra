@@ -26,13 +26,11 @@ RootNode:
             Label: Ledger
         grpSelection:
             Label: Currency
-            Dock: Top
             Controls: [cmbCurrency]
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [Base, International]
         grpDateSelection:
-            Dock: Top
             Label: Select Report Range
             Controls: [dtpFromDate, dtpToDate]
         

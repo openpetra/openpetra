@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,36 +26,78 @@ using System.Xml;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Drawing;
 using Ict.Tools.CodeGeneration;
 
-//using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common;
-
-//using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
     /// <summary>
     /// generator for the table layout panel
     /// </summary>
-    public class TableLayoutPanelGenerator : TControlGenerator
+    public class PanelLayoutGenerator : TControlGenerator
     {
+        /// <summary>the space between two controls, that are beside each other</summary>
+        public static Int32 HORIZONTAL_SPACE = 5;
+        /// <summary>the space between two controls, that are above each other</summary>
+        public static Int32 VERTICAL_SPACE = 3;
+        /// <summary>the space from the top of a panel</summary>
+        public static Int32 MARGIN_TOP = 7;
+        /// <summary>the space from the bottom of a panel</summary>
+        public static Int32 MARGIN_BOTTOM = 5;
+        /// <summary>the space from the left of a panel</summary>
+        public static Int32 MARGIN_LEFT = 5;
+
         private Int32 FColumnCount = -1, FRowCount = -1;
 
         /// <summary>
         /// constructor
         /// </summary>
-        public TableLayoutPanelGenerator()
-            : base("tlp", typeof(TableLayoutPanel))
+        public PanelLayoutGenerator()
+            : base("tlp", typeof(Panel))
         {
-            FAutoSize = true;
+            FAutoSize = false;
         }
 
         /// <summary>
         /// count the number of generated table layout panels for the names
         /// </summary>
         public static Int32 countTableLayoutPanel = 0;
+
+        private static bool HaveTestedForTextRenderer = false;
+        private static bool TextRendererAvailable = false;
+        private static Int32 LETTER_WIDTH = 7;
+        private static Font DEFAULT_FONT = new Font("Verdana", 8.25f);
+
+        /// <summary>
+        /// measure the width of a text
+        /// </summary>
+        /// <param name="AText"></param>
+        /// <returns></returns>
+        public static Int32 MeasureTextWidth(string AText)
+        {
+            if (!HaveTestedForTextRenderer)
+            {
+                try
+                {
+                    TextRenderer.MeasureText("test", DEFAULT_FONT);
+                    TextRendererAvailable = true;
+                }
+                catch (Exception)
+                {
+                    TextRendererAvailable = false;
+                }
+            }
+
+            if (!TextRendererAvailable)
+            {
+                return AText.Length * LETTER_WIDTH;
+            }
+
+            return TextRenderer.MeasureText(AText, PanelLayoutGenerator.DEFAULT_FONT).Width;
+        }
 
         /// <summary>
         /// generate the name for the layout panel
@@ -64,7 +106,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public string CalculateName()
         {
             countTableLayoutPanel++;
-            return "tableLayoutPanel" + countTableLayoutPanel.ToString();
+            return "layoutPanel" + countTableLayoutPanel.ToString();
         }
 
         /// <summary>
@@ -81,14 +123,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            ctrl.SetAttribute("Dock", "Fill");
             return base.SetControlProperties(writer, ctrl);
         }
 
         /// <summary>
-        /// either null for no control, or TControlDef object, or string object for temporary controls.
+        /// either null for no control, or TControlDef object
         /// </summary>
-        private System.Object[, ] FGrid;
+        private TControlDef[, ] FGrid;
 
         /// <summary>
         /// tab order for the set of controls. Can be ByColumn, or default is ByRow
@@ -98,7 +139,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// first collect everything, in the end check for unnecessary columnspan, and then write the tablelayout
         public void InitTableLayoutGrid()
         {
-            FGrid = new System.Object[FColumnCount, FRowCount];
+            FGrid = new TControlDef[FColumnCount, FRowCount];
         }
 
         /// <summary>
@@ -116,233 +157,355 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             childctrl.colSpan = childctrl.HasAttribute("ColSpan") ? Convert.ToInt32(childctrl.GetAttribute("ColSpan")) : 1;
             childctrl.rowSpan = childctrl.HasAttribute("RowSpan") ? Convert.ToInt32(childctrl.GetAttribute("RowSpan")) : 1;
-        }
 
-        /// <summary>
-        /// add controls to the TableLayoutPanel, but don't write yet;
-        /// writing is done in WriteTableLayout, when the layout can be optimised
-        /// </summary>
-        /// <param name="tmpChildCtrlName"></param>
-        /// <param name="column"></param>
-        /// <param name="row"></param>
-        public void AddControl(
-            string tmpChildCtrlName,
-            Int32 column, Int32 row)
-        {
-            FGrid[column, row] = tmpChildCtrlName;
+            if (!childctrl.hasLabel)
+            {
+                childctrl.colSpanWithLabel = childctrl.colSpan * 2;
+            }
+            else
+            {
+                childctrl.colSpanWithLabel = childctrl.colSpan * 2 - 1;
+            }
         }
 
         private static int FCurrentTabIndex = 0;
 
         /// <summary>
         /// optimise the table layout, and write it;
-        /// Mono has some problems with columnspan and autosize columns (https://bugzilla.novell.com/show_bug.cgi?id=531591)
         /// </summary>
-        public void WriteTableLayout(TFormWriter writer, string ctrlname)
+        public void WriteTableLayout(TFormWriter writer, TControlDef LayoutCtrl)
         {
-            List <int>SkippedColumns = new List <int>();
+            // calculate the width and height for the columns and rows
+            int[] ColumnWidth = new int[FColumnCount];
+            int[] RowHeight = new int[FRowCount];
 
-            // check if there are empty columns, that are always spanned; remove them
+            // first go: ignore cells spanning rows and columns; second go: check that spanning cells fit as well
+            for (int spanRunCounter = 0; spanRunCounter < 2; spanRunCounter++)
+            {
+                for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                {
+                    // initialise the summary values
+                    if (spanRunCounter == 0)
+                    {
+                        ColumnWidth[columnCounter] = 0;
+
+                        if (columnCounter == 0)
+                        {
+                            for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                            {
+                                RowHeight[rowCounter] = 0;
+                            }
+                        }
+                    }
+
+                    for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                    {
+                        if ((FGrid[columnCounter, rowCounter] != null))
+                        {
+                            TControlDef ctrl = FGrid[columnCounter, rowCounter];
+
+                            int CellWidth = ctrl.Width;
+
+                            if ((spanRunCounter == 0) && (ctrl.colSpanWithLabel == 1))
+                            {
+                                if (CellWidth > ColumnWidth[columnCounter])
+                                {
+                                    ColumnWidth[columnCounter] = CellWidth;
+                                }
+                            }
+                            else
+                            {
+                                int CurrentSpanWidth = 0;
+
+                                if (columnCounter + ctrl.colSpanWithLabel > FColumnCount)
+                                {
+                                    // TODO: make an exception again?
+                                    TLogging.Log("Warning: invalid colspan " + ctrl.colSpan.ToString() + " in control " + ctrl.controlName +
+                                        ". There are only " +
+                                        (FColumnCount / 2).ToString() + " columns overall");
+
+                                    ctrl.colSpanWithLabel = ctrl.colSpan;
+                                }
+
+                                for (int columnCounter2 = columnCounter; columnCounter2 < columnCounter + ctrl.colSpanWithLabel; columnCounter2++)
+                                {
+                                    CurrentSpanWidth += ColumnWidth[columnCounter2];
+                                }
+
+                                if (CurrentSpanWidth < CellWidth)
+                                {
+                                    ColumnWidth[columnCounter + ctrl.colSpanWithLabel - 1] += CellWidth - CurrentSpanWidth;
+                                }
+                            }
+
+                            int CellHeight = ctrl.Height;
+
+                            if (CellHeight == 17)
+                            {
+                                // for labels, we should consider the margin top as well.
+                                CellHeight = 22;
+                            }
+
+                            if ((spanRunCounter == 0) && (ctrl.colSpanWithLabel == 1))
+                            {
+                                if (CellHeight > RowHeight[rowCounter])
+                                {
+                                    RowHeight[rowCounter] = CellHeight;
+                                }
+                            }
+                            else
+                            {
+                                int CurrentSpanHeight = 0;
+
+                                for (int rowCounter2 = rowCounter; rowCounter2 < rowCounter + ctrl.rowSpan; rowCounter2++)
+                                {
+                                    CurrentSpanHeight += RowHeight[rowCounter2];
+                                }
+
+                                if (CurrentSpanHeight < CellHeight)
+                                {
+                                    RowHeight[rowCounter + ctrl.rowSpan - 1] += CellHeight - CurrentSpanHeight;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // now apply settings about the column width and row height
+            if (FColWidths != null)
+            {
+                bool simpleColumnWidth = false;
+
+                // for the simple column width specification, you need to provide a width for each column, without the label columns
+                if (FColWidths.Count * 2 == FColumnCount)
+                {
+                    simpleColumnWidth = true;
+
+                    for (int columnCounter = 0; columnCounter < FColWidths.Count; columnCounter++)
+                    {
+                        if (!FColWidths.ContainsKey(columnCounter))
+                        {
+                            simpleColumnWidth = false;
+                        }
+                    }
+                }
+
+                for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                {
+                    if (simpleColumnWidth)
+                    {
+                        // the specified width includes the label column
+                        if (FColWidths.ContainsKey(columnCounter / 2))
+                        {
+                            string[] ColWidthSpec = FColWidths[columnCounter / 2].Split(':');
+
+                            if (ColWidthSpec[0].ToLower() == "fixed")
+                            {
+                                ColumnWidth[columnCounter] = Convert.ToInt32(ColWidthSpec[1]) / 2;
+                            }
+                            else if (ColWidthSpec[0].ToLower() == "percent")
+                            {
+                                // TODO
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (FColWidths.ContainsKey(columnCounter))
+                        {
+                            string[] ColWidthSpec = FColWidths[columnCounter].Split(':');
+
+                            if (ColWidthSpec[0].ToLower() == "fixed")
+                            {
+                                ColumnWidth[columnCounter] = Convert.ToInt32(ColWidthSpec[1]);
+                            }
+                            else if (ColWidthSpec[0].ToLower() == "percent")
+                            {
+                                // TODO
+                                TLogging.Log("Warning: we currently don't support colwidth in percentage, control " + LayoutCtrl.controlName);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (FRowHeights != null)
+            {
+                for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                {
+                    if (FRowHeights.ContainsKey(rowCounter))
+                    {
+                        string[] RowHeightSpec = FRowHeights[rowCounter].Split(':');
+
+                        if (RowHeightSpec[0].ToLower() == "fixed")
+                        {
+                            RowHeight[rowCounter] = Convert.ToInt32(RowHeightSpec[1]);
+                        }
+                        else if (RowHeightSpec[0].ToLower() == "percent")
+                        {
+                            // TODO
+                            TLogging.Log("Warning: we currently don't support rowheight in percentage, control " + LayoutCtrl.controlName);
+                        }
+                    }
+                }
+            }
+
+            if (TLogging.DebugLevel >= 4)
+            {
+                StringCollection widthStringCollection = new StringCollection();
+
+                for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                {
+                    widthStringCollection.Add(ColumnWidth[columnCounter].ToString());
+                }
+
+                TLogging.Log("column width for " + LayoutCtrl.controlName + ": " + StringHelper.StrMerge(widthStringCollection, ','));
+
+                for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
+                {
+                    string rowText = string.Empty;
+
+                    for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+                    {
+                        if (FGrid[columnCounter, rowCounter] != null)
+                        {
+                            TControlDef childctrl = FGrid[columnCounter, rowCounter];
+
+                            for (int countspan = 0; countspan < childctrl.colSpanWithLabel; countspan++)
+                            {
+                                rowText += string.Format("{0}:{1} ", columnCounter + countspan, childctrl.controlName);
+                            }
+                        }
+                    }
+
+                    TLogging.Log(String.Format(" Row{0}: {1}", rowCounter, rowText));
+                }
+            }
+
+            int Width = 0;
+            int Height = 0;
+
+            int CurrentLeftPosition = Convert.ToInt32(LayoutCtrl.GetAttribute("MarginLeft", MARGIN_LEFT.ToString()));
+
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
-                bool canSkipColumn = true;
+                int CurrentTopPosition = Convert.ToInt32(LayoutCtrl.GetAttribute("MarginTop", MARGIN_TOP.ToString()));
+
+                // only twice the margin for groupboxes
+                if ((LayoutCtrl.controlTypePrefix == "grp") || (LayoutCtrl.controlTypePrefix == "rgr"))
+                {
+                    CurrentTopPosition += MARGIN_TOP;
+                }
 
                 for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
                 {
                     if (FGrid[columnCounter, rowCounter] != null)
                     {
-                        canSkipColumn = false;
+                        TControlDef childctrl = FGrid[columnCounter, rowCounter];
+
+                        if (childctrl.GetAttribute("Stretch") == "horizontally")
+                        {
+                            // use the full column width
+                            // add up spanning columns
+                            int concatenatedColumnWidth = ColumnWidth[columnCounter];
+
+                            for (int colSpanCounter = 1; colSpanCounter < childctrl.colSpanWithLabel; colSpanCounter++)
+                            {
+                                concatenatedColumnWidth += ColumnWidth[columnCounter + colSpanCounter];
+                            }
+
+                            if (concatenatedColumnWidth > 0)
+                            {
+                                writer.SetControlProperty(childctrl, "Size",
+                                    String.Format("new System.Drawing.Size({0}, {1})", concatenatedColumnWidth, childctrl.Height));
+                            }
+                        }
+
+                        int ControlTopPosition = CurrentTopPosition;
+                        int ControlLeftPosition = CurrentLeftPosition;
+
+                        // add margin or padding
+                        string padding = writer.GetControlProperty(childctrl.controlName, "Padding");
+
+                        if (padding.Length > 0)
+                        {
+                            string[] values = padding.Substring(padding.IndexOf("(") + 1).Replace(")", "").Split(new char[] { ',' });
+                            ControlLeftPosition += Convert.ToInt32(values[0]);
+                            ControlTopPosition += Convert.ToInt32(values[1]);
+                            writer.ClearControlProperty(childctrl.controlName, "Padding");
+                        }
+
+                        string margin = writer.GetControlProperty(childctrl.controlName, "Margin");
+
+                        if (margin.Length > 0)
+                        {
+                            string[] values = margin.Substring(margin.IndexOf("(") + 1).Replace(")", "").Split(new char[] { ',' });
+                            ControlLeftPosition += Convert.ToInt32(values[0]);
+                            ControlTopPosition += Convert.ToInt32(values[1]);
+                            writer.ClearControlProperty(childctrl.controlName, "Margin");
+                        }
+
+                        writer.SetControlProperty(childctrl.controlName,
+                            "Location",
+                            String.Format("new System.Drawing.Point({0},{1})",
+                                ControlLeftPosition.ToString(),
+                                ControlTopPosition.ToString()),
+                            false);
+                        writer.CallControlFunction(LayoutCtrl.controlName,
+                            "Controls.Add(this." + childctrl.controlName + ")");
+
+                        if (FTabOrder == "Horizontal")
+                        {
+                            writer.SetControlProperty(childctrl.controlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                            FCurrentTabIndex++;
+                        }
+                    }
+
+                    CurrentTopPosition += RowHeight[rowCounter];
+
+                    CurrentTopPosition += Convert.ToInt32(LayoutCtrl.GetAttribute("VerticalSpace", VERTICAL_SPACE.ToString()));
+
+                    if (CurrentTopPosition > Height)
+                    {
+                        Height = CurrentTopPosition;
                     }
                 }
 
-                if (canSkipColumn)
+                CurrentLeftPosition += ColumnWidth[columnCounter];
+
+                CurrentLeftPosition += Convert.ToInt32(LayoutCtrl.GetAttribute("HorizontalSpace", HORIZONTAL_SPACE.ToString()));
+
+                if (CurrentLeftPosition > Width)
                 {
-                    SkippedColumns.Add(columnCounter);
+                    Width = CurrentLeftPosition;
                 }
             }
 
-            // check all controls in previous columns and reduce ColumnSpan if they cover the skipped column
-            for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+            Height +=
+                Convert.ToInt32(LayoutCtrl.GetAttribute("MarginBottom", MARGIN_BOTTOM.ToString())) -
+                Convert.ToInt32(LayoutCtrl.GetAttribute("VerticalSpace", VERTICAL_SPACE.ToString()));
+
+            if (!LayoutCtrl.HasAttribute("Width"))
             {
-                for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
-                {
-                    if ((FGrid[columnCounter, rowCounter] != null) && (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef)))
-                    {
-                        TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
-
-                        if (childctrl.colSpan > 1)
-                        {
-                            int ReduceColumnSpan = 0;
-
-                            foreach (int SkippedColumn in SkippedColumns)
-                            {
-                                if ((columnCounter < SkippedColumn) && (columnCounter + childctrl.colSpan > SkippedColumn))
-                                {
-                                    ReduceColumnSpan++;
-                                }
-                            }
-
-                            childctrl.colSpan -= ReduceColumnSpan;
-                        }
-                    }
-                }
+                LayoutCtrl.SetAttribute("Width", Width.ToString());
             }
-
-            #region ColumnStyles and RowStyles
-
-            writer.SetControlProperty(ctrlname, "ColumnCount", (FColumnCount - SkippedColumns.Count).ToString(), false);
-
-            /*
-             * Generate ColumnStyles which influence the width of the Columns. If custom widths are specified by the user,
-             * ColumStyles with the appropriate Arguments are generated, otherwise standard ColumnStyles, which means that
-             * Colum Widths are AutoSized at runtime.
-             */
-            for (Int32 countCol = 0; countCol < FColumnCount - SkippedColumns.Count; countCol++)
+            else
             {
-                if (FColWidths != null)
-                {
-                    if (FColWidths.ContainsKey(countCol))
-                    {
-                        string[] ColWidthSpec = FColWidths[countCol].Split(':');
-
-                        if (ColWidthSpec[0].ToLower() != "auto")
-                        {
-                            if (ColWidthSpec[0].ToLower() == "fixed")
-                            {
-                                writer.CallControlFunction(ctrlname,
-                                    String.Format("ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Absolute, {0}))", ColWidthSpec[1]));
-                            }
-                            else if (ColWidthSpec[0].ToLower() == "percent")
-                            {
-                                writer.CallControlFunction(ctrlname,
-                                    String.Format("ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(SizeType.Percent, {0}))", ColWidthSpec[1]));
-                            }
-                            else
-                            {
-                                throw new Exception("Invalid ColWidhts Type '" + ColWidthSpec[0] + "' for Control '" + ctrlname + "'");
-                            }
-                        }
-                        else
-                        {
-                            writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
-                        }
-                    }
-                    else
-                    {
-                        writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
-                    }
-                }
-                else
-                {
-                    writer.CallControlFunction(ctrlname, "ColumnStyles.Add(new System.Windows.Forms.ColumnStyle())");
-                }
+                Width = Convert.ToInt32(LayoutCtrl.GetAttribute("Width"));
             }
 
-            writer.SetControlProperty(ctrlname, "RowCount", FRowCount.ToString(), false);
-
-            /*
-             * Generate RowStyles which influence the height of the Columns. If custom heights are specified by the user,
-             * RowStyles with the appropriate Arguments are generated, otherwise standard RowStyles, which means that
-             * Row Heights are AutoSized at runtime.
-             */
-            for (Int32 countRow = 0; countRow < FRowCount; countRow++)
+            if (!LayoutCtrl.HasAttribute("Height"))
             {
-                if (FRowHeights != null)
-                {
-                    if (FRowHeights.ContainsKey(countRow))
-                    {
-                        string[] RowHeightSpec = FRowHeights[countRow].Split(':');
-
-                        if (RowHeightSpec[0].ToLower() != "auto")
-                        {
-                            if (RowHeightSpec[0].ToLower() == "fixed")
-                            {
-                                writer.CallControlFunction(ctrlname,
-                                    String.Format("RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Absolute, {0}))", RowHeightSpec[1]));
-                            }
-                            else if (RowHeightSpec[0].ToLower() == "percent")
-                            {
-                                writer.CallControlFunction(ctrlname,
-                                    String.Format("RowStyles.Add(new System.Windows.Forms.RowStyle(SizeType.Percent, {0}))", RowHeightSpec[1]));
-                            }
-                            else
-                            {
-                                throw new Exception("Invalid RowHeights Type '" + RowHeightSpec[0] + "' for Control '" + ctrlname + "'");
-                            }
-                        }
-                        else
-                        {
-                            writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
-                        }
-                    }
-                    else
-                    {
-                        writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
-                    }
-                }
-                else
-                {
-                    writer.CallControlFunction(ctrlname, "RowStyles.Add(new System.Windows.Forms.RowStyle())");
-                }
+                LayoutCtrl.SetAttribute("Height", Height.ToString());
             }
-
-            #endregion
-
-            for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
+            else
             {
-                if (!SkippedColumns.Contains(columnCounter))
-                {
-                    for (int rowCounter = 0; rowCounter < FRowCount; rowCounter++)
-                    {
-                        if (FGrid[columnCounter, rowCounter] != null)
-                        {
-                            string childCtrlName;
-
-                            if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
-                            {
-                                TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
-                                childCtrlName = childctrl.controlName;
-
-                                if (childctrl.colSpan > 1)
-                                {
-                                    writer.CallControlFunction(FTlpName,
-                                        "SetColumnSpan(this." + childctrl.controlName + ", " + childctrl.colSpan + ")");
-                                }
-
-                                if (childctrl.rowSpan > 1)
-                                {
-                                    writer.CallControlFunction(FTlpName, "SetRowSpan(this." + childctrl.controlName + ", " + childctrl.rowSpan + ")");
-                                }
-                            }
-                            else
-                            {
-                                childCtrlName = (string)FGrid[columnCounter, rowCounter];
-                            }
-
-                            int NewColumn = columnCounter;
-
-                            foreach (int SkippedColumn in SkippedColumns)
-                            {
-                                if (SkippedColumn < columnCounter)
-                                {
-                                    NewColumn--;
-                                }
-                            }
-
-                            writer.CallControlFunction(ctrlname,
-                                "Controls.Add(this." +
-                                childCtrlName + ", " +
-                                NewColumn.ToString() + ", " + rowCounter.ToString() + ")");
-
-                            if (FTabOrder == "Horizontal")
-                            {
-                                writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
-                                FCurrentTabIndex++;
-                            }
-                        }
-                    }
-                }
+                Height = Convert.ToInt32(LayoutCtrl.GetAttribute("Height"));
             }
+
+            writer.SetControlProperty(LayoutCtrl, "Location", String.Format("new System.Drawing.Point({0}, {1})", MARGIN_LEFT, MARGIN_TOP));
+            writer.SetControlProperty(LayoutCtrl, "Size", String.Format("new System.Drawing.Size({0}, {1})", Width, Height));
 
             // by default, the TabOrder is by column, Vertical
             if (FTabOrder != "Horizontal")
@@ -353,19 +516,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         if (FGrid[columnCounter, rowCounter] != null)
                         {
-                            string childCtrlName;
+                            TControlDef childctrl = FGrid[columnCounter, rowCounter];
 
-                            if (FGrid[columnCounter, rowCounter].GetType() == typeof(TControlDef))
-                            {
-                                TControlDef childctrl = (TControlDef)FGrid[columnCounter, rowCounter];
-                                childCtrlName = childctrl.controlName;
-                            }
-                            else
-                            {
-                                childCtrlName = (string)FGrid[columnCounter, rowCounter];
-                            }
-
-                            writer.SetControlProperty(childCtrlName, "TabIndex", FCurrentTabIndex.ToString(), false);
+                            writer.SetControlProperty(childctrl.controlName, "TabIndex", FCurrentTabIndex.ToString(), false);
                             FCurrentTabIndex++;
                         }
                     }
@@ -398,10 +551,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// cursor to determine the current column
         /// </summary>
         protected Int32 FCurrentColumn = 0;
-        /// <summary>
-        /// name of the current table layout panel
-        /// </summary>
-        protected string FTlpName = "";
 
         /// <summary>
         /// Holds definitions for custom ColumnStyles which influence the width of the Columns.
@@ -430,18 +579,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// create a new panel for the layout. eg. needed for radio buttons with depending controls
+        /// </summary>
+        public TControlDef CreateNewPanel(TFormWriter writer, TControlDef parentContainer)
+        {
+            TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(CalculateName(), parentContainer.controlName);
+
+            GenerateControl(writer, newTableLayoutPanel);
+            return newTableLayoutPanel;
+        }
+
+        /// <summary>
         /// this function should be used for any collection of controls: on a TabPage, in a table, in a groupbox, radio button list etc.
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="parentContainerName"></param>
-        /// <param name="controls"></param>
-        /// <param name="ANewWidth"></param>
-        /// <param name="ANewHeight"></param>
-        /// <returns>the name of the table layout control that still needs to be added to the parent</returns>
-        public string CreateLayout(TFormWriter writer, string parentContainerName, StringCollection controls, Int32 ANewWidth, Int32 ANewHeight)
+        /// <returns>the layout control that still needs to be added to the parent</returns>
+        public void CreateLayout(TFormWriter writer, TControlDef parentContainer, TControlDef layoutPanel, Int32 ANewWidth, Int32 ANewHeight)
         {
+            if (layoutPanel == null)
+            {
+                layoutPanel = parentContainer;
+            }
+
             // first check if the table layout has already been defined in the container with sets of rows?
-            XmlNode containerNode = writer.CodeStorage.GetControl(parentContainerName).xmlNode;
+            XmlNode containerNode = parentContainer.xmlNode;
             XmlNode controlsNode = TXMLParser.GetChild(containerNode, "Controls");
 
             if (controlsNode != null)
@@ -451,10 +611,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             List <XmlNode>childNodes = TYml2Xml.GetChildren(controlsNode, true);
 
-            if ((childNodes.Count > 0) && childNodes[0].Name.StartsWith("Row"))
+            if ((childNodes.Count > 0) && TYml2Xml.GetElementName(childNodes[0]).StartsWith("Row"))
             {
                 // create a layout using the defined rows in Controls
-                // create TableLayoutPanel that has as many columns and rows as needed
+                // create TableLayoutPanel that has as many columns (including the labels) and rows as needed
                 FOrientation = eOrientation.TableLayout;
                 FCurrentRow = 0;
                 FCurrentColumn = 0;
@@ -476,15 +636,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 InitTableLayoutGrid();
 
-                FTlpName = CalculateName();
-                TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainerName);
-                GenerateDeclaration(writer, newTableLayoutPanel);
-                SetControlProperties(writer, newTableLayoutPanel);
-
-                foreach (string controlName in controls)
+                foreach (TControlDef childctrl in parentContainer.Children)
                 {
-                    TControlDef ctrl = writer.CodeStorage.GetControl(controlName);
-                    ctrl.parentName = FTlpName;
+                    childctrl.parentName = layoutPanel.controlName;
                 }
             }
             else
@@ -496,52 +650,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (FOrientation == eOrientation.Vertical)
                 {
                     FColumnCount = 2;
-                    FRowCount = controls.Count;
+                    FRowCount = parentContainer.Children.Count;
                 }
                 else if (FOrientation == eOrientation.Horizontal)
                 {
                     // horizontal: label and control, all controls in one row
-                    FColumnCount = controls.Count * 2;
+                    FColumnCount = parentContainer.Children.Count * 2;
                     FRowCount = 1;
                 }
 
                 InitTableLayoutGrid();
 
-                FTlpName = CalculateName();
-                TControlDef newTableLayoutPanel = writer.CodeStorage.FindOrCreateControl(FTlpName, parentContainerName);
-
-                if (!parentContainerName.StartsWith("tableLayoutPanel"))
+                foreach (TControlDef childControl in parentContainer.Children)
                 {
-                    TControlDef parentContainer = writer.CodeStorage.GetControl(parentContainerName);
-
-                    if (parentContainer.HasAttribute("Height"))
-                    {
-                        newTableLayoutPanel.SetAttribute("Height", parentContainer.GetAttribute("Height"));
-                    }
-
-                    if (parentContainer.HasAttribute("Width") && (parentContainer.controlTypePrefix != "tlp"))
-                    {
-                        newTableLayoutPanel.SetAttribute("Width", parentContainer.GetAttribute("Width"));
-                    }
-                }
-
-                if (ANewWidth != -1)
-                {
-                    newTableLayoutPanel.SetAttribute("Width", ANewWidth.ToString());
-                }
-
-                if (ANewHeight != -1)
-                {
-                    newTableLayoutPanel.SetAttribute("Height", ANewHeight.ToString());
-                }
-
-                GenerateDeclaration(writer, newTableLayoutPanel);
-                SetControlProperties(writer, newTableLayoutPanel);
-
-                foreach (string controlName in controls)
-                {
-                    TControlDef ctrl = writer.CodeStorage.GetControl(controlName);
-                    ctrl.parentName = FTlpName;
+                    childControl.parentName = layoutPanel.controlName;
                 }
             }
 
@@ -592,8 +714,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             #endregion
-
-            return FTlpName;
         }
 
         /// <summary>
@@ -601,9 +721,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="ctrl"></param>
-        public void CreateCode(TFormWriter writer, TControlDef ctrl)
+        public void InsertControl(TFormWriter writer, TControlDef ctrl)
         {
-            XmlNode curNode = ctrl.xmlNode;
             IControlGenerator ctrlGenerator = writer.FindControlGenerator(ctrl);
 
             string controlName = ctrl.controlName;
@@ -615,17 +734,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FCurrentColumn = 0;
                     FCurrentRow = ctrl.rowNumber;
                 }
-            }
-
-            // add control itself
-            if (!ctrl.controlName.StartsWith("Empty"))
-            {
-                ctrlGenerator.GenerateDeclaration(writer, ctrl);
-                ctrlGenerator.SetControlProperties(writer, ctrl);
-                ctrlGenerator.OnChangeDataType(writer, curNode, controlName);
-                writer.InitialiseDataSource(curNode, controlName);
-
-                writer.ApplyDerivedFunctionality(ctrlGenerator, curNode);
             }
 
 /* this does not work yet; creates endless loop/recursion
@@ -675,12 +783,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     AddControl(ctrl, FCurrentColumn, FCurrentRow);
                 }
 
-                StringCollection childControls = TYml2Xml.GetElements(TXMLParser.GetChild(curNode, "Controls"));
+                StringCollection childControls = TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "Controls"));
 
                 if (childControls.Count > 1)
                 {
                     // we need another tablelayout to arrange all the controls
-                    TableLayoutPanelGenerator TlpGenerator = new TableLayoutPanelGenerator();
+                    PanelLayoutGenerator TlpGenerator = new PanelLayoutGenerator();
                     TlpGenerator.SetOrientation(ctrl);
 
                     Int32 NewHeight = -1;
@@ -698,38 +806,36 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ctrl.ClearAttribute("Width");
                     }
 
-                    string subTlpControlName = TlpGenerator.CreateLayout(writer, FTlpName, childControls, NewWidth, NewHeight);
+                    TControlDef subTlpControl = TlpGenerator.CreateNewPanel(writer, ctrl);
+                    TlpGenerator.CreateLayout(writer, ctrl, subTlpControl, NewWidth, NewHeight);
 
                     foreach (string ChildControlName in childControls)
                     {
                         TControlDef ChildControl = ctrl.FCodeStorage.GetControl(ChildControlName);
-                        ChildControl.SetAttribute("DependsOnRadioButton", "true");
-                        TlpGenerator.CreateCode(writer, ChildControl);
+                        TlpGenerator.InsertControl(writer, ChildControl);
                     }
 
-                    TlpGenerator.WriteTableLayout(writer, subTlpControlName);
+                    TlpGenerator.WriteTableLayout(writer, subTlpControl);
 
                     if (FOrientation == eOrientation.Vertical)
                     {
-                        AddControl(subTlpControlName, 1, FCurrentRow);
+                        AddControl(subTlpControl, 1, FCurrentRow);
                     }
                     else if (FOrientation == eOrientation.Horizontal)
                     {
-                        AddControl(subTlpControlName, FCurrentColumn * 2 + 1, 0);
+                        AddControl(subTlpControl, FCurrentColumn * 2 + 1, 0);
                     }
                     else if (FOrientation == eOrientation.TableLayout)
                     {
-                        AddControl(subTlpControlName, FCurrentColumn + 1, FCurrentRow);
+                        AddControl(subTlpControl, FCurrentColumn + 1, FCurrentRow);
                     }
                 }
                 else if (childControls.Count == 1)
                 {
                     // we don't need to add another table layout for just one other control
                     TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
-                    ChildCtrl.SetAttribute("DependsOnRadioButton", "true");
                     IControlGenerator ChildGenerator = writer.FindControlGenerator(ChildCtrl);
-                    ChildGenerator.GenerateDeclaration(writer, ChildCtrl);
-                    ChildGenerator.SetControlProperties(writer, ChildCtrl);
+                    ChildGenerator.GenerateControl(writer, ChildCtrl);
 
                     if (FOrientation == eOrientation.Vertical)
                     {
@@ -744,42 +850,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         AddControl(ChildCtrl, FCurrentColumn + 1, FCurrentRow);
                     }
                 }
-
-                // add and install event handler for change of selection
-                writer.CodeStorage.FEventHandlersImplementation += "void " + controlName + "CheckedChanged(object sender, System.EventArgs e)" +
-                                                                   Environment.NewLine + "{" + Environment.NewLine + "  {#CHECKEDCHANGED_" +
-                                                                   controlName + "}" + Environment.NewLine +
-                                                                   "}" + Environment.NewLine + Environment.NewLine;
-                writer.Template.AddToCodelet("INITIALISESCREEN", controlName + "CheckedChanged(null, null);" + Environment.NewLine);
-                writer.Template.AddToCodelet("CONTROLINITIALISATION",
-                    "this." + controlName +
-                    ".CheckedChanged += new System.EventHandler(this." +
-                    controlName +
-                    "CheckedChanged);" + Environment.NewLine);
-                writer.Template.AddToCodelet("INITACTIONSTATE", controlName + "CheckedChanged(null, null);" + Environment.NewLine);
-
-                foreach (string childName in childControls)
-                {
-                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childName);
-
-                    // make sure the control is enabled/disabled depending on the selection of the radiobutton
-                    writer.Template.AddToCodelet("CHECKEDCHANGED_" + controlName,
-                        ChildCtrl.controlName + ".Enabled = " + controlName + ".Checked;" + Environment.NewLine);
-
-                    if (childControls.Count == 1)
-                    {
-                        if (FOrientation == eOrientation.Vertical)
-                        {
-                            AddControl(ChildCtrl, 1, FCurrentRow);
-                        }
-                        else if (FOrientation == eOrientation.Horizontal)
-                        {
-                            AddControl(ChildCtrl, FCurrentColumn * 2 + 1, 0);
-                        }
-                    }
-                }
             }
-            else if (ctrl.controlName.StartsWith("Empty"))
+            else if (ctrl.controlName.StartsWith("pnlEmpty"))
             {
                 // don't do anything here!
             }
@@ -788,8 +860,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 // add label
                 LabelGenerator lblGenerator = new LabelGenerator();
                 string lblName = lblGenerator.CalculateName(controlName);
-                TControlDef newLabel = writer.CodeStorage.FindOrCreateControl(lblName, FTlpName);
+                TControlDef newLabel = writer.CodeStorage.FindOrCreateControl(lblName, ctrl.controlName);
                 newLabel.Label = ctrl.Label;
+
+                if (ctrl.HasAttribute("LabelWidth"))
+                {
+                    newLabel.SetAttribute("Width", ctrl.GetAttribute("LabelWidth"));
+                }
 
                 if (ctrl.HasAttribute("LabelUnit"))
                 {
@@ -801,7 +878,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 lblGenerator.RightAlign = true;
                 lblGenerator.SetControlProperties(writer, newLabel);
 
-                AddControl(lblName,
+                AddControl(newLabel,
                     FCurrentColumn * 2,
                     FCurrentRow);
                 AddControl(ctrl,
@@ -810,16 +887,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
-                // checkbox, radiobutton, groupbox, label control: no label
-                // no label: merge cells
-                Int32 colSpan = 1;
-
-                if (ctrl.HasAttribute("ColSpan"))
-                {
-                    colSpan = Convert.ToInt32(ctrl.GetAttribute("ColSpan"));
-                }
-
-                ctrl.SetAttribute("ColSpan", (colSpan + 1).ToString());
                 AddControl(ctrl,
                     FCurrentColumn * 2,
                     FCurrentRow);
@@ -836,7 +903,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (FOrientation == eOrientation.TableLayout)
             {
-                FCurrentColumn++;
+                FCurrentColumn += ctrl.colSpan;
             }
         }
     }

@@ -13,6 +13,7 @@
             Dock: Fill
             Controls: [pnlTop, preLetters]
         pnlTop:
+            Dock: Top
             Controls:
                 Row1: [txtPaymentNum, btnLoad, btnCopy, btnPDF]
                 Row2: [lblLoadStatus]

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -82,6 +82,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 SUserRow UserDR = TUserManager.LoadUser(AUsername.ToUpper(), out tempPrincipal);
                 SUserTable UserTable = (SUserTable)UserDR.Table;
 
+                Random r = new Random();
+                UserDR.PasswordSalt = r.Next(1000000000).ToString();
                 UserDR.PasswordHash = TUserManager.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt), "SHA1");
 

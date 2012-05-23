@@ -270,7 +270,7 @@ namespace Ict.Common.DB
                         case OdbcType.DateTime:
                             ReturnValue[Counter] = new NpgsqlParameter(
                             ParamName,
-                            NpgsqlDbType.Date);
+                            NpgsqlDbType.Timestamp);
 
                             break;
 

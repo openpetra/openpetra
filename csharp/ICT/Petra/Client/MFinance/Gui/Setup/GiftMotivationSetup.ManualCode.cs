@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,6 +59,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 // to get an empty AMotivationDetailFee table, instead of null reference
                 FMainDS.Merge(new GiftBatchTDS());
 
+                TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, false);
+
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
 
                 // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
@@ -111,29 +113,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         private void ShowDetailsManual(AMotivationDetailRow ARow)
         {
-            FMainDS.AMotivationDetailFee.DefaultView.RowFilter =
-                String.Format("{0}={1} and {2}='{3}' and {4}='{5}'",
-                    AMotivationDetailFeeTable.GetLedgerNumberDBName(),
-                    ARow.LedgerNumber,
-                    AMotivationDetailFeeTable.GetMotivationGroupCodeDBName(),
-                    ARow.MotivationGroupCode,
-                    AMotivationDetailFeeTable.GetMotivationDetailCodeDBName(),
-                    ARow.MotivationDetailCode);
-
             string FeesPayable = string.Empty;
             string FeesReceivable = string.Empty;
 
-            foreach (DataRowView rv in FMainDS.AMotivationDetailFee.DefaultView)
+            if (ARow != null)
             {
-                AMotivationDetailFeeRow detailFeeRow = (AMotivationDetailFeeRow)rv.Row;
+                FMainDS.AMotivationDetailFee.DefaultView.RowFilter =
+                    String.Format("{0}={1} and {2}='{3}' and {4}='{5}'",
+                        AMotivationDetailFeeTable.GetLedgerNumberDBName(),
+                        ARow.LedgerNumber,
+                        AMotivationDetailFeeTable.GetMotivationGroupCodeDBName(),
+                        ARow.MotivationGroupCode,
+                        AMotivationDetailFeeTable.GetMotivationDetailCodeDBName(),
+                        ARow.MotivationDetailCode);
 
-                if (StringHelper.StrSplit(clbDetailFeesPayable.GetAllStringList(), ",").Contains(detailFeeRow.FeeCode))
+                foreach (DataRowView rv in FMainDS.AMotivationDetailFee.DefaultView)
                 {
-                    FeesPayable = StringHelper.AddCSV(FeesPayable, detailFeeRow.FeeCode);
-                }
-                else
-                {
-                    FeesReceivable = StringHelper.AddCSV(FeesReceivable, detailFeeRow.FeeCode);
+                    AMotivationDetailFeeRow detailFeeRow = (AMotivationDetailFeeRow)rv.Row;
+
+                    if (StringHelper.StrSplit(clbDetailFeesPayable.GetAllStringList(), ",").Contains(detailFeeRow.FeeCode))
+                    {
+                        FeesPayable = StringHelper.AddCSV(FeesPayable, detailFeeRow.FeeCode);
+                    }
+                    else
+                    {
+                        FeesReceivable = StringHelper.AddCSV(FeesReceivable, detailFeeRow.FeeCode);
+                    }
                 }
             }
 

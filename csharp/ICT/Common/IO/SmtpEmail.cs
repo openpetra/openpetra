@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -118,6 +118,7 @@ namespace Ict.Common.IO
                 //    certmgr -ssl smtps://tim00.hostsharing.net:443
 
                 TLogging.Log("There has been a problem sending the email");
+                TLogging.Log("server: " + FSmtpClient.Host + ":" + FSmtpClient.Port.ToString());
                 TLogging.Log(ex.ToString() + " " + ex.Message);
                 TLogging.Log(ex.StackTrace);
 

@@ -13,13 +13,11 @@ RootNode:
             Dock: Fill
        
         grpEmergencyData:
-            Dock: Fill
             Controls:
                 Row0: [pnlEmergencyDataLeft, pnlEmergencyDataRight]
             Label: Emergency Data (will not be exported)
 
         pnlEmergencyDataLeft:
-            Dock: Fill
             Controls:
                 Row0: [txtHeightCm]
                 Row1: [txtWeightKg]
@@ -28,12 +26,9 @@ RootNode:
                 Row4: [cmbFacialHair]
         
         pnlEmergencyDataRight:
-            #Dock: Right
             Controls:
                 Row0: [lblIdentMarks]
                 Row1: [txtIdentifyingMarks]
-            Label: Emergency Data (will not be exported)
-            
         txtHeightCm:
             Label: Height (cm)
             Width: 100
@@ -55,13 +50,10 @@ RootNode:
         lblIdentMarks:
             Label:Scars, Marks, Tattoos, Piercings
         txtIdentifyingMarks:
-            #Label: Scars, Marks, Tattoos, Piercings
-            Dock: Fill
             Multiline: true
             ScrollBars: Vertical
             NoLabel: True
-            #RowSpan:4
-            #Width: 250
+            Width: 250
             Height: 110
             DataField: PmPersonalData.PhysicalDesc
             

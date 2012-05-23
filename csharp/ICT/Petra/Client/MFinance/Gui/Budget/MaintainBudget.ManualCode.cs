@@ -321,7 +321,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 if (impOptions.Length > 1)
                 {
-                    FdlgSeparator.NumberFormatIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
                 }
 
                 FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
@@ -331,7 +331,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     TVerificationResultCollection AMessages;
 
                     string[] FdlgSeparatorVal = new string[] {
-                        FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormatIndex.ToString()
+                        FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
                     };
 
                     //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
@@ -393,6 +393,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
+        // This is not used (and imcomplete...)
         private void ExportBudget(System.Object sender, EventArgs e)
         {
             if (FPetraUtilsObject.HasChanges)
@@ -498,6 +499,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     DisplayBudgetTypeInflateBase();
                 }
             }
+
+            grdDetails.Refresh();
         }
 
         private void ProcessBudgetTypeAdhoc(System.Object sender, EventArgs e)
@@ -544,6 +547,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             lblAdhocTotalAmount.Text = "    Total: " + TotalAmount.ToString();
+            grdDetails.Refresh();
         }
 
         private void ProcessBudgetTypeSame(System.Object sender, EventArgs e)
@@ -575,6 +579,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             lblSameTotalAmount.Text = "    Total: " + AnnualAmount.ToString();
+            grdDetails.Refresh();
         }
 
         private void ProcessBudgetTypeSplit(System.Object sender, EventArgs e)
@@ -621,6 +626,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             txtPerPeriodAmount.NumberValueDecimal = PerPeriodAmount;
             txtPeriod12AmountPlus.NumberValueDecimal = Period12Amount;
+            grdDetails.Refresh();
         }
 
         private void ProcessBudgetTypeInflateN(System.Object sender, EventArgs e)
@@ -666,6 +672,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             lblInflateNTotalAmount.Text = "    Total: " + TotalAmount.ToString("C");
+            grdDetails.Refresh();
         }
 
         private void ProcessBudgetTypeInflateBase(System.Object sender, EventArgs e)
@@ -729,7 +736,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 textboxName = "txtPeriod" + i.ToString("00") + "Amount";
 
-                foreach (Control ctrl in tableLayoutPanel5.Controls)
+                foreach (Control ctrl in pnlBudgetTypeAdhoc.Controls[0].Controls)
                 {
                     if (ctrl is TTxtNumericTextBox && (ctrl.Name == textboxName))
                     {
@@ -992,30 +999,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 EnableBudgetEntry(true);
             }
 
-            if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SPLIT)
+            //
+            // ARow can be null...
+            if (ARow != null)
             {
-                rbtSplit.Checked = true;
-                DisplayBudgetTypeSplit();
-            }
-            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_ADHOC)
-            {
-                rbtAdHoc.Checked = true;
-                DisplayBudgetTypeAdhoc();
-            }
-            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SAME)
-            {
-                rbtSame.Checked = true;
-                DisplayBudgetTypeSame();
-            }
-            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_INFLATE_BASE)
-            {
-                rbtInflateBase.Checked = true;
-                DisplayBudgetTypeInflateBase();
-            }
-            else          //ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N
-            {
-                rbtInflateN.Checked = true;
-                DisplayBudgetTypeInflateN();
+                if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SPLIT)
+                {
+                    rbtSplit.Checked = true;
+                    DisplayBudgetTypeSplit();
+                }
+                else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_ADHOC)
+                {
+                    rbtAdHoc.Checked = true;
+                    DisplayBudgetTypeAdhoc();
+                }
+                else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SAME)
+                {
+                    rbtSame.Checked = true;
+                    DisplayBudgetTypeSame();
+                }
+                else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_INFLATE_BASE)
+                {
+                    rbtInflateBase.Checked = true;
+                    DisplayBudgetTypeInflateBase();
+                }
+                else          //ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N
+                {
+                    rbtInflateN.Checked = true;
+                    DisplayBudgetTypeInflateN();
+                }
             }
 
             pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
@@ -1060,6 +1072,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 ARow.EndEdit();
             }
 
+            grdDetails.Refresh();
             return true;
         }
 

@@ -11,12 +11,10 @@ RootNode:
             Controls: [grpLedger, grpCurrency, grpPeriodRange]
         grpLedger:
             Label: Ledger Details
-            Dock: Top
             Controls: [txtLedger, cmbAccountHierarchy]
             ControlsOrientation: horizontal
         grpCurrency:
             Controls: [cmbCurrency]
-            Dock: Top
         txtLedger: 
             ReadOnly: true
             NoParameter: true
