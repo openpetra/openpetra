@@ -724,6 +724,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
                                     Int64 ANewFamilyKey,
                                     out String AProblemMessage,
                                     out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
+        Int64 GetBankBySortCode(System.String ABranchCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
         PUnitTable GetConferenceUnits(System.String AConferenceName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
