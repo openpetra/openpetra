@@ -24,11 +24,14 @@ RootNode:
             Dock: Fill
             Controls: [pnlFilterTop1, pnlFilter, sptTransactionDetails]
             # add to Controls: pnlStatementInfo
-        cmbBankAccount: {List=UserDefinedList}
-        txtBankStatement: {ReadOnly=true}
+        cmbBankAccount: {List=UserDefinedList, ColSpan=2}
+        txtBankStatement: {ReadOnly=true, Width=300}
+        dtpBankStatementDate: {ReadOnly=true}
         pnlFilterTop1:
             Dock: Top
-            Controls: [cmbBankAccount, txtBankStatement]
+            Controls: 
+                Row0: [cmbBankAccount]
+                Row1: [txtBankStatement, dtpBankStatementDate]
         pnlFilter:
             Dock: Top
             Controls:
@@ -70,7 +73,7 @@ RootNode:
             Dock: Fill
         pnlGiftEdit:
             Dock: Fill
-            Visible: true
+            Visible: false
             Controls: [txtDonorKey, pnlDetailGrid, pnlEditGiftDetail]
         txtDonorKey: {Label=Donor, Type=PartnerKey, Dock=Top}
         pnlDetailGrid:

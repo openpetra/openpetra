@@ -2836,6 +2836,13 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public Int64 GetBankBySortCode(System.String ABranchCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector), "GetBankBySortCode", ";STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector.GetBankBySortCode(ABranchCode);
+        }
+
+        /// generated method from connector
         public PUnitTable GetConferenceUnits(System.String AConferenceName)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader), "GetConferenceUnits", ";STRING;");

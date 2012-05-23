@@ -199,7 +199,7 @@ public class TSQLiteWriter
             {
                 RunCommand(conn, line);
             }
-            else if (line.ToUpper().StartsWith("INSERT INTO "))
+            else if (line.ToUpper().StartsWith("INSERT INTO ") || line.ToUpper().StartsWith("UPDATE "))
             {
                 line = line.Replace("true", "1");
                 line = line.Replace("false", "0");
@@ -209,6 +209,16 @@ public class TSQLiteWriter
             {
                 string tablename = StringHelper.GetCSVValue(line.Replace(" ", ","), 1);
                 LoadData(ADataDefinition, conn, APath, tablename);
+            }
+            else if (line.ToUpper().StartsWith("SELECT NEXTVAL("))
+            {
+                string SequenceName = line.Substring(line.IndexOf("'") + 1);
+                SequenceName = SequenceName.Substring(0, SequenceName.IndexOf("'"));
+                RunCommand(conn, "INSERT INTO " + SequenceName + " VALUES(NULL, -1);");
+            }
+            else if (!line.StartsWith("--") && (line.Trim().Length > 0))
+            {
+                throw new Exception("unknown command " + line);
             }
         }
 

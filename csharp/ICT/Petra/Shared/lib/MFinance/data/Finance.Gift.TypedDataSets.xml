@@ -62,18 +62,13 @@
         </Table>
         <Table sqltable="a_ep_statement"/>
         <Table sqltable="a_ep_transaction">
-            <CustomField name = "MatchAction" type="string"/>
-<!--            <CustomField name="NumberOnStatement" type="Int32"/>
-            <CustomField name="DetailKey" type="Int32"/>
-            <CustomField name="OriginalAmountOnStatement" type="Double"/>
+            <CustomField name="MatchAction" type="string"/>
+            <CustomField name="OriginalAmountOnStatement" type="Decimal"/>
             <CustomField name="GiftLedgerNumber" type="Int32"/>
             <CustomField name="GiftBatchNumber" type="Int32"/>
             <CustomField name="GiftTransactionNumber" type="Int32"/>
             <CustomField name="GiftDetailNumber" type="Int32"/>
             <CustomField name="DonorKey" type="Int64"/>
-            <CustomField name="DonorShortName" type="string"/>
-            <CustomField name="RecipientDescription" type="string"/>
-            <PrimaryKey thisFields="a_statement_key_i, a_order_i, DetailKey"/> -->
         </Table>
         <Table sqltable="a_ep_match">
             <CustomField name="CostCentreName" type="string"/>

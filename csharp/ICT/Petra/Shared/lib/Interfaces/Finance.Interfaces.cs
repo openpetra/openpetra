@@ -475,11 +475,12 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ImportExport.WebConnectors
     public interface IImportExportWebConnectorsNamespace : IInterface
     {
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
-        TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
-                                                   AEpTransactionTable ATransTable,
+        TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
+                                                   out Int32 AFirstStatementKey,
                                                    out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
-        AEpStatementTable GetImportedBankStatements(DateTime AStartDate);
+        AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber,
+                                                    DateTime AStartDate);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
         System.Boolean DropBankStatement(Int32 AEpStatementKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector)</summary>
@@ -582,7 +583,8 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                                    out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
-                                      DateTime ADateEffective);
+                                      DateTime ADateEffective,
+                                      System.String ABatchDescription);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
@@ -827,6 +829,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.ICH.WebConnectors
         System.Boolean PerformStewardshipCalculation(System.Int32 ALedgerNumber,
                                                      System.Int32 APeriodNumber,
                                                      out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector)</summary>
+        System.Boolean GenerateICHStewardshipBatch(System.Int32 ALedgerNumber,
+                                                   System.Int32 APeriodNumber,
+                                                   ref TVerificationResultCollection AVerificationResult);
     }
 
 }
