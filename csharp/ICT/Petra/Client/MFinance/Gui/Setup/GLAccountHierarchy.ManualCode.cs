@@ -335,6 +335,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
+            //
+            // I need to remove any AnalysisAttribute records that are still set to "Unassigned"
+            //
+            for (int Idx = ASubmitDS.AAnalysisAttribute.Rows.Count - 1; Idx >= 0; Idx--)
+            {
+                AAnalysisAttributeRow Row = ASubmitDS.AAnalysisAttribute[Idx];
+                if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisTypeCode.IndexOf("Unassigned") == 0))
+                {
+                    Row.Delete();
+                }
+            }
+
+            //
+            // I'll take this opportunity to remove any similar records in my own TDS
+            //
+            for (int Idx = FMainDS.AAnalysisAttribute.Rows.Count - 1; Idx >= 0; Idx--)
+            {
+                AAnalysisAttributeRow Row = FMainDS.AAnalysisAttribute[Idx];
+                if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisTypeCode.IndexOf("Unassigned") == 0))
+                {
+                    Row.Delete();
+                }
+            }
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
         }
 

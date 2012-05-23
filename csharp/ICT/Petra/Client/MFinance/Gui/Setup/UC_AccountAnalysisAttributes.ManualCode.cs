@@ -57,7 +57,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FAccountCode = value;
-                FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
                     FAccountCode);
             }
@@ -80,15 +82,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             pnlDetails.Enabled = true;
         }
 
+        private string NewUniqueAnalTypeCode()
+        {
+            string NewTypeCode = "Unassigned";
+            int ItmIdx = -1;
+            int FindAttempt = 0;
+            FMainDS.AAnalysisAttribute.DefaultView.Sort =
+                    AAnalysisAttributeTable.GetLedgerNumberDBName() + ", "
+                  + AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", "
+                  + AAnalysisAttributeTable.GetAccountCodeDBName();
+            do {
+                ItmIdx = FMainDS.AAnalysisAttribute.DefaultView.Find(new object[] { FLedgerNumber, NewTypeCode, FAccountCode });
+//                TLogging.Log("NewUniqueAnalTypeCode: Find (" + NewTypeCode + ") = " + ItmIdx);
+                if (ItmIdx >= 0)
+                {
+                    FindAttempt++;
+                    NewTypeCode = "Unassigned-" + FindAttempt.ToString();
+                }
+            } while (ItmIdx >= 0);
+
+            return NewTypeCode;
+        }
+
         private void NewRowManual(ref AAnalysisAttributeRow ARow)
         {
             ARow.LedgerNumber = FLedgerNumber;
             ARow.Active = true;
             ARow.AccountCode = FAccountCode;
 
-            // TODO: this does not work if there exists not type yet, or if the first type has not been used yet
             cmbDetailAnalysisTypeCode.SelectedIndex = 0;
-            ARow.AnalysisTypeCode = cmbDetailAnalysisTypeCode.GetSelectedString();
+
+            ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -98,23 +122,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-#if TODO
-// TODO: this code might be similar to the code for FreeFormAnalysis
+            // TODO: Do I need to check whether I can detatch this AnalTypeCode from this account?
+            /*
             int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
                 FPreviouslySelectedDetailRow.AnalysisTypeCode,
-                FPreviouslySelectedDetailRow.AnalysisValue);
+                "*All*");
 
             if (num > 0)
             {
                 MessageBox.Show(Catalog.GetString(
-                        "This value is already referenced and cannot be deleted."));
+                        "{0} is already referenced and cannot be deleted."), FPreviouslySelectedDetailRow.AnalysisTypeCode);
                 return;
             }
+            */
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "You have chosen to delete this value ({0}).\n\nDo you really want to delete it?"),
-                            FPreviouslySelectedDetailRow.AnalysisValue), Catalog.GetString("Confirm Delete"),
+                                "Confirm you want to Remove {0} from this account."),
+                            FPreviouslySelectedDetailRow.AnalysisTypeCode), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
                 int rowIndex = CurrentRowIndex();
@@ -122,12 +147,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FPetraUtilsObject.SetChangedFlag();
                 SelectByIndex(rowIndex);
             }
-#endif
+        }
+
+        private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
+        {
+            GetDataFromControls();
         }
 
         private void GetDetailDataFromControlsManual(AAnalysisAttributeRow ARow)
         {
-            // TODO
+            // I need to check whether this row will break a DB constraint.
+
+            // The row is being edited right now, (It's in a BeginEdit ... EndEdit bracket) so it doesn't show up in the DefaultView.
+            // I need to call EndEdit, but I'll give this row a "safe" value first.
+
+            string TempEdit = ARow.AnalysisTypeCode;
+            ARow.AnalysisTypeCode = "temp_edit";
+            ARow.EndEdit();
+
+            string FilterString = String.Format("{0}={3} and {1}='{4}' and {2}='{5}'",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                FLedgerNumber,
+                TempEdit,
+                FAccountCode);
+            FMainDS.AAnalysisAttribute.DefaultView.RowFilter = FilterString;
+//            TLogging.Log("Check for unique TypeCode (" + TempEdit + ") : " + FMainDS.AAnalysisAttribute.DefaultView.Count + " Matches.");
+            Boolean MustReplaceName = (FMainDS.AAnalysisAttribute.DefaultView.Count > 0);
+
+            FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                FAccountCode);
+
+            ARow.BeginEdit();
+            if (MustReplaceName)
+            {
+                ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
+//                TLogging.Log("Replace name: " + ARow.AnalysisTypeCode);
+            }
+            else
+            {
+                ARow.AnalysisTypeCode = TempEdit;
+//                TLogging.Log("Keep name: " + ARow.AnalysisTypeCode);
+            }
         }
 
         private int CurrentRowIndex()
