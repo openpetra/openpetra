@@ -236,7 +236,7 @@ namespace Ict.Tools.DataDumpPetra2
                 }
 
                 StringBuilder sb = new StringBuilder(l[i]);
-                
+
                 if (l[i].Contains("\\"))
                 {
                     // avoid Postgresql load error: ERROR:  invalid byte sequence for encoding "UTF8": 0x80
