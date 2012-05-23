@@ -572,6 +572,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 newMatch.CommentTwoType = giftRow.CommentTwoType;
                 newMatch.CommentThreeType = giftRow.CommentThreeType;
                 newMatch.MailingCode = giftRow.MailingCode;
+                newMatch.CostCentreCode = giftRow.CostCentreCode;
                 newMatch.ChargeFlag = giftRow.ChargeFlag;
                 newMatch.ConfidentialGiftFlag = giftRow.ConfidentialGiftFlag;
                 newMatch.GiftTransactionAmount = giftRow.GiftTransactionAmount;

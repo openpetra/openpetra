@@ -19,6 +19,10 @@ RootNode:
             ActionClick: CreateGiftBatch
         actCreateGLBatch:
             ActionClick: CreateGLBatch
+        actExportGiftBatch:
+            ActionClick: ExportGiftBatch
+        actPrintReport:
+            ActionClick: PrintReport
     Controls:
         pnlContent:
             Dock: Fill
@@ -111,3 +115,6 @@ RootNode:
         tbbSaveMatches:
         tbbCreateGiftBatch:
         tbbCreateGLBatch:
+        tbbExportGiftBatch:
+        tbbPrintReport:
+        

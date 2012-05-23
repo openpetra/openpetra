@@ -417,17 +417,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                                     TResultSeverity.Resv_Critical));
                         }
 
-                        // check for active account
-                        AAccountRow account = (AAccountRow)AccountTable.Rows.Find(new object[] { ALedgerNumber, match.AccountCode });
-
-                        if ((account == null) || !account.AccountActiveFlag)
-                        {
-                            AVerificationResult.Add(new TVerificationResult(
-                                    String.Format(Catalog.GetString("creating gift for match {0}"), transactionRow.Description),
-                                    Catalog.GetString("Invalid or inactive account code"),
-                                    TResultSeverity.Resv_Critical));
-                        }
-
                         GiftDS.AGiftDetail.Rows.Add(detail);
                     }
                 }

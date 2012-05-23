@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MFinance.Gui.Gift;
 
 namespace Ict.Petra.Client.MFinance.Gui.Common
 {
@@ -639,6 +640,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                         Catalog.GetString("Error"));
                 }
             }
+        }
+
+        /// <summary>
+        /// this is useful for the situation, where we are using OpenPetra only for the bankimport,
+        /// but need to post the gift batches in the old Petra 2.x database
+        /// </summary>
+        private void ExportGiftBatch(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            // TODO: should we first ask? also when closing the window?
+            SaveMatches(null, null);
+
+            TVerificationResultCollection VerificationResult;
+            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
+                FLedgerNumber,
+                CurrentStatement.StatementKey,
+                -1,
+                out VerificationResult);
+
+            if (GiftBatchNumber != -1)
+            {
+                // export to csv
+                TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
+                exportForm.LedgerNumber = FLedgerNumber;
+                exportForm.FirstBatchNumber = GiftBatchNumber;
+                exportForm.LastBatchNumber = GiftBatchNumber;
+                exportForm.IncludeUnpostedBatches = true;
+                exportForm.OutputFilename = TAppSettingsManager.GetValue("BankImport.GiftBatchExportFilename",
+                    TAppSettingsManager.GetValue("OpenPetra.PathTemp") +
+                    Path.DirectorySeparatorChar +
+                    "giftBatch" + GiftBatchNumber.ToString("000000") + ".csv");
+                exportForm.ExportBatches(null, null);
+            }
+            else
+            {
+                if (VerificationResult != null)
+                {
+                    MessageBox.Show(
+                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Problem: No gift batch has been created"));
+                }
+                else
+                {
+                    MessageBox.Show(
+                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Problem: No gift batch has been created"));
+                }
+            }
+        }
+
+        private void PrintReport(System.Object sender, EventArgs e)
+        {
+            // TODO
         }
 
         private void TransactionFilterChanged(System.Object sender, EventArgs e)
