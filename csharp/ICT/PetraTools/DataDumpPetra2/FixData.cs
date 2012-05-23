@@ -611,6 +611,38 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
+            if (ATableName == "s_system_defaults")
+            {
+                // load the file a_system_parameter.d.gz so that we can access s_system_parameter, s_site_key_n
+                TTable systemParameterTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("a_system_parameter");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "a_system_parameter.d.gz",
+                    systemParameterTableOld.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(systemParameterTableOld);
+
+                while (true)
+                {
+                    string[] OldRow = Parser.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+
+                    // needs to be added to s_system_defaults name=SiteKey
+                    string SiteKey = GetValue(ColumnNames, OldRow, "s_site_key_n");
+
+                    SetValue(AColumnNames, ref ANewRow, "s_default_code_c", "SiteKey");
+                    SetValue(AColumnNames, ref ANewRow, "s_default_description_c", "there has to be one site key for the database");
+                    SetValue(AColumnNames, ref ANewRow, "s_default_value_c", SiteKey);
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    RowCounter++;
+                }
+            }
+
             return RowCounter;
         }
     }
