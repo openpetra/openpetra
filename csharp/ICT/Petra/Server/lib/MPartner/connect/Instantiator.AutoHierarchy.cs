@@ -2777,6 +2777,16 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                        Boolean AAllUsers,
+                                                        String AUserCreated,
+                                                        String AUserModified)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";STRING;BOOL;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AAllUsers, AUserCreated, AUserModified);
+        }
+
+        /// generated method from connector
         public Boolean ExtractExists(String AExtractName)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "ExtractExists", ";STRING;");

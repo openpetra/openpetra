@@ -7,22 +7,50 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: window
+    WindowWidth: 700
+    WindowHeight: 700
     Actions:
         actMaintainExtract: {ActionClick=MaintainExtract}      
         actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}     
         actPurgeExtracts: {ActionClick=PurgeExtracts}     
+        actActivateFilter: {ActionClick=FilterExtracts}     
+        actClearFilter: {ActionClick=ClearFilterExtracts}     
+        actUserFilterSelectionChanged: {ActionClick=FilterExtracts}     
     Controls:
         pnlContent:
             Controls: [pnlFilter, pnlExtractMasterList]
             Dock: Fill
-        pnlFilter:
-            Dock: Top
-            Controls: [lblFilter]
+        pnlFilter: {ControlsOrientation=horizontal}
+            NoLabel: true
+            Controls: [grpNameFilter, rgrUserFilter]
+        grpNameFilter:
+            Label: Filter by Extract Name
+            Controls: 
+                Row0: [txtExtractNameFilter]
+                Row1: [btnActivateFilter, btnClearFilter]
         pnlExtractMasterList:
             Dock: Fill
             Controls: [ucoExtractMasterList]
                
-        lblFilter:
+        txtExtractNameFilter:
+            NoLabel: true
+            ColSpan: 2
+            Width: 250
+        btnActivateFilter:
+            Label: Filter
+            Action: actActivateFilter
+        btnClearFilter:
+            Label: Clear Filter
+            Action: actClearFilter
+        rgrUserFilter: {Label=Filter by User}
+            Controls: [rbtAll, rbtCreatedBy, rbtModifiedBy]
+        rbtAll: {Label=All, Action=actUserFilterSelectionChanged}
+        rbtCreatedBy: {Label=Created by, Action=actUserFilterSelectionChanged}
+            Controls:[cmbUserCreatedBy]
+        rbtModifiedBy: {Label=Modified by, Action=actUserFilterSelectionChanged}
+            Controls:[cmbUserModifiedBy]
+        cmbUserCreatedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
+        cmbUserModifiedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
         ucoExtractMasterList:
             Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
             Dock: Fill

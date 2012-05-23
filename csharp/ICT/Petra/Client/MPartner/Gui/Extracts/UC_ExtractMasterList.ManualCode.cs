@@ -44,7 +44,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
     public partial class TUC_ExtractMasterList
     {
+    	/// <summary>
+        /// Delegate for call to parent window to trigger refreshing of extract list 
+        /// (needed here as filter criteria exist in parent and are unknown in this object)
+        /// </summary>
+    	public delegate void TDelegateRefreshExtractList();
+    
+        /// <summary>
+        /// Reference to the Delegate in parent window
+        /// </summary>
+        private TDelegateRefreshExtractList FDelegateRefreshExtractList;
+    	
         #region Public Methods
+        /// <summary>
+        /// This property is used to provide a function which is called when refresh button is clicked
+        /// </summary>
+        /// <description></description>
+        public TDelegateRefreshExtractList DelegateRefreshExtractList
+        {
+            set
+            {
+                FDelegateRefreshExtractList = value;
+            }
+        }
 
         /// <summary>
         /// save the changes on the screen (code is copied from auto-generated code)
@@ -303,28 +325,28 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void RefreshExtractList(System.Object sender, EventArgs e)
         {
-            // Do not allow refresh of the extract list if the user has made changes to any of the records
-            // as otherwise their changes will be overwritten by reloading of the data.
-            if (FPetraUtilsObject.HasChanges)
-            {
-                MessageBox.Show(Catalog.GetString(
-                        "Before refreshing the list you need to save changes made in this screen! " + "\r\n" + "\r\n" +
-                        "If you don't want to save changes then please exit and reopen this screen."),
-                    Catalog.GetString("Refresh List"),
-                    MessageBoxButtons.OK);
-            }
-            else
-            {
-                this.LoadData();
-
-                // data can have changed completely, so easiest for now is to select first row
-                grdDetails.SelectRowInGrid(1, true);
-                
-                // enable/disable buttons
-                UpdateButtonStatus();
-            }
+        	FDelegateRefreshExtractList();
         }
 
+        /// <summary>
+        /// Open a new screen to show details and maintain the currently selected extract
+        /// </summary>
+        /// <param name="AExtractNameFilter"></param>
+        /// <param name="AAllUsers"></param>
+        /// <param name="ACreatedByUser"></param>
+        /// <param name="AModifiedByUser"></param>
+        public void RefreshExtractList(String AExtractNameFilter, Boolean AAllUsers,
+                                       String ACreatedByUser, String AModifiedByUser)
+        {
+            this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
+
+            // data can have changed completely, so easiest for now is to select first row
+            grdDetails.SelectRowInGrid(1, true);
+            
+            // enable/disable buttons
+            UpdateButtonStatus();
+        }
+        
         /// <summary>
         /// Verify and if necessary update partner data in an extract
         /// </summary>
@@ -346,7 +368,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void InitializeManualCode()
         {
             FMainDS = new ExtractTDS();
-            LoadData();
+            LoadData("", true, "", "");
 
             // allow multiselection of list items so several records can be deleted at once
             grdDetails.Selection.EnableMultiSelection = true;
@@ -358,8 +380,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <summary>
         /// Loads Extract Master Data from Petra Server into FMainDS.
         /// </summary>
+        /// <param name="AExtractNameFilter"></param>
+        /// <param name="AAllUsers"></param>
+        /// <param name="ACreatedByUser"></param>
+        /// <param name="AModifiedByUser"></param>
         /// <returns>true if successful, otherwise false.</returns>
-        private Boolean LoadData()
+        private Boolean LoadData(String AExtractNameFilter, Boolean AAllUsers,
+                                 String ACreatedByUser, String AModifiedByUser)
         {
             Boolean ReturnValue;
 
@@ -378,7 +405,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 	FMainDS.MExtractMaster.Clear();
                 }
 
-                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetAllExtractHeaders());
+                // add filter data
+                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetAllExtractHeaders(AExtractNameFilter,
+                                                               AAllUsers, ACreatedByUser, AModifiedByUser));
 
                 // Make DataRows unchanged
                 if (FMainDS.MExtractMaster.Rows.Count > 0)

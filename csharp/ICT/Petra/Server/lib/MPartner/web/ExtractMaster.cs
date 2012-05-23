@@ -63,6 +63,73 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// retrieve all extract master records that match given criteria
+        /// </summary>
+        /// <param name="AExtractNameFilter"></param>
+        /// <param name="AAllUsers"></param>
+        /// <param name="AUserCreated"></param>
+        /// <param name="AUserModified"></param>
+        /// <returns>returns table filled with all extract headers</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, Boolean AAllUsers, 
+                                                               String AUserCreated, String AUserModified)
+        {
+        	// if no filter is set then call method to get all extracts
+        	if (   AExtractNameFilter.Length == 0
+        	    && AAllUsers)
+        	{
+        		return GetAllExtractHeaders();
+        	}
+        	
+            MExtractMasterTable ExtractMasterDT = new MExtractMasterTable();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt;
+
+            try
+            {
+            	// prepare extract name filter field
+	            if (AExtractNameFilter == "*")
+	            {
+	                AExtractNameFilter = "";
+	            }
+	            else if (AExtractNameFilter.EndsWith("*"))
+	            {
+	                AExtractNameFilter = AExtractNameFilter.Substring(0, AExtractNameFilter.Length - 1);
+	            }
+                AExtractNameFilter = AExtractNameFilter.Replace('*', '%') + "%";
+                
+                // Use a direct sql statement rather than db access classes to improve performance as otherwise
+                // we would need an extra query for each row of an extract to retrieve partner name and class
+                SqlStmt = "SELECT * FROM " + MExtractMasterTable.GetTableDBName() +
+                          " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() +
+                          " LIKE '" + AExtractNameFilter + "'";
+                if (AUserCreated.Length > 0)
+                {
+                	SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
+                				  " = '" + AUserCreated + "'";
+                }
+                
+                if (AUserModified.Length > 0)
+                {
+                	SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetModifiedByDBName() +
+                		  		" = '" + AUserModified + "'";
+                }
+
+                DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction, null, -1, -1);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during load of extract headers: " + e.Message);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+
+            return ExtractMasterDT;
+            
+        }
+        
+        /// <summary>
         /// check if extract with given name already exists
         /// </summary>
         /// <param name="AExtractName"></param>

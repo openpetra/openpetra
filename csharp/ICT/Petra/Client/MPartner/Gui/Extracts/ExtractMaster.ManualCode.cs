@@ -316,8 +316,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         private void InitializeManualCode()
         {
+        	ucoExtractMasterList.DelegateRefreshExtractList = @RefreshExtractList;
         }
 
+        private void RunOnceOnActivationManual()
+        {
+        	// unhook filter controls so save button does not get enabled when they are used
+        	FPetraUtilsObject.UnhookControl(pnlFilter, true);
+        	//FPetraUtilsObject.UnhookControl(rgrUserFilter, true);
+        }
+        
         /// <summary>
         ///
         /// </summary>
@@ -373,6 +381,66 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ExtractPurgingDialog.Dispose();
         }
 
+        /// <summary>
+        /// Open a new screen to show details and maintain the currently selected extract
+        /// </summary>
+        public void RefreshExtractList()
+        {
+            // Do not allow refresh of the extract list if the user has made changes to any of the records
+            // as otherwise their changes will be overwritten by reloading of the data.
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "Before refreshing the list you need to save changes made in this screen! " + "\r\n" + "\r\n" +
+                        "If you don't want to save changes then please exit and reopen this screen."),
+                    Catalog.GetString("Refresh List"),
+                    MessageBoxButtons.OK);
+            }
+            else
+            {
+            	// now refresh extract list in user control
+            	String UserCreated = "";
+            	String UserModified = "";
+            	Boolean AllUsers = false;
+            	
+            	if (rbtAll.Checked)
+            	{
+            		AllUsers = true;
+            	}
+            	else if (rbtCreatedBy.Checked)
+            	{
+            		UserCreated = cmbUserCreatedBy.GetSelectedString();
+            	}
+            	else if (rbtModifiedBy.Checked)
+            	{
+            		UserModified = cmbUserModifiedBy.GetSelectedString();
+            	}
+            		
+            	ucoExtractMasterList.RefreshExtractList (txtExtractNameFilter.Text, AllUsers, UserCreated, UserModified);
+            }
+        }
+        
+        /// <summary>
+        /// Filter extracts according to given criteria
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FilterExtracts(System.Object sender, EventArgs e)
+        {
+        	RefreshExtractList();
+        }
+
+        /// <summary>
+        /// Filter extracts according to given criteria
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ClearFilterExtracts(System.Object sender, EventArgs e)
+        {
+        	this.txtExtractNameFilter.Text = "";
+        	RefreshExtractList();
+        }
+        
         #endregion
     }
 }

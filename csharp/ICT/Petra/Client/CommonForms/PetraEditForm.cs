@@ -354,8 +354,78 @@ namespace Ict.Petra.Client.CommonForms
 #endif
             }
         }
+        
+        /// <summary>todoComment</summary>
+        private void UnhookControl(Control AControl)
+        {
+            if (AControl.GetType() == typeof(TextBox))
+            {
+                ((TextBox)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TTxtMaskedTextBox))
+            {
+                ((TTxtMaskedTextBox)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl is DateTimePicker)
+            {
+                ((DateTimePicker)AControl).ValueChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(RadioButton))
+            {
+                ((RadioButton)AControl).CheckedChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(ComboBox))
+            {
+                ((ComboBox)AControl).SelectedValueChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(CheckBox))
+            {
+                ((CheckBox)AControl).CheckedChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl is NumericUpDown)
+            {
+                ((NumericUpDown)AControl).ValueChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TCmbAutoComplete))
+            {
+                ((TCmbAutoComplete)AControl).SelectedValueChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TCmbVersatile))
+            {
+                ((TCmbVersatile)AControl).SelectedValueChanged -= new EventHandler(this.MultiEventHandler);
+                ((TCmbVersatile)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TClbVersatile))
+            {
+                ((TClbVersatile)AControl).ValueChanged -= new EventHandler(MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(TtxtPetraDate))
+            {
+                //((TtxtPetraDate)ctrl).DateChanged += new TPetraDateChangedEventHandler(this.TFrmPetraEditUtils_DateChanged);
+                ((TtxtPetraDate)AControl).TextChanged -= new EventHandler(MultiEventHandler);
+            }
+            else if (AControl.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
+            {
+                ((Ict.Common.Controls.TTxtNumericTextBox)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
+            }
+            
+        }
 
-        /** This is available for the child form to respond to by overriding
+        /// <summary>todoComment</summary>
+        public void UnhookControl(Control AControl, Boolean AUnhookChildren)
+        {
+        	UnhookControl(AControl);
+        	if (AUnhookChildren)
+        	{
+        		// recursive loop to catch all nested child controls
+				foreach (Control ctrl in AControl.Controls)
+				{
+					UnhookControl(ctrl, AUnhookChildren);
+				}
+        	}
+        }
+
+      	/** This is available for the child form to respond to by overriding
          */
         protected void ControlValueChanged()
         {
