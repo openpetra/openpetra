@@ -116,9 +116,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             FTransactionView.Sort = AEpTransactionTable.GetOrderDBName() + " ASC";
             grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(FTransactionView);
 
+            TFinanceControls.InitialiseMotivationGroupList(ref cmbMotivationGroup, FLedgerNumber, true);
             TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, true);
-            TFinanceControls.InitialiseCostCentreList(ref cmbGiftCostCentre, FLedgerNumber, true, false, true, true);
-            TFinanceControls.InitialiseAccountList(ref cmbGiftAccount, FLedgerNumber, true, false, true, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbGLCostCentre, FLedgerNumber, true, false, true, true);
             TFinanceControls.InitialiseAccountList(ref cmbGLAccount, FLedgerNumber, true, false, true, false);
 
@@ -149,30 +148,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             grdAllTransactions.SelectRowInGrid(1);
         }
 
+        private AMotivationDetailRow GetCurrentMotivationDetail(string AMotivationGroupCode, string AMotivationDetailCode)
+        {
+            return (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, AMotivationGroupCode, AMotivationDetailCode });
+        }
+
+        private void FilterMotivationDetail(object sender, EventArgs e)
+        {
+            TFinanceControls.ChangeFilterMotivationDetailList(ref cmbMotivationDetail, cmbMotivationGroup.GetSelectedString());
+        }
+
         private void MotivationDetailChanged(System.Object sender, EventArgs e)
         {
-            cmbGiftCostCentre.Enabled = false;
-            cmbGiftAccount.Enabled = false;
-
             // look for the motivation detail.
-            if (cmbMotivationDetail.SelectedIndex == -1)
+            AMotivationDetailRow motivationDetailRow = GetCurrentMotivationDetail(
+                cmbMotivationGroup.GetSelectedString(),
+                cmbMotivationDetail.GetSelectedString());
+
+            if (motivationDetailRow != null)
             {
-                return;
+                txtGiftAccount.Text = motivationDetailRow.AccountCode;
+                txtGiftCostCentre.Text = motivationDetailRow.CostCentreCode;
             }
-
-            DataView v = new DataView(FMainDS.AMotivationDetail);
-            v.RowFilter = AMotivationDetailTable.GetMotivationDetailCodeDBName() +
-                          " = '" + cmbMotivationDetail.GetSelectedString() + "'";
-
-            if (v.Count == 0)
-            {
-                return;
-            }
-
-            AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)v[0].Row;
-
-            cmbGiftAccount.SetSelectedString(motivationDetailRow.AccountCode);
-            cmbGiftCostCentre.SetSelectedString(motivationDetailRow.CostCentreCode);
         }
 
         private void NewTransactionCategory(System.Object sender, EventArgs e)
@@ -384,6 +382,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             {
                 txtAmount.NumberValueDecimal = CurrentlySelectedMatch.GiftTransactionAmount;
 
+                if (CurrentlySelectedMatch.IsMotivationGroupCodeNull())
+                {
+                    cmbMotivationGroup.SelectedIndex = -1;
+                }
+                else
+                {
+                    cmbMotivationGroup.SetSelectedString(CurrentlySelectedMatch.MotivationGroupCode);
+                }
+
                 if (CurrentlySelectedMatch.IsMotivationDetailCodeNull())
                 {
                     cmbMotivationDetail.SelectedIndex = -1;
@@ -393,22 +400,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     cmbMotivationDetail.SetSelectedString(CurrentlySelectedMatch.MotivationDetailCode);
                 }
 
-                if (CurrentlySelectedMatch.IsAccountCodeNull())
-                {
-                    cmbGiftAccount.SelectedIndex = -1;
-                }
-                else
-                {
-                    cmbGiftAccount.SetSelectedString(CurrentlySelectedMatch.AccountCode);
-                }
+                AMotivationDetailRow motivationDetailRow = GetCurrentMotivationDetail(
+                    CurrentlySelectedMatch.MotivationGroupCode,
+                    CurrentlySelectedMatch.MotivationDetailCode);
 
-                if (CurrentlySelectedMatch.IsCostCentreCodeNull())
+                if (motivationDetailRow != null)
                 {
-                    cmbGiftCostCentre.SelectedIndex = -1;
+                    txtGiftAccount.Text = motivationDetailRow.AccountCode;
+                    txtGiftCostCentre.Text = motivationDetailRow.CostCentreCode;
                 }
                 else
                 {
-                    cmbGiftCostCentre.SetSelectedString(CurrentlySelectedMatch.CostCentreCode);
+                    txtGiftAccount.Text = string.Empty;
+                    txtGiftCostCentre.Text = string.Empty;
                 }
             }
         }
@@ -417,11 +421,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         {
             if (CurrentlySelectedMatch != null)
             {
-                // TODO: support more motivation groups.
-                CurrentlySelectedMatch.MotivationGroupCode = FMainDS.AMotivationDetail[0].MotivationGroupCode;
+                CurrentlySelectedMatch.MotivationGroupCode = cmbMotivationGroup.GetSelectedString();
                 CurrentlySelectedMatch.MotivationDetailCode = cmbMotivationDetail.GetSelectedString();
-                CurrentlySelectedMatch.AccountCode = cmbGiftAccount.GetSelectedString();
-                CurrentlySelectedMatch.CostCentreCode = cmbGiftCostCentre.GetSelectedString();
+                CurrentlySelectedMatch.CostCentreCode = txtGiftCostCentre.Text;
                 CurrentlySelectedMatch.GiftTransactionAmount = txtAmount.NumberValueDecimal.Value;
                 CurrentlySelectedMatch.DonorKey = Convert.ToInt64(txtDonorKey.Text);
 
