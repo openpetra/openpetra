@@ -43,8 +43,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     {
         private void InitializeManualCode()
         {
-        	txtMinGiftAmount.CurrencySymbol = "";
-        	txtMaxGiftAmount.CurrencySymbol = "";
+            txtMinGiftAmount.CurrencySymbol = "";
+            txtMaxGiftAmount.CurrencySymbol = "";
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

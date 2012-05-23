@@ -68,9 +68,9 @@ namespace Ict.Petra.Server.MPartner.queries
             string WhereClause = "";
             string TableNames = "";
             string StringValue;
-        	
+
             // add parameters to sql parameter list
-            
+
             // Partner Class
             ASQLParameterList.Add(new OdbcParameter("param_partner_class_unset", OdbcType.Bit)
                 {
@@ -80,7 +80,7 @@ namespace Ict.Petra.Server.MPartner.queries
                 {
                     Value = AParameters.Get("param_partner_class").ToString()
                 });
-            
+
             // Language Code
             ASQLParameterList.Add(new OdbcParameter("param_language_unset", OdbcType.Bit)
                 {
@@ -90,7 +90,7 @@ namespace Ict.Petra.Server.MPartner.queries
                 {
                     Value = AParameters.Get("param_language").ToString()
                 });
-            
+
             // Active Partners and No Solicitations
             ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
                 {
@@ -119,7 +119,7 @@ namespace Ict.Petra.Server.MPartner.queries
                     Value = AParameters.Get("param_user_modified").ToString()
                 });
 
-			// Date range for creation and modification of record            
+            // Date range for creation and modification of record
             ASQLParameterList.Add(new OdbcParameter("param_date_created_from_unset", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_date_created_from").IsZeroOrNull()
@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MPartner.queries
                 {
                     Value = AParameters.Get("param_date_modified_to").ToDate()
                 });
-			
+
             // add statement for church denomination
             if (AParameters.Exists("param_denomination"))
             {
@@ -164,9 +164,9 @@ namespace Ict.Petra.Server.MPartner.queries
                         {
                             Value = StringValue
                         });
-                	TableNames = ", pub_p_church";
-                    WhereClause =   " AND pub_p_church.p_partner_key_n = pub_p_partner.p_partner_key_n"
-                				  + " AND pub_p_church.p_denomination_c = ?";
+                    TableNames = ", pub_p_church";
+                    WhereClause = " AND pub_p_church.p_partner_key_n = pub_p_partner.p_partner_key_n" +
+                                  " AND pub_p_church.p_denomination_c = ?";
                 }
             }
 
@@ -181,15 +181,14 @@ namespace Ict.Petra.Server.MPartner.queries
                         {
                             Value = StringValue
                         });
-                	TableNames = ", pub_p_organisation";
-                    WhereClause =   " AND pub_p_organisation.p_partner_key_n = pub_p_partner.p_partner_key_n"
-                				  + " AND pub_p_organisation.p_business_code_c = ?";
+                    TableNames = ", pub_p_organisation";
+                    WhereClause = " AND pub_p_organisation.p_partner_key_n = pub_p_partner.p_partner_key_n" +
+                                  " AND pub_p_organisation.p_business_code_c = ?";
                 }
             }
-            
+
             ASqlStmt = ASqlStmt.Replace("##partner_specific_tables##", TableNames);
             ASqlStmt = ASqlStmt.Replace("##partner_specific_where_clause##", WhereClause);
-			
         }
     }
 }

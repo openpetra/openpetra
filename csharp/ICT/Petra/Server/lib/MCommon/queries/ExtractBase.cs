@@ -192,7 +192,7 @@ namespace Ict.Petra.Server.MCommon.queries
                     LocationTableNeeded = true;
                 }
             }
-            
+
             // add statement for country
             if (AParameters.Exists("param_country"))
             {
@@ -250,7 +250,7 @@ namespace Ict.Petra.Server.MCommon.queries
             // add date clause if address should only be valid at a certain date
             if (AParameters.Exists("param_only_addresses_valid_on")
                 && (AParameters.Get("param_only_addresses_valid_on").ToBool()))
-           	{
+            {
                 if (AParameters.Exists("param_address_date_valid_on")
                     && !AParameters.Get("param_address_date_valid_on").IsZeroOrNull())
                 {
@@ -284,7 +284,7 @@ namespace Ict.Petra.Server.MCommon.queries
             }
             else
             {
-            	// if not valid on certain date then check if date range is filled
+                // if not valid on certain date then check if date range is filled
                 if (AParameters.Exists("param_address_start_from")
                     && !AParameters.Get("param_address_start_from").IsZeroOrNull())
                 {
@@ -292,7 +292,7 @@ namespace Ict.Petra.Server.MCommon.queries
                         {
                             Value = AParameters.Get("param_address_start_from").ToDate()
                         });
-            		
+
                     WhereClause = WhereClause +
                                   " AND pub_p_partner_location.p_date_effective_d >= ?";
                     LocationTableNeeded = true;
@@ -305,7 +305,7 @@ namespace Ict.Petra.Server.MCommon.queries
                         {
                             Value = AParameters.Get("param_address_start_to").ToDate()
                         });
-            		
+
                     WhereClause = WhereClause +
                                   " AND pub_p_partner_location.p_date_effective_d <= ?";
                     LocationTableNeeded = true;
@@ -318,10 +318,10 @@ namespace Ict.Petra.Server.MCommon.queries
                         {
                             Value = AParameters.Get("param_address_end_from").ToDate()
                         });
-            		
+
                     WhereClause = WhereClause +
                                   " AND (    pub_p_partner_location.p_date_good_until_d IS NOT NULL" +
-                    	          "      AND pub_p_partner_location.p_date_good_until_d >= ?)";
+                                  "      AND pub_p_partner_location.p_date_good_until_d >= ?)";
                     LocationTableNeeded = true;
                 }
 
@@ -332,10 +332,10 @@ namespace Ict.Petra.Server.MCommon.queries
                         {
                             Value = AParameters.Get("param_address_end_to").ToDate()
                         });
-            		
+
                     WhereClause = WhereClause +
                                   " AND (    pub_p_partner_location.p_date_good_until_d IS NOT NULL" +
-                    	          "      AND pub_p_partner_location.p_date_good_until_d <= ?)";
+                                  "      AND pub_p_partner_location.p_date_good_until_d <= ?)";
                     LocationTableNeeded = true;
                 }
             }
@@ -368,21 +368,21 @@ namespace Ict.Petra.Server.MCommon.queries
 
                 if (StringValue.Trim().Length > 0)
                 {
-		            List <String>param_location_type = new List <String>();
-		
-		            foreach (TVariant choice in AParameters.Get("param_location_type").ToComposite())
-		            {
-		                param_location_type.Add(choice.ToString());
-		            }
+                    List <String>param_location_type = new List <String>();
 
-		            AOdbcParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_location_type",
-		                    OdbcType.VarChar,
-		                    param_location_type));
+                    foreach (TVariant choice in AParameters.Get("param_location_type").ToComposite())
+                    {
+                        param_location_type.Add(choice.ToString());
+                    }
+
+                    AOdbcParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_location_type",
+                            OdbcType.VarChar,
+                            param_location_type));
                     WhereClause = WhereClause + " AND pub_p_partner_location.p_location_type_c IN (?)";
                     PartnerLocationTableNeeded = true;
                 }
             }
-            
+
             // if location table is needed then automatically partner location table is needed as well
             if (LocationTableNeeded)
             {

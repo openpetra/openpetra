@@ -1336,25 +1336,25 @@ namespace Ict.Common.Controls
         /// select a row in the grid, and invoke the even for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid)
         {
-        	SelectRowInGrid (ARowNumberInGrid, false);
+            SelectRowInGrid(ARowNumberInGrid, false);
         }
 
         /// select a row in the grid, and invoke the even for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
         {
-        	if (ASelectBorderIfOutsideLimit)
-        	{
-	            if (ARowNumberInGrid >= Rows.Count)
-	            {
-	                ARowNumberInGrid = Rows.Count - 1;
-	            }
-	
-	            if ((ARowNumberInGrid < 1) && (Rows.Count > 1))
-	            {
-	                ARowNumberInGrid = 1;
-	            }
-        	}
-        	
+            if (ASelectBorderIfOutsideLimit)
+            {
+                if (ARowNumberInGrid >= Rows.Count)
+                {
+                    ARowNumberInGrid = Rows.Count - 1;
+                }
+
+                if ((ARowNumberInGrid < 1) && (Rows.Count > 1))
+                {
+                    ARowNumberInGrid = 1;
+                }
+            }
+
             this.Selection.ResetSelection(false);
             this.Selection.SelectRow(ARowNumberInGrid, true);
 
@@ -1373,7 +1373,7 @@ namespace Ict.Common.Controls
             // scroll to the row
             this.ShowCell(new SourceGrid.Position(this.SelectedRowIndex(), 0), true);
         }
-        
+
         /// <summary>
         /// Performs selection of rows with a matching first character as the user
         /// presses certain keys that produce characters that this procedure can search

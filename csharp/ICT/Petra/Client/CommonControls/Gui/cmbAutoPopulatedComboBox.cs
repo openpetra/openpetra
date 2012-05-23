@@ -161,7 +161,7 @@ namespace Ict.Petra.Client.CommonControls
             /// <summary>todoComment</summary>
             MailingList,
 
-			/// <summary>todoComment</summary>
+            /// <summary>todoComment</summary>
             MaritalStatusList,
 
             /// <summary>todoComment</summary>
@@ -656,7 +656,7 @@ namespace Ict.Petra.Client.CommonControls
                     AMethodOfGivingTable.GetMethodOfGivingDescDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.MethodOfPaymentList:
 
                     InitialiseUserControl(

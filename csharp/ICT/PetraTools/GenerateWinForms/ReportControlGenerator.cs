@@ -97,7 +97,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return;
             }
-            
+
             bool clearIfSettingEmpty = ReportControls.GetClearIfSettingEmpty(curNode);
 
             ProcessTemplate snippetReadControls = writer.Template.GetSnippet(ATemplateControlType + "READCONTROLS");
@@ -108,10 +108,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ProcessTemplate snippetWriteControls = writer.Template.GetSnippet(ATemplateControlType + "SETCONTROLS");
             snippetWriteControls.SetCodelet("CONTROLNAME", controlName);
             snippetWriteControls.SetCodelet("PARAMNAME", paramName);
+
             if (clearIfSettingEmpty)
             {
                 snippetWriteControls.SetCodelet("CLEARIFSETTINGEMPTY", clearIfSettingEmpty.ToString().ToLower());
             }
+
             ATargetTemplate.InsertSnippet("SETCONTROLS", snippetWriteControls);
         }
     }

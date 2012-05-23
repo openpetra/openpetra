@@ -316,16 +316,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         private void InitializeManualCode()
         {
-        	ucoExtractMasterList.DelegateRefreshExtractList = @RefreshExtractList;
+            ucoExtractMasterList.DelegateRefreshExtractList = @RefreshExtractList;
         }
 
         private void RunOnceOnActivationManual()
         {
-        	// unhook filter controls so save button does not get enabled when they are used
-        	FPetraUtilsObject.UnhookControl(pnlFilter, true);
-        	//FPetraUtilsObject.UnhookControl(rgrUserFilter, true);
+            // unhook filter controls so save button does not get enabled when they are used
+            FPetraUtilsObject.UnhookControl(pnlFilter, true);
         }
-        
+
         /// <summary>
         ///
         /// </summary>
@@ -366,18 +365,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             // purging of extracts happens in the dialog
             ExtractPurgingDialog.ShowDialog();
-            
+
             if (ExtractPurgingDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
             {
                 /* Get values from the Dialog */
                 ExtractPurgingDialog.GetReturnedParameters(out PurgingSuccessful);
-                
+
                 if (PurgingSuccessful)
                 {
-		            ucoExtractMasterList.RefreshExtractList(sender, e);
+                    ucoExtractMasterList.RefreshExtractList(sender, e);
                 }
             }
-                
+
             ExtractPurgingDialog.Dispose();
         }
 
@@ -398,28 +397,28 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else
             {
-            	// now refresh extract list in user control
-            	String UserCreated = "";
-            	String UserModified = "";
-            	Boolean AllUsers = false;
-            	
-            	if (rbtAll.Checked)
-            	{
-            		AllUsers = true;
-            	}
-            	else if (rbtCreatedBy.Checked)
-            	{
-            		UserCreated = cmbUserCreatedBy.GetSelectedString();
-            	}
-            	else if (rbtModifiedBy.Checked)
-            	{
-            		UserModified = cmbUserModifiedBy.GetSelectedString();
-            	}
-            		
-            	ucoExtractMasterList.RefreshExtractList (txtExtractNameFilter.Text, AllUsers, UserCreated, UserModified);
+                // now refresh extract list in user control
+                String UserCreated = "";
+                String UserModified = "";
+                Boolean AllUsers = false;
+
+                if (rbtAll.Checked)
+                {
+                    AllUsers = true;
+                }
+                else if (rbtCreatedBy.Checked)
+                {
+                    UserCreated = cmbUserCreatedBy.GetSelectedString();
+                }
+                else if (rbtModifiedBy.Checked)
+                {
+                    UserModified = cmbUserModifiedBy.GetSelectedString();
+                }
+
+                ucoExtractMasterList.RefreshExtractList(txtExtractNameFilter.Text, AllUsers, UserCreated, UserModified);
             }
         }
-        
+
         /// <summary>
         /// Filter extracts according to given criteria
         /// </summary>
@@ -427,7 +426,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void FilterExtracts(System.Object sender, EventArgs e)
         {
-        	RefreshExtractList();
+            RefreshExtractList();
         }
 
         /// <summary>
@@ -437,10 +436,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void ClearFilterExtracts(System.Object sender, EventArgs e)
         {
-        	this.txtExtractNameFilter.Text = "";
-        	RefreshExtractList();
+            this.txtExtractNameFilter.Text = "";
+            RefreshExtractList();
         }
-        
+
         #endregion
     }
 }

@@ -44,17 +44,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
     public partial class TUC_ExtractMasterList
     {
-    	/// <summary>
-        /// Delegate for call to parent window to trigger refreshing of extract list 
+        /// <summary>
+        /// Delegate for call to parent window to trigger refreshing of extract list
         /// (needed here as filter criteria exist in parent and are unknown in this object)
         /// </summary>
-    	public delegate void TDelegateRefreshExtractList();
-    
+        public delegate void TDelegateRefreshExtractList();
+
         /// <summary>
         /// Reference to the Delegate in parent window
         /// </summary>
         private TDelegateRefreshExtractList FDelegateRefreshExtractList;
-    	
+
         #region Public Methods
         /// <summary>
         /// This property is used to provide a function which is called when refresh button is clicked
@@ -267,14 +267,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
-	                int rowIndex = grdDetails.SelectedRowIndex();
+                    int rowIndex = grdDetails.SelectedRowIndex();
                     FPreviouslySelectedDetailRow.Delete();
                     FPetraUtilsObject.SetChangedFlag();
 
                     // temporarily reset selected row to avoid interference with validation
-	                FPreviouslySelectedDetailRow = null;
-	                grdDetails.SelectRowInGrid(rowIndex, true);
-	                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    FPreviouslySelectedDetailRow = null;
+                    grdDetails.SelectRowInGrid(rowIndex, true);
+                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 }
             }
             // delete single selected record from extract
@@ -286,7 +286,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
                     DataRowView RowView;
-	                int rowIndex = grdDetails.SelectedRowIndex();
+                    int rowIndex = grdDetails.SelectedRowIndex();
 
                     // build a collection of objects to be deleted before actually deleting them (as otherwise
                     // indexes may not be valid any longer)
@@ -308,9 +308,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPetraUtilsObject.SetChangedFlag();
 
                     // temporarily reset selected row to avoid interference with validation
-	                FPreviouslySelectedDetailRow = null;
-	                grdDetails.SelectRowInGrid(rowIndex, true);
-	                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    FPreviouslySelectedDetailRow = null;
+                    grdDetails.SelectRowInGrid(rowIndex, true);
+                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 }
             }
 
@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void RefreshExtractList(System.Object sender, EventArgs e)
         {
-        	FDelegateRefreshExtractList();
+            FDelegateRefreshExtractList();
         }
 
         /// <summary>
@@ -336,17 +336,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="ACreatedByUser"></param>
         /// <param name="AModifiedByUser"></param>
         public void RefreshExtractList(String AExtractNameFilter, Boolean AAllUsers,
-                                       String ACreatedByUser, String AModifiedByUser)
+            String ACreatedByUser, String AModifiedByUser)
         {
             this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
 
             // data can have changed completely, so easiest for now is to select first row
             grdDetails.SelectRowInGrid(1, true);
-            
+
             // enable/disable buttons
             UpdateButtonStatus();
         }
-        
+
         /// <summary>
         /// Verify and if necessary update partner data in an extract
         /// </summary>
@@ -386,7 +386,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AModifiedByUser"></param>
         /// <returns>true if successful, otherwise false.</returns>
         private Boolean LoadData(String AExtractNameFilter, Boolean AAllUsers,
-                                 String ACreatedByUser, String AModifiedByUser)
+            String ACreatedByUser, String AModifiedByUser)
         {
             Boolean ReturnValue;
 
@@ -401,13 +401,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
                 else
                 {
-                	// clear table so a load also works if records on the server have been removed
-                	FMainDS.MExtractMaster.Clear();
+                    // clear table so a load also works if records on the server have been removed
+                    FMainDS.MExtractMaster.Clear();
                 }
 
                 // add filter data
                 FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetAllExtractHeaders(AExtractNameFilter,
-                                                               AAllUsers, ACreatedByUser, AModifiedByUser));
+                        AAllUsers, ACreatedByUser, AModifiedByUser));
 
                 // Make DataRows unchanged
                 if (FMainDS.MExtractMaster.Rows.Count > 0)

@@ -103,25 +103,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             ExtractNameDialog.Dispose();
-            
+
             // create empty extract with given name and description and store it in db
-            if (TRemote.MPartner.Partner.WebConnectors.CreateEmptyExtract(ref ExtractId, 
-                                                                          ExtractName, ExtractDescription))
+            if (TRemote.MPartner.Partner.WebConnectors.CreateEmptyExtract(ref ExtractId,
+                    ExtractName, ExtractDescription))
             {
-	            // now open Screen for new extract so user can add partner records manually
-	            TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
-	            frm.ExtractId = ExtractId;
-	            frm.ExtractName = ExtractName;
-	            frm.Show();
+                // now open Screen for new extract so user can add partner records manually
+                TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
+                frm.ExtractId = ExtractId;
+                frm.ExtractName = ExtractName;
+                frm.Show();
             }
-			else
-			{
+            else
+            {
                 MessageBox.Show(Catalog.GetString("Creation of extract failed"),
                     Catalog.GetString("Generate Manual Extract"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop);
                 return;
-			}
+            }
         }
     }
 }

@@ -71,48 +71,50 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AUserModified"></param>
         /// <returns>returns table filled with all extract headers</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, Boolean AAllUsers, 
-                                                               String AUserCreated, String AUserModified)
+        public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, Boolean AAllUsers,
+            String AUserCreated, String AUserModified)
         {
-        	// if no filter is set then call method to get all extracts
-        	if (   AExtractNameFilter.Length == 0
-        	    && AAllUsers)
-        	{
-        		return GetAllExtractHeaders();
-        	}
-        	
+            // if no filter is set then call method to get all extracts
+            if ((AExtractNameFilter.Length == 0)
+                && AAllUsers)
+            {
+                return GetAllExtractHeaders();
+            }
+
             MExtractMasterTable ExtractMasterDT = new MExtractMasterTable();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             string SqlStmt;
 
             try
             {
-            	// prepare extract name filter field
-	            if (AExtractNameFilter == "*")
-	            {
-	                AExtractNameFilter = "";
-	            }
-	            else if (AExtractNameFilter.EndsWith("*"))
-	            {
-	                AExtractNameFilter = AExtractNameFilter.Substring(0, AExtractNameFilter.Length - 1);
-	            }
+                // prepare extract name filter field
+                if (AExtractNameFilter == "*")
+                {
+                    AExtractNameFilter = "";
+                }
+                else if (AExtractNameFilter.EndsWith("*"))
+                {
+                    AExtractNameFilter = AExtractNameFilter.Substring(0, AExtractNameFilter.Length - 1);
+                }
+
                 AExtractNameFilter = AExtractNameFilter.Replace('*', '%') + "%";
-                
+
                 // Use a direct sql statement rather than db access classes to improve performance as otherwise
                 // we would need an extra query for each row of an extract to retrieve partner name and class
                 SqlStmt = "SELECT * FROM " + MExtractMasterTable.GetTableDBName() +
                           " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() +
                           " LIKE '" + AExtractNameFilter + "'";
+
                 if (AUserCreated.Length > 0)
                 {
-                	SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
-                				  " = '" + AUserCreated + "'";
+                    SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
+                               " = '" + AUserCreated + "'";
                 }
-                
+
                 if (AUserModified.Length > 0)
                 {
-                	SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetModifiedByDBName() +
-                		  		" = '" + AUserModified + "'";
+                    SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetModifiedByDBName() +
+                               " = '" + AUserModified + "'";
                 }
 
                 DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction, null, -1, -1);
@@ -126,9 +128,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             return ExtractMasterDT;
-            
         }
-        
+
         /// <summary>
         /// check if extract with given name already exists
         /// </summary>
@@ -167,15 +168,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean CreateEmptyExtract(ref int AExtractId, String AExtractName, String AExtractDescription)
         {
-        	Boolean ResultValue = false;
-        	TVerificationResultCollection VerificationResult;
-        	Boolean ExtractExists;
-        	
-           	ResultValue = Server.MPartner.Extracts.TExtractsHandling.CreateNewExtract(AExtractName, AExtractDescription, 
-        	                                                                          out AExtractId, out ExtractExists, out VerificationResult);
+            Boolean ResultValue = false;
+            TVerificationResultCollection VerificationResult;
+            Boolean ExtractExists;
+
+            ResultValue = Server.MPartner.Extracts.TExtractsHandling.CreateNewExtract(AExtractName, AExtractDescription,
+                out AExtractId, out ExtractExists, out VerificationResult);
 
             return ResultValue;
-        	
         }
 
         /// <summary>
@@ -188,37 +188,37 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PurgeExtracts(int ANumberOfDays, Boolean AAllUsers, String AUserName)
         {
-        	Boolean ResultValue = false;
-        	
+            Boolean ResultValue = false;
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             string DeleteStmtTemplate;
             string DeleteStmt;
             string WhereStmtUser = "";
             string WhereStmtMaster = "";
-            DateTime PurgeDate = DateTime.Today.AddDays(0-ANumberOfDays);
+            DateTime PurgeDate = DateTime.Today.AddDays(0 - ANumberOfDays);
             TSelfExpandingArrayList SqlParameterList = new TSelfExpandingArrayList();
-            
+
             if (!AAllUsers)
             {
-            	WhereStmtUser = " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName()
-            					+ " = '" + AUserName + "' ";
+                WhereStmtUser = " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
+                                " = '" + AUserName + "' ";
             }
-            
-            WhereStmtMaster = " pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateCreatedDBName()
-            	+ " < ?"
-            	+ " AND ((pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName()
-            	+ " IS NULL) OR ("
-            	+ " pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName()
-            	+ " < ?))"
-            	+ WhereStmtUser;
 
-            DeleteStmtTemplate = "DELETE FROM pub_" + "##cascading_table_extract_id##"
-            	+ " WHERE EXISTS (SELECT 1 FROM pub_" + MExtractMasterTable.GetTableDBName()
-            	+ " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractIdDBName()
-            	+ " = pub_" + "##cascading_field_extract_id##" 
-            	+ " AND " 
-            	+ WhereStmtMaster
-            	+ ")";
+            WhereStmtMaster = " pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateCreatedDBName() +
+                              " < ?" +
+                              " AND ((pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName() +
+                              " IS NULL) OR (" +
+                              " pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName() +
+                              " < ?))" +
+                              WhereStmtUser;
+
+            DeleteStmtTemplate = "DELETE FROM pub_" + "##cascading_table_extract_id##" +
+                                 " WHERE EXISTS (SELECT 1 FROM pub_" + MExtractMasterTable.GetTableDBName() +
+                                 " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractIdDBName() +
+                                 " = pub_" + "##cascading_field_extract_id##" +
+                                 " AND " +
+                                 WhereStmtMaster +
+                                 ")";
 
             OdbcParameter[] parameterArray = new OdbcParameter[2];
             parameterArray[0] = new OdbcParameter("Date", OdbcType.Date);
@@ -228,33 +228,33 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             try
             {
-            	// delete MExtractTable
-                DeleteStmt = DeleteStmtTemplate.Replace ("##cascading_table_extract_id##", 
-                                                         MExtractTable.GetTableDBName());
-                DeleteStmt = DeleteStmt.Replace ("##cascading_field_extract_id##", 
-                                                 MExtractTable.GetTableDBName() + "." + MExtractTable.GetExtractIdDBName());
+                // delete MExtractTable
+                DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
+                    MExtractTable.GetTableDBName());
+                DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
+                    MExtractTable.GetTableDBName() + "." + MExtractTable.GetExtractIdDBName());
                 DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, false, parameterArray);
 
-            	// delete MExtractParameterTable
-                DeleteStmt = DeleteStmtTemplate.Replace ("##cascading_table_extract_id##", 
-                                                         MExtractParameterTable.GetTableDBName());
-                DeleteStmt = DeleteStmt.Replace ("##cascading_field_extract_id##", 
-                                                 MExtractParameterTable.GetTableDBName() + "." + MExtractParameterTable.GetExtractIdDBName());
+                // delete MExtractParameterTable
+                DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
+                    MExtractParameterTable.GetTableDBName());
+                DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
+                    MExtractParameterTable.GetTableDBName() + "." + MExtractParameterTable.GetExtractIdDBName());
                 DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, false, parameterArray);
 
-            	// delete SGroupExtractTable
-                DeleteStmt = DeleteStmtTemplate.Replace ("##cascading_table_extract_id##", 
-                                                         SGroupExtractTable.GetTableDBName());
-                DeleteStmt = DeleteStmt.Replace ("##cascading_field_extract_id##", 
-                                                 SGroupExtractTable.GetTableDBName() + "." + SGroupExtractTable.GetExtractIdDBName());
+                // delete SGroupExtractTable
+                DeleteStmt = DeleteStmtTemplate.Replace("##cascading_table_extract_id##",
+                    SGroupExtractTable.GetTableDBName());
+                DeleteStmt = DeleteStmt.Replace("##cascading_field_extract_id##",
+                    SGroupExtractTable.GetTableDBName() + "." + SGroupExtractTable.GetExtractIdDBName());
                 DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, false, parameterArray);
 
-            	// delete MExtractMasterTable
-		        DeleteStmt = "DELETE FROM pub_" + MExtractMasterTable.GetTableDBName()
-		        	+ " WHERE " + WhereStmtMaster;
+                // delete MExtractMasterTable
+                DeleteStmt = "DELETE FROM pub_" + MExtractMasterTable.GetTableDBName() +
+                             " WHERE " + WhereStmtMaster;
                 DBAccess.GDBAccessObj.ExecuteNonQuery(DeleteStmt, Transaction, false, parameterArray);
-                
-				// commit whole transaction if successful
+
+                // commit whole transaction if successful
                 DBAccess.GDBAccessObj.CommitTransaction();
                 ResultValue = true;
             }
@@ -266,9 +266,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             return ResultValue;
-        	
         }
-        
+
         /// <summary>
         /// retrieve extract records and include partner name and class
         /// </summary>

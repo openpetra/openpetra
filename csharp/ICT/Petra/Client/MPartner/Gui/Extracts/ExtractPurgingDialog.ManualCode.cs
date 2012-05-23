@@ -47,17 +47,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     /// manual methods for the generated window
     public partial class TFrmExtractPurgingDialog : System.Windows.Forms.Form
     {
-    	Boolean FPurgingSuccessful;
-    	
+        Boolean FPurgingSuccessful;
+
         private void InitializeManualCode()
         {
-        	// set the number of days to default according to settings used in System Manager
-        	String NumberOfDays = TSystemDefaults.GetSystemDefault
-        		(SharedConstants.SYSDEFAULT_PURGEEXTRACTS, "no,365").Split(',')[1];
-        	
-        	txtNumberOfDays.NumberValueInt = Convert.ToInt32(NumberOfDays);
-        	
-        	FPurgingSuccessful = false;
+            // set the number of days to default according to settings used in System Manager
+            String NumberOfDays = TSystemDefaults.GetSystemDefault
+                                      (SharedConstants.SYSDEFAULT_PURGEEXTRACTS, "no,365").Split(',')[1];
+
+            txtNumberOfDays.NumberValueInt = Convert.ToInt32(NumberOfDays);
+
+            FPurgingSuccessful = false;
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
@@ -83,15 +83,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // delete extracts on the server
             if (TRemote.MPartner.Partner.WebConnectors.PurgeExtracts(Convert.ToInt32(txtNumberOfDays.Text),
-                                                                 chkAllUsers.Checked,
-                                                                 cmbUser.GetSelectedString()))
+                    chkAllUsers.Checked,
+                    cmbUser.GetSelectedString()))
             {
                 MessageBox.Show(Catalog.GetString("Purging of extract was successful"),
                     Catalog.GetString("Purge Extracts"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
-            	
-            	FPurgingSuccessful = true;
+
+                FPurgingSuccessful = true;
             }
             else
             {
@@ -99,10 +99,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     Catalog.GetString("Purge Extracts"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop);
-            	
-            	FPurgingSuccessful = false;
+
+                FPurgingSuccessful = false;
             }
-            
+
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }

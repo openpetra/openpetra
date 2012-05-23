@@ -354,7 +354,7 @@ namespace Ict.Petra.Client.CommonForms
 #endif
             }
         }
-        
+
         /// <summary>todoComment</summary>
         private void UnhookControl(Control AControl)
         {
@@ -408,24 +408,24 @@ namespace Ict.Petra.Client.CommonForms
             {
                 ((Ict.Common.Controls.TTxtNumericTextBox)AControl).TextChanged -= new EventHandler(this.MultiEventHandler);
             }
-            
         }
 
         /// <summary>todoComment</summary>
         public void UnhookControl(Control AControl, Boolean AUnhookChildren)
         {
-        	UnhookControl(AControl);
-        	if (AUnhookChildren)
-        	{
-        		// recursive loop to catch all nested child controls
-				foreach (Control ctrl in AControl.Controls)
-				{
-					UnhookControl(ctrl, AUnhookChildren);
-				}
-        	}
+            UnhookControl(AControl);
+
+            if (AUnhookChildren)
+            {
+                // recursive loop to catch all nested child controls
+                foreach (Control ctrl in AControl.Controls)
+                {
+                    UnhookControl(ctrl, AUnhookChildren);
+                }
+            }
         }
 
-      	/** This is available for the child form to respond to by overriding
+        /** This is available for the child form to respond to by overriding
          */
         protected void ControlValueChanged()
         {

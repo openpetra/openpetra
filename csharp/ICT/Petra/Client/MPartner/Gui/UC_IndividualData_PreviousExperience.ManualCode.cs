@@ -128,12 +128,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 int rowIndex = grdDetails.SelectedRowIndex();
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
-                
+
                 // temporarily reset selected row to avoid interference with validation
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SelectRowInGrid(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                
+
                 DoRecalculateScreenParts();
 
                 if (grdDetails.Rows.Count <= 1)

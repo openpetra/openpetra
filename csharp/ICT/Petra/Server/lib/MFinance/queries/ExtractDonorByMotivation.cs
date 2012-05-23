@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.MFinance.queries
                 MailingCodeSet = true;
                 MailingCode = AParameters.Get("param_mailing_code").ToString();
             }
-            
+
             ASQLParameterList.Add(new OdbcParameter("param_mailing_code_unset", OdbcType.Bit)
                 {
                     Value = !MailingCodeSet
@@ -102,37 +102,38 @@ namespace Ict.Petra.Server.MFinance.queries
                 {
                     Value = MailingCode
                 });
-                
+
             // Motivation Group and Detail Code in Pairs. First value is group code, second is detail code.
-            List<String> param_motivation_detail = new List <String>(AParameters.Get("param_motivation_detail").ToString().Split(','));
+            List <String>param_motivation_detail = new List <String>(AParameters.Get("param_motivation_detail").ToString().Split(','));
 
-        	int Index = 0;
-        	String Group_Detail_Pairs = "";
-        	foreach (String KeyPart in param_motivation_detail)
-        	{
-        		if (Index % 2 == 0)
-        		{
-        			if (Group_Detail_Pairs.Length > 0)
-        			{
-        				Group_Detail_Pairs += ",";
-        			}
-        			
-        			// even Index: Group Code
-        			Group_Detail_Pairs += "('" + KeyPart + "','";
-        		}
-        		else
-        		{
-        			// odd Index: Detail Code
-        			Group_Detail_Pairs += KeyPart + "')";
-        		}
+            int Index = 0;
+            String Group_Detail_Pairs = "";
 
-        		// increase Index for next element
-        		Index += 1;
-        	}
-        	
+            foreach (String KeyPart in param_motivation_detail)
+            {
+                if (Index % 2 == 0)
+                {
+                    if (Group_Detail_Pairs.Length > 0)
+                    {
+                        Group_Detail_Pairs += ",";
+                    }
+
+                    // even Index: Group Code
+                    Group_Detail_Pairs += "('" + KeyPart + "','";
+                }
+                else
+                {
+                    // odd Index: Detail Code
+                    Group_Detail_Pairs += KeyPart + "')";
+                }
+
+                // increase Index for next element
+                Index += 1;
+            }
+
             ASqlStmt = ASqlStmt.Replace("##motivation_group_detail_pairs##", Group_Detail_Pairs);
-            
-			// Date from and to            
+
+            // Date from and to
             ASQLParameterList.Add(new OdbcParameter("param_date_from_unset", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_date_from").IsZeroOrNull()
@@ -151,19 +152,19 @@ namespace Ict.Petra.Server.MFinance.queries
                     Value = AParameters.Get("param_date_to").ToDate()
                 });
 
-			// New Donors only
+            // New Donors only
             ASQLParameterList.Add(new OdbcParameter("param_new_donors_only", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_new_donors_only").ToBool()
                 });
-			
-			// Receipt each gift
+
+            // Receipt each gift
             ASQLParameterList.Add(new OdbcParameter("param_receipt_each_gift_only", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_receipt_each_gift_only").ToBool()
                 });
 
-			// Active Partners only, Families only and Exclude No Solicitations
+            // Active Partners only, Families only and Exclude No Solicitations
             ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_active").ToBool()
@@ -177,7 +178,7 @@ namespace Ict.Petra.Server.MFinance.queries
                     Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                 });
 
-			// Receipt Letter Frequency
+            // Receipt Letter Frequency
             if (AParameters.Get("param_receipt_letter_frequency").IsZeroOrNull()
                 || (AParameters.Get("param_receipt_letter_frequency").ToString() == ""))
             {

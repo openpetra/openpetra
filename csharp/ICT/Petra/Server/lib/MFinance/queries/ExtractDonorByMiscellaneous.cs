@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MFinance.queries
             {
                 MailingCodeSet = false;
                 MailingCode = "";
-	            ASqlStmt = ASqlStmt.Replace("##equals_or_like_mailing_code##", "=");
+                ASqlStmt = ASqlStmt.Replace("##equals_or_like_mailing_code##", "=");
             }
             else
             {
@@ -105,16 +105,16 @@ namespace Ict.Petra.Server.MFinance.queries
                 MailingCode = AParameters.Get("param_mailing_code").ToString();
                 MailingCode.Replace('*', '%');
 
-            	if (MailingCode.Contains("%"))
-        	    {
-		            ASqlStmt = ASqlStmt.Replace("##equals_or_like_mailing_code##", "LIKE");
-        	    }
-            	else
-            	{
-		            ASqlStmt = ASqlStmt.Replace("##equals_or_like_mailing_code##", "=");
-            	}
+                if (MailingCode.Contains("%"))
+                {
+                    ASqlStmt = ASqlStmt.Replace("##equals_or_like_mailing_code##", "LIKE");
+                }
+                else
+                {
+                    ASqlStmt = ASqlStmt.Replace("##equals_or_like_mailing_code##", "=");
+                }
             }
-            
+
             ASQLParameterList.Add(new OdbcParameter("param_mailing_code_unset", OdbcType.Bit)
                 {
                     Value = !MailingCodeSet
@@ -130,7 +130,7 @@ namespace Ict.Petra.Server.MFinance.queries
                     Value = AParameters.Get("param_exclude_mot_detail_no_receipt").ToBool()
                 });
 
-			// Date from and to            
+            // Date from and to
             ASQLParameterList.Add(new OdbcParameter("param_date_from_unset", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_date_from").IsZeroOrNull()
@@ -149,12 +149,12 @@ namespace Ict.Petra.Server.MFinance.queries
                     Value = AParameters.Get("param_date_to").ToDate()
                 });
 
-			// New Donors only
+            // New Donors only
             ASQLParameterList.Add(new OdbcParameter("param_new_donors_only", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_new_donors_only").ToBool()
                 });
-			
+
             // add Method of Giving
             ASQLParameterList.Add(new OdbcParameter("param_method_of_giving_unset", OdbcType.Bit)
                 {
@@ -174,7 +174,7 @@ namespace Ict.Petra.Server.MFinance.queries
                 {
                     Value = AParameters.Get("param_method_of_payment").ToString()
                 });
-			
+
             // add Reference
             ASQLParameterList.Add(new OdbcParameter("param_reference_unset", OdbcType.Bit)
                 {
@@ -184,7 +184,7 @@ namespace Ict.Petra.Server.MFinance.queries
                 {
                     Value = AParameters.Get("param_reference").ToString()
                 });
-			
+
             // TODO: receipt letter code currently not available --> therefore leave this code snippet empty
             // add receipt letter code
             //ASQLParameterList.Add(new OdbcParameter("param_receipt_letter_code_unset", OdbcType.Bit)
@@ -196,10 +196,10 @@ namespace Ict.Petra.Server.MFinance.queries
             //        Value = AParameters.Get("param_receipt_letter_code").ToString()
             //    });
             ASqlStmt = ASqlStmt.Replace("##receipt_letter_code_snippet##", "");
-            //ASqlStmt = ASqlStmt.Replace("##receipt_letter_code_snippet##", 
+            //ASqlStmt = ASqlStmt.Replace("##receipt_letter_code_snippet##",
             //                            "AND (? OR pub_a_gift.a_receipt_letter_code_c ##equals_or_like_receipt_letter_code## ?)");
             //ASqlStmt = ASqlStmt.Replace("##equals_or_like_receipt_letter_code##", "LIKE");
-				
+
             // add Gift type
             ASQLParameterList.Add(new OdbcParameter("param_gift_type_unset", OdbcType.Bit)
                 {
@@ -209,14 +209,14 @@ namespace Ict.Petra.Server.MFinance.queries
                 {
                     Value = AParameters.Get("param_gift_type").ToString()
                 });
-			
-			// Receipt each gift
+
+            // Receipt each gift
             ASQLParameterList.Add(new OdbcParameter("param_receipt_each_gift_only", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_receipt_each_gift_only").ToBool()
                 });
 
-			// Active Partners only, Families only and Exclude No Solicitations
+            // Active Partners only, Families only and Exclude No Solicitations
             ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_active").ToBool()
@@ -230,7 +230,7 @@ namespace Ict.Petra.Server.MFinance.queries
                     Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                 });
 
-			// Receipt Letter Frequency
+            // Receipt Letter Frequency
             if (AParameters.Get("param_receipt_letter_frequency").IsZeroOrNull()
                 || (AParameters.Get("param_receipt_letter_frequency").ToString() == ""))
             {

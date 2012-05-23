@@ -108,14 +108,14 @@ namespace Ict.Petra.Server.MFinance.queries
 
             TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
-			// With the result of the original query process the data and identify the partner keys for 
-			// the extract.
-			partnerkeys.Columns.Add("0", typeof(Int64));
-			partnerkeys.Columns.Add("1", typeof(string));
-			partnerkeys.Columns.Add("2", typeof(Int64));
-			partnerkeys.Columns.Add("3", typeof(Int32));
+            // With the result of the original query process the data and identify the partner keys for
+            // the extract.
+            partnerkeys.Columns.Add("0", typeof(Int64));
+            partnerkeys.Columns.Add("1", typeof(string));
+            partnerkeys.Columns.Add("2", typeof(Int64));
+            partnerkeys.Columns.Add("3", typeof(Int32));
             ProcessGiftDetailRecords(giftdetails, AddressFilterAdded, AParameters, ref partnerkeys);
-            
+
             TVerificationResultCollection VerificationResult;
             int NewExtractID;
 
@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.queries
                 0,
                 AddressFilterAdded,
                 true);
-            
+
             return ReturnValue;
         }
 
@@ -177,7 +177,7 @@ namespace Ict.Petra.Server.MFinance.queries
                     Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                 });
         }
- 
+
         /// <summary>
         /// Post processing of db query that retrieved gift detail records to create a list of partner keys
         /// </summary>
@@ -185,262 +185,269 @@ namespace Ict.Petra.Server.MFinance.queries
         /// <param name="AAddressFilterAdded"></param>
         /// <param name="AParameters"></param>
         /// <param name="APartnerKeys"></param>
-        private void ProcessGiftDetailRecords(DataTable AGiftDetails, bool AAddressFilterAdded, 
-                                              TParameterList AParameters, ref DataTable APartnerKeys)
+        private void ProcessGiftDetailRecords(DataTable AGiftDetails, bool AAddressFilterAdded,
+            TParameterList AParameters, ref DataTable APartnerKeys)
         {
-        	int PartnerKeyColumn              = 0;
-        	int LedgerNumberColumn            = 2;
-        	int BatchNumberColumn             = 3;
-        	int GiftTransactionNumberColumn   = 4;
-        	int FirstTimeGiftColumn           = 5;
-        	int GiftDetailNumberColumn        = 6;
-        	int GiftAmountColumn              = 7;
-        	int GiftAmountInternationalColumn = 8;
-        	int SiteKeyColumn                 = -1;
-        	int LocationKeyColumn             = -1;
+            int PartnerKeyColumn = 0;
+            int LedgerNumberColumn = 2;
+            int BatchNumberColumn = 3;
+            int GiftTransactionNumberColumn = 4;
+            int FirstTimeGiftColumn = 5;
+            int GiftDetailNumberColumn = 6;
+            int GiftAmountColumn = 7;
+            int GiftAmountInternationalColumn = 8;
+            int SiteKeyColumn = -1;
+            int LocationKeyColumn = -1;
 
-        	Int32 LedgerNumber          = -1;
-        	Int32 BatchNumber           = -1;
-        	Int32 GiftTransactionNumber = -1;
-        	Int32 GiftDetailNumber      = -1;
-        	Int64 PartnerKey            = -1;
-        	Int64 SiteKey               = 0;
-        	Int32 LocationKey           = 0;
+            Int32 LedgerNumber = -1;
+            Int32 BatchNumber = -1;
+            Int32 GiftTransactionNumber = -1;
+            Int32 GiftDetailNumber = -1;
+            Int64 PartnerKey = -1;
+            Int64 SiteKey = 0;
+            Int32 LocationKey = 0;
 
-        	Int32 PreviousLedgerNumber          = -1;
-        	Int32 PreviousBatchNumber           = -1;
-        	Int32 PreviousGiftTransactionNumber = -1;
-        	Int32 PreviousGiftDetailNumber      = -1;
-        	Int64 PreviousPartnerKey            = -1;
-        	Int64 PreviousSiteKey               = 0;
-        	Int32 PreviousLocationKey           = 0;
-        	
-        	int CountGifts = 0;
-        	decimal GiftAmountTotal = 0;
-        	decimal GiftAmount;
-        	decimal GiftAmountInternationalTotal = 0;
-        	decimal GiftAmountInternational;
-        	bool ReversedGift = false;
+            Int32 PreviousLedgerNumber = -1;
+            Int32 PreviousBatchNumber = -1;
+            Int32 PreviousGiftTransactionNumber = -1;
+            Int32 PreviousGiftDetailNumber = -1;
+            Int64 PreviousPartnerKey = -1;
+            Int64 PreviousSiteKey = 0;
+            Int32 PreviousLocationKey = 0;
 
-        	Decimal MinAmount = 0;
-        	Decimal MaxAmount = 999999999.99M;
-        	bool AmountPerSingleGift = false;
-        	Int32 MinNumberOfGifts = 0;
-        	Int32 MaxNumberOfGifts = 999999;
-        	bool BaseCurrency = true;
-        	bool NewDonor = false;
-        	bool NewDonorsOnly = false;
-        	
-        	bool NextGift = false;
-        	bool NextPartner = false;
+            int CountGifts = 0;
+            decimal GiftAmountTotal = 0;
+            decimal GiftAmount;
+            decimal GiftAmountInternationalTotal = 0;
+            decimal GiftAmountInternational;
+            bool ReversedGift = false;
 
-        	// initialize parameters needed from parameter list
-        	if (!AParameters.Get("param_new_donors_only").IsNil())
-        	{
-        	    NewDonorsOnly = AParameters.Get("param_new_donors_only").ToBool();
-        	}
-        	if (!AParameters.Get("param_min_gift_amount").IsNil())
-        	{
-        	    MinAmount = AParameters.Get("param_min_gift_amount").ToDecimal();
-        	}
-        	if (!AParameters.Get("param_max_gift_amount").IsNil())
-        	{
-        	    MaxAmount = AParameters.Get("param_max_gift_amount").ToDecimal();
-        	}
-        	if (!AParameters.Get("param_amount_per_single_gift").IsNil())
-        	{
-        	    AmountPerSingleGift = AParameters.Get("param_amount_per_single_gift").ToBool();
-        	}
-        	if (!AParameters.Get("param_min_number_gifts").IsNil())
-        	{
-        	    MinNumberOfGifts = AParameters.Get("param_min_number_gifts").ToInt32();
-        	}
-        	if (!AParameters.Get("param_max_number_gifts").IsNil())
-        	{
-        	    MaxNumberOfGifts = AParameters.Get("param_max_number_gifts").ToInt32();
-        	}
-        	if (   !AParameters.Get("param_currency").IsNil()
-        	    && AParameters.Get("param_currency").ToString() == "InternationalCurrency")
-        	{
-        		BaseCurrency = false;
-        	}
-        	
-        	// only set columns for address related information if address filter was added
-        	if (AAddressFilterAdded)
-        	{
-        		SiteKeyColumn = 9;
-        		LocationKeyColumn = 10;
-        	}
-        	
-        	// now start processing rows retrieved from database to filter according to criteria
+            Decimal MinAmount = 0;
+            Decimal MaxAmount = 999999999.99M;
+            bool AmountPerSingleGift = false;
+            Int32 MinNumberOfGifts = 0;
+            Int32 MaxNumberOfGifts = 999999;
+            bool BaseCurrency = true;
+            bool NewDonor = false;
+            bool NewDonorsOnly = false;
+
+            bool NextGift = false;
+            bool NextPartner = false;
+
+            // initialize parameters needed from parameter list
+            if (!AParameters.Get("param_new_donors_only").IsNil())
+            {
+                NewDonorsOnly = AParameters.Get("param_new_donors_only").ToBool();
+            }
+
+            if (!AParameters.Get("param_min_gift_amount").IsNil())
+            {
+                MinAmount = AParameters.Get("param_min_gift_amount").ToDecimal();
+            }
+
+            if (!AParameters.Get("param_max_gift_amount").IsNil())
+            {
+                MaxAmount = AParameters.Get("param_max_gift_amount").ToDecimal();
+            }
+
+            if (!AParameters.Get("param_amount_per_single_gift").IsNil())
+            {
+                AmountPerSingleGift = AParameters.Get("param_amount_per_single_gift").ToBool();
+            }
+
+            if (!AParameters.Get("param_min_number_gifts").IsNil())
+            {
+                MinNumberOfGifts = AParameters.Get("param_min_number_gifts").ToInt32();
+            }
+
+            if (!AParameters.Get("param_max_number_gifts").IsNil())
+            {
+                MaxNumberOfGifts = AParameters.Get("param_max_number_gifts").ToInt32();
+            }
+
+            if (!AParameters.Get("param_currency").IsNil()
+                && (AParameters.Get("param_currency").ToString() == "InternationalCurrency"))
+            {
+                BaseCurrency = false;
+            }
+
+            // only set columns for address related information if address filter was added
+            if (AAddressFilterAdded)
+            {
+                SiteKeyColumn = 9;
+                LocationKeyColumn = 10;
+            }
+
+            // now start processing rows retrieved from database to filter according to criteria
             foreach (DataRow giftDetailRow in AGiftDetails.Rows)
             {
-                LedgerNumber          = Convert.ToInt32(giftDetailRow[LedgerNumberColumn]);
-                BatchNumber           = Convert.ToInt32(giftDetailRow[BatchNumberColumn]);
+                LedgerNumber = Convert.ToInt32(giftDetailRow[LedgerNumberColumn]);
+                BatchNumber = Convert.ToInt32(giftDetailRow[BatchNumberColumn]);
                 GiftTransactionNumber = Convert.ToInt32(giftDetailRow[GiftTransactionNumberColumn]);
-                GiftDetailNumber      = Convert.ToInt32(giftDetailRow[GiftDetailNumberColumn]);
-                PartnerKey            = Convert.ToInt64(giftDetailRow[PartnerKeyColumn]);
+                GiftDetailNumber = Convert.ToInt32(giftDetailRow[GiftDetailNumberColumn]);
+                PartnerKey = Convert.ToInt64(giftDetailRow[PartnerKeyColumn]);
+
                 if (AAddressFilterAdded)
                 {
-                	SiteKey               = Convert.ToInt64(giftDetailRow[SiteKeyColumn]);
-                	LocationKey           = Convert.ToInt32(giftDetailRow[LocationKeyColumn]);
-                	
-                	// if key field values have not changed then this record is the same with just
-                	// a different location key --> skip this record as otherwise gift amounts and 
-                	// numbers of gifts would be wrongly multiplied.
-                	if (   LedgerNumber          == PreviousLedgerNumber
-                	    && BatchNumber           == PreviousBatchNumber
-                	    && GiftTransactionNumber == PreviousGiftTransactionNumber
-                	    && GiftDetailNumber      == PreviousGiftDetailNumber
-                	    && PartnerKey            == PreviousPartnerKey)
-                	{
-                		continue;
-                	}
+                    SiteKey = Convert.ToInt64(giftDetailRow[SiteKeyColumn]);
+                    LocationKey = Convert.ToInt32(giftDetailRow[LocationKeyColumn]);
+
+                    // if key field values have not changed then this record is the same with just
+                    // a different location key --> skip this record as otherwise gift amounts and
+                    // numbers of gifts would be wrongly multiplied.
+                    if ((LedgerNumber == PreviousLedgerNumber)
+                        && (BatchNumber == PreviousBatchNumber)
+                        && (GiftTransactionNumber == PreviousGiftTransactionNumber)
+                        && (GiftDetailNumber == PreviousGiftDetailNumber)
+                        && (PartnerKey == PreviousPartnerKey))
+                    {
+                        continue;
+                    }
                 }
 
                 // check for new partner record (unless this is the first record)
                 if (PreviousPartnerKey != -1)
                 {
-	                if (PartnerKey != PreviousPartnerKey)
-	                {
-	                	NextPartner = true;
-	                }
+                    if (PartnerKey != PreviousPartnerKey)
+                    {
+                        NextPartner = true;
+                    }
                 }
-                
-            	// check for new gift record (unless this is the first record)
-            	if (PreviousGiftTransactionNumber != -1)
-            	{
-	                if (!(   LedgerNumber          == PreviousLedgerNumber
-	                      && BatchNumber           == PreviousBatchNumber
-	                      && GiftTransactionNumber == PreviousGiftTransactionNumber))
-	                {
-	            		NextGift = true;
-	            	}
-            	}
 
-            	// new gift: check for criteria and possibly increase gift counter
+                // check for new gift record (unless this is the first record)
+                if (PreviousGiftTransactionNumber != -1)
+                {
+                    if (!((LedgerNumber == PreviousLedgerNumber)
+                          && (BatchNumber == PreviousBatchNumber)
+                          && (GiftTransactionNumber == PreviousGiftTransactionNumber)))
+                    {
+                        NextGift = true;
+                    }
+                }
+
+                // new gift: check for criteria and possibly increase gift counter
                 if (NextGift)
                 {
-		            if (AmountPerSingleGift)
-		            {
-		            	if (   (   BaseCurrency
-		            	        && Math.Abs(GiftAmountTotal) >= MinAmount
-		            	        && Math.Abs(GiftAmountTotal) <= MaxAmount)
-		            	    || (   !BaseCurrency
-		            	        && Math.Abs(GiftAmountInternationalTotal) >= MinAmount
-		            	        && Math.Abs(GiftAmountInternationalTotal) <= MaxAmount))
-		            	{
-		            		if (ReversedGift)
-		            		{
-		            			CountGifts = CountGifts - 1;
-		            		}
-		            		else
-		            		{
-		            			CountGifts = CountGifts + 1;
-		            		}
-		            	}
-		            	
-						GiftAmountTotal = 0;
-						GiftAmountInternationalTotal = 0;
-		            }
-		            else
-		            {
-		        		if (ReversedGift)
-		        		{
-		        			CountGifts = CountGifts - 1;
-		        		}
-		        		else
-		        		{
-		        			CountGifts = CountGifts + 1;
-		        		}
-		            }
-		            
-		            // reset variable for reversed gift since a new gift record is starting
-		            ReversedGift = false;
-            	}
-            	
-                if (NextPartner)
-                {
-                	// different partner than the record before: check if partner meets criteria for extract
-                	// (in case of single gift amounts don't check amounts again)
-                	if (   (!AmountPerSingleGift
-                	        && (   (   BaseCurrency
-            	                    && (   Math.Abs(GiftAmountTotal) < MinAmount
-                	                    || Math.Abs(GiftAmountTotal) > MaxAmount))
-            	    		    || (   !BaseCurrency
-            	                    && (   Math.Abs(GiftAmountInternationalTotal) < MinAmount
-                	                    || Math.Abs(GiftAmountInternationalTotal) > MaxAmount))))
-                	    || CountGifts < MinNumberOfGifts
-                	    || CountGifts > MaxNumberOfGifts
-                	    || !NewDonor)
-                	{
-                		// skip partner as criteria are not fulfilled
-                	}
-                	else
-                	{
-                		// add partner to extract
-		        		APartnerKeys.Rows.Add(PreviousPartnerKey, "", PreviousSiteKey, PreviousLocationKey);
-                	}
+                    if (AmountPerSingleGift)
+                    {
+                        if ((BaseCurrency
+                             && (Math.Abs(GiftAmountTotal) >= MinAmount)
+                             && (Math.Abs(GiftAmountTotal) <= MaxAmount))
+                            || (!BaseCurrency
+                                && (Math.Abs(GiftAmountInternationalTotal) >= MinAmount)
+                                && (Math.Abs(GiftAmountInternationalTotal) <= MaxAmount)))
+                        {
+                            if (ReversedGift)
+                            {
+                                CountGifts = CountGifts - 1;
+                            }
+                            else
+                            {
+                                CountGifts = CountGifts + 1;
+                            }
+                        }
+
+                        GiftAmountTotal = 0;
+                        GiftAmountInternationalTotal = 0;
+                    }
+                    else
+                    {
+                        if (ReversedGift)
+                        {
+                            CountGifts = CountGifts - 1;
+                        }
+                        else
+                        {
+                            CountGifts = CountGifts + 1;
+                        }
+                    }
+
+                    // reset variable for reversed gift since a new gift record is starting
+                    ReversedGift = false;
                 }
 
                 if (NextPartner)
                 {
-                	// reset variables needed for calculation
-                	NewDonor = false;
-                	CountGifts = 0;
-                	GiftAmountTotal = 0;
-                	GiftAmountInternationalTotal = 0;
+                    // different partner than the record before: check if partner meets criteria for extract
+                    // (in case of single gift amounts don't check amounts again)
+                    if ((!AmountPerSingleGift
+                         && ((BaseCurrency
+                              && ((Math.Abs(GiftAmountTotal) < MinAmount)
+                                  || (Math.Abs(GiftAmountTotal) > MaxAmount)))
+                             || (!BaseCurrency
+                                 && ((Math.Abs(GiftAmountInternationalTotal) < MinAmount)
+                                     || (Math.Abs(GiftAmountInternationalTotal) > MaxAmount)))))
+                        || (CountGifts < MinNumberOfGifts)
+                        || (CountGifts > MaxNumberOfGifts)
+                        || !NewDonor)
+                    {
+                        // skip partner as criteria are not fulfilled
+                    }
+                    else
+                    {
+                        // add partner to extract
+                        APartnerKeys.Rows.Add(PreviousPartnerKey, "", PreviousSiteKey, PreviousLocationKey);
+                    }
                 }
-                
-                if (   Convert.ToBoolean(giftDetailRow[FirstTimeGiftColumn])
+
+                if (NextPartner)
+                {
+                    // reset variables needed for calculation
+                    NewDonor = false;
+                    CountGifts = 0;
+                    GiftAmountTotal = 0;
+                    GiftAmountInternationalTotal = 0;
+                }
+
+                if (Convert.ToBoolean(giftDetailRow[FirstTimeGiftColumn])
                     || !NewDonorsOnly)
                 {
-                	NewDonor = true;
+                    NewDonor = true;
                 }
-                
-            	GiftAmount      = Convert.ToInt32(giftDetailRow[GiftAmountColumn]);
-            	GiftAmountTotal = GiftAmountTotal + GiftAmount;
-                GiftAmountInternational      = Convert.ToInt32(giftDetailRow[GiftAmountInternationalColumn]);
-            	GiftAmountInternationalTotal = GiftAmountInternationalTotal + GiftAmountInternational;
-            	
-            	if (GiftAmount < 0)
-            	{
-            		ReversedGift = true;
-            	}
 
-	            // prepare for next round of loop
-	            PreviousLedgerNumber          = LedgerNumber;
-	            PreviousBatchNumber           = BatchNumber;
-	            PreviousGiftTransactionNumber = GiftTransactionNumber;
-	            PreviousGiftDetailNumber      = GiftDetailNumber;
-	            PreviousPartnerKey            = PartnerKey;
-	            PreviousSiteKey               = SiteKey;
-	            PreviousLocationKey           = LocationKey;
-	            
-	            NextPartner = false;
-	            NextGift    = false;
-	        }
+                GiftAmount = Convert.ToInt32(giftDetailRow[GiftAmountColumn]);
+                GiftAmountTotal = GiftAmountTotal + GiftAmount;
+                GiftAmountInternational = Convert.ToInt32(giftDetailRow[GiftAmountInternationalColumn]);
+                GiftAmountInternationalTotal = GiftAmountInternationalTotal + GiftAmountInternational;
 
-			// process last record after loop through all records has finished        
-        	// (in case of single gift amounts don't check amounts again)
-        	if (   (!AmountPerSingleGift
-        	        && (   (   BaseCurrency
-    	                    && (   Math.Abs(GiftAmountTotal) < MinAmount
-        	                    || Math.Abs(GiftAmountTotal) > MaxAmount))
-    	    		    || (   !BaseCurrency
-    	                    && (   Math.Abs(GiftAmountInternationalTotal) < MinAmount
-        	                    || Math.Abs(GiftAmountInternationalTotal) > MaxAmount))))
-        	    || CountGifts < MinNumberOfGifts
-        	    || CountGifts > MaxNumberOfGifts
-        	    || !NewDonor)
-        	{
-        		// skip partner as criteria are not fulfilled
-        	}
-        	else
-        	{
-        		// add partner to extract
-        		APartnerKeys.Rows.Add(PreviousPartnerKey, "", PreviousSiteKey, PreviousLocationKey);
-        	}
+                if (GiftAmount < 0)
+                {
+                    ReversedGift = true;
+                }
+
+                // prepare for next round of loop
+                PreviousLedgerNumber = LedgerNumber;
+                PreviousBatchNumber = BatchNumber;
+                PreviousGiftTransactionNumber = GiftTransactionNumber;
+                PreviousGiftDetailNumber = GiftDetailNumber;
+                PreviousPartnerKey = PartnerKey;
+                PreviousSiteKey = SiteKey;
+                PreviousLocationKey = LocationKey;
+
+                NextPartner = false;
+                NextGift = false;
+            }
+
+            // process last record after loop through all records has finished
+            // (in case of single gift amounts don't check amounts again)
+            if ((!AmountPerSingleGift
+                 && ((BaseCurrency
+                      && ((Math.Abs(GiftAmountTotal) < MinAmount)
+                          || (Math.Abs(GiftAmountTotal) > MaxAmount)))
+                     || (!BaseCurrency
+                         && ((Math.Abs(GiftAmountInternationalTotal) < MinAmount)
+                             || (Math.Abs(GiftAmountInternationalTotal) > MaxAmount)))))
+                || (CountGifts < MinNumberOfGifts)
+                || (CountGifts > MaxNumberOfGifts)
+                || !NewDonor)
+            {
+                // skip partner as criteria are not fulfilled
+            }
+            else
+            {
+                // add partner to extract
+                APartnerKeys.Rows.Add(PreviousPartnerKey, "", PreviousSiteKey, PreviousLocationKey);
+            }
         }
     }
 }

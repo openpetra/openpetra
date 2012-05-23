@@ -47,7 +47,6 @@ using Ict.Common.Controls;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
-	
     /// <summary>
     /// useful functions for report screens
     /// </summary>
@@ -56,13 +55,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// Delegate for call before LoadSettings is startin (for pre processing)
         /// </summary>
-    	public delegate void TDelegateLoadSettingsStarting();
+        public delegate void TDelegateLoadSettingsStarting();
 
-    	/// <summary>
+        /// <summary>
         /// Delegate for call after LoadSettings is finished (for post processing)
         /// </summary>
-    	public delegate void TDelegateLoadSettingsFinished(TParameterList AParameters);
-    
+        public delegate void TDelegateLoadSettingsFinished(TParameterList AParameters);
+
         /// <summary>
         /// Reference to the Delegate for call before LoadSettings is starting (for pre processing)
         /// </summary>
@@ -178,7 +177,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FDelegateLoadSettingsStarting = value;
             }
         }
-		
+
         /// <summary>
         /// This property is used to provide a function which is called after LoadSettings
         /// </summary>

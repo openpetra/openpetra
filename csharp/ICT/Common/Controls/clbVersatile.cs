@@ -46,7 +46,7 @@ namespace Ict.Common.Controls
         private System.Data.DataView FDataView;
         private System.Data.DataTable FDataTable;
         private String FCheckedColumn;
-        private List <String> FKeyColumns;
+        private List <String>FKeyColumns;
 
         /// <summary>
         /// the number of checked items
@@ -86,7 +86,7 @@ namespace Ict.Common.Controls
         public TClbVersatile() : base()
         {
             InitializeComponent();
-            FKeyColumns = new List <String> ();
+            FKeyColumns = new List <String>();
         }
 
         private void InitializeComponent()
@@ -135,11 +135,11 @@ namespace Ict.Common.Controls
             bool AAllowEdit,
             bool AAllowDelete)
         {
-        	List<String> KeyColumns = new List <String>();
-        	KeyColumns.Add(AKeyColumn);
-        	
-        	DataBindGrid (ATable, ASortColumn, ACheckedColumn, KeyColumns, ALabelColumn, 
-        	              AAllowNew, AAllowEdit, AAllowDelete);
+            List <String>KeyColumns = new List <String>();
+            KeyColumns.Add(AKeyColumn);
+
+            DataBindGrid(ATable, ASortColumn, ACheckedColumn, KeyColumns, ALabelColumn,
+                AAllowNew, AAllowEdit, AAllowDelete);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Ict.Common.Controls
         public void DataBindGrid(System.Data.DataTable ATable,
             String ASortColumn,
             String ACheckedColumn,
-            List<String> AKeyColumns,
+            List <String>AKeyColumns,
             String ALabelColumn,
             bool AAllowNew,
             bool AAllowEdit,
@@ -162,7 +162,7 @@ namespace Ict.Common.Controls
             FDataView = FDataTable.DefaultView;
             FDataView.Sort = ASortColumn;
             FCheckedColumn = ACheckedColumn;
-            FKeyColumns = new List <String> (AKeyColumns);
+            FKeyColumns = new List <String>(AKeyColumns);
             FDataView.AllowNew = AAllowNew;
             FDataView.AllowEdit = AAllowEdit;
             FDataView.AllowDelete = AAllowDelete;
@@ -176,7 +176,7 @@ namespace Ict.Common.Controls
                 FDataTable.ColumnChanged += MyDataColumnChangedEventHandler;
             }
         }
-        
+
         private void MyDataColumnChangedEventHandler(object sender, DataColumnChangeEventArgs e)
         {
             if (this.ValueChanged != null)
@@ -185,7 +185,7 @@ namespace Ict.Common.Controls
             }
         }
 
-        private DataRowView FindRow(DataTable ATable, List<String> AColumns, List<String> ANeedles)
+        private DataRowView FindRow(DataTable ATable, List <String>AColumns, List <String>ANeedles)
         {
             DataRowView ReturnValue;
             DataView View;
@@ -194,25 +194,26 @@ namespace Ict.Common.Controls
 
             ReturnValue = null;
             View = new DataView(ATable);
+
             for (Counter = 0; Counter < AColumns.Count; Counter++)
             {
-            	if (Counter > 0)
-            	{
-            		Filter = Filter + " AND ";
-            	}
-            	
-            	if (ATable.Columns[AColumns[Counter]].DataType == typeof(String))
-	            {
-            		Filter = Filter + AColumns[Counter] + " = '" + ANeedles[Counter] + "'";
-	            }
-	            else
-	            {
-	            	Filter = Filter + AColumns[Counter] + " = " + ANeedles[Counter];
-	            }
+                if (Counter > 0)
+                {
+                    Filter = Filter + " AND ";
+                }
+
+                if (ATable.Columns[AColumns[Counter]].DataType == typeof(String))
+                {
+                    Filter = Filter + AColumns[Counter] + " = '" + ANeedles[Counter] + "'";
+                }
+                else
+                {
+                    Filter = Filter + AColumns[Counter] + " = " + ANeedles[Counter];
+                }
             }
 
             View.RowFilter = Filter;
-            
+
             if (View.Count > 0)
             {
                 ReturnValue = View[0];
@@ -220,7 +221,7 @@ namespace Ict.Common.Controls
 
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// This function returns the comma separated list of the currently selected row,
         /// identified by their codes (using FKeyColumns)
@@ -239,15 +240,15 @@ namespace Ict.Common.Controls
                 {
                     if (Row[FCheckedColumn].GetType() != typeof(System.DBNull))
                     {
-	                	if (Convert.ToBoolean(Row[FCheckedColumn]) == true)
-	                    {
-	                        // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
-	                        // eg. motivation group and detail
-	                        foreach (String KeyColumn in FKeyColumns)
-	                        {
-		                        ReturnValue = StringHelper.AddCSV(ReturnValue, Row[KeyColumn].ToString());
-	                        }
-	                    }
+                        if (Convert.ToBoolean(Row[FCheckedColumn]) == true)
+                        {
+                            // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
+                            // eg. motivation group and detail
+                            foreach (String KeyColumn in FKeyColumns)
+                            {
+                                ReturnValue = StringHelper.AddCSV(ReturnValue, Row[KeyColumn].ToString());
+                            }
+                        }
                     }
                 }
             }
@@ -314,7 +315,7 @@ namespace Ict.Common.Controls
                 }
             }
         }
-        
+
         /// <summary>
         /// This function selects the strings retrieved from the parameter AStringsToCheck;
         /// All other items are unselected.
@@ -325,7 +326,8 @@ namespace Ict.Common.Controls
         public bool SetCheckedStringList(String AStringsToCheck)
         {
             bool ReturnValue;
-            List<String> ItemStringList = new List <String>();;
+
+            List <String>ItemStringList = new List <String>();;
             DataRowView RowView;
             int Counter;
 
@@ -336,31 +338,33 @@ namespace Ict.Common.Controls
 
             if (FKeyColumns.Count == 0)
             {
-            	ReturnValue =  false;
+                ReturnValue = false;
             }
-            
+
             if (ReturnValue != false)
             {
-	            while (AStringsToCheck.Length > 0)
-	            {
-	            	ItemStringList.Clear();
-	            	for (Counter = 0; Counter < FKeyColumns.Count; Counter++)
-	            	{
-	            		ItemStringList.Add(StringHelper.GetNextCSV(ref AStringsToCheck));
-	            	}
-	                RowView = FindRow(FDataTable, FKeyColumns, ItemStringList);
-	
-	                if (RowView != null)
-	                {
-	                    RowView[FCheckedColumn] = (System.Object)true;
-	                }
-	                else
-	                {
-	                    ReturnValue = false;
-	                }
-	            }
+                while (AStringsToCheck.Length > 0)
+                {
+                    ItemStringList.Clear();
+
+                    for (Counter = 0; Counter < FKeyColumns.Count; Counter++)
+                    {
+                        ItemStringList.Add(StringHelper.GetNextCSV(ref AStringsToCheck));
+                    }
+
+                    RowView = FindRow(FDataTable, FKeyColumns, ItemStringList);
+
+                    if (RowView != null)
+                    {
+                        RowView[FCheckedColumn] = (System.Object)true;
+                    }
+                    else
+                    {
+                        ReturnValue = false;
+                    }
+                }
             }
-            
+
             return ReturnValue;
         }
     }

@@ -44,11 +44,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
-            
+
             ucoChkFilter.ShowFamiliesOnly(false);
             ucoAddress.ShowCountyStateField(true);
             ucoAddress.ShowAddressDateFields(true);
-  
+
             // enable autofind in list for first character (so the user can press character to find list entry)
             this.clbLocationType.AutoFindColumn = ((Int16)(1));
             this.clbLocationType.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
@@ -64,10 +64,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.LoadListData();
 
             // make sure date fields are not initialized with today's date but later on with default settings
-            dtpCreatedFrom.Text  = "";
-            dtpCreatedTo.Text    = "";
+            dtpCreatedFrom.Text = "";
+            dtpCreatedTo.Text = "";
             dtpModifiedFrom.Text = "";
-            dtpModifiedTo.Text   = "";
+            dtpModifiedTo.Text = "";
 
             FPetraUtilsObject.LoadDefaultSettings();
         }
@@ -94,42 +94,42 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //TODO: only temporarily until settings file exists
             clbLocationType.SetCheckedStringList("");
         }
-     
-	    private void OnPartnerClassChanged(object sender, EventArgs e)
-	    {
-	   		if (cmbPartnerClass.GetSelectedString() == "ORGANISATION")
-	    	{
-		   		lblDenomination.Visible = false;
-		   		cmbDenomination.Visible = false;
-		   		cmbDenomination.SetSelectedString("", -1);
 
- 		   		lblBusiness.Visible = true;
-	    		cmbBusiness.Visible = true;
-	    	}
-	    	else if (cmbPartnerClass.GetSelectedString() == "CHURCH")
-	    	{
-		    	lblBusiness.Visible = false;
-		   		cmbBusiness.Visible = false;
-		   		cmbBusiness.SetSelectedString("", -1);
-		   		
-		   		lblDenomination.Visible = true;
-	    		cmbDenomination.Visible = true;
-	    	}
-	    	else
-	    	{
-		    	lblBusiness.Visible = false;
-		   		cmbBusiness.Visible = false;
-		   		cmbBusiness.SetSelectedString("", -1);
+        private void OnPartnerClassChanged(object sender, EventArgs e)
+        {
+            if (cmbPartnerClass.GetSelectedString() == "ORGANISATION")
+            {
+                lblDenomination.Visible = false;
+                cmbDenomination.Visible = false;
+                cmbDenomination.SetSelectedString("", -1);
 
-		   		lblDenomination.Visible = false;
-		   		cmbDenomination.Visible = false;
-		   		cmbDenomination.SetSelectedString("", -1);
-	    	}
-	    }
-        
+                lblBusiness.Visible = true;
+                cmbBusiness.Visible = true;
+            }
+            else if (cmbPartnerClass.GetSelectedString() == "CHURCH")
+            {
+                lblBusiness.Visible = false;
+                cmbBusiness.Visible = false;
+                cmbBusiness.SetSelectedString("", -1);
+
+                lblDenomination.Visible = true;
+                cmbDenomination.Visible = true;
+            }
+            else
+            {
+                lblBusiness.Visible = false;
+                cmbBusiness.Visible = false;
+                cmbBusiness.SetSelectedString("", -1);
+
+                lblDenomination.Visible = false;
+                cmbDenomination.Visible = false;
+                cmbDenomination.SetSelectedString("", -1);
+            }
+        }
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-        	// add verification here if needed
+            // add verification here if needed
         }
     }
 }

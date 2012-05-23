@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_recipient_key", txtRecipient.Text);
         }
-        
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
         }
