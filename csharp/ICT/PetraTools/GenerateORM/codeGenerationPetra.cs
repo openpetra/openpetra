@@ -69,6 +69,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 return "OdbcType.Date";
             }
+            else if (tableField.strType == "timestamp")
+            {
+                return "OdbcType.DateTime";
+            }
             else if (tableField.strType == "integer")
             {
                 return "OdbcType.Int";

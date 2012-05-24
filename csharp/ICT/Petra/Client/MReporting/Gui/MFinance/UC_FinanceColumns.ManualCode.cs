@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// </summary>
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
-            btnDummy.Visible = false;
             FUpdatingRelationColumns = false;
 
             FPetraUtilsObject = APetraUtilsObject;

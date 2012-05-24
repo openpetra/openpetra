@@ -50,7 +50,12 @@ static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out 
         {#SUBMITCHANGESDELETE}
         {#SUBMITCHANGESINSERT}
         {#SUBMITCHANGESUPDATE}
-        
+
+        if ((SubmissionResult == TSubmitChangesResult.scrOK) && AInspectDS.ThrowAwayAfterSubmitChanges)
+        {
+            AInspectDS.Clear();
+        }
+
         if (NewTransaction)
         {
             if (SubmissionResult == TSubmitChangesResult.scrOK)

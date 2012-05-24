@@ -39,7 +39,7 @@ RootNode:
         txtDetailCode: {Label=Leadership Rating, CharacterCasing=Upper}
         txtDetailDescription: {Label=Description, Width=265}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

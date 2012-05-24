@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,60 +31,72 @@ using System.Xml;
 using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data;
+using Ict.Common.Verification;
+using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Testing.NUnitPetraServer;
+using Ict.Testing.NUnitTools;
 using Npgsql;
 
 namespace Ict.Common.Data.Testing
 {
-    ///  This is a testing program for Ict.Common.DB.dll
+    ///  This is a testing program for Ict.Common.Data.dll
     [TestFixture]
-    public class TTestCommonDB
+    public class TTestCommonData
     {
-        /// <summary>
-        /// modified version taken from Ict.Petra.Server.App.Main::TServerManager
-        /// </summary>
-        private void EstablishDBConnection()
-        {
-            TLogging.Log("  Connecting to Database...");
-
-            DBAccess.GDBAccessObj = new TDataBase();
-            TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 10);
-            try
-            {
-                DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType")),
-                    TAppSettingsManager.GetValue("Server.DBHostOrFile"),
-                    TAppSettingsManager.GetValue("Server.DBPort"),
-                    TAppSettingsManager.GetValue("Server.DBName"),
-                    TAppSettingsManager.GetValue("Server.DBUserName"),
-                    TAppSettingsManager.GetValue("Server.DBPassword"),
-                    "");
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            TLogging.Log("  Connected to Database.");
-        }
-
         /// Init the test
         [SetUp]
         public void Init()
         {
-            new TLogging("test.log");
-            new TAppSettingsManager("Tests.Common.DB.dll.config");
-
-            EstablishDBConnection();
+            TPetraServerConnector.Connect("../../etc/TestServer.config");
         }
 
         /// clean up after the test
         [TearDown]
         public void TearDown()
         {
-            DBAccess.GDBAccessObj.CloseDBConnection();
-            TLogging.Log("  Database disconnected.");
+            TPetraServerConnector.Disconnect();
+        }
+
+        /// <summary>
+        /// update an existing record. testing the modificationID timestamp
+        /// </summary>
+        [Test]
+        public void UpdateRecord()
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            ALedgerAccess.LoadAll(MainDS, null);
+
+            MainDS.ALedger[0].LastGiftBatchNumber++;
+
+            AGiftBatchRow batch = MainDS.AGiftBatch.NewRowTyped();
+            batch.LedgerNumber = MainDS.ALedger[0].LedgerNumber;
+            batch.BatchNumber = MainDS.ALedger[0].LastGiftBatchNumber;
+            batch.BankAccountCode = "6000";
+            batch.BatchYear = 0;
+            batch.BatchPeriod = 1;
+            batch.CurrencyCode = "EUR";
+            batch.BatchDescription = "test";
+            batch.BankCostCentre = (MainDS.ALedger[0].LedgerNumber * 100).ToString("0000");
+            batch.LastGiftNumber = 0;
+            MainDS.AGiftBatch.Rows.Add(batch);
+
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult result = GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "SubmitChanges should be ok");
+            Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "there are critical errors");
+            MainDS.AcceptChanges();
+
+            MainDS.AGiftBatch[0].BatchDescription = "test2";
+            result = GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "SubmitChanges of update should be ok");
+            Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "there are critical errors in UPDATE");
         }
 
 #if EXPERIMENT_NOT_FINISHED

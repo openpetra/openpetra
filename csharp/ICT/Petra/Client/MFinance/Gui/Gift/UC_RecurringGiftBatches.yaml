@@ -46,7 +46,7 @@ RootNode:
                 Row3: [txtDetailHashTotal, cmbDetailCurrencyCode]
                 Row4: [cmbDetailMethodOfPaymentCode]
                 Row5: [rgrDetailGiftType]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=3}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, OnChange=HashTotalChanged}

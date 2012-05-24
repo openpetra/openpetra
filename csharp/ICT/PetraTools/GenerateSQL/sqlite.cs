@@ -93,10 +93,10 @@ public class TSQLiteWriter
                 createStmt += ")";
             }
 
+            createStmt += AddForeignKeys(table);
+
             createStmt += ");";
 
-            // TODO: primary key
-            // TODO: foreign key
 
             SqliteCommand cmd = new SqliteCommand(createStmt, conn);
             cmd.ExecuteNonQuery();
@@ -117,6 +117,53 @@ public class TSQLiteWriter
         conn.Close();
 
         return true;
+    }
+
+    static private string AddForeignKeys(TTable ATable)
+    {
+        string createStmt = string.Empty;
+
+        if (ATable.HasForeignKey())
+        {
+            foreach (TConstraint constr in ATable.grpConstraint)
+            {
+                if (constr.strType == "foreignkey")
+                {
+                    createStmt += ", FOREIGN KEY(";
+                    bool firstColumn = true;
+
+                    foreach (string columnName in constr.strThisFields)
+                    {
+                        if (!firstColumn)
+                        {
+                            createStmt += ",";
+                        }
+
+                        createStmt += columnName;
+                        firstColumn = false;
+                    }
+
+                    createStmt += ") REFERENCES " + constr.strOtherTable + "(";
+
+                    firstColumn = true;
+
+                    foreach (string columnName in constr.strOtherFields)
+                    {
+                        if (!firstColumn)
+                        {
+                            createStmt += ",";
+                        }
+
+                        createStmt += columnName;
+                        firstColumn = false;
+                    }
+
+                    createStmt += ")";
+                }
+            }
+        }
+
+        return createStmt;
     }
 
     /// <summary>
@@ -152,7 +199,7 @@ public class TSQLiteWriter
             {
                 RunCommand(conn, line);
             }
-            else if (line.ToUpper().StartsWith("INSERT INTO "))
+            else if (line.ToUpper().StartsWith("INSERT INTO ") || line.ToUpper().StartsWith("UPDATE "))
             {
                 line = line.Replace("true", "1");
                 line = line.Replace("false", "0");
@@ -162,6 +209,16 @@ public class TSQLiteWriter
             {
                 string tablename = StringHelper.GetCSVValue(line.Replace(" ", ","), 1);
                 LoadData(ADataDefinition, conn, APath, tablename);
+            }
+            else if (line.ToUpper().StartsWith("SELECT NEXTVAL("))
+            {
+                string SequenceName = line.Substring(line.IndexOf("'") + 1);
+                SequenceName = SequenceName.Substring(0, SequenceName.IndexOf("'"));
+                RunCommand(conn, "INSERT INTO " + SequenceName + " VALUES(NULL, -1);");
+            }
+            else if (!line.StartsWith("--") && (line.Trim().Length > 0))
+            {
+                throw new Exception("unknown command " + line);
             }
         }
 

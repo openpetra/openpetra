@@ -56,10 +56,24 @@ namespace Ict.Testing.NUnitTools
             string[] strArr = strAssemblyPath.Split(new char[] { '\\', '/' });
             rootPath = "";
 
-            //For SharpDevelop testing use -2, for NUnit standalone use -3
-            for (int i = 0; i < strArr.Length - 2; ++i)
+            //This value is correct for tests run within SharpDevelop, need one less for NUnit standalone
+            int numPathElementsForRoot = strArr.Length - 2;
+
+            for (int i = 0; i < numPathElementsForRoot; ++i)
             {
-                rootPath += strArr[i] + "/";
+                //  Check for last value of i to allow for NUnit
+                if (i == (numPathElementsForRoot - 1))  //last value of i
+                {
+                    //If "OpenPetra.build" not in rootPath directory then move down one more directory
+                    if (!File.Exists(rootPath + "OpenPetra.build"))
+                    {
+                        rootPath += strArr[i] + "/";
+                    }
+                }
+                else
+                {
+                    rootPath += strArr[i] + "/";
+                }
             }
 
             TLogging.Log("rootPath: " + rootPath);

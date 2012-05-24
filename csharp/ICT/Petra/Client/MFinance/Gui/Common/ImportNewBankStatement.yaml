@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Common
     FormType: dialog
     Template: window
-    WindowWidth: 440
+    WindowWidth: 490
     WindowHeight: 200
     Actions:
     Controls:

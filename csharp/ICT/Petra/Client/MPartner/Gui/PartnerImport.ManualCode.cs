@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -698,51 +698,50 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)rv.Row;
                 bool importingAlready = false;
 
-                if (PartnerLocationRow.LocationKey != 0)
+                FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                    PLocationTable.GetLocationKeyDBName(),
+                    PartnerLocationRow.LocationKey,
+                    PLocationTable.GetSiteKeyDBName(),
+                    PartnerLocationRow.SiteKey);
+
+                if ((FMainDS.PLocation.DefaultView.Count == 0) && (PartnerLocationRow.LocationKey >= 0))
                 {
-                    FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
-                        PLocationTable.GetLocationKeyDBName(),
-                        PartnerLocationRow.LocationKey,
-                        PLocationTable.GetSiteKeyDBName(),
-                        PartnerLocationRow.SiteKey);
+                    PartnerLocationRow.PartnerKey = ANewPartnerKey;
 
-                    if ((FMainDS.PLocation.DefaultView.Count == 0) && (PartnerLocationRow.LocationKey > 0))
+                    // If this PartnerLocation has a real database key or points to location 0, import it anyway!
+                    ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
+                }
+                else
+                {
+                    foreach (DataRowView NewLocationRv in FMainDS.PLocation.DefaultView)
                     {
-                        PartnerLocationRow.PartnerKey = ANewPartnerKey;
-                        ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow); // If this PartnerLocation has a real database key, import it anyway!
-                    }
-                    else
-                    {
-                        foreach (DataRowView NewLocationRv in FMainDS.PLocation.DefaultView)
+                        PLocationRow NewLocation = (PLocationRow)NewLocationRv.Row;
+                        // Check address already being imported, comparing StreetName and PostalCode
+                        // If I'm already importing it, I'll ignore this row.
+                        // (The address may still be already in the database.)
+
+                        foreach (DataRowView plrv in ANewPartnerDS.PLocation.DefaultView)
                         {
-                            PLocationRow NewLocation = (PLocationRow)NewLocationRv.Row;
-                            // Check address already being imported, comparing StreetName and PostalCode
-                            // If I'm already importing it, I'll ignore this row.
-                            // (The address may still be already in the database.)
+                            PLocationRow ExistingLocation = (PLocationRow)plrv.Row;
 
-                            foreach (DataRowView plrv in ANewPartnerDS.PLocation.DefaultView)
+                            if (
+                                (ExistingLocation.Locality == NewLocation.Locality)
+                                && (ExistingLocation.StreetName == NewLocation.StreetName)
+                                && (ExistingLocation.PostalCode == NewLocation.PostalCode)
+                                )
                             {
-                                PLocationRow ExistingLocation = (PLocationRow)plrv.Row;
-
-                                if (
-                                    (ExistingLocation.Locality == NewLocation.Locality)
-                                    && (ExistingLocation.StreetName == NewLocation.StreetName)
-                                    && (ExistingLocation.PostalCode == NewLocation.PostalCode)
-                                    )
-                                {
-                                    importingAlready = true;
-                                    break;
-                                }
+                                importingAlready = true;
+                                break;
                             }
+                        }
 
-                            if (!importingAlready) // This row is not already on my list
-                            {
-                                ANewPartnerDS.PLocation.ImportRow(NewLocation);
-                                ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
-                                // Set the PartnerKey for the new Row
-                                int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
-                                ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;;
-                            }
+                        if (!importingAlready) // This row is not already on my list
+                        {
+                            ANewPartnerDS.PLocation.ImportRow(NewLocation);
+                            ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
+                            // Set the PartnerKey for the new Row
+                            int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
+                            ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;;
                         }
                     }
                 }
@@ -830,8 +829,54 @@ namespace Ict.Petra.Client.MPartner.Gui
  */
         private void AddUnitstructure(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            ImportRecordsByPartnerKey(ANewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
-                UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+            bool recordAlreadyExists = false;
+
+            FMainDS.UmUnitStructure.DefaultView.RowFilter = String.Format("{0}={1}",
+                UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey);
+
+            if (FMainDS.UmUnitStructure.DefaultView.Count > 0)
+            {
+                UmUnitStructureRow unitStructureRow = (UmUnitStructureRow)FMainDS.UmUnitStructure.DefaultView[0].Row;
+
+                // only import row if it does not exist yet in the new partner DS
+                if (null != ANewPartnerDS.UmUnitStructure.Rows.Find(new object[] { unitStructureRow.ParentUnitKey, unitStructureRow.ChildUnitKey }))
+                {
+                    recordAlreadyExists = true;
+                }
+            }
+
+            if (!recordAlreadyExists)
+            {
+                ImportRecordsByPartnerKey(ANewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
+                    UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+            }
+        }
+
+        private void AddBankingDetails(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
+        {
+            FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetPartnerKeyDBName();
+            int indexPartnerBankingDetails = FMainDS.PPartnerBankingDetails.DefaultView.Find(AOrigPartnerKey);
+
+            if (indexPartnerBankingDetails != -1)
+            {
+                PPartnerBankingDetailsRow partnerdetailsRow =
+                    (PPartnerBankingDetailsRow)FMainDS.PPartnerBankingDetails.DefaultView[indexPartnerBankingDetails].Row;
+                partnerdetailsRow.PartnerKey = ANewPartnerKey;
+                ANewPartnerDS.PPartnerBankingDetails.ImportRow(partnerdetailsRow);
+
+                // need to copy the associated PBankingDetails as well
+                FMainDS.PBankingDetails.DefaultView.Sort = PBankingDetailsTable.GetBankingDetailsKeyDBName();
+                PBankingDetailsRow OrigBankingDetailsRow =
+                    (PBankingDetailsRow)FMainDS.PBankingDetails.DefaultView[
+                        FMainDS.PBankingDetails.DefaultView.Find(partnerdetailsRow.BankingDetailsKey)].Row;
+
+                PBankRow bankRow = (PBankRow)FMainDS.PBank.Rows.Find(OrigBankingDetailsRow.BankKey);
+
+                // create the PBank record as well, if it does not exist yet
+                OrigBankingDetailsRow.BankKey = TRemote.MPartner.Partner.WebConnectors.GetBankBySortCode(bankRow.BranchCode);
+
+                ANewPartnerDS.PBankingDetails.ImportRow(OrigBankingDetailsRow);
+            }
         }
 
         private void AddBuilding(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
@@ -1015,6 +1060,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             AddRoom(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddSubscriptions(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddContacts(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
+
+            AddBankingDetails(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
 
 
             TVerificationResultCollection VerificationResult;

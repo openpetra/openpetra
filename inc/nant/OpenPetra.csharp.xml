@@ -3,6 +3,12 @@
 
 <include buildfile="OpenPetra.default.targets.xml"/>
 
+<target name="MsBuildTarget">
+    <msbuild project="${solution.file}" verbosity="Minimal">
+        <property name="Configuration" value="${Configuration}"/>
+    </msbuild>
+</target>
+
 <target name="uncrustify" depends="indent" 
         description="indent the code, so it adheres the formatting guidelines" />
 

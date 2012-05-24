@@ -24,11 +24,15 @@ RootNode:
             # add to Controls: pnlStatementInfo
         grpOutreachOption:
             Label: Events
+            Dock: Fill
+            Controls: [pnlFilter, grdOutreachOption]
+
+        pnlFilter:
+            Dock: Top
             Controls:
                 Row1: [lblExplanation]
                 Row2: [lblChoose]
                 Row3: [pnlButtonSelection]
-                Row4: [grdOutreachOption]
         
         lblExplanation:
             Text: There is more than one campaign option for this event.
@@ -49,7 +53,7 @@ RootNode:
             Width: 500
             ActionDoubleClick: grdOutreachOptionDoubleClick
         pnlBottom:
-            Dock: Top
+            Dock: Bottom
             Controls:
                 Row1: [btnAccept, btnCancel]
         btnAccept:

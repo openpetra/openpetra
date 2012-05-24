@@ -2047,19 +2047,20 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
         }
 
         /// generated method from connector
-        public TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
-                                                          AEpTransactionTable ATransTable,
+        public TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
+                                                          out Int32 AFirstStatementKey,
                                                           out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "StoreNewBankStatement", ";AEPSTATEMENTTABLE;AEPTRANSACTIONTABLE;TVERIFICATIONRESULTCOLLECTION;");
-            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(ref AStmtTable, ATransTable, out AVerificationResult);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "StoreNewBankStatement", ";BANKIMPORTTDS;INT;TVERIFICATIONRESULTCOLLECTION;");
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.StoreNewBankStatement(AStatementAndTransactionsDS, out AFirstStatementKey, out AVerificationResult);
         }
 
         /// generated method from connector
-        public AEpStatementTable GetImportedBankStatements(DateTime AStartDate)
+        public AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber,
+                                                           DateTime AStartDate)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "GetImportedBankStatements", ";DATETIME;");
-            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.GetImportedBankStatements(AStartDate);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector), "GetImportedBankStatements", ";INT;DATETIME;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.ImportExport.WebConnectors.TBankImportWebConnector.GetImportedBankStatements(ALedgerNumber, AStartDate);
         }
 
         /// generated method from connector
@@ -2468,10 +2469,11 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
 
         /// generated method from connector
         public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
-                                             DateTime ADateEffective)
+                                             DateTime ADateEffective,
+                                             System.String ABatchDescription)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateAGiftBatch", ";INT;DATETIME;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, ADateEffective);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateAGiftBatch", ";INT;DATETIME;STRING;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, ADateEffective, ABatchDescription);
         }
 
         /// generated method from connector
@@ -3328,6 +3330,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector), "PerformStewardshipCalculation", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector.PerformStewardshipCalculation(ALedgerNumber, APeriodNumber, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public System.Boolean GenerateICHStewardshipBatch(System.Int32 ALedgerNumber,
+                                                          System.Int32 APeriodNumber,
+                                                          ref TVerificationResultCollection AVerificationResult)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector), "GenerateICHStewardshipBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.ICH.WebConnectors.TStewardshipCalculationWebConnector.GenerateICHStewardshipBatch(ALedgerNumber, APeriodNumber, ref AVerificationResult);
         }
     }
 }

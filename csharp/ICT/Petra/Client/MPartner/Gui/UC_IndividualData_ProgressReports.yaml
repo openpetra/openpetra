@@ -58,7 +58,7 @@ RootNode:
             ScrollBars: Vertical
             Height: 50
             Width: 380
-            ColSpan: 3
+            ColSpan: 2
         txtEvaluationAction:
             Label: Next Action
             DataField: PmPersonEvaluation.PersonEvalAction
@@ -66,6 +66,6 @@ RootNode:
             ScrollBars: Vertical
             Height: 50
             Width: 380
-            ColSpan: 3
+            ColSpan: 2
 
         

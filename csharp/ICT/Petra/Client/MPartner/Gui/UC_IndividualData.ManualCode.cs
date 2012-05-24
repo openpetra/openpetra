@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -324,8 +324,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Local Personnel Data
                 if (FUserControlSetup.ContainsKey(TDynamicLoadableUserControls.dlucLocalPersonnelData))
                 {
-                    TUC_IndividualData_LocalPersonnelData UCLocalPersonnelData =
-                        (TUC_IndividualData_LocalPersonnelData)FUserControlSetup[TDynamicLoadableUserControls.dlucLocalPersonnelData];
+                    // TUC_IndividualData_LocalPersonnelData UCLocalPersonnelData =
+                    //    (TUC_IndividualData_LocalPersonnelData)FUserControlSetup[TDynamicLoadableUserControls.dlucLocalPersonnelData];
 
                     //TODO: no proper validation in place yet for local personnel data control
                     //if (!UCLocalPersonnelData.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
@@ -591,7 +591,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
         {
             //
-            // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_c of modififed Rows is held correctly in IndividualDataTDS, too!
+            // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_t of modififed Rows is held correctly in IndividualDataTDS, too!
             //
 
             // ...but first empty relevant DataTables to ensure that DataRows that got deleted in FPartnerEditTDS are reflected in FMainDS (just performing a Merge wouldn't remove them!)

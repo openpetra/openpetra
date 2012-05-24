@@ -4,7 +4,7 @@
 // @Authors:
 //       charlvj, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,9 +69,10 @@ namespace Ict.Common
 
             foreach (string s in list)
             {
-                if ((FList.Count > 0) && FList[FList.Count - 1].EndsWith(":"))
+                if ((FList.Count > 0) && FList[FList.Count - 1].EndsWith(":") && !s.StartsWith("-"))
                 {
                     // allow space after : to allow automatic tab expansion for the filename on the Command line
+                    // but also allow empty parameters, that do not use the next parameter name as a value
                     FList[FList.Count - 1] += s.Trim();
                 }
                 else if ((FList.Count > 0) && !s.StartsWith("-"))

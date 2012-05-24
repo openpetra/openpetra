@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,13 +26,13 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TFrmGLBatch
     {
         private Int32 FLedgerNumber;
-
 
         /// <summary>
         /// use this ledger
@@ -42,6 +42,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             set
             {
                 FLedgerNumber = value;
+
+                this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+
                 ucoBatches.LoadBatches(FLedgerNumber);
                 ucoAttributes.LedgerNumber = value;
 

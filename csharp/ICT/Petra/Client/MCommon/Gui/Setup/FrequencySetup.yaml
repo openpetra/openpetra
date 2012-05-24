@@ -41,12 +41,11 @@ RootNode:
             Controls:
                 Row0: [txtDetailNumberOfYears, txtDetailNumberOfMonths, Empty]
                 Row1: [txtDetailNumberOfDays, txtDetailNumberOfHours, txtDetailNumberOfMinutes] 
-            ColSpan: 3
-        txtDetailFrequencyCode:
+            ColSpan: 2
+        txtDetailFrequencyCode: {Width=100}
         txtDetailFrequencyDescription: {Width=160}
         txtDetailNumberOfYears: {Format=Integer, Width=30, Validation=true}
         txtDetailNumberOfMonths: {Format=Integer, Width=30, Validation=true}
-        Empty:
         txtDetailNumberOfDays: {Format=Integer, Width=30, Validation=true}
         txtDetailNumberOfHours: {Format=Integer, Width=30, Validation=true}
         txtDetailNumberOfMinutes: {Format=Integer, Width=30, Validation=true}
