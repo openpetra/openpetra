@@ -190,8 +190,7 @@ namespace Ict.Tools.DevelopersAssistant
                         }
                         else if (itemID == 3)
                         {
-                            // exception must not be ExceptionDetailsDialog
-                            // or ExceptionLogFileDialog-
+                            // exception must not be ExceptionDetailsDialog or ExceptionLogFileDialog-
                             bIsValid =
                                 (_verboseOutput.LastIndexOf('\\', p, 24) == -1
                                  && _verboseOutput.IndexOf("DetailsDialog", p, 24) == -1
@@ -298,15 +297,19 @@ namespace Ict.Tools.DevelopersAssistant
                             // error and warning must not be plural.  We also need to ignore s_error_log
                             if ((TextToParse.Substring(p + lookFor.Length, 3).CompareTo("(s)") != 0)
                                 && (TextToParse.Substring(p + lookFor.Length, 1).CompareTo("s") != 0)
-                                && (TextToParse.Substring(p - 2, 8).CompareTo("s_error_") != 0))
+                                && (TextToParse.Substring(p - 2, 8).CompareTo("s_error_") != 0)
+                                && (TextToParse.Substring(p - 1, 12).CompareTo("\\ErrorLog.cs") != 0)
+                                && (TextToParse.Substring(p - 1, 14).CompareTo("\\ErrorCodes.cs") != 0))
                             {
                                 NumWarnings++;
                             }
                         }
                         else if (itemID == 2)
                         {
-                            // exception must not refer to ExceptionDetailsDialog
-                            if ((TextToParse.LastIndexOf('\\', p, 24) == -1) && (TextToParse.IndexOf("DetailsDialog", p, 24) == -1))
+                            // exception must not refer to ExceptionDetailsDialog or ExceptionLogFileDialog
+                            if ((TextToParse.LastIndexOf('\\', p, 24) == -1)
+                                && (TextToParse.IndexOf("DetailsDialog", p, 24) == -1)
+                                && (TextToParse.IndexOf("LogFileDialog", p, 24) == -1))
                             {
                                 NumWarnings++;
                             }
