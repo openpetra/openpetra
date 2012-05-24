@@ -99,8 +99,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 true,
                 false);
 
-            //TODO: only temporarily until settings file exists
+            // set flag as otherwise InitializeMotivationDetailList will be processed unnecessarily
+            FDuringLoadSettings = true;
             clbMotivationGroup.SetCheckedStringList("");
+            FDuringLoadSettings = false;
         }
 
         private void InitializeMotivationDetailList()
