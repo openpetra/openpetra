@@ -36,5 +36,5 @@ ${TemplateReferences}  </ItemGroup>
   <ItemGroup>
 ${TemplateCompile}${TemplateResource}  </ItemGroup>
   <ItemGroup>
-${TemplateProjectReferences}    </ItemGroup>
-</Project>
+${TemplateProjectReferences}  </ItemGroup>
+${MiscellaneousFiles}</Project>

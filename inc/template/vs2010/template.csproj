@@ -38,5 +38,5 @@ ${TemplateReferences}  </ItemGroup>
 ${TemplateCompile}${TemplateResource}  </ItemGroup>
   <ItemGroup>
 ${TemplateProjectReferences}  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+${MiscellaneousFiles}  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

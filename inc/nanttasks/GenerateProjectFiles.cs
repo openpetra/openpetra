@@ -426,16 +426,59 @@ namespace Ict.Tools.NAntTasks
                 if (File.Exists(ATemplateDir + "template.sln.folder"))
                 {
                     // Add the following files to the Definitions folder
-                    string folderName = "Definitions";
+                    string solutionFolderName = "Definitions";
                     StringBuilder temp = GetTemplateFile(ATemplateDir + "template.sln.folder");
-                    temp.Replace("${FolderName}", folderName);
-                    temp.Replace("${ProjectGuid}", GetProjectGUID(folderName));
+                    temp.Replace("${FolderName}", solutionFolderName);
+                    temp.Replace("${ProjectGuid}", GetProjectGUID(solutionFolderName));
 
-                    string fileList = GetAdditionalSolutionFile(folderName, "CacheableTablesAndLists.yaml");
-                    if (ASolutionFilename != "OpenPetra.Server.sln") fileList += GetAdditionalSolutionFile(folderName, "UINavigation.yml");
+                    string fileList = GetAdditionalSolutionFile(solutionFolderName, "CacheableTablesAndLists.yaml");
+                    fileList += GetAdditionalSolutionFile(solutionFolderName, "NamespaceHierarchy.yml");
+                    if (ASolutionFilename != "OpenPetra.Server.sln") fileList += GetAdditionalSolutionFile(solutionFolderName, "UINavigation.yml");
                     temp.Replace("${FileList}", fileList);
                     Projects += temp.ToString();
+
+                    if (ASolutionFilename != "OpenPetra.Client.sln")
+                    {
+                        // Add the SQL files to an SQL folder
+                        solutionFolderName = "SQL";
+                        temp = GetTemplateFile(ATemplateDir + "template.sln.folder");
+                        temp.Replace("${FolderName}", solutionFolderName);
+                        temp.Replace("${ProjectGuid}", GetProjectGUID(solutionFolderName));
+
+                        string SQLFilesPath = FDirProjectFiles;         // will be <branch>/delivery/projects
+                        SQLFilesPath += "/../../csharp/ICT/Petra/Server/sql";
+                        SQLFilesPath = SQLFilesPath.Replace('/', Path.DirectorySeparatorChar);
+                        if (Directory.Exists(SQLFilesPath))
+                        {
+                            string[] SQLFiles = Directory.GetFiles(SQLFilesPath, "*.sql", SearchOption.TopDirectoryOnly);
+                            if (SQLFiles.Length > 0)
+                            {
+                                fileList = String.Empty;
+                                for (int i = 0; i < SQLFiles.Length; i++)
+                                {
+                                    fileList += GetAdditionalSolutionFile(solutionFolderName, Path.GetFileName(SQLFiles[i]));
+                                }
+                                temp.Replace("${FileList}", fileList);
+                                Projects += temp.ToString();
+                            }
+                        }
+                    }
                 }
+            }
+
+            // All solutions get the database schema
+            if (File.Exists(ATemplateDir + "template.sln.folder"))
+            {
+                // Add the following files to a Database folder
+                string solutionFolderName = "Database";
+                StringBuilder temp = GetTemplateFile(ATemplateDir + "template.sln.folder");
+                temp.Replace("${FolderName}", solutionFolderName);
+                temp.Replace("${ProjectGuid}", GetProjectGUID(solutionFolderName));
+
+                string fileList = GetAdditionalSolutionFile(solutionFolderName, "petra.xml");
+                fileList += GetAdditionalSolutionFile(solutionFolderName, "datastructure.dtd");
+                temp.Replace("${FileList}", fileList);
+                Projects += temp.ToString();
             }
 
             template.Replace("${TemplateProject}", Projects);
@@ -736,6 +779,30 @@ namespace Ict.Tools.NAntTasks
 
             template.Replace("${TemplateResource}", Resources.ToString());
 
+            // Check for any miscellaneous xml files in a data subfolder
+            string miscFilesPath = Path.Combine(ASrcPath, "data");
+            if (Directory.Exists(miscFilesPath))
+            {
+                string[] dataXmlFiles = Directory.GetFiles(miscFilesPath, "*.xml");
+                replaceWith = String.Empty;
+                if (dataXmlFiles.Length > 0 && File.Exists(ATemplateDir + "template.csproj.none"))
+                {
+                    temp = GetTemplateFile(ATemplateDir + "template.csproj.none");
+                    replaceWith = "  <ItemGroup>" + Environment.NewLine;
+                    for (int i = 0; i < dataXmlFiles.Length; i++)
+                    {
+                        replaceWith += temp;
+                        replaceWith = replaceWith.Replace("${filename}", dataXmlFiles[i]);
+                    }
+                    replaceWith += ("  </ItemGroup>" + Environment.NewLine);
+                }
+                template.Replace("${MiscellaneousFiles}", replaceWith);
+            }
+            else
+            {
+                template.Replace("${MiscellaneousFiles}", String.Empty);
+            }
+
             template.Replace("${dir.3rdParty}", FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty");
             template.Replace("${csharpStdLibs}", "");
 
@@ -854,12 +921,28 @@ namespace Ict.Tools.NAntTasks
             sr.Close();
         }
 
-        private string GetAdditionalSolutionFile(string FolderName, string FileName)
+        private string GetAdditionalSolutionFile(string SolutionFolderName, string FileName)
         {
-            if (FolderName == "Definitions")
+            if (SolutionFolderName == "Definitions")
             {
-                return String.Format("\t\t..\\..\\..\\csharp\\ICT\\Petra\\{0}\\{1} = ..\\..\\..\\csharp\\ICT\\Petra\\{0}\\{1}{2}",
-                    FolderName, FileName, Environment.NewLine);
+                string work = String.Format("\t\t../../../csharp/ICT/Petra/Definitions/{0} = ../../../csharp/ICT/Petra/Definitions/{0}{1}",
+                    FileName, Environment.NewLine);
+
+                return work.Replace('/', Path.DirectorySeparatorChar);
+            }
+            else if (SolutionFolderName == "Database")
+            {
+                string work = String.Format("\t\t../../../db/{0} = ../../../db/{0}{1}",
+                    FileName, Environment.NewLine);
+
+                return work.Replace('/', Path.DirectorySeparatorChar);
+            }
+            else if (SolutionFolderName == "SQL")
+            {
+                string work = String.Format("\t\t../../../csharp/ICT/Petra/Server/sql/{0} = ../../../csharp/ICT/Petra/Server/sql/{0}{1}",
+                    FileName, Environment.NewLine);
+
+                return work.Replace('/', Path.DirectorySeparatorChar);
             }
             return String.Empty;
         }
