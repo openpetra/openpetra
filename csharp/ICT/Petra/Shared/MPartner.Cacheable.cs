@@ -213,6 +213,11 @@ namespace Ict.Petra.Shared
     public enum TCacheableSubscriptionsTablesEnum
     {
         /// <summary>
+        /// Details of a publication
+        /// </summary>
+        PublicationList,
+
+        /// <summary>
         /// Cost of a publication
         /// </summary>
         PublicationCostList,
@@ -229,6 +234,6 @@ namespace Ict.Petra.Shared
         /// <summary>
         /// available publications
         /// </summary>
-        PublicationList
+        PublicationInfoList
     };
 }
