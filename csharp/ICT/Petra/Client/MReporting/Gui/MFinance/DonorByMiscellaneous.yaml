@@ -29,7 +29,6 @@
             Controls: 
                 Row0: [pnlOptionsLeft, pnlOptionsRight]
         pnlBottom: {ControlsOrientation=horizontal}
-            #Dock: Bottom
             Controls: [ucoAddress, ucoChkFilter]
         pnlOptionsLeft:
             Controls:
@@ -41,7 +40,6 @@
                 Row5:[txtReference]
                 Row6: [txtRecipient]
         pnlOptionsRight:
-            Dock: Right
             Controls:
                 Row0:[cmbReceiptLetterFrequency]
                 Row1:[chkNewDonorsOnly]
@@ -68,7 +66,6 @@
             Label: To
             ParameterName: param_date_to
         ucoAddress:
-            Dock: Left
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter

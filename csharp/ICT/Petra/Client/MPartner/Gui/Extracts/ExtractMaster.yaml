@@ -44,7 +44,6 @@ RootNode:
                 Row0: [txtExtractNameFilter]
                 Row1: [btnActivateFilter, btnClearFilter]
         pnlExtractMasterList:
-            Dock: Fill
             Controls: [ucoExtractMasterList]
                
         txtExtractNameFilter:
@@ -68,7 +67,6 @@ RootNode:
         cmbUserModifiedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
         ucoExtractMasterList:
             Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
-            Dock: Fill
 
     Menu:
         mniCreateExtract:

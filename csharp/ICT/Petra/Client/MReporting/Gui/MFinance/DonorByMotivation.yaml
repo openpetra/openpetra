@@ -39,7 +39,6 @@
                 Row0:[lblMotivationGroup]
                 Row1:[clbMotivationGroup]
         pnlTopRight:
-            Dock: Right
             Controls:
                 Row0:[lblMotivationDetail, btnSelectAll, btnDeselectAll]
                 Row1:[clbMotivationDetail]
@@ -73,7 +72,7 @@
             ParameterName: param_motivation_detail
             Width: 400
             Height: 200
-            ColSpan: 4
+            ColSpan: 3
         cmbMailingCode: {Label=Mailing Code, List=MailingList, ClearIfSettingEmpty=true, ParameterName=param_mailing_code}
         cmbReceiptLetterFrequency: {Label=Receipt Letter Frequency, List=FrequencyList, ClearIfSettingEmpty=true, ParameterName=param_receipt_letter_frequency}            
         chkNewDonorsOnly: {Label=New Donors only, ParameterName=param_new_donors_only}
@@ -85,7 +84,6 @@
             Label: To
             ParameterName: param_date_to
         ucoAddress:
-            Dock: Left
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter

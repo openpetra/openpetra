@@ -40,8 +40,9 @@ RootNode:
                 Row2: [cmbBusiness]
                 Row3: [cmbLanguage]
         ucoChkFilter:
-            Dock: Left
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Width: 300
+            Height: 100
         grpLocationType:
             Controls: [clbLocationType]
         clbLocationType:
@@ -50,8 +51,9 @@ RootNode:
             Width: 200
             Height: 300
         ucoAddress:
-            Dock: Left
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Width: 500
+            Height: 170
         grpRecordModification: {NoLabel=true}
             Controls:
                 Row0: [cmbUserCreated]
@@ -62,10 +64,10 @@ RootNode:
         cmbDenomination: {List=DenominationList, ClearIfSettingEmpty=true, ParameterName=param_denomination}
         cmbBusiness: {List=BusinessCodeList, ClearIfSettingEmpty=true, ParameterName=param_business}
         cmbLanguage: {List=LanguageCodeList, ClearIfSettingEmpty=true, ParameterName=param_language}
-        cmbUserCreated: {Label=Created By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_created, ColSpan=3}
+        cmbUserCreated: {Label=Created By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_created, ColSpan=2}
         dtpCreatedFrom: {Label=Created Date between, ClearIfSettingEmpty=true, ParameterName=param_date_created_from}
         dtpCreatedTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_date_created_to}
-        cmbUserModified: {Label=Modified By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_modified, ColSpan=3}
+        cmbUserModified: {Label=Modified By, List=UserList, ClearIfSettingEmpty=true, ParameterName=param_user_modified, ColSpan=2}
         dtpModifiedFrom: {Label=Modified Date between, ClearIfSettingEmpty=true, ParameterName=param_date_modified_from}
         dtpModifiedTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_date_modified_to}
 
