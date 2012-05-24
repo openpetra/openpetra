@@ -16,6 +16,21 @@ RootNode:
         actActivateFilter: {ActionClick=FilterExtracts}     
         actClearFilter: {ActionClick=ClearFilterExtracts}     
         actUserFilterSelectionChanged: {ActionClick=FilterExtracts}     
+        
+        actCreateGeneralExtract: {ActionClick=CreateGeneralExtract}     
+        actCreateManualExtract: {ActionClick=CreateManualExtract}     
+        actCreatePartnerByCityExtract: {ActionClick=CreatePartnerByCityExtract}     
+        actCreatePartnerBySubscriptionExtract: {ActionClick=CreatePartnerBySubscriptionExtract}     
+        actCreatePartnerBySpecialTypeExtract: {ActionClick=CreatePartnerBySpecialTypeExtract}     
+        actCreatePartnerByConferenceExtract: {ActionClick=CreatePartnerByConferenceExtract}     
+        actCreatePartnerByOutreachExtract: {ActionClick=CreatePartnerByOutreachExtract}     
+        actCreatePartnerByCommitmentExtract: {ActionClick=CreatePartnerByCommitmentExtract}     
+        actCreatePartnerByFieldExtract: {ActionClick=CreatePartnerByFieldExtract}     
+        actCreateRecipientByFieldExtract: {ActionClick=CreateRecipientByFieldExtract}     
+        actCreateDonorByFieldExtract: {ActionClick=CreateDonorByFieldExtract}     
+        actCreateDonorByMotivationExtract: {ActionClick=CreateDonorByMotivationExtract}     
+        actCreateDonorByAmountExtract: {ActionClick=CreateDonorByAmountExtract}     
+        actCreateDonorByMiscellaneousExtract: {ActionClick=CreateDonorByMiscellaneousExtract}     
     Controls:
         pnlContent:
             Controls: [pnlFilter, pnlExtractMasterList]
@@ -56,6 +71,28 @@ RootNode:
             Dock: Fill
 
     Menu:
+        mniCreateExtract:
+            Label: &Create Extract
+            mniCreateGeneralExtract: {Label=General Extract, Action=actCreateGeneralExtract}
+            mniCreateManualExtract: {Label=Manual Extract, Action=actCreateManualExtract}
+            mniSeparator:
+            mniCreatePartnerByCityExtract: {Label=Partner by City, Action=actCreatePartnerByCityExtract}
+            mniCreatePartnerBySubscriptionExtract: {Label=Partner by Subscription, Action=actCreatePartnerBySubscriptionExtract}
+            mniCreatePartnerBySpecialTypeExtract: {Label=Partner by Special Type, Action=actCreatePartnerBySpecialTypeExtract}
+            mniSeparator:
+            mniCreatePartnerByConferenceExtract: {Label=Partner by Conference, Action=actCreatePartnerByConferenceExtract}
+            mniCreatePartnerByOutreachExtract: {Label=Partner by Outreach, Action=actCreatePartnerByOutreachExtract}
+            mniSeparator:
+            mniCreatePartnerByCommitmentExtract: {Label=Partner by Commitment, Action=actCreatePartnerByCommitmentExtract}
+            mniCreatePartnerByFieldExtract: {Label=Partner by Field, Action=actCreatePartnerByFieldExtract}
+            mniSeparator:
+            mniCreateDonorExtract:
+                Label: Donor Extract
+                mniCreateDonorByFieldExtract: {Label=Donor by Field, Action=actCreateDonorByFieldExtract}
+                mniCreateDonorByMotivationExtract: {Label=Donor by Motivation, Action=actCreateDonorByMotivationExtract}
+                mniCreateDonorByAmountExtract: {Label=Donor by Amount, Action=actCreateDonorByAmountExtract}
+                mniCreateDonorByMiscellaneousExtract: {Label=Donor by Miscellaneous, Action=actCreateDonorByMiscellaneousExtract}
+            mniCreateRecipientByFieldExtract: {Label=Recipient by Field, Action=actCreateRecipientByFieldExtract}
         mniMaintain:
             Label: &Maintain
             mniMaintainExtract: {Label=Maintain Extract, Action=actMaintainExtract}
@@ -65,6 +102,4 @@ RootNode:
             Label: &Update Partners
 
     Toolbar:
-        tbbNew:
-            Label: New Extract
 
