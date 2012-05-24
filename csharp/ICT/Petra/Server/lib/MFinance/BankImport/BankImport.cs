@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,6 @@ using System.Data;
 using System.IO;
 using System.Xml;
 using System.Collections.Specialized;
-using System.Security.Cryptography;
 using System.Text;
 using GNU.Gettext;
 using Ict.Common;
@@ -44,6 +43,8 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.ImportExport;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 {
@@ -55,58 +56,21 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <summary>
         /// upload new bank statement so that it can be used for matching etc.
         /// </summary>
-        /// <param name="AStmtTable"></param>
-        /// <param name="ATransTable"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult StoreNewBankStatement(ref AEpStatementTable AStmtTable,
-            AEpTransactionTable ATransTable,
+        public static TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
+            out Int32 AFirstStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction;
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TSubmitChangesResult SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
 
-            // TODO: check for existing statement with same filename? to avoid duplicate statements? delete older statement?
+            AFirstStatementKey = -1;
 
-            AVerificationResult = new TVerificationResultCollection();
-            SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            try
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
-                if (AEpStatementAccess.SubmitChanges(AStmtTable, SubmitChangesTransaction, out AVerificationResult))
-                {
-                    // update statement key reference
-                    // supports committing several bank statements at once
-                    foreach (AEpTransactionRow row in ATransTable.Rows)
-                    {
-                        if (row.StatementKey < 0)
-                        {
-                            row.StatementKey = AStmtTable[(row.StatementKey + 1) * -1].StatementKey;
-                        }
-                    }
+                AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
 
-                    if (AEpTransactionAccess.SubmitChanges(ATransTable, SubmitChangesTransaction, out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-                }
-
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("after submitchanges: exception " + e.Message);
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw new Exception(e.ToString() + " " + e.Message);
+                // search for already posted gift batches, and do the matching for these imported statements
+                TBankImportMatching.Train(AStatementAndTransactionsDS);
             }
 
             return SubmissionResult;
@@ -115,19 +79,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// <summary>
         /// returns the bank statements that are from or newer than the given date
         /// </summary>
-        /// <param name="AStartDate"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static AEpStatementTable GetImportedBankStatements(DateTime AStartDate)
+        public static AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber, DateTime AStartDate)
         {
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             AEpStatementTable localTable = new AEpStatementTable();
             AEpStatementRow row = localTable.NewRowTyped(false);
 
+            row.LedgerNumber = ALedgerNumber;
             row.Date = AStartDate;
 
             StringCollection operators = new StringCollection();
+            operators.Add("=");
             operators.Add(">=");
 
             localTable = AEpStatementAccess.LoadUsingTemplate(row, operators, null, ReadTransaction);
@@ -171,48 +135,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         }
 
         /// <summary>
-        /// match text should uniquely identify a gift from a certain donor with a certain purpose;
-        /// use account name, description, and amount;
-        /// remove umlaut and spaces, because the banks sometimes play around with them
-        /// </summary>
-        private static string CalculateMatchText(string ABankAccount, AEpTransactionRow tr)
-        {
-            string matchtext = ABankAccount + tr.AccountName + tr.Description;
-
-            matchtext += tr.TransactionAmount.ToString("0.##");
-
-            matchtext = matchtext.Replace(",", "").Replace("/", "").Replace("-", "").Replace(";", "").Replace(".", "");
-
-            string oldMatchText = String.Empty;
-
-            while (oldMatchText != matchtext)
-            {
-                oldMatchText = matchtext;
-                matchtext = matchtext.ToUpper();
-                matchtext = matchtext.Replace("UE", "");
-                matchtext = matchtext.Replace("AE", "");
-                matchtext = matchtext.Replace("OE", "");
-                matchtext = matchtext.Replace("SS", "");
-                matchtext = matchtext.Replace("Ü", "");
-                matchtext = matchtext.Replace("Ä", "");
-                matchtext = matchtext.Replace("Ö", "");
-                matchtext = matchtext.Replace("ß", "");
-                matchtext = matchtext.Replace(" ", "");
-            }
-
-            if (matchtext.Length > AEpTransactionTable.GetMatchTextLength())
-            {
-                // calculate unique check sum which is shorter than the whole match text
-                MD5CryptoServiceProvider cr = new MD5CryptoServiceProvider();
-                System.Text.ASCIIEncoding encoding = new System.Text.ASCIIEncoding();
-                byte[] matchbytes = encoding.GetBytes(matchtext);
-                matchtext = BitConverter.ToString(cr.ComputeHash(matchbytes)).Replace("-", "").ToLower();
-            }
-
-            return matchtext;
-        }
-
-        /// <summary>
         /// returns the transactions of the bank statement, and the matches if they exist;
         /// tries to find matches too
         /// </summary>
@@ -249,7 +171,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     // find a match with the same match text, or create a new one
                     if (row.IsMatchTextNull() || (row.MatchText.Length == 0) || !row.MatchText.StartsWith(BankAccountCode))
                     {
-                        row.MatchText = CalculateMatchText(BankAccountCode, row);
+                        row.MatchText = TBankImportMatching.CalculateMatchText(BankAccountCode, row);
                     }
 
                     AEpMatchTable tempTable = new AEpMatchTable();
@@ -287,7 +209,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     {
                         // create new match
                         tempRow = tempTable.NewRowTyped(true);
-                        tempRow.EpMatchKey = -1;
+                        tempRow.EpMatchKey = (ResultDataset.AEpMatch.Count + 1) * -1;
                         tempRow.Detail = 0;
                         tempRow.MatchText = row.MatchText;
                         tempRow.LedgerNumber = ALedgerNumber;
@@ -437,10 +359,12 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 ALedgerNumber,
                 out typeofTable);
 
-            GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(ALedgerNumber, stmt.Date);
+            GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(
+                ALedgerNumber,
+                stmt.Date,
+                String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
-            giftbatchRow.BatchDescription = String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString());
 
             decimal HashTotal = 0.0M;
 

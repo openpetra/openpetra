@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 {
     public partial class TFrmSelectBankStatement
     {
-        private Int32 FLedgerNumber;
+        private Int32 FLedgerNumber = -1;
         private Int32 FStatementKey = -1;
 
         /// <summary>
@@ -57,9 +57,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         {
             set
             {
-                btnOK.Visible = false;
-                FLedgerNumber = value;
-                PopulateStatementCombobox();
+                if (FLedgerNumber != value)
+                {
+                    btnOK.Visible = false;
+                    FLedgerNumber = value;
+                    dtpShowStatementsFrom.Date = DateTime.Now.AddMonths(-2);
+                    // will be called by dtp event: PopulateStatementGrid(null, null);
+
+                    if (((DevAge.ComponentModel.BoundDataView)grdSelectStatement.DataSource).Count == 0)
+                    {
+                        dtpShowStatementsFrom.Clear();
+                        PopulateStatementGrid(null, null);
+                    }
+                }
             }
         }
 
@@ -74,33 +84,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private void PopulateStatementCombobox()
+        private bool RunningPopulateStatementGrid = false;
+
+        private void PopulateStatementGrid(object sender, EventArgs e)
         {
-            // TODO: add datetimepicker to toolstrip
-            // see http://www.daniweb.com/forums/thread109966.html#
-            // dtTScomponent = new ToolStripControlHost(dtMyDateTimePicker);
-            // MainToolStrip.Items.Add(dtTScomponent);
-            // DateTime.Now.AddMonths(-100);
+            if (RunningPopulateStatementGrid)
+            {
+                return;
+            }
+
+            // somehow, the datetimepicker throws an event, when we are reading the Date property
+            RunningPopulateStatementGrid = true;
+
             DateTime dateStatementsFrom = DateTime.MinValue;
 
-            // update the combobox with the bank statements
-            AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(dateStatementsFrom);
+            if (dtpShowStatementsFrom.Date.HasValue)
+            {
+                dateStatementsFrom = dtpShowStatementsFrom.Date.Value;
+            }
 
-            cmbSelectStatement.BeginUpdate();
-            cmbSelectStatement.DisplayMember = AEpStatementTable.GetFilenameDBName();
-            cmbSelectStatement.ValueMember = AEpStatementTable.GetStatementKeyDBName();
-            cmbSelectStatement.DataSource = stmts.DefaultView;
-            cmbSelectStatement.DropDownWidth = 300;
-            cmbSelectStatement.EndUpdate();
+            // update the grid with the bank statements
+            AEpStatementTable stmts = TRemote.MFinance.ImportExport.WebConnectors.GetImportedBankStatements(FLedgerNumber, dateStatementsFrom);
 
-            cmbSelectStatement.SelectedIndex = -1;
+            grdSelectStatement.Columns.Clear();
+            grdSelectStatement.AddTextColumn(Catalog.GetString("Bank statement"), stmts.ColumnFilename);
+            grdSelectStatement.AddDateColumn(Catalog.GetString("Date"), stmts.ColumnDate);
+
+            stmts.DefaultView.AllowNew = false;
+            grdSelectStatement.DataSource = new DevAge.ComponentModel.BoundDataView(stmts.DefaultView);
+
+            RunningPopulateStatementGrid = false;
         }
 
         private void LoadStatement(object sender, EventArgs e)
         {
-            if (cmbSelectStatement.SelectedIndex != -1)
+            DataRowView[] SelectedGridRow = grdSelectStatement.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
             {
-                FStatementKey = cmbSelectStatement.GetSelectedInt32();
+                FStatementKey = ((AEpStatementRow)SelectedGridRow[0].Row).StatementKey;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -140,26 +162,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
                 if (ImportBankStatement.ImportBankStatement(out FStatementKey, FLedgerNumber, DlgImport.FAccountCode))
                 {
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
+                    if (FStatementKey > -1)
+                    {
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    }
                 }
             }
         }
 
         private void DeleteStatement(object sender, EventArgs e)
         {
-            if (cmbSelectStatement.SelectedIndex != -1)
+            DataRowView[] SelectedGridRow = grdSelectStatement.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
             {
+                AEpStatementRow toDelete = (AEpStatementRow)SelectedGridRow[0].Row;
+
                 if (MessageBox.Show(
                         String.Format(Catalog.GetString("Do you really want to delete the bank statement {0}?"),
-                            cmbSelectStatement.GetSelectedDescription()),
+                            toDelete.Filename),
                         Catalog.GetString("Confirmation"),
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    if (TRemote.MFinance.ImportExport.WebConnectors.DropBankStatement(cmbSelectStatement.GetSelectedInt32()))
+                    if (TRemote.MFinance.ImportExport.WebConnectors.DropBankStatement(toDelete.StatementKey))
                     {
-                        PopulateStatementCombobox();
+                        PopulateStatementGrid(null, null);
                     }
                 }
             }

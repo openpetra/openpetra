@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,6 +49,9 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         /// </summary>
         public string GetFileFilter()
         {
+            // each time the button btnImportNewStatement is clicked, do a split and move action
+            SplitFilesAndMove();
+
             return "MT940 Datei (*.sta)|*.sta";
         }
 
@@ -80,6 +83,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
             DialogOpen.Filter = Catalog.GetString("bank statement MT940 (*.sta)|*.sta");
             DialogOpen.RestoreDirectory = true;
+            DialogOpen.Multiselect = true;
             DialogOpen.Title = Catalog.GetString("Please select the bank statement to import");
 
             if (DialogOpen.ShowDialog() != DialogResult.OK)
@@ -87,21 +91,20 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 return false;
             }
 
-            string BankStatementFilename = DialogOpen.FileName;
-
             BankImportTDS MainDS = new BankImportTDS();
 
-            decimal StartBalance, EndBalance;
-            DateTime DateEffective;
-            string BankName;
+            // import several files at once
+            foreach (string BankStatementFilename in DialogOpen.FileNames)
+            {
+                if (!ImportFromFile(BankStatementFilename,
+                        ABankAccountCode,
+                        ref MainDS))
+                {
+                    return false;
+                }
+            }
 
-            if (ImportFromFile(BankStatementFilename,
-                    ABankAccountCode,
-                    ref MainDS,
-                    out StartBalance,
-                    out EndBalance,
-                    out DateEffective,
-                    out BankName) && (MainDS.AEpStatement.Count > 0))
+            if (MainDS.AEpStatement.Count > 0)
             {
                 foreach (AEpStatementRow stmt in MainDS.AEpStatement.Rows)
                 {
@@ -129,13 +132,11 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 TVerificationResultCollection VerificationResult;
                 TLogging.Log("writing to db");
 
-                AEpStatementTable refStmt = MainDS.AEpStatement;
-
-                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(ref refStmt,
-                        MainDS.AEpTransaction,
+                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
+                        MainDS,
+                        out AStatementKey,
                         out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
-                    AStatementKey = refStmt[0].StatementKey;
                     return AStatementKey != -1;
                 }
             }
@@ -146,27 +147,17 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         /// <summary>
         /// open the file and return a typed datatable
         /// </summary>
-        public bool ImportFromFile(string AFilename,
+        private bool ImportFromFile(string AFilename,
             string ABankAccountCode,
-            ref BankImportTDS AMainDS,
-            out decimal AStartBalance,
-            out decimal AEndBalance,
-            out DateTime ADateEffective,
-            out string ABankName)
+            ref BankImportTDS AMainDS)
         {
             TSwiftParser parser = new TSwiftParser();
 
-            AStartBalance = -1;
-            AEndBalance = -1;
-            ABankName = "";
-            ADateEffective = DateTime.MinValue;
-
             parser.ProcessFile(AFilename);
 
-            Int32 statementCounter = 0;
+            Int32 statementCounter = AMainDS.AEpStatement.Rows.Count;
             TLogging.Log(parser.statements.Count.ToString());
 
-            // TODO: support several statements per file?
             foreach (TStatement stmt in parser.statements)
             {
                 Int32 transactionCounter = 0;
@@ -210,69 +201,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     transactionCounter++;
                 }
 
-                ABankName = stmt.bankCode;
-
-                // TODO; use BLZ List?
-                // see http://www.bundesbank.de/zahlungsverkehr/zahlungsverkehr_bankleitzahlen_download.php
-
-                string[] bankAccountData = TAppSettingsManager.GetValue("BankAccounts").Split(new char[] { ',' });
-
-                for (Int32 bankCounter = 0; bankCounter < bankAccountData.Length / 3; bankCounter++)
-                {
-                    if (bankAccountData[bankCounter * 3 + 0] == ABankName)
-                    {
-                        ABankName = bankAccountData[bankCounter * 3 + 1];
-                    }
-                }
-
-                if (statementCounter == 0)
-                {
-                    AStartBalance = stmt.startBalance;
-                }
-
-                if (statementCounter == parser.statements.Count - 1)
-                {
-                    AEndBalance = stmt.endBalance;
-                    ADateEffective = stmt.date;
-                }
-
-                statementCounter++;
-
-                // TODO: don't support several bank statements per file at the moment
-                break;
-            }
-
-            if (parser.statements.Count > 1)
-            {
-                System.Windows.Forms.MessageBox.Show(Catalog.GetString("We don't support several bank statements per file at the moment"));
-            }
-
-            // sort by amount, and by accountname; this is the order of the paper statements and attachments
-            AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetTransactionAmountDBName() + "," +
-                                                      BankImportTDSAEpTransactionTable.GetOrderDBName();
-            AMainDS.AEpTransaction.DefaultView.RowFilter = "";
-            Int32 countOrderOnStatement = 1;
-
-            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
-            {
-                BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)rv.Row;
-
-                if (row.TransactionAmount < 0)
-                {
-                    // TODO: sort by absolute amount, ignoring debit/credit?
-                    row.NumberOnPaperStatement = 1000;
-                }
-                else
-                {
-                    row.NumberOnPaperStatement = countOrderOnStatement;
-                    countOrderOnStatement++;
-                }
-            }
-
-            statementCounter = 0;
-
-            foreach (TStatement stmt in parser.statements)
-            {
                 AEpStatementRow epstmt = AMainDS.AEpStatement.NewRowTyped();
                 epstmt.StatementKey = (statementCounter + 1) * -1;
                 epstmt.Date = stmt.date;
@@ -282,14 +210,40 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
                 if (AFilename.Length > AEpStatementTable.GetFilenameLength())
                 {
-                    // use the last number of characters of the path and filename
-                    // dangerous: Proficash always gives the same name?
-                    epstmt.Filename = AFilename.Substring(AFilename.Length - AEpStatementTable.GetFilenameLength());
+                    epstmt.Filename =
+                        TAppSettingsManager.GetValue("BankNameFor" + stmt.bankCode + "/" + stmt.accountCode,
+                            stmt.bankCode + "/" + stmt.accountCode, true);
                 }
 
                 epstmt.EndBalance = stmt.endBalance;
 
                 AMainDS.AEpStatement.Rows.Add(epstmt);
+
+                // sort by amount, and by accountname; this is the order of the paper statements and attachments
+                AMainDS.AEpTransaction.DefaultView.Sort = BankImportTDSAEpTransactionTable.GetTransactionAmountDBName() + "," +
+                                                          BankImportTDSAEpTransactionTable.GetOrderDBName();
+                AMainDS.AEpTransaction.DefaultView.RowFilter = BankImportTDSAEpTransactionTable.GetStatementKeyDBName() + "=" +
+                                                               epstmt.StatementKey.ToString();
+
+                Int32 countOrderOnStatement = 1;
+
+                foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+                {
+                    BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                    if (row.TransactionAmount < 0)
+                    {
+                        // TODO: sort by absolute amount, ignoring debit/credit?
+                        // row.NumberOnPaperStatement = 1000;
+                        row.NumberOnPaperStatement = countOrderOnStatement;
+                        countOrderOnStatement++;
+                    }
+                    else
+                    {
+                        row.NumberOnPaperStatement = countOrderOnStatement;
+                        countOrderOnStatement++;
+                    }
+                }
 
                 statementCounter++;
             }
@@ -330,9 +284,15 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         /// there are files from several banks, possibly for several legal entities
         /// one file can contain several bank statements from several days
         /// split the files into one file per statement, and move the file to a separate directory for each legal entity
-        static public void SplitFilesAndMove()
+        private bool SplitFilesAndMove()
         {
-            // BankAccounts contains a comma separated list of bank accounts, each with bank account number, bank id, name for legal entity
+            if (!TAppSettingsManager.HasValue("BankAccounts"))
+            {
+                return false;
+            }
+
+            // BankAccounts contains a comma separated list of bank accounts,
+            // each with bank account number, bank id, name for legal entity
             string[] bankAccountData = TAppSettingsManager.GetValue("BankAccounts").Split(new char[] { ',' });
             string RawPath = TAppSettingsManager.GetValue("RawMT940.Path");
             string OutputPath = TAppSettingsManager.GetValue("MT940.Output.Path");
@@ -394,6 +354,8 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     }
                 }
             }
+
+            return true;
         }
     }
 }
