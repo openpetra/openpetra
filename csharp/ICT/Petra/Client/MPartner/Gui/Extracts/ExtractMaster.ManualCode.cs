@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -452,7 +452,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             TPartnerExtractsMain.PartnerByGeneralCriteriaExtract(FindForm());
         }
-        
+
         /// <summary>
         /// Create Manual Extract
         /// </summary>
@@ -460,7 +460,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void CreateManualExtract(System.Object sender, EventArgs e)
         {
-        	TPartnerExtractsMain.PartnerNewManualExtract(FindForm());
+            TPartnerExtractsMain.PartnerNewManualExtract(FindForm());
         }
 
         /// <summary>

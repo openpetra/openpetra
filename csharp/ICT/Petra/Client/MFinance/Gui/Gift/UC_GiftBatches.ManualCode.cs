@@ -241,6 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewAGiftBatch();
+            txtDetailBatchDescription.Focus();
         }
 
         /// <summary>
@@ -250,10 +251,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+
+            //Check if any rows exist
+            if (grdDetails.Rows.Count < 2)
+            {
+                return;
+            }
+            //Check if any row is selected
+            else if ((newCurrentRowPos == -1) || (FPreviouslySelectedDetailRow == null))
+            {
+                MessageBox.Show(Catalog.GetString("No batch is selected to delete."),
+                    Catalog.GetString("Cancelling of Gift Batch"));
+                return;
+            }
             // ask if the user really wants to cancel the batch
-            if (MessageBox.Show(Catalog.GetString("Do you really want to cancel this gift batch?"),
-                    Catalog.GetString("Confirm cancelling of Gift Batch"),
-                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            else if (MessageBox.Show(Catalog.GetString("Do you really want to cancel this gift batch?"),
+                         Catalog.GetString("Confirm cancelling of Gift Batch"),
+                         MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
             {
                 return;
             }
@@ -261,6 +276,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
             FPetraUtilsObject.SetChangedFlag();
             grdDetails.Refresh();
+
+            //If some row(s) still exist after deletion
+            if (grdDetails.Rows.Count > 1)
+            {
+                //If last row just deleted, select row at old position - 1
+                if (newCurrentRowPos == grdDetails.Rows.Count)
+                {
+                    newCurrentRowPos--;
+                }
+
+                grdDetails.Selection.ResetSelection(false);
+                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                FPreviouslySelectedDetailRow = null;
+                ClearControls();
+            }
+        }
+
+        private void ClearControls()
+        {
+            txtDetailBatchDescription.Clear();
+            txtDetailHashTotal.NumberValueDecimal = 0;
+            dtpDetailGlEffectiveDate.Clear();
+            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
 
         private void PostBatch(System.Object sender, EventArgs e)
@@ -309,6 +353,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftBatchRow giftBatchRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FSelectedBatchNumber });
                 giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
                 giftBatchRow.AcceptChanges();
+
+                // make sure that the gift batch is not touched again, by GetDetailsFromControls
+                FSelectedBatchNumber = -1;
+                FPreviouslySelectedDetailRow = null;
+
+                // make sure that gift transactions and details are cleared as well
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                FMainDS.AGiftDetail.Rows.Clear();
+                FMainDS.AGift.Rows.Clear();
 
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
             }

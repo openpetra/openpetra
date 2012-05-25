@@ -99,12 +99,18 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
-            bool NewTransaction = false;
+            //Assume it is a new transaction
+            bool NewTransaction = true;
 
+            //TDBTransaction FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            //Set this to true to committ or rollback the calling transaction at this point
+            NewTransaction = true;
 
             AGiftBatchRow giftBatch = null;
             //AGiftRow gift = null;
+            decimal totalBatchAmount = 0;
             FImportMessage = Catalog.GetString("Parsing first line");
             Int32 RowNumber = 0;
             bool ok = false;
@@ -125,7 +131,28 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         if (RowType == "B")
                         {
-                            previousGift = null;
+                            //Check if
+                            if ((previousGift != null) && (giftBatch != null))
+                            {
+                                //New batch so set total amount of Batch for previous batch
+                                giftBatch.BatchTotal = totalBatchAmount;
+
+                                if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+                                {
+                                    if (NewTransaction)
+                                    {
+                                        DBAccess.GDBAccessObj.RollbackTransaction();
+                                    }
+
+                                    sr.Close();
+                                    return false;
+                                }
+
+                                FMainDS.AGiftBatch.AcceptChanges();
+                                previousGift = null;
+                            }
+
+                            totalBatchAmount = 0;
 
                             string BatchDescription = ImportString(Catalog.GetString("batch description"));
                             string BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
@@ -149,6 +176,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
                             {
+                                if (NewTransaction)
+                                {
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
+                                }
+
+                                sr.Close();
                                 return false;
                             }
 
@@ -225,8 +258,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 giftDetails.RecipientLedgerNumber = ImportInt32(Catalog.GetString("recipient ledger number"));
                             }
 
-                            giftDetails.GiftAmount = ImportDecimal(Catalog.GetString("Gift amount"));
-                            giftDetails.GiftTransactionAmount = giftDetails.GiftAmount;
+                            decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"));
+                            giftDetails.GiftAmount = currentGiftAmount;
+                            giftDetails.GiftTransactionAmount = currentGiftAmount;
+                            totalBatchAmount += currentGiftAmount;
                             // TODO: currency translation
 
                             if (FExtraColumns)
@@ -268,6 +303,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                sr.Close();
                                 return false;
                             }
 
@@ -281,6 +317,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
+                                sr.Close();
                                 return false;
                             }
 
@@ -291,6 +328,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                             throw new Exception(Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"));
                         }
                     }
+                }
+
+                //Update batch total for the last batch entered.
+                if (giftBatch != null)
+                {
+                    giftBatch.BatchTotal = totalBatchAmount;
                 }
 
                 FImportMessage = Catalog.GetString("Saving all data into the database");
@@ -305,6 +348,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                         ok = true;
                     }
                 }
+
+                sr.Close();
             }
             catch (Exception ex)
             {
@@ -321,18 +366,19 @@ namespace Ict.Petra.Server.MFinance.Gift
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
+                sr.Close();
                 return false;
             }
-            finally
-            {
-                try
-                {
-                    sr.Close();
-                }
-                catch
-                {
-                };
-            }
+//            finally  //Can't use return with Finally
+//            {
+//                try
+//                {
+//                    sr.Close();
+//                }
+//                catch
+//                {
+//                };
+//            }
 
             if (ok && NewTransaction)
             {

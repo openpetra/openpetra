@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -196,7 +196,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string WhereStmtUser = "";
             string WhereStmtMaster = "";
             DateTime PurgeDate = DateTime.Today.AddDays(0 - ANumberOfDays);
-            TSelfExpandingArrayList SqlParameterList = new TSelfExpandingArrayList();
 
             if (!AAllUsers)
             {
