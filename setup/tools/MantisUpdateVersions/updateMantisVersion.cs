@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -164,7 +164,43 @@ namespace Ict.Tools.Mantis.UpdateVersion
             OpenVersionEdit(ADriver, AEditProjectURL, AVersionNext);
             EditVersion(ADriver, AVersionNext, DateReleased.AddMonths(1).ToString("yyyy-MM-dd"), "next planned release", false);
         }
-        
+
+        static private void SetVersionFixedInForResolvedBug(IWebDriver ADriver, string AEditBugAdvancedURL, string AVersionFixedIn)
+        {
+            TLogging.Log(AEditBugAdvancedURL);
+            ADriver.Navigate().GoToUrl(AEditBugAdvancedURL);
+
+            IWebElement cmbResolution = ADriver.FindElement(By.Name("resolution"));
+            ReadOnlyCollection<IWebElement> options = cmbResolution.FindElements(By.TagName("option"));
+            foreach (IWebElement option in options) 
+            {
+                if (option.Text == "fixed" && option.Selected == false)
+                {
+                    TLogging.Log("*resolution* is not a fix, so we are not setting *version fixed in* for " + AEditBugAdvancedURL);
+                    return;
+                }
+            } 
+
+            IWebElement cmbFixedInVersion = ADriver.FindElement(By.Name("fixed_in_version"));
+            options = cmbFixedInVersion.FindElements(By.TagName("option"));
+
+            foreach (IWebElement option in options) 
+            {
+                if (AVersionFixedIn == option.Text)
+                {
+                    option.Click();
+                    break; 
+                }
+            } 
+
+            IWebElement form = ((IWebElement)cmbFixedInVersion).FindElement(By.XPath("../../../../.."));
+
+            if (form.TagName == "form")
+            {
+                form.Submit();
+            }
+        }
+
         static void Main(string[] args)
         {
             new TAppSettingsManager(false);
@@ -172,14 +208,12 @@ namespace Ict.Tools.Mantis.UpdateVersion
             if (!TAppSettingsManager.HasValue("sf-username"))
             {
                 Console.WriteLine("call: MantisUpdateVersions.exe -sf-username:pokorra -sf-pwd:xyz -release-version:0.2.16.0");
+                Console.WriteLine("or: MantisUpdateVersions.exe -sf-username:pokorra -sf-pwd:xyz -bug-id:abc,def,ghi -version-fixed-in:\"Alpha 0.2.20\"");
                 return;
             }
 
             string loginURL = TAppSettingsManager.GetValue("login-url", "http://sourceforge.net/account/login.php");
             string mantisURL = TAppSettingsManager.GetValue("mantis-url", "https://sourceforge.net/apps/mantisbt/openpetraorg/");
-            Version releaseVersion = new Version(TAppSettingsManager.GetValue("release-version"));
-            Version devVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build+1, releaseVersion.Revision);
-            Version nextVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build+2, releaseVersion.Revision);;
             
             IWebDriver driver = new FirefoxDriver();
             
@@ -187,16 +221,35 @@ namespace Ict.Tools.Mantis.UpdateVersion
             {
                 LoginToSourceforge(driver, loginURL, TAppSettingsManager.GetValue("sf-username"), TAppSettingsManager.GetValue("sf-pwd"));
 
-                SortedList<int, string> projectIDs = GetAllProjects(driver, mantisURL + "manage_proj_page.php");
-                
-                foreach(int id in projectIDs.Keys)
+                if (TAppSettingsManager.HasValue("version-fixed-in"))
                 {
-                    Console.WriteLine("project " + projectIDs[id]);
-                    UpdateVersionsOfProject(driver,
-                                            mantisURL + "manage_proj_edit_page.php?project_id=" + id.ToString(),
-                                            "Alpha " + releaseVersion.ToString(3),
-                                            "Alpha " + devVersion.ToString(3) + " Dev",
-                                            "Alpha " + nextVersion.ToString(3));
+                    string[] bugids = TAppSettingsManager.GetValue("bug-id").Split(new char[]{','});
+                    
+                    foreach (string bugid in bugids)
+                    {
+                        SetVersionFixedInForResolvedBug(
+                            driver,
+                            mantisURL + "bug_update_advanced_page.php?bug_id=" + bugid,
+                            TAppSettingsManager.GetValue("version-fixed-in"));
+                    }
+                }
+                else
+                {
+                    Version releaseVersion = new Version(TAppSettingsManager.GetValue("release-version"));
+                    Version devVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build+1, releaseVersion.Revision);
+                    Version nextVersion = new Version(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Build+2, releaseVersion.Revision);
+                    
+                    SortedList<int, string> projectIDs = GetAllProjects(driver, mantisURL + "manage_proj_page.php");
+                    
+                    foreach(int id in projectIDs.Keys)
+                    {
+                        Console.WriteLine("project " + projectIDs[id]);
+                        UpdateVersionsOfProject(driver,
+                                                mantisURL + "manage_proj_edit_page.php?project_id=" + id.ToString(),
+                                                "Alpha " + releaseVersion.ToString(3),
+                                                "Alpha " + devVersion.ToString(3) + " Dev",
+                                                "Alpha " + nextVersion.ToString(3));
+                    }
                 }
             }
             catch (Exception e)
