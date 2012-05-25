@@ -8,13 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-14 18:58+0100\n"
+"POT-Creation-Date: 2012-05-25 10:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 msgid "Caption"
 msgstr ""
@@ -40,6 +41,16 @@ msgstr ""
 msgid "Invalid Number Format"
 msgstr ""
 
+msgid ""
+"The entered Date is not valid - the month is greater than 12.\r\n"
+"It seems you have inadvertedly exchanged month and day. OpenPetra will "
+"exchange month and day for you to make a valid date - please check that the "
+"corrected date is the date you intended to enter!"
+msgstr ""
+
+msgid "Invalid date - OpenPetra tries correcting"
+msgstr ""
+
 msgid "Cannot open CSV file, because it is missing the header line."
 msgstr ""
 
@@ -62,6 +73,13 @@ msgstr ""
 msgid ""
 "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Spreadsheet file (*.csv)|All "
 "supported file formats (*.yml, *.xml, *.csv)|*.csv;*.yml;*.xml|"
+msgstr ""
+
+#, csharp-format
+msgid "There is a problem connecting to {0}"
+msgstr ""
+
+msgid "Cannot find patches on server"
 msgstr ""
 
 msgid "Comma"
@@ -91,6 +109,15 @@ msgstr ""
 msgid "Select CSV Separator"
 msgstr ""
 
+#, csharp-format
+msgid ""
+"The Program Version of your OpenPetra Client ({0}) does not match the "
+"Program Version of the OpenPetra Server ({1}).\r\n"
+"An OpenPetra Client cannot connect to an OpenPetra Server unless the Program "
+"Versions match. You need to install an OpenPetra Client with the correct "
+"Program Version."
+msgstr ""
+
 msgid ""
 "  ID | Client          | Status           | Computer    | IP Address      | "
 "Type"
@@ -110,6 +137,13 @@ msgstr ""
 msgid ""
 "  (Currently connected Clients: {0}; client connections since Server start: "
 "{1})"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Client failed to contact OpenPetra Server regularly (last contact was {0} "
+"ago [Format: hh:mm:ss]): ClientStillAliveCheck mechanism found timeout "
+"expired!"
 msgstr ""
 
 #, csharp-format
@@ -135,42 +169,55 @@ msgstr ""
 msgid "SHUTDOWN PROCEDURE FINISHED"
 msgstr ""
 
-msgid "Invalid date entered."
+#, csharp-format
+msgid "{0} may not be empty."
 msgstr ""
 
 #, csharp-format
-msgid "'{0}' cannot be later than '{1}'."
-msgstr ""
-
-msgid "Invalid Data"
+msgid "{0} may not be a past date."
 msgstr ""
 
 #, csharp-format
-msgid "'{0}' cannot be later or equal than '{1}'."
+msgid "{0} may not be a future date."
 msgstr ""
 
 #, csharp-format
-msgid "{0} must be a date.'"
+msgid "{0} cannot be later then {1}."
 msgstr ""
 
 #, csharp-format
-msgid "'{0}' may not be a past date.'"
+msgid "{0} cannot be later than or equal to {1}."
 msgstr ""
 
 #, csharp-format
-msgid "'{0}' may not be a future date.'"
+msgid "{0} cannot be earlier than {1}."
 msgstr ""
 
 #, csharp-format
-msgid "'{0}' may not be empty.'"
+msgid "{0} cannot be earlier than or equal to {1}."
 msgstr ""
 
 #, csharp-format
-msgid "'{0}' cannot be earlier than '{1}'."
+msgid "{0} must be a date."
+msgstr ""
+
+msgid "At least one item needs to be checked."
+msgstr ""
+
+msgid "No item has been selected"
+msgstr ""
+
+msgid "You have typed in a non-existing item."
+msgstr ""
+
+msgid "Value"
 msgstr ""
 
 #, csharp-format
-msgid "'{0}' cannot be earlier or equal than '{1}'."
+msgid ""
+"  Context: {0}; Severity: {1}.\r\n"
+"    Problem: {2}\r\n"
+"    Code: {3}"
 msgstr ""
 
 msgid "Exception has been thrown"
@@ -179,11 +226,103 @@ msgstr ""
 msgid "Inner Exception"
 msgstr ""
 
-msgid "Invalid number entered."
+#, csharp-format
+msgid "{0} must be an integer (= a number without a fraction)."
 msgstr ""
 
 #, csharp-format
-msgid "'{0}' must be an Integer (= a number without a fraction)."
+msgid "{0} must be a decimal number (= a number that has a fraction)."
+msgstr ""
+
+#, csharp-format
+msgid "{0} must be a positive integer (= a number without a fraction)."
+msgstr ""
+
+#, csharp-format
+msgid "{0} must be a positive decimal number (= a number that has a fraction)."
+msgstr ""
+
+#, csharp-format
+msgid "{0} must be a positive integer (= a number without a fraction), or 0."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"{0} must be a positive decimal number (= a number that has a fraction), or 0."
+msgstr ""
+
+#, csharp-format
+msgid "{0} must be a negative integer (= a number without a fraction)."
+msgstr ""
+
+#, csharp-format
+msgid "{0} must be a negative decimal number (= a number that has a fraction)."
+msgstr ""
+
+#, csharp-format
+msgid "{0} must be a negative integer (= a number without a fraction), or 0."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"{0} must be a negative decimal number (= a number that has a fraction), or 0."
+msgstr ""
+
+#, csharp-format
+msgid "{0} cannot be greater than {1}."
+msgstr ""
+
+#, csharp-format
+msgid "{0} cannot be greater or equal to {1}."
+msgstr ""
+
+msgid "Invalid Data"
+msgstr ""
+
+msgid "Information Missing"
+msgstr ""
+
+msgid "Invalid number entered."
+msgstr ""
+
+msgid "Invalid numbers entered."
+msgstr ""
+
+msgid "Invalid date entered."
+msgstr ""
+
+msgid "Invalid value entered."
+msgstr ""
+
+msgid ""
+"Note: The submitted e-mail address contains a comma (',') or a semicolon "
+"(';'). These characters are not valid in an e-mail address, but they can be "
+"used to separate several e-mail addresses."
+msgstr ""
+
+msgid ""
+"Reason: The submitted e-mail address contains a comma (',') or a semicolon "
+"(';'). These characters are not valid in an e-mail address, but they can be "
+"used to separate several e-mail addresses. However, in this case only ONE e-"
+"mail address is allowed!"
+msgstr ""
+
+#, csharp-format
+msgid "The e-mail address '{0}' is not valid."
+msgstr ""
+
+#, csharp-format
+msgid "The e-mail address '{0}' (or a part of it, '{1}') is not valid."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Invalid Order.\r\n"
+"{0} cannot be greater than {1}."
+msgstr ""
+
+#, csharp-format
+msgid "A value must be entered for {0}."
 msgstr ""
 
 msgid ""
@@ -216,6 +355,12 @@ msgid "Not Implemented"
 msgstr ""
 
 msgid "Copy To Clipboard"
+msgstr ""
+
+msgid "Show Server Log"
+msgstr ""
+
+msgid "Show Client Log"
 msgstr ""
 
 msgid "Error Details - OpenPetra"
@@ -293,11 +438,141 @@ msgstr ""
 msgid "Application Error"
 msgstr ""
 
+msgid "Log Files - OpenPetra"
+msgstr ""
+
+msgid "The Server log file:"
+msgstr ""
+
+msgid ""
+"Problem on opening logfile. The server log can (at the moment) only be "
+"displayed in this window if you are using the standalone version or the "
+"development environment."
+msgstr ""
+
+msgid "The Client log file:"
+msgstr ""
+
+msgid "Problem on opening logfile"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"An error ocurred. The logfile you are looking for \r\n"
+"({0})\r\n"
+"is not available!"
+msgstr ""
+
+msgid "County/St&ate:"
+msgstr ""
+
+msgid "Message Number: "
+msgstr ""
+
+msgid "Context: "
+msgstr ""
+
+msgid "Release: "
+msgstr ""
+
+msgid "Form Contains Invalid Data!"
+msgstr ""
+
+msgid "Data cannot be saved because invalid data has not been corrected:"
+msgstr ""
+
+msgid ""
+"There are warning messages associated with the data in form\r\n"
+"(data can be saved, though):"
+msgstr ""
+
+msgid ""
+"There are warning messages associated with the data in the currently edited "
+"record\r\n"
+"(you can move away from that record, though):"
+msgstr ""
+
+msgid "The currently edited record contains invalid data:"
+msgstr ""
+
+msgid "Record Contains Invalid Data!"
+msgstr ""
+
+msgid "Unable to Save - Concurrent Activity Detected"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Another user {0} has {1} the same record in Table '{2}' after you have\r\n"
+"{3} it.{4}\r\n"
+"\r\n"
+"None of your changes can be saved, since the other user's changes could be "
+"overwritten.\r\n"
+"\r\n"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"You have tried to {1} the same record in Table '{2}' after you have\r\n"
+"{3}{4}.\r\n"
+"\r\n"
+"None of your current changes can be saved, since these changes could "
+"potentially\r\n"
+"conflict with each other.\r\n"
+"\r\n"
+msgstr ""
+
+msgid ""
+"Actions required:\r\n"
+"  * If you were in a screen: please close the screen and re-open it again."
+"\r\n"
+"  * You will need to repeat your changes and save them again."
+msgstr ""
+
+msgid "modified"
+msgstr ""
+
+msgid "modified and saved"
+msgstr ""
+
+msgid "modify and save"
+msgstr ""
+
+msgid "opened and before you deleted"
+msgstr ""
+
+msgid "deleted it somewhere else"
+msgstr ""
+
+msgid "deleted"
+msgstr ""
+
+msgid "delete"
+msgstr ""
+
+#, csharp-format
+msgid " The other user has done this on {0}."
+msgstr ""
+
+#, csharp-format
+msgid " it in another place on {0}"
+msgstr ""
+
 msgid "Security Violation"
 msgstr ""
 
 #, csharp-format
 msgid "You do not have permission to {0} {1} records."
+msgstr ""
+
+#, csharp-format
+msgid "Access to Partner {0}denied."
+msgstr ""
+
+msgid "Reason: Partner is a Private Partner of another user."
+msgstr ""
+
+msgid "Reason: You must be the owner of a foundation in order to edit it."
 msgstr ""
 
 #, csharp-format
@@ -312,6 +587,15 @@ msgid "This date is earlier than the date limit: {0}"
 msgstr ""
 
 msgid "Date underrun ..."
+msgstr ""
+
+msgid "Partner"
+msgstr ""
+
+msgid "Partner Class"
+msgstr ""
+
+msgid "PartnerKey"
 msgstr ""
 
 msgid "New Navigation"
@@ -398,6 +682,9 @@ msgstr ""
 msgid "Go to Partner Module"
 msgstr ""
 
+msgid "Starting OpenPetra Server..."
+msgstr ""
+
 #, csharp-format
 msgid ""
 "Please make sure that you have logged in to your network drive\n"
@@ -419,6 +706,10 @@ msgid ""
 "Do you want to install now?"
 msgstr ""
 
+#, csharp-format
+msgid "Install new OpenPetra patch"
+msgstr ""
+
 msgid "Loading..."
 msgstr ""
 
@@ -438,8 +729,60 @@ msgstr ""
 msgid "Exactly matches search term ---"
 msgstr ""
 
+msgid "NOT A VALID VALUE!"
+msgstr ""
+
+msgid "NOT A VALID OCCUPATION CODE!"
+msgstr ""
 
 
+
+
+msgid "&Occupation..."
+msgstr ""
+
+#, csharp-format
+msgid "&{0}"
+msgstr ""
+
+msgid "&Extract"
+msgstr ""
+
+msgid "&Conference"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The specified Occupation Code '{0}' is invalid!\r\n"
+"Please check spelling!"
+msgstr ""
+
+msgid "Invalid Occupation Code"
+msgstr ""
+
+#, csharp-format
+msgid "The specified {0} '{1}' is invalid!"
+msgstr ""
+
+#, csharp-format
+msgid "Invalid "
+msgstr ""
+
+msgid "No valid Extract selected"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "### ShortName not retrieved ###"
+msgstr ""
+
+msgid "### Extract description not retrieved ###"
+msgstr ""
+
+#, csharp-format
+msgid "### {0} is not a Conference ###"
+msgstr ""
 
 msgid ""
 "The date is not empty. By double-clicking it you would set the date to "
@@ -551,6 +894,34 @@ msgstr ""
 msgid "Standalone / Network / Remote"
 msgstr ""
 
+msgid "&Yes"
+msgstr ""
+
+msgid "Yes to &all"
+msgstr ""
+
+msgid "&No"
+msgstr ""
+
+msgid "N&o to all"
+msgstr ""
+
+msgid "&OK"
+msgstr ""
+
+msgid "&Cancel"
+msgstr ""
+
+msgid "Option"
+msgstr ""
+
+msgid "Message:"
+msgstr ""
+
+#, csharp-format
+msgid "Form Name: {0}, Form Title: {1}"
+msgstr ""
+
 msgid "New"
 msgstr ""
 
@@ -647,15 +1018,28 @@ msgstr ""
 msgid "This code is Required for System operation by other code"
 msgstr ""
 
-msgid "There is nothing to be saved."
+msgid "Data Cannot Be Saved"
 msgstr ""
 
-
-msgid "Frequency Code:"
+msgid ""
+"--> The value you entered has been changed back to what it was before! <--"
 msgstr ""
 
-msgid "Frequency Description:"
+msgid "Int'l Access Code"
 msgstr ""
+
+msgid "Int'l Dialling Code"
+msgstr ""
+
+msgid "Int'l Postal Type"
+msgstr ""
+
+msgid "Time Zone From"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
 
 msgid "Number Of Years:"
 msgstr ""
@@ -672,10 +1056,31 @@ msgstr ""
 msgid "Number Of Minutes:"
 msgstr ""
 
+msgid "Frequency Code:"
+msgstr ""
+
+msgid "Frequency Description:"
+msgstr ""
+
 msgid "New Frequency"
 msgstr ""
 
 msgid "Maintain Frequencies"
+msgstr ""
+
+msgid "Number Of Years"
+msgstr ""
+
+msgid "Number Of Months"
+msgstr ""
+
+msgid "Number Of Days"
+msgstr ""
+
+msgid "Number Of Hours"
+msgstr ""
+
+msgid "Number Of Minutes"
 msgstr ""
 
 msgid "Int. Postal Type Code:"
@@ -714,6 +1119,9 @@ msgstr ""
 msgid "Indicates if the language is an 'official' Congress Language."
 msgstr ""
 
+msgid "Maintain Local Data Field Order"
+msgstr ""
+
 msgid " For Bank"
 msgstr ""
 
@@ -744,13 +1152,13 @@ msgstr ""
 msgid " For Personnel"
 msgstr ""
 
+msgid "Text"
+msgstr ""
+
 msgid "Label:"
 msgstr ""
 
 msgid "Group heading (optional):"
-msgstr ""
-
-msgid "Text"
 msgstr ""
 
 msgid "Data type:"
@@ -798,10 +1206,10 @@ msgstr ""
 msgid "Do you want this data label to be displayed?"
 msgstr ""
 
-msgid "Used By"
+msgid "Lookup Category Code"
 msgstr ""
 
-msgid "Partner Class"
+msgid "Used By"
 msgstr ""
 
 msgid "Application"
@@ -843,35 +1251,6 @@ msgstr ""
 msgid "NewLabel"
 msgstr ""
 
-msgid ""
-"You cannot select the 'Lookup Option' because there are no options defined. "
-"The application will choose 'Text'.  Then go to the 'Local Data Options' "
-"menu item and define some options.  Then return to this menu and reconfigure "
-"this entry."
-msgstr ""
-
-msgid "Error in Data Input"
-msgstr ""
-
-msgid ""
-"You must check at least one box in the 'Used By' list. The system will check "
-"one box for you, but you should validate the entry yourself."
-msgstr ""
-
-msgid "The PETRA Server cannot be reached! Data cannot be saved!"
-msgstr ""
-
-msgid "No Server response"
-msgstr ""
-
-msgid ""
-"The 'UsedBy' part of the data could not be saved! There has been a conflict "
-"with another user's data entry."
-msgstr ""
-
-msgid "Cached Table Data Conflict"
-msgstr ""
-
 msgid "An error occured while saving the 'used by' data"
 msgstr ""
 
@@ -904,6 +1283,12 @@ msgid "Currency code"
 msgstr ""
 
 msgid "Option list name"
+msgstr ""
+
+msgid "You must check at least one box in the list of Partner classes."
+msgstr ""
+
+msgid "You must check at least one box in the list of Application types."
 msgstr ""
 
 msgid "&New"
@@ -939,7 +1324,10 @@ msgstr ""
 msgid "The format in which to display and accept input on a currency."
 msgstr ""
 
-msgid "PartnerKey"
+msgid "Opening of Field Of Service screen got cancelled by user."
+msgstr ""
+
+msgid "Screen opening cancelled"
 msgstr ""
 
 msgid "Partner Name"
@@ -974,9 +1362,6 @@ msgid "&Phone:"
 msgstr ""
 
 msgid "&Location Type:"
-msgstr ""
-
-msgid "County/St&ate:"
 msgstr ""
 
 msgid "Co&untry:"
@@ -1069,6 +1454,41 @@ msgstr ""
 msgid "Valid To"
 msgstr ""
 
+msgid "A similar address already exists in the database:"
+msgstr ""
+
+msgid "Use the existing address record?"
+msgstr ""
+
+msgid "(Choose 'No' to create a new address record.)"
+msgstr ""
+
+msgid "Similar Address Exists"
+msgstr ""
+
+#, csharp-format
+msgid "NOTE: this is used by {0} "
+msgstr ""
+
+msgid "Expire All Current Addresses"
+msgstr ""
+
+msgid "There are no Current Addresses, therefore none need to be expired."
+msgstr ""
+
+msgid "There are no Current Addresses that can be expired."
+msgstr ""
+
+msgid "All Addresses Expired"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The following {0} Address(es) was/were expired:\r\n"
+"{1}\r\n"
+"The Partner has no Current Addresses left."
+msgstr ""
+
 msgid "      &Delete"
 msgstr ""
 
@@ -1085,6 +1505,184 @@ msgid "Delete currently selected Address"
 msgstr ""
 
 msgid "Create new address"
+msgstr ""
+
+msgid " other partner."
+msgid_plural " other partners."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"The OpenPetra Server is currently too busy to open the Partner Edit screen. "
+"Please wait a few seconds and press 'Retry' then to retry, or 'Cancel' to "
+"abort."
+msgstr ""
+
+msgid "OpenPetra Server Too Busy"
+msgstr ""
+
+msgid "Information"
+msgstr ""
+
+msgid "Warning"
+msgstr ""
+
+msgid "Ready"
+msgstr ""
+
+msgid "Details: "
+msgstr ""
+
+msgid " (inactive)"
+msgstr ""
+
+msgid "Functionality not available"
+msgstr ""
+
+msgid "This window has changes that have not been saved."
+msgstr ""
+
+msgid "Save changes before closing?"
+msgstr ""
+
+msgid "Saving data..."
+msgstr ""
+
+msgid "Data successfully saved."
+msgstr ""
+
+msgid "Data could not be saved because an unexpected error occured!"
+msgstr ""
+
+msgid "Data could not be saved because an error occured!"
+msgstr ""
+
+msgid "Saving of data cancelled by user!"
+msgstr ""
+
+msgid "There was nothing to be saved."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The OpenPetra Server is currently too busy to {0}.\r\n"
+"\r\n"
+"Please wait a few seconds and press 'Retry' then to retry, or 'Cancel' to "
+"abort."
+msgstr ""
+
+#, csharp-format
+msgid "Opening of {0} screen got cancelled by user."
+msgstr ""
+
+msgid "This only works for Partners of Partner Class PERSON"
+msgstr ""
+
+msgid "This only works for Partners of Partner Classes FAMILY or PERSON"
+msgstr ""
+
+msgid "This only works for Partners of Partner Classes PERSON or UNIT"
+msgstr ""
+
+msgid "No Installed Sites!"
+msgstr ""
+
+msgid "Edi&t"
+msgstr ""
+
+msgid "D&one"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The Partner's Status is currently '{0}'.\r\n"
+"OpenPetra will change it automatically to '{1}'"
+msgstr ""
+
+msgid "Partner Gets Re-activated!"
+msgstr ""
+
+msgid "Unassignable Value"
+msgstr ""
+
+msgid ""
+"Another Address is already set to be a Mailing Address.\r\n"
+"\r\n"
+"This could lead to confusion as to which Address is the 'Best' Address (=the "
+"default Address OpenPetra will use).\r\n"
+"OpenPetra has already marked the 'Best' Address in the list of Addresses "
+"(green icon background).\r\n"
+"Please check if this is the correct one!"
+msgstr ""
+
+msgid "Multiple Mailing Addresses"
+msgstr ""
+
+msgid ""
+"You tried to delete the last Address that the Partner had.\r\n"
+"For this operation you need modify permission on PartnerLocation records,\r\n"
+"which you do not have."
+msgstr ""
+
+msgid ""
+"You tried to delete an Address that isn't used by any other Partner.\r\n"
+"For this operation you need delete permission on Location records,\r\n"
+"which you do not have."
+msgstr ""
+
+msgid "Security Violation - Explanation"
+msgstr ""
+
+msgid "Are you sure you want to remove this address"
+msgstr ""
+
+msgid "from this partner?"
+msgstr ""
+
+msgid "from the database (it is not used elsewhere)?"
+msgstr ""
+
+msgid "Delete Address?"
+msgstr ""
+
+msgid ""
+"The found Address cannot be used because the Partner already has an Address "
+"record with this address!"
+msgstr ""
+
+msgid "Duplicate Address"
+msgstr ""
+
+msgid ""
+" because you have added\r\n"
+"a new Address!"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The Address\r\n"
+"\r\n"
+"   {0}\r\n"
+"\r\n"
+"has a Valid-From date that lies after the date that you entered for\r\n"
+"expiration.\r\n"
+"\r\n"
+"This Address will not be expired because the Valid-To date cannot lie\r\n"
+"before the Valid-From date!"
+msgstr ""
+
+msgid "Address Cannot be Expired"
+msgstr ""
+
+msgid ""
+"'Best' Address - this is the default address OpenPetra will use [eg. for "
+"Mailings])"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The code {0} cannot be assigned because you are not\r\n"
+"in Security Group '{1}'!"
 msgstr ""
 
 msgid "Cost Type Code:"
@@ -1117,13 +1715,13 @@ msgstr ""
 msgid "Indicates if a record can be deleted."
 msgstr ""
 
+msgid "Search"
+msgstr ""
+
 msgid "Conference:"
 msgstr ""
 
 msgid "Prefix:"
-msgstr ""
-
-msgid "Search"
 msgstr ""
 
 msgid "Find Conference"
@@ -1162,12 +1760,6 @@ msgstr ""
 msgid "Conference Module OpenPetra.org"
 msgstr ""
 
-msgid "&OK"
-msgstr ""
-
-msgid "&Cancel"
-msgstr ""
-
 msgid "&Apply"
 msgstr ""
 
@@ -1183,10 +1775,13 @@ msgstr ""
 msgid "Currency:"
 msgstr ""
 
-msgid "Invoice &Number:"
+msgid "Invoice"
 msgstr ""
 
-msgid "Invoice"
+msgid "Lookup"
+msgstr ""
+
+msgid "Invoice &Number:"
 msgstr ""
 
 msgid "T&ype:"
@@ -1207,7 +1802,7 @@ msgstr ""
 msgid "Discount &Days:"
 msgstr ""
 
-msgid "Discount &Value (%):"
+msgid "Discount:"
 msgstr ""
 
 msgid "&Amount:"
@@ -1223,6 +1818,12 @@ msgid "Add De&tail"
 msgstr ""
 
 msgid "&Remove Detail"
+msgstr ""
+
+msgid "Use Ta&x Acct"
+msgstr ""
+
+msgid "Anal Attri&b"
 msgstr ""
 
 msgid "Narrati&ve:"
@@ -1243,16 +1844,13 @@ msgstr ""
 msgid "Accou&nt:"
 msgstr ""
 
-msgid "Use Ta&x Acct"
-msgstr ""
-
-msgid "Anal Attri&b"
-msgstr ""
-
 msgid "Details"
 msgstr ""
 
-msgid "Post Document"
+msgid "Post"
+msgstr ""
+
+msgid "Pay"
 msgstr ""
 
 msgid "AP Document Edit"
@@ -1312,10 +1910,19 @@ msgstr ""
 msgid "Reference to the account to use for this detail"
 msgstr ""
 
+msgid "Invoice &Number"
+msgstr ""
+
+msgid "A&mount"
+msgstr ""
+
 msgid "The document Amount does not equal the sum of the detail lines."
 msgstr ""
 
 msgid "Balance Problem"
+msgstr ""
+
+msgid "Invalid Account"
 msgstr ""
 
 #, csharp-format
@@ -1343,16 +1950,19 @@ msgstr ""
 msgid "The AP document has been posted successfully!"
 msgstr ""
 
-msgid "Partner Key:"
+msgid "&Edit Partner info of Supplier"
 msgstr ""
 
-msgid "&Edit Partner info of Supplier"
+msgid "Partner Key:"
 msgstr ""
 
 msgid "&Currency:"
 msgstr ""
 
 msgid "Supplier &Type:"
+msgstr ""
+
+msgid "Our Ref:"
 msgstr ""
 
 msgid "General Information"
@@ -1368,6 +1978,9 @@ msgid "Default &Payment Type:"
 msgstr ""
 
 msgid "Number of Days for &Discount (0 for none):"
+msgstr ""
+
+msgid "Discount &Value (%):"
 msgstr ""
 
 msgid "Misc Defaults"
@@ -1396,6 +2009,9 @@ msgstr ""
 
 msgid ""
 "What type of supplier this is - normal, credit card, maybe something else."
+msgstr ""
+
+msgid "This reference identifies us to the supplier"
 msgstr ""
 
 msgid "Number of months to display invoices and credit notes"
@@ -1451,10 +2067,10 @@ msgstr ""
 msgid "&Overdue"
 msgstr ""
 
-msgid "Due &Within"
+msgid "Days"
 msgstr ""
 
-msgid "Days"
+msgid "Due &Within"
 msgstr ""
 
 msgid "Show Outstanding &Amounts"
@@ -1469,9 +2085,6 @@ msgstr ""
 msgid "Suppliers"
 msgstr ""
 
-msgid "Tag all Appro&vable"
-msgstr ""
-
 msgid "Tag a&ll Postable"
 msgstr ""
 
@@ -1481,16 +2094,19 @@ msgstr ""
 msgid "&Untag all"
 msgstr ""
 
+msgid "Tag all Appro&vable"
+msgstr ""
+
 msgid "Sum of Tagged:"
 msgstr ""
 
 msgid "Outstanding Invoices"
 msgstr ""
 
-msgid "Open the transactions of the supplier"
+msgid "Create a new supplier"
 msgstr ""
 
-msgid "Open Transactions"
+msgid "&New Supplier"
 msgstr ""
 
 msgid "Change the details and settings of an existing supplier"
@@ -1499,10 +2115,10 @@ msgstr ""
 msgid "&Edit Supplier"
 msgstr ""
 
-msgid "Create a new supplier"
+msgid "Open the transactions of the supplier"
 msgstr ""
 
-msgid "&New Supplier"
+msgid "&Open Transactions"
 msgstr ""
 
 msgid "Create &Invoice"
@@ -1526,7 +2142,10 @@ msgstr ""
 msgid "&Find Invoice..."
 msgstr ""
 
-msgid "Find"
+msgid "Reverse"
+msgstr ""
+
+msgid "Delete"
 msgstr ""
 
 msgid "Accounts Payable"
@@ -1574,15 +2193,6 @@ msgstr ""
 msgid "Cash"
 msgstr ""
 
-msgid "Payment T&ype:"
-msgstr ""
-
-msgid "Exchange Rate:"
-msgstr ""
-
-msgid "Bank Account:"
-msgstr ""
-
 msgid "Print Remittance"
 msgstr ""
 
@@ -1590,6 +2200,21 @@ msgid "Print Label"
 msgstr ""
 
 msgid "Print Cheque"
+msgstr ""
+
+msgid "Payment T&ype:"
+msgstr ""
+
+msgid "Amount:"
+msgstr ""
+
+msgid "Exchange Rate:"
+msgstr ""
+
+msgid "Amount in Base:"
+msgstr ""
+
+msgid "Bank Account:"
 msgstr ""
 
 msgid "Cheque Number:"
@@ -1612,7 +2237,7 @@ msgstr ""
 msgid "&Make Payment"
 msgstr ""
 
-msgid "Split By Invoice"
+msgid "Reprint report"
 msgstr ""
 
 msgid "AP Payment"
@@ -1645,9 +2270,6 @@ msgstr ""
 msgid "The referenced payment Connot be loaded."
 msgstr ""
 
-msgid "Error"
-msgstr ""
-
 #, csharp-format
 msgid ""
 "This Payment cannot be reversed automatically because the total amount of "
@@ -1670,25 +2292,28 @@ msgstr ""
 msgid "Reverse Payment Failed"
 msgstr ""
 
+msgid "Supplier:"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
 msgid "&Type:"
 msgstr ""
 
-msgid "&Date:"
-msgstr ""
-
-msgid "Date &Field:"
+msgid "Hide &Aged Transactions"
 msgstr ""
 
 msgid "&Status:"
-msgstr ""
-
-msgid "Hide &Aged Transactions"
 msgstr ""
 
 msgid "Tag all P&ostable"
 msgstr ""
 
 msgid "&Untag All"
+msgstr ""
+
+msgid "Reload List"
 msgstr ""
 
 msgid "Displayed Balance:"
@@ -1706,13 +2331,10 @@ msgstr ""
 msgid "Re&verse Selected"
 msgstr ""
 
-msgid "&Approve Tagged"
-msgstr ""
-
 msgid "&Post Tagged"
 msgstr ""
 
-msgid "Add Tagged to Pa&yment"
+msgid "Pay Tagged"
 msgstr ""
 
 msgid "Reprint Re&mittance Advice"
@@ -1722,6 +2344,9 @@ msgid "Reprint &Cheque"
 msgstr ""
 
 msgid "&New..."
+msgstr ""
+
+msgid "Approve Tagged"
 msgstr ""
 
 msgid "&Action"
@@ -1742,9 +2367,6 @@ msgstr ""
 msgid "Budget Scope"
 msgstr ""
 
-msgid "Forecast is based on actuals of period 1 to:"
-msgstr ""
-
 msgid "&This Year's Budgets"
 msgstr ""
 
@@ -1754,22 +2376,25 @@ msgstr ""
 msgid "Remaining Periods"
 msgstr ""
 
+msgid "Forecast is based on actuals of period 1 to:"
+msgstr ""
+
+msgid "&Generate"
+msgstr ""
+
 msgid "Select &All"
 msgstr ""
 
 msgid "&Unselect All"
 msgstr ""
 
-msgid "&Generate"
-msgstr ""
-
 msgid "Auto Generate Budget"
 msgstr ""
 
-msgid "Filename:"
+msgid "&Browse..."
 msgstr ""
 
-msgid "&Browse..."
+msgid "Filename:"
 msgstr ""
 
 msgid "Delimiter:"
@@ -1793,16 +2418,13 @@ msgstr ""
 msgid "Warnings"
 msgstr ""
 
-msgid "There are no Budget matching your criteria"
+msgid "There are no Budgets matching your criteria"
 msgstr ""
 
-msgid "Your data was exported successfully!"
+msgid "Data exported successfully!"
 msgstr ""
 
 msgid "Success"
-msgstr ""
-
-msgid "E&xport"
 msgstr ""
 
 msgid "Cost Centre:"
@@ -1824,6 +2446,9 @@ msgid "Inflate Base"
 msgstr ""
 
 msgid "Inflate n"
+msgstr ""
+
+msgid "Total"
 msgstr ""
 
 msgid "Period 1:"
@@ -1860,12 +2485,6 @@ msgid "Period 6:"
 msgstr ""
 
 msgid "Period 12:"
-msgstr ""
-
-msgid "Total"
-msgstr ""
-
-msgid "Amount:"
 msgstr ""
 
 msgid "Total Amount:"
@@ -1975,6 +2594,9 @@ msgstr ""
 msgid "Bank Statement:"
 msgstr ""
 
+msgid "Bank Statement Date:"
+msgstr ""
+
 msgid "ListAll"
 msgstr ""
 
@@ -2006,6 +2628,9 @@ msgid "GL"
 msgstr ""
 
 msgid "Ignored"
+msgstr ""
+
+msgid "Find"
 msgstr ""
 
 msgid "&Add"
@@ -2108,16 +2733,22 @@ msgstr ""
 msgid "Select a ledger"
 msgstr ""
 
-msgid "Select Statement:"
-msgstr ""
-
-msgid "Delete Statement"
+msgid "Show Statements From:"
 msgstr ""
 
 msgid "Load Statement"
 msgstr ""
 
+msgid "Delete Statement"
+msgstr ""
+
 msgid "Select a bank statement"
+msgstr ""
+
+msgid "Bank statement"
+msgstr ""
+
+msgid "Date"
 msgstr ""
 
 msgid "Please select a valid plugin for the import of bank statements!"
@@ -2128,6 +2759,9 @@ msgid "Do you really want to delete the bank statement {0}?"
 msgstr ""
 
 msgid "Confirmation"
+msgstr ""
+
+msgid "Browse"
 msgstr ""
 
 msgid "Ledger:"
@@ -2146,9 +2780,6 @@ msgid "Motivation Group:"
 msgstr ""
 
 msgid "Detail:"
-msgstr ""
-
-msgid "Browse"
 msgstr ""
 
 msgid "Total:"
@@ -2178,9 +2809,6 @@ msgstr ""
 msgid "Gift Batches"
 msgstr ""
 
-msgid "Failure saving"
-msgstr ""
-
 msgid "Detail"
 msgstr ""
 
@@ -2208,6 +2836,9 @@ msgstr ""
 msgid "Date Or Batch Range"
 msgstr ""
 
+msgid "Browse Filename"
+msgstr ""
+
 msgid "Include Unposted Batches:"
 msgstr ""
 
@@ -2217,13 +2848,13 @@ msgstr ""
 msgid "With extra columns:"
 msgstr ""
 
-msgid "Browse Filename"
-msgstr ""
-
 msgid "Export Gift Batches"
 msgstr ""
 
 msgid "There are no batches matching your criteria"
+msgstr ""
+
+msgid "Your data was exported successfully!"
 msgstr ""
 
 msgid "Worker Partner Key:"
@@ -2278,6 +2909,9 @@ msgstr ""
 msgid "The partner contacts have been updated successfully!"
 msgstr ""
 
+msgid "No Receipt"
+msgstr ""
+
 msgid "Start Date:"
 msgstr ""
 
@@ -2291,9 +2925,6 @@ msgid "Recipient Key:"
 msgstr ""
 
 msgid "Old Field Key:"
-msgstr ""
-
-msgid "No Receipt"
 msgstr ""
 
 msgid "&Adjust gifts after field change"
@@ -2391,9 +3022,6 @@ msgstr ""
 msgid "Your gift has been sucessfully adjusted"
 msgstr ""
 
-msgid "Warning"
-msgstr ""
-
 msgid "Recurring Gift Batches"
 msgstr ""
 
@@ -2424,9 +3052,6 @@ msgstr ""
 msgid "Editing"
 msgstr ""
 
-msgid "All"
-msgstr ""
-
 msgid "Show batches"
 msgstr ""
 
@@ -2437,6 +3062,15 @@ msgid "Period:"
 msgstr ""
 
 msgid "&Post Batch"
+msgstr ""
+
+msgid "Gift In Kind"
+msgstr ""
+
+msgid "Other"
+msgstr ""
+
+msgid "Gift Type"
 msgstr ""
 
 msgid "Batch Description:"
@@ -2452,15 +3086,6 @@ msgid "Exchange Rate To Base:"
 msgstr ""
 
 msgid "Method of Payment:"
-msgstr ""
-
-msgid "Gift In Kind"
-msgstr ""
-
-msgid "Other"
-msgstr ""
-
-msgid "Gift Type"
 msgstr ""
 
 msgid "&Export Batches"
@@ -2499,6 +3124,12 @@ msgstr ""
 msgid "Enter the gift type (gift/gift in kind/etc.)"
 msgstr ""
 
+msgid "Batch Description"
+msgstr ""
+
+msgid "Exchange Rate To Base"
+msgstr ""
+
 msgid "Import batches from spreadsheet file"
 msgstr ""
 
@@ -2506,6 +3137,15 @@ msgid "Gift Batches files (*.csv)|*.csv"
 msgstr ""
 
 msgid "Your data was imported successfully!"
+msgstr ""
+
+msgid "Please enter batch description"
+msgstr ""
+
+msgid "No batch is selected to delete."
+msgstr ""
+
+msgid "Cancelling of Gift Batch"
 msgstr ""
 
 msgid "Do you really want to cancel this gift batch?"
@@ -2619,6 +3259,15 @@ msgstr ""
 msgid "Enter a comment"
 msgstr ""
 
+msgid "Comment 1"
+msgstr ""
+
+msgid "No gift detail is selected to delete."
+msgstr ""
+
+msgid "Deletion of Gift Detail"
+msgstr ""
+
 msgid "Please select a Gift Batch."
 msgstr ""
 
@@ -2647,6 +3296,15 @@ msgstr ""
 msgid "&Recurring Gift Batch"
 msgstr ""
 
+msgid "Deleting Recurring Gift Batch"
+msgstr ""
+
+msgid "Do you really want to delete this recurring gift batch?"
+msgstr ""
+
+msgid "Confirm deletion of Recurring Gift Batch"
+msgstr ""
+
 msgid "Please select a Batch before submitting."
 msgstr ""
 
@@ -2668,7 +3326,19 @@ msgstr ""
 msgid "Enter the amount"
 msgstr ""
 
+msgid "Date that donor wants to begin giving this recurring donation"
+msgstr ""
+
+msgid "Date that donor wants to stop giving this recurring donation"
+msgstr ""
+
 msgid "Should gifts with this motivation code be tax deductable?"
+msgstr ""
+
+msgid "No recurring gift detail is selected to delete."
+msgstr ""
+
+msgid "Deletion of Recurring Gift Detail"
 msgstr ""
 
 msgid "Journals"
@@ -2776,6 +3446,12 @@ msgstr ""
 msgid "Show batches available for"
 msgstr ""
 
+msgid "Year Filter:"
+msgstr ""
+
+msgid "Period Filter:"
+msgstr ""
+
 msgid "&Test Batch"
 msgstr ""
 
@@ -2867,6 +3543,9 @@ msgstr ""
 msgid "Hash:"
 msgstr ""
 
+msgid "Get/Set Exchange Rate"
+msgstr ""
+
 msgid "Journal Description:"
 msgstr ""
 
@@ -2877,9 +3556,6 @@ msgid "Transaction Type:"
 msgstr ""
 
 msgid "Exchange Rate to Base:"
-msgstr ""
-
-msgid "Get/Set Exchange Rate"
 msgstr ""
 
 msgid "Enter a description for this general ledger journal."
@@ -2904,15 +3580,6 @@ msgstr ""
 msgid "&Remove"
 msgstr ""
 
-msgid "Cost Centre Code:"
-msgstr ""
-
-msgid "Account Code:"
-msgstr ""
-
-msgid "Transaction Date:"
-msgstr ""
-
 msgid "TODOTransactionCurrency:"
 msgstr ""
 
@@ -2929,6 +3596,15 @@ msgid "Debit Total:"
 msgstr ""
 
 msgid "Credit Total:"
+msgstr ""
+
+msgid "Cost Centre Code:"
+msgstr ""
+
+msgid "Account Code:"
+msgstr ""
+
+msgid "Transaction Date:"
 msgstr ""
 
 msgid "Enter a cost centre code (department or fund)."
@@ -3004,10 +3680,10 @@ msgstr ""
 msgid "Decimal Name (e.g. Cent)"
 msgstr ""
 
-msgid "Singular amount:"
+msgid "and"
 msgstr ""
 
-msgid "and"
+msgid "Singular amount:"
 msgstr ""
 
 msgid "Plural amount:"
@@ -3038,6 +3714,36 @@ msgid "Enter the label for the decimal when the amount is > 1"
 msgstr ""
 
 msgid "This is needed to determine the gender in some languages."
+msgstr ""
+
+msgid "AFO"
+msgstr ""
+
+msgid "Email address(es) (one per line):"
+msgstr ""
+
+msgid "File Code:"
+msgstr ""
+
+msgid "Condition value:"
+msgstr ""
+
+msgid "New Email Destination"
+msgstr ""
+
+msgid "Maintain Email Destinations"
+msgstr ""
+
+msgid "Enter the code for the file you wish to email from the list."
+msgstr ""
+
+msgid "Enter the condition value"
+msgstr ""
+
+msgid "Enter the partner key to pick up their email address"
+msgstr ""
+
+msgid "Enter an Email address."
 msgstr ""
 
 msgid "NEWVALUE"
@@ -3073,6 +3779,9 @@ msgstr ""
 msgid "NEWDETAIL"
 msgstr ""
 
+msgid "Foreign Currency"
+msgstr ""
+
 msgid "Account Type:"
 msgstr ""
 
@@ -3089,9 +3798,6 @@ msgid "Description Short Local:"
 msgstr ""
 
 msgid "Valid Cost Centres:"
-msgstr ""
-
-msgid "Foreign Currency"
 msgstr ""
 
 msgid "Add Account"
@@ -3261,18 +3967,6 @@ msgstr ""
 msgid "Enter a description in your local language."
 msgstr ""
 
-msgid "Fee Code:"
-msgstr ""
-
-msgid "Charge Option:"
-msgstr ""
-
-msgid "Charge Percentage:"
-msgstr ""
-
-msgid "Charge Amount:"
-msgstr ""
-
 msgid "To Be Debited:"
 msgstr ""
 
@@ -3283,6 +3977,18 @@ msgid "Receiving Fund"
 msgstr ""
 
 msgid "Assignment"
+msgstr ""
+
+msgid "Fee Code:"
+msgstr ""
+
+msgid "Charge Option:"
+msgstr ""
+
+msgid "Charge Percentage:"
+msgstr ""
+
+msgid "Charge Amount:"
 msgstr ""
 
 msgid "New Payable Admin. Grant"
@@ -3344,9 +4050,18 @@ msgstr ""
 
 #, csharp-format
 msgid ""
-"You have chosen to delete thistype ({0}).\n"
+"You have chosen to delete this type ({0}).\n"
 "\n"
 "Do you really want to delete it?"
+msgstr ""
+
+msgid "&Invert value"
+msgstr ""
+
+msgid "Value One Direction:"
+msgstr ""
+
+msgid "Value Other Direction:"
 msgstr ""
 
 msgid "&From Currency Code:"
@@ -3359,15 +4074,6 @@ msgid "D&ate:"
 msgstr ""
 
 msgid "&Rate of exchange:"
-msgstr ""
-
-msgid "&Invert value"
-msgstr ""
-
-msgid "Value One Direction:"
-msgstr ""
-
-msgid "Value Other Direction:"
 msgstr ""
 
 msgid "Import"
@@ -3445,14 +4151,8 @@ msgstr ""
 msgid "Please create an analysis type first"
 msgstr ""
 
-msgid "This value is already referenced and cannot be deleted."
-msgstr ""
-
 #, csharp-format
-msgid ""
-"You have chosen to delete this value ({0}).\n"
-"\n"
-"Do you really want to delete it?"
+msgid "Confirm you want to Remove {0} from this account."
 msgstr ""
 
 msgid "Values for this Type and Ledger Number:"
@@ -3462,6 +4162,16 @@ msgid "Value of analysis code"
 msgstr ""
 
 msgid "Select if analysis attribute value can be used"
+msgstr ""
+
+msgid "This value is already referenced and cannot be deleted."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"You have chosen to delete this value ({0}).\n"
+"\n"
+"Do you really want to delete it?"
 msgstr ""
 
 msgid "&Select Ledger"
@@ -3498,6 +4208,9 @@ msgid "&Previous Periods"
 msgstr ""
 
 msgid "&Recurring"
+msgstr ""
+
+msgid "E&xport"
 msgstr ""
 
 msgid "G&L Batch"
@@ -3621,9 +4334,6 @@ msgstr ""
 msgid "Import exchange rates from spreadsheet file"
 msgstr ""
 
-msgid "Data description files (*.yaml,*.yml)|*.yaml;*.yml"
-msgstr ""
-
 msgid ""
 "Failed to import the CSV currency file:\r\n"
 "\r\n"
@@ -3643,19 +4353,34 @@ msgstr ""
 msgid "For {0} {1} one will get {2} {3}."
 msgstr ""
 
+msgid "Copy partner key to clipboard"
+msgstr ""
+
+msgid "Set this partner as 'last worked with'"
+msgstr ""
+
+msgid "Verify and Update Extract"
+msgstr ""
+
+msgid "&Maintain"
+msgstr ""
+
+msgid "Maintenance of Extract"
+msgstr ""
+
 msgid "Filter:"
 msgstr ""
 
 msgid "New Extract"
 msgstr ""
 
+msgid "Maintain Extract"
+msgstr ""
+
 msgid "Extract Master List"
 msgstr ""
 
 msgid "Extract was already up to date"
-msgstr ""
-
-msgid "Verify and Update Extract"
 msgstr ""
 
 msgid "Verify and Update of Extract failed"
@@ -3693,70 +4418,44 @@ msgid ""
 "be removed from this extract"
 msgstr ""
 
-msgid "Name of City:"
+msgid ""
+"Before refreshing the list you need to save changes made in this screen! \r\n"
+"\r\n"
+"If you don't want to save changes then please exit and reopen this screen."
 msgstr ""
 
-msgid "Name for the new extract:"
+msgid "Refresh List"
 msgstr ""
 
-msgid "Description for the new extract:"
+msgid "Purging of extract was successful"
 msgstr ""
 
-msgid "Report parameters"
-msgstr ""
-
-msgid "Columns"
-msgstr ""
-
-msgid "Generate the report"
-msgstr ""
-
-msgid "&Generate Report"
-msgstr ""
-
-msgid "Generate the extract"
-msgstr ""
-
-msgid "Generate &Extract"
-msgstr ""
-
-msgid "&Save Settings"
-msgstr ""
-
-msgid "Save Settings &As..."
-msgstr ""
-
-msgid "&Open..."
-msgstr ""
-
-
-msgid "&Load Settings"
-msgstr ""
-
-msgid "&Maintain Settings..."
-msgstr ""
-
-msgid "&Wrap Columns"
-msgstr ""
-
-msgid "Partner by City"
-msgstr ""
-
-msgid "&Generate Report..."
-msgstr ""
-
-msgid "Generate"
-msgstr ""
-
-msgid "Generate a report and display the preview"
-msgstr ""
-
-msgid "&Cancel Report"
+msgid "Purge Extracts"
 msgstr ""
 
 msgid ""
-"Cancel the calculation of the report (after cancelling it might still take a "
-"while)"
+"Purging of extracts failed. Please see server log file for more details."
+msgstr ""
+
+msgid "Creation of extract failed"
+msgstr ""
+
+msgid "Generate Manual Extract"
+msgstr ""
+
+msgid "Edit Partner"
+msgstr ""
+
+msgid "Add Partner"
+msgstr ""
+
+msgid "Created By:"
+msgstr ""
+
+msgid "User ID of who created this record."
+msgstr ""
+
+msgid "There is nothing to be saved."
 msgstr ""
 
 #, csharp-format
@@ -3770,9 +4469,6 @@ msgid "Extract {0} was already up to date"
 msgstr ""
 
 msgid "Please select only one partner record that you want to edit"
-msgstr ""
-
-msgid "Edit Partner"
 msgstr ""
 
 msgid ""
@@ -3801,13 +4497,41 @@ msgstr ""
 msgid "Key Count:"
 msgstr ""
 
+msgid "Frozen:"
+msgstr ""
+
+msgid "Manually modified:"
+msgstr ""
+
+msgid "By:"
+msgstr ""
+
+msgid "Created:"
+msgstr ""
+
+msgid "Modified:"
+msgstr ""
+
 msgid "Short name for the extract to be used in filenames"
 msgstr ""
 
 msgid "Number of keys in this extract"
 msgstr ""
 
-msgid "Maintain Extract"
+msgid ""
+"The user can set the frozen field when the extract should not be updated."
+msgstr ""
+
+msgid "Who made the last manual modification ?"
+msgstr ""
+
+msgid "The date the record was created."
+msgstr ""
+
+msgid "The date the record was modified."
+msgstr ""
+
+msgid "User ID of who last modified this record."
 msgstr ""
 
 #, csharp-format
@@ -3818,15 +4542,6 @@ msgid ""
 msgstr ""
 
 msgid "Do you want to delete the selected extracts?"
-msgstr ""
-
-msgid ""
-"Before refreshing the list you need to save changes made in this screen! \r\n"
-"\r\n"
-"If you don't want to save changes then please exit and reopen this screen."
-msgstr ""
-
-msgid "Refresh List"
 msgstr ""
 
 msgid "Please select the one Extract that you want to use for this action: "
@@ -3859,6 +4574,9 @@ msgstr ""
 msgid "Indicates if acquisition code represents a recruiting effort."
 msgstr ""
 
+msgid "Acquisition Description"
+msgstr ""
+
 msgid "Addressee Type Code:"
 msgstr ""
 
@@ -3889,6 +4607,27 @@ msgstr ""
 msgid "Enter a Business Code Description"
 msgstr ""
 
+msgid "Attribute Detail Codes"
+msgstr ""
+
+msgid "Attribute Code:"
+msgstr ""
+
+msgid "New Contact Attribute"
+msgstr ""
+
+msgid "Setup Contact Attributes and Details"
+msgstr ""
+
+msgid "Enter a contact attribute code"
+msgstr ""
+
+msgid "allowed to use this attribute for new contacts?"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
 msgid "Number of Detail Codes"
 msgstr ""
 
@@ -3908,13 +4647,9 @@ msgstr ""
 msgid "Contact Attribute"
 msgstr ""
 
-#, csharp-format
 msgid ""
-"There are no detail codes associated with the '{0}' contact attribute.  No "
-"data has been saved."
-msgstr ""
-
-msgid "Error Saving Data"
+"You must create at least one 'Attribute Detail Code' for each 'Contact "
+"Attribute'."
 msgstr ""
 
 msgid "Method Of Contact:"
@@ -4078,6 +4813,9 @@ msgstr ""
 msgid "Cost of Mailing"
 msgstr ""
 
+msgid "Mailing Date"
+msgstr ""
+
 msgid "Marital Status Code:"
 msgstr ""
 
@@ -4097,6 +4835,9 @@ msgid "Indicates if this code can still be assigned?"
 msgstr ""
 
 msgid "Date from which this code was made unassignable."
+msgstr ""
+
+msgid "Unassignable Date"
 msgstr ""
 
 msgid "Occupation Code:"
@@ -4300,6 +5041,15 @@ msgstr ""
 msgid "NEWRELATION"
 msgstr ""
 
+msgid "Detail Code:"
+msgstr ""
+
+msgid "code for attribute detail"
+msgstr ""
+
+msgid "allowed to use this attribute detail for new contacts?"
+msgstr ""
+
 msgid ""
 "Are you sure that you want to delete the current Contact Detail Attribute?"
 msgstr ""
@@ -4470,6 +5220,14 @@ msgstr ""
 msgid "Partner Edit"
 msgstr ""
 
+msgid ""
+"All 'Units' MUST be assigned a 'Parent'.\r\n"
+"Do you wish to assign one now?"
+msgstr ""
+
+msgid "Assign Parent in Unit Hierarchy?"
+msgstr ""
+
 msgid "Save Partners into File"
 msgstr ""
 
@@ -4630,7 +5388,16 @@ msgstr ""
 msgid "Partner Find OpenPetra.org"
 msgstr ""
 
+msgid " Find"
+msgstr ""
+
+msgid "Recipient"
+msgstr ""
+
 msgid "&More >>"
+msgstr ""
+
+msgid "<< &Less"
 msgstr ""
 
 msgid "Move &Up"
@@ -4678,10 +5445,13 @@ msgstr ""
 msgid "Find Options"
 msgstr ""
 
-msgid "Select File"
+msgid "Do you want to reset the Find Criteria to the OpenPetra default?"
 msgstr ""
 
-msgid "Import Status:"
+msgid "Reset Find Criteria"
+msgstr ""
+
+msgid "Select File"
 msgstr ""
 
 msgid "Take Action:"
@@ -4703,6 +5473,9 @@ msgid "Add to Family"
 msgstr ""
 
 msgid "Automatic Import"
+msgstr ""
+
+msgid "Import Status:"
 msgstr ""
 
 msgid "Hint:"
@@ -4847,6 +5620,37 @@ msgstr ""
 msgid "Partner Module OpenPetra.org"
 msgstr ""
 
+msgid ""
+"New Partner can't be created because there are no Installed Sites available!"
+"\r\n"
+"Please set up at least one Installed Site in the System Manager Module!"
+msgstr ""
+
+msgid ""
+"A Family needs to be selected when a new Partner of Partner Class 'PERSON' "
+"should be created!"
+msgstr ""
+
+msgid "Family Needed!"
+msgstr ""
+
+msgid ""
+"The correct key of an existing family needs to be entered when a new Partner "
+"of Partner Class 'PERSON' should be created!"
+msgstr ""
+
+msgid "A correct family key needs to be entered!"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"A Partner with Partner Key {0} already exists.\r\n"
+"Please choose a different Partner Key!"
+msgstr ""
+
+msgid "Partner Key already in use"
+msgstr ""
+
 msgid "S&ites Available:"
 msgstr ""
 
@@ -4890,6 +5694,15 @@ msgid "Please enter a Partner Key or Accept the default Partner Key"
 msgstr ""
 
 msgid "Please select a Family that the Person should belong to"
+msgstr ""
+
+msgid "Explanation:"
+msgstr ""
+
+msgid "Passport Name:"
+msgstr ""
+
+msgid "Passport Name Entry"
 msgstr ""
 
 msgid ""
@@ -4960,7 +5773,19 @@ msgstr ""
 msgid "An unofficial job title for the person."
 msgstr ""
 
-msgid "Please fix the errors"
+msgid "Receiving Field"
+msgstr ""
+
+msgid "&Start of Commitment"
+msgstr ""
+
+msgid "&End of Commitment"
+msgstr ""
+
+msgid "Home Office"
+msgstr ""
+
+msgid "Recruiting Office"
 msgstr ""
 
 #, csharp-format
@@ -4970,43 +5795,10 @@ msgid ""
 "Do you really want to delete it?"
 msgstr ""
 
-msgid "Receiving Field"
-msgstr ""
-
-msgid "You need to select the office that the person will join"
-msgstr ""
-
-msgid "Start of Commitment"
-msgstr ""
-
-msgid "Please enter a valid start date"
-msgstr ""
-
-msgid "End of Commitment"
-msgstr ""
-
-msgid "Please enter a valid end date"
-msgstr ""
-
-msgid "Home office"
-msgstr ""
-
-msgid "You need to select the office that is sending the person"
-msgstr ""
-
-msgid "Recruiting Office"
-msgstr ""
-
-msgid "You need to select the office that has recruited the person"
-msgstr ""
-
 msgid "This Dialog allows cancelling of all active Subscriptions in one go."
 msgstr ""
 
-msgid ""
-"Select the 'Reason ended' and enter the 'Date ended'. On clicking OK these "
-"will be applied to all active Subscriptions. The Partner will be left with "
-"no active Subscriptions!"
+msgid "==Will be set in the dialog initialization=="
 msgstr ""
 
 msgid "Reason Ended:"
@@ -5033,15 +5825,6 @@ msgstr ""
 msgid "Change Family"
 msgstr ""
 
-msgid "Manual Edit"
-msgstr ""
-
-msgid "Just To Extend Width:"
-msgstr ""
-
-msgid "Change Family ID"
-msgstr ""
-
 msgid "Edit Selected Person"
 msgstr ""
 
@@ -5055,6 +5838,12 @@ msgid "Create new Person for this Family"
 msgstr ""
 
 msgid "Move or Create Family Members"
+msgstr ""
+
+msgid "Manual Edit"
+msgstr ""
+
+msgid "Change Family ID"
 msgstr ""
 
 msgid "Family Members"
@@ -5134,13 +5923,18 @@ msgid ""
 "Are you sure you want to change this Family ID?"
 msgstr ""
 
-msgid "[&v] Overview"
+msgid "[&a] Overview"
 msgstr ""
 
-msgid "[&c] Personal Data"
+msgid "[&b] Emergency Data"
 msgstr ""
 
-msgid "[&d] Emergency Data"
+#, csharp-format
+msgid "[&c] Commitment Periods ({0})"
+msgstr ""
+
+#, csharp-format
+msgid "[&d] Job Assignments ({0})"
 msgstr ""
 
 #, csharp-format
@@ -5154,35 +5948,34 @@ msgstr ""
 msgid "[&g] Special Needs"
 msgstr ""
 
-msgid "[&i] Local Personnel Data"
+#, csharp-format
+msgid "[&h] Languages ({0})"
 msgstr ""
 
 #, csharp-format
-msgid "[&j] Professional Areas ({0})"
+msgid "[&i] Skills ({0})"
 msgstr ""
 
 #, csharp-format
-msgid "[&k] Languages ({0})"
+msgid "[&j] Previous Experience ({0})"
 msgstr ""
 
 #, csharp-format
-msgid "[&l] Abilities ({0})"
+msgid "[&k] Progress Reports ({0})"
+msgstr ""
+
+msgid "[&l] Local Personnel Data"
+msgstr ""
+
+msgid "[&m] Miscellaneous"
 msgstr ""
 
 #, csharp-format
-msgid "[&m] Previous Experience ({0})"
+msgid "[&n] Professional Areas ({0})"
 msgstr ""
 
 #, csharp-format
-msgid "[&o] Commitment Periods ({0})"
-msgstr ""
-
-#, csharp-format
-msgid "[&p] Job Assignments ({0})"
-msgstr ""
-
-#, csharp-format
-msgid "[&q] Progress Reports ({0})"
+msgid "[&o] Abilities ({0})"
 msgstr ""
 
 msgid "Basic Data Shepherd..."
@@ -5192,6 +5985,33 @@ msgid "Intranet Registration Shepherd..."
 msgstr ""
 
 msgid "Emergency Contacts..."
+msgstr ""
+
+msgid "Ability:"
+msgstr ""
+
+msgid "Years Of Experience:"
+msgstr ""
+
+msgid "as of Date:"
+msgstr ""
+
+msgid "Level:"
+msgstr ""
+
+msgid "Comment:"
+msgstr ""
+
+msgid "Name for this area of ability, e.g. guitarist."
+msgstr ""
+
+msgid "Enter the number of years experience."
+msgstr ""
+
+msgid "The date the years of experience were up to date."
+msgstr ""
+
+msgid "Numeric representation of level of ability."
 msgstr ""
 
 #, csharp-format
@@ -5208,6 +6028,39 @@ msgstr ""
 msgid "There is no explanation available for Ability Level {0}."
 msgstr ""
 
+msgid "Commitment Start Date:"
+msgstr ""
+
+msgid "Commitment End Date:"
+msgstr ""
+
+msgid "Commitment Status:"
+msgstr ""
+
+msgid "Sending Field:"
+msgstr ""
+
+msgid "Recruiting Field:"
+msgstr ""
+
+msgid "Commitment Start Date"
+msgstr ""
+
+msgid "Commitment End Date"
+msgstr ""
+
+msgid "Commitment Status"
+msgstr ""
+
+msgid "Sending Field"
+msgstr ""
+
+msgid "Recruiting Field"
+msgstr ""
+
+msgid "Comments"
+msgstr ""
+
 #, csharp-format
 msgid ""
 "You have choosen to delete this record ({0} at {1} started {2}).\n"
@@ -5215,16 +6068,198 @@ msgid ""
 "Do you really want to delete it?"
 msgstr ""
 
-msgid "Unit key"
+msgid "Unknown"
 msgstr ""
 
-msgid "You need to select the unit that the person will work for"
+msgid "Height (cm):"
 msgstr ""
 
-msgid "Position"
+msgid "Weight (kg):"
 msgstr ""
 
-msgid "You need to select the position"
+msgid "Eye Colour:"
+msgstr ""
+
+msgid "Hair Colour:"
+msgstr ""
+
+msgid "Facial Hair:"
+msgstr ""
+
+msgid "Scars, Marks, Tattoos, Piercings:"
+msgstr ""
+
+msgid "Emergency Data (will not be exported)"
+msgstr ""
+
+msgid "Blood Type:"
+msgstr ""
+
+msgid "Blood Type (will be exported)"
+msgstr ""
+
+msgid "Question1:"
+msgstr ""
+
+msgid "Answer1:"
+msgstr ""
+
+msgid "Question2:"
+msgstr ""
+
+msgid "Answer2:"
+msgstr ""
+
+msgid "Question3:"
+msgstr ""
+
+msgid "Answer3:"
+msgstr ""
+
+msgid "Proof of life questions (will not be exported)"
+msgstr ""
+
+msgid "Enter the person's height"
+msgstr ""
+
+msgid "Enter the person's weight"
+msgstr ""
+
+msgid "Enter the person's eye colour."
+msgstr ""
+
+msgid "Enter the person's hair colour."
+msgstr ""
+
+msgid "Enter information about the person's facial hair"
+msgstr ""
+
+msgid ""
+"Enter further information about the physical description, e.g. scars, marks, "
+"tatoos."
+msgstr ""
+
+msgid "Enter the person's blood type"
+msgstr ""
+
+msgid "Enter the person's proof of life question"
+msgstr ""
+
+msgid "Enter the answer to the person's proof of life question"
+msgstr ""
+
+msgid "Assignment Type Code:"
+msgstr ""
+
+msgid "From Date:"
+msgstr ""
+
+msgid "To Date:"
+msgstr ""
+
+msgid "Unit Key:"
+msgstr ""
+
+msgid "Position/Role:"
+msgstr ""
+
+msgid "Assistant to selected Position:"
+msgstr ""
+
+msgid "Enter the assignment code."
+msgstr ""
+
+msgid "Enter the date this job was assigned."
+msgstr ""
+
+msgid "Expected end date for this job (blank if indefinite)"
+msgstr ""
+
+msgid "Enter the partner key for the unit."
+msgstr ""
+
+msgid "Enter the position to which this person is assigned."
+msgstr ""
+
+msgid "Is the assignment in assistance to the given position?"
+msgstr ""
+
+msgid "Assignment Type Code"
+msgstr ""
+
+msgid "From Date"
+msgstr ""
+
+msgid "To Date"
+msgstr ""
+
+msgid "Unit Key"
+msgstr ""
+
+msgid "Position/Role"
+msgstr ""
+
+msgid "Passport Number:"
+msgstr ""
+
+msgid "Type:"
+msgstr ""
+
+msgid "Place of Birth:"
+msgstr ""
+
+msgid "Date of Birth:"
+msgstr ""
+
+msgid "Passport Nationality:"
+msgstr ""
+
+msgid "Place of Issue:"
+msgstr ""
+
+msgid "Date of Issue:"
+msgstr ""
+
+msgid "Date of Expiration:"
+msgstr ""
+
+msgid "Enter the passport number."
+msgstr ""
+
+msgid "Indicates the type of passport held."
+msgstr ""
+
+msgid "Enter the full passport name."
+msgstr ""
+
+msgid "Enter the place of birth."
+msgstr ""
+
+msgid "Enter the date of birth."
+msgstr ""
+
+msgid "Enter the nationality of the passport holder."
+msgstr ""
+
+msgid "Enter the place the passport was issued from."
+msgstr ""
+
+msgid "Enter the issue date of the passport."
+msgstr ""
+
+msgid "Enter the passport expiration date."
+msgstr ""
+
+msgid "Passport Number"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Date of Issue"
+msgstr ""
+
+msgid "Date of Expiration"
 msgstr ""
 
 msgid ""
@@ -5235,6 +6270,57 @@ msgstr ""
 msgid "Passport Name Explained"
 msgstr ""
 
+msgid "Believer since"
+msgstr ""
+
+msgid "Year the Person became a Believer"
+msgstr ""
+
+msgid "Comment about the Year or how the Person became a Believer"
+msgstr ""
+
+msgid "Document Type:"
+msgstr ""
+
+msgid "Document ID:"
+msgstr ""
+
+msgid "Associated Document ID:"
+msgstr ""
+
+msgid "Expiration Date:"
+msgstr ""
+
+msgid "Contact:"
+msgstr ""
+
+msgid "This code indicates the type of document for a person."
+msgstr ""
+
+msgid "Enter the document ID"
+msgstr ""
+
+msgid "Enter the ID of the associated document"
+msgstr ""
+
+msgid "Enter the place the document was issued from."
+msgstr ""
+
+msgid "Enter the issue date of the document."
+msgstr ""
+
+msgid "Enter the date the document takes effect."
+msgstr ""
+
+msgid "Enter the document expiration date."
+msgstr ""
+
+msgid "Enter comments and details for the document"
+msgstr ""
+
+msgid "Document Type"
+msgstr ""
+
 #, csharp-format
 msgid ""
 "You have choosen to delete this record ({0} {1}).\n"
@@ -5242,34 +6328,22 @@ msgid ""
 "Do you really want to delete it?"
 msgstr ""
 
-msgid "Language:"
-msgstr ""
-
-msgid "Years Of Experience:"
-msgstr ""
-
-msgid "as of Date:"
-msgstr ""
-
-msgid "Level:"
-msgstr ""
-
 msgid "&Explanation..."
 msgstr ""
 
-msgid "Comment:"
+msgid "Language:"
 msgstr ""
 
 msgid "Name of the language(s) spoken, e.g. English."
 msgstr ""
 
-msgid "Enter the number of years experience."
-msgstr ""
-
-msgid "The date the years of experience were up to date."
-msgstr ""
-
 msgid "Numeric representation of level of language."
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Level"
 msgstr ""
 
 msgid "Language Level Explanation"
@@ -5279,11 +6353,169 @@ msgstr ""
 msgid "There is no explanation available for Language Level {0}."
 msgstr ""
 
+msgid "Skill Category:"
+msgstr ""
+
+msgid "Skill Level:"
+msgstr ""
+
+msgid "Local Language:"
+msgstr ""
+
+msgid "Description in local language:"
+msgstr ""
+
+msgid "Is this a professional skill?:"
+msgstr ""
+
+msgid "Is person's current occupation?:"
+msgstr ""
+
+msgid "Degree linked with this skill:"
+msgstr ""
+
+msgid "Year Of Degree:"
+msgstr ""
+
+msgid "Category that the skill is in"
+msgstr ""
+
+msgid "Numeric representation of level of skill"
+msgstr ""
+
+msgid "Describe the skill in english language"
+msgstr ""
+
+msgid "Which language did you use for the description of the skill"
+msgstr ""
+
+msgid "Describe the skill in your local language"
+msgstr ""
+
+msgid "Enter the number of years experience"
+msgstr ""
+
+msgid "Indicates if this is a professional skill"
+msgstr ""
+
+msgid "Indicates if this is the current occupation"
+msgstr ""
+
+msgid "Enter a degree linked with the skill if applicable"
+msgstr ""
+
+msgid "Enter the year the degree was obtained"
+msgstr ""
+
+msgid "Enter any additional comment"
+msgstr ""
+
+msgid "Skill Category"
+msgstr ""
+
+msgid "Skill Level"
+msgstr ""
+
 #, csharp-format
 msgid ""
 "You have choosen to delete this record ({0} - {1}).\n"
 "\n"
 "Do you really want to delete it?"
+msgstr ""
+
+msgid "With our Organisation"
+msgstr ""
+
+msgid "With similar Organisation"
+msgstr ""
+
+msgid "Organisation:"
+msgstr ""
+
+msgid "Location:"
+msgstr ""
+
+msgid "Role:"
+msgstr ""
+
+msgid "Indicates if past experience was with this organisation."
+msgstr ""
+
+msgid ""
+"Indicates whether the individual has previous worked with similar "
+"organisations."
+msgstr ""
+
+msgid "Worked with which organisation (if other than us)."
+msgstr ""
+
+msgid "Location of previous  work."
+msgstr ""
+
+msgid "Describes role played in previous work."
+msgstr ""
+
+msgid "Start date of previous experience."
+msgstr ""
+
+msgid "End date of previous experience."
+msgstr ""
+
+msgid "Comments on previous experience."
+msgstr ""
+
+msgid "Start Date"
+msgstr ""
+
+msgid "End Date"
+msgstr ""
+
+msgid "Semi-Annual"
+msgstr ""
+
+msgid "Reporter:"
+msgstr ""
+
+msgid "Report Date:"
+msgstr ""
+
+msgid "Next Report Date:"
+msgstr ""
+
+msgid "Report Type:"
+msgstr ""
+
+msgid "Next Action:"
+msgstr ""
+
+msgid "Indicates the name of the person writing the progress report."
+msgstr ""
+
+msgid "Enter the evaluation date."
+msgstr ""
+
+msgid "Date of next evaluation"
+msgstr ""
+
+msgid "Select the applicable report type."
+msgstr ""
+
+msgid "Comments on the progress report."
+msgstr ""
+
+msgid "What actions should be taken."
+msgstr ""
+
+msgid "Reporter"
+msgstr ""
+
+msgid "Report Date"
+msgstr ""
+
+msgid "Next Report Date"
+msgstr ""
+
+msgid "Report Type"
 msgstr ""
 
 #, csharp-format
@@ -5414,6 +6646,13 @@ msgid ""
 "identifying a bank branch with a number/code."
 msgstr ""
 
+msgid ""
+"BIC (Bank Identifier Code)/SWIFT code. The Bank Identifier Code is a unique "
+"address which, in telecommunication messages, identifies precisely the "
+"financial institutions involved in financial transactions. BICs either have "
+"8 or 11 characters."
+msgstr ""
+
 msgid "Select a method-of-acquisition code"
 msgstr ""
 
@@ -5422,13 +6661,19 @@ msgid ""
 "correspondence"
 msgstr ""
 
-msgid "Approximate Size:"
+msgid "Bank/Branch Code"
+msgstr ""
+
+msgid "BIC/SWIFT Code"
 msgstr ""
 
 msgid "Map On File"
 msgstr ""
 
 msgid "Prayer Group"
+msgstr ""
+
+msgid "Approximate Size:"
 msgstr ""
 
 msgid "Accomodation:"
@@ -5575,6 +6820,32 @@ msgstr ""
 msgid "Local Data"
 msgstr ""
 
+msgid "Addresses"
+msgstr ""
+
+msgid "Subscriptions"
+msgstr ""
+
+msgid "Special Types"
+msgstr ""
+
+msgid "Relationships"
+msgstr ""
+
+msgid "Notes"
+msgstr ""
+
+msgid "Subscription"
+msgstr ""
+
+#, csharp-format
+msgid "{0} {2}, of which {1} is "
+msgstr ""
+
+#, csharp-format
+msgid "{0} {2}, of which {1} are "
+msgstr ""
+
 msgid "Individual Data"
 msgstr ""
 
@@ -5591,16 +6862,16 @@ msgstr ""
 msgid "Title/Na&me:"
 msgstr ""
 
-msgid "&Addressee Type:"
+msgid "Na&me:"
 msgstr ""
 
 msgid "No Solicitations"
 msgstr ""
 
-msgid "&Gender:"
+msgid "&Addressee Type:"
 msgstr ""
 
-msgid "Na&me:"
+msgid "&Gender:"
 msgstr ""
 
 msgid "Last Gift:"
@@ -5633,9 +6904,6 @@ msgstr ""
 msgid "Enter a Last Name/Surname/Family Name"
 msgstr ""
 
-msgid "Set this if the partner does not want extra mailings"
-msgstr ""
-
 msgid "e.g. Herr, Mr(s)., Frau, Miss., Senor(ita), M., Mme., Dr., et"
 msgstr ""
 
@@ -5660,8 +6928,31 @@ msgstr ""
 msgid "Select a partner status"
 msgstr ""
 
+msgid "Set this if the partner does not want extra mailings"
+msgstr ""
+
+msgid "Partner &Status"
+msgstr ""
+
 #, csharp-format
 msgid "Unrecognised Partner Class '{0}'!"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Partner Status change to '{0}': \r\n"
+"Should OpenPetra apply this change to all Family Members of this Family?"
+msgstr ""
+
+msgid "The Family has the following Family Members:"
+msgstr ""
+
+msgid ""
+"(Choose 'Cancel' to cancel the change of the Partner Status\r\n"
+"for this Partner)."
+msgstr ""
+
+msgid "Promote Partner Status Change to All Family Members?"
 msgstr ""
 
 msgid "FDelegateMaintainWorkerField"
@@ -5686,6 +6977,44 @@ msgid "Fin&d Result"
 msgstr ""
 
 msgid "Searching..."
+msgstr ""
+
+msgid ""
+"Enter [last name, first name, title] or church / organisation / bank / "
+"unit / venue name."
+msgstr ""
+
+msgid "Enter a Personal name when searching for specific people"
+msgstr ""
+
+msgid "Enter a Partner Key as 4+6=10 digit Unit/Partner number"
+msgstr ""
+
+msgid "Restricts search to Partners with Status ACTIVE"
+msgstr ""
+
+msgid "Search for Partners with any Status"
+msgstr ""
+
+msgid ""
+"Restricts search to Partners of specified Partner Class (* = all Classes)"
+msgstr ""
+
+msgid "Filters the search to Worker Families"
+msgstr ""
+
+msgid ""
+"Enter a Previous Name (eg. Maiden Name, old name of an Organisation or "
+"Church)"
+msgstr ""
+
+msgid ""
+"Trailing zero(es) in the Partner Key are used as wilcard characters.\n"
+"\rExample: Entering Partner Key '0029000000' will return all Partners whose "
+"Partner Key was generated\n"
+"\rfor Unit 0029000000.\n"
+"\rThis is because the 'Exact Partner Key Match' Option is turned off in the "
+"Partner Find Options."
 msgstr ""
 
 msgid "Location Key"
@@ -5749,6 +7078,20 @@ msgid "Eve&nt/Confer./Camp.:"
 msgstr ""
 
 msgid "Lang&uage:"
+msgstr ""
+
+msgid ""
+"This Partner (or this Partner+Location combination) doesn't exist anymore in "
+"OpenPetra."
+msgstr ""
+
+msgid ""
+"Please re-run the Partner Find query by pressing 'Search' to get up-to-date "
+"Find Results."
+msgstr ""
+
+#, csharp-format
+msgid "Partner Information Cannot be Shown for Partner {0}"
 msgstr ""
 
 msgid "Acquired:"
@@ -5817,9 +7160,6 @@ msgstr ""
 msgid "Family:"
 msgstr ""
 
-msgid "Date of Birth:"
-msgstr ""
-
 msgid "Family Members:"
 msgstr ""
 
@@ -5827,9 +7167,6 @@ msgid "No Partner to display."
 msgstr ""
 
 msgid "Please wait."
-msgstr ""
-
-msgid "Notes"
 msgstr ""
 
 msgid "&Edit Other Partner"
@@ -5850,6 +7187,12 @@ msgstr ""
 msgid "Enter any additional specific relationship comments"
 msgstr ""
 
+msgid "Relation"
+msgstr ""
+
+msgid "Another Partner"
+msgstr ""
+
 #, csharp-format
 msgid ""
 "You have choosen to delete this value ({0}).\n"
@@ -5857,19 +7200,16 @@ msgid ""
 "Do you really want to delete it?"
 msgstr ""
 
-msgid "Pub&lication Code:"
+msgid "PERMANENT"
 msgstr ""
 
-msgid "PERMANENT"
+msgid "Pub&lication Code:"
 msgstr ""
 
 msgid "S&ubscription Status:"
 msgstr ""
 
 msgid "Free Subscri&ption:"
-msgstr ""
-
-msgid "Subscription"
 msgstr ""
 
 msgid "Complimentar&y:"
@@ -5899,6 +7239,9 @@ msgstr ""
 msgid "Dates"
 msgstr ""
 
+msgid "Edit Issues"
+msgstr ""
+
 msgid "Issues Received:"
 msgstr ""
 
@@ -5906,9 +7249,6 @@ msgid "Fi&rst Issue Sent:"
 msgstr ""
 
 msgid "L&ast Issue Sent:"
-msgstr ""
-
-msgid "Edit Issues"
 msgstr ""
 
 msgid "Issues"
@@ -5959,6 +7299,9 @@ msgstr ""
 msgid "Date the most recent issue was sent to this Partner"
 msgstr ""
 
+msgid "S&ubscription Status"
+msgstr ""
+
 msgid ""
 "Issues data is usually automatically maintained by Petra. Are you sure you "
 "want to manually change it?"
@@ -5993,7 +7336,280 @@ msgid ""
 "No valid e-mail address for this Partner in the selected address record."
 msgstr ""
 
-msgid "Details: "
+msgid ""
+"It is not possible to add this Special Type to this person because\r\n"
+"this person already has got this Special Type assigned!"
+msgstr ""
+
+msgid ""
+"It is not possible to remove this Special Type from this person\r\n"
+"because this person doesn't have this Special Type assigned!"
+msgstr ""
+
+msgid "Action Not Possible"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"This partner is linked to a Cost Centre ({0}) in the\r\n"
+"Finance Module.  Remove the link before deleting\r\n"
+"this Special Type."
+msgstr ""
+
+msgid "Cannot remove Special Type"
+msgstr ""
+
+msgid ""
+"Please contact your OpenPetra Support team. Forward this message: "
+"TPartnerTypeFamilyMembersPropagationSelectionLogic."
+"RemoveRowFromFamilyMembersPromotionTable"
+msgstr ""
+
+msgid "You have to save the Partner first, before "
+msgstr ""
+
+msgid "First Save the Partner"
+msgstr ""
+
+msgid "finding a new Address"
+msgstr ""
+
+msgid "exporting the Partner"
+msgstr ""
+
+msgid "printing the Partner"
+msgstr ""
+
+msgid "changing the Family"
+msgstr ""
+
+msgid "maintaining Contacts"
+msgstr ""
+
+msgid "deleting the Partner"
+msgstr ""
+
+msgid "changing the Field"
+msgstr ""
+
+msgid "maintaining Family Members"
+msgstr ""
+
+msgid "maintaining Finance Details"
+msgstr ""
+
+msgid "showing the Donor Gift History"
+msgstr ""
+
+msgid "showing the Recipient Gift History"
+msgstr ""
+
+msgid "maintaining Interests"
+msgstr ""
+
+msgid "maintaining Individual Data"
+msgstr ""
+
+msgid "maintaining Relationships"
+msgstr ""
+
+msgid "maintaining Reminders"
+msgstr ""
+
+msgid "copying an Address"
+msgstr ""
+
+msgid ""
+"For this Merged Partner the Merged-Into Partner is not known. It is "
+"generally not possible to work with a Partner that was Merged.\r\n"
+"Choose 'Cancel' to cancel the operation that you were in."
+msgstr ""
+
+msgid "Enter an email address"
+msgstr ""
+
+msgid ""
+"Enter a first line of an address (this does NOT contain the street, but "
+"usually contains a business' name)"
+msgstr ""
+
+msgid "Enter a second line of an address (this usually contains the street)"
+msgstr ""
+
+msgid "Enter a third line of an address (eg. district of the city)"
+msgstr ""
+
+msgid "Enter a city or town"
+msgstr ""
+
+msgid "Enter an international postal/zip code"
+msgstr ""
+
+msgid "Enter a county/province/state/district/canton"
+msgstr ""
+
+msgid "Select a country from the list or type the 2 digit code"
+msgstr ""
+
+msgid "Enter a Location Key"
+msgstr ""
+
+msgid " (use button to the left to find a Location Key)"
+msgstr ""
+
+msgid "Finds a Location Key"
+msgstr ""
+
+msgid "Restricts returned Addresses to Mailing Addresses if ticked"
+msgstr ""
+
+msgid "Searches for a phone number or an alternate phone number"
+msgstr ""
+
+msgid "Stopping search..."
+msgstr ""
+
+msgid "Search stopped!"
+msgstr ""
+
+msgid "No Search Criteria Specified"
+msgstr ""
+
+msgid "Searches the OpenPetra database with above criteria"
+msgstr ""
+
+msgid "Clears the search criteria fields and the search result"
+msgstr ""
+
+msgid "Accepts the selected "
+msgstr ""
+
+msgid "Closes the window without selecting a "
+msgstr ""
+
+msgid ""
+"These are the results of your search. Highlight (or right-click) a line to "
+"work with the "
+msgstr ""
+
+msgid ""
+"If this is ticked, all data is shown; untick to speed up searches (esp. on "
+"remote connections)."
+msgstr ""
+
+msgid "Transferring data...    (for Page "
+msgstr ""
+
+msgid "found"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid ""
+" records found.\r\n"
+"\r\n"
+"Please check your search criteria or broaden your conditions!"
+msgstr ""
+
+msgid "&Stop"
+msgstr ""
+
+msgid "&Stop Search"
+msgstr ""
+
+msgid "Partner+Location combination"
+msgstr ""
+
+msgid "Partner+Location combinations"
+msgstr ""
+
+msgid "Family &Members..."
+msgstr ""
+
+msgid "Fa&mily..."
+msgstr ""
+
+msgid "&Personnel/Unit Maintenance..."
+msgstr ""
+
+#, csharp-format
+msgid ""
+"The Family ID of\r\n"
+"    {0} was changed from {1} to {2}\r\n"
+"    {3} was changed from {4} to {5}"
+msgstr ""
+
+#, csharp-format
+msgid "Are you sure you want to remove the Interest {0} from the database?"
+msgstr ""
+
+msgid "Delete Interest?"
+msgstr ""
+
+msgid "Are you sure you want to remove this Subscription from the database?"
+msgstr ""
+
+msgid "Delete Subscription?"
+msgstr ""
+
+msgid ""
+" because you have added\r\n"
+"a new Subscription!"
+msgstr ""
+
+msgid "CANCELLED"
+msgstr ""
+
+msgid "EXPIRED"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"This Partner is linked to a Cost Centre ({0}) in the\r\n"
+"Finance Module.  Remove the link before deleting\r\n"
+"this Special Type."
+msgstr ""
+
+msgid "Cannot remove Partner Type"
+msgstr ""
+
+msgid ""
+"You are not allowed to remove this Partner Type from the Partner\r\n"
+"because of the security warning you have just received."
+msgstr ""
+
+msgid "Partner Type Removal Denied"
+msgstr ""
+
+msgid ""
+"This partner is a ledger.\r\n"
+"Fund names can be changed only with the approval from the IFC.\r\n"
+"\r\n"
+"Do you have the approval to change the fund name?"
+msgstr ""
+
+msgid "Fund Name Change Authorisation"
+msgstr ""
+
+msgid "Fund Name change has been undone."
+msgstr ""
+
+msgid "Missing Approval"
+msgstr ""
+
+msgid ""
+"You need to specify the Partner who has made the gift for this Subscription!"
+"\r\n"
+"Either choose the 'Gift Given By' button to select the Partner or enter\r\n"
+"the Partners' Partner Key in the Field next to it.\r\n"
+"\r\n"
+"Note: If the price for the Subscription is no longer paid by another "
+"Partner, you need to select\r\n"
+"a different Subscription Status than 'GIFT'."
+msgstr ""
+
+msgid "Gift Given By Mandatory"
 msgstr ""
 
 msgid "Ability Area:"
@@ -6003,9 +7619,6 @@ msgid "New Ability Area"
 msgstr ""
 
 msgid "Maintain Ability Areas"
-msgstr ""
-
-msgid "Name for this area of ability, e.g. guitarist."
 msgstr ""
 
 msgid "Enter a description for this area of ability."
@@ -6024,9 +7637,6 @@ msgid "New Ability Level"
 msgstr ""
 
 msgid "Maintain Ability Levels"
-msgstr ""
-
-msgid "Numeric representation of level of ability."
 msgstr ""
 
 msgid "Enter a description for this level of ability."
@@ -6053,15 +7663,6 @@ msgstr ""
 msgid "This describes the applicant status code."
 msgstr ""
 
-msgid "Application Form Name:"
-msgstr ""
-
-msgid "For Sending:"
-msgstr ""
-
-msgid "For Receiving:"
-msgstr ""
-
 msgid "Short Form Applications"
 msgstr ""
 
@@ -6069,6 +7670,15 @@ msgid "Long Form Applications"
 msgstr ""
 
 msgid "Both"
+msgstr ""
+
+msgid "Application Form Name:"
+msgstr ""
+
+msgid "For Sending:"
+msgstr ""
+
+msgid "For Receiving:"
 msgstr ""
 
 msgid "New Application Form"
@@ -6089,7 +7699,10 @@ msgstr ""
 msgid "Which applications use this form?"
 msgstr ""
 
-msgid "Application Type:"
+msgid "For Sending"
+msgstr ""
+
+msgid "Sending/Receiving"
 msgstr ""
 
 msgid "SHORT FORM"
@@ -6099,6 +7712,9 @@ msgid "LONG FORM"
 msgstr ""
 
 msgid "Form Type"
+msgstr ""
+
+msgid "Application Type:"
 msgstr ""
 
 msgid "New Application Type"
@@ -6179,9 +7795,6 @@ msgstr ""
 msgid "Maintain Document Types"
 msgstr ""
 
-msgid "This code indicates the type of document for a person."
-msgstr ""
-
 msgid "This describes the document type."
 msgstr ""
 
@@ -6200,12 +7813,6 @@ msgstr ""
 msgid "This describes the driver status."
 msgstr ""
 
-msgid "Role:"
-msgstr ""
-
-msgid "Can Be Assigned As:"
-msgstr ""
-
 msgid "Pre-Conference Role"
 msgstr ""
 
@@ -6213,6 +7820,9 @@ msgid "Conference Role"
 msgstr ""
 
 msgid "Outreach Role"
+msgstr ""
+
+msgid "Can be assigned as:"
 msgstr ""
 
 msgid "Discounted Fees:"
@@ -6398,6 +8008,45 @@ msgstr ""
 msgid "Enter a description for this level of qualification."
 msgstr ""
 
+msgid "Skill Category Code:"
+msgstr ""
+
+msgid "New Skill Category"
+msgstr ""
+
+msgid "Maintain Skill Catogories"
+msgstr ""
+
+msgid "Enter a code for the category"
+msgstr ""
+
+msgid "Enter a description for this skill category."
+msgstr ""
+
+msgid "Check box if category is no longer assignable."
+msgstr ""
+
+msgid "Date from which the category is unassignable."
+msgstr ""
+
+msgid "New Skill Level"
+msgstr ""
+
+msgid "Maintain Skill Levels"
+msgstr ""
+
+msgid "Numeric representation of level of skill."
+msgstr ""
+
+msgid "Enter a description for this level of skill."
+msgstr ""
+
+msgid "Check box if skill level is no longer assignable."
+msgstr ""
+
+msgid "Date from which the skill level is unassignable."
+msgstr ""
+
 msgid "Valuable Item:"
 msgstr ""
 
@@ -6509,9 +8158,6 @@ msgstr ""
 msgid "Unit Hierarchy"
 msgstr ""
 
-msgid "Partner"
-msgstr ""
-
 msgid "Personnel Module OpenPetra.org"
 msgstr ""
 
@@ -6521,7 +8167,58 @@ msgstr ""
 msgid "Sorting"
 msgstr ""
 
+msgid "Columns"
+msgstr ""
+
+msgid "Generate the report"
+msgstr ""
+
+msgid "&Generate Report"
+msgstr ""
+
+msgid "Generate the extract"
+msgstr ""
+
+msgid "Generate &Extract"
+msgstr ""
+
+msgid "&Save Settings"
+msgstr ""
+
+msgid "Save Settings &As..."
+msgstr ""
+
+msgid "&Open..."
+msgstr ""
+
+
+msgid "&Load Settings"
+msgstr ""
+
+msgid "&Maintain Settings..."
+msgstr ""
+
+msgid "&Wrap Columns"
+msgstr ""
+
 msgid "Absentee Report"
+msgstr ""
+
+msgid "&Generate Report..."
+msgstr ""
+
+msgid "Generate"
+msgstr ""
+
+msgid "Generate a report and display the preview"
+msgstr ""
+
+msgid "&Cancel Report"
+msgstr ""
+
+msgid ""
+"Cancel the calculation of the report (after cancelling it might still take a "
+"while)"
 msgstr ""
 
 msgid "Brief Report"
@@ -6587,12 +8284,6 @@ msgstr ""
 msgid "Departure"
 msgstr ""
 
-msgid "Report Date:"
-msgstr ""
-
-msgid "Report Date"
-msgstr ""
-
 msgid "Arrivals Listing Report"
 msgstr ""
 
@@ -6627,9 +8318,6 @@ msgid "Children Report"
 msgstr ""
 
 msgid "Hide persons with no comments:"
-msgstr ""
-
-msgid "Comments"
 msgstr ""
 
 msgid "Comments Report"
@@ -6705,9 +8393,6 @@ msgid "Additional Settings"
 msgstr ""
 
 msgid "Outreach Code"
-msgstr ""
-
-msgid "Unit Key"
 msgstr ""
 
 msgid "Unit Name"
@@ -6876,13 +8561,13 @@ msgstr ""
 msgid "Sort By Reference"
 msgstr ""
 
+msgid "Sort By Analysis Type"
+msgstr ""
+
 msgid "from:"
 msgstr ""
 
 msgid "to:"
-msgstr ""
-
-msgid "Sort By Analysis Type"
 msgstr ""
 
 msgid "Account / CostCentre Settings"
@@ -6939,6 +8624,56 @@ msgstr ""
 msgid "AP Aged Supplier List"
 msgstr ""
 
+msgid "Report Specific"
+msgstr ""
+
+msgid "Current Accounts Payable"
+msgstr ""
+
+msgid "From date:"
+msgstr ""
+
+msgid "To date:"
+msgstr ""
+
+msgid "From Pymnt:"
+msgstr ""
+
+msgid "To Pymnt:"
+msgstr ""
+
+msgid "AP Payment Report"
+msgstr ""
+
+msgid "Load"
+msgstr ""
+
+msgid "Copy"
+msgstr ""
+
+msgid "PDF"
+msgstr ""
+
+msgid "Payment Number:"
+msgstr ""
+
+msgid "Remittance Advice"
+msgstr ""
+
+#, csharp-format
+msgid "Error - can't load Payment number {0}."
+msgstr ""
+
+#, csharp-format
+msgid "Error - unable to load HTML template from {0}"
+msgstr ""
+
+msgid "Generated PDF Document: "
+msgstr ""
+
+msgid "Text copied to Clipboard."
+msgstr ""
+
 msgid "Partner Key of Conference:"
 msgstr ""
 
@@ -6946,6 +8681,9 @@ msgid "Motivation Codes:"
 msgstr ""
 
 msgid "Start of Payments:"
+msgstr ""
+
+msgid "Report parameters"
 msgstr ""
 
 msgid "Payments for Conference"
@@ -6966,10 +8704,40 @@ msgstr ""
 msgid "Balance Sheet Standard"
 msgstr ""
 
-msgid "Report Type:"
+msgid "Filter List"
 msgstr ""
 
-msgid "Report Type"
+msgid "Receipt Letter Frequency:"
+msgstr ""
+
+msgid "New Donors only:"
+msgstr ""
+
+msgid "Receipt each Gift only:"
+msgstr ""
+
+msgid "Selection Criteria"
+msgstr ""
+
+msgid "Select all ledgers (ignore selection in list above)"
+msgstr ""
+
+msgid "Donor by Field"
+msgstr ""
+
+msgid "Ledger Name"
+msgstr ""
+
+msgid "Select at least one Field"
+msgstr ""
+
+msgid "Please select at least one Field, to avoid listing the whole database!"
+msgstr ""
+
+msgid "Group Code"
+msgstr ""
+
+msgid "Detail Code"
 msgstr ""
 
 msgid "All Donors"
@@ -7086,6 +8854,9 @@ msgstr ""
 msgid "Please use the same year."
 msgstr ""
 
+msgid "Recipient by Field"
+msgstr ""
+
 msgid "One Recipient"
 msgstr ""
 
@@ -7152,10 +8923,10 @@ msgstr ""
 msgid "Select Account Codes"
 msgstr ""
 
-msgid "Summary Cost Centres:"
+msgid "Tick all reporting cost centres"
 msgstr ""
 
-msgid "Tick all reporting cost centres"
+msgid "Summary Cost Centres:"
 msgstr ""
 
 msgid "Select Cost Centre Codes"
@@ -7212,9 +8983,6 @@ msgstr ""
 msgid "summary"
 msgstr ""
 
-msgid "DummyButton"
-msgstr ""
-
 msgid "Left:"
 msgstr ""
 
@@ -7242,9 +9010,6 @@ msgstr ""
 msgid "Define Column"
 msgstr ""
 
-msgid "Ledger Name"
-msgstr ""
-
 msgid "Account Hierarchy:"
 msgstr ""
 
@@ -7255,9 +9020,6 @@ msgid "Period"
 msgstr ""
 
 msgid "Quarter"
-msgstr ""
-
-msgid "Date"
 msgstr ""
 
 msgid "Period Range"
@@ -7470,7 +9232,16 @@ msgstr ""
 msgid "Local Partner Data Report"
 msgstr ""
 
+msgid "Name of City:"
+msgstr ""
+
+msgid "Partner by City"
+msgstr ""
+
 msgid "Report on all partners that have one of these special types:"
+msgstr ""
+
+msgid "Date Set:"
 msgstr ""
 
 msgid "Partner By Special Type"
@@ -7509,9 +9280,6 @@ msgstr ""
 
 msgid ""
 "Please select at least one subscription, to avoid listing the whole database!"
-msgstr ""
-
-msgid "Contact:"
 msgstr ""
 
 msgid "Date From:"
@@ -7560,7 +9328,7 @@ msgstr ""
 msgid "Conferences Only"
 msgstr ""
 
-msgid "Teenstreet Only"
+msgid "TeenStreet Only"
 msgstr ""
 
 msgid "Current / Future Events Only:"
@@ -7689,6 +9457,55 @@ msgstr ""
 msgid "Outreach Options Report"
 msgstr ""
 
+msgid "&Start Date from:"
+msgstr ""
+
+msgid "&End Date from:"
+msgstr ""
+
+msgid "&Valid on Day:"
+msgstr ""
+
+msgid ""
+"&Include only Persons with one or more of the selected Commitment Status(es)"
+msgstr ""
+
+msgid "Sending &Field:"
+msgstr ""
+
+msgid "&Receiving Field:"
+msgstr ""
+
+msgid "Include Persons with &no Commitment Status set"
+msgstr ""
+
+msgid "Commitment Statuses"
+msgstr ""
+
+msgid "Partner by Commitment"
+msgstr ""
+
+msgid "Accepted"
+msgstr ""
+
+msgid "Cancelled"
+msgstr ""
+
+msgid "Hold"
+msgstr ""
+
+msgid "Enquiry"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Appl. Status"
+msgstr ""
+
+msgid "Partner By Event"
+msgstr ""
+
 msgid "Partner by Conference"
 msgstr ""
 
@@ -7705,6 +9522,40 @@ msgid "Select at least one Event"
 msgstr ""
 
 msgid "Please select at least one Event, to avoid listing the whole database!"
+msgstr ""
+
+msgid "Now"
+msgstr ""
+
+msgid "Ever"
+msgstr ""
+
+msgid "Within Date Range"
+msgstr ""
+
+msgid "until:"
+msgstr ""
+
+msgid "Partners at Field"
+msgstr ""
+
+msgid "Consider selected Field as"
+msgstr ""
+
+msgid "Only consider Partners with Commitments"
+msgstr ""
+
+msgid "Allow Commitments and Worker Field"
+msgstr ""
+
+msgid "Commitment and Worker Field"
+msgstr ""
+
+msgid "Partner By Field"
+msgstr ""
+
+msgid ""
+"Please select at least one Field as otherwise the Extract cannot be created!"
 msgstr ""
 
 msgid "Show Personal Info"
@@ -7806,9 +9657,6 @@ msgstr ""
 msgid "Include Persons with no Commitment Status set"
 msgstr ""
 
-msgid "Commitment Status"
-msgstr ""
-
 msgid "Start of Commitment Report"
 msgstr ""
 
@@ -7830,13 +9678,10 @@ msgstr ""
 msgid "Close the preview"
 msgstr ""
 
-msgid "&About Petra..."
+msgid "&About OpenPetra..."
 msgstr ""
 
 msgid "Status Bar"
-msgstr ""
-
-msgid "Ready"
 msgstr ""
 
 msgid "Print Preview"
@@ -7891,16 +9736,10 @@ msgstr ""
 msgid "Existing stored Settings:"
 msgstr ""
 
-msgid "Load"
-msgstr ""
-
 msgid "Load Report Settings"
 msgstr ""
 
 msgid "Rename"
-msgstr ""
-
-msgid "Delete"
 msgstr ""
 
 msgid "Maintain Report Settings"
@@ -7933,6 +9772,9 @@ msgstr ""
 msgid "Save Report Settings"
 msgstr ""
 
+msgid "Current Addresses only:"
+msgstr ""
+
 msgid "Town/City:"
 msgstr ""
 
@@ -7943,6 +9785,15 @@ msgid "Region:"
 msgstr ""
 
 msgid "Country:"
+msgstr ""
+
+msgid "Active Partners Only"
+msgstr ""
+
+msgid "Mailing Addresses Only"
+msgstr ""
+
+msgid "Families Only"
 msgstr ""
 
 msgid ""
@@ -7959,13 +9810,13 @@ msgstr ""
 msgid "Destination file"
 msgstr ""
 
+msgid "cm:"
+msgstr ""
+
 msgid "Content of Column:"
 msgstr ""
 
 msgid "Width of Column:"
-msgstr ""
-
-msgid "cm:"
 msgstr ""
 
 msgid "Staff at"
@@ -8343,9 +10194,6 @@ msgstr ""
 msgid "bank statement MT940 (*.sta)|*.sta"
 msgstr ""
 
-msgid "We don't support several bank statements per file at the moment"
-msgstr ""
-
 msgid "SERVER>"
 msgstr ""
 
@@ -8385,6 +10233,20 @@ msgid ""
 msgstr ""
 
 msgid "Connected to Database."
+msgstr ""
+
+#, csharp-format
+msgid "OpenPetra is currently disabled due to {0}."
+msgstr ""
+
+#, csharp-format
+msgid "It will be available on {0} at {1}."
+msgstr ""
+
+msgid "Proceed with caution."
+msgstr ""
+
+msgid "User is retired."
 msgstr ""
 
 msgid "Invalid User ID/Password."
@@ -8428,7 +10290,49 @@ msgstr ""
 msgid "Reversal: "
 msgstr ""
 
+#, csharp-format
+msgid ""
+"Error: Account {0} cannot be used with cost centre {1}. Account requires a "
+"{2} cost centre."
+msgstr ""
+
 msgid "Accounts Payable Payment"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Cannot create a gift batch for date {0} since it is not in an open period of "
+"the ledger."
+msgstr ""
+
+msgid "Creating Gift Batch"
+msgstr ""
+
+#, csharp-format
+msgid "Cannot create a gift for transaction {0} since there is no valid donor."
+msgstr ""
+
+#, csharp-format
+msgid "bank import for date {0}"
+msgstr ""
+
+#, csharp-format
+msgid "creating gift for match {0}"
+msgstr ""
+
+msgid "Invalid or inactive cost centre"
+msgstr ""
+
+msgid "Invalid or inactive account code"
+msgstr ""
+
+#, csharp-format
+msgid ""
+"Cannot create a GL batch for date {0} since it is not in an open period of "
+"the ledger."
+msgstr ""
+
+msgid "Creating GL Batch"
 msgstr ""
 
 msgid "You cannot account foreign currencies in a base journal!"
@@ -8443,11 +10347,11 @@ msgid ""
 "to account something in {3}?"
 msgstr ""
 
-msgid "Peridic end routine hint"
+msgid "Periodic end routine hint"
 msgstr ""
 
 #, csharp-format
-msgid "There is nothing to do for the module: [{0}]"
+msgid "There is nothing to be done for the module: [{0}]"
 msgstr ""
 
 #, csharp-format
@@ -8455,7 +10359,7 @@ msgid "Problem occurs in module [{0}]"
 msgstr ""
 
 #, csharp-format
-msgid "The operation has heft {0} elements which are not transformed!"
+msgid "The operation has left {0} elements which are not transformed!"
 msgstr ""
 
 #, csharp-format
@@ -8532,42 +10436,6 @@ msgid "Free Again"
 msgstr ""
 
 #, csharp-format
-msgid ""
-"Cannot create a gift batch for date {0} since it is not in an open period of "
-"the ledger."
-msgstr ""
-
-msgid "Creating Gift Batch"
-msgstr ""
-
-#, csharp-format
-msgid "Cannot create a gift for transaction {0} since there is no valid donor."
-msgstr ""
-
-#, csharp-format
-msgid "bank import for date {0}"
-msgstr ""
-
-#, csharp-format
-msgid "creating gift for match {0}"
-msgstr ""
-
-msgid "Invalid or inactive cost centre"
-msgstr ""
-
-msgid "Invalid or inactive account code"
-msgstr ""
-
-#, csharp-format
-msgid ""
-"Cannot create a GL batch for date {0} since it is not in an open period of "
-"the ledger."
-msgstr ""
-
-msgid "Creating GL Batch"
-msgstr ""
-
-#, csharp-format
 msgid "posted on {0}"
 msgstr ""
 
@@ -8589,6 +10457,9 @@ msgid "It was already adjusted or reverted."
 msgstr ""
 
 msgid "Gift Revert/Adjust failed."
+msgstr ""
+
+msgid "Split Gift"
 msgstr ""
 
 msgid "** confidential **"
@@ -8724,6 +10595,9 @@ msgid "Saving gift"
 msgstr ""
 
 msgid "Saving giftdetails"
+msgstr ""
+
+msgid "Invalid Row Type. Perhaps using wrong CSV separator?"
 msgstr ""
 
 msgid "Saving all data into the database"
@@ -9158,6 +11032,14 @@ msgstr ""
 
 #, csharp-format
 msgid ""
+"Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."
+msgstr ""
+
+msgid "There have not been any transactions for the stewardship run"
+msgstr ""
+
+#, csharp-format
+msgid ""
 "Unknown error while Generating the ICH batch for Ledger: {0} and Period: {1}"
 msgstr ""
 
@@ -9294,6 +11176,38 @@ msgid ""
 "that you are you. You can also reset your password there."
 msgstr ""
 
+#, csharp-format
+msgid "A quantity of time must be defined for the '{0}' frequency."
+msgstr ""
+
+msgid ""
+"You cannot use the option list until you have defined at least one option "
+"using the 'Local Data Option List Names' main menu selection"
+msgstr ""
+
+msgid ""
+"The BIC / Swift code you entered for this bank is invalid!\r\n"
+"\r\n"
+"  Here is the format of a valid BIC: 'BANKCCLL' or 'BANKCCLLBBB'.\r\n"
+"    BANK = Bank Code. This code identifies the bank world wide.\r\n"
+"    CC   = Country Code. This is the ISO country code of the country the "
+"bank is in.\r\n"
+"    LL   = Location Code. This code gives the town where the bank is located."
+"\r\n"
+"    BBB  = Branch Code. This code denotes the branch of the bank.\r\n"
+"  BICs have either 8 or 11 characters.\r\n"
+msgstr ""
+
+#, csharp-format
+msgid "The Partner Class of the Partner needs to be '{0}', but it is '{1}'."
+msgstr ""
+
+msgid " or "
+msgstr ""
+
+msgid "  No name information available"
+msgstr ""
+
 msgid "Mrs"
 msgstr ""
 
@@ -9343,9 +11257,6 @@ msgid "Enter the third part of the address, eg district of the city"
 msgstr ""
 
 msgid "Enter a post town or city"
-msgstr ""
-
-msgid "Enter a county/province/state/district/canton"
 msgstr ""
 
 msgid "Enter the international postal/zip code"
@@ -9402,6 +11313,9 @@ msgstr ""
 msgid "Add New Family"
 msgstr ""
 
+msgid "Add New Person"
+msgstr ""
+
 msgid "Add New Organisation"
 msgstr ""
 
@@ -9435,7 +11349,13 @@ msgstr ""
 msgid "Administration"
 msgstr ""
 
-msgid "Generate Extract"
+msgid "Generate Partner Extract"
+msgstr ""
+
+msgid "General Extract"
+msgstr ""
+
+msgid "Manual Extract"
 msgstr ""
 
 msgid "Partner by Subscription"
@@ -9444,7 +11364,22 @@ msgstr ""
 msgid "Partner by Special Type"
 msgstr ""
 
-msgid "Partner by Commitment"
+msgid "Generate Personnel Extract"
+msgstr ""
+
+msgid "Partner by Field"
+msgstr ""
+
+msgid "Generate Finance Extract"
+msgstr ""
+
+msgid "Donor by Motivation"
+msgstr ""
+
+msgid "Donor by Amount"
+msgstr ""
+
+msgid "Donor by Miscellaneous"
 msgstr ""
 
 msgid "Reports"
@@ -9664,7 +11599,16 @@ msgstr ""
 msgid "Aged Supplier List"
 msgstr ""
 
-msgid "Ap Payment Report"
+msgid "Invoices payable today, or on a specified date"
+msgstr ""
+
+msgid "Payment Report"
+msgstr ""
+
+msgid "Report for a Payment or group of payments"
+msgstr ""
+
+msgid "Reprint Payment advice sent to supplier"
 msgstr ""
 
 msgid "Budgets"
@@ -9674,6 +11618,12 @@ msgid "General"
 msgstr ""
 
 msgid "Consolidate Budgets"
+msgstr ""
+
+msgid "Income Expense Statement Multi Period"
+msgstr ""
+
+msgid "Income Expense Statement Multi Ledger"
 msgstr ""
 
 msgid "General Ledger"
@@ -9709,6 +11659,12 @@ msgstr ""
 msgid "Close a year"
 msgstr ""
 
+msgid "ICH Processing"
+msgstr ""
+
+msgid "ICH Stewardship Calculation"
+msgstr ""
+
 msgid "Account Detail Report"
 msgstr ""
 
@@ -9716,12 +11672,6 @@ msgid "Account Detail With Analysis Attribute"
 msgstr ""
 
 msgid "Surplus Deficit"
-msgstr ""
-
-msgid "Income Expense Statement Multi Period"
-msgstr ""
-
-msgid "Income Expense Statement Multi Ledger"
 msgstr ""
 
 msgid "Donor Gifts To Fields Report"
@@ -9739,10 +11689,19 @@ msgstr ""
 msgid "Total Gifts Through Field"
 msgstr ""
 
-msgid "ICH Processing"
+msgid "Generate Extract - Recipient by Field"
 msgstr ""
 
-msgid "ICH Stewardship Calculation"
+msgid "Generate Extract - Donor by Field"
+msgstr ""
+
+msgid "Generate Extract - Donor by Motivation"
+msgstr ""
+
+msgid "Generate Extract - Donor by Amount"
+msgstr ""
+
+msgid "Generate Extract - Donor by Miscellaneous"
 msgstr ""
 
 msgid "General Ledger Setup"
@@ -9808,9 +11767,6 @@ msgstr ""
 msgid "Setup Email Destinations"
 msgstr ""
 
-msgid "Maintain Email Destinations"
-msgstr ""
-
 msgid "Setup Currencies"
 msgstr ""
 
@@ -9833,6 +11789,9 @@ msgid "Setup Corporate Exchange Rates"
 msgstr ""
 
 msgid "Setup Daily Exchange Rates"
+msgstr ""
+
+msgid "Generate Extract"
 msgstr ""
 
 msgid "Personnel Reports"
@@ -9892,9 +11851,6 @@ msgstr ""
 msgid "Setup Skill Levels"
 msgstr ""
 
-msgid "Maintain Skill Levels"
-msgstr ""
-
 msgid "Setup Valuable Items"
 msgstr ""
 
@@ -9931,28 +11887,10 @@ msgstr ""
 msgid "Maintain Event Roles"
 msgstr ""
 
-msgid "Setup Local Application Data Fields"
-msgstr ""
-
-msgid "Maintain Local Application Data Fields"
-msgstr ""
-
 msgid "Setup Local Personnel Data Fields"
 msgstr ""
 
 msgid "Maintain Local Personnel Data Fields"
-msgstr ""
-
-msgid "Setup Field Order for Long Term Applications"
-msgstr ""
-
-msgid "Maintain Field Order for Long Term Applications"
-msgstr ""
-
-msgid "Setup Field Order for Short Term Applications"
-msgstr ""
-
-msgid "Maintain Field Order for Short Term Applications"
 msgstr ""
 
 msgid "Setup Field Order for Personnel"
@@ -10019,9 +11957,6 @@ msgstr ""
 msgid "Please change your own password regularly"
 msgstr ""
 
-msgid "Language"
-msgstr ""
-
 msgid "Set Language Settings"
 msgstr ""
 
@@ -10064,7 +11999,7 @@ msgstr ""
 msgid "Export All Data"
 msgstr ""
 
-msgid "Reset Database"
+msgid "Restore Database From Backup"
 msgstr ""
 
 msgid "Auditing"
