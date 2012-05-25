@@ -23,7 +23,10 @@
   <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymlfile:${file} ${generateWinformsParameters}"/>
   
   <property name="ClientPath" value="${dir.root}/csharp/ICT/Petra/Client"/>
-  <CompileProject CSFile="${ClientPath}/${string::replace(file,'.yaml', '-generated.cs')}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
+  <if test="${not file::exists(file)}">
+    <property name="file" value="${ClientPath}/${file}"/>
+  </if>
+  <CompileProject CSFile="${string::replace(file,'.yaml', '-generated.cs')}" ProjectFilesDir="${dir.projectfiles}/${devenv-msbuild}" CodeRootDir="${dir.csharp}"/>
 </target>
 
 <target name="previewWinform">

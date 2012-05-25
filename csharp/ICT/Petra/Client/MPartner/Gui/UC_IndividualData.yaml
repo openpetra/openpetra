@@ -23,7 +23,8 @@ RootNode:
             
         pnlButtons:
             Dock: Bottom
-            Height: 30
+            Height: 35
+            Margin: 0
             ControlsOrientation: horizontal
             Controls: [pnlShepherds, pnlEmergencyData]
         

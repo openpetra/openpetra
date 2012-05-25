@@ -701,7 +701,20 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         MExtractMasterTable GetAllExtractHeaders();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                 Boolean AAllUsers,
+                                                 String AUserCreated,
+                                                 String AUserModified);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean ExtractExists(String AExtractName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean CreateEmptyExtract(ref System.Int32 AExtractId,
+                                   String AExtractName,
+                                   String AExtractDescription);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean PurgeExtracts(System.Int32 ANumberOfDays,
+                              Boolean AAllUsers,
+                              String AUserName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         ExtractTDSMExtractTable GetExtractRowsWithPartnerData(System.Int32 AExtractId);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
@@ -724,6 +737,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
                                     Int64 ANewFamilyKey,
                                     out String AProblemMessage,
                                     out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
+        Int64 GetBankBySortCode(System.String ABranchCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
         PUnitTable GetConferenceUnits(System.String AConferenceName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>

@@ -42,6 +42,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
+        private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
 

@@ -254,9 +254,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (!ANewGiftBatches.ContainsKey(key))
             {
-                GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(AOldGiftBatch.LedgerNumber, ADateCorrection);
+                GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(AOldGiftBatch.LedgerNumber, ADateCorrection,
+                    Catalog.GetString("Gift Adjustment (Field Change)"));
                 AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
-                giftbatchRow.BatchDescription = Catalog.GetString("Gift Adjustment (Field Change)");
                 giftbatchRow.BankCostCentre = AOldGiftBatch.BankCostCentre;
                 giftbatchRow.BankAccountCode = AOldGiftBatch.BankAccountCode;
                 giftbatchRow.GiftType = AOldGiftBatch.GiftType;

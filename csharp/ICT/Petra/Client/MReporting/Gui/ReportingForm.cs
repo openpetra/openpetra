@@ -52,6 +52,26 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// </summary>
     public class TFrmPetraReportingUtils : TFrmPetraUtils
     {
+        /// <summary>
+        /// Delegate for call before LoadSettings is startin (for pre processing)
+        /// </summary>
+        public delegate void TDelegateLoadSettingsStarting();
+
+        /// <summary>
+        /// Delegate for call after LoadSettings is finished (for post processing)
+        /// </summary>
+        public delegate void TDelegateLoadSettingsFinished(TParameterList AParameters);
+
+        /// <summary>
+        /// Reference to the Delegate for call before LoadSettings is starting (for pre processing)
+        /// </summary>
+        private TDelegateLoadSettingsStarting FDelegateLoadSettingsStarting;
+
+        /// <summary>
+        /// Reference to the Delegate for call after LoadSettings is finished (for post processing)
+        /// </summary>
+        private TDelegateLoadSettingsFinished FDelegateLoadSettingsFinished;
+
         /// <summary>number of columns that can be sorted</summary>
         public const Int32 NUMBER_SORTBY = 3;
 
@@ -133,6 +153,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             FGenerateReportThread = null;
             FGenerateExtractThread = null;
             FDontResizeForm = false;
+            FDelegateLoadSettingsStarting = null;
+            FDelegateLoadSettingsFinished = null;
         }
 
         /// set caption of window, used to build window title
@@ -141,6 +163,30 @@ namespace Ict.Petra.Client.MReporting.Gui
             set
             {
                 FWindowCaption = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which is called at the start of LoadSettings
+        /// </summary>
+        /// <description>The Delegate is set before LoadSettings is called or not at all if no pre processing is needed.</description>
+        public TDelegateLoadSettingsStarting DelegateLoadSettingsStarting
+        {
+            set
+            {
+                FDelegateLoadSettingsStarting = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which is called after LoadSettings
+        /// </summary>
+        /// <description>The Delegate is set before LoadSettings is called or not at all if no post processing is needed.</description>
+        public TDelegateLoadSettingsFinished DelegateLoadSettingsFinished
+        {
+            set
+            {
+                FDelegateLoadSettingsFinished = value;
             }
         }
 
@@ -674,6 +720,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         protected void LoadSettings(String ASettingsName)
         {
+            // call the delegate for pre processing if needed
+            if (FDelegateLoadSettingsStarting != null)
+            {
+                FDelegateLoadSettingsStarting();
+            }
+
             FParametersFromFile = new TParameterList();
 
             FCurrentSettingsName = ASettingsName;
@@ -691,6 +743,12 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             SetControls(FParametersFromFile);
             UpdateLoadingMenu(RecentlyUsedSettings);
+
+            // now call the delegate for post processing if needed
+            if (FDelegateLoadSettingsFinished != null)
+            {
+                FDelegateLoadSettingsFinished(FParametersFromFile);
+            }
         }
 
         /// <summary>

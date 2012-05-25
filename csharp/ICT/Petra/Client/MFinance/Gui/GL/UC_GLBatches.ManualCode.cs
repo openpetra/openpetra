@@ -112,8 +112,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (FLedgerNumber != -1)
             {
-                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-
                 ALedgerRow ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                          TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
