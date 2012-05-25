@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,6 +57,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {                                           // this row if it's been deleted.
                 return;
             }
+
             // 'Description' must not be empty
             ValidationColumn = ARow.Table.Columns[AAnalysisTypeTable.ColumnAnalysisTypeDescriptionId];
 

@@ -63,7 +63,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-
         private void InitializeManualCode()
         {
             // When a doument is saved, I'll see about updating my caller.
@@ -237,6 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
             {
                 FMainDS.AApDocumentDetail.DefaultView.Sort = AApDocumentDetailTable.GetDetailNumberDBName();
+
                 // Create Text description of Anal Attribs for each DetailRow..
                 foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
                 {

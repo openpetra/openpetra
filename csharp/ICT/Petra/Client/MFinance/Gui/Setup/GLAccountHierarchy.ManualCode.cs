@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, wolfgangu
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -341,6 +341,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             for (int Idx = ASubmitDS.AAnalysisAttribute.Rows.Count - 1; Idx >= 0; Idx--)
             {
                 AAnalysisAttributeRow Row = ASubmitDS.AAnalysisAttribute[Idx];
+
                 if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisTypeCode.IndexOf("Unassigned") == 0))
                 {
                     Row.Delete();
@@ -353,11 +354,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             for (int Idx = FMainDS.AAnalysisAttribute.Rows.Count - 1; Idx >= 0; Idx--)
             {
                 AAnalysisAttributeRow Row = FMainDS.AAnalysisAttribute[Idx];
+
                 if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisTypeCode.IndexOf("Unassigned") == 0))
                 {
                     Row.Delete();
                 }
             }
+
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
         }
 

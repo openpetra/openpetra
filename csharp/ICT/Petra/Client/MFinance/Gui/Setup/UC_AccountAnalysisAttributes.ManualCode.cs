@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -87,12 +87,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string NewTypeCode = "Unassigned";
             int ItmIdx = -1;
             int FindAttempt = 0;
+
             FMainDS.AAnalysisAttribute.DefaultView.Sort =
-                    AAnalysisAttributeTable.GetLedgerNumberDBName() + ", "
-                  + AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", "
-                  + AAnalysisAttributeTable.GetAccountCodeDBName();
-            do {
+                AAnalysisAttributeTable.GetLedgerNumberDBName() + ", " +
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", " +
+                AAnalysisAttributeTable.GetAccountCodeDBName();
+
+            do
+            {
                 ItmIdx = FMainDS.AAnalysisAttribute.DefaultView.Find(new object[] { FLedgerNumber, NewTypeCode, FAccountCode });
+
 //                TLogging.Log("NewUniqueAnalTypeCode: Find (" + NewTypeCode + ") = " + ItmIdx);
                 if (ItmIdx >= 0)
                 {
@@ -123,18 +127,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // TODO: Do I need to check whether I can detatch this AnalTypeCode from this account?
-            /*
-            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-                FPreviouslySelectedDetailRow.AnalysisTypeCode,
-                "*All*");
 
-            if (num > 0)
-            {
-                MessageBox.Show(Catalog.GetString(
-                        "{0} is already referenced and cannot be deleted."), FPreviouslySelectedDetailRow.AnalysisTypeCode);
-                return;
-            }
-            */
+            /*
+             * int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
+             *  FPreviouslySelectedDetailRow.AnalysisTypeCode,
+             *  "*All*");
+             *
+             * if (num > 0)
+             * {
+             *  MessageBox.Show(Catalog.GetString(
+             *          "{0} is already referenced and cannot be deleted."), FPreviouslySelectedDetailRow.AnalysisTypeCode);
+             *  return;
+             * }
+             */
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
@@ -162,6 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // I need to call EndEdit, but I'll give this row a "safe" value first.
 
             string TempEdit = ARow.AnalysisTypeCode;
+
             ARow.AnalysisTypeCode = "temp_edit";
             ARow.EndEdit();
 
@@ -183,6 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FAccountCode);
 
             ARow.BeginEdit();
+
             if (MustReplaceName)
             {
                 ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
