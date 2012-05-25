@@ -297,6 +297,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 AGiftNumber = (Int32)requestParams["GiftNumber"];
             Int32 ABatchNumber = (Int32)requestParams["BatchNumber"];
 
+            //decimal batchHashTotal = 0;
+            decimal batchGiftTotal = 0;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = null;
@@ -317,6 +319,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftBatch.CurrencyCode = oldGiftBatch.CurrencyCode;
                     giftBatch.ExchangeRateToBase = oldGiftBatch.ExchangeRateToBase;
                     giftBatch.MethodOfPaymentCode = oldGiftBatch.MethodOfPaymentCode;
+                    giftBatch.HashTotal = -oldGiftBatch.HashTotal;
+                    giftBatch.BatchTotal = -oldGiftBatch.BatchTotal;
 
                     if (giftBatch.MethodOfPaymentCode.Length == 0)
                     {
@@ -444,6 +448,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     decimal signum = (cycle == 0) ? -1 : 1;
                                     giftDetail.GiftTransactionAmount = signum * oldGiftDetail.GiftTransactionAmount;
                                     giftDetail.GiftAmount = signum * oldGiftDetail.GiftAmount;
+                                    batchGiftTotal += giftDetail.GiftAmount;
                                     giftDetail.GiftAmountIntl = signum * oldGiftDetail.GiftAmountIntl;
 
                                     /*
@@ -490,6 +495,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     cycle++;
                 } while ((cycle < 2) && Function.Equals("AdjustGift"));
+
+                //When reversing into an existing batch, calculate batch total
+                if (batchSelected && !Function.Equals("AdjustGift"))
+                {
+                    giftBatch.BatchTotal = batchGiftTotal;
+                }
 
                 // save everything at the end
                 if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out AMessages))
