@@ -354,6 +354,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
                 giftBatchRow.AcceptChanges();
 
+                // make sure that the gift batch is not touched again, by GetDetailsFromControls
+                FSelectedBatchNumber = -1;
+                FPreviouslySelectedDetailRow = null;
+
+                // make sure that gift transactions and details are cleared as well
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                FMainDS.AGiftDetail.Rows.Clear();
+                FMainDS.AGift.Rows.Clear();
+
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
             }
         }
