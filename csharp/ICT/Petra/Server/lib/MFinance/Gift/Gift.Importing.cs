@@ -107,7 +107,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             //Set this to true to committ or rollback the calling transaction at this point
             NewTransaction = true;
-            
+
             AGiftBatchRow giftBatch = null;
             //AGiftRow gift = null;
             decimal totalBatchAmount = 0;
@@ -132,25 +132,27 @@ namespace Ict.Petra.Server.MFinance.Gift
                         if (RowType == "B")
                         {
                             //Check if
-                        	if (previousGift != null && giftBatch != null)
+                            if ((previousGift != null) && (giftBatch != null))
                             {
-                            	//New batch so set total amount of Batch for previous batch
-                        		giftBatch.BatchTotal = totalBatchAmount;
-	                            if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
-	                            {
-	                                if (NewTransaction)
-	                                {
-	                                    DBAccess.GDBAccessObj.RollbackTransaction();
-	                                }
-	                            	sr.Close();
-	                            	return false;
-	                            }
-	
-	                            FMainDS.AGiftBatch.AcceptChanges();
-                            	previousGift = null;
+                                //New batch so set total amount of Batch for previous batch
+                                giftBatch.BatchTotal = totalBatchAmount;
+
+                                if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+                                {
+                                    if (NewTransaction)
+                                    {
+                                        DBAccess.GDBAccessObj.RollbackTransaction();
+                                    }
+
+                                    sr.Close();
+                                    return false;
+                                }
+
+                                FMainDS.AGiftBatch.AcceptChanges();
+                                previousGift = null;
                             }
-                        	
-                          	totalBatchAmount = 0;
+
+                            totalBatchAmount = 0;
 
                             string BatchDescription = ImportString(Catalog.GetString("batch description"));
                             string BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
@@ -174,13 +176,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
                             {
-                            	if (NewTransaction)
+                                if (NewTransaction)
                                 {
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
-                            	sr.Close();
-                            	return false;
+                                sr.Close();
+                                return false;
                             }
 
                             FMainDS.AGiftBatch.AcceptChanges();
@@ -256,7 +258,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 giftDetails.RecipientLedgerNumber = ImportInt32(Catalog.GetString("recipient ledger number"));
                             }
 
-							decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"));
+                            decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"));
                             giftDetails.GiftAmount = currentGiftAmount;
                             giftDetails.GiftTransactionAmount = currentGiftAmount;
                             totalBatchAmount += currentGiftAmount;
@@ -315,7 +317,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     DBAccess.GDBAccessObj.RollbackTransaction();
                                 }
 
-                               	sr.Close();
+                                sr.Close();
                                 return false;
                             }
 
@@ -327,12 +329,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                     }
                 }
-                
-				//Update batch total for the last batch entered.
-				if (giftBatch != null)
-				{
-	                giftBatch.BatchTotal = totalBatchAmount;
-				}
+
+                //Update batch total for the last batch entered.
+                if (giftBatch != null)
+                {
+                    giftBatch.BatchTotal = totalBatchAmount;
+                }
 
                 FImportMessage = Catalog.GetString("Saving all data into the database");
 
@@ -346,7 +348,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         ok = true;
                     }
                 }
-                
+
                 sr.Close();
             }
             catch (Exception ex)
