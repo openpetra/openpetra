@@ -46,8 +46,28 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         Int32 FLedgerNumber;
         ALedgerRow FLedgerRow = null;
 
+        /// <summary>
+        /// When this document is saved in the database, I can check whether
+        /// my calling form should be updated.
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        private void OnDataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (e.Success)
+            {
+                if (FPetraUtilsObject.GetCallerForm().GetType() == typeof(TFrmAPSupplierTransactions))
+                {
+                    ((TFrmAPSupplierTransactions)FPetraUtilsObject.GetCallerForm()).Reload();
+                }
+            }
+        }
+
+
         private void InitializeManualCode()
         {
+            // When a doument is saved, I'll see about updating my caller.
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
         }
 
         private void RunOnceOnActivationManual()
@@ -216,6 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
             {
+                FMainDS.AApDocumentDetail.DefaultView.Sort = AApDocumentDetailTable.GetDetailNumberDBName();
                 // Create Text description of Anal Attribs for each DetailRow..
                 foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
                 {

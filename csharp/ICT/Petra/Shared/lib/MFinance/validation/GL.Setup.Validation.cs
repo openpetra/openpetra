@@ -53,6 +53,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            if (ARow.RowState == DataRowState.Deleted)  // Don't even begin to look at
+            {                                           // this row if it's been deleted.
+                return;
+            }
             // 'Description' must not be empty
             ValidationColumn = ARow.Table.Columns[AAnalysisTypeTable.ColumnAnalysisTypeDescriptionId];
 
