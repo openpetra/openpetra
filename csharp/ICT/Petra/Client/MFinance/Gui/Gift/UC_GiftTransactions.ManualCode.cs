@@ -220,7 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
         	if (cmbDetailMotivationGroupCode.Text.Trim() == string.Empty)
 			{
-				cmbDetailMotivationGroupCode.SelectedIndex = -1;
+				cmbDetailMotivationDetailCode.SelectedIndex = -1;
 			}        	
         }
 
@@ -536,13 +536,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
                 grdDetails.Refresh();
-
-				//Test CT
-                FPreviouslySelectedDetailRow = null;
-
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
                 
         		//ShowDetails(FPreviouslySelectedDetailRow);
+
+        		cmbDetailMotivationGroupCode.SelectedIndex = 0;
             }
         }
 
@@ -632,7 +630,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
                 grdDetails.Refresh();
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
-                RetrieveMotivationDetailAccountCode();
+				cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                //RetrieveMotivationDetailAccountCode();
+                txtDetailGiftTransactionAmount.Focus();
             }
         }
 
