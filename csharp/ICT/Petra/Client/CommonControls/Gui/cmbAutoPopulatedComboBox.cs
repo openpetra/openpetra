@@ -37,8 +37,11 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
 using System.Globalization;
@@ -150,10 +153,22 @@ namespace Ict.Petra.Client.CommonControls
             LeavingCodeList,
 
             /// <summary>todoComment</summary>
+            LedgerNameList,
+
+            /// <summary>todoComment</summary>
             LocationTypeList,
 
             /// <summary>todoComment</summary>
+            MailingList,
+
+            /// <summary>todoComment</summary>
             MaritalStatusList,
+
+            /// <summary>todoComment</summary>
+            MethodOfGivingList,
+
+            /// <summary>todoComment</summary>
+            MethodOfPaymentList,
 
             /// <summary>todoComment</summary>
             PartnerClassList,
@@ -189,7 +204,7 @@ namespace Ict.Petra.Client.CommonControls
             ProposalSubmitFrequencyList,
 
             /// <summary>todoComment</summary>
-            PublicationList,
+            PublicationInfoList,
 
             /// <summary>todoComment</summary>
             ReasonSubscriptionCancelledList,
@@ -213,7 +228,10 @@ namespace Ict.Petra.Client.CommonControls
             SubscriptionStatus,
 
             /// <summary>todoComment</summary>
-            UnitTypeList
+            UnitTypeList,
+
+            /// <summary>todoComment</summary>
+            UserList
         };
 
         private DataTable FDataCache_ListTable = null;
@@ -594,12 +612,30 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.LedgerNameList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList),
+                    "LedgerNumber",
+                    "LedgerName",
+                    null);
+                    break;
+
                 case TListTableEnum.LocationTypeList:
 
                     InitialiseUserControl(
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
                     PLocationTypeTable.GetCodeDBName(),
                     null,
+                    null);
+                    break;
+
+                case TListTableEnum.MailingList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.MailingList),
+                    PMailingTable.GetMailingCodeDBName(),
+                    PMailingTable.GetMailingDescriptionDBName(),
                     null);
                     break;
 
@@ -612,6 +648,23 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.MethodOfGivingList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfGivingList),
+                    AMethodOfGivingTable.GetMethodOfGivingCodeDBName(),
+                    AMethodOfGivingTable.GetMethodOfGivingDescDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.MethodOfPaymentList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfPaymentList),
+                    AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
+                    AMethodOfPaymentTable.GetMethodOfPaymentDescDBName(),
+                    null);
+                    break;
 
                 case TListTableEnum.PartnerClassList:
 
@@ -747,10 +800,10 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
-                case TListTableEnum.PublicationList:
+                case TListTableEnum.PublicationInfoList:
 
                     InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationList),
+                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationInfoList),
                     PPublicationTable.GetPublicationCodeDBName(),
                     PPublicationTable.GetPublicationDescriptionDBName(),
                     null);
@@ -809,6 +862,15 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.UnitTypeList),
                     UUnitTypeTable.GetUnitTypeCodeDBName(),
                     UUnitTypeTable.GetUnitTypeNameDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.UserList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMSysMan.GetCacheableSysManTable(TCacheableSysManTablesEnum.UserList),
+                    SUserTable.GetUserIdDBName(),
+                    MSysManConstants.USER_LAST_AND_FIRST_NAME_COLUMNNAME,
                     null);
                     break;
             }
@@ -1111,8 +1173,18 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 200;
                     break;
 
+                case TListTableEnum.LedgerNameList:
+                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
                 case TListTableEnum.LocationTypeList:
                     this.ColumnWidthCol1 = 110;
+                    break;
+
+                case TListTableEnum.MailingList:
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 250;
                     break;
 
                 case TListTableEnum.MaritalStatusList:
@@ -1164,7 +1236,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 450;
                     break;
 
-                case TListTableEnum.PublicationList:
+                case TListTableEnum.PublicationInfoList:
                     this.ColumnWidthCol1 = 110;
                     this.ColumnWidthCol2 = 350;
                     this.ColumnWidthCol3 = 80;
@@ -1196,6 +1268,10 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.UnitTypeList:
                     this.ColumnWidthCol1 = 90;
                     this.ColumnWidthCol2 = 200;
+                    break;
+
+                case TListTableEnum.UserList:
+                    this.ColumnWidthCol1 = 120;
                     this.ColumnWidthCol2 = 200;
                     break;
             }

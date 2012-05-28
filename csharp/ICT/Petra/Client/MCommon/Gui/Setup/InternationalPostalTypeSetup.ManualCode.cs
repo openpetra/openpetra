@@ -62,13 +62,5 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
             CreateNewPInternationalPostalType();
         }
-
-        private void ValidateDataDetailsManual(PInternationalPostalTypeRow ARow)
-        {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            TSharedValidation_CacheableDataTables.ValidateInternationalPostalTypeSetup(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
-        }
     }
 }

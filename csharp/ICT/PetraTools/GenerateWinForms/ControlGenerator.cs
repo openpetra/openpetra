@@ -302,6 +302,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public CheckBoxGenerator()
             : base("chk", typeof(CheckBox))
         {
+            base.FGenerateLabel = true;
             this.FChangeEventName = "CheckedChanged";
             FDefaultHeight = 22;
         }
@@ -311,7 +312,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// </summary>
         public override bool GenerateLabel(TControlDef ctrl)
         {
-            if ((ctrl.HasAttribute("CheckBoxAttachedLabel"))
+            if (ctrl.HasAttribute("CheckBoxAttachedLabel")
                 && ((ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "left")
                     || (ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "right")))
             {
@@ -329,7 +330,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 && ((ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "left")
                     || (ctrl.GetAttribute("CheckBoxAttachedLabel").ToLower() == "right")))
             {
-                base.FGenerateLabel = false;
                 base.FAutoSize = true;
 
                 if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
@@ -359,7 +359,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
-                base.FGenerateLabel = true;
                 base.FAutoSize = false;
                 ctrl.SetAttribute("Width", 30.ToString ());
 

@@ -254,9 +254,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (!ANewGiftBatches.ContainsKey(key))
             {
-                GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(AOldGiftBatch.LedgerNumber, ADateCorrection);
+                GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(AOldGiftBatch.LedgerNumber, ADateCorrection,
+                    Catalog.GetString("Gift Adjustment (Field Change)"));
                 AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
-                giftbatchRow.BatchDescription = Catalog.GetString("Gift Adjustment (Field Change)");
                 giftbatchRow.BankCostCentre = AOldGiftBatch.BankCostCentre;
                 giftbatchRow.BankAccountCode = AOldGiftBatch.BankAccountCode;
                 giftbatchRow.GiftType = AOldGiftBatch.GiftType;
@@ -297,9 +297,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 AGiftNumber = (Int32)requestParams["GiftNumber"];
             Int32 ABatchNumber = (Int32)requestParams["BatchNumber"];
 
-			//decimal batchHashTotal = 0;
-			decimal batchGiftTotal = 0;
-            
+            //decimal batchHashTotal = 0;
+            decimal batchGiftTotal = 0;
+
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = null;
             try
@@ -499,9 +499,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //When reversing into an existing batch, calculate batch total
                 if (batchSelected && !Function.Equals("AdjustGift"))
                 {
-                	giftBatch.BatchTotal = batchGiftTotal;
+                    giftBatch.BatchTotal = batchGiftTotal;
                 }
-                                
+
                 // save everything at the end
                 if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out AMessages))
                 {

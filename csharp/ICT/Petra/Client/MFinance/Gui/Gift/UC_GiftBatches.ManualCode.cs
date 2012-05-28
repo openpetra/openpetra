@@ -42,6 +42,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
+        private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
 
@@ -78,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.DisableDataChangedEvent();
                 TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
                 FPetraUtilsObject.EnableDataChangedEvent();
-
+                
                 // only refresh once, seems we are doing too many loads from the db otherwise
                 RefreshFilter(null, null);
             }
@@ -239,6 +240,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            //If viewing posted batches only, show list of editing batches
+            //  instead before adding a new batch
+        	if (rbtPosted.Checked)
+            {
+            	rbtEditing.Checked = true;
+            }
+        	
             this.CreateNewAGiftBatch();
             txtDetailBatchDescription.Focus();
         }
@@ -331,6 +339,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            //Read current rows position
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
             {
                 string ErrorMessages = String.Empty;
@@ -353,7 +364,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
                 giftBatchRow.AcceptChanges();
 
+                // make sure that the gift batch is not touched again, by GetDetailsFromControls
+                FSelectedBatchNumber = -1;
+                FPreviouslySelectedDetailRow = null;
+
+                // make sure that gift transactions and details are cleared as well
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                FMainDS.AGiftDetail.Rows.Clear();
+                FMainDS.AGift.Rows.Clear();
+
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
+                
+				//Select unposted batch row in same index position as batch just posted
+				if (grdDetails.Rows.Count > 1)
+	            {
+	                //If last row just deleted, select row at old position - 1
+	                if (newCurrentRowPos == grdDetails.Rows.Count)
+	                {
+	                    newCurrentRowPos--;
+	                }
+	
+	                grdDetails.Selection.ResetSelection(false);
+	                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+	                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	
+	                ShowDetails(FPreviouslySelectedDetailRow);
+	            }
+	            else
+	            {
+	                FPreviouslySelectedDetailRow = null;
+	                ClearControls();
+	            }
+                
             }
         }
 

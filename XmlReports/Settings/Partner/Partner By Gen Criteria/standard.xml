@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="xmlfiles" value="eString:Partner\\partnerbygeneralcriteria.xml" />
+  <Parameter id="param_active" value="eBoolean:true" />
+  <Parameter id="param_mailing_addresses_only" value="eBoolean:true" />
+  <Parameter id="param_exclude_no_solicitations" value="eBoolean:true" />
+</Parameters>

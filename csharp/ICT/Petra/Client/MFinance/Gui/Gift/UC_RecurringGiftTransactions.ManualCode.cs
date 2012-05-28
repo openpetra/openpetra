@@ -298,6 +298,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPreviouslySelectedDetailRow == null)
             {
                 txtGiftTotal.Text = "";
+                txtBatchTotal.NumberValueDecimal = 0;
                 return;
             }
 
@@ -627,6 +628,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (batchRow != null)
             {
                 txtDetailGiftAmount.CurrencySymbol = batchRow.CurrencyCode;
+            }
+
+            if (grdDetails.Rows.Count == 1)
+            {
+            	txtBatchTotal.NumberValueDecimal = 0;
+            	ClearControls();
             }
 
             //----Set Cost Centre Code
