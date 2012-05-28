@@ -174,6 +174,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            
+            if (grdDetails.Rows.Count < 2)
+            {
+            	ClearControls();
+            }
+            
         }
 
         /// reset the control
