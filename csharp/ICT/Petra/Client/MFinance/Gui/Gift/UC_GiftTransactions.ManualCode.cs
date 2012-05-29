@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             
             //add textxhanged event handler to Motivation group code
             this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
+            this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
 
 
             //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
@@ -207,31 +208,57 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
+//        	if (cmbDetailMotivationGroupCode.GetSelectedString().Trim() == string.Empty)
+//			{
+//        		TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, string.Empty);
+//        		//Impossible filter to clear list
+//        		cmbDetailMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true AND 1 = 2";
+//			}
+//        	else 
+//        	{
 			TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
-            RetrieveMotivationDetailAccountCode();
+//        	}
 
-            if(Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+			if (cmbDetailMotivationDetailCode.Count > 0 && cmbDetailMotivationDetailCode.Text.Trim() == string.Empty)
+			{
+				cmbDetailMotivationDetailCode.SelectedIndex = 0;
+			}
+			
+			RetrieveMotivationDetailAccountCode();
+
+        	if(Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
             {
                 RetrieveMotivationDetailCostCentreCode();
             }
         }
         
+        /// <summary>
+        /// Called on TextChanged event for combo
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MotivationGroupCodeChanged(object sender, EventArgs e)
         {
         	if (cmbDetailMotivationGroupCode.Text.Trim() == string.Empty)
 			{
-				cmbDetailMotivationDetailCode.SelectedIndex = -1;
+        		cmbDetailMotivationGroupCode.SelectedIndex = -1;
+        		cmbDetailMotivationDetailCode.SelectedIndex = -1;
 			}        	
         }
 
-        private void CheckMotivationDetail(object sender, EventArgs e)
+        /// <summary>
+        /// Called on TextChanged event for combo
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MotivationDetailCodeChanged(object sender, EventArgs e)
         {
-        	if (cmbDetailMotivationGroupCode.GetSelectedString().Trim() == string.Empty)
-        	{
-        		TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
-        		RetrieveMotivationDetailAccountCode();
-        	}
+        	if (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty)
+			{
+        		txtDetailAccountCode.Text = string.Empty;
+			}        	
         }
+        
 
         /// <summary>
         /// To be called on the display of a new record
@@ -992,7 +1019,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(AGiftDetailRow ARow)
         {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+        	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
