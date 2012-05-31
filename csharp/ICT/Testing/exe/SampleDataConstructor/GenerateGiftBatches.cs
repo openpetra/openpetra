@@ -195,6 +195,7 @@ namespace Ict.Testing.SampleDataConstructor
                         GlEffectiveDate);
 
                     giftBatch.BatchDescription = "Benerator Batch for " + GlEffectiveDate.ToShortDateString();
+                    giftBatch.BatchTotal = 0.0m;
 
                     foreach (XmlNode RecordNode in AGiftsPerDate[GlEffectiveDate])
                     {
@@ -220,6 +221,8 @@ namespace Ict.Testing.SampleDataConstructor
 
                             giftDetail.MotivationGroupCode = "GIFT";
                             giftDetail.GiftTransactionAmount = Convert.ToDecimal(TXMLParser.GetAttribute(RecordNode, "amount_" + counter.ToString()));
+                            giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
+                            giftBatch.BatchTotal += giftDetail.GiftAmount;
 
                             string motivation = TXMLParser.GetAttribute(RecordNode, "motivation_" + counter.ToString());
 

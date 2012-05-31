@@ -1,0 +1,73 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Donor by Amount
+    WindowWidth: 800
+    WindowHeight: 600
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MFinance.queries.QueryDonorByAmount.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        REPORTNAME: Donor by Amount
+        CURRENTREPORT: Donor by Amount
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Actions:
+    Controls:
+        tpgGeneralSettings: {ControlsOrientation=vertical}
+            Label: General Settings
+            Controls: [pnlTop, pnlBottom]
+        pnlTop: {ControlsOrientation=horizontal}
+            Controls: [pnlOptionsLeft, pnlOptionsRight]
+        pnlBottom: {ControlsOrientation=horizontal}
+            Controls: [ucoAddress, ucoChkFilter]
+        pnlOptionsLeft:
+            Controls:
+                Row0: [grpGeneral]
+                Row1: [rgrCurrency]
+        grpGeneral: {NoLabel=true}
+            Controls:
+                Row0: [chkNewDonorsOnly]
+                Row1: [dtpDateFrom]
+                Row2: [dtpDateTo]
+        pnlOptionsRight:
+            Controls:
+                Row0: [grpGiftAmount]
+                Row1: [grpNumberOfGifts]
+        grpGiftAmount: {Label=Gift Amount}
+            Controls:
+                Row0: [chkAmountPerSingleGift]
+                Row1: [txtMinGiftAmount]
+                Row2: [txtMaxGiftAmount]
+        grpNumberOfGifts: {Label=Number of Gifts}
+            Controls:
+                Row0: [txtMinNumberOfGifts]
+                Row1: [txtMaxNumberOfGifts]
+                
+        chkNewDonorsOnly: {Label=New Donors only, ParameterName=param_new_donors_only}
+        dtpDateFrom: {Label=Date from, ClearIfSettingEmpty=true, ParameterName=param_date_from}
+        dtpDateTo: {Label=To, ClearIfSettingEmpty=true, ParameterName=param_date_to}
+        chkAmountPerSingleGift: {Label=per single gift, ParameterName=param_amount_per_single_gift}
+        txtMinGiftAmount: {Label: Minimum, Format=Currency, ParameterName=param_min_gift_amount} 
+        txtMaxGiftAmount: {Label: Maximum, Format=Currency, ParameterName=param_max_gift_amount} 
+        txtMinNumberOfGifts: {Label: Minimum, Format=Integer, ParameterName=param_min_number_gifts} 
+        txtMaxNumberOfGifts: {Label: Maximum, Format=Integer, ParameterName=param_max_number_gifts} 
+        rgrCurrency: {Label=Currency, ParameterName=param_currency}
+            Controls: [rbtBaseCurrency, rbtInternationalCurrency]
+        rbtBaseCurrency: {Label=Base, ParameterValue=BaseCurrency}
+        rbtInternationalCurrency: {Label=International, ParameterValue=InternationalCurrency}
+        ucoAddress:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Width: 500
+            Height: 170
+        ucoChkFilter:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Width: 300
+            Height: 100

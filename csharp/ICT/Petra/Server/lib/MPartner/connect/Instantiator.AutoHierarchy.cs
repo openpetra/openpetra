@@ -2777,10 +2777,38 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                        Boolean AAllUsers,
+                                                        String AUserCreated,
+                                                        String AUserModified)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";STRING;BOOL;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AAllUsers, AUserCreated, AUserModified);
+        }
+
+        /// generated method from connector
         public Boolean ExtractExists(String AExtractName)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "ExtractExists", ";STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.ExtractExists(AExtractName);
+        }
+
+        /// generated method from connector
+        public Boolean CreateEmptyExtract(ref System.Int32 AExtractId,
+                                          String AExtractName,
+                                          String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateEmptyExtract", ";INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateEmptyExtract(ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
+        public Boolean PurgeExtracts(System.Int32 ANumberOfDays,
+                                     Boolean AAllUsers,
+                                     String AUserName)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "PurgeExtracts", ";INT;BOOL;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.PurgeExtracts(ANumberOfDays, AAllUsers, AUserName);
         }
 
         /// generated method from connector
