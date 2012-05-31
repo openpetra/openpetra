@@ -253,6 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             	rbtEditing.Checked = true;
             }
         	
+        	pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
             txtDetailBatchDescription.Focus();
         }
@@ -308,6 +309,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 FPreviouslySelectedDetailRow = null;
+                pnlDetails.Enabled = false;
                 ClearControls();
             }
         }
@@ -317,6 +319,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailBatchDescription.Clear();
             txtDetailHashTotal.NumberValueDecimal = 0;
             dtpDetailGlEffectiveDate.Clear();
+            cmbDetailBankCostCentre.SelectedIndex = -1;
+            cmbDetailBankAccountCode.SelectedIndex = -1;
             cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
 

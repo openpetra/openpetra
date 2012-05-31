@@ -516,6 +516,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
+                pnlDetails.Enabled = false;
                 ClearControls();
             }
         }
@@ -535,6 +536,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailGiftCommentThree.Clear();
             cmbDetailReceiptLetterCode.SelectedIndex = -1;
             cmbDetailMotivationGroupCode.SelectedIndex = -1;
+            cmbDetailMotivationDetailCode.SelectedIndex = -1;
             cmbDetailCommentOneType.SelectedIndex = -1;
             cmbDetailCommentTwoType.SelectedIndex = -1;
             cmbDetailCommentThreeType.SelectedIndex = -1;

@@ -86,7 +86,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, ActiveOnly);
             //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
 
-
+            //add textxhanged event handler to Motivation group code
+            this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
+            this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
+            
             //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
             //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
 
@@ -212,6 +215,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 RetrieveMotivationDetailCostCentreCode();
             }
+        }
+
+        private void MotivationGroupCodeChanged(object sender, EventArgs e)
+        {
+        	if (cmbDetailMotivationGroupCode.Text.Trim() == string.Empty)
+			{
+        		cmbDetailMotivationGroupCode.SelectedIndex = -1;
+        		cmbDetailMotivationDetailCode.SelectedIndex = -1;
+			}        	
+        }
+
+        /// <summary>
+        /// Called on TextChanged event for combo
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MotivationDetailCodeChanged(object sender, EventArgs e)
+        {
+        	if (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty)
+			{
+        		txtDetailAccountCode.Text = string.Empty;
+			}        	
         }
 
         /// <summary>
@@ -467,13 +492,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                ClearControls();
+                pnlDetails.Enabled = false;
+            	ClearControls();
             }
         }
 
         private void ClearControls()
         {
-            txtDetailDonorKey.Text = string.Empty;
+        	txtBatchTotal.NumberValueDecimal = 0;
+        	txtDetailDonorKey.Text = string.Empty;
             txtDetailReference.Clear();
             txtGiftTotal.NumberValueDecimal = 0;
             txtDetailGiftAmount.NumberValueDecimal = 0;
@@ -487,6 +514,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailGiftCommentThree.Clear();
             cmbDetailReceiptLetterCode.SelectedIndex = -1;
             cmbDetailMotivationGroupCode.SelectedIndex = -1;
+            cmbDetailMotivationDetailCode.SelectedIndex = -1;
             cmbDetailCommentOneType.SelectedIndex = -1;
             cmbDetailCommentTwoType.SelectedIndex = -1;
             cmbDetailCommentThreeType.SelectedIndex = -1;
@@ -632,20 +660,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (grdDetails.Rows.Count == 1)
             {
-            	txtBatchTotal.NumberValueDecimal = 0;
             	ClearControls();
             }
-
-            //----Set Cost Centre Code
-            long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
-
-            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, PartnerKey);
-
-            long FieldNumber = Convert.ToInt64(txtField.Text);
-
-            txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
-            //----
-
+            else
+            {
+	            //----Set Cost Centre Code
+	            long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+	
+	            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, PartnerKey);
+	
+	            long FieldNumber = Convert.ToInt64(txtField.Text);
+	
+	            txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
+            }
+            
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfPaymentCode, Catalog.GetString("Enter the method of payment"));
             FPetraUtilsObject.SetStatusBarText(txtDetailReference, Catalog.GetString("Enter a reference code."));
@@ -659,7 +687,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARow == null)
             {
-                return;
+            	return;
             }
 
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);

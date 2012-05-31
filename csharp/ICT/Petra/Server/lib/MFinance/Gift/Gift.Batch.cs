@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.LedgerNumber = ALedgerNumber;
             LedgerTable[0].LastRecGiftBatchNumber++;
             NewRow.BatchNumber = LedgerTable[0].LastRecGiftBatchNumber;
-            NewRow.BatchDescription = "PLEASE ENTER A DESCRIPTION";
+            NewRow.BatchDescription = Catalog.GetString("Please enter recurring batch description");
 
             // TODO: bank account as a parameter, set on the gift matching screen, etc
             NewRow.BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
