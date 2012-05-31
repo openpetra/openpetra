@@ -62,8 +62,9 @@ namespace Ict.Petra.Server.MPartner.queries
         /// retrieve parameters from client sent in AParameters and build up AParameterList to run SQL query
         /// </summary>
         /// <param name="AParameters"></param>
+        /// <param name="ASqlStmt"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters(TParameterList AParameters, ref TSelfExpandingArrayList ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref TSelfExpandingArrayList ASQLParameterList)
         {
             ICollection <String>param_explicit_specialtypes;
 

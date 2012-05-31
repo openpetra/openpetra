@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,6 +37,5 @@ namespace Ict.Petra.Server.MCommon.DataReader
         //
         // Put Methods for the validation of DataReader-managed DataTables in this code file.
         //
-
     }
 }

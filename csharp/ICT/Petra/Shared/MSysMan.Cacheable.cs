@@ -35,13 +35,12 @@ namespace Ict.Petra.Shared
     public enum TCacheableSysManTablesEnum
     {
         /// <summary>
-        /// List of users
-        /// </summary>
-        UserList,
-
-        /// <summary>
         /// Definitions of fields that are language specific.
         /// </summary>
-        LanguageSpecificList
+        LanguageSpecificList,
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        UserList
     };
 }

@@ -1,0 +1,24 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Purge Extracts
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    FormType: dialog
+    Template: window
+    WindowWidth: 400
+    WindowHeight: 300
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [lblIntroduction]
+                Row1: [txtNumberOfDays]
+                Row2: [chkAllUsers]
+                Row3: [cmbUser]
+                
+        lblIntroduction: {Label=Purge Extracts that are}
+        txtNumberOfDays: {Label=Days old, Format=Integer}
+        chkAllUsers: {Label=For all users}
+        cmbUser: {Label=For user, List=UserList}

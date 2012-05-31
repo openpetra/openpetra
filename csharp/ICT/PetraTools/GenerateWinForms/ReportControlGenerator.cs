@@ -57,6 +57,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// give information if a value should be cleared if there is no value in the settings file
+        /// </summary>
+        public static bool GetClearIfSettingEmpty(XmlNode curNode)
+        {
+            if (TYml2Xml.HasAttribute(curNode, "ClearIfSettingEmpty"))
+            {
+                if (TYml2Xml.GetAttribute(curNode, "ClearIfSettingEmpty").ToLower() == "true")
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// write the code for reading and writing the controls with the parameters
         /// </summary>
         public static void GenerateReadSetControls(TFormWriter writer, XmlNode curNode, ProcessTemplate ATargetTemplate, string ATemplateControlType)
@@ -78,6 +98,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return;
             }
 
+            bool clearIfSettingEmpty = ReportControls.GetClearIfSettingEmpty(curNode);
+
             ProcessTemplate snippetReadControls = writer.Template.GetSnippet(ATemplateControlType + "READCONTROLS");
             snippetReadControls.SetCodelet("CONTROLNAME", controlName);
             snippetReadControls.SetCodelet("PARAMNAME", paramName);
@@ -86,6 +108,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             ProcessTemplate snippetWriteControls = writer.Template.GetSnippet(ATemplateControlType + "SETCONTROLS");
             snippetWriteControls.SetCodelet("CONTROLNAME", controlName);
             snippetWriteControls.SetCodelet("PARAMNAME", paramName);
+
+            if (clearIfSettingEmpty)
+            {
+                snippetWriteControls.SetCodelet("CLEARIFSETTINGEMPTY", clearIfSettingEmpty.ToString().ToLower());
+            }
+
             ATargetTemplate.InsertSnippet("SETCONTROLS", snippetWriteControls);
         }
     }

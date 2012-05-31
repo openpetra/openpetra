@@ -58,12 +58,25 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
-            // 'International Telephone Code' must be positive or 0
+            // 'International Access Code' must have a value
+            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatAccessCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.InternatAccessCode,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+            
+            // 'International Telephone Code' must be positive
             ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatTelephoneCodeId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
+                VerificationResult = TNumericalChecks.IsPositiveInteger(ARow.InternatTelephoneCode,
                     ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
