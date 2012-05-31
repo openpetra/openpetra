@@ -40,6 +40,7 @@ namespace Ict.Tools.DevelopersAssistant
         private string _password;
         private string _port;
         private string _target;
+        private string _version;
 
         private List <string>_storedDbBuildConfig = new List <string>();                     // List of stored configuration items
 
@@ -89,6 +90,7 @@ namespace Ict.Tools.DevelopersAssistant
             _password = DefaultString;
             _port = DefaultString;
             _target = DefaultString;
+            _version = DefaultString;
 
             XmlDocument xmlDoc = new XmlDocument();
             try
@@ -99,6 +101,11 @@ namespace Ict.Tools.DevelopersAssistant
                 _password = GetPropertyValue(xmlDoc, "DBMS.Password");
                 _port = GetPropertyValue(xmlDoc, "DBMS.DBPort");
                 _target = GetPropertyValue(xmlDoc, "DBMS.DBHostOrFile");
+
+                if (String.Compare(_DBMSType, "postgresql", true) == 0)
+                {
+                    _version = GetPropertyValue(xmlDoc, "PostgreSQL.Version");
+                }
 
                 // Save the current configuration as a favourite
                 SaveCurrentConfig();
@@ -120,8 +127,9 @@ namespace Ict.Tools.DevelopersAssistant
                     return "";
                 }
 
-                string s = String.Format("DBMS: {0};  Port: {1};  Database name: {2};  Password: {3}\r\nLocation: {4}",
-                    _DBMSType,
+                string s = String.Format("DBMS: {0}{1};  Port: {2};  Database name: {3};  Password: {4}\r\nLocation: {5}",
+                    Systems[GetDBMSIndex(_DBMSType)],
+                    IsDefined(_version) ? " version " + _version : String.Empty,
                     _port,
                     _DBName,
                     (_password == String.Empty) ? "<blank>" : _password,
@@ -149,7 +157,9 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (items[0] != String.Empty)
                 {
-                    s += String.Format(";  DBMS: {0}", items[0]);
+                    s += String.Format(";  DBMS: {0}{1}", Systems[GetDBMSIndex(
+                                                                      items[0])],
+                        (items.Length > 6 && items[6] != String.Empty) ? " version " + items[6] : String.Empty);
                 }
 
                 if (items[1] != String.Empty)
@@ -187,6 +197,14 @@ namespace Ict.Tools.DevelopersAssistant
             if (listBox.Items.Count > 0)
             {
                 listBox.SelectedIndex = 0;
+            }
+        }
+
+        public string FavouriteConfigurations
+        {
+            get
+            {
+                return MakeConfigStringArray();
             }
         }
 
@@ -233,9 +251,9 @@ namespace Ict.Tools.DevelopersAssistant
             if ((Index >= 0) && (Index < _storedDbBuildConfig.Count))
             {
                 bRet = true;
-                string dbms, dbName, port, password, location;
+                string dbms, dbName, port, password, location, version;
                 bool isBlank;
-                GetStoredConfiguration(Index, out dbms, out dbName, out port, out password, out isBlank, out location);
+                GetStoredConfiguration(Index, out dbms, out dbName, out port, out password, out isBlank, out location, out version);
                 XmlDocument xmlDoc = new XmlDocument();
                 try
                 {
@@ -258,6 +276,15 @@ namespace Ict.Tools.DevelopersAssistant
                     else
                     {
                         bRet &= SetPropertyValue(xmlDoc, "DBMS.Type", dbms.ToLower());
+                    }
+
+                    if (version == String.Empty)
+                    {
+                        bRet &= RemoveProperty(xmlDoc, "PostgreSQL.Version");
+                    }
+                    else
+                    {
+                        bRet &= SetPropertyValue(xmlDoc, "PostgreSQL.Version", version);
                     }
 
                     if (dbName == String.Empty)
@@ -326,6 +353,7 @@ namespace Ict.Tools.DevelopersAssistant
         private void SaveCurrentConfig()
         {
             string dbms = (IsDefined(_DBMSType)) ? _DBMSType : String.Empty;
+            string version = (IsDefined(_version)) ? _version : String.Empty;
             string dbName = (IsDefined(_DBName)) ? _DBName : String.Empty;
             string port = (IsDefined(_port)) ? _port : String.Empty;
             string location = (IsDefined(_target)) ? _target : String.Empty;
@@ -338,7 +366,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (hasContent)
             {
-                string s = MakeConfigString(dbms, dbName, port, password, isBlank, location);
+                string s = MakeConfigString(dbms, dbName, port, password, isBlank, location, version);
 
                 // Have we got it already?
                 for (int i = 0; i < _storedDbBuildConfig.Count; i++)
@@ -363,9 +391,10 @@ namespace Ict.Tools.DevelopersAssistant
         /// <param name="IsBlank">Set this true to force the use of a blank password</param>
         /// <param name="Location">A parameter that specifies the host location or file location depending on the DBMS type</param>
         /// <returns>The formatted string for use as a stored favourite</returns>
-        public static string MakeConfigString(string DBMS, string DBName, string Port, string Password, bool IsBlank, string Location)
+        public static string MakeConfigString(string DBMS, string DBName, string Port, string Password, bool IsBlank, string Location, string Version)
         {
-            return String.Format("{0}++{1}++{2}++{3}++{4}++{5}", DBMS, DBName, Port, Password, (IsBlank) ? "1" : "0", Location);
+            return String.Format("{0}++{1}++{2}++{3}++{4}++{5}++{6}",
+                DBMS.ToLower(), DBName, Port, Password, (IsBlank) ? "1" : "0", Location, Version);
         }
 
         /// <summary>
@@ -403,13 +432,15 @@ namespace Ict.Tools.DevelopersAssistant
         /// <param name="Password">Returns the password for the database</param>
         /// <param name="IsBlank">Returns if the password is explicitly blank</param>
         /// <param name="Location">Returns the location parameter (the host or file path)</param>
+        /// <param name="Version">Returns the DBMS version</param>
         public void GetStoredConfiguration(int Index,
             out string DBMS,
             out string DBName,
             out string Port,
             out string Password,
             out bool IsBlank,
-            out string Location)
+            out string Location,
+            out string Version)
         {
             DBMS = String.Empty;
             DBName = String.Empty;
@@ -417,6 +448,7 @@ namespace Ict.Tools.DevelopersAssistant
             Password = String.Empty;
             IsBlank = false;
             Location = String.Empty;
+            Version = String.Empty;
 
             if ((Index >= 0) && (Index < _storedDbBuildConfig.Count))
             {
@@ -431,6 +463,11 @@ namespace Ict.Tools.DevelopersAssistant
                 Password = items[3];
                 IsBlank = items[4] != "0";
                 Location = items[5];
+
+                if (items.Length > 6)
+                {
+                    Version = items[6];
+                }
             }
         }
 

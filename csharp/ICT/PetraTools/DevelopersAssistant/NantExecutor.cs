@@ -113,7 +113,7 @@ namespace Ict.Tools.DevelopersAssistant
             if (bRet)
             {
                 // Just wait for things to settle
-                System.Threading.Thread.Sleep(250);
+                System.Threading.Thread.Sleep(2000);
 
                 // Call IsServerRunning - this will work out the value for _serverProcessID
                 IsServerRunning();
@@ -253,6 +253,7 @@ namespace Ict.Tools.DevelopersAssistant
             try
             {
                 Process p = Process.Start(si);
+
                 if (WaitForExit)
                 {
                     p.WaitForExit();
