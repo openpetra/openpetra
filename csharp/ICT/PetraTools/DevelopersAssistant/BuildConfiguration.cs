@@ -390,6 +390,7 @@ namespace Ict.Tools.DevelopersAssistant
         /// <param name="Password">The database password</param>
         /// <param name="IsBlank">Set this true to force the use of a blank password</param>
         /// <param name="Location">A parameter that specifies the host location or file location depending on the DBMS type</param>
+        /// <param name="Version">The version of the DBMS (currently only used for PostgreSQL)</param>
         /// <returns>The formatted string for use as a stored favourite</returns>
         public static string MakeConfigString(string DBMS, string DBName, string Port, string Password, bool IsBlank, string Location, string Version)
         {
