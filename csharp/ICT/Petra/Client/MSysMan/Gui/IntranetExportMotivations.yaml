@@ -1,0 +1,46 @@
+  RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Motivation details to be Exported
+    Namespace: Ict.Petra.Client.MSysMan.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 575
+    WindowHeight:400
+
+    Controls:
+        pnlDialogContent:
+            Controls: 
+                Row0: [pnlLedger]
+                Row1: [pnlExport]
+
+        pnlLedger:
+            Controls: 
+                Row0: [cmbLedger, lblNote]
+        cmbLedger:
+            OnChange: OnLedgerChange
+        lblNote:
+            Stretch:horizontally
+        pnlExport:
+            Stretch: vertically
+            Controls: 
+                Row0: [pnlDontExport, pnlAddRemove, pnlDoExport]
+
+        pnlDontExport:
+            Width: 200
+            Height: 270
+        pnlAddRemove:
+            Width: 102
+            Controls:
+                Row2: [btnAdd]
+                Row3: [btnRemove]
+        btnAdd:
+            Label:Add >>
+            Width:90
+            ActionClick: AddSelected
+        btnRemove:
+            Label:<< Remove
+            Width:90
+            ActionClick: RemoveSelected
+        pnlDoExport:
+            Width: 200
+            Height: 270

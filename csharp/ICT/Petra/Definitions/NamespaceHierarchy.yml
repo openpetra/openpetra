@@ -102,3 +102,5 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
             UserManager:
         Cacheable: {Description=Cacheable DataTables}
+        IntranetExport: {Description=Export data to Intranet}
+            WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}

@@ -372,6 +372,9 @@ OpenPetra:
                         SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
                     Language:
                         SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
+                    Export:
+                        ExportDataToCaleb: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
+
         SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
             Security:
                 Users:
