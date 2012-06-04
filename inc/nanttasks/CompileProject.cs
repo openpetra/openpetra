@@ -468,15 +468,17 @@ namespace Ict.Tools.NAntTasks
                 // could call msbuild or xbuild with the project files as parameter
                 // OR: process csproj file, and call csc task directly. might avoid some warnings, and work around xbuild issues
 
-                if (true || FUseCSC)
-                {
-                    // RunCscTask();
-                    CompileHere();
-                }
-                else
-                {
-                    RunSolutionTask();
-                }
+                // this is the fastest option. resources are compiled quickly, and only the required dll is compiled
+                CompileHere();
+
+                // if (FUseCSC)
+                // {
+                //     RunCscTask();
+                // }
+                // else
+                // {
+                //     RunSolutionTask();
+                // }
             }
             else
             {
