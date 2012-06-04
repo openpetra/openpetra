@@ -34,6 +34,7 @@ using Microsoft.CSharp;
 using System.Reflection;
 using NAnt.Core;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 using NAnt.DotNet.Tasks;
 using NAnt.DotNet.Types;
@@ -248,7 +249,7 @@ namespace Ict.Tools.NAntTasks
             return Path.GetFileNameWithoutExtension(ACSFile);
         }
 
-        protected void CompileHere()
+        private bool CompileHere()
         {
             Console.WriteLine("Compiling " + FCSProjFile);
 
@@ -290,8 +291,14 @@ namespace Ict.Tools.NAntTasks
             }
 
             parameters.OutputAssembly = OutputFile;
+            parameters.WarningLevel = 4;
 
-            parameters.CompilerOptions = "/define:DEBUGMODE";
+            parameters.CompilerOptions = "/define:DEBUGMODE /doc:\"" + OutputFile + ".xml\"";
+
+            if (this.Project.PlatformName == "unix")
+            {
+                parameters.CompilerOptions = parameters.CompilerOptions.Replace("/", "-");
+            }
 
             String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
 
@@ -345,7 +352,7 @@ namespace Ict.Tools.NAntTasks
                                 if (File.Exists(ResourceXFile))
                                 {
                                     Environment.CurrentDirectory = Path.GetDirectoryName(ResourceXFile);
-                                    
+
                                     ResXResourceReader ResXReader = new ResXResourceReader(ResourceXFile);
                                     FileStream fs = new FileStream(ResourcesFile, FileMode.OpenOrCreate, FileAccess.Write);
                                     IResourceWriter writer = new ResourceWriter(fs);
@@ -371,13 +378,27 @@ namespace Ict.Tools.NAntTasks
 
             CompilerResults results = csc.CompileAssemblyFromFile(parameters, src.ToArray());
 
-            if (results.Errors.HasErrors)
+            bool result = true;
+
+            foreach (CompilerError error in results.Errors)
             {
-                foreach (CompilerError error in results.Errors)
+                Console.WriteLine(error.ToString());
+
+                if (!error.IsWarning)
                 {
-                    Console.WriteLine(error.ToString());
+                    result = false;
                 }
             }
+
+            if (!result)
+            {
+                FailTask fail = new FailTask();
+                this.CopyTo(fail);
+                fail.Message = "compiler error(s)";
+                fail.Execute();
+            }
+
+            return result;
         }
 
         protected void RunSolutionTask()
