@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,8 +28,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Resources;
+using System.CodeDom.Compiler;
+using Microsoft.CSharp;
+using System.Reflection;
 using NAnt.Core;
 using NAnt.Core.Attributes;
+using NAnt.Core.Tasks;
 using NAnt.Core.Types;
 using NAnt.DotNet.Tasks;
 using NAnt.DotNet.Types;
@@ -211,6 +216,191 @@ namespace Ict.Tools.NAntTasks
             csc.Execute();
         }
 
+        private string GetNamespaceAndClass(string ACSFile)
+        {
+            string result = string.Empty;
+
+            StreamReader sr = new StreamReader(ACSFile);
+
+            while (!sr.EndOfStream)
+            {
+                string line = sr.ReadLine().Trim();
+
+                if (line.StartsWith("namespace "))
+                {
+                    result = line.Substring("namespace ".Length);
+                }
+
+                if (line.Contains("public ") && line.Contains(" class "))
+                {
+                    string classname = line.Substring(line.IndexOf(" class ") + " class ".Length);
+
+                    if (classname.IndexOfAny(new char[] { ' ', ':', '{' }) != -1)
+                    {
+                        classname = classname.Substring(0, classname.IndexOfAny(new char[] { ' ', ':', '{' }));
+                    }
+
+                    result += "." + classname;
+
+                    return result;
+                }
+            }
+
+            return Path.GetFileNameWithoutExtension(ACSFile);
+        }
+
+        private bool CompileHere()
+        {
+            Console.WriteLine("Compiling " + FCSProjFile);
+
+            XmlDocument doc = new XmlDocument();
+
+            doc.Load(FCSProjFile);
+
+            XmlNode propertyGroup = doc.DocumentElement.FirstChild;
+            Dictionary <string, string>mainProperties = new Dictionary <string, string>();
+
+            List <String>src = new List <string>();
+
+            foreach (XmlNode propNode in propertyGroup.ChildNodes)
+            {
+                mainProperties.Add(propNode.Name, propNode.InnerText);
+            }
+
+            CSharpCodeProvider csc = new CSharpCodeProvider(
+                new Dictionary <string, string>() {
+                    { "CompilerVersion", "v4.0" }
+                });
+            CompilerParameters parameters = new CompilerParameters();
+
+            parameters.GenerateInMemory = false;
+
+            string OutputFile = mainProperties["OutputPath"];
+
+            OutputFile += "/" + mainProperties["AssemblyName"];
+
+            if (mainProperties["OutputType"].ToLower() == "library")
+            {
+                parameters.GenerateExecutable = false;
+                OutputFile += ".dll";
+            }
+            else
+            {
+                parameters.GenerateExecutable = true;
+                OutputFile += ".exe";
+            }
+
+            parameters.OutputAssembly = OutputFile;
+            parameters.WarningLevel = 4;
+
+            parameters.CompilerOptions = "/define:DEBUGMODE /doc:\"" + OutputFile + ".xml\"";
+
+            if (this.Project.PlatformName == "unix")
+            {
+                parameters.CompilerOptions = parameters.CompilerOptions.Replace("/", "-");
+            }
+
+            String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
+
+            foreach (XmlNode ProjectNodeChild in doc.DocumentElement)
+            {
+                if (ProjectNodeChild.Name == "ItemGroup")
+                {
+                    foreach (XmlNode ItemNode in ProjectNodeChild)
+                    {
+                        if (ItemNode.Name == "Reference")
+                        {
+                            if (ItemNode.HasChildNodes && (ItemNode.ChildNodes[0].Name == "HintPath"))
+                            {
+                                parameters.ReferencedAssemblies.Add(ItemNode.ChildNodes[0].InnerText);
+                            }
+                            else
+                            {
+                                // .net dlls
+                                parameters.ReferencedAssemblies.Add(
+                                    FrameworkDLLPath + Path.DirectorySeparatorChar +
+                                    ItemNode.Attributes["Include"].Value + ".dll");
+                            }
+                        }
+                        else if (ItemNode.Name == "ProjectReference")
+                        {
+                            string ReferencedProjectName = ItemNode.ChildNodes[1].InnerText;
+                            parameters.ReferencedAssemblies.Add(
+                                Path.GetDirectoryName(OutputFile) + Path.DirectorySeparatorChar +
+                                ReferencedProjectName + ".dll");
+                        }
+                        else if (ItemNode.Name == "Compile")
+                        {
+                            src.Add(ItemNode.Attributes["Include"].Value);
+                        }
+                        else if (ItemNode.Name == "EmbeddedResource")
+                        {
+                            string ResourceXFile = ItemNode.Attributes["Include"].Value;
+
+                            if (ResourceXFile.EndsWith(".resx"))
+                            {
+                                string NamespaceAndClass = Path.GetFileNameWithoutExtension(ResourceXFile);
+
+                                if (ItemNode.HasChildNodes && (ItemNode.FirstChild.Name == "DependentUpon"))
+                                {
+                                    NamespaceAndClass = GetNamespaceAndClass(ItemNode.FirstChild.InnerText);
+                                }
+
+                                //"../../../../tmp/" +
+                                string ResourcesFile = NamespaceAndClass + ".resources";
+
+                                if (File.Exists(ResourceXFile))
+                                {
+                                    Environment.CurrentDirectory = Path.GetDirectoryName(ResourceXFile);
+
+                                    ResXResourceReader ResXReader = new ResXResourceReader(ResourceXFile);
+                                    FileStream fs = new FileStream(ResourcesFile, FileMode.OpenOrCreate, FileAccess.Write);
+                                    IResourceWriter writer = new ResourceWriter(fs);
+
+                                    foreach (DictionaryEntry d in ResXReader)
+                                    {
+                                        writer.AddResource(d.Key.ToString(), d.Value);
+                                    }
+
+                                    writer.Close();
+
+                                    parameters.EmbeddedResources.Add(ResourcesFile);
+                                }
+                            }
+                            else
+                            {
+                                parameters.EmbeddedResources.Add(ResourceXFile);
+                            }
+                        }
+                    }
+                }
+            }
+
+            CompilerResults results = csc.CompileAssemblyFromFile(parameters, src.ToArray());
+
+            bool result = true;
+
+            foreach (CompilerError error in results.Errors)
+            {
+                Console.WriteLine(error.ToString());
+
+                if (!error.IsWarning)
+                {
+                    result = false;
+                }
+            }
+
+            if (!result)
+            {
+                FailTask fail = new FailTask();
+                this.CopyTo(fail);
+                fail.Message = "compiler error(s)";
+                fail.Execute();
+            }
+
+            return result;
+        }
+
         protected void RunSolutionTask()
         {
             // create a copy of OpenPetra.sln, and remove all projects but FCSProjFile
@@ -278,14 +468,17 @@ namespace Ict.Tools.NAntTasks
                 // could call msbuild or xbuild with the project files as parameter
                 // OR: process csproj file, and call csc task directly. might avoid some warnings, and work around xbuild issues
 
-                if (FUseCSC)
-                {
-                    RunCscTask();
-                }
-                else
-                {
-                    RunSolutionTask();
-                }
+                // this is the fastest option. resources are compiled quickly, and only the required dll is compiled
+                CompileHere();
+
+                // if (FUseCSC)
+                // {
+                //     RunCscTask();
+                // }
+                // else
+                // {
+                //     RunSolutionTask();
+                // }
             }
             else
             {
