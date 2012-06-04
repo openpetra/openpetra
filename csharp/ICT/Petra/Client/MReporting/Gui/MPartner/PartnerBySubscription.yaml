@@ -4,8 +4,8 @@ RootNode:
     FormTitle: Partner By Subscription
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     UsingNamespaces: [Ict.Petra.Client.MReporting.Gui]
-#    WindowWidth: 800
-#    WindowHeight: 700
+    WindowWidth: 700
+    WindowHeight: 700
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerBySubscription.CalculateExtract
         ISOLATIONLEVEL: serializable
@@ -29,10 +29,8 @@ RootNode:
             Controls: [ucoReportSorting]
         pnlSettingsGrid:
             Controls: [lblIncludePublication, clbIncludePublication, dtpDateOfSendingCopy]
-            Dock: Fill
             Order: AlwaysFirst
         pnlSettingsCriteria:
-            Dock: Bottom
             Controls: 
 #                Row0: [chkActivePartnersOnly, chkMailingAddressesOnly]
 #                Row1: [chkFamiliesOnly, chkExcludeNoSolicitations]
@@ -46,7 +44,7 @@ RootNode:
         clbIncludePublication:
             NoLabel: true 
             ParameterName: param_explicit_publication
-            Width: 400
+            Width: 550
             Height: 200
         dtpDateOfSendingCopy:
             ParameterName: param_date_effective

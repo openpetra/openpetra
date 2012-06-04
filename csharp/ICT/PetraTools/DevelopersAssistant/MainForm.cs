@@ -135,7 +135,8 @@ namespace Ict.Tools.DevelopersAssistant
                 lblDbBuildConfig.Text = dbCfg.CurrentConfig;
             }
 
-            dbCfg.ListAllConfigs(listDbBuildConfig);
+            dbCfg.ListAllConfigs(listDbBuildConfig);        // This might add a new configuration, so we need to update our local settings
+            _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
             btnRemoveDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0;
             btnEditDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0;
             btnSaveDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0 && txtBranchLocation.Text != String.Empty;
@@ -477,6 +478,8 @@ namespace Ict.Tools.DevelopersAssistant
 
             BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
             dbCfg.RemoveConfig(index);
+            _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
+
             SetBranchDependencies();
 
             if ((--index < 0) && (listDbBuildConfig.Items.Count > 0))
@@ -506,6 +509,8 @@ namespace Ict.Tools.DevelopersAssistant
 
             BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
             dbCfg.EditConfig(listDbBuildConfig.SelectedIndex, dlg.ExitData);
+            _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
+
             SetBranchDependencies();
             listDbBuildConfig.SelectedIndex = index;
         }
@@ -1567,18 +1572,21 @@ namespace Ict.Tools.DevelopersAssistant
         protected override void WndProc(ref Message message)
         {
             // We just check for our magic number to see if we have been activated by another instance
-            System.Diagnostics.Trace.WriteLine(String.Format("Message received - {0}", message.Msg));
 
             if (message.Msg == Program.UM_STOP_SERVER)
             {
+                System.Diagnostics.Trace.WriteLine(String.Format("Stop server: Message received - {0}", message.Msg));
                 linkLabelStopServer_LinkClicked(null, null);
             }
             else if (message.Msg == Program.UM_START_SERVER)
             {
+                System.Diagnostics.Trace.WriteLine(String.Format("Start server: Message received - {0}", message.Msg));
                 linkLabelStartServer_LinkClicked(null, null);
             }
-
-            base.WndProc(ref message);
+            else
+            {
+                base.WndProc(ref message);
+            }
         }
     }
 }
