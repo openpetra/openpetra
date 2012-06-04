@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanp
+//       alanP
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -21,8 +21,27 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
 
-[assembly: AssemblyFileVersion("1.0.1.30")]
+namespace Ict.Tools.DevelopersAssistant
+{
+    /// <summary>
+    /// The dialog that displays advanced options
+    /// </summary>
+    public partial class DlgAdvancedOptions : Form
+    {
+        /// <summary>
+        /// Main Constructor
+        /// </summary>
+        public DlgAdvancedOptions()
+        {
+            InitializeComponent();
+        }
+    }
+}
