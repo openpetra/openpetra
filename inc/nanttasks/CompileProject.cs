@@ -350,7 +350,15 @@ namespace Ict.Tools.NAntTasks
 
                                     foreach (DictionaryEntry d in ResXReader)
                                     {
-                                        writer.AddResource(d.Key.ToString(), d.Value);
+                                        string value = d.Value.ToString();
+                                        
+                                        // in the developers assistant there is a reference to an .ico file, need to add the full path
+                                        if (value.Contains(";System.Drawing.Icon, System.Drawing, "))
+                                        {
+                                            value = Path.GetDirectoryName(ResourceXFile) + "/" + value;
+                                        }
+                                        
+                                        writer.AddResource(d.Key.ToString(), value);
                                     }
 
                                     writer.Close();
