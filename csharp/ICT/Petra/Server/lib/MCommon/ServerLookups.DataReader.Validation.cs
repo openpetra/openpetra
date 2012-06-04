@@ -37,6 +37,5 @@ namespace Ict.Petra.Server.MCommon.DataReader
         //
         // Put Methods for the validation of DataReader-managed DataTables in this code file.
         //
-
     }
 }

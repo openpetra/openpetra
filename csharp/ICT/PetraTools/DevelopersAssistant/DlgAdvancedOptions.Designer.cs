@@ -59,40 +59,40 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnCancel = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
+            //
             // chkDoPreBuild
-            // 
+            //
             this.chkDoPreBuild.AutoSize = true;
             this.chkDoPreBuild.Location = new System.Drawing.Point(32, 72);
             this.chkDoPreBuild.Name = "chkDoPreBuild";
             this.chkDoPreBuild.Size = new System.Drawing.Size(442, 17);
             this.chkDoPreBuild.TabIndex = 0;
             this.chkDoPreBuild.Text = "Include a pre-build action on Ict.Common.dll to stop the server before compiling " +
-    "the code";
+                                      "the code";
             this.chkDoPreBuild.UseVisualStyleBackColor = true;
-            // 
+            //
             // chkDoPostBuild
-            // 
+            //
             this.chkDoPostBuild.AutoSize = true;
             this.chkDoPostBuild.Location = new System.Drawing.Point(32, 95);
             this.chkDoPostBuild.Name = "chkDoPostBuild";
             this.chkDoPostBuild.Size = new System.Drawing.Size(500, 17);
             this.chkDoPostBuild.TabIndex = 1;
             this.chkDoPostBuild.Text = "Include a post-build action on PetraClient.exe to start the server after successf" +
-    "ully compiling the code";
+                                       "ully compiling the code";
             this.chkDoPostBuild.UseVisualStyleBackColor = true;
-            // 
+            //
             // label1
-            // 
+            //
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(13, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(315, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Project code generation (Generate Solution with No Compile only)";
-            // 
+            //
             // btnOk
-            // 
+            //
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btnOk.Location = new System.Drawing.Point(386, 134);
             this.btnOk.Name = "btnOk";
@@ -100,9 +100,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnOk.TabIndex = 3;
             this.btnOk.Text = "Ok";
             this.btnOk.UseVisualStyleBackColor = true;
-            // 
+            //
             // btnCancel
-            // 
+            //
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(467, 134);
             this.btnCancel.Name = "btnCancel";
@@ -110,18 +110,18 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnCancel.TabIndex = 4;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            // 
+            //
             // label2
-            // 
+            //
             this.label2.Location = new System.Drawing.Point(29, 35);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(513, 28);
             this.label2.TabIndex = 5;
             this.label2.Text = "Be sure to generate the solution with full compile first, then run again with no " +
-    "compile.  After that you can work in your IDE in edit and debug mode.";
-            // 
+                               "compile.  After that you can work in your IDE in edit and debug mode.";
+            //
             // DlgAdvancedOptions
-            // 
+            //
             this.AcceptButton = this.btnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -138,7 +138,6 @@ namespace Ict.Tools.DevelopersAssistant
             this.Text = "Advanced Options";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

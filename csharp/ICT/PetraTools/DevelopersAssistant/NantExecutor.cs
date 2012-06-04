@@ -253,6 +253,7 @@ namespace Ict.Tools.DevelopersAssistant
             try
             {
                 Process p = Process.Start(si);
+
                 if (WaitForExit)
                 {
                     p.WaitForExit();

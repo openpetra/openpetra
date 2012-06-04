@@ -421,7 +421,8 @@ namespace Ict.Tools.NAntTasks
 
             // Now, for selected solutions, we add some solution files
             // This functionality is not available for all IDE's at present
-            if (ASolutionFilename == "OpenPetra.Client.sln" || ASolutionFilename == "OpenPetra.Server.sln" || ASolutionFilename == "OpenPetra.sln")
+            if ((ASolutionFilename == "OpenPetra.Client.sln") || (ASolutionFilename == "OpenPetra.Server.sln")
+                || (ASolutionFilename == "OpenPetra.sln"))
             {
                 if (File.Exists(ATemplateDir + "template.sln.folder"))
                 {
@@ -433,7 +434,12 @@ namespace Ict.Tools.NAntTasks
 
                     string fileList = GetAdditionalSolutionFile(solutionFolderName, "CacheableTablesAndLists.yaml");
                     fileList += GetAdditionalSolutionFile(solutionFolderName, "NamespaceHierarchy.yml");
-                    if (ASolutionFilename != "OpenPetra.Server.sln") fileList += GetAdditionalSolutionFile(solutionFolderName, "UINavigation.yml");
+
+                    if (ASolutionFilename != "OpenPetra.Server.sln")
+                    {
+                        fileList += GetAdditionalSolutionFile(solutionFolderName, "UINavigation.yml");
+                    }
+
                     temp.Replace("${FileList}", fileList);
                     Projects += temp.ToString();
 
@@ -448,16 +454,20 @@ namespace Ict.Tools.NAntTasks
                         string SQLFilesPath = FDirProjectFiles;         // will be <branch>/delivery/projects
                         SQLFilesPath += "/../../csharp/ICT/Petra/Server/sql";
                         SQLFilesPath = SQLFilesPath.Replace('/', Path.DirectorySeparatorChar);
+
                         if (Directory.Exists(SQLFilesPath))
                         {
                             string[] SQLFiles = Directory.GetFiles(SQLFilesPath, "*.sql", SearchOption.TopDirectoryOnly);
+
                             if (SQLFiles.Length > 0)
                             {
                                 fileList = String.Empty;
+
                                 for (int i = 0; i < SQLFiles.Length; i++)
                                 {
                                     fileList += GetAdditionalSolutionFile(solutionFolderName, Path.GetFileName(SQLFiles[i]));
                                 }
+
                                 temp.Replace("${FileList}", fileList);
                                 Projects += temp.ToString();
                             }
@@ -590,9 +600,11 @@ namespace Ict.Tools.NAntTasks
 
             // Set the application icon for WinExe projects, if an icon file exists
             string replaceWith = String.Empty;
+
             if (String.Compare(AProjectType, "WinExe", true) == 0)
             {
                 string[] iconFiles = Directory.GetFiles(ASrcPath, "*.ico", SearchOption.TopDirectoryOnly);
+
                 if (iconFiles.Length > 0)
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.appicon");
@@ -600,13 +612,16 @@ namespace Ict.Tools.NAntTasks
                     replaceWith = temp.ToString();
                 }
             }
+
             template.Replace("${ApplicationIcon}", replaceWith);
 
             // Set the Pre-build event if required by the environment and if the project is Ict.Common
             replaceWith = String.Empty;
-            if (AProjectName == "Ict.Common" && Environment.GetEnvironmentVariable("OPDA_StopServer") != null)
+
+            if ((AProjectName == "Ict.Common") && (Environment.GetEnvironmentVariable("OPDA_StopServer") != null))
             {
                 string path = Environment.GetEnvironmentVariable("OPDA_PATH");
+
                 if (path != null)
                 {
                     Uri u = new Uri(path);
@@ -615,13 +630,16 @@ namespace Ict.Tools.NAntTasks
                     replaceWith = temp.ToString();
                 }
             }
+
             template.Replace("${PreBuildEvent}", replaceWith);
 
             // Set the Post-build event if required by the environment and if the project is PetraClient
             replaceWith = String.Empty;
-            if (AProjectName == "PetraClient" && Environment.GetEnvironmentVariable("OPDA_StartServer") != null)
+
+            if ((AProjectName == "PetraClient") && (Environment.GetEnvironmentVariable("OPDA_StartServer") != null))
             {
                 string path = Environment.GetEnvironmentVariable("OPDA_PATH");
+
                 if (path != null)
                 {
                     Uri u = new Uri(path);
@@ -630,6 +648,7 @@ namespace Ict.Tools.NAntTasks
                     replaceWith = temp.ToString();
                 }
             }
+
             template.Replace("${PostBuildEvent}", replaceWith);
 
             // replace references
@@ -730,6 +749,7 @@ namespace Ict.Tools.NAntTasks
 
                         // Add the YAML file as a dependent non-compile file
                         OtherFile = ContainedFile.Replace("-generated.cs", ".yaml");
+
                         if (File.Exists(OtherFile) && File.Exists(ATemplateDir + "template.csproj.none.DependentUpon"))
                         {
                             temp = GetTemplateFile(ATemplateDir + "template.csproj.none.DependentUpon");
@@ -781,21 +801,26 @@ namespace Ict.Tools.NAntTasks
 
             // Check for any miscellaneous xml files in a data subfolder
             string miscFilesPath = Path.Combine(ASrcPath, "data");
+
             if (Directory.Exists(miscFilesPath))
             {
                 string[] dataXmlFiles = Directory.GetFiles(miscFilesPath, "*.xml");
                 replaceWith = String.Empty;
-                if (dataXmlFiles.Length > 0 && File.Exists(ATemplateDir + "template.csproj.none"))
+
+                if ((dataXmlFiles.Length > 0) && File.Exists(ATemplateDir + "template.csproj.none"))
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.none");
                     replaceWith = "  <ItemGroup>" + Environment.NewLine;
+
                     for (int i = 0; i < dataXmlFiles.Length; i++)
                     {
                         replaceWith += temp;
                         replaceWith = replaceWith.Replace("${filename}", dataXmlFiles[i]);
                     }
+
                     replaceWith += ("  </ItemGroup>" + Environment.NewLine);
                 }
+
                 template.Replace("${MiscellaneousFiles}", replaceWith);
             }
             else
@@ -944,6 +969,7 @@ namespace Ict.Tools.NAntTasks
 
                 return work.Replace('/', Path.DirectorySeparatorChar);
             }
+
             return String.Empty;
         }
     }
