@@ -344,21 +344,15 @@ namespace Ict.Tools.NAntTasks
 
                                 if (File.Exists(ResourceXFile))
                                 {
+                                    Environment.CurrentDirectory = Path.GetDirectoryName(ResourceXFile);
+                                    
                                     ResXResourceReader ResXReader = new ResXResourceReader(ResourceXFile);
                                     FileStream fs = new FileStream(ResourcesFile, FileMode.OpenOrCreate, FileAccess.Write);
                                     IResourceWriter writer = new ResourceWriter(fs);
 
                                     foreach (DictionaryEntry d in ResXReader)
                                     {
-                                        string value = d.Value.ToString();
-                                        
-                                        // in the developers assistant there is a reference to an .ico file, need to add the full path
-                                        if (value.Contains(";System.Drawing.Icon, System.Drawing, "))
-                                        {
-                                            value = Path.GetDirectoryName(ResourceXFile) + "/" + value;
-                                        }
-                                        
-                                        writer.AddResource(d.Key.ToString(), value);
+                                        writer.AddResource(d.Key.ToString(), d.Value);
                                     }
 
                                     writer.Close();
