@@ -9,7 +9,7 @@
     <AssemblyName>${Namespace}</AssemblyName>
     <TargetFrameworkVersion>v${NETframework-version}</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <BaseIntermediateOutputPath>../../bin/${Namespace}/</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>../../obj/${Namespace}/</BaseIntermediateOutputPath>
     <NoStdLib>False</NoStdLib>
     <OutputPath>../../bin/</OutputPath>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>

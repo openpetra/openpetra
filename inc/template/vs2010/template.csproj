@@ -19,7 +19,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>${dir.bin}\${Namespace}\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>${dir.obj}\${Namespace}\</BaseIntermediateOutputPath>
     <OutputPath>${dir.bin}</OutputPath>
     <StartArguments>${DebugStartArguments}</StartArguments>
     <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
@@ -28,7 +28,7 @@
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <DefineConstants>TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>${dir.bin}\${Namespace}\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>${dir.obj}\${Namespace}\</BaseIntermediateOutputPath>
     <OutputPath>${dir.bin}</OutputPath>
     <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
   </PropertyGroup>
