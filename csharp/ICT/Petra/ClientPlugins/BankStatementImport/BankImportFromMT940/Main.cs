@@ -49,9 +49,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         /// </summary>
         public string GetFileFilter()
         {
-            // each time the button btnImportNewStatement is clicked, do a split and move action
-            SplitFilesAndMove();
-
             return "MT940 Datei (*.sta)|*.sta";
         }
 
@@ -78,6 +75,9 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         public bool ImportBankStatement(out Int32 AStatementKey, Int32 ALedgerNumber, string ABankAccountCode)
         {
             AStatementKey = -1;
+
+            // each time the button btnImportNewStatement is clicked, do a split and move action
+            SplitFilesAndMove();
 
             OpenFileDialog DialogOpen = new OpenFileDialog();
 
@@ -339,7 +339,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
                         if (!Backupfilename.StartsWith(lastDate.ToString("yyyyMMdd")))
                         {
-                            Backupfilename = lastDate + Backupfilename;
+                            Backupfilename = lastDate.ToString("yyyyMMdd") + Backupfilename;
                         }
 
                         string BackupName = OutputPath + Path.DirectorySeparatorChar + "imported" + Path.DirectorySeparatorChar + Backupfilename;
