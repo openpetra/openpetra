@@ -25,11 +25,13 @@ using System;
 using System.IO;
 using System.Data;
 using System.Windows.Forms;
+using System.Threading;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
@@ -129,19 +131,36 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     stmt.Date = latestDate;
                 }
 
-                TVerificationResultCollection VerificationResult;
-                TLogging.Log("writing to db");
+                Thread t = new Thread(() => ProcessStatementsOnServer(MainDS));
+                t.Start();
 
-                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
-                        MainDS,
-                        out AStatementKey,
-                        out VerificationResult) == TSubmitChangesResult.scrOK)
+                TProgressDialog dialog = new TProgressDialog();
+
+                if (dialog.ShowDialog() == DialogResult.Cancel)
                 {
-                    return AStatementKey != -1;
+                    return false;
+                }
+                else
+                {
+                    return FStatementKey != -1;
                 }
             }
 
             return false;
+        }
+
+        private int FStatementKey = -1;
+
+        private void ProcessStatementsOnServer(BankImportTDS AMainDS)
+        {
+            TVerificationResultCollection VerificationResult;
+
+            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
+                    AMainDS,
+                    out FStatementKey,
+                    out VerificationResult) == TSubmitChangesResult.scrOK)
+            {
+            }
         }
 
         /// <summary>
@@ -156,7 +175,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
             parser.ProcessFile(AFilename);
 
             Int32 statementCounter = AMainDS.AEpStatement.Rows.Count;
-            TLogging.Log(parser.statements.Count.ToString());
 
             foreach (TStatement stmt in parser.statements)
             {

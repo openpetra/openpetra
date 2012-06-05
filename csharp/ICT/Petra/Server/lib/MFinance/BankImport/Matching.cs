@@ -35,6 +35,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.ImportExport
 {
@@ -48,9 +49,22 @@ namespace Ict.Petra.Server.MFinance.ImportExport
         /// </summary>
         public static void Train(BankImportTDS AMainDS)
         {
+            int stmtCounter = 0;
+
             // go through all statements in the dataset, and find gift matches for those days
             foreach (AEpStatementRow stmt in AMainDS.AEpStatement.Rows)
             {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    String.Format(Catalog.GetString("training statement {0}"),
+                        stmt.Filename),
+                    1 + stmtCounter);
+                stmtCounter++;
+
+                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                {
+                    return;
+                }
+
                 // first stage: collect historic matches from database:
                 // go through each transaction of the statement,
                 // and see if you can find a donation on that date with the same amount from the same bank account

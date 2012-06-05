@@ -113,8 +113,6 @@ RootNode:
     Menu:
         mniFile:
             mniImportNewStatement:
-        mniTools:
-            mniSelectPlugin:
     Toolbar:
         tbbSaveMatches:
         tbbCreateGiftBatch:

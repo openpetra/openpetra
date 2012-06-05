@@ -168,6 +168,13 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.WebConnectors
     /// <summary>auto generated</summary>
     public interface IWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector)</summary>
+        System.Boolean GetCurrentState(out System.String ACaption,
+                                       out System.String AStatusMessage,
+                                       out System.Int32 APercentageDone,
+                                       out System.Boolean AJobFinished);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector)</summary>
+        System.Boolean CancelJob();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TSequenceWebConnector)</summary>
         Int64 GetNextSequence(TSequenceNames ASequence);
     }
