@@ -539,7 +539,7 @@ namespace Ict.Tools.NAntTasks
         private string AddAssemblyInfoFile(string AProjectName,
             string ATemplateDir)
         {
-            string AssemblyInfoPath = Path.GetFullPath(FDirProjectFiles + "/../bin/" +
+            string AssemblyInfoPath = Path.GetFullPath(FDirProjectFiles + "/../obj/" +
                 AProjectName + "/AssemblyInfo.cs");
 
             StringBuilder temp = GetTemplateFile(ATemplateDir + "/../src/AssemblyInfo.cs");
@@ -586,6 +586,7 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${Namespace}", AProjectName);
             template.Replace("${NETframework-version}", FNetFrameworkVersion);
             template.Replace("${dir.bin}", FDirBin);
+            template.Replace("${dir.obj}", this.Properties["dir.obj"]);
 
             if (FDebugParameters.ContainsKey(AProjectName))
             {
