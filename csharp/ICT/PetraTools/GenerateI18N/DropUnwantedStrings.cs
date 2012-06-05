@@ -146,13 +146,19 @@ public class TDropUnwantedStrings
                         if(line.Contains("GenerateI18N.CollectedGettext.cs"))
                         {
                             //sw.WriteLine("#: This item was created automatically from a designer file");
+                            line = sr.ReadLine();
                         }
                         else
                         {
-                            sw.WriteLine(line);
+                            string currentLine = line;
+                            line = sr.ReadLine();
+                            DoNotTranslate.Contains(messageId)
+                            123
+                            if(line != null)    //make sure that the next line is not an empty line because then one source line would follow another one
+                            sw.WriteLine(currentLine);
                         }
                         sw_all.WriteLine(line);
-                        line = sr.ReadLine();
+                        
                     }
     
                     /* if(line.StartsWith("#:"))
