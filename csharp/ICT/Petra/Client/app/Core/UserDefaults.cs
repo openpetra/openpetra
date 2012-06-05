@@ -282,6 +282,9 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>which plugin to use for importing bank statements</summary>
         public const String FINANCE_BANKIMPORT_PLUGIN = "BankImportPlugin";
 
+        /// <summary>which bank account to use</summary>
+        public const String FINANCE_BANKIMPORT_BANKACCOUNT = "BankImportBankAccount";
+
         // Put other User Default Constants here as well.
 
         /// <summary>todoComment</summary>
