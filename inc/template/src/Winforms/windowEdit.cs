@@ -257,7 +257,7 @@ namespace {#NAMESPACE}
             if (AProcessAnyDataValidationErrors)
             {
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType());
+                    this.GetType(), null, true);
             }
         }
         else
@@ -428,6 +428,14 @@ namespace {#NAMESPACE}
 
                         ReturnValue = true;
                         FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+
+                        if((VerificationResult != null)
+                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
+                        {
+                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                                this.GetType(), null);
+                        }
+
                         break;
 
                     case TSubmitChangesResult.scrError:
@@ -435,8 +443,8 @@ namespace {#NAMESPACE}
                         this.Cursor = Cursors.Default;
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult), 
-                            Catalog.GetString("Data Cannot Be Saved"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                            this.GetType(), null);
 
                         FPetraUtilsObject.SubmitChangesContinue = false;
                         ReturnValue = false;
