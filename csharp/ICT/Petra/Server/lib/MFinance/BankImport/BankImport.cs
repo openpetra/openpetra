@@ -353,11 +353,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             System.Type typeofTable = null;
             TCacheable CachePopulator = new TCacheable();
-            AAccountTable AccountTable = (AAccountTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountList,
-                "",
-                false,
-                ALedgerNumber,
-                out typeofTable);
 
             GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(
                 ALedgerNumber,

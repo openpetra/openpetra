@@ -288,6 +288,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         {
             if (!TAppSettingsManager.HasValue("BankAccounts"))
             {
+                TLogging.Log("missing parameter BankAccounts in config file");
                 return false;
             }
 
@@ -302,6 +303,8 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
             foreach (string RawFile in RawSTAFiles)
             {
+                TLogging.Log("BankImport MT940 plugin: splitting file " + RawFile);
+
                 TSwiftParser Parser = new TSwiftParser();
                 Parser.ProcessFile(RawFile);
 
