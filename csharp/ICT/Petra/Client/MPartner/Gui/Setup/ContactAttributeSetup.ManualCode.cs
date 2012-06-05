@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ValidationColumn = ARow.Table.Columns[PContactAttributeTable.ColumnActiveId];
             VerificationResult = TNumericalChecks.IsPositiveInteger(Convert.ToInt32(ARow[NumDetailCodesColumnOrdinal]),
                 "Contact Detail",
-                this, ValidationColumn, chkDetailActive);
+                this, ValidationColumn, null);
 
             if (VerificationResult != null)
             {

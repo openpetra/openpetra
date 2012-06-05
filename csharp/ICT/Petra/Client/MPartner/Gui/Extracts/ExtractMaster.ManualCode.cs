@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +42,9 @@ using Ict.Petra.Shared.Interfaces.MPartner.Mailing.WebConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Client.MReporting.Gui.MPartner;
+using Ict.Petra.Client.MReporting.Gui.MPersonnel;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
@@ -316,6 +319,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         private void InitializeManualCode()
         {
+            ucoExtractMasterList.DelegateRefreshExtractList = @RefreshExtractList;
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            // unhook filter controls so save button does not get enabled when they are used
+            FPetraUtilsObject.UnhookControl(pnlFilter, true);
         }
 
         /// <summary>
@@ -343,6 +353,266 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
         {
             ucoExtractMasterList.VerifyAndUpdateExtract(sender, e);
+        }
+
+        /// <summary>
+        /// Purge Extracts (open a screen for user to set parameters)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PurgeExtracts(System.Object sender, EventArgs e)
+        {
+            // open dialog to prompt the user to enter a name for new extract
+            TFrmExtractPurgingDialog ExtractPurgingDialog = new TFrmExtractPurgingDialog(this.ParentForm);
+            Boolean PurgingSuccessful = false;
+
+            // purging of extracts happens in the dialog
+            ExtractPurgingDialog.ShowDialog();
+
+            if (ExtractPurgingDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractPurgingDialog.GetReturnedParameters(out PurgingSuccessful);
+
+                if (PurgingSuccessful)
+                {
+                    ucoExtractMasterList.RefreshExtractList(sender, e);
+                }
+            }
+
+            ExtractPurgingDialog.Dispose();
+        }
+
+        /// <summary>
+        /// Open a new screen to show details and maintain the currently selected extract
+        /// </summary>
+        public void RefreshExtractList()
+        {
+            // Do not allow refresh of the extract list if the user has made changes to any of the records
+            // as otherwise their changes will be overwritten by reloading of the data.
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "Before refreshing the list you need to save changes made in this screen! " + "\r\n" + "\r\n" +
+                        "If you don't want to save changes then please exit and reopen this screen."),
+                    Catalog.GetString("Refresh List"),
+                    MessageBoxButtons.OK);
+            }
+            else
+            {
+                // now refresh extract list in user control
+                String UserCreated = "";
+                String UserModified = "";
+                Boolean AllUsers = false;
+
+                if (rbtAll.Checked)
+                {
+                    AllUsers = true;
+                }
+                else if (rbtCreatedBy.Checked)
+                {
+                    UserCreated = cmbUserCreatedBy.GetSelectedString();
+                }
+                else if (rbtModifiedBy.Checked)
+                {
+                    UserModified = cmbUserModifiedBy.GetSelectedString();
+                }
+
+                ucoExtractMasterList.RefreshExtractList(txtExtractNameFilter.Text, AllUsers, UserCreated, UserModified);
+            }
+        }
+
+        /// <summary>
+        /// Filter extracts according to given criteria
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FilterExtracts(System.Object sender, EventArgs e)
+        {
+            RefreshExtractList();
+        }
+
+        /// <summary>
+        /// Filter extracts according to given criteria
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ClearFilterExtracts(System.Object sender, EventArgs e)
+        {
+            this.txtExtractNameFilter.Text = "";
+            RefreshExtractList();
+        }
+
+        /// <summary>
+        /// Create General Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateGeneralExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.PartnerByGeneralCriteriaExtract(FindForm());
+        }
+
+        /// <summary>
+        /// Create Manual Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateManualExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.PartnerNewManualExtract(FindForm());
+        }
+
+        /// <summary>
+        /// Create Partner By City Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerByCityExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.PartnerByCityExtract(FindForm());
+        }
+
+        /// <summary>
+        /// Create Partner By Subscription Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerBySubscriptionExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.PartnerBySubscriptionExtract(FindForm());
+        }
+
+        /// <summary>
+        /// Create Partner By Special Type Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerBySpecialTypeExtract(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerBySpecialType frm = new TFrmPartnerBySpecialType(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Partner By Conference Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerByConferenceExtract(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Partner By Outreach Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerByOutreachExtract(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.CalledForConferences = false;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Partner By Commitment Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerByCommitmentExtract(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerByCommitmentExtract frm = new TFrmPartnerByCommitmentExtract(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Partner By Field Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerByFieldExtract(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerByField frm = new TFrmPartnerByField(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Recipient By Field Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateRecipientByFieldExtract(System.Object sender, EventArgs e)
+        {
+            TFrmRecipientByField frm = new TFrmRecipientByField(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Donor By Field Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateDonorByFieldExtract(System.Object sender, EventArgs e)
+        {
+            TFrmDonorByField frm = new TFrmDonorByField(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Donor By Motivation Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateDonorByMotivationExtract(System.Object sender, EventArgs e)
+        {
+            TFrmDonorByMotivation frm = new TFrmDonorByMotivation(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Donor By Amount Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateDonorByAmountExtract(System.Object sender, EventArgs e)
+        {
+            TFrmDonorByAmount frm = new TFrmDonorByAmount(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// Create Donor By Miscellaneous Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateDonorByMiscellaneousExtract(System.Object sender, EventArgs e)
+        {
+            TFrmDonorByMiscellaneous frm = new TFrmDonorByMiscellaneous(FindForm());
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
         }
 
         #endregion

@@ -23,6 +23,8 @@
 //
 using System;
 using System.Windows.Forms;
+using Ict.Common;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 
@@ -33,6 +35,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     /// </summary>
     public class TPartnerExtractsMain
     {
+        /// <summary>
+        /// open General Extract screen
+        /// </summary>
+        public static void PartnerByGeneralCriteriaExtract(Form AParentForm)
+        {
+            TFrmPartnerByGeneralCriteria frm = new TFrmPartnerByGeneralCriteria(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
         /// <summary>
         /// open screen to create Publication Extract
         /// </summary>
@@ -64,6 +77,51 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             frm.CalledFromExtracts = true;
             frm.Show();
+        }
+
+        /// <summary>
+        /// prompt user for name of a new manual extract, create it and open screen for it
+        /// </summary>
+        public static void PartnerNewManualExtract(Form AParentForm)
+        {
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(AParentForm);
+            int ExtractId = 0;
+            string ExtractName;
+            string ExtractDescription;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
+            // create empty extract with given name and description and store it in db
+            if (TRemote.MPartner.Partner.WebConnectors.CreateEmptyExtract(ref ExtractId,
+                    ExtractName, ExtractDescription))
+            {
+                // now open Screen for new extract so user can add partner records manually
+                TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
+                frm.ExtractId = ExtractId;
+                frm.ExtractName = ExtractName;
+                frm.Show();
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                    Catalog.GetString("Generate Manual Extract"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
         }
     }
 }

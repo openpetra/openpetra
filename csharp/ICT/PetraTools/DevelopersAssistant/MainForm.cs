@@ -99,6 +99,25 @@ namespace Ict.Tools.DevelopersAssistant
             SetEnabledStates();
 
             SetToolTips();
+
+            // Check if we were launched using commandline switches
+            // If so, we execute the instruction, start a timer, which then will close us down.
+            if (Program.cmdLine.StartServer)
+            {
+                linkLabelStartServer_LinkClicked(null, null);
+                ShutdownTimer.Enabled = true;
+            }
+            else if (Program.cmdLine.StopServer)
+            {
+                linkLabelStopServer_LinkClicked(null, null);
+                ShutdownTimer.Enabled = true;
+            }
+        }
+
+        private void ShutdownTimer_Tick(object sender, EventArgs e)
+        {
+            ShutdownTimer.Enabled = false;
+            Close();
         }
 
         private void SetBranchDependencies()
@@ -116,7 +135,8 @@ namespace Ict.Tools.DevelopersAssistant
                 lblDbBuildConfig.Text = dbCfg.CurrentConfig;
             }
 
-            dbCfg.ListAllConfigs(listDbBuildConfig);
+            dbCfg.ListAllConfigs(listDbBuildConfig);        // This might add a new configuration, so we need to update our local settings
+            _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
             btnRemoveDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0;
             btnEditDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0;
             btnSaveDbBuildConfig.Enabled = listDbBuildConfig.Items.Count > 0 && txtBranchLocation.Text != String.Empty;
@@ -149,6 +169,7 @@ namespace Ict.Tools.DevelopersAssistant
             toolTip.SetToolTip(btnStartClient, toolTip.GetToolTip(btnStartClient) + Environment.NewLine + "Shortcut: Ctrl + O");
             toolTip.SetToolTip(linkLabelRestartServer, toolTip.GetToolTip(linkLabelRestartServer) + Environment.NewLine + "Shortcut: Ctrl + R");
             toolTip.SetToolTip(linkLabelStartServer, toolTip.GetToolTip(linkLabelStartServer) + Environment.NewLine + "Shortcut: Ctrl + S");
+            toolTip.SetToolTip(btnPreviewWinform, toolTip.GetToolTip(btnPreviewWinform) + Environment.NewLine + "Shortcut: Ctrl + W");
             toolTip.SetToolTip(btnGenerateWinform, toolTip.GetToolTip(btnGenerateWinform) + Environment.NewLine + "Shortcut: Ctrl + Y");
             toolTip.SetToolTip(linkLabelBazaar, toolTip.GetToolTip(linkLabelBazaar) + Environment.NewLine + "Shortcut: Ctrl + Z");
         }
@@ -203,6 +224,17 @@ namespace Ict.Tools.DevelopersAssistant
             btnRunAltSequence.Enabled = bGotBranch && txtAltSequence.Text != String.Empty;
             btnResetClientConfig.Enabled = bGotBranch;
             btnUpdateMyClientConfig.Enabled = bGotBranch;
+
+            if (btnGenerateWinform.Enabled)
+            {
+                string path = Path.Combine(txtBranchLocation.Text, Path.Combine(@"csharp\ICT\petra\client", txtYAMLPath.Text));
+                path = path.Replace(".yaml", "-generated.cs");
+                btnPreviewWinform.Enabled = File.Exists(path);
+            }
+            else
+            {
+                btnPreviewWinform.Enabled = false;
+            }
         }
 
         private void SetWarningButtons()
@@ -446,6 +478,8 @@ namespace Ict.Tools.DevelopersAssistant
 
             BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
             dbCfg.RemoveConfig(index);
+            _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
+
             SetBranchDependencies();
 
             if ((--index < 0) && (listDbBuildConfig.Items.Count > 0))
@@ -475,6 +509,8 @@ namespace Ict.Tools.DevelopersAssistant
 
             BuildConfiguration dbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
             dbCfg.EditConfig(listDbBuildConfig.SelectedIndex, dlg.ExitData);
+            _localSettings.DbBuildConfigurations = dbCfg.FavouriteConfigurations;
+
             SetBranchDependencies();
             listDbBuildConfig.SelectedIndex = index;
         }
@@ -731,6 +767,10 @@ namespace Ict.Tools.DevelopersAssistant
                         linkLabelStartServer_LinkClicked(null, null);
                         return true;
 
+                    case Keys.W | Keys.Control:
+                        btnPreviewWinform_Click(null, null);
+                        return true;
+
                     case Keys.Y | Keys.Control:
                         btnGenerateWinform_Click(null, null);
                         return true;
@@ -872,8 +912,17 @@ namespace Ict.Tools.DevelopersAssistant
             // Now we are ready to perform the original task
             if (NumFailures == 0)
             {
+                if (task.Item == NantTask.TaskItem.generateSolutionNoCompile)
+                {
+                    Environment.SetEnvironmentVariable("OPDA_StopServer", (_localSettings.DoPreBuildOnIctCommon) ? "1" : null);
+                    Environment.SetEnvironmentVariable("OPDA_StartServer", (_localSettings.DoPostBuildOnPetraClient) ? "1" : null);
+                }
+
                 RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
             }
+
+            Environment.SetEnvironmentVariable("OPDA_StopServer", null);
+            Environment.SetEnvironmentVariable("OPDA_StartServer", null);
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
@@ -1121,6 +1170,24 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
+        private void btnPreviewWinform_Click(object sender, EventArgs e)
+        {
+            OutputText.ResetOutput();
+            int NumFailures = 0;
+            int NumWarnings = 0;
+
+            RunPreviewWinform(ref NumFailures, ref NumWarnings);
+            txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
+
+            if ((NumFailures > 0) || ((NumWarnings > 0) && chkTreatWarningsAsErrors.Checked))
+            {
+                tabControl.SelectedTab = OutputPage;
+                chkVerbose.Checked = true;
+            }
+
+            PrepareWarnings();
+        }
+
         private void btnRunSequence_Click(object sender, EventArgs e)
         {
             RunSequence(_sequence);
@@ -1129,6 +1196,68 @@ namespace Ict.Tools.DevelopersAssistant
         private void btnRunAltSequence_Click(object sender, EventArgs e)
         {
             RunSequence(_altSequence);
+        }
+
+        private void btnBrowseBazaar_Click(object sender, EventArgs e)
+        {
+            string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
+
+            if (x86 == null)
+            {
+                x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
+            }
+
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Browse for the Bazaar Explorer Application";
+            dlg.FileName = "bzrw.exe";
+            dlg.Filter = "Applications|*.exe";
+            dlg.CheckFileExists = true;
+
+            if (x86 != null)
+            {
+                dlg.InitialDirectory = x86;
+            }
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+            {
+                return;
+            }
+
+            txtBazaarPath.Text = dlg.FileName;
+            linkLabelBazaar.Enabled = true;
+        }
+
+        private void linkLabelBazaar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            // Launch Bazaar using <Path-to-Bazaar> explorer <branch-location>
+            System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(txtBazaarPath.Text);
+            si.Arguments = String.Format("explorer \"{0}\"", txtBranchLocation.Text);
+            si.WorkingDirectory = txtBranchLocation.Text;
+
+            try
+            {
+                System.Diagnostics.Process.Start(si);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("The Assistant failed to launch the Bazaar Explorer.  The system error message was: " + ex.Message, Program.APP_TITLE);
+            }
+        }
+
+        private void btnAdvancedOptions_Click(object sender, EventArgs e)
+        {
+            DlgAdvancedOptions dlg = new DlgAdvancedOptions();
+
+            dlg.chkDoPreBuild.Checked = _localSettings.DoPreBuildOnIctCommon;
+            dlg.chkDoPostBuild.Checked = _localSettings.DoPostBuildOnPetraClient;
+
+            if (dlg.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            _localSettings.DoPreBuildOnIctCommon = dlg.chkDoPreBuild.Checked;
+            _localSettings.DoPostBuildOnPetraClient = dlg.chkDoPostBuild.Checked;
         }
 
         /******************************************************************************************************************************************
@@ -1211,6 +1340,34 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (NantExecutor.RunGenerateWinform(txtBranchLocation.Text, txtYAMLPath.Text, chkCompileWinform.Checked,
                     chkStartClientAfterGenerateWinform.Checked))
+            {
+                // It ran successfully - let us check the output ...
+                OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
+            }
+            else
+            {
+                NumFailures++;
+            }
+
+            dlg.Close();
+        }
+
+        // Generic method to run previewWinform because it is in a different disk location to all the rest and takes additional parameters.
+        private void RunPreviewWinform(ref int NumFailures, ref int NumWarnings)
+        {
+            NantTask task = new NantTask(NantTask.TaskItem.previewWinform);
+
+            ProgressDialog dlg = new ProgressDialog();
+
+            dlg.lblStatus.Text = task.StatusText;
+            dlg.Show();
+
+            NumFailures = 0;
+            NumWarnings = 0;
+            OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", task.LogText));
+            dlg.Refresh();
+
+            if (NantExecutor.RunPreviewWinform(txtBranchLocation.Text, txtYAMLPath.Text))
             {
                 // It ran successfully - let us check the output ...
                 OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
@@ -1331,52 +1488,6 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
-        private void btnBrowseBazaar_Click(object sender, EventArgs e)
-        {
-            string x86 = Environment.GetEnvironmentVariable("ProgramFiles(x86)", EnvironmentVariableTarget.Process);
-
-            if (x86 == null)
-            {
-                x86 = Environment.GetEnvironmentVariable("ProgramFiles", EnvironmentVariableTarget.Process);
-            }
-
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Browse for the Bazaar Explorer Application";
-            dlg.FileName = "bzrw.exe";
-            dlg.Filter = "Applications|*.exe";
-            dlg.CheckFileExists = true;
-
-            if (x86 != null)
-            {
-                dlg.InitialDirectory = x86;
-            }
-
-            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
-            {
-                return;
-            }
-
-            txtBazaarPath.Text = dlg.FileName;
-            linkLabelBazaar.Enabled = true;
-        }
-
-        private void linkLabelBazaar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            // Launch Bazaar using <Path-to-Bazaar> explorer <branch-location>
-            System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo(txtBazaarPath.Text);
-            si.Arguments = String.Format("explorer \"{0}\"", txtBranchLocation.Text);
-            si.WorkingDirectory = txtBranchLocation.Text;
-
-            try
-            {
-                System.Diagnostics.Process.Start(si);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("The Assistant failed to launch the Bazaar Explorer.  The system error message was: " + ex.Message, Program.APP_TITLE);
-            }
-        }
-
         private void ValidateBazaarPath()
         {
             if (txtBazaarPath.Text != String.Empty)
@@ -1450,6 +1561,31 @@ namespace Ict.Tools.DevelopersAssistant
             else
             {
                 return String.Format("{0} failed, {1} errors/warnings", OutputText.ErrorCount, OutputText.WarningCount);
+            }
+        }
+
+        /// <summary>
+        /// This is the override for the main windows message pump.  We use it to process our own user messages
+        /// </summary>
+        /// <param name="message">The message object to process</param>
+        [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
+        protected override void WndProc(ref Message message)
+        {
+            // We just check for our magic number to see if we have been activated by another instance
+
+            if (message.Msg == Program.UM_STOP_SERVER)
+            {
+                System.Diagnostics.Trace.WriteLine(String.Format("Stop server: Message received - {0}", message.Msg));
+                linkLabelStopServer_LinkClicked(null, null);
+            }
+            else if (message.Msg == Program.UM_START_SERVER)
+            {
+                System.Diagnostics.Trace.WriteLine(String.Format("Start server: Message received - {0}", message.Msg));
+                linkLabelStartServer_LinkClicked(null, null);
+            }
+            else
+            {
+                base.WndProc(ref message);
             }
         }
     }

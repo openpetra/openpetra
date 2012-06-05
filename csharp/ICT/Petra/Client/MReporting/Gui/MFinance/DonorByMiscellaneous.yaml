@@ -1,0 +1,71 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Donor Extract (Miscellaneous)
+    WindowWidth: 900
+    WindowHeight: 600
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MFinance.queries.QueryDonorByMiscellaneous.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        REPORTNAME: Donor by Miscellaneous
+        CURRENTREPORT: Donor by Miscellaneous
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Actions:
+        actFilter: {Label=Filter List, ActionClick=FilterList}
+    Controls:
+        tpgGeneralSettings: {ControlsOrientation=vertical}
+            Label: General Settings
+            Controls: [grpTop, pnlBottom]
+        grpTop: {NoLabel=true, ControlsOrientation=horizontal}
+            Controls: 
+                Row0: [pnlOptionsLeft, pnlOptionsRight]
+        pnlBottom: {ControlsOrientation=horizontal}
+            Controls: [ucoAddress, ucoChkFilter]
+        pnlOptionsLeft:
+            Controls:
+                Row0:[cmbLedgerNumber]
+                Row1:[cmbMethodOfGiving]
+                Row2:[cmbMethodOfPayment]
+                Row3:[cmbMailingCode]
+                Row4:[cmbGiftType]
+                Row5:[txtReference]
+                Row6: [txtRecipient]
+        pnlOptionsRight:
+            Controls:
+                Row0:[cmbReceiptLetterFrequency]
+                Row1:[chkNewDonorsOnly]
+                Row2:[chkReceiptEachGiftOnly]
+                Row3:[chkExcludeMotDetailNoReceipt]
+                Row4:[dtpDateFrom]
+                Row5:[dtpDateTo]
+        cmbLedgerNumber: {Label=Ledger Number, List=LedgerNameList, ClearIfSettingEmpty=true, ParameterName=param_ledger_number}            
+        cmbMethodOfGiving: {Label=Method of Giving, List=MethodOfGivingList, ClearIfSettingEmpty=true, ParameterName=param_method_of_giving}            
+        cmbMethodOfPayment: {Label=Method of Payment, List=MethodOfPaymentList, ClearIfSettingEmpty=true, ParameterName=param_method_of_payment}            
+        cmbMailingCode: {Label=Mailing Code, List=MailingList, ClearIfSettingEmpty=true, ParameterName=param_mailing_code}
+        cmbGiftType: {Label=Gift Type, ParameterName=param_gift_type}
+            OptionalValues: [Gift,In Kind,Other]
+        txtRecipient: {Label=Recipient, Type=PartnerKey, ParameterName=param_recipient_key}
+        txtReference: {Label=Reference, ParameterName=param_reference}
+        cmbReceiptLetterFrequency: {Label=Receipt Letter Frequency, List=FrequencyList, ClearIfSettingEmpty=true, ParameterName=param_receipt_letter_frequency}            
+        chkNewDonorsOnly: {Label=New Donors only, ParameterName=param_new_donors_only}
+        chkReceiptEachGiftOnly: {Label=Receipt each Gift only, ParameterName=param_receipt_each_gift_only}
+        chkExcludeMotDetailNoReceipt: {Label=Exclude Mot. Detail 'No Receipt', ParameterName=param_exclude_mot_detail_no_receipt}
+        dtpDateFrom: {ClearIfSettingEmpty=true}
+            Label: Date from
+            ParameterName: param_date_from
+        dtpDateTo: {ClearIfSettingEmpty=true}
+            Label: To
+            ParameterName: param_date_to
+        ucoAddress:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+        ucoChkFilter:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter

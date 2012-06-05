@@ -1,0 +1,3 @@
+  <PropertyGroup>
+    <ApplicationIcon>${application-Icon}</ApplicationIcon>
+  </PropertyGroup>

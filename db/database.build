@@ -331,6 +331,15 @@
             <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <delete file="${tempfile}" if="${file::exists(tempfile)}"/>
 
+            <!-- drop all sequences as well -->
+            <property name="tempfile" value="${path::get-temp-path()}/delAllSequences.sql"/>
+            <psql exe="${PostgreSQL.exe}" 
+                     sqlcommand="SELECT 'DROP SEQUENCE ' || n.nspname || '.' || c.relname || ';' FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind = 'S' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid)" 
+                     outputfile="${tempfile}"
+                     database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <delete file="${tempfile}" if="${file::exists(tempfile)}"/>
+
             <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <if test="${file!='nothing'}">
                 <if test="${string::ends-with(file, '.gz')}">
