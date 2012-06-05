@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
                                 ValidateLanguageSpecificList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateLanguageSpecificListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (SLanguageSpecificAccess.SubmitChanges((SLanguageSpecificTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))

@@ -266,7 +266,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                                 ValidatePositionList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidatePositionListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtPositionAccess.SubmitChanges((PtPositionTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -283,7 +283,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                                 ValidateJobAssignmentTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateJobAssignmentTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtAssignmentTypeAccess.SubmitChanges((PtAssignmentTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                                 ValidateLeavingCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateLeavingCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtLeavingCodeAccess.SubmitChanges((PtLeavingCodeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
