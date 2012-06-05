@@ -205,6 +205,8 @@
           overwrite="false" />
 <property name="dir.bin" value="${path::combine(dir.delivery, 'bin')}"
           overwrite="false" />
+<property name="dir.obj" value="${path::combine(dir.delivery, 'obj')}"
+          overwrite="false" />
 <property name="dir.setup" value="${path::combine(dir.delivery, 'setup')}"
           overwrite="false" />
  <!-- projectfiles -->
@@ -330,10 +332,7 @@
 
 <!-- generateWinforms -->
 <property name="tool-generateWinForms" value="${dir.bin}/Ict.Tools.GenerateWinForms.exe" overwrite="false" />
-<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-x.x needs GUILocalisation value en! -->
 <property name="GUILocalisation" value="" overwrite="false"/> 
-<!-- the gui is either generated for mono or net. This is due to some problems with AutoSize of filled docking panels -->
-<property name="TargetPlatformGUI" value="net" overwrite="false"/>
 
 <property name="tool-generateEncryptionKey" value="${dir.bin}/Ict.Tools.GenerateEncryptionKey.exe" overwrite="false" />
 

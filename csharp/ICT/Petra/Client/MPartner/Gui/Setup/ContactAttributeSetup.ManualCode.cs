@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void InitializeManualCode()
         {
             // Initialise the user control variables
-            ucContactDetail.PetraUtilsObject = FPetraUtilsObject;
+            ucoContactDetail.PetraUtilsObject = FPetraUtilsObject;
 
             // The auto-generator does not dock our user control correctly
             grpExtraDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
 
             // we also want to know if the number of rows in our user control changes
-            ucContactDetail.CountChanged += new CountChangedEventHandler(ucContactDetail_CountChanged);
+            ucoContactDetail.CountChanged += new CountChangedEventHandler(ucoContactDetail_CountChanged);
 
 
             txtDetailContactAttributeCode.LostFocus += new EventHandler(txtDetailContactAttributeCode_LostFocus);
@@ -69,12 +69,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void RunOnceOnActivationManual()
         {
             // Initialise the GUI of the user control
-            ucContactDetail.InitUserControl();
+            ucoContactDetail.InitUserControl();
 
             // Set up the correct filter for the bottom grid, based on our initial contact attribute
             if (FMainDS.PContactAttribute.Rows.Count > 0)
             {
-                ucContactDetail.SetContactAttribute(txtDetailContactAttributeCode.Text);
+                ucoContactDetail.SetContactAttribute(txtDetailContactAttributeCode.Text);
             }
 
             // Add an extra column to our main data set that contains the number of sub-details for a given code
@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             for (int i = 0; i < FMainDS.PContactAttribute.Rows.Count; i++)
             {
                 string code = FMainDS.PContactAttribute.Rows[i][FMainDS.PContactAttribute.ColumnContactAttributeCode.Ordinal].ToString();
-                FMainDS.PContactAttribute.Rows[i][NumDetailCodesColumnOrdinal] = ucContactDetail.NumberOfDetails(code);
+                FMainDS.PContactAttribute.Rows[i][NumDetailCodesColumnOrdinal] = ucoContactDetail.NumberOfDetails(code);
             }
 
             // add a column to the grid and bind it to our new data set column
@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Now we need to remove all the detail attributes associated with this contact attribute.
             // (If we can delete the current row, it must also be the case that we can delete all the detail attributes for this row)
             // Then we can delete the contact attribute itself...
-            ucContactDetail.DeleteAll();
+            ucoContactDetail.DeleteAll();
 
             // Get the selected grid row
             int nSelectedRow = grdDetails.DataSourceRowToIndex2(grdDetails.SelectedDataRowsAsDataRowView[0]) + 1;
@@ -165,24 +165,24 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (ARow == null)
             {
                 pnlDetails.Enabled = false;
-                ucContactDetail.Enabled = false;
+                ucoContactDetail.Enabled = false;
                 btnDelete.Enabled = false;
             }
             else
             {
                 pnlDetails.Enabled = true;
-                ucContactDetail.Enabled = true;
+                ucoContactDetail.Enabled = true;
                 btnDelete.Enabled = !txtDetailContactAttributeCode.ReadOnly;
 
                 // Pass the contact attribute to the user control - it will then update itself
-                ucContactDetail.SetContactAttribute(ARow.ContactAttributeCode);
+                ucoContactDetail.SetContactAttribute(ARow.ContactAttributeCode);
             }
         }
 
         private void GetDetailDataFromControlsManual(PContactAttributeRow ARow)
         {
             // Tell the user control to get its data too
-            ucContactDetail.GetDetailsFromControls();
+            ucoContactDetail.GetDetailsFromControls();
         }
 
         private void txtDetailContactAttributeCode_LostFocus(object sender, EventArgs e)
@@ -217,7 +217,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             // So it is safe to modify the detail attribute
-            ucContactDetail.ModifyAttributeCode(newCode);
+            ucoContactDetail.ModifyAttributeCode(newCode);
         }
 
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
@@ -226,11 +226,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (e.Success)
             {
                 FPetraUtilsObject.SetChangedFlag();
-                ucContactDetail.SaveChanges();
+                ucoContactDetail.SaveChanges();
             }
         }
 
-        private void ucContactDetail_CountChanged(object Sender, CountEventArgs e)
+        private void ucoContactDetail_CountChanged(object Sender, CountEventArgs e)
         {
             // something has changed in our user control (add/delete rows)
             FPreviouslySelectedDetailRow[NumDetailCodesColumnOrdinal] = e.NewCount;
@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ValidationColumn = ARow.Table.Columns[PContactAttributeTable.ColumnActiveId];
             VerificationResult = TNumericalChecks.IsPositiveInteger(Convert.ToInt32(ARow[NumDetailCodesColumnOrdinal]),
                 "Contact Detail",
-                this, ValidationColumn, chkDetailActive);
+                this, ValidationColumn, null);
 
             if (VerificationResult != null)
             {

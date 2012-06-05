@@ -28,6 +28,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Ict.Tools.DevelopersAssistant
 {
@@ -65,10 +66,10 @@ namespace Ict.Tools.DevelopersAssistant
         public void InitializeDialog(string BranchLocation, int Index, SettingsDictionary LocalSettings)
         {
             BuildConfiguration dbCfg = new BuildConfiguration(BranchLocation, LocalSettings);
-            string dbms, dbName, port, password, location;
+            string dbms, dbName, port, password, location, version;
             bool isBlank;
 
-            dbCfg.GetStoredConfiguration(Index, out dbms, out dbName, out port, out password, out isBlank, out location);
+            dbCfg.GetStoredConfiguration(Index, out dbms, out dbName, out port, out password, out isBlank, out location, out version);
 
             cboDBMS.SelectedIndex = BuildConfiguration.GetDBMSIndex(dbms);
             txtDBName.Text = dbName;
@@ -76,6 +77,15 @@ namespace Ict.Tools.DevelopersAssistant
             txtPassword.Text = password;
             chkBlankPW.Checked = isBlank;
             txtLocation.Text = location;
+
+            if (String.Compare(dbms, "postgresql", true) == 0)
+            {
+                SetPostgreSQLVersionIndex(version);
+            }
+            else
+            {
+                cboVersion.SelectedIndex = 0;
+            }
 
             SetEnabledStates();
         }
@@ -91,16 +101,30 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            string s = txtLocation.Text;
+            string version = cboVersion.Items[cboVersion.SelectedIndex].ToString();
 
-            s = s.Replace('\\', '/');
+            if (version == BuildConfiguration.DefaultString)
+            {
+                version = String.Empty;
+            }
+
+            if (version == "9.0")
+            {
+                version = String.Empty;                         // applies to PostgreSQL
+            }
+
+            string location = txtLocation.Text;
+            location = location.Replace('\\', '/');
+
             ExitData = BuildConfiguration.MakeConfigString(
-                (cboDBMS.SelectedIndex == 0) ? String.Empty : cboDBMS.Items[cboDBMS.SelectedIndex].ToString(),
+                (cboDBMS.SelectedIndex ==
+                 0) ? String.Empty : BuildConfiguration.Systems[BuildConfiguration.GetDBMSIndex(cboDBMS.Items[cboDBMS.SelectedIndex].ToString())],
                 txtDBName.Text,
                 txtPort.Text,
                 txtPassword.Text,
                 chkBlankPW.Checked,
-                s);
+                location,
+                version);
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -118,6 +142,78 @@ namespace Ict.Tools.DevelopersAssistant
         private void chkBlankPW_Click(object sender, EventArgs e)
         {
             txtPassword.Enabled = (!chkBlankPW.Checked);
+        }
+
+        private void cboDBMS_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Called in initialisation (index changes from -1 to 0) and whenever the user selects a different DBMS
+            // We always have the DefaultString as the first item
+            cboVersion.Items.Clear();
+            cboVersion.Items.Add(BuildConfiguration.DefaultString);
+
+            // Now handle the case where the DBMS is PostgreSQL
+            if (cboDBMS.Items[cboDBMS.SelectedIndex].ToString() == "PostgreSQL")
+            {
+                cboVersion.Items.Add("9.1");
+
+                // Try and build in some future-proofing by checking Program Files for later versions
+                string searchPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "PostgreSQL");
+                searchPath = searchPath.Replace(" (x86)", String.Empty);
+
+                if (Directory.Exists(searchPath))
+                {
+                    string[] versions = Directory.GetDirectories(searchPath, "*.*", SearchOption.TopDirectoryOnly);
+
+                    for (int i = 0; i < versions.Length; i++)
+                    {
+                        string version = versions[i].Substring(searchPath.Length + 1);
+
+                        if (version == "9.0")
+                        {
+                            continue;
+                        }
+
+                        if (version == "9.1")
+                        {
+                            continue;
+                        }
+
+                        cboVersion.Items.Add(version);
+                    }
+                }
+            }
+
+            cboVersion.SelectedIndex = 0;
+        }
+
+        private void SetPostgreSQLVersionIndex(string ForVersion)
+        {
+            // Sets the selected index for a specified version string
+            // Start by assuming it is the first one (which should be the DefaultString)
+            cboVersion.SelectedIndex = 0;
+
+            if (String.Compare(ForVersion, "9.0") == 0)
+            {
+                return;
+            }
+
+            if (ForVersion == String.Empty)
+            {
+                return;
+            }
+
+            for (int i = 0; i < cboVersion.Items.Count; i++)
+            {
+                if (String.Compare(ForVersion, cboVersion.Items[i].ToString(), true) == 0)
+                {
+                    cboVersion.SelectedIndex = i;
+                    return;
+                }
+            }
+
+            // Handle a case where the config file has some random version we do not expect!
+            cboVersion.Items.Add(ForVersion);
+            cboVersion.SelectedIndex = cboVersion.Items.Count - 1;
         }
     }
 }

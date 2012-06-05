@@ -36,7 +36,7 @@ RootNode:
                 Row0: [txtDetailFormName, chkDetailFormSentIndicator, chkDetailFormReceivedIndicator]
                 Row1: [rgrDetailAppUsedBy]
                 Row2: [chkDetailDeletableFlag]                
-        rgrDetailAppUsedBy: {ColSpan=4}
+        rgrDetailAppUsedBy: {ColSpan=3}
             OptionalValues: ["Short Form Applications", "Long Form Applications", "Both"]
             Label: Used By
             BorderVisible: false

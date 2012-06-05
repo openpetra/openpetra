@@ -40,6 +40,7 @@ RootNode:
             Padding: 5,0,10,0
             # todo: electronic payment; 
             # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
+            Height: 170
             Dock:Top
         chkPrintRemittance:
             CheckBoxAttachedLabel: right
@@ -81,6 +82,7 @@ RootNode:
         txtReference: {Label=&Reference, ColSpan=2, DataField=AApPayment.Reference}
         cmbBankAccount:
             List: UserDefinedList
+            Width: 200
         txtExchangeRate:
             Format: Decimal(5)
         txtTotalAmount:

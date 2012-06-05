@@ -16,6 +16,9 @@
 	<attribute name="City" script="address.city.name" />
 	<attribute name="Province" script="address.city.state.name" />
 	<attribute name="CountryCode" script="address.city.state.country.isoCode" />
+    
+    <attribute name="IsSupplier" type="string" pattern="no|yes|no"/>
+    <attribute name="Currency" type="string" pattern="EUR|EUR|EUR|EUR|EUR|EUR"/> <!-- TODO also create foreign currency suppliers, eg GBP -->
 </generate>
 
 <bean id="myDayGen" class="DayGenerator">
@@ -210,6 +213,17 @@
     <attribute name="recipient_field_3" type="int" min="1" max="20"/>
     <attribute name="amount_3" type="int" min="5" max="500"/>
 
+</generate>
+
+<generate type="Invoices" count="${invoices_count}" 
+	consumer="new CSVEntityExporter(uri='${dir.data.output}/invoices.csv')">
+
+	<id name="identifier" type="long"  />
+    <attribute name="DateIssued" generator="myDayGen"/>
+    <attribute name="Supplier" type="int" min="1" max="1000"/>
+    <attribute name="Amount" type="int" min="500" max="600000"/> <!-- import will divide amount by 100 to get decimals -->
+    <attribute name="PaidAfterXDays" type="int" min="0" max="20"/>
+    <attribute name="ExpenseAccount" type="int" min="1" max="300"/>
 </generate>
 
 <echo>\n ### GENERATE COMPLETE ### \n</echo>

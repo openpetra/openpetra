@@ -10,7 +10,7 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 800
-    WindowHeight: 550
+    WindowHeight: 450
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -41,7 +41,6 @@ RootNode:
                 Row3: [pnlDataSubType]
                 Row4: [txtDetailDescription]
                 Row5: [chkDetailDisplayed]
-            RowHeights: [3=Fixed:32]
         txtDetailText: {Label=Label}
         clbUsedBy: {NoLabel=true, Validation=True}
             RowSpan: 6
@@ -53,27 +52,31 @@ RootNode:
         cmbDetailDataType: {Label=Data type, OnChange=OnDataTypeChange}
             OptionalValues: [=Text, Number, Currency, Yes/No, Date, Time, Option List, Partner Key]
         pnlDataSubType:
-            Controls:
-                Row0: [pnlDataSubTypeLabel, txtDetailCharLength, txtDetailNumDecimalPlaces, pnlCurrencyCode, pnlCategoryCode]
+            Controls: [pnlCharLength, pnlNumDecimalPlaces, pnlCurrencyCode, pnlLookupCategoryCode]
+            Height: 25
+            Width: 360
             Margin: 0
-            Padding: 0,0,0,0
-            ColWidths: [0=Fixed:175]
-        pnlDataSubTypeLabel:
-            Controls:
-                Row0: [lblDataSubType]
+            Label: Maximum length
+        pnlCharLength:
+            Controls: [txtDetailCharLength]
             Margin: 0
-            Padding: 0,0,0,0
+            Visible: false
+            Dock: Fill
+        pnlNumDecimalPlaces:
+            Controls: [txtDetailNumDecimalPlaces]
+            Margin: 0
+            Visible: false
+            Dock: Fill
+        pnlLookupCategoryCode:
+            Controls: [cmbDetailLookupCategoryCode]
+            Margin: 0
+            Visible: false
+            Dock: Fill
         pnlCurrencyCode:
-            Controls:
-                Row0: [cmbDetailCurrencyCode]
+            Controls: [cmbDetailCurrencyCode]
             Margin: 0
-            Padding: 0,0,0,0
-        pnlCategoryCode:
-            Controls:
-                Row0: [cmbDetailLookupCategoryCode]
-            Margin: 0
-            Padding: 0,0,0,0
-        lblDataSubType: {Label=Maximum length, Align=right}
+            Visible: false
+            Dock: Fill
         txtDetailCharLength: {NoLabel=true, Width=70, Format=Integer}
         txtDetailNumDecimalPlaces: {NoLabel=true, Width=70, Format=Integer}
         cmbDetailCurrencyCode: {NoLabel=true, List=CurrencyCodeList, ComboBoxWidth=70, Width=330}

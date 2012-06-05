@@ -49,7 +49,6 @@ RootNode:
         clbAccountCodes: 
             List: UserDefinedList
             NoLabel:true
-            Dock: Fill
             Width: 365
         btnUnselectAllAccountCodes: 
             Label: Unselect All
@@ -73,7 +72,6 @@ RootNode:
         clbCostCentres: 
             List: UserDefinedList
             NoLabel:true
-            Dock: Fill
             Width: 365
         btnUnselectAllCostCentres: 
             Label: Unselect All

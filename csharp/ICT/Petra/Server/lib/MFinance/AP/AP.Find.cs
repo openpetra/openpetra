@@ -39,6 +39,7 @@ using Ict.Petra.Server.MCommon;
 
 #region ManualCode
 using Ict.Petra.Shared.MFinance;
+using Ict.Common.Conversion;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -175,7 +176,19 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         public void PerformSearch(DataTable ACriteriaData)
         {
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
-            FPagedDataSetObject = new TPagedDataSet(null);
+
+            if (FSearchTransactions)
+            {
+                FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSTransactionListTable());
+            }
+            else if (FSearchSupplierOrInvoice)
+            {
+                FPagedDataSetObject = new TPagedDataSet(null);
+            }
+            else
+            {
+                FPagedDataSetObject = new TPagedDataSet(new AccountsPayableGUITDSInvoiceListTable());
+            }
 
             // Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
             // can update execution status
@@ -335,39 +348,53 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// </returns>
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
-            DataTable ReturnValue;
-
-#if DEBUGMODE
             if (TLogging.DL >= 7)
             {
                 Console.WriteLine(this.GetType().FullName + ".GetDataPagedResult called.");
             }
-#endif
-            ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
 
-            if (!FSearchTransactions && !FSearchSupplierOrInvoice) // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
+            DataTable ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
+
+            // searching for outstanding invoices on the main screen
+            if (!FSearchTransactions && !FSearchSupplierOrInvoice)
             {
-                try  // I need an extra column, but it might be already present - I can't really tell without generating an exception!
-                {
-                    DataColumn NewColumn = new DataColumn("OutstandingAmount", typeof(Decimal));
-                    ReturnValue.Columns.Add(NewColumn);
-                }
-                catch (Exception)
-                {
-                }
+                // initvars on typed table
+                AccountsPayableGUITDSInvoiceListTable table = (AccountsPayableGUITDSInvoiceListTable)ReturnValue;
+                table.InitVars();
 
-                foreach (DataRow Row in ReturnValue.Rows)
+                foreach (AccountsPayableGUITDSInvoiceListRow Row in ReturnValue.Rows)
                 {
-                    Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"];
+                    // calculate DateDue and DateDiscountUntil
+                    // add creditTerms to dateIssued to get DateDue
+                    Row.DateDue = Row.DateIssued.AddDays(Row.CreditTerms);
+                    Row.DateDiscountUntil = Row.DateIssued.AddDays(Row.DiscountDays);
 
-                    if (Row["a_document_status_c"].Equals(MFinanceConstants.AP_DOCUMENT_PAID))
+                    // If any of the invoices are part-paid, I want to retrieve the outstanding amount.
+                    Row.OutstandingAmount = Row.TotalAmount;
+
+                    if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PAID)
                     {
-                        Row["OutstandingAmount"] = 0.0m;
+                        Row.OutstandingAmount = 0.0m;
                     }
 
-                    if (Row["a_document_status_c"].Equals(MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID))
+                    if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PARTIALLY_PAID)
                     {
-                        Row["OutstandingAmount"] = (Decimal)Row["a_total_amount_n"] - GetPartPaidAmount((Int32)Row["a_ap_document_id_i"]);
+                        Row.OutstandingAmount = Row.TotalAmount - GetPartPaidAmount(Row.ApDocumentId);
+                    }
+
+                    Row.DiscountMsg = "None";
+                    Row.Selected = false;
+
+                    if (Row.DateDiscountUntil > DateTime.Now)
+                    {
+                        Row.DiscountMsg =
+                            String.Format("{0:n0}% until {1}",
+                                Row.DiscountPercentage,
+                                TDate.DateTimeToLongDateString2(Row.DateDiscountUntil));
+                    }
+                    else
+                    {
+                        Row.DiscountMsg = "Expired";
                     }
                 }
             }
@@ -482,9 +509,9 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                        DocTbl + AApDocumentTable.GetTotalAmountDBName() + "," +
                        DocTbl + AApDocumentTable.GetDocumentStatusDBName() + "," +
                        DocTbl + AApDocumentTable.GetDateIssuedDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
+                       DocTbl + AApDocumentTable.GetCreditTermsDBName() + "," +
                        DocTbl + AApDocumentTable.GetDiscountPercentageDBName() + "," +
-                       DocTbl + AApDocumentTable.GetDateIssuedDBName() + "+" + DocTbl + AApDocumentTable.GetDiscountDaysDBName() + "," +
+                       DocTbl + AApDocumentTable.GetDiscountDaysDBName() + "," +
                        DocTbl + AApDocumentTable.GetCreditNoteFlagDBName() + "," +
                        DocTbl + AApDocumentTable.GetApDocumentIdDBName();
             }

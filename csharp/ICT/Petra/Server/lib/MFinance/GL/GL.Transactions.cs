@@ -434,7 +434,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static List <TVariant>TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
             GLBatchTDS MainDS;
-            bool success = TGLPosting.PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, false);
+            bool success = TGLPosting.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS);
 
             List <TVariant>Result = new List <TVariant>();
 

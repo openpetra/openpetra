@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1492,6 +1492,20 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
+        /// for debugging purposes, get the isolation level of the current transaction
+        /// </summary>
+        /// <returns>Isolation.Undefined if no transaction is open</returns>
+        public IsolationLevel GetIsolationLevel()
+        {
+            if (this.Transaction != null)
+            {
+                return this.Transaction.IsolationLevel;
+            }
+
+            return IsolationLevel.Unspecified;
+        }
+
+        /// <summary>
         /// Either starts a new Transaction on the current DB connection or returns
         /// a existing <see cref="TDBTransaction" />. What it does depends on two factors: whether a Transaction
         /// is currently running or not, and if so, whether it meets the specified
@@ -1539,11 +1553,12 @@ namespace Ict.Common.DB
                     {
                         case TEnforceIsolationLevel.eilExact:
                             throw new EDBTransactionIsolationLevelWrongException("Expected IsolationLevel: " +
-                            ADesiredIsolationLevel.ToString("G"));
+                            ADesiredIsolationLevel.ToString("G") + " but is: " + TheTransaction.IsolationLevel.ToString("G"));
 
                         case TEnforceIsolationLevel.eilMinimum:
                             throw new EDBTransactionIsolationLevelTooLowException(
-                            "Expected IsolationLevel: at least " + ADesiredIsolationLevel.ToString("G"));
+                            "Expected IsolationLevel: at least " + ADesiredIsolationLevel.ToString("G") +
+                            " but is: " + TheTransaction.IsolationLevel.ToString("G"));
                     }
                 }
             }
@@ -1711,6 +1726,11 @@ namespace Ict.Common.DB
                 try
                 {
                     int NumberOfRowsAffected = TransactionCommand.ExecuteNonQuery();
+
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log("Number of rows affected: " + NumberOfRowsAffected.ToString());
+                    }
 
                     if (ACommitTransaction)
                     {

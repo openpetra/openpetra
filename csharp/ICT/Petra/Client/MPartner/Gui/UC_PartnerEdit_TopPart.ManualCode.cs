@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -134,7 +134,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerClass.PERSON:
                     pnlPerson.Visible = true;
                     pnlWorkerField.Visible = true;
-                    pnlSpacer.Visible = false;
+                    pnlPerson2ndLine.Visible = true;
                     txtPartnerClass.BackColor = System.Drawing.Color.Yellow;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerClass.FAMILY:
                     pnlFamily.Visible = true;
                     pnlWorkerField.Visible = true;
-                    pnlSpacer.Visible = false;
+                    pnlFamily2ndLine.Visible = true;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
 #if TODO
@@ -171,7 +171,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.CHURCH:
                     pnlChurch.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtChurchName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
@@ -179,7 +179,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.ORGANISATION:
                     pnlOrganisation.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtOrganisationName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
@@ -187,7 +187,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.UNIT:
                     pnlUnit.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtUnitName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     FMainDS.PUnit.ColumnChanging += new DataColumnChangeEventHandler(OnUnitDataColumnChanging);
@@ -196,7 +196,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.BANK:
                     pnlBank.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtBranchName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
@@ -204,7 +204,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.VENUE:
                     pnlVenue.Visible = true;
-                    pnlOther.Visible = true;
+                    pnlOther2ndLine.Visible = true;
 
                     txtVenueName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
 
@@ -361,7 +361,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PPartnerTable.GetTableDBName()))
             {
                 // need to disable all Fields that are DataBound to p_partner. This continues in the switch statments!
-                CustomEnablingDisabling.DisableControlGroup(pnlRight);
+                // timop: I have disabled all controls. usually you have p_partner modify permissions, or none
+                CustomEnablingDisabling.DisableControlGroup(pnlContent);
             }
 
             switch (SharedTypes.PartnerClassStringToEnum(FPartnerClass))
@@ -403,11 +404,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PChurchTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_church
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -419,11 +420,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, POrganisationTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_organisation
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -435,11 +436,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PUnitTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_unit
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -451,11 +452,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PBankTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_bank
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }
@@ -467,11 +468,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!UserInfo.GUserInfo.IsTableAccessOK(TTableAccessPermission.tapMODIFY, PVenueTable.GetTableDBName()))
                     {
                         // need to disable all Fields that are DataBound to p_partner
-                        CustomEnablingDisabling.DisableControl(pnlOther, cmbOtherAddresseeTypeCode);
-                        CustomEnablingDisabling.DisableControl(pnlOther, chkOtherNoSolicitations);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, cmbOtherAddresseeTypeCode);
+                        CustomEnablingDisabling.DisableControl(pnlOther2ndLine, chkOtherNoSolicitations);
 
                         // need to disable all Fields that are DataBound to p_venue
-                        CustomEnablingDisabling.DisableControlGroup(pnlOther);
+                        CustomEnablingDisabling.DisableControlGroup(pnlOther2ndLine);
 
                         cmbOtherAddresseeTypeCode.Focus();
                     }

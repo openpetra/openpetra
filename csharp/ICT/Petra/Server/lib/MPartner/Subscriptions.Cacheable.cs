@@ -160,6 +160,12 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 
                     switch(ACacheableTable)
                     {
+                        case TCacheableSubscriptionsTablesEnum.PublicationList:
+                        {
+                            DataTable TmpTable = PPublicationAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableSubscriptionsTablesEnum.PublicationCostList:
                         {
                             DataTable TmpTable = PPublicationCostAccess.LoadAll(ReadTransaction);
@@ -178,9 +184,9 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
-                        case TCacheableSubscriptionsTablesEnum.PublicationList:
+                        case TCacheableSubscriptionsTablesEnum.PublicationInfoList:
                         {
-                            DataTable TmpTable = GetPublicationListTable(ReadTransaction, TableName);
+                            DataTable TmpTable = GetPublicationInfoListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -250,6 +256,23 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                 {
                     switch (ACacheableTable)
                     {
+                        case TCacheableSubscriptionsTablesEnum.PublicationList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidatePublicationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePublicationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PPublicationAccess.SubmitChanges((PPublicationTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
                         case TCacheableSubscriptionsTablesEnum.PublicationCostList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
@@ -337,6 +360,15 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+#region ManualCode
+				// dependent tables: PublicationInfoList refers to same underlying table as PublicationList
+				// and therefore needs to be updated as well when Publications are modified
+				if (ACacheableTable == TCacheableSubscriptionsTablesEnum.PublicationList)
+				{
+	                GetCacheableTable(TCacheableSubscriptionsTablesEnum.PublicationInfoList, 
+					                  String.Empty, true, out TmpType);
+				}
+#endregion ManualCode
             }
 
             if (AVerificationResult.Count > 0)
@@ -351,6 +383,10 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 
 #region Data Validation
 
+        partial void ValidatePublicationList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePublicationListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidatePublicationCostList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidatePublicationCostListManual(TValidationControlsDict ValidationControlsDict,
@@ -366,7 +402,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 
 #endregion Data Validation
 
-        private DataTable GetPublicationListTable(TDBTransaction AReadTransaction, string ATableName)
+        private DataTable GetPublicationInfoListTable(TDBTransaction AReadTransaction, string ATableName)
         {
 #region ManualCode
 			DataColumn ValidityColumn;

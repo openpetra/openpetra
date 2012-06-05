@@ -41,8 +41,8 @@ RootNode:
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
         txtDetailMotivationDetailDesc: {Label=Description, Width=195}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, ColSpan=3}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ColSpan=3}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, ColSpan=2}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
         clbDetailFeesPayable:

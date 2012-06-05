@@ -591,7 +591,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
         {
             //
-            // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_c of modififed Rows is held correctly in IndividualDataTDS, too!
+            // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_t of modififed Rows is held correctly in IndividualDataTDS, too!
             //
 
             // ...but first empty relevant DataTables to ensure that DataRows that got deleted in FPartnerEditTDS are reflected in FMainDS (just performing a Merge wouldn't remove them!)
@@ -1079,7 +1079,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FLinkLabelsOrigTexts = new Dictionary <string, string>();
 
-            foreach (Control Cntrl in this.pnlIndivDataMenu.Controls[0].Controls)
+            foreach (Control Cntrl in this.pnlIndivDataMenu.Controls)
             {
                 if ((Cntrl is LinkLabel)
                     && (Cntrl.Text.Contains("{")))

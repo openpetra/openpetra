@@ -27,7 +27,6 @@
             Label: Ledger
         grpSelection:
             Label: Settings
-            Dock: Top
             Controls: [dtpDateSelection, chkInvoice, chkDiscounted]
         
         dtpDateSelection:

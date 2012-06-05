@@ -81,13 +81,12 @@ RootNode:
         txtDetailMonthNameShort10: {NoLabel=true, Width=50}
         txtDetailMonthNameShort11: {NoLabel=true, Width=50}
         txtDetailMonthNameShort12: {NoLabel=true, Width=50}
-        pnlLanguage: {ColSpan = 6}
-            Dock: Bottom
+        pnlLanguage: {ColSpan = 4}
             Controls:
-                Row0: [cmbDetailLanguageCode, Empty]
+                Row0: [cmbDetailLanguageCode]
             Padding: 200,0,0,0
             Margin: 0
-        cmbDetailLanguageCode: {List=LanguageCodeList, ColSpan=3}
+        cmbDetailLanguageCode: {List=LanguageCodeList}
         Empty:
     Toolbar:
         tbbNew:

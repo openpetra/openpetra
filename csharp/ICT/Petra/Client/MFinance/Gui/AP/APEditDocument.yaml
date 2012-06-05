@@ -85,10 +85,10 @@ RootNode:
                 Row2: [txtDetailAmount, cmbDetailCostCentreCode]
                 Row3: [txtDetailBaseAmount, cmbDetailAccountCode]
                 Row4: [Empty1, pnlItemButtons]
-        txtDetailNarrative: {ColSpan=3}
+        txtDetailNarrative: {ColSpan=2}
             Width: 350
             Label: Narrati&ve
-        txtDetailItemRef: {ColSpan=3}
+        txtDetailItemRef: {ColSpan=2}
             Width: 350
             Label: Detail &Ref
         txtDetailAmount:
