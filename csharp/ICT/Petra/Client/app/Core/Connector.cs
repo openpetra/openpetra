@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,20 +61,25 @@ namespace Ict.Petra.Client.App.Core
         public void GetRemoteMCommonObject(string RemotingURL, out IMCommonNamespace ARemote)
         {
             string strTCP;
-            string strServer;
+            string strServer = null;
 
             ARemote = null;
-            strServer = null;
-#if DEBUGMODE
-            TLogging.Log("Entering GetRemoteMCommonObject()...", TLoggingType.ToLogfile);
-#endif
+
+            if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+            {
+                TLogging.Log("Entering GetRemoteMCommonObject()...", TLoggingType.ToLogfile);
+            }
+
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
                 strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
+
+                if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                {
+                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                }
+
                 ARemote = (IMCommonNamespace)RemotingServices.Connect(typeof(IMCommonNamespace), strTCP);
 
                 if (ARemote == null)
@@ -83,9 +88,10 @@ namespace Ict.Petra.Client.App.Core
                 }
                 else
                 {
-#if DEBUGMODE
-                    TLogging.Log("GetRemoteMCommonObject: connected.", TLoggingType.ToLogfile);
-#endif
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("GetRemoteMCommonObject: connected.", TLoggingType.ToLogfile);
+                    }
                 }
             }
             catch (Exception exp)
@@ -109,20 +115,25 @@ namespace Ict.Petra.Client.App.Core
         public void GetRemoteMConferenceObject(string RemotingURL, out IMConferenceNamespace ARemote)
         {
             string strTCP;
-            string strServer;
+            string strServer = null;
 
             ARemote = null;
-            strServer = null;
-#if DEBUGMODE
-            TLogging.Log("Entering GetRemoteMConferenceObject()...", TLoggingType.ToLogfile);
-#endif
+
+            if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+            {
+                TLogging.Log("Entering GetRemoteMConferenceObject()...", TLoggingType.ToLogfile);
+            }
+
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
                 strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
+
+                if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                {
+                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                }
+
                 ARemote = (IMConferenceNamespace)RemotingServices.Connect(typeof(IMConferenceNamespace), strTCP);
 
                 if (ARemote == null)
@@ -131,9 +142,10 @@ namespace Ict.Petra.Client.App.Core
                 }
                 else
                 {
-#if DEBUGMODE
-                    TLogging.Log("GetRemoteMConferenceObject: connected.", TLoggingType.ToLogfile);
-#endif
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("GetRemoteMConferenceObject: connected.", TLoggingType.ToLogfile);
+                    }
                 }
             }
             catch (Exception exp)
@@ -157,20 +169,25 @@ namespace Ict.Petra.Client.App.Core
         public void GetRemoteMPartnerObject(string RemotingURL, out IMPartnerNamespace ARemote)
         {
             string strTCP;
-            string strServer;
+            string strServer = null;
 
             ARemote = null;
-            strServer = null;
-#if DEBUGMODE
-            TLogging.Log("Entering GetRemoteMPartnerObject()...", TLoggingType.ToLogfile);
-#endif
+
+            if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+            {
+                TLogging.Log("Entering GetRemoteMPartnerObject()...", TLoggingType.ToLogfile);
+            }
+
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
                 strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
+
+                if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                {
+                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                }
+
                 ARemote = (IMPartnerNamespace)RemotingServices.Connect(typeof(IMPartnerNamespace), strTCP);
 
                 if (ARemote == null)
@@ -179,9 +196,10 @@ namespace Ict.Petra.Client.App.Core
                 }
                 else
                 {
-#if DEBUGMODE
-                    TLogging.Log("GetRemoteMPartnerObject: connected.", TLoggingType.ToLogfile);
-#endif
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("GetRemoteMPartnerObject: connected.", TLoggingType.ToLogfile);
+                    }
                 }
             }
             catch (Exception exp)
@@ -205,20 +223,25 @@ namespace Ict.Petra.Client.App.Core
         public void GetRemoteMPersonnelObject(string RemotingURL, out IMPersonnelNamespace ARemote)
         {
             string strTCP;
-            string strServer;
+            string strServer = null;
 
             ARemote = null;
-            strServer = null;
-#if DEBUGMODE
-            TLogging.Log("Entering GetRemoteMPersonnelObject()...", TLoggingType.ToLogfile);
-#endif
+
+            if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+            {
+                TLogging.Log("Entering GetRemoteMPersonnelObject()...", TLoggingType.ToLogfile);
+            }
+
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
                 strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
+
+                if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                {
+                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                }
+
                 ARemote = (IMPersonnelNamespace)RemotingServices.Connect(typeof(IMPersonnelNamespace), strTCP);
 
                 if (ARemote == null)
@@ -227,9 +250,10 @@ namespace Ict.Petra.Client.App.Core
                 }
                 else
                 {
-#if DEBUGMODE
-                    TLogging.Log("GetRemoteMPersonnelObject: connected.", TLoggingType.ToLogfile);
-#endif
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("GetRemoteMPersonnelObject: connected.", TLoggingType.ToLogfile);
+                    }
                 }
             }
             catch (Exception exp)
@@ -254,22 +278,25 @@ namespace Ict.Petra.Client.App.Core
         {
             ARemote = null;
             string strTCP;
-            string strServer;
+            string strServer = null;
 
             if (RemotingURL != "")
             {
-                ARemote = null;
-                strServer = null;
-#if DEBUGMODE
-                TLogging.Log("Entering GetRemoteMFinanceObject()...", TLoggingType.ToLogfile);
-#endif
+                if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                {
+                    TLogging.Log("Entering GetRemoteMFinanceObject()...", TLoggingType.ToLogfile);
+                }
+
                 try
                 {
                     strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
                     strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
+
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                    }
+
                     ARemote = (IMFinanceNamespace)RemotingServices.Connect(typeof(IMFinanceNamespace), strTCP);
 
                     if (ARemote == null)
@@ -278,9 +305,10 @@ namespace Ict.Petra.Client.App.Core
                     }
                     else
                     {
-#if DEBUGMODE
-                        TLogging.Log("GetRemoteMFinanceObject: connected.", TLoggingType.ToLogfile);
-#endif
+                        if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                        {
+                            TLogging.Log("GetRemoteMFinanceObject: connected.", TLoggingType.ToLogfile);
+                        }
                     }
                 }
                 catch (Exception exp)
@@ -306,22 +334,25 @@ namespace Ict.Petra.Client.App.Core
         {
             ARemote = null;
             string strTCP;
-            string strServer;
+            string strServer = null;
 
             if (RemotingURL != "")
             {
-                ARemote = null;
-                strServer = null;
-#if DEBUGMODE
-                TLogging.Log("Entering GetRemoteMReportingObject()...", TLoggingType.ToLogfile);
-#endif
+                if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                {
+                    TLogging.Log("Entering GetRemoteMReportingObject()...", TLoggingType.ToLogfile);
+                }
+
                 try
                 {
                     strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
                     strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
+
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                    }
+
                     ARemote = (IMReportingNamespace)RemotingServices.Connect(typeof(IMReportingNamespace), strTCP);
 
                     if (ARemote == null)
@@ -330,9 +361,10 @@ namespace Ict.Petra.Client.App.Core
                     }
                     else
                     {
-#if DEBUGMODE
-                        TLogging.Log("GetRemoteMReportingObject: connected.", TLoggingType.ToLogfile);
-#endif
+                        if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                        {
+                            TLogging.Log("GetRemoteMReportingObject: connected.", TLoggingType.ToLogfile);
+                        }
                     }
                 }
                 catch (Exception exp)
@@ -357,20 +389,25 @@ namespace Ict.Petra.Client.App.Core
         public void GetRemoteMSysManObject(string RemotingURL, out IMSysManNamespace ARemote)
         {
             string strTCP;
-            string strServer;
+            string strServer = null;
 
             ARemote = null;
-            strServer = null;
-#if DEBUGMODE
-            TLogging.Log("Entering GetRemoteMSysManObject()...", TLoggingType.ToLogfile);
-#endif
+
+            if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+            {
+                TLogging.Log("Entering GetRemoteMSysManObject()...", TLoggingType.ToLogfile);
+            }
+
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
                 strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
+
+                if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                {
+                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                }
+
                 ARemote = (IMSysManNamespace)RemotingServices.Connect(typeof(IMSysManNamespace), strTCP);
 
                 if (ARemote == null)
@@ -379,9 +416,10 @@ namespace Ict.Petra.Client.App.Core
                 }
                 else
                 {
-#if DEBUGMODE
-                    TLogging.Log("GetRemoteMSysManObject: connected.", TLoggingType.ToLogfile);
-#endif
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("GetRemoteMSysManObject: connected.", TLoggingType.ToLogfile);
+                    }
                 }
             }
             catch (Exception exp)
