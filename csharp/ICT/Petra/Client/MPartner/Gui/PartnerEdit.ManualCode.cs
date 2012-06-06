@@ -1215,13 +1215,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                             ReturnValue = true;
                             FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
 
-                            if((VerificationResult != null)
+                            if ((VerificationResult != null)
                                 && (VerificationResult.HasCriticalOrNonCriticalErrors))
-                            {    
+                            {
                                 TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
                                     this.GetType(), null);
-                            }    
-                                
+                            }
+
                             break;
 
                         case TSubmitChangesResult.scrError:

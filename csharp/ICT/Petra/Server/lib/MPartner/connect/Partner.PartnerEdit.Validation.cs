@@ -46,8 +46,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             ValidationControlsDict.Add(ASubmitTable.Columns[PPartnerTable.ColumnStatusCodeId],
-                new TValidationControlsData(null, Catalog.GetString("Partner &Status")));           
-            
+                new TValidationControlsData(null, Catalog.GetString("Partner &Status")));
+
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedPartnerValidation_Partner.ValidatePartnerManual("TPartnerEditUIConnector" +
@@ -63,14 +63,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             ValidationControlsDict.Add(ASubmitTable.Columns[PPartnerTable.ColumnStatusCodeId],
-                new TValidationControlsData(null, Catalog.GetString("Partner &Status")));           
+                new TValidationControlsData(null, Catalog.GetString("Partner &Status")));
 
             ValidationControlsDict.Add(ASubmitTable.Columns[PBankTable.ColumnBranchCodeId],
                 new TValidationControlsData(null, Catalog.GetString("Bank/Branch Code"),
-                                            null, Catalog.GetString("BIC/SWIFT Code")));
+                    null, Catalog.GetString("BIC/SWIFT Code")));
             ValidationControlsDict.Add(ASubmitTable.Columns[PBankTable.ColumnBicId],
                 new TValidationControlsData(null, Catalog.GetString("BIC/SWIFT Code")));
-            
+
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
                 TSharedPartnerValidation_Partner.ValidatePartnerBankDetailsManual("TPartnerEditUIConnector" +

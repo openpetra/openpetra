@@ -792,11 +792,11 @@ namespace Ict.Common.Verification
                     IncludeVerificationResult = true;
                 }
 
-                if(AIgnoreWarnings && si.ResultSeverity == TResultSeverity.Resv_Noncritical)
+                if (AIgnoreWarnings && (si.ResultSeverity == TResultSeverity.Resv_Noncritical))
                 {
                     IncludeVerificationResult = false;
                 }
-                
+
                 if (IncludeVerificationResult)
                 {
                     AErrorMessages = AErrorMessages + si.ResultText;
@@ -808,15 +808,15 @@ namespace Ict.Common.Verification
 
                     AErrorMessages += Environment.NewLine + Environment.NewLine;
 
-                    if (si is TScreenVerificationResult) 
+                    if (si is TScreenVerificationResult)
                     {
                         siScr = (TScreenVerificationResult)(List[Counter]);
-    
+
                         if (AFirstErrorControl == null)
                         {
                             AFirstErrorControl = siScr.ResultControl;
                             AFirstErrorContext = siScr.ResultContext;
-    
+
                             if (AUpdateFirstErrorControl)
                             {
                                 FFirstErrorControl = AFirstErrorControl;

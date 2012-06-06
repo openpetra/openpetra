@@ -2013,9 +2013,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
                     else
                     {
-                        SubmissionResult = TSubmitChangesResult.scrError;                        
+                        SubmissionResult = TSubmitChangesResult.scrError;
                     }
-                    
+
                     AVerificationResult.AddCollection(SingleVerificationResultCollection);
 
                     if (SubmissionResult != TSubmitChangesResult.scrError)
@@ -2031,7 +2031,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         }
                         else
                         {
-                            SubmissionResult = SubmitChangesAddressResult;                          
+                            SubmissionResult = SubmitChangesAddressResult;
 
                             if (SubmitChangesAddressResult == TSubmitChangesResult.scrInfoNeeded)
                             {
@@ -2095,7 +2095,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 }
                             }
                         }
-                        
+
                         AVerificationResult.AddCollection(SingleVerificationResultCollection);
                     }
 
@@ -2399,7 +2399,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             AVerificationResult = null;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-            
+
 #if DEBUGMODE
             if (TLogging.DL >= 7)
             {
@@ -2423,15 +2423,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         ValidatePPartner(ValidationControlsDict, ref AVerificationResult, AInspectDS.PPartner);
                         ValidatePPartnerManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PPartner);
-                
+
                         if (AVerificationResult.HasCriticalErrors)
                         {
                             AllSubmissionsOK = false;
-                        }                        
+                        }
 
                         // Business Rule: if the Partner's StatusCode changes, give the user the
                         // option to promote the change to all Family Members (if the Partner is
-                        // a FAMILY and has Family Members).                        
+                        // a FAMILY and has Family Members).
                         if (AInspectDS.PPartner.Rows[0].HasVersion(DataRowVersion.Original)
                             && (AInspectDS.PPartner.Rows != AInspectDS.PPartner.Rows[0][PPartnerTable.GetStatusCodeDBName(), DataRowVersion.Current]))
                         {
@@ -2505,15 +2505,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             ValidatePBank(ValidationControlsDict, ref AVerificationResult, AInspectDS.PBank);
                             ValidatePBankManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PBank);
-                    
+
                             if (AVerificationResult.HasCriticalErrors)
                             {
                                 AllSubmissionsOK = false;
-                            }                        
-                        }       
-                    }                    
-                }                    
-                
+                            }
+                        }
+                    }
+                }
+
                 #endregion
 
                 #region Foundations
@@ -3234,18 +3234,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         }
 
         #endregion
-        
-#region Data Validation
 
-  static partial void ValidatePPartner(TValidationControlsDict ValidationControlsDict,
-    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-  static partial void ValidatePPartnerManual(TValidationControlsDict ValidationControlsDict,
-     ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-  static partial void ValidatePBank(TValidationControlsDict ValidationControlsDict,
-    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-  static partial void ValidatePBankManual(TValidationControlsDict ValidationControlsDict,
-     ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        #region Data Validation
 
-#endregion Data Validation            
+        static partial void ValidatePPartner(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePPartnerManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePBank(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePBankManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+        #endregion Data Validation
     }
 }
