@@ -34,7 +34,7 @@ namespace Ict.Petra.Shared
     {
         /// <summary>Shown when Warnings are brought to the attention of the user.</summary>
         public static readonly string StrWarningsAttention = Catalog.GetString("The following warnings are brought to your attention:");
-        
+
         /// <summary>
         /// format an error message using the errors from Verification Result
         /// </summary>
@@ -49,16 +49,16 @@ namespace Ict.Petra.Shared
 
             if (AMessageHeadline == null)
             {
-                if(AVerificationResult.HasCriticalErrors)
-                {    
+                if (AVerificationResult.HasCriticalErrors)
+                {
                     AMessageHeadline = Catalog.GetString("Saving of data failed!\r\n\r\nReasons:");
                 }
-                else                
+                else
                 {
                     AMessageHeadline = StrWarningsAttention;
                 }
             }
- 
+
 // MessageBox.Show('AVerificationResult.Count: ' + AVerificationResult.Count.ToString);
             ReturnValue = AMessageHeadline + Environment.NewLine;
             VerificationResultEnum = AVerificationResult.GetEnumerator();
