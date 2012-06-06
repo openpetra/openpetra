@@ -62,7 +62,7 @@ VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.{#COLUMNNAME},
     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
 {##CHECKGENERALNOTNULL}
-VerificationResult = TGeneralChecks.ValueMustNotBeNull(ARow.IsDeletableNull() ? null : "",
+VerificationResult = TGeneralChecks.ValueMustNotBeNull(ARow.Is{#COLUMNNAME}Null() ? null : "",
     ValidationControlsData.ValidationControlLabel,
     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
     
