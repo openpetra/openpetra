@@ -44,11 +44,12 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesError">Instance of the calling WinForm.</param>
         /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that
         /// are considered by this Method to those whose <see cref="TVerificationResult.ResultContext" /> matches
-        /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref></param>.
+        /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref> (defaults to null).</param>
+        /// <param name="AIgnoreWarnings">Set to true if Warnings are to be ignored (defaults to false).</param>
         /// <returns>True in case there were no data verification errors, otherwise false.</returns>
         public static bool ProcessAnyDataValidationErrors(bool ARecordChangeVerification,
             TVerificationResultCollection AVerificationResultCollection,
-            Type ATypeWhichRaisesError, Type ARestrictToTypeWhichRaisesError = null)
+            Type ATypeWhichRaisesError, Type ARestrictToTypeWhichRaisesError = null, bool AIgnoreWarnings = false)
         {
             bool ReturnValue = false;
             string ErrorMessages;
@@ -66,7 +67,7 @@ namespace Ict.Petra.Client.App.Gui
             {
                 // Determine data validation message, and more
                 AVerificationResultCollection.BuildScreenVerificationResultList(out ErrorMessages,
-                    out FirstErrorControl, out FirstErrorContext, true, ARestrictToTypeWhichRaisesError);
+                    out FirstErrorControl, out FirstErrorContext, true, ARestrictToTypeWhichRaisesError, AIgnoreWarnings);
 
                 // Tell user that there are data validation errors if there are any
                 if (ErrorMessages != String.Empty)

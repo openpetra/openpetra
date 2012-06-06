@@ -58,16 +58,15 @@ namespace Ict.Petra.Client.App.Gui
         /// <summary>Shown when the Form contains invalid data.</summary>
         private static readonly string StrInvalidDataNeedsCorrectingTitle = Catalog.GetString("Form Contains Invalid Data!");
 
+        /// <summary>Shown when there are Warnings associated with a Form's data.</summary>
+        private static readonly string StrFormDataWarningTitle = Catalog.GetString("Form Data Warning");
+
         /// <summary>Shown when invalid data was entered.</summary>
         private static readonly string StrInvalidDataTitle = Catalog.GetString("Invalid Data");
 
-        /// <summary>Shown when the Form contains invalid data at the poing of saving data.</summary>
+        /// <summary>Shown when the Form contains invalid data at the point of saving data.</summary>
         private static readonly string StrFormSaveInvalidDataNeedsCorrecting = Catalog.GetString(
             "Data cannot be saved because invalid data has not been corrected:");
-
-        /// <summary>Shown when the Form contains warnings at the poing of saving data.</summary>
-        private static readonly string StrFormSaveInvalidDataWarning = Catalog.GetString(
-            "There are warning messages associated with the data in form\r\n(data can be saved, though):");
 
         /// <summary>Shown when a record contains warnings at the poing of changing to a different record.</summary>
         private static readonly string StrRecordChangeInvalidDataWarning = Catalog.GetString(
@@ -355,6 +354,7 @@ namespace Ict.Petra.Client.App.Gui
             bool AOnlyWarnings,
             System.Type ATypeWhichRaisesError)
         {
+            string Title;
             string Heading;
             MessageBoxIcon Icon;
 
@@ -370,17 +370,19 @@ namespace Ict.Petra.Client.App.Gui
 
             if (AOnlyWarnings)
             {
-                Heading = StrFormSaveInvalidDataWarning;
+                Title = TMessages.StrFormDataWarningTitle;
+                Heading = Messages.StrWarningsAttention;
                 Icon = MessageBoxIcon.Warning;
             }
             else
             {
+                Title = TMessages.StrInvalidDataNeedsCorrectingTitle;
                 Heading = StrFormSaveInvalidDataNeedsCorrecting;
                 Icon = MessageBoxIcon.Error;
             }
 
             MsgGeneralError(Heading + Environment.NewLine + Environment.NewLine +
-                AVerificationError, Catalog.GetString(TMessages.StrInvalidDataNeedsCorrectingTitle), AMessageNumber,
+                AVerificationError, Title, AMessageNumber,
                 ATypeWhichRaisesError, Icon);
         }
 

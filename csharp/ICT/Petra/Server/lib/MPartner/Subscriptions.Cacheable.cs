@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                                 ValidatePublicationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidatePublicationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PPublicationAccess.SubmitChanges((PPublicationTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                                 ValidatePublicationCostList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidatePublicationCostListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PPublicationCostAccess.SubmitChanges((PPublicationCostTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -296,7 +296,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                                 ValidateReasonSubscriptionGivenList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateReasonSubscriptionGivenListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PReasonSubscriptionGivenAccess.SubmitChanges((PReasonSubscriptionGivenTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -313,7 +313,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                                 ValidateReasonSubscriptionCancelledList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateReasonSubscriptionCancelledListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PReasonSubscriptionCancelledAccess.SubmitChanges((PReasonSubscriptionCancelledTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
