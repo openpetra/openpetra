@@ -42,6 +42,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Shared.MSysMan.Validation;
 #endregion ManualCode
 
 namespace Ict.Petra.Server.MSysMan.Cacheable
@@ -241,7 +242,7 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
                         case TCacheableSysManTablesEnum.LanguageSpecificList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateSLanguageSpecific(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                SLanguageSpecificValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
                                 ValidateLanguageSpecificListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -305,8 +306,6 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
 
 #region Data Validation
 
-        partial void ValidateSLanguageSpecific(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLanguageSpecificListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 

@@ -47,6 +47,7 @@ using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.MPersonnel.Units.Validation;
 #endregion ManualCode
 namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 {
@@ -263,7 +264,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                         case TCacheableUnitTablesEnum.PositionList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidatePtPosition(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtPositionValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
                                 ValidatePositionListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -280,7 +281,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                         case TCacheableUnitTablesEnum.JobAssignmentTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidatePtAssignmentType(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtAssignmentTypeValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
                                 ValidateJobAssignmentTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -297,7 +298,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                         case TCacheableUnitTablesEnum.LeavingCodeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidatePtLeavingCode(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtLeavingCodeValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
                                 ValidateLeavingCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -361,15 +362,9 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 
 #region Data Validation
 
-        partial void ValidatePtPosition(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidatePositionListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePtAssignmentType(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateJobAssignmentTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePtLeavingCode(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLeavingCodeListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);

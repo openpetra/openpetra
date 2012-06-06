@@ -41,6 +41,7 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.MCommon.Validation;
 #endregion ManualCode
 using Ict.Petra.Server.App.Core;
 
@@ -262,7 +263,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                         case TCacheableCommonTablesEnum.CountryList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidatePCountry(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PCountryValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
                                 ValidateCountryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -279,7 +280,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                         case TCacheableCommonTablesEnum.FrequencyList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateAFrequency(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AFrequencyValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
                                 ValidateFrequencyListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -296,7 +297,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                         case TCacheableCommonTablesEnum.LanguageCodeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidatePLanguage(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PLanguageValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
                                 ValidateLanguageCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -360,15 +361,9 @@ namespace Ict.Petra.Server.MCommon.Cacheable
 
 #region Data Validation
 
-        partial void ValidatePCountry(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateCountryListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAFrequency(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateFrequencyListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePLanguage(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLanguageCodeListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);

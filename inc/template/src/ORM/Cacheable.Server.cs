@@ -509,7 +509,7 @@ private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction,
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     if (ASubmitTable.Rows.Count > 0) 
     { 
-        Validate{#DATATABLENAME}(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+        {#DATATABLENAME}Validation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
         Validate{#ENUMNAME}Manual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
         if (!AVerificationResult.HasCriticalErrors)
@@ -525,8 +525,6 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     break;
     
 {##DATAVALIDATION}
-    partial void Validate{#DATATABLENAME}(TValidationControlsDict ValidationControlsDict, 
-        ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
     partial void Validate{#ENUMNAME}Manual(TValidationControlsDict ValidationControlsDict, 
         ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
 
