@@ -716,15 +716,66 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                 {
                     switch (ACacheableTable)
                     {
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateAMotivationGroup(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateMotivationGroupListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (AMotivationGroupAccess.SubmitChanges((AMotivationGroupTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
                         case TCacheableFinanceTablesEnum.MotivationList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMotivationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateAMotivationDetail(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMotivationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
+                        case TCacheableFinanceTablesEnum.FeesPayableList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateAFeesPayable(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateFeesPayableListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
+                        case TCacheableFinanceTablesEnum.FeesReceivableList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateAFeesReceivable(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateFeesReceivableListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
                                     {
                                         SubmissionResult = TSubmitChangesResult.scrOK;

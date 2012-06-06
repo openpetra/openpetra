@@ -405,23 +405,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
         {
             switch (ACacheableTable)
             {
-                case TCacheableFinanceTablesEnum.MotivationList:
-                    if (ASubmitTable.Rows.Count > 0) 
-                    { 
-                        ValidateMotivationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                        ValidateMotivationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-
-                        if (!AVerificationResult.HasCriticalErrors)
-                        {
-                            if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                        }
-                    }
-
-                    break;
+                {#SAVETABLE}
 
                 default:
 
