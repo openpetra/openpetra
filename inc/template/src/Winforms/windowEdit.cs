@@ -34,6 +34,9 @@ namespace {#NAMESPACE}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
     private {#DATASETTYPE} FMainDS;
+{#IFDEF SHOWDETAILS}
+    private int FCurrentRow;
+{#ENDIF SHOWDETAILS}
 
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
@@ -125,12 +128,8 @@ namespace {#NAMESPACE}
                 break;
             }
         }
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(RowNumberGrid, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
 
-        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+        grdDetails.SelectRowInGrid(RowNumberGrid);
     }
 
     /// return the selected row
@@ -202,10 +201,21 @@ namespace {#NAMESPACE}
 {#ENDIF SAVEDETAILS}
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        // display the details of the currently selected row
-        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-        ShowDetails(FPreviouslySelectedDetailRow);
-        pnlDetails.Enabled = true;
+        if(e.Row != FCurrentRow)
+        {
+            // Transfer data from Controls into the DataTable
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            }
+
+            // Display the details of the currently selected Row
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+            pnlDetails.Enabled = true;
+            
+            FCurrentRow = e.Row;
+        }
     }
 {#ENDIF SHOWDETAILS}
 {#IFDEF UNDODATA}
