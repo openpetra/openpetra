@@ -37,7 +37,7 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces;
+using Ict.Petra.Shared.Interfaces.MCommon;
 
 namespace Ict.Petra.Client.CommonDialogs
 {
