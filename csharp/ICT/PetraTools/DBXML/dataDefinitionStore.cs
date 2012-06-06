@@ -259,6 +259,61 @@ namespace Ict.Tools.DBXML
         }
 
         /// <summary>
+        /// get the namespace for this table, eg. MPersonnel.Units
+        /// </summary>
+        public static string GetNamespace(string AStrGroup)
+        {
+            String NamespaceTable;
+
+            if (AStrGroup == "partner")
+            {
+                NamespaceTable = "MPartner.Partner";
+            }
+            else if (AStrGroup == "mailroom")
+            {
+                NamespaceTable = "MPartner.Mailroom";
+            }
+            else if (AStrGroup == "account")
+            {
+                NamespaceTable = "MFinance.Account";
+            }
+            else if (AStrGroup == "gift")
+            {
+                NamespaceTable = "MFinance.Gift";
+            }
+            else if (AStrGroup == "ap")
+            {
+                NamespaceTable = "MFinance.AP";
+            }
+            else if (AStrGroup == "ar")
+            {
+                NamespaceTable = "MFinance.AR";
+            }
+            else if (AStrGroup == "personnel")
+            {
+                NamespaceTable = "MPersonnel.Personnel";
+            }
+            else if (AStrGroup == "units")
+            {
+                NamespaceTable = "MPersonnel.Units";
+            }
+            else if (AStrGroup == "common")
+            {
+                NamespaceTable = "MCommon";
+            }
+            else
+            {
+                NamespaceTable = 'M' + AStrGroup;
+            }
+
+            NamespaceTable = NamespaceTable.Replace("Msysman", "MSysMan").
+                             Replace("Mconference", "MConference").
+                             Replace("Mhospitality", "MHospitality");
+
+            return NamespaceTable;
+        }
+
+        /// <summary>
         /// overload, do warn about missing fields (if GEnabledLoggingMissingFields is set)
         /// </summary>
         /// <param name="s"></param>

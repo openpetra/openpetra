@@ -23,6 +23,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
 using GNU.Gettext;
 using SourceGrid;
+using {#SHAREDVALIDATIONNAMESPACEMODULE};
 
 {#USINGNAMESPACES}
 
@@ -86,10 +87,7 @@ namespace {#NAMESPACE}
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-{#IFDEF DATAVALIDATION}
-
             BuildValidationControlsDict();
-{#ENDIF DATAVALIDATION}
 
             ShowData();
         }
@@ -330,7 +328,7 @@ namespace {#NAMESPACE}
 
             GetDetailsFromControls(CurrentRow);
             
-            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+            ValidateDataDetails(CurrentRow);
 {#IFDEF VALIDATEDATADETAILSMANUAL}
             ValidateDataDetailsManual(CurrentRow);
 {#ENDIF VALIDATEDATADETAILSMANUAL}
@@ -419,7 +417,6 @@ namespace {#NAMESPACE}
 
 #endregion
 {#ENDIF ACTIONENABLING}
-{#IFDEF DATAVALIDATION}
 
 #region Data Validation
     
@@ -471,13 +468,23 @@ namespace {#NAMESPACE}
         }
     }
 
+    private void ValidateDataDetails({#DETAILTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        {#DETAILTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
+    }
+
     private void BuildValidationControlsDict()
     {
+        FPetraUtilsObject.ValidationControlsDict = TValidationControlsDict.PopulateDictionaryWithAllColumns(FMainDS.{#DETAILTABLE});
+{#IFDEF ADDCONTROLTOVALIDATIONCONTROLSDICT}
         {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+{#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
     }
     
 #endregion
-{#ENDIF DATAVALIDATION}
   }
 }
 

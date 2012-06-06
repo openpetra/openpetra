@@ -444,6 +444,10 @@ namespace Ict.Petra.Client.CommonForms
             {
                 return FValidationControlsDict;
             }
+            set
+            {
+                FValidationControlsDict = value;
+            }
         }
 
         /// useful for initialising actions, eg based on permissions

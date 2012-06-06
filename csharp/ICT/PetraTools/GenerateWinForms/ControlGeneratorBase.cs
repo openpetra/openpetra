@@ -1003,8 +1003,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if ((ctrl.HasAttribute("Validation"))
                 && (ctrl.GetAttribute("Validation").ToLower() != "false"))
             {
-                writer.FTemplate.SetCodelet("DATAVALIDATION", "TRUE");
-
                 string targetCodeletValidation = "ADDCONTROLTOVALIDATIONCONTROLSDICT";
 
                 if (!ctrl.GetAttribute("Validation").ToLower().StartsWith("pair("))

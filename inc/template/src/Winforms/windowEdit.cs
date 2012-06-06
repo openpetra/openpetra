@@ -24,6 +24,7 @@ using Ict.Petra.Client.MCommon;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Remoting.Shared;
+using {#SHAREDVALIDATIONNAMESPACEMODULE};
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -66,10 +67,8 @@ namespace {#NAMESPACE}
           ShowDetails(null);
       }
       {#INITACTIONSTATE}
-{#IFDEF DATAVALIDATION}
 
       BuildValidationControlsDict();
-{#ENDIF DATAVALIDATION}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -244,7 +243,7 @@ namespace {#NAMESPACE}
         if (CurrentRow != null)
         {
             GetDetailsFromControls(CurrentRow);
-            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+            ValidateDataDetails(CurrentRow);
 {#IFDEF VALIDATEDATADETAILSMANUAL}
             ValidateDataDetailsManual(CurrentRow);
 {#ENDIF VALIDATEDATADETAILSMANUAL}
@@ -499,7 +498,6 @@ namespace {#NAMESPACE}
     {#ACTIONHANDLERS}
 
 #endregion
-{#IFDEF DATAVALIDATION}
 
 #region Data Validation
     
@@ -551,13 +549,23 @@ namespace {#NAMESPACE}
         }
     }
 
+    private void ValidateDataDetails({#DETAILTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        {#DETAILTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
+    }
+
     private void BuildValidationControlsDict()
     {
+        FPetraUtilsObject.ValidationControlsDict = TValidationControlsDict.PopulateDictionaryWithAllColumns(FMainDS.{#DETAILTABLE});
+{#IFDEF ADDCONTROLTOVALIDATIONCONTROLSDICT}
         {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+{#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
     }
     
 #endregion
-{#ENDIF DATAVALIDATION}
   }
 }
 
