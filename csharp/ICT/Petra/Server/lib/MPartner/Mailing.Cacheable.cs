@@ -271,7 +271,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                         case TCacheableMailingTablesEnum.ContactAttributeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateContactAttributeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePContactAttribute(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateContactAttributeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                         case TCacheableMailingTablesEnum.ContactAttributeDetailList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateContactAttributeDetailList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePContactAttributeDetail(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateContactAttributeDetailListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -305,7 +305,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                         case TCacheableMailingTablesEnum.MethodOfContactList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMethodOfContactList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePMethodOfContact(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMethodOfContactListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -322,7 +322,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                         case TCacheableMailingTablesEnum.MergeFormList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMergeFormList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePMergeForm(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMergeFormListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -339,7 +339,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                         case TCacheableMailingTablesEnum.MergeFieldList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMergeFieldList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePMergeField(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMergeFieldListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -356,7 +356,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                         case TCacheableMailingTablesEnum.MailingList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMailingList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePMailing(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMailingListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -420,27 +420,27 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
 
 #region Data Validation
 
-        partial void ValidateContactAttributeList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidatePContactAttribute(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateContactAttributeListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateContactAttributeDetailList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidatePContactAttributeDetail(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateContactAttributeDetailListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMethodOfContactList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidatePMethodOfContact(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfContactListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMergeFormList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidatePMergeForm(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMergeFormListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMergeFieldList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidatePMergeField(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMergeFieldListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMailingList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidatePMailing(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMailingListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);

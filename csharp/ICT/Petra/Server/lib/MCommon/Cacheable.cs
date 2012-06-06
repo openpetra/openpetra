@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                         case TCacheableCommonTablesEnum.CountryList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateCountryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePCountry(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateCountryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                         case TCacheableCommonTablesEnum.FrequencyList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateFrequencyList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateAFrequency(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateFrequencyListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -296,7 +296,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                         case TCacheableCommonTablesEnum.LanguageCodeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateLanguageCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePLanguage(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateLanguageCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
@@ -360,15 +360,15 @@ namespace Ict.Petra.Server.MCommon.Cacheable
 
 #region Data Validation
 
-        partial void ValidateCountryList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidatePCountry(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateCountryListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateFrequencyList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidateAFrequency(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateFrequencyListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateLanguageCodeList(TValidationControlsDict ValidationControlsDict,
+        partial void ValidatePLanguage(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLanguageCodeListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
