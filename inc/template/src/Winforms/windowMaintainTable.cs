@@ -162,12 +162,8 @@ namespace {#NAMESPACE}
                 break;
             }
         }
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(RowNumberGrid, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
 
-        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+        grdDetails.SelectRowInGrid(RowNumberGrid);
     }
 
     /// return the selected row
