@@ -148,10 +148,11 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <!--  ***************  Build remote client installer ********************* -->
     <property name="SetupOriginal.File" value="${dir.root}/setup/petra${PetraRelease}/remoteclientWin/remote.nsi"/>
     <call target="setupTemplate"/>
-    
+
     <!-- ************ build backup client tar.gz for future patches ********* -->
     <property name="BuildArchive" value="client" overwrite="true"/>
     <call target="prepareSetupDirForTarFile"/>
+    <copy file="${Config.file}" tofile="${setupDir}/etc30/PetraClientRemote.config" overwrite="true"/>
     <!-- this does not keep the executable flag; need this to make the patch for windows clients -->
     <tar destfile="${dir.delivery}/openpetraorg-client-backup-${OrgNameWithoutSpace}-${ReleaseID}.tar.gz" compression="GZip">
       <fileset basedir="${setupDir}" prefix="openpetraorg-${ReleaseID}">
