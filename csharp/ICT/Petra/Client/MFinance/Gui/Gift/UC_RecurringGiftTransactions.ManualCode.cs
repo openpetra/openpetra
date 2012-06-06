@@ -424,7 +424,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPreviouslySelectedDetailRow.BatchNumber,
                 ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
                 FPreviouslySelectedDetailRow.GiftTransactionNumber);
-            FMainDS.ARecurringGiftDetail.Rows.Remove(FPreviouslySelectedDetailRow);
+            //FMainDS.ARecurringGiftDetail.Rows.Remove(FPreviouslySelectedDetailRow);
+            FPreviouslySelectedDetailRow.Delete();	
             FPreviouslySelectedDetailRow = null;
             DataView giftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
             giftDetailView.RowFilter = filterAllDetailsOfGift;
@@ -434,7 +435,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // TODO int oldGiftNumber = gift.GiftTransactionNumber;
                 // TODO int oldBatchNumber = gift.BatchNumber;
 
-                FMainDS.ARecurringGift.Rows.Remove(gift);
+                //FMainDS.ARecurringGift.Rows.Remove(gift);
+                gift.Delete();
 
                 // we cannot update primary keys easily, therefore we have to do it later on the server side
 #if DISABLED
@@ -488,7 +490,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
-                ShowDetails(FPreviouslySelectedDetailRow);
+                //ShowDetails(FPreviouslySelectedDetailRow);
             }
             else
             {
@@ -499,30 +501,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearControls()
         {
-        	txtBatchTotal.NumberValueDecimal = 0;
-        	txtDetailDonorKey.Text = string.Empty;
-            txtDetailReference.Clear();
-            txtGiftTotal.NumberValueDecimal = 0;
-            txtDetailGiftAmount.NumberValueDecimal = 0;
-            dtpStartDonations.Clear();
-            dtpEndDonations.Clear();
-            txtDetailRecipientKey.Text = string.Empty;
-            txtField.Text = string.Empty;
-            txtDetailAccountCode.Clear();
-            txtDetailGiftCommentOne.Clear();
-            txtDetailGiftCommentTwo.Clear();
-            txtDetailGiftCommentThree.Clear();
-            cmbDetailReceiptLetterCode.SelectedIndex = -1;
-            cmbDetailMotivationGroupCode.SelectedIndex = -1;
-            cmbDetailMotivationDetailCode.SelectedIndex = -1;
-            cmbDetailCommentOneType.SelectedIndex = -1;
-            cmbDetailCommentTwoType.SelectedIndex = -1;
-            cmbDetailCommentThreeType.SelectedIndex = -1;
-            cmbDetailMailingCode.SelectedIndex = -1;
-            cmbDetailMethodOfGivingCode.SelectedIndex = -1;
-            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-            cmbMinistry.SelectedIndex = -1;
-            txtDetailCostCentreCode.Text = string.Empty;
+        	try
+        	{
+				FPetraUtilsObject.SuppressChangeDetection = true;
+        		
+        		txtBatchTotal.NumberValueDecimal = 0;
+	        	txtDetailDonorKey.Text = string.Empty;
+	            txtDetailReference.Clear();
+	            txtGiftTotal.NumberValueDecimal = 0;
+	            txtDetailGiftAmount.NumberValueDecimal = 0;
+	            dtpStartDonations.Clear();
+	            dtpEndDonations.Clear();
+	            txtDetailRecipientKey.Text = string.Empty;
+	            txtField.Text = string.Empty;
+	            txtDetailAccountCode.Clear();
+	            txtDetailGiftCommentOne.Clear();
+	            txtDetailGiftCommentTwo.Clear();
+	            txtDetailGiftCommentThree.Clear();
+	            cmbDetailReceiptLetterCode.SelectedIndex = -1;
+	            cmbDetailMotivationGroupCode.SelectedIndex = -1;
+	            cmbDetailMotivationDetailCode.SelectedIndex = -1;
+	            cmbDetailCommentOneType.SelectedIndex = -1;
+	            cmbDetailCommentTwoType.SelectedIndex = -1;
+	            cmbDetailCommentThreeType.SelectedIndex = -1;
+	            cmbDetailMailingCode.SelectedIndex = -1;
+	            cmbDetailMethodOfGivingCode.SelectedIndex = -1;
+	            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+	            cmbMinistry.SelectedIndex = -1;
+	            txtDetailCostCentreCode.Text = string.Empty;
+
+				FPetraUtilsObject.SuppressChangeDetection = false;
+        	}
+        	catch (Exception)
+        	{
+				FPetraUtilsObject.SuppressChangeDetection = false;
+        		throw;
+        	}
         }
 
         /// <summary>
@@ -535,13 +549,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            NewGift(); // returns ARecurringGiftDetailRow
+            ARecurringGiftDetailRow RecurringGiftDetailRow = NewGift(); // returns ARecurringGiftDetailRow
 
-            FPetraUtilsObject.SetChangedFlag();
-
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
-            grdDetails.Refresh();
-            SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
+            if (RecurringGiftDetailRow != null)
+            {
+	            FPetraUtilsObject.SetChangedFlag();
+	
+	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
+	            grdDetails.Refresh();
+	            SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
+	            
+	            //Idiosyncratic behaviour of the screen requires the following
+//	            if (grdDetails.Rows.Count == 2)
+//	            {
+//	            	cmbDetailMotivationGroupCode.SetSelectedString("GIFT");
+//	            	cmbDetailMotivationDetailCode.SetSelectedString("SUPPORT");
+//	            }
+            }
         }
 
         /// <summary>
@@ -554,14 +578,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is coded manually, to use the correct gift record
 
             // we create the table locally, no dataset
-            NewGiftDetail((RecurringGiftBatchTDSARecurringGiftDetailRow)FPreviouslySelectedDetailRow); // returns ARecurringGiftDetailRow
+            ARecurringGiftDetailRow ARecurringGiftDetailRow = NewGiftDetail((RecurringGiftBatchTDSARecurringGiftDetailRow)FPreviouslySelectedDetailRow); // returns ARecurringGiftDetailRow
 
-            FPetraUtilsObject.SetChangedFlag();
+            if (ARecurringGiftDetailRow != null)
+            {
+	            FPetraUtilsObject.SetChangedFlag();
+	
+	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
+	            grdDetails.Refresh();
+	            SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
+	            RetrieveMotivationDetailAccountCode();
+				txtGiftTotal.Focus();
+            }
 
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
-            grdDetails.Refresh();
-            SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
-            RetrieveMotivationDetailAccountCode();
         }
 
         /// <summary>
@@ -595,14 +624,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             newRow.DetailNumber = 1;
             //newRow.DateEntered = giftRow.DateEntered;
             newRow.DonorKey = 0;
+            newRow.MotivationGroupCode = "GIFT";
+            newRow.MotivationDetailCode = "SUPPORT";
             newRow.CommentOneType = "Both";
             newRow.CommentTwoType = "Both";
             newRow.CommentThreeType = "Both";
             FMainDS.ARecurringGiftDetail.Rows.Add(newRow);
-
-            // TODO: use previous gifts of donor?
-            //newRow.MotivationGroupCode = "GIFT";
-            //newRow.MotivationDetailCode = "SUPPORT";
 
             return newRow;
         }
@@ -630,15 +657,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             newRow.DonorKey = ACurrentRow.DonorKey;
             newRow.DonorName = ACurrentRow.DonorName;
             newRow.DateEntered = ACurrentRow.DateEntered;
-            FMainDS.ARecurringGiftDetail.Rows.Add(newRow);
-
-            // TODO: use previous gifts of donor?
-            // newRow.MotivationGroupCode = "GIFT";
-            // newRow.MotivationDetailCode = "SUPPORT";
+            newRow.MotivationGroupCode = "GIFT";
+            newRow.MotivationDetailCode = "SUPPORT";
             newRow.CommentOneType = "Both";
             newRow.CommentTwoType = "Both";
             newRow.CommentThreeType = "Both";
+            FMainDS.ARecurringGiftDetail.Rows.Add(newRow);
 
+            // TODO: use previous gifts of donor?
 
             return newRow;
         }
