@@ -66,6 +66,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     return;
                 }
 
+                cmbSelectBankAccount.SetSelectedString(
+                    TUserDefaults.GetStringDefault(TUserDefaults.FINANCE_BANKIMPORT_BANKACCOUNT, ""), -1);
+
                 StringCollection list = new StringCollection();
 
                 string[] files = Directory.GetFiles(TAppSettingsManager.ApplicationDirectory, PluginNamespace + ".*.dll");
@@ -95,6 +98,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             {
                 TUserDefaults.SetDefault(TUserDefaults.FINANCE_BANKIMPORT_PLUGIN,
                     cmbSelectPlugin.GetSelectedString());
+
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_BANKIMPORT_BANKACCOUNT,
+                    cmbSelectBankAccount.GetSelectedString());
 
                 TUserDefaults.SaveChangedUserDefault(TUserDefaults.FINANCE_BANKIMPORT_PLUGIN);
 

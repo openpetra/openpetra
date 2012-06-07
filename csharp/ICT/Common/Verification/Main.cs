@@ -759,11 +759,13 @@ namespace Ict.Common.Verification
         /// of this Class (defaults to true).</param>
         /// <param name="ARestrictToTypeWhichRaisesError">Restricts the <see cref="TVerificationResult" />s that
         /// are added to the result list to those whose <see cref="TVerificationResult.ResultContext" /> matches
-        /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref>.</param>
+        /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref> (defaults to null).</param>
+        /// <param name="AIgnoreWarnings">Set to true if Warnings are to be ignored (defaults to false).</param>
         public void BuildScreenVerificationResultList(out String AErrorMessages, out Control AFirstErrorControl, out object AFirstErrorContext,
-            bool AUpdateFirstErrorControl = true, Type ARestrictToTypeWhichRaisesError = null)
+            bool AUpdateFirstErrorControl = true, Type ARestrictToTypeWhichRaisesError = null, bool AIgnoreWarnings = false)
         {
-            TScreenVerificationResult si;
+            TVerificationResult si;
+            TScreenVerificationResult siScr;
             bool IncludeVerificationResult;
 
             AFirstErrorControl = null;
@@ -772,7 +774,7 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
+                si = (TVerificationResult)(List[Counter]);
 
                 if (ARestrictToTypeWhichRaisesError != null)
                 {
@@ -790,6 +792,11 @@ namespace Ict.Common.Verification
                     IncludeVerificationResult = true;
                 }
 
+                if (AIgnoreWarnings && (si.ResultSeverity == TResultSeverity.Resv_Noncritical))
+                {
+                    IncludeVerificationResult = false;
+                }
+
                 if (IncludeVerificationResult)
                 {
                     AErrorMessages = AErrorMessages + si.ResultText;
@@ -801,14 +808,19 @@ namespace Ict.Common.Verification
 
                     AErrorMessages += Environment.NewLine + Environment.NewLine;
 
-                    if (AFirstErrorControl == null)
+                    if (si is TScreenVerificationResult)
                     {
-                        AFirstErrorControl = si.ResultControl;
-                        AFirstErrorContext = si.ResultContext;
+                        siScr = (TScreenVerificationResult)(List[Counter]);
 
-                        if (AUpdateFirstErrorControl)
+                        if (AFirstErrorControl == null)
                         {
-                            FFirstErrorControl = AFirstErrorControl;
+                            AFirstErrorControl = siScr.ResultControl;
+                            AFirstErrorContext = siScr.ResultContext;
+
+                            if (AUpdateFirstErrorControl)
+                            {
+                                FFirstErrorControl = AFirstErrorControl;
+                            }
                         }
                     }
                 }

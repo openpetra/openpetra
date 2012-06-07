@@ -39,6 +39,10 @@ namespace {#NAMESPACE}
         public static {#DETAILTABLE}Table {#DETAILTABLE};
     }
 
+{#IFDEF SHOWDETAILS}
+    private int FCurrentRow;
+
+{#ENDIF SHOWDETAILS} 
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
     {
@@ -158,12 +162,8 @@ namespace {#NAMESPACE}
                 break;
             }
         }
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(RowNumberGrid, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
 
-        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+        grdDetails.SelectRowInGrid(RowNumberGrid);
     }
 
     /// return the selected row
@@ -249,10 +249,21 @@ namespace {#NAMESPACE}
 
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        // display the details of the currently selected row
-        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-        ShowDetails(FPreviouslySelectedDetailRow);
-        pnlDetails.Enabled = true;
+        if(e.Row != FCurrentRow)
+        {
+            // Transfer data from Controls into the DataTable
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            }
+
+            // Display the details of the currently selected Row
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+            pnlDetails.Enabled = true;
+            
+            FCurrentRow = e.Row;
+        }
     }
 {#ENDIF SHOWDETAILS}
     
@@ -299,7 +310,7 @@ namespace {#NAMESPACE}
             if (AProcessAnyDataValidationErrors)
             {
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType());    
+                    this.GetType(), null, true);
             }
         }
         else
@@ -463,14 +474,22 @@ namespace {#NAMESPACE}
 
                         ReturnValue = true;
                         FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+
+                        if((VerificationResult != null)
+                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
+                        {
+                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                                this.GetType(), null);
+                        }
+
                         break;
 
                     case TSubmitChangesResult.scrError:
                         this.Cursor = Cursors.Default;
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult), 
-                            Catalog.GetString("Data Cannot Be Saved"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                            this.GetType(), null);
 
                         FPetraUtilsObject.SubmitChangesContinue = false;
                         

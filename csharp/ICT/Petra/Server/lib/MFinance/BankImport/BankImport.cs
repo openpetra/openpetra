@@ -32,6 +32,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Data; // Needed indirectly by Ict.Petra.Server.lib.MFinance.Common.dll and Ict.Petra.Shared.lib.data.dll
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -45,6 +46,7 @@ using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.ImportExport;
+using Ict.Petra.Server.App.Core;
 
 namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 {
@@ -61,17 +63,31 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             out Int32 AFirstStatementKey,
             out TVerificationResultCollection AVerificationResult)
         {
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Processing new bank statements"),
+                AStatementAndTransactionsDS.AEpStatement.Rows.Count + 1);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Saving to database"),
+                0);
+
             TSubmitChangesResult SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
 
             AFirstStatementKey = -1;
 
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("starting to train"),
+                    1);
+
                 AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
 
                 // search for already posted gift batches, and do the matching for these imported statements
                 TBankImportMatching.Train(AStatementAndTransactionsDS);
             }
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return SubmissionResult;
         }
@@ -351,14 +367,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            System.Type typeofTable = null;
-            TCacheable CachePopulator = new TCacheable();
-            AAccountTable AccountTable = (AAccountTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.AccountList,
-                "",
-                false,
-                ALedgerNumber,
-                out typeofTable);
-
             GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(
                 ALedgerNumber,
                 stmt.Date,
@@ -414,17 +422,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             AVerificationResult.Add(new TVerificationResult(
                                     String.Format(Catalog.GetString("creating gift for match {0}"), transactionRow.Description),
                                     Catalog.GetString("Invalid or inactive cost centre"),
-                                    TResultSeverity.Resv_Critical));
-                        }
-
-                        // check for active account
-                        AAccountRow account = (AAccountRow)AccountTable.Rows.Find(new object[] { ALedgerNumber, match.AccountCode });
-
-                        if ((account == null) || !account.AccountActiveFlag)
-                        {
-                            AVerificationResult.Add(new TVerificationResult(
-                                    String.Format(Catalog.GetString("creating gift for match {0}"), transactionRow.Description),
-                                    Catalog.GetString("Invalid or inactive account code"),
                                     TResultSeverity.Resv_Critical));
                         }
 

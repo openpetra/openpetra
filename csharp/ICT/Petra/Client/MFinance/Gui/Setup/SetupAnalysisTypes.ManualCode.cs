@@ -60,8 +60,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewAAnalysisType();
+
+            pnlDetails.Enabled = true;
             ucoValues.Enabled = true;
             txtDetailAnalysisTypeCode.Enabled = true;
+            
+            ShowDetails(GetSelectedDetailRow());
         }
 
         private void NewRowManual(ref AAnalysisTypeRow ARow)
