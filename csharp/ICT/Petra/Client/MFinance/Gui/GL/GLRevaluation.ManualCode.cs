@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     string strCurrencyCode = (string)row["a_foreign_currency_code_c"];
-                    decimal decExchangeRate = frmExchangeRate.GetLastExchangeValueOfIntervall(
+                    decimal decExchangeRate = frmExchangeRate.GetLastExchangeValueOfInterval(FLedgerNumber,
                         StartDateCurrentPeriod, EndDateLastForwardingPeriod, strCurrencyCode);
                     AddADataRow(ic, strCurrencyCode, decExchangeRate);
                 }
@@ -462,11 +462,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 TFrmSetupDailyExchangeRate frmExchangeRate =
                     new TFrmSetupDailyExchangeRate(mainForm);
-                frmExchangeRate.LedgerNumber = mainForm.FLedgerNumber;
-                frmExchangeRate.SetDataFilters(dteStart, dteEnd,
+                if (frmExchangeRate.ShowDialog(mainForm.FLedgerNumber, dteStart, dteEnd,
                     currencyExchangeList[iRow].Currency,
-                    currencyExchangeList[iRow].ExchangeRate);
-                frmExchangeRate.ShowDialog(mainForm);
+                    currencyExchangeList[iRow].ExchangeRate) == DialogResult.Cancel) return;
 
                 currencyExchangeList[iRow].updateExchangeRate(
                     frmExchangeRate.CurrencyExchangeRate);

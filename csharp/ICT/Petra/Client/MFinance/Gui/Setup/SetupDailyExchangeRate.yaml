@@ -11,7 +11,7 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actImport: {ActionClick=Import}
-        actClose:  {Label=Close, ActionClick=CloseDialog}
+        actClose:  {Label=Accept, ActionClick=CloseDialog}
         actCancel:  {Label=Cancel, ActionClick=CancelDialog}
     Controls:
         pnlContent:

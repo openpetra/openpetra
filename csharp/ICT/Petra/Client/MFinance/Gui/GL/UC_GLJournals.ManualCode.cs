@@ -122,11 +122,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TFrmSetupDailyExchangeRate setupDailyExchangeRate =
                 new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
 
-            setupDailyExchangeRate.LedgerNumber = FLedgerNumber;
-            setupDailyExchangeRate.SetDataFilters(dtpDetailDateEffective.Date.Value,
+            if (setupDailyExchangeRate.ShowDialog(FLedgerNumber, dtpDetailDateEffective.Date.Value,
                 cmbDetailTransactionCurrency.GetSelectedString(),
-                DEFAULT_CURRENCY_EXCHANGE);
-            setupDailyExchangeRate.ShowDialog(this);
+                DEFAULT_CURRENCY_EXCHANGE) == DialogResult.Cancel) return;
 
             FPreviouslySelectedDetailRow.ExchangeRateToBase = setupDailyExchangeRate.CurrencyExchangeRate;
 

@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, alanP
 //
 // Copyright 2004-2012 by OM International
 //
@@ -59,9 +59,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool blnIsInModalMode;
 
         /// <summary>
-        /// The definition of the ledger number is used to define some
-        /// default values and it initializes the dialog to run in the non modal
-        /// form ...
+        /// Public property that is not really used in release builds, but might be useful
+        /// when developing to set the initial value for the ledger number
         /// </summary>
         public Int32 LedgerNumber
         {
@@ -71,21 +70,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                          TCacheableFinanceTablesEnum.LedgerDetails, value))[0];
                 baseCurrencyOfLedger = ledger.BaseCurrency;
-
-
-                btnClose.Visible = false;
-                btnCancel.Visible = false;
-                mniImport.Enabled = true;
-                tbbImport.Enabled = true;
-                blnIsInModalMode = false;
-                ModalFormReturnValue = 1.0m;
             }
+        }
+
+        private void InitializeManualCode()
+        {
+            // This code runs just before the auto-generated code binds the data to the grid
+            // We need to set the RowFilter to something that returns no rows because we will return the rows we actually want
+            // in RunOnceOnActivation.  By returning no rows now we reduce some horrible flicker on the screen
+            FMainDS.ADailyExchangeRate.DefaultView.RowFilter = FMainDS.ADailyExchangeRate.ColumnDateModified + " = '" + DateTime.MaxValue.ToShortDateString() + "'";
+
+            // Now we set some default settings that apply when the screen is MODELESS
+            //  (If the screen will be MODAL one of the SetDataFilters methods will be called below)
+            btnClose.Visible = false;           // Do not show the modal buttons
+            btnCancel.Visible = false;
+            mniImport.Enabled = true;           // Allow imports
+            tbbImport.Enabled = true;
+            blnIsInModalMode = false;
+            ModalFormReturnValue = 1.0m;        // Not really used when MODELESS
         }
 
         private void RunOnceOnActivationManual()
         {
+            // Activate events we will use in manual code
             this.txtDetailRateOfExchange.Validated +=
                 new System.EventHandler(this.ValidatedExchangeRate);
+            this.txtDetailRateOfExchange.TextChanged += new EventHandler(txtDetailRateOfExchange_TextChanged);
 
             this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
                 new System.EventHandler(this.ValueChangedCurrencyCode);
@@ -98,53 +108,98 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.btnInvertExchangeRate.Click +=
                 new System.EventHandler(this.InvertExchangeRate);
 
+            // Set a non-standard sort order (newest record first)
             FMainDS.ADailyExchangeRate.DefaultView.Sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
                                                           ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
             FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
+
+            // Having changed the sort order we need to put the correct details in the panel (assuming we have a row to display)
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
         }
 
         /// <summary>
-        /// In oder to run the dialog in the modal form you have to invoke this routine.
-        /// The table will be filtered by the value of the base currency of the selected ledger,
-        /// and the values of the two function parameters.
+        /// Do not use this method signature for OpenPetra
         /// </summary>
-        /// <param name="dteEffective">Effective date of the actual acounting process</param>
+        /// <returns>An error</returns>
+        public new DialogResult ShowDialog()
+        {
+            throw new NotSupportedException("You cannot call ShowDialog with empty parameters.  Use one of the method signatures with multiple parameters");
+        }
+
+        /// <summary>
+        /// Do not use this method signature for OpenPetra
+        /// </summary>
+        /// <returns>An error</returns>
+        public new DialogResult ShowDialog(IWin32Window Parent)
+        {
+            throw new NotSupportedException("You cannot call ShowDialog with a single parameter.  Use one of the method signatures with multiple parameters");
+        }
+
+        /// <summary>
+        /// Main method to invoke the dialog in the modal form based on a single effective date.
+        /// The table will be filtered by the value of the base currency of the selected ledger,
+        /// and the values of the date and foreign currency.
+        /// </summary>
+        /// <param name="LedgerNumber">The ledger number from which the base currency will be extracted</param>
+        /// <param name="dteEffective">Effective date of the actual acounting process.  The grid will show all entries on or before this date.</param>
         /// <param name="strCurrencyTo">The actual foreign currency value</param>
         /// <param name="ExchangeDefault">Default value for the exchange rate</param>
-        public void SetDataFilters(DateTime dteEffective,
+        public DialogResult ShowDialog(Int32 LedgerNumber, DateTime dteEffective,
             string strCurrencyTo,
             decimal ExchangeDefault)
         {
+            ALedgerRow ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                     TCacheableFinanceTablesEnum.LedgerDetails, LedgerNumber))[0];
+            baseCurrencyOfLedger = ledger.BaseCurrency;
+
             DateTime dateLimit = dteEffective.AddDays(1.0);
             // Do not use local formats here!
             DateTimeFormatInfo dateTimeFormat =
                 new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
             string dateString = dateLimit.ToString("d", dateTimeFormat);
 
-            FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
+            // Set up the filter and re-bind to the grid
+            string filter =
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
+            string sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+                ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+            DataView myDataView = new DataView(FMainDS.ADailyExchangeRate, filter, sort, DataViewRowState.CurrentRows);
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-            ModalFormReturnValue = 1.0m;
+            ModalFormReturnValue = ExchangeDefault;
             strCurrencyToDefault = strCurrencyTo;
             dateTimeDefault = dteEffective;
 
             DefineModalSettings();
+
+            return base.ShowDialog();
         }
 
         /// <summary>
-        /// Set the data filters
+        /// Main method to invoke the dialog in the modal form based on a date range.
+        /// The table will be filtered by the value of the base currency of the selected ledger,
+        /// and the values of the date range and foreign currency.
         /// </summary>
-        /// <param name="dteStart"></param>
-        /// <param name="dteEnd"></param>
-        /// <param name="strCurrencyTo"></param>
-        /// <param name="decExchangeDefault"></param>
-        public void SetDataFilters(DateTime dteStart,
+        /// <param name="LedgerNumber">The ledger number from which the base currency will be extracted</param>
+        /// <param name="dteStart">The start date for the date range</param>
+        /// <param name="dteEnd">The end date for the date range.  The grid will show all entries between the start and end dates.</param>
+        /// <param name="strCurrencyTo">The actual foreign currency value</param>
+        /// <param name="ExchangeDefault">Default value for the exchange rate</param>
+        public DialogResult ShowDialog(Int32 LedgerNumber, DateTime dteStart,
             DateTime dteEnd,
             string strCurrencyTo,
-            decimal decExchangeDefault)
+            decimal ExchangeDefault)
         {
+            ALedgerRow ledger =
+               ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                    TCacheableFinanceTablesEnum.LedgerDetails, LedgerNumber))[0];
+            baseCurrencyOfLedger = ledger.BaseCurrency;
+
             DateTime dateEnd2 = dteEnd.AddDays(1.0);
             // Do not use local formats here!
             DateTimeFormatInfo dateTimeFormat =
@@ -152,30 +207,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string strDteStart = dteStart.ToString("d", dateTimeFormat);
             string strDteEnd = dateEnd2.ToString("d", dateTimeFormat);
 
-            FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
+            string filter =
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "' and " +
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'";
+            string sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+                ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+            DataView myDataView = new DataView(FMainDS.ADailyExchangeRate, filter, sort, DataViewRowState.CurrentRows);
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-            ModalFormReturnValue = decExchangeDefault;
-            dateTimeDefault = dteEnd;
+            ModalFormReturnValue = ExchangeDefault;
             strCurrencyToDefault = strCurrencyTo;
+            dateTimeDefault = dteEnd;
 
             DefineModalSettings();
+
+            return base.ShowDialog();
         }
 
         /// <summary>
-        /// Get the last exchange value of the interval
+        /// Get the most recent exchange rate value of the interval.  This method does not display a dialog
         /// </summary>
-        /// <param name="dteStart"></param>
-        /// <param name="dteEnd"></param>
-        /// <param name="strCurrencyTo"></param>
-        /// <returns></returns>
-        public decimal GetLastExchangeValueOfIntervall(DateTime dteStart,
+        /// <param name="LedgerNumber">The ledger number from which the base currency will be extracted</param>
+        /// <param name="dteStart">The start date for the date range</param>
+        /// <param name="dteEnd">The end date for the date range.</param>
+        /// <param name="strCurrencyTo">The actual foreign currency value</param>
+        /// <returns>The most recent exchange rate in the specified date range</returns>
+        public decimal GetLastExchangeValueOfInterval(Int32 LedgerNumber, DateTime dteStart,
             DateTime dteEnd,
             string strCurrencyTo)
         {
+            ALedgerRow ledger =
+               ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                    TCacheableFinanceTablesEnum.LedgerDetails, LedgerNumber))[0];
+            baseCurrencyOfLedger = ledger.BaseCurrency;
+
             DateTime dateEnd2 = dteEnd.AddDays(1.0);
             // Do not use local formats here!
             DateTimeFormatInfo dateTimeFormat =
@@ -183,26 +251,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string strDteStart = dteStart.ToString("d", dateTimeFormat);
             string strDteEnd = dateEnd2.ToString("d", dateTimeFormat);
 
-            FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
+            string filter =
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "' and " +
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'";
+            string sort = ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+                ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+            DataView myView = new DataView(FMainDS.ADailyExchangeRate, filter, sort, DataViewRowState.CurrentRows);
 
-            if (grdDetails.Rows.Count != 0)
+            if (myView.Count > 0)
             {
-                try
-                {
-                    // Code tut nicht!
-                    SelectDetailRowByDataTableIndex(0);
-                    ADailyExchangeRateRow DailyExchangeRateRow =
-                        (ADailyExchangeRateRow)(FMainDS.ADailyExchangeRate.DefaultView[0].Row);
-                    return DailyExchangeRateRow.RateOfExchange;
-                }
-                catch (Exception)
-                {
-                    return 1.0m;
-                }
+                return ((ADailyExchangeRateRow)(myView.ToTable().Rows[0])).RateOfExchange;
             }
             else
             {
@@ -213,12 +273,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void DefineModalSettings()
         {
             blnUseDateTimeDefault = true;
+
+            // We need the accept/cancel buttons when MODAL.  It looks better if they are at the top and New is beneath
             btnClose.Visible = true;
             btnCancel.Visible = true;
+            int pos1 = btnNew.Top;
+            int pos2 = btnClose.Top;
+            btnClose.Top = pos1;
+            btnCancel.Top = pos2;
+            btnNew.Top = btnCancel.Top + 2 * btnCancel.Height;
+
+            // Import not allowed when MODAL
             mniImport.Enabled = false;
             tbbImport.Enabled = false;
 
+            // Different Dialog Title text
+            this.Text = "Select an Exchange Rate";
+
             blnIsInModalMode = true;
+            DialogResult = DialogResult.Cancel;     // assume it is cancelled for now
         }
 
         /// <summary>
@@ -252,6 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     blnUseDateTimeDefault = false;
                     SaveChanges();
+                    DialogResult = DialogResult.OK;
                     Close();
                 }
             }
@@ -294,16 +368,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e">not used</param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            // Check the current panel data and get it into the current record
+            if (!ValidateAllData(true, true)) return;
+
+            // Now create an appropriate new record
             DateTime dateTimeNow;
 
-            if (!blnUseDateTimeDefault)
+            if (blnUseDateTimeDefault)
             {
-                //For Corpoate Exchange Rate must be 1st of the month, for Daily Exchange Rate it must be now
-                dateTimeNow = DateTime.Now;
+                dateTimeNow = dateTimeDefault;
             }
             else
             {
-                dateTimeNow = dateTimeDefault;
+                //For Corpoate Exchange Rate must be 1st of the month, for Daily Exchange Rate it must be now
+                dateTimeNow = DateTime.Now;
             }
 
             DateTime dateDate = DateTime.Parse(dateTimeNow.ToLongDateString());
@@ -465,7 +543,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         /// <summary>
         /// This routines supports a small gui-calculator. The user can easily calculate the
-        /// reciproke value of the exchange rate.
+        /// reciprocal value of the exchange rate.
         /// </summary>
         /// <param name="sender">not used</param>
         /// <param name="e">not used</param>
@@ -487,32 +565,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ValidatedExchangeRate();
         }
 
-        /// <summary>
-        /// A "date filter" is placed inside the table. The content of
-        /// dtpDetailDateEffectiveFrom is used for the filter.
-        /// </summary>
-        /// <param name="sender">not used</param>
-        /// <param name="e">not used</param>
-        private void UseDateToFilter(System.Object sender, EventArgs e)
-        {
-            if (FMainDS.ADailyExchangeRate.DefaultView.RowFilter.Equals(""))
-            {
-                DateTime dateLimit = dtpDetailDateEffectiveFrom.Date.Value.AddDays(1.0);
-                // Do not use local formats here!
-                DateTimeFormatInfo dateTimeFormat = new
-                                                    System.Globalization.CultureInfo("en-US", false).DateTimeFormat;
-                string dateString = dateLimit.ToString("d", dateTimeFormat);
-                FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
-                    ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
-            }
-            else
-            {
-                FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
-            }
+        ///// <summary>
+        ///// A "date filter" is placed inside the table. The content of
+        ///// dtpDetailDateEffectiveFrom is used for the filter.
+        ///// </summary>
+        ///// <param name="sender">not used</param>
+        ///// <param name="e">not used</param>
+        //private void UseDateToFilter(System.Object sender, EventArgs e)
+        //{
+        //    if (FMainDS.ADailyExchangeRate.DefaultView.RowFilter.Equals(""))
+        //    {
+        //        DateTime dateLimit = dtpDetailDateEffectiveFrom.Date.Value.AddDays(1.0);
+        //        // Do not use local formats here!
+        //        DateTimeFormatInfo dateTimeFormat = new
+        //                                            System.Globalization.CultureInfo("en-US", false).DateTimeFormat;
+        //        string dateString = dateLimit.ToString("d", dateTimeFormat);
+        //        FMainDS.ADailyExchangeRate.DefaultView.RowFilter =
+        //            ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + dateString + "'";
+        //    }
+        //    else
+        //    {
+        //        FMainDS.ADailyExchangeRate.DefaultView.RowFilter = "";
+        //    }
 
-            cmbDetailToCurrencyCode.Enabled = false;
-            dtpDetailDateEffectiveFrom.Enabled = false;
-        }
+        //    cmbDetailToCurrencyCode.Enabled = false;
+        //    dtpDetailDateEffectiveFrom.Enabled = false;
+        //}
 
         /// <summary>
         /// Standardroutine
@@ -537,37 +615,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
-        /// <summary>
-        /// SelectByIndex is a copy and paste routine which is always sligtly modified
-        /// and adapted to the project ..
-        /// </summary>
-        /// <param name="rowIndex">-1 means "noRow" and 1 is the first row</param>
-        private void SelectByIndex(int rowIndex)
+        private void txtDetailRateOfExchange_TextChanged(object sender, EventArgs e)
         {
-            if (rowIndex != -1)
-            {
-                if (rowIndex >= grdDetails.Rows.Count)
-                {
-                    rowIndex = grdDetails.Rows.Count - 1;
-                }
-
-                if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-                {
-                    rowIndex = 1;
-                }
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                grdDetails.Selection.ResetSelection(false);
-                FPreviouslySelectedDetailRow = null;
-            }
+            if (txtDetailRateOfExchange.Text.Trim() != String.Empty) UpdateExchangeRateLabels();
         }
 
         private void GetDetailDataFromControlsManual(ADailyExchangeRateRow ARow)
