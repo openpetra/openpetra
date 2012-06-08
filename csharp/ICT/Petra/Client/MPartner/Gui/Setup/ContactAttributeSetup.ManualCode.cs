@@ -249,21 +249,21 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // but when we tab away from the checkbox, wich is not quite right...
             // or we can just use htis code without the Validation=true in the YAML - in which case we just get the validation dialog
             ValidationColumn = ARow.Table.Columns[PContactAttributeTable.ColumnActiveId];
-            
-            if (ARow[NumDetailCodesColumnOrdinal] != System.DBNull.Value) 
+
+            if (ARow[NumDetailCodesColumnOrdinal] != System.DBNull.Value)
             {
                 VerificationResult = TNumericalChecks.IsPositiveInteger(Convert.ToInt32(ARow[NumDetailCodesColumnOrdinal]),
                     "Contact Detail",
                     this, ValidationColumn, null);
-    
+
                 if (VerificationResult != null)
                 {
                     VerificationResult.OverrideResultText(Catalog.GetString(
                             "You must create at least one 'Attribute Detail Code' for each 'Contact Attribute'."));
                 }
-    
+
                 // Handle addition to/removal from TVerificationResultCollection.
-                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, false);                
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, false);
             }
         }
     }
