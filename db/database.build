@@ -277,9 +277,9 @@
                  <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
                  <echo message='${script::ReplaceInFile(Current.File, toReplace, newValue)}'/>
              </if>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
@@ -293,7 +293,7 @@
             <copy file="${SQLitedb.file}" tofile="${file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <exec program="${pgdump.exe}" commandline="--data-only --username=${DBMS.UserName} --file=&quot;${file}&quot; ${DBMS.DBName}">
+            <exec program="${pgdump.exe}" commandline="--data-only --username=${DBMS.UserName} --file=&quot;${file}&quot; -h ${DBMS.DBHostOrFile} -p ${DBMS.DBPort} ${DBMS.DBName}">
                 <environment>
                     <variable name="PGPASSWORD" value="${DBMS.Password}"/>
                 </environment>
@@ -321,14 +321,14 @@
             <copy file="${file}" tofile="${SQLitedb.file}" overwrite="true"/>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <!-- drop all tables that are not part of the current revision anymore. they are missed by petra_remove.sql -->
             <property name="tempfile" value="${path::get-temp-path()}/delAllTables.sql"/>
             <psql exe="${PostgreSQL.exe}" 
                      sqlcommand="SELECT 'DROP TABLE ' || n.nspname || '.' || c.relname || ' CASCADE;' FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind = 'r' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid)" 
                      outputfile="${tempfile}"
-                     database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-            <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                     host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <delete file="${tempfile}" if="${file::exists(tempfile)}"/>
 
             <!-- drop all sequences as well -->
@@ -336,22 +336,22 @@
             <psql exe="${PostgreSQL.exe}" 
                      sqlcommand="SELECT 'DROP SEQUENCE ' || n.nspname || '.' || c.relname || ';' FROM pg_catalog.pg_class AS c LEFT JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace WHERE relkind = 'S' AND n.nspname NOT IN ('pg_catalog', 'pg_toast') AND pg_catalog.pg_table_is_visible(c.oid)" 
                      outputfile="${tempfile}"
-                     database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-            <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                     host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${tempfile}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <delete file="${tempfile}" if="${file::exists(tempfile)}"/>
 
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_withoutConstraints.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             <if test="${file!='nothing'}">
                 <if test="${string::ends-with(file, '.gz')}">
                     <gunzip src="${file}" dest="${tempdir + '/load.sql'}" />
-                    <psql exe="${PostgreSQL.exe}" sqlfile="${tempdir + '/load.sql'}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                    <psql exe="${PostgreSQL.exe}" sqlfile="${tempdir + '/load.sql'}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
                     <delete file="${tempdir + '/load.sql'}"/>
                 </if>
                 <if test="${not string::ends-with(file, '.gz')}">
-                    <psql exe="${PostgreSQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                    <psql exe="${PostgreSQL.exe}" sqlfile="${file}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
                 </if>
             </if>
-            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+            <psql exe="${PostgreSQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.Password}"/>
@@ -368,11 +368,11 @@
         <if test="${DBMS.Type=='postgresql'}">
             <if test="${string::ends-with(file, '.gz')}">
                 <gunzip src="${file}" dest="${tempdir + '/load.sql'}" />
-                <psql exe="${PostgreSQL.exe}" sqlfile="${tempdir + '/load.sql'}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <psql exe="${PostgreSQL.exe}" sqlfile="${tempdir + '/load.sql'}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
                 <delete file="${tempdir + '/load.sql'}"/>
             </if>
             <if test="${not string::ends-with(file, '.gz')}">
-                <psql exe="${PostgreSQL.exe}" sqlfile="${file}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <psql exe="${PostgreSQL.exe}" sqlfile="${file}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
