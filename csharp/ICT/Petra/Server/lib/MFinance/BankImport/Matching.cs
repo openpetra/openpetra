@@ -55,8 +55,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             foreach (AEpStatementRow stmt in AMainDS.AEpStatement.Rows)
             {
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    String.Format(Catalog.GetString("training statement {0}"),
-                        stmt.Filename),
+                    String.Format(Catalog.GetString("training statement {0} {1}"),
+                        stmt.Filename, StringHelper.DateToLocalizedString(stmt.Date)),
                     1 + stmtCounter);
                 stmtCounter++;
 

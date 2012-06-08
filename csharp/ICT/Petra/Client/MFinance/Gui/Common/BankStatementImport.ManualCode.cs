@@ -721,11 +721,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
                             "Full bank statement") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
-            else if (rbtListUnmatched.Checked)
+            else if (rbtListUnmatchedGifts.Checked)
             {
                 HtmlDocument =
                     PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
                             "Unmatched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+            else if (rbtListUnmatchedGL.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Unmatched GL") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListGift.Checked)
             {
@@ -885,7 +891,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
                     MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT);
             }
-            else if (rbtListUnmatched.Checked)
+            else if (rbtListUnmatchedGift.Checked)
+            {
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    CurrentStatement.StatementKey,
+                    BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
+                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED_GIFT);
+            }
+            else if (rbtListUnmatchedGL.Checked)
             {
                 FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
                     AEpStatementTable.GetStatementKeyDBName(),

@@ -45,7 +45,7 @@ RootNode:
                 Row0: [txtCreditSum]
                 Row1: [txtDebitSum]
         rgrSelectTransaction:
-            OptionalValues: [ListAll, ListUnmatched, ListGift, ListGL, ListIgnored]
+            OptionalValues: [ListAll, ListUnmatchedGift, ListGift, ListUnmatchedGL, ListGL, ListIgnored]
             ControlsOrientation: horizontal
             NoLabel: true
             OnChange: TransactionFilterChanged
