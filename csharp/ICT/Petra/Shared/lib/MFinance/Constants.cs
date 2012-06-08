@@ -136,9 +136,6 @@ namespace Ict.Petra.Shared.MFinance
         public const String BANK_STMT_STATUS_UNMATCHED = "UNMATCHED";
 
         /// <summary>Bank statements</summary>
-        public const String BANK_STMT_STATUS_UNMATCHED_GIFT = "UNMATCHED_GIFT";
-
-        /// <summary>Bank statements</summary>
         public const String BANK_STMT_POTENTIAL_GIFT = "POTENTIALGIFT";
 
         /// <summary>Sub Systems, General Ledger</summary>

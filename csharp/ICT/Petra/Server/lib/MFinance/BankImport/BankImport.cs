@@ -230,15 +230,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         tempRow.MatchText = row.MatchText;
                         tempRow.LedgerNumber = ALedgerNumber;
                         tempRow.GiftTransactionAmount = row.TransactionAmount;
-
-                        if (row.TransactionTypeCode.EndsWith(MFinanceConstants.BANK_STMT_POTENTIAL_GIFT))
-                        {
-                            tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED_GIFT;
-                        }
-                        else
-                        {
-                            tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
-                        }
+                        tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
 
                         // fuzzy search for the partner. only return if unique result
                         string sql =

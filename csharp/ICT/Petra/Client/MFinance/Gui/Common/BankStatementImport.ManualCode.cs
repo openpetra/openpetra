@@ -721,7 +721,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
                             "Full bank statement") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
-            else if (rbtListUnmatchedGifts.Checked)
+            else if (rbtListUnmatchedGift.Checked)
             {
                 HtmlDocument =
                     PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
@@ -893,19 +893,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
             else if (rbtListUnmatchedGift.Checked)
             {
-                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}' and {4} LIKE '%{5}'",
                     AEpStatementTable.GetStatementKeyDBName(),
                     CurrentStatement.StatementKey,
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
-                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED_GIFT);
+                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED,
+                    BankImportTDSAEpTransactionTable.GetTransactionTypeCodeDBName(),
+                    MFinanceConstants.BANK_STMT_POTENTIAL_GIFT);
             }
             else if (rbtListUnmatchedGL.Checked)
             {
-                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}' and {4} NOT LIKE '%{5}'",
                     AEpStatementTable.GetStatementKeyDBName(),
                     CurrentStatement.StatementKey,
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
-                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED);
+                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED,
+                    BankImportTDSAEpTransactionTable.GetTransactionTypeCodeDBName(),
+                    MFinanceConstants.BANK_STMT_POTENTIAL_GIFT);
             }
             else if (rbtListIgnored.Checked)
             {
