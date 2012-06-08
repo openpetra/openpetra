@@ -398,13 +398,15 @@
 
     <target name="createPostgreSQLDB" depends="init">
         <property name="DBMS.Type.Orig" value="${DBMS.Type}"/>
+        <property name="DBMS.DBName.Orig" value="${DBMS.DBName}"/>
         <property name="DBMS.Type" value="postgresql"/>
-        <property name="DBMS.DBName" value="openpetra_basedb"/>
+        <property name="DBMS.DBName" value="${DBMS.Setup.DBName}"/>
         <call target="recreateDatabase"/>
         <call target="resetDatabase"/>
         <property name="file" value="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"/>
         <call target="dumpDatabase"/>
         <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
+        <property name="DBMS.DBName" value="${DBMS.DBName.Orig}"/>
     </target>
 
     <target name="createMySQLDB" depends="init">
