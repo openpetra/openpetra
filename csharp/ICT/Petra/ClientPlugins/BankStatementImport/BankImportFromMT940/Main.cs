@@ -142,6 +142,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 }
                 else
                 {
+                    AStatementKey = FStatementKey;
                     return FStatementKey != -1;
                 }
             }
