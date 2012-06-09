@@ -112,6 +112,10 @@ namespace Ict.Common
              ErrorMessageTitle = "Information Missing")]
         public const String ERR_INFORMATIONMISSING = "GENC.00009V";
 
+        /// <summary>Value may not be null.</summary>
+        [ErrCodeAttribute("A value must be assigned.",
+             FullDescription = "The value may not be empty.")]
+        public const String ERR_NONULL = "GENC.00010V";
 
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
