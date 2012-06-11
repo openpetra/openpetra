@@ -249,6 +249,9 @@ namespace Ict.Common.Data
         {
             XmlTextReader reader;
 
+            strSchema = strSchema.Replace("msdata:ThrowAwayAfterSubmitChanges=\"False\"", string.Empty);
+            strSchema = strSchema.Replace("msdata:ThrowAwayAfterSubmitChanges=\"True\"", string.Empty);
+
             reader = new XmlTextReader(new StringReader(strSchema));
             ReadXmlSchema(reader);
             reader.Close();

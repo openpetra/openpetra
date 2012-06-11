@@ -120,6 +120,12 @@ useful parameters
       <exclude name="."/>
     </fileset>
   </delete>
+  <delete>
+    <fileset basedir="${dir.obj}">
+      <include name="**" />
+      <exclude name="."/>
+    </fileset>
+  </delete>
   <delete file="${namespaceFile}"/>
   <delete file="${projectDependenciesFile}"/>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >

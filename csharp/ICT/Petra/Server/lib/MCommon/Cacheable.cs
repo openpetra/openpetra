@@ -265,7 +265,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                                 ValidateCountryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateCountryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PCountryAccess.SubmitChanges((PCountryTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -282,7 +282,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                                 ValidateFrequencyList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateFrequencyListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AFrequencyAccess.SubmitChanges((AFrequencyTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -299,7 +299,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
                                 ValidateLanguageCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateLanguageCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PLanguageAccess.SubmitChanges((PLanguageTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))

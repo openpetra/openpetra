@@ -1079,7 +1079,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FLinkLabelsOrigTexts = new Dictionary <string, string>();
 
-            foreach (Control Cntrl in this.pnlIndivDataMenu.Controls[0].Controls)
+            foreach (Control Cntrl in this.pnlIndivDataMenu.Controls)
             {
                 if ((Cntrl is LinkLabel)
                     && (Cntrl.Text.Contains("{")))

@@ -92,6 +92,11 @@ namespace Ict.Tools.CodeGeneration
             {
                 FCodeStorage.FWidth = Convert.ToInt32(TYml2Xml.GetAttribute(formNode, "WindowWidth"));
             }
+
+            if (TYml2Xml.HasAttribute(formNode, "Height") || TYml2Xml.HasAttribute(formNode, "Width"))
+            {
+                TLogging.Log("Warning: Please use WindowWidth and WindowHeight, because Width and Height for the root node are invalid");
+            }
         }
 
         /// <summary>

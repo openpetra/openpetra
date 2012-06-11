@@ -811,7 +811,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
                 ValidateGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
 
-                if (AVerificationResult.Count != 0)
+                if (AVerificationResult.HasCriticalErrors)
                 {
                     AllValidationsOK = false;
                 }
@@ -822,7 +822,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
                 ValidateGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
 
-                if (AVerificationResult.Count != 0)
+                if (AVerificationResult.HasCriticalErrors)
                 {
                     AllValidationsOK = false;
                 }

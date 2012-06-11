@@ -80,6 +80,18 @@ namespace Ict.Common.Printing
         /// <summary>todoComment</summary>
         public Int32 borderWidth;
 
+        /// left border
+        public static int LEFT = 1;
+        /// right border
+        public static int RIGHT = 2;
+        /// top border
+        public static int TOP = 4;
+        /// bottom border
+        public static int BOTTOM = 8;
+
+        /// <summary>border: left = 1, right = 2, top = 4, bottom = 8</summary>
+        public Int32 borderBitField;
+
         /// <summary>this height has been calculated while printing the content</summary>
         public float contentHeight;
 

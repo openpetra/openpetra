@@ -66,12 +66,14 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnCancel = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.chkBlankPW = new System.Windows.Forms.CheckBox();
+            this.cboVersion = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             //
             // label15
             //
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(46, 117);
+            this.label15.Location = new System.Drawing.Point(46, 144);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(48, 13);
             this.label15.TabIndex = 8;
@@ -80,7 +82,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label14
             //
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(68, 89);
+            this.label14.Location = new System.Drawing.Point(68, 116);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(26, 13);
             this.label14.TabIndex = 6;
@@ -98,7 +100,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label12
             //
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 61);
+            this.label12.Location = new System.Drawing.Point(12, 88);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(82, 13);
             this.label12.TabIndex = 2;
@@ -112,6 +114,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.cboDBMS.Name = "cboDBMS";
             this.cboDBMS.Size = new System.Drawing.Size(125, 21);
             this.cboDBMS.TabIndex = 1;
+            this.cboDBMS.SelectedIndexChanged += new System.EventHandler(this.cboDBMS_SelectedIndexChanged);
             //
             // label11
             //
@@ -124,14 +127,14 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // txtLocation
             //
-            this.txtLocation.Location = new System.Drawing.Point(100, 114);
+            this.txtLocation.Location = new System.Drawing.Point(100, 141);
             this.txtLocation.Name = "txtLocation";
             this.txtLocation.Size = new System.Drawing.Size(378, 20);
             this.txtLocation.TabIndex = 9;
             //
             // txtDBName
             //
-            this.txtDBName.Location = new System.Drawing.Point(100, 58);
+            this.txtDBName.Location = new System.Drawing.Point(100, 85);
             this.txtDBName.Name = "txtDBName";
             this.txtDBName.Size = new System.Drawing.Size(125, 20);
             this.txtDBName.TabIndex = 3;
@@ -146,14 +149,14 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // txtPort
             //
-            this.txtPort.Location = new System.Drawing.Point(100, 86);
+            this.txtPort.Location = new System.Drawing.Point(100, 113);
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(67, 20);
             this.txtPort.TabIndex = 7;
             //
             // btnOK
             //
-            this.btnOK.Location = new System.Drawing.Point(159, 150);
+            this.btnOK.Location = new System.Drawing.Point(159, 173);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 10;
@@ -164,7 +167,7 @@ namespace Ict.Tools.DevelopersAssistant
             // btnCancel
             //
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(258, 150);
+            this.btnCancel.Location = new System.Drawing.Point(258, 173);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 11;
@@ -174,7 +177,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label1
             //
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 195);
+            this.label1.Location = new System.Drawing.Point(12, 218);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(374, 13);
             this.label1.TabIndex = 12;
@@ -191,13 +194,33 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkBlankPW.UseVisualStyleBackColor = true;
             this.chkBlankPW.Click += new System.EventHandler(this.chkBlankPW_Click);
             //
+            // cboVersion
+            //
+            this.cboVersion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboVersion.FormattingEnabled = true;
+            this.cboVersion.Location = new System.Drawing.Point(100, 55);
+            this.cboVersion.Name = "cboVersion";
+            this.cboVersion.Size = new System.Drawing.Size(125, 21);
+            this.cboVersion.TabIndex = 14;
+            //
+            // label2
+            //
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(52, 61);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(42, 13);
+            this.label2.TabIndex = 15;
+            this.label2.Text = "Version";
+            //
             // DlgDbBuildConfig
             //
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(492, 220);
+            this.ClientSize = new System.Drawing.Size(492, 242);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.cboVersion);
             this.Controls.Add(this.chkBlankPW);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnCancel);
@@ -239,5 +262,7 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.TextBox txtPassword;
         private System.Windows.Forms.TextBox txtPort;
         private System.Windows.Forms.CheckBox chkBlankPW;
+        private System.Windows.Forms.ComboBox cboVersion;
+        private System.Windows.Forms.Label label2;
     }
 }
