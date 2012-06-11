@@ -39,24 +39,26 @@ RootNode:
         pnlFilter:
             Dock: Top
             Controls:
-                Row0: [rgrSelectTransaction, pnlSum]
+                Row0: [rgrSelectTransaction]
+                Row1: [pnlSum]
         pnlSum:
             Controls:
-                Row0: [txtCreditSum]
+                Row0: [txtCreditSum, txtTransactionCount]
                 Row1: [txtDebitSum]
         rgrSelectTransaction:
-            OptionalValues: [ListAll, ListUnmatchedGift, ListGift, ListUnmatchedGL, ListGL, ListIgnored]
+            OptionalValues: [ListAll, =ListUnmatchedGift, ListGift, ListUnmatchedGL, ListGL, ListIgnored]
             ControlsOrientation: horizontal
             NoLabel: true
             OnChange: TransactionFilterChanged
         txtCreditSum: {Format=Currency, ReadOnly=true}
         txtDebitSum: {Format=Currency, ReadOnly=true}
+        txtTransactionCount: {Label=Number of Transactions, ReadOnly=true}
         # pnlStatementInfo:
             # Controls: [txtStartBalance, txtEndBalance, txtSumDebit, txtSumCredit, txtNumberMatchedTransactions]
         sptTransactionDetails:
             Panel1: grdAllTransactions
             Panel2: pnlDetails
-            SplitterDistance: 50
+            SplitterDistance: 40
             SplitterOrientation: horizontal
             Dock: Fill
         grdAllTransactions:
@@ -95,11 +97,13 @@ RootNode:
                 Row0: [txtAmount]
                 Row1: [cmbMotivationGroup, txtGiftAccount]
                 Row2: [cmbMotivationDetail, txtGiftCostCentre]
+                Row3: [txtRecipientKey]
         btnAddGiftDetail:
         btnRemoveGiftDetail:
         txtAmount: {Format=Currency, ColSpan=2}
         cmbMotivationGroup: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail, Width=200}
         cmbMotivationDetail: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged, Width=200}
+        txtRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=2}
         txtGiftAccount: {Label=Account, ReadOnly=true}
         txtGiftCostCentre: {Label=Cost Centre, ReadOnly=true}
         pnlGLEdit:

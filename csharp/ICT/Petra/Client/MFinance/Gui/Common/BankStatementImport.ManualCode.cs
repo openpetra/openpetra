@@ -145,7 +145,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 FMainDS.AEpStatement.DefaultView.RowFilter = string.Empty;
             }
 
-            rbtListAll.Checked = true;
             TransactionFilterChanged(null, null);
             grdAllTransactions.SelectRowInGrid(1);
         }
@@ -383,6 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             if (CurrentlySelectedMatch != null)
             {
                 txtAmount.NumberValueDecimal = CurrentlySelectedMatch.GiftTransactionAmount;
+                txtRecipientKey.Text = StringHelper.FormatStrToPartnerKeyString(CurrentlySelectedMatch.RecipientKey.ToString());
 
                 if (CurrentlySelectedMatch.IsMotivationGroupCodeNull())
                 {
@@ -428,6 +428,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 CurrentlySelectedMatch.CostCentreCode = txtGiftCostCentre.Text;
                 CurrentlySelectedMatch.GiftTransactionAmount = txtAmount.NumberValueDecimal.Value;
                 CurrentlySelectedMatch.DonorKey = Convert.ToInt64(txtDonorKey.Text);
+                CurrentlySelectedMatch.RecipientKey = Convert.ToInt64(txtRecipientKey.Text);
 
                 FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
                     ACostCentreTable.GetCostCentreCodeDBName(), CurrentlySelectedMatch.CostCentreCode);
@@ -948,6 +949,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             txtCreditSum.NumberValueDecimal = sumCredit;
             txtDebitSum.NumberValueDecimal = sumDebit;
+            txtTransactionCount.Text = FTransactionView.Count.ToString();
 
             if (FTransactionView.Count > 0)
             {
