@@ -183,7 +183,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
+            if (!rbtEditing.Checked)
+            {
+                rbtEditing.Checked = true;
+            }
+        	
+            btnPostBatch.Enabled = true;
+            btnTestPostBatch.Enabled = true;
+            
+        	FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
             ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
 
@@ -196,6 +204,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+            
+            
             // dtpDetailDateEffective.Date = DefaultDate;
 
             // grdDetails.Selection.SelectRow(1,true);
@@ -212,6 +222,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
+            
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 ||
@@ -243,7 +255,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 else
                 {
                     FMainDS.Merge(mergeDS);
-                    FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                    GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                    //FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
 
                     foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                     {
@@ -274,7 +287,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
 
-                    SelectByIndex(rowIndex);
+                    //SelectByIndex(rowIndex);
+		            grdDetails.Refresh();
+		
+		            //If some row(s) still exist after deletion
+		            if (grdDetails.Rows.Count > 1)
+		            {
+		                //If last row just deleted, select row at old position - 1
+		                if (newCurrentRowPos == grdDetails.Rows.Count)
+		                {
+		                    newCurrentRowPos--;
+		                }
+		
+		                grdDetails.Selection.ResetSelection(false);
+		                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+		                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+		            }
+		            else
+		            {
+		                FPreviouslySelectedDetailRow = null;
+		                btnPostBatch.Enabled = false;
+		                btnTestPostBatch.Enabled = false;
+		            }
                 }
 
                 LoadBatches(FLedgerNumber);
@@ -466,6 +500,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // TODO Select the actual row again in updated
                     SelectByIndex(rowIndex);
                     // UpdateChangeableStatus();
+                    
+                    bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
+                    btnPostBatch.Enabled = enablePosting;
+                    btnTestPostBatch.Enabled = enablePosting;
                 }
             }
         }
