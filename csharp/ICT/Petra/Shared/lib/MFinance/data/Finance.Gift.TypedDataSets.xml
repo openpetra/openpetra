@@ -61,6 +61,9 @@
             <CustomField name="PartnerKey" type="Int64"/>
         </Table>
         <Table sqltable="a_ep_statement"/>
+        <Table sqltable="a_ep_match">
+            <CustomField name="CostCentreName" type="string"/>
+        </Table>
         <Table sqltable="a_ep_transaction">
             <CustomField name="MatchAction" type="string"/>
             <CustomField name="OriginalAmountOnStatement" type="Decimal"/>
@@ -69,9 +72,6 @@
             <CustomField name="GiftTransactionNumber" type="Int32"/>
             <CustomField name="GiftDetailNumber" type="Int32"/>
             <CustomField name="DonorKey" type="Int64"/>
-        </Table>
-        <Table sqltable="a_ep_match">
-            <CustomField name="CostCentreName" type="string"/>
         </Table>
         <Table sqltable="a_cost_centre"/>
         <Table sqltable="a_motivation_detail"/>
