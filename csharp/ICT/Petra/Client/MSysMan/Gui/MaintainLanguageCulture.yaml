@@ -3,8 +3,8 @@ RootNode:
     FormTitle: Maintain Language and Culture
     Namespace: Ict.Petra.Client.MSysMan.Gui
     FormType: dialog
-    Width: 200
-    Height: 60
+    WindowWidth: 350
+    WindowHeight: 150
     Template: window
 
     Controls:

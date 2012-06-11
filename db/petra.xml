@@ -14703,7 +14703,6 @@
                 label="Leadership Rating"
                 columnlabel="Leadership Rating"
                 help="Indicates the Leadership Rating."
-                notnull="yes"
                 initial=""/>
     <tablefield name="pm_confirmed_option_code_c"
                 type="varchar"
@@ -15035,8 +15034,7 @@
                 format="9999999999"
                 label="Field Charged"
                 columnlabel="Field Charged"
-                help="This field idenifies the field to be charged for the costs."
-                notnull="yes"/>
+                help="This field idenifies the field to be charged for the costs."/>
     <tablefield name="pm_st_congress_language_c"
                 type="varchar"
                 charlength="10"

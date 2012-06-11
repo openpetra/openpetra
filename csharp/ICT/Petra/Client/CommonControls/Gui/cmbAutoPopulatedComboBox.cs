@@ -81,6 +81,9 @@ namespace Ict.Petra.Client.CommonControls
             AbilityLevelList,
 
             /// <summary>todoComment</summary>
+            ArrivalDeparturePointList,
+            
+            /// <summary>todoComment</summary>
             AccommodationCodeList,
 
             /// <summary>todoComment</summary>
@@ -99,10 +102,16 @@ namespace Ict.Petra.Client.CommonControls
             AnalysisTypeList,
 
             /// <summary>todoComment</summary>
+            ApplicantStatusList,
+
+            /// <summary>todoComment</summary>
             BusinessCodeList,
 
             /// <summary>todoComment</summary>
             CommitmentStatusList,
+
+            /// <summary>todoComment</summary>
+            ContactList,
 
             /// <summary>todoComment</summary>
             CountryList,
@@ -124,6 +133,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             DocumentTypeList,
+
+            /// <summary>todoComment</summary>
+            EventRoleList,
 
             /// <summary>todoComment</summary>
             FrequencyList,
@@ -226,6 +238,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             SubscriptionStatus,
+            
+            /// <summary>todoComment</summary>
+            TransportTypeList,
 
             /// <summary>todoComment</summary>
             UnitTypeList,
@@ -380,6 +395,14 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.ArrivalDeparturePointList:
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.ArrivalDeparturePointList),
+                    PtArrivalPointTable.GetCodeDBName(),
+                    PtArrivalPointTable.GetDescriptionDBName(),
+                    null);
+                    break;
+                    
                 case TListTableEnum.AccommodationCodeList:
 
                     InitialiseUserControl(
@@ -435,6 +458,16 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.ApplicantStatusList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.ApplicantStatusList),
+                    PtApplicantStatusTable.GetCodeDBName(),
+                    PtApplicantStatusTable.GetDescriptionDBName(),
+                    null
+                    );
+                    break;
+                    
                 case TListTableEnum.BusinessCodeList:
 
                     InitialiseUserControl(
@@ -450,6 +483,16 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.CommitmentStatusList),
                     PmCommitmentStatusTable.GetCodeDBName(),
                     PmCommitmentStatusTable.GetDescDBName(),
+                    null
+                    );
+                    break;
+
+                case TListTableEnum.ContactList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.ContactList),
+                    PtContactTable.GetContactNameDBName(),
+                    PtContactTable.GetContactDescrDBName(),
                     null
                     );
                     break;
@@ -517,6 +560,15 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.DocumentTypeList),
                     "pm_doc_code_c",
                     "pm_description_c",
+                    null);
+                    break;
+
+                case TListTableEnum.EventRoleList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.EventRoleList),
+                    PtCongressCodeTable.GetCodeDBName(),
+                    PtCongressCodeTable.GetDescriptionDBName(),
                     null);
                     break;
 
@@ -820,6 +872,14 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.TransportTypeList:
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.TransportTypeList),
+                    PtTravelTypeTable.GetCodeDBName(),
+                    PtTravelTypeTable.GetDescriptionDBName(),
+                    null);
+                    break;
+                    
                 case TListTableEnum.RelationList:
 
                     InitialiseUserControl(
@@ -1068,6 +1128,11 @@ namespace Ict.Petra.Client.CommonControls
                     cmbCombobox.MaxDropDownItems = 9;
                     break;
 
+                case TListTableEnum.ArrivalDeparturePointList:
+                    this.ColumnWidthCol1 = 150;
+                    this.ColumnWidthCol2 = 300;
+                    break;
+
                 case TListTableEnum.AcquisitionCodeList:
                     this.ColumnWidthCol2 = 350;
                     break;
@@ -1082,6 +1147,11 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 150;
                     break;
 
+                case TListTableEnum.ApplicantStatusList:
+                    this.ColumnWidthCol1 = 80;
+                    this.ColumnWidthCol2 = 300;
+                    break;
+                    
                 case TListTableEnum.BusinessCodeList:
                     this.ColumnWidthCol2 = 150;
                     cmbCombobox.MaxDropDownItems = 9;
@@ -1092,6 +1162,11 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 300;
                     break;
 
+                case TListTableEnum.ContactList:
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 300;
+                    break;
+                    
                 case TListTableEnum.CountryList:
                     this.ColumnWidthCol1 = 50;
                     this.ColumnWidthCol2 = 200;
@@ -1119,6 +1194,11 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 200;
                     break;
 
+                case TListTableEnum.EventRoleList:
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 250;
+                    break;
+                    
                 case TListTableEnum.DocumentTypeCategoryList:
                     this.ColumnWidthCol2 = 200;
                     break;
@@ -1244,6 +1324,11 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.SubscriptionStatus:
                     this.ColumnWidthCol1 = 110;
+                    break;
+                    
+                case TListTableEnum.TransportTypeList:
+                    this.ColumnWidthCol1 = 80;
+                    this.ColumnWidthCol2 = 130;
                     break;
 
                 case TListTableEnum.SkillCategoryList:

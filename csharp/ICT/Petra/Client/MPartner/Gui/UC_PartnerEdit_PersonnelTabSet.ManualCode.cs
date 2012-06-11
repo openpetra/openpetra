@@ -31,6 +31,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -127,8 +128,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FUserControlInitialised = true;
 
-            tpgApplications.Enabled = false;    // TODO This feature isn't implemented yet.
-
             tabPersonnel.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
             SelectTabPage(FInitiallySelectedTabPage);
@@ -171,14 +170,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucApplications))
             {
-                // TUC_Applications UCApplications =
-                //    (TUC_Applications)FTabSetup[TDynamicLoadableUserControls.dlucApplications];
+                 TUC_ApplicationData UCApplicationData =
+                    (TUC_ApplicationData)FTabSetup[TDynamicLoadableUserControls.dlucApplications];
 
-                //TODO: UCApplications not implemented yet
-                //if (!UCApplications.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
-                //{
-                //    ReturnValue = false;
-                //}
+                if (!UCApplicationData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
             }
 
             return ReturnValue;
@@ -195,6 +193,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoIndividualData.GetDataFromControls();
             }
+            
+            if (FUcoApplications != null)
+            {
+                FUcoApplications.GetDataFromControls();
+            }
         }
 
         /// <summary>
@@ -205,6 +208,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FUcoIndividualData != null)
             {
                 FUcoIndividualData.RefreshPersonnelDataAfterMerge(AAddressesOrRelationsChanged);
+            }
+
+            if (FUcoApplications != null)
+            {
+                FUcoApplications.RefreshPersonnelDataAfterMerge(AAddressesOrRelationsChanged);
             }
         }
 
@@ -218,11 +226,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
                 FUcoIndividualData.InitialiseUserControl();
+				CalculateTabHeaderCounters(this);
             }
             else if (AUserControl == FUcoApplications)
             {
-// TODO         FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
-// TODO         FUcoApplications.InitialiseUserControl();
+				FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
+				FUcoApplications.InitialiseUserControl();
+				CalculateTabHeaderCounters(FUcoApplications);
             }
         }
 
@@ -259,11 +269,22 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CalculateTabHeaderCounters(System.Object ASender)
         {
-            Int32 CountAll = 0;
-
-            if ((ASender is TUC_PartnerEdit_PersonnelTabSet) || (ASender is TUC_Applications))
+        	if ((ASender is TUC_PartnerEdit_PersonnelTabSet) || (ASender is TUC_Applications) || (ASender is TUC_ApplicationData))
             {
-                tpgApplications.Text = String.Format(tpgApplications.Text, CountAll);
+	        	if (FUcoApplications != null)
+	        	{
+		        	tpgApplications.Text = Catalog.GetString("Applications") + " (" + FUcoApplications.CountApplications().ToString() + ")";
+	        	}
+	        	else if (FUcoIndividualData != null)
+	        	{
+			        // This is really only needed if application tab has not been activated yet. The number
+			        // of applications still needs to be displayed and will already be available in Individual Data Tab.
+		        	tpgApplications.Text = Catalog.GetString("Applications") + " (" + FUcoIndividualData.CountApplications().ToString() + ")";
+	        	}
+	        	else
+	        	{
+		        	tpgApplications.Text = Catalog.GetString("Applications");
+	        	}
             }
         }
 

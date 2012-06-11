@@ -1,0 +1,28 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.ApplicationTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PmGeneralApplication
+    Actions:
+    Controls:
+        pnlDetails:
+            Controls: [grpField, grpPlacement]
+            Dock: Fill
+        grpField: {NoLabel=true}
+            Controls: 
+                Row0: [txtField]
+                Row1: [dtpAvailableFrom, dtpAvailableTo]
+        grpPlacement: {NoLabel=true}
+            Controls: 
+                Row0: [txtPlacementPerson]
+              
+        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, ColSpan=2}
+        dtpAvailableFrom: {Label=Available from, DataField=PmYearProgramApplication.StartOfCommitment}
+        dtpAvailableTo: {Label=Available to, DataField=PmYearProgramApplication.EndOfCommitment}
+
+        txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey}
+        
