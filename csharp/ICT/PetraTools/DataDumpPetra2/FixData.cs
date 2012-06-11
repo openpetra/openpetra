@@ -614,10 +614,10 @@ namespace Ict.Tools.DataDumpPetra2
             if (ATableName == "s_system_defaults")
             {
                 // load the file a_system_parameter.d.gz so that we can access s_system_parameter, s_site_key_n
-                TTable systemParameterTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("a_system_parameter");
+                TTable systemParameterTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("s_system_parameter");
 
                 TParseProgressCSV Parser = new TParseProgressCSV(
-                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "a_system_parameter.d.gz",
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "s_system_parameter.d.gz",
                     systemParameterTableOld.grpTableField.Count);
 
                 StringCollection ColumnNames = GetColumnNames(systemParameterTableOld);
