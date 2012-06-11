@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
 // Copyright 2004-2012 by OM International
 //
@@ -208,16 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
-//              if (cmbDetailMotivationGroupCode.GetSelectedString().Trim() == string.Empty)
-//			{
-//                      TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, string.Empty);
-//                      //Impossible filter to clear list
-//                      cmbDetailMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true AND 1 = 2";
-//			}
-//              else
-//              {
             TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
-//              }
 
             if ((cmbDetailMotivationDetailCode.Count > 0) && (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty))
             {
@@ -447,7 +438,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPreviouslySelectedDetailRow.BatchNumber,
                 AGiftDetailTable.GetGiftTransactionNumberDBName(),
                 FPreviouslySelectedDetailRow.GiftTransactionNumber);
-            //FMainDS.AGiftDetail.Rows.Remove(FPreviouslySelectedDetailRow);
             FPreviouslySelectedDetailRow.Delete();
             FPreviouslySelectedDetailRow = null;
             DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
@@ -458,7 +448,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // TODO int oldGiftNumber = gift.GiftTransactionNumber;
                 // TODO int oldBatchNumber = gift.BatchNumber;
 
-                //FMainDS.AGift.Rows.Remove(gift);
                 gift.Delete();
 
                 // we cannot update primary keys easily, therefore we have to do it later on the server side

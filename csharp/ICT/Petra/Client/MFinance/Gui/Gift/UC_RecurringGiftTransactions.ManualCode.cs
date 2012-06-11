@@ -424,7 +424,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPreviouslySelectedDetailRow.BatchNumber,
                 ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
                 FPreviouslySelectedDetailRow.GiftTransactionNumber);
-            //FMainDS.ARecurringGiftDetail.Rows.Remove(FPreviouslySelectedDetailRow);
             FPreviouslySelectedDetailRow.Delete();
             FPreviouslySelectedDetailRow = null;
             DataView giftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
@@ -435,7 +434,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // TODO int oldGiftNumber = gift.GiftTransactionNumber;
                 // TODO int oldBatchNumber = gift.BatchNumber;
 
-                //FMainDS.ARecurringGift.Rows.Remove(gift);
                 gift.Delete();
 
                 // we cannot update primary keys easily, therefore we have to do it later on the server side
