@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
             TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, ActiveOnly);
             //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
-            
+
             //add textxhanged event handler to Motivation group code
             this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
             this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
@@ -208,30 +208,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
-//        	if (cmbDetailMotivationGroupCode.GetSelectedString().Trim() == string.Empty)
+//              if (cmbDetailMotivationGroupCode.GetSelectedString().Trim() == string.Empty)
 //			{
-//        		TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, string.Empty);
-//        		//Impossible filter to clear list
-//        		cmbDetailMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true AND 1 = 2";
+//                      TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, string.Empty);
+//                      //Impossible filter to clear list
+//                      cmbDetailMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true AND 1 = 2";
 //			}
-//        	else 
-//        	{
-			TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
-//        	}
+//              else
+//              {
+            TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
+//              }
 
-			if (cmbDetailMotivationDetailCode.Count > 0 && cmbDetailMotivationDetailCode.Text.Trim() == string.Empty)
-			{
-				cmbDetailMotivationDetailCode.SelectedIndex = 0;
-			}
-			
-			RetrieveMotivationDetailAccountCode();
+            if ((cmbDetailMotivationDetailCode.Count > 0) && (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty))
+            {
+                cmbDetailMotivationDetailCode.SelectedIndex = 0;
+            }
 
-        	if(Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            RetrieveMotivationDetailAccountCode();
+
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
             {
                 RetrieveMotivationDetailCostCentreCode();
             }
         }
-        
+
         /// <summary>
         /// Called on TextChanged event for combo
         /// </summary>
@@ -239,11 +239,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void MotivationGroupCodeChanged(object sender, EventArgs e)
         {
-        	if (cmbDetailMotivationGroupCode.Text.Trim() == string.Empty)
-			{
-        		cmbDetailMotivationGroupCode.SelectedIndex = -1;
-        		cmbDetailMotivationDetailCode.SelectedIndex = -1;
-			}        	
+            if (cmbDetailMotivationGroupCode.Text.Trim() == string.Empty)
+            {
+                cmbDetailMotivationGroupCode.SelectedIndex = -1;
+                cmbDetailMotivationDetailCode.SelectedIndex = -1;
+            }
         }
 
         /// <summary>
@@ -253,12 +253,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void MotivationDetailCodeChanged(object sender, EventArgs e)
         {
-        	if (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty)
-			{
-        		txtDetailAccountCode.Text = string.Empty;
-			}        	
+            if (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty)
+            {
+                txtDetailAccountCode.Text = string.Empty;
+            }
         }
-        
 
         /// <summary>
         /// To be called on the display of a new record
@@ -527,37 +526,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             try
             {
-            	FPetraUtilsObject.SuppressChangeDetection = true;
+                FPetraUtilsObject.SuppressChangeDetection = true;
 
-            	txtDetailDonorKey.Text = string.Empty;
-	            txtDetailReference.Clear();
-	            dtpDateEntered.Clear();
-	            txtGiftTotal.NumberValueDecimal = 0;
-	            txtDetailGiftTransactionAmount.NumberValueDecimal = 0;
-	            txtDetailRecipientKey.Text = string.Empty;
-	            txtField.Text = string.Empty;
-	            txtDetailAccountCode.Clear();
-	            txtDetailGiftCommentOne.Clear();
-	            txtDetailGiftCommentTwo.Clear();
-	            txtDetailGiftCommentThree.Clear();
-	            cmbDetailReceiptLetterCode.SelectedIndex = -1;
-	            cmbDetailMotivationGroupCode.SelectedIndex = -1;
-	            cmbDetailMotivationDetailCode.SelectedIndex = -1;
-	            cmbDetailCommentOneType.SelectedIndex = -1;
-	            cmbDetailCommentTwoType.SelectedIndex = -1;
-	            cmbDetailCommentThreeType.SelectedIndex = -1;
-	            cmbDetailMailingCode.SelectedIndex = -1;
-	            cmbDetailMethodOfGivingCode.SelectedIndex = -1;
-	            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-	            cmbMinistry.SelectedIndex = -1;
-	            txtDetailCostCentreCode.Text = string.Empty;
+                txtDetailDonorKey.Text = string.Empty;
+                txtDetailReference.Clear();
+                dtpDateEntered.Clear();
+                txtGiftTotal.NumberValueDecimal = 0;
+                txtDetailGiftTransactionAmount.NumberValueDecimal = 0;
+                txtDetailRecipientKey.Text = string.Empty;
+                txtField.Text = string.Empty;
+                txtDetailAccountCode.Clear();
+                txtDetailGiftCommentOne.Clear();
+                txtDetailGiftCommentTwo.Clear();
+                txtDetailGiftCommentThree.Clear();
+                cmbDetailReceiptLetterCode.SelectedIndex = -1;
+                cmbDetailMotivationGroupCode.SelectedIndex = -1;
+                cmbDetailMotivationDetailCode.SelectedIndex = -1;
+                cmbDetailCommentOneType.SelectedIndex = -1;
+                cmbDetailCommentTwoType.SelectedIndex = -1;
+                cmbDetailCommentThreeType.SelectedIndex = -1;
+                cmbDetailMailingCode.SelectedIndex = -1;
+                cmbDetailMethodOfGivingCode.SelectedIndex = -1;
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+                cmbMinistry.SelectedIndex = -1;
+                txtDetailCostCentreCode.Text = string.Empty;
 
-	            FPetraUtilsObject.SuppressChangeDetection = false;
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
             catch (Exception)
             {
-            	FPetraUtilsObject.SuppressChangeDetection = false;
-            	throw;
+                FPetraUtilsObject.SuppressChangeDetection = false;
+                throw;
             }
         }
 
@@ -580,8 +579,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
                 grdDetails.Refresh();
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
-                
-        		ShowDetails(FPreviouslySelectedDetailRow);
+
+                ShowDetails(FPreviouslySelectedDetailRow);
             }
         }
 
@@ -716,7 +715,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.CommentOneType = "Both";
                 newRow.CommentTwoType = "Both";
                 newRow.CommentThreeType = "Both";
-
             }
 
             return newRow;
@@ -752,11 +750,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.MotivationGroupCode = "GIFT";
                 newRow.MotivationDetailCode = "SUPPORT";
                 FMainDS.AGiftDetail.Rows.Add(newRow);
-                
-				newRow.CommentOneType = "Both";
+
+                newRow.CommentOneType = "Both";
                 newRow.CommentTwoType = "Both";
                 newRow.CommentThreeType = "Both";
-
             }
 
             return newRow;
@@ -777,11 +774,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailGiftTransactionAmount.CurrencySymbol = batchRow.CurrencyCode;
                 txtBatchStatus.Text = batchRow.BatchStatus;
             }
-            
+
             if (grdDetails.Rows.Count == 1)
             {
-            	txtBatchTotal.NumberValueDecimal = 0;
-            	ClearControls();
+                txtBatchTotal.NumberValueDecimal = 0;
+                ClearControls();
             }
 
             if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
@@ -1032,7 +1029,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(AGiftDetailRow ARow)
         {
-        	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);

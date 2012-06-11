@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.DisableDataChangedEvent();
                 TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYear, FLedgerNumber);
                 FPetraUtilsObject.EnableDataChangedEvent();
-                
+
                 // only refresh once, seems we are doing too many loads from the db otherwise
                 RefreshFilter(null, null);
             }
@@ -174,12 +174,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-            
+
             if (grdDetails.Rows.Count < 2)
             {
-            	ClearControls();
+                ClearControls();
             }
-            
         }
 
         /// reset the control
@@ -248,12 +247,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             //If viewing posted batches only, show list of editing batches
             //  instead before adding a new batch
-        	if (rbtPosted.Checked)
+            if (rbtPosted.Checked)
             {
-            	rbtEditing.Checked = true;
+                rbtEditing.Checked = true;
             }
-        	
-        	pnlDetails.Enabled = true;
+
+            pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
             txtDetailBatchDescription.Focus();
         }
@@ -384,28 +383,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.AGift.Rows.Clear();
 
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
-                
-				//Select unposted batch row in same index position as batch just posted
-				if (grdDetails.Rows.Count > 1)
-	            {
-	                //If last row just deleted, select row at old position - 1
-	                if (newCurrentRowPos == grdDetails.Rows.Count)
-	                {
-	                    newCurrentRowPos--;
-	                }
-	
-	                grdDetails.Selection.ResetSelection(false);
-	                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
-	                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-	
-	                ShowDetails(FPreviouslySelectedDetailRow);
-	            }
-	            else
-	            {
-	                FPreviouslySelectedDetailRow = null;
-	                ClearControls();
-	            }
-                
+
+                //Select unposted batch row in same index position as batch just posted
+                if (grdDetails.Rows.Count > 1)
+                {
+                    //If last row just deleted, select row at old position - 1
+                    if (newCurrentRowPos == grdDetails.Rows.Count)
+                    {
+                        newCurrentRowPos--;
+                    }
+
+                    grdDetails.Selection.ResetSelection(false);
+                    TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+                    ShowDetails(FPreviouslySelectedDetailRow);
+                }
+                else
+                {
+                    FPreviouslySelectedDetailRow = null;
+                    ClearControls();
+                }
             }
         }
 
