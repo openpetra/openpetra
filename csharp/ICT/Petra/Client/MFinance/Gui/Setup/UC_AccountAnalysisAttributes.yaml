@@ -31,7 +31,9 @@ RootNode:
             Controls:
                 Row0: [cmbDetailAnalysisTypeCode]
                 Row1: [chkDetailActive]
-        cmbDetailAnalysisTypeCode: {List=AnalysisTypeList}
+        cmbDetailAnalysisTypeCode:
+            List:   AnalysisTypeList
+            OnChange: OnDetailAnalysisTypeCodeChange
         chkDetailActive: {Label=Active}
     Toolbar:
         tbbNew:

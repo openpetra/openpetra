@@ -58,12 +58,25 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
-            // 'International Telephone Code' must be positive or 0
+            // 'International Access Code' must have a value
+            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatAccessCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.InternatAccessCode,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'International Telephone Code' must be positive
             ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatTelephoneCodeId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
+                VerificationResult = TNumericalChecks.IsPositiveInteger(ARow.InternatTelephoneCode,
                     ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
@@ -91,36 +104,6 @@ namespace Ict.Petra.Shared.MCommon.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TSharedCommonValidation.IsValidInternationalPostalCode(ARow.InternatPostalTypeCode,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-        }
-
-        /// <summary>
-        /// Validates the Setup International Postal Type screen data.
-        /// </summary>
-        /// <param name="AContext">Context that describes where the data validation failed.</param>
-        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
-        /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
-        public static void ValidateInternationalPostalTypeSetup(object AContext, PInternationalPostalTypeRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
-        {
-            DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
-
-            // 'Description' must have a value
-            ValidationColumn = ARow.Table.Columns[PInternationalPostalTypeTable.ColumnDescriptionId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Description,
                     ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 

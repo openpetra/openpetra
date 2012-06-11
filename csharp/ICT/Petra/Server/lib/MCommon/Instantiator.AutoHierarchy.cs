@@ -774,6 +774,23 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
         }
 
         /// generated method from connector
+        public System.Boolean GetCurrentState(out System.String ACaption,
+                                              out System.String AStatusMessage,
+                                              out System.Int32 APercentageDone,
+                                              out System.Boolean AJobFinished)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector), "GetCurrentState", ";STRING;STRING;INT;BOOL;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector.GetCurrentState(out ACaption, out AStatusMessage, out APercentageDone, out AJobFinished);
+        }
+
+        /// generated method from connector
+        public System.Boolean CancelJob()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector), "CancelJob", ";");
+            return Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector.CancelJob();
+        }
+
+        /// generated method from connector
         public Int64 GetNextSequence(TSequenceNames ASequence)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TSequenceWebConnector), "GetNextSequence", ";TSEQUENCENAMES;");

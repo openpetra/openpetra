@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
 // Copyright 2004-2012 by OM International
 //
@@ -174,6 +174,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                ClearControls();
+            }
         }
 
         /// reset the control
@@ -240,7 +245,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            //If viewing posted batches only, show list of editing batches
+            //  instead before adding a new batch
+            if (rbtPosted.Checked)
+            {
+                rbtEditing.Checked = true;
+            }
+
+            pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
+            txtDetailBatchDescription.Focus();
         }
 
         /// <summary>
@@ -250,10 +264,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+
+            //Check if any rows exist
+            if (grdDetails.Rows.Count < 2)
+            {
+                return;
+            }
+            //Check if any row is selected
+            else if ((newCurrentRowPos == -1) || (FPreviouslySelectedDetailRow == null))
+            {
+                MessageBox.Show(Catalog.GetString("No batch is selected to delete."),
+                    Catalog.GetString("Cancelling of Gift Batch"));
+                return;
+            }
             // ask if the user really wants to cancel the batch
-            if (MessageBox.Show(Catalog.GetString("Do you really want to cancel this gift batch?"),
-                    Catalog.GetString("Confirm cancelling of Gift Batch"),
-                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            else if (MessageBox.Show(Catalog.GetString("Do you really want to cancel this gift batch?"),
+                         Catalog.GetString("Confirm cancelling of Gift Batch"),
+                         MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
             {
                 return;
             }
@@ -261,6 +289,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
             FPetraUtilsObject.SetChangedFlag();
             grdDetails.Refresh();
+
+            //If some row(s) still exist after deletion
+            if (grdDetails.Rows.Count > 1)
+            {
+                //If last row just deleted, select row at old position - 1
+                if (newCurrentRowPos == grdDetails.Rows.Count)
+                {
+                    newCurrentRowPos--;
+                }
+
+                grdDetails.Selection.ResetSelection(false);
+                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+                //ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                FPreviouslySelectedDetailRow = null;
+                pnlDetails.Enabled = false;
+                ClearControls();
+            }
+        }
+
+        private void ClearControls()
+        {
+            txtDetailBatchDescription.Clear();
+            txtDetailHashTotal.NumberValueDecimal = 0;
+            dtpDetailGlEffectiveDate.Clear();
+            cmbDetailBankCostCentre.SelectedIndex = -1;
+            cmbDetailBankAccountCode.SelectedIndex = -1;
+            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
 
         private void PostBatch(System.Object sender, EventArgs e)
@@ -288,6 +348,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            //Read current rows position
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
             {
                 string ErrorMessages = String.Empty;
@@ -310,7 +373,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
                 giftBatchRow.AcceptChanges();
 
+                // make sure that the gift batch is not touched again, by GetDetailsFromControls
+                FSelectedBatchNumber = -1;
+                FPreviouslySelectedDetailRow = null;
+
+                // make sure that gift transactions and details are cleared as well
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                FMainDS.AGiftDetail.Rows.Clear();
+                FMainDS.AGift.Rows.Clear();
+
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
+
+                //Select unposted batch row in same index position as batch just posted
+                if (grdDetails.Rows.Count > 1)
+                {
+                    //If last row just deleted, select row at old position - 1
+                    if (newCurrentRowPos == grdDetails.Rows.Count)
+                    {
+                        newCurrentRowPos--;
+                    }
+
+                    grdDetails.Selection.ResetSelection(false);
+                    TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+                    ShowDetails(FPreviouslySelectedDetailRow);
+                }
+                else
+                {
+                    FPreviouslySelectedDetailRow = null;
+                    ClearControls();
+                }
             }
         }
 

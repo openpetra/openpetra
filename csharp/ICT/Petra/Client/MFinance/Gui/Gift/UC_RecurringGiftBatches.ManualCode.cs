@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -122,11 +122,69 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewARecurringGiftBatch();
+            txtDetailBatchDescription.Focus();
         }
 
         private void DeleteRow(System.Object sender, System.EventArgs e)
         {
-            //TODO
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+
+            //Check if any rows exist
+            if (grdDetails.Rows.Count < 2)
+            {
+                return;
+            }
+            //Check if any row is selected
+            else if ((newCurrentRowPos == -1) || (FPreviouslySelectedDetailRow == null))
+            {
+                MessageBox.Show(Catalog.GetString("No batch is selected to delete."),
+                    Catalog.GetString("Deleting Recurring Gift Batch"));
+                return;
+            }
+            // ask if the user really wants to delete the recurring batch
+            else if (MessageBox.Show(Catalog.GetString("Do you really want to delete this recurring gift batch?"),
+                         Catalog.GetString("Confirm deletion of Recurring Gift Batch"),
+                         MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            FPreviouslySelectedDetailRow.Delete();
+
+            FPetraUtilsObject.SetChangedFlag();
+            grdDetails.Refresh();
+
+            //If some row(s) still exist after deletion
+            if (grdDetails.Rows.Count > 1)
+            {
+                //If last row just deleted, select row at old position - 1
+                if (newCurrentRowPos == grdDetails.Rows.Count)
+                {
+                    newCurrentRowPos--;
+                }
+
+                grdDetails.Selection.ResetSelection(false);
+                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                //btnDelete.Enabled = false;
+                FPreviouslySelectedDetailRow = null;
+                pnlDetails.Enabled = false;
+                ClearControls();
+            }
+        }
+
+        private void ClearControls()
+        {
+            txtDetailBatchDescription.Clear();
+            txtDetailHashTotal.NumberValueDecimal = 0;
+            cmbDetailBankCostCentre.SelectedIndex = -1;
+            cmbDetailBankAccountCode.SelectedIndex = -1;
+            cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
 
         private void Submit(System.Object sender, System.EventArgs e)

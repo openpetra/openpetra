@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     ValidatePersonnelStaff(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
                     ValidatePersonnelStaffManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
 
-                    if (AVerificationResult.Count > 0)
+                    if (AVerificationResult.HasCriticalErrors)
                     {
                         AllDataValidationsOK = false;
                     }

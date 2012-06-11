@@ -31,7 +31,7 @@ RootNode:
         grpIssues: {Label=Issues, Stretch=horizontally}
             Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue, btnEditIssues]
 
-        cmbPSubscriptionPublicationCode: {List=PublicationList, OnChange=PublicationCodeChanged}
+        cmbPSubscriptionPublicationCode: {List=PublicationInfoList, OnChange=PublicationCodeChanged}
             Label: Pub&lication Code
         cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
             Label: S&ubscription Status

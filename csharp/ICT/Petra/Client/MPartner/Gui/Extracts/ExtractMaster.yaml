@@ -7,32 +7,97 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: window
+    WindowWidth: 700
+    WindowHeight: 700
     Actions:
         actMaintainExtract: {ActionClick=MaintainExtract}      
-        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}      
+        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}     
+        actPurgeExtracts: {ActionClick=PurgeExtracts}     
+        actActivateFilter: {ActionClick=FilterExtracts}     
+        actClearFilter: {ActionClick=ClearFilterExtracts}     
+        actUserFilterSelectionChanged: {ActionClick=FilterExtracts}     
+        
+        actCreateGeneralExtract: {ActionClick=CreateGeneralExtract}     
+        actCreateManualExtract: {ActionClick=CreateManualExtract}     
+        actCreatePartnerByCityExtract: {ActionClick=CreatePartnerByCityExtract}     
+        actCreatePartnerBySubscriptionExtract: {ActionClick=CreatePartnerBySubscriptionExtract}     
+        actCreatePartnerBySpecialTypeExtract: {ActionClick=CreatePartnerBySpecialTypeExtract}     
+        actCreatePartnerByConferenceExtract: {ActionClick=CreatePartnerByConferenceExtract}     
+        actCreatePartnerByOutreachExtract: {ActionClick=CreatePartnerByOutreachExtract}     
+        actCreatePartnerByCommitmentExtract: {ActionClick=CreatePartnerByCommitmentExtract}     
+        actCreatePartnerByFieldExtract: {ActionClick=CreatePartnerByFieldExtract}     
+        actCreateRecipientByFieldExtract: {ActionClick=CreateRecipientByFieldExtract}     
+        actCreateDonorByFieldExtract: {ActionClick=CreateDonorByFieldExtract}     
+        actCreateDonorByMotivationExtract: {ActionClick=CreateDonorByMotivationExtract}     
+        actCreateDonorByAmountExtract: {ActionClick=CreateDonorByAmountExtract}     
+        actCreateDonorByMiscellaneousExtract: {ActionClick=CreateDonorByMiscellaneousExtract}     
     Controls:
         pnlContent:
             Controls: [pnlFilter, pnlExtractMasterList]
             Dock: Fill
-        pnlFilter:
-            Dock: Top
-            Controls: [lblFilter]
+        pnlFilter: {ControlsOrientation=horizontal}
+            NoLabel: true
+            Controls: [grpNameFilter, rgrUserFilter]
+        grpNameFilter:
+            Label: Filter by Extract Name
+            Controls: 
+                Row0: [txtExtractNameFilter]
+                Row1: [btnActivateFilter, btnClearFilter]
         pnlExtractMasterList:
-            Dock: Fill
             Controls: [ucoExtractMasterList]
                
-        lblFilter:
+        txtExtractNameFilter:
+            NoLabel: true
+            ColSpan: 2
+            Width: 250
+        btnActivateFilter:
+            Label: Filter
+            Action: actActivateFilter
+        btnClearFilter:
+            Label: Clear Filter
+            Action: actClearFilter
+        rgrUserFilter: {Label=Filter by User}
+            Controls: [rbtAll, rbtCreatedBy, rbtModifiedBy]
+        rbtAll: {Label=All, Action=actUserFilterSelectionChanged}
+        rbtCreatedBy: {Label=Created by, Action=actUserFilterSelectionChanged}
+            Controls:[cmbUserCreatedBy]
+        rbtModifiedBy: {Label=Modified by, Action=actUserFilterSelectionChanged}
+            Controls:[cmbUserModifiedBy]
+        cmbUserCreatedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
+        cmbUserModifiedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
         ucoExtractMasterList:
             Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
-            Dock: Fill
 
     Menu:
+        mniCreateExtract:
+            Label: &Create Extract
+            mniCreateGeneralExtract: {Label=General Extract, Action=actCreateGeneralExtract}
+            mniCreateManualExtract: {Label=Manual Extract, Action=actCreateManualExtract}
+            mniSeparator:
+            mniCreatePartnerByCityExtract: {Label=Partner by City, Action=actCreatePartnerByCityExtract}
+            mniCreatePartnerBySubscriptionExtract: {Label=Partner by Subscription, Action=actCreatePartnerBySubscriptionExtract}
+            mniCreatePartnerBySpecialTypeExtract: {Label=Partner by Special Type, Action=actCreatePartnerBySpecialTypeExtract}
+            mniSeparator:
+            mniCreatePartnerByConferenceExtract: {Label=Partner by Conference, Action=actCreatePartnerByConferenceExtract}
+            mniCreatePartnerByOutreachExtract: {Label=Partner by Outreach, Action=actCreatePartnerByOutreachExtract}
+            mniSeparator:
+            mniCreatePartnerByCommitmentExtract: {Label=Partner by Commitment, Action=actCreatePartnerByCommitmentExtract}
+            mniCreatePartnerByFieldExtract: {Label=Partner by Field, Action=actCreatePartnerByFieldExtract}
+            mniSeparator:
+            mniCreateDonorExtract:
+                Label: Donor Extract
+                mniCreateDonorByFieldExtract: {Label=Donor by Field, Action=actCreateDonorByFieldExtract}
+                mniCreateDonorByMotivationExtract: {Label=Donor by Motivation, Action=actCreateDonorByMotivationExtract}
+                mniCreateDonorByAmountExtract: {Label=Donor by Amount, Action=actCreateDonorByAmountExtract}
+                mniCreateDonorByMiscellaneousExtract: {Label=Donor by Miscellaneous, Action=actCreateDonorByMiscellaneousExtract}
+            mniCreateRecipientByFieldExtract: {Label=Recipient by Field, Action=actCreateRecipientByFieldExtract}
         mniMaintain:
             Label: &Maintain
             mniMaintainExtract: {Label=Maintain Extract, Action=actMaintainExtract}
             mniVerifyExtract: {Label=Verify and Update Extract, Action=actVerifyAndUpdateExtract}
+            mniPurgeExtracts: {Label=Purge Extracts, Action=actPurgeExtracts}
+        mniUpdatePartners:
+            Label: &Update Partners
 
     Toolbar:
-        tbbNew:
-            Label: New Extract
 

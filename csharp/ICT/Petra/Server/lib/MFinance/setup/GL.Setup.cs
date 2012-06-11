@@ -257,7 +257,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     ValidateAAnalysisType(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
                     ValidateAAnalysisTypeManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
 
-                    if (AVerificationResult.Count != 0)
+                    if (AVerificationResult.HasCriticalErrors)
                     {
                         ReturnValue = TSubmitChangesResult.scrError;
                     }

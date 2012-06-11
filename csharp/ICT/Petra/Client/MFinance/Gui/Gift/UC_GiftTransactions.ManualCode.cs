@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
 // Copyright 2004-2012 by OM International
 //
@@ -85,6 +85,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, ActiveOnly);
             //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
 
+            //add textxhanged event handler to Motivation group code
+            this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
+            this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
+
 
             //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
             //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
@@ -122,15 +126,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                //txtDetailCostCentreCode.Text
-
                 if (!FInKeyMinistryChanging)
                 {
+                    //
                     TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
 
                     long FieldNumber = Convert.ToInt64(txtField.Text);
 
                     txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
+                }
+
+                if (APartnerKey == 0)
+                {
+                    RetrieveMotivationDetailCostCentreCode();
                 }
             }
             finally
@@ -201,16 +209,95 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
             TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
+
+            if ((cmbDetailMotivationDetailCode.Count > 0) && (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty))
+            {
+                cmbDetailMotivationDetailCode.SelectedIndex = 0;
+            }
+
+            RetrieveMotivationDetailAccountCode();
+
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            {
+                RetrieveMotivationDetailCostCentreCode();
+            }
+        }
+
+        /// <summary>
+        /// Called on TextChanged event for combo
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MotivationGroupCodeChanged(object sender, EventArgs e)
+        {
+            if (cmbDetailMotivationGroupCode.Text.Trim() == string.Empty)
+            {
+                cmbDetailMotivationGroupCode.SelectedIndex = -1;
+                cmbDetailMotivationDetailCode.SelectedIndex = -1;
+            }
+        }
+
+        /// <summary>
+        /// Called on TextChanged event for combo
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MotivationDetailCodeChanged(object sender, EventArgs e)
+        {
+            if (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty)
+            {
+                txtDetailAccountCode.Text = string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// To be called on the display of a new record
+        /// </summary>
+        private void RetrieveMotivationDetailAccountCode()
+        {
+            string MotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            string MotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+            string AcctCode = string.Empty;
+
+            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
+
+            if (motivationDetail != null)
+            {
+                AcctCode = motivationDetail.AccountCode.ToString();
+            }
+
+            txtDetailAccountCode.Text = AcctCode;
+        }
+
+        private void RetrieveMotivationDetailCostCentreCode()
+        {
+            string MotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            string MotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+            string CostCentreCode = string.Empty;
+
+            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
+
+            if (motivationDetail != null)
+            {
+                CostCentreCode = motivationDetail.CostCentreCode.ToString();
+            }
+
+            txtDetailCostCentreCode.Text = CostCentreCode;
         }
 
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
+            string MotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            string MotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+
             AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                new object[] { FLedgerNumber, cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString() });
+                new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
 
             if (motivationDetail != null)
             {
-                txtDetailAccountCode.Text = motivationDetail.AccountCode;
+                RetrieveMotivationDetailAccountCode();
 
                 // TODO: calculation of cost centre also depends on the recipient partner key; can be a field key or ministry key, or determined by pm_staff_data: foreign cost centre
                 if (motivationDetail.CostCentreCode.EndsWith("S"))
@@ -219,12 +306,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     // TODO: allow to select the cost centre here, which reports to the motivation cost centre
                     //txtDetailCostCentreCode.Text =
                 }
+            }
 
-                //Wrong
-//                else
-//                {
-//                    txtDetailCostCentreCode.Text = motivationDetail.CostCentreCode;
-//                }
+            long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+
+            if (PartnerKey == 0)
+            {
+                RetrieveMotivationDetailCostCentreCode();
+            }
+            else
+            {
+                TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, PartnerKey);
+
+                long FieldNumber = Convert.ToInt64(txtField.Text);
+
+                txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
             }
         }
 
@@ -241,6 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPreviouslySelectedDetailRow == null)
             {
                 txtGiftTotal.Text = "";
+                txtBatchTotal.NumberValueDecimal = 0;
                 return;
             }
 
@@ -319,8 +416,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void DeleteDetail(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+
+            //Check if any rows exist
+            if (grdDetails.Rows.Count < 2)
             {
+                return;
+            }
+            //Check if any row is selected
+            else if ((newCurrentRowPos == -1) || (FPreviouslySelectedDetailRow == null))
+            {
+                MessageBox.Show(Catalog.GetString("No gift detail is selected to delete."),
+                    Catalog.GetString("Deletion of Gift Detail"));
                 return;
             }
 
@@ -331,7 +438,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPreviouslySelectedDetailRow.BatchNumber,
                 AGiftDetailTable.GetGiftTransactionNumberDBName(),
                 FPreviouslySelectedDetailRow.GiftTransactionNumber);
-            FMainDS.AGiftDetail.Rows.Remove(FPreviouslySelectedDetailRow);
+            FPreviouslySelectedDetailRow.Delete();
             FPreviouslySelectedDetailRow = null;
             DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
             giftDetailView.RowFilter = filterAllDetailsOfGift;
@@ -341,7 +448,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // TODO int oldGiftNumber = gift.GiftTransactionNumber;
                 // TODO int oldBatchNumber = gift.BatchNumber;
 
-                FMainDS.AGift.Rows.Remove(gift);
+                gift.Delete();
 
                 // we cannot update primary keys easily, therefore we have to do it later on the server side
 #if DISABLED
@@ -382,6 +489,64 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
             grdDetails.Refresh();
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                //If last row just deleted, select row at old position - 1
+                if (newCurrentRowPos == grdDetails.Rows.Count)
+                {
+                    newCurrentRowPos--;
+                }
+
+                grdDetails.Selection.ResetSelection(false);
+                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+                //ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else
+            {
+                pnlDetails.Enabled = false;
+                ClearControls();
+            }
+        }
+
+        private void ClearControls()
+        {
+            try
+            {
+                FPetraUtilsObject.SuppressChangeDetection = true;
+
+                txtDetailDonorKey.Text = string.Empty;
+                txtDetailReference.Clear();
+                dtpDateEntered.Clear();
+                txtGiftTotal.NumberValueDecimal = 0;
+                txtDetailGiftTransactionAmount.NumberValueDecimal = 0;
+                txtDetailRecipientKey.Text = string.Empty;
+                txtField.Text = string.Empty;
+                txtDetailAccountCode.Clear();
+                txtDetailGiftCommentOne.Clear();
+                txtDetailGiftCommentTwo.Clear();
+                txtDetailGiftCommentThree.Clear();
+                cmbDetailReceiptLetterCode.SelectedIndex = -1;
+                cmbDetailMotivationGroupCode.SelectedIndex = -1;
+                cmbDetailMotivationDetailCode.SelectedIndex = -1;
+                cmbDetailCommentOneType.SelectedIndex = -1;
+                cmbDetailCommentTwoType.SelectedIndex = -1;
+                cmbDetailCommentThreeType.SelectedIndex = -1;
+                cmbDetailMailingCode.SelectedIndex = -1;
+                cmbDetailMethodOfGivingCode.SelectedIndex = -1;
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
+                cmbMinistry.SelectedIndex = -1;
+                txtDetailCostCentreCode.Text = string.Empty;
+
+                FPetraUtilsObject.SuppressChangeDetection = false;
+            }
+            catch (Exception)
+            {
+                FPetraUtilsObject.SuppressChangeDetection = false;
+                throw;
+            }
         }
 
         /// <summary>
@@ -403,6 +568,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
                 grdDetails.Refresh();
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+
+                ShowDetails(FPreviouslySelectedDetailRow);
             }
         }
 
@@ -492,6 +659,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
                 grdDetails.Refresh();
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                RetrieveMotivationDetailAccountCode();
+                txtDetailGiftTransactionAmount.Focus();
             }
         }
 
@@ -528,14 +697,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.DetailNumber = 1;
                 newRow.DateEntered = giftRow.DateEntered;
                 newRow.DonorKey = 0;
+                newRow.MotivationGroupCode = "GIFT";
+                newRow.MotivationDetailCode = "SUPPORT";
+                FMainDS.AGiftDetail.Rows.Add(newRow);
+
                 newRow.CommentOneType = "Both";
                 newRow.CommentTwoType = "Both";
                 newRow.CommentThreeType = "Both";
-                FMainDS.AGiftDetail.Rows.Add(newRow);
-
-                // TODO: use previous gifts of donor?
-                //newRow.MotivationGroupCode = "GIFT";
-                //newRow.MotivationDetailCode = "SUPPORT";
             }
 
             return newRow;
@@ -568,11 +736,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.DonorKey = ACurrentRow.DonorKey;
                 newRow.DonorName = ACurrentRow.DonorName;
                 newRow.DateEntered = ACurrentRow.DateEntered;
+                newRow.MotivationGroupCode = "GIFT";
+                newRow.MotivationDetailCode = "SUPPORT";
                 FMainDS.AGiftDetail.Rows.Add(newRow);
 
-                // TODO: use previous gifts of donor?
-                // newRow.MotivationGroupCode = "GIFT";
-                // newRow.MotivationDetailCode = "SUPPORT";
                 newRow.CommentOneType = "Both";
                 newRow.CommentTwoType = "Both";
                 newRow.CommentThreeType = "Both";
@@ -595,6 +762,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 txtDetailGiftTransactionAmount.CurrencySymbol = batchRow.CurrencyCode;
                 txtBatchStatus.Text = batchRow.BatchStatus;
+            }
+
+            if (grdDetails.Rows.Count == 1)
+            {
+                txtBatchTotal.NumberValueDecimal = 0;
+                ClearControls();
+            }
+
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            {
+                txtDetailCostCentreCode.Text = string.Empty;
             }
 
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
@@ -625,6 +803,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 txtDetailDonorKey.Text = ((GiftBatchTDSAGiftDetailRow)ARow).DonorKey.ToString();
+            }
+
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            {
+                txtDetailCostCentreCode.Text = string.Empty;
             }
 
             UpdateControlsProtection(ARow);

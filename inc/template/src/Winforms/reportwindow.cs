@@ -306,7 +306,12 @@ ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Checked);
 ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.GetSelectedString());
 
 {##TCMBAUTOPOPULATEDSETCONTROLS}
+{#IFDEF CLEARIFSETTINGEMPTY}
+{#CONTROLNAME}.SetSelectedString(AParameters.Get("{#PARAMNAME}").ToString(), -1);
+{#ENDIF CLEARIFSETTINGEMPTY}
+{#IFNDEF CLEARIFSETTINGEMPTY}
 {#CONTROLNAME}.SetSelectedString(AParameters.Get("{#PARAMNAME}").ToString());
+{#ENDIFN CLEARIFSETTINGEMPTY}
 
 {##COMBOBOXREADCONTROLS}
 if (this.{#CONTROLNAME}.SelectedItem != null)
@@ -349,6 +354,23 @@ ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.GetCheckedStringList());
 ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Date);
 
 {##TTXTPETRADATESETCONTROLS}
+{#IFDEF CLEARIFSETTINGEMPTY}
+if (!AParameters.Get("{#PARAMNAME}").IsNil())
+{
+    DateTime {#CONTROLNAME}Date = AParameters.Get("{#PARAMNAME}").ToDate();
+    if (({#CONTROLNAME}Date <= DateTime.MinValue)
+        || ({#CONTROLNAME}Date >= DateTime.MaxValue))
+    {
+        {#CONTROLNAME}Date = DateTime.Now;
+    }
+    {#CONTROLNAME}.Date = {#CONTROLNAME}Date;
+}
+else
+{
+    {#CONTROLNAME}.Text = "";
+}
+{#ENDIF CLEARIFSETTINGEMPTY}
+{#IFNDEF CLEARIFSETTINGEMPTY}
 DateTime {#CONTROLNAME}Date = AParameters.Get("{#PARAMNAME}").ToDate();
 if (({#CONTROLNAME}Date <= DateTime.MinValue)
     || ({#CONTROLNAME}Date >= DateTime.MaxValue))
@@ -356,3 +378,4 @@ if (({#CONTROLNAME}Date <= DateTime.MinValue)
     {#CONTROLNAME}Date = DateTime.Now;
 }
 {#CONTROLNAME}.Date = {#CONTROLNAME}Date;
+{#ENDIFN CLEARIFSETTINGEMPTY}

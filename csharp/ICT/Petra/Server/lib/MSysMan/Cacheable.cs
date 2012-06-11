@@ -160,15 +160,15 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
 
                     switch(ACacheableTable)
                     {
-                        case TCacheableSysManTablesEnum.UserList:
-                        {
-                            DataTable TmpTable = SUserAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheableSysManTablesEnum.LanguageSpecificList:
                         {
                             DataTable TmpTable = SLanguageSpecificAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableSysManTablesEnum.UserList:
+                        {
+                            DataTable TmpTable = GetUserListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -238,30 +238,13 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
                 {
                     switch (ACacheableTable)
                     {
-                        case TCacheableSysManTablesEnum.UserList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                ValidateUserList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateUserListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-
-                                if (AVerificationResult.Count == 0)
-                                {
-                                    if (SUserAccess.SubmitChanges((SUserTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
                         case TCacheableSysManTablesEnum.LanguageSpecificList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
                                 ValidateLanguageSpecificList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateLanguageSpecificListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (SLanguageSpecificAccess.SubmitChanges((SLanguageSpecificTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -322,15 +305,28 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
 
 #region Data Validation
 
-        partial void ValidateUserList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateUserListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLanguageSpecificList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLanguageSpecificListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
+
+        private DataTable GetUserListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+			DataColumn LastAndFirstNameColumn;
+            DataTable TmpTable = SUserAccess.LoadAll(AReadTransaction);
+
+	        // add column to display a combination of last and first name
+	        LastAndFirstNameColumn = new DataColumn();
+	        LastAndFirstNameColumn.DataType = System.Type.GetType("System.String");
+	        LastAndFirstNameColumn.ColumnName = MSysManConstants.USER_LAST_AND_FIRST_NAME_COLUMNNAME;
+	        LastAndFirstNameColumn.Expression = string.Format("{0} + ' ' + {1}", SUserTable.GetFirstNameDBName(), SUserTable.GetLastNameDBName());
+	        TmpTable.Columns.Add(LastAndFirstNameColumn);
+            
+            return TmpTable;
+#endregion ManualCode
+        }
     }
 }
