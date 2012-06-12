@@ -407,7 +407,7 @@ public class TWriteSQL
         {
             result += String.Format("  {0} boolean", field.strName);
         }
-        else if ((field.strType == "number") && (field.iLength == 10) && (field.iDecimals == 0))
+        else if ((field.strType == "number") && (field.iLength == 10) && (field.iDecimals == -1))
         {
             result += String.Format("  {0} bigint", field.strName);
         }
@@ -436,7 +436,7 @@ public class TWriteSQL
         }
 
         // According to the type we will add parameters
-        if ((field.strType == "number") && (field.iLength == 10) && (field.iDecimals == 0))
+        if ((field.strType == "number") && (field.iLength == 10) && (field.iDecimals == -1))
         {
             // no parameter for bigints
         }
