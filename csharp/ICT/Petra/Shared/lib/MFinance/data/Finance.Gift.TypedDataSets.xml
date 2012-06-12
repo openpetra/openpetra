@@ -59,6 +59,7 @@
         </Table>
         <Table sqltable="p_banking_details">
             <CustomField name="PartnerKey" type="Int64"/>
+            <CustomField name="BankSortCode" type="string"/>
         </Table>
         <Table sqltable="a_ep_statement"/>
         <Table sqltable="a_ep_match">
