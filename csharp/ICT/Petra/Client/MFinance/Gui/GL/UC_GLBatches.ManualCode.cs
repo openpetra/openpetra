@@ -118,6 +118,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 txtDetailBatchControlTotal.CurrencySymbol = ledger.BaseCurrency;
             }
+            else
+            {
+				EnableButtonControl(false);
+            }
         }
 
         private void UpdateChangeableStatus(bool batchRowIsSelected)
@@ -176,6 +180,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Journals);
         }
 
+        
+        /// <summary>
+        /// Controls the enabled status of the Cancel, Test and Post buttons
+        /// </summary>
+        /// <param name="AEnable"></param>
+        private void EnableButtonControl(bool AEnable)
+        {
+			btnPostBatch.Enabled = AEnable;
+            btnTestPostBatch.Enabled = AEnable;
+            btnCancel.Enabled = AEnable;
+        }
+        
         /// <summary>
         /// add a new batch
         /// </summary>
@@ -187,10 +203,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 rbtEditing.Checked = true;
             }
-        	
-            btnPostBatch.Enabled = true;
-            btnTestPostBatch.Enabled = true;
             
+            EnableButtonControl(true);
+        	
         	FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
             ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
@@ -306,12 +321,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 		            else
 		            {
 		                FPreviouslySelectedDetailRow = null;
-		                btnPostBatch.Enabled = false;
-		                btnTestPostBatch.Enabled = false;
+			            EnableButtonControl(false);
 		            }
                 }
 
-                LoadBatches(FLedgerNumber);
+                //LoadBatches(FLedgerNumber);
             }
         }
 
@@ -324,7 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FPreviouslySelectedDetailRow.BatchRunningTotal;
         }
 
-        private bool SaveBatch()
+        private bool SaveBatchForPosting()
         {
             if (FPetraUtilsObject.HasChanges)
             {
@@ -347,7 +361,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
 
-            if (!SaveBatch())
+            if (!SaveBatchForPosting())
             {
                 return;
             }
@@ -402,7 +416,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             TVerificationResultCollection Verifications;
 
-            if (!SaveBatch())
+            if (!SaveBatchForPosting())
             {
                 return;
             }
@@ -502,8 +516,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // UpdateChangeableStatus();
                     
                     bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
-                    btnPostBatch.Enabled = enablePosting;
-                    btnTestPostBatch.Enabled = enablePosting;
+		            EnableButtonControl(enablePosting);
                 }
             }
         }
