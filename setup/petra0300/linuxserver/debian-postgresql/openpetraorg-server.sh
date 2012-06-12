@@ -83,7 +83,7 @@ menu() {
 # backup the postgresql database
 backup() {
     echo `date` "Writing to " $backupfile
-    su $userName -c "pg_dump -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
+    su $userName -c "pg_dump --data-only -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
 
