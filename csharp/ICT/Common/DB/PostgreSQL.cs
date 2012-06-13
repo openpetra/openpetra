@@ -423,7 +423,14 @@ namespace Ict.Common.DB
             Int32 AMaxRecords,
             string ADataTableName)
         {
-            ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+            if ((AStartRecord > 0) && (AMaxRecords > 0))
+            {
+                ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+            }
+            else
+            {
+                ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataSet, ADataTableName);
+            }
         }
 
         /// <summary>
@@ -439,7 +446,14 @@ namespace Ict.Common.DB
             Int32 AStartRecord,
             Int32 AMaxRecords)
         {
-            ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataTable);
+            if ((AStartRecord > 0) && (AMaxRecords > 0))
+            {
+                ((NpgsqlDataAdapter)TheAdapter).Fill(AStartRecord, AMaxRecords, AFillDataTable);
+            }
+            else
+            {
+                ((NpgsqlDataAdapter)TheAdapter).Fill(AFillDataTable);
+            }
         }
 
         /// <summary>

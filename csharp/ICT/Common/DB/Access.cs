@@ -1191,6 +1191,15 @@ namespace Ict.Common.DB
                 IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
                 TheAdapter.SelectCommand = Command(ASqlStatement, AReadTransaction, AParametersArray);
                 FDataBaseRDBMS.FillAdapter(TheAdapter, ref ATypedDataTable, AStartRecord, AMaxRecords);
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log(((this.GetType().FullName + ".Select: finished filling IDbDataAdapter(DataTable '" +
+                                   ATypedDataTable.TableName) + "'). DT Row Count: " + ATypedDataTable.Rows.Count.ToString()));
+#if WITH_POSTGRESQL_LOGGING
+                    NpgsqlEventLog.Level = LogLevel.None;
+#endif
+                }
             }
             catch (Exception exp)
             {
