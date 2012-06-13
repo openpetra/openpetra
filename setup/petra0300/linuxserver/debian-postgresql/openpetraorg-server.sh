@@ -83,7 +83,9 @@ menu() {
 # backup the postgresql database
 backup() {
     echo `date` "Writing to " $backupfile
-    su $userName -c "pg_dump --data-only -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
+    # loading of this dump will show errors about existing data tables etc.
+    # could have 2 calls: --data-only and --schema-only.
+    su $userName -c "pg_dump -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME | gzip > $backupfile"
     echo `date` "Finished!"
 }
 
