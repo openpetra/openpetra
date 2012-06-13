@@ -1,4 +1,4 @@
-SELECT PUB_a_gift_detail.*, PUB_a_gift.p_donor_key_n AS DonorKey, PUB_p_partner.p_partner_short_name_c AS DonorShortName, RecipientPartner.p_partner_short_name_c AS RecipientDescription, 0 AS AlreadyMatched, PUB_a_gift_batch.a_batch_status_c AS BatchStatus
+SELECT PUB_a_gift_detail.*, PUB_a_gift.p_donor_key_n AS DonorKey, PUB_p_partner.p_partner_short_name_c AS DonorShortName, RecipientPartner.p_partner_short_name_c AS RecipientDescription, false AS AlreadyMatched, PUB_a_gift_batch.a_batch_status_c AS BatchStatus
 FROM PUB_a_gift_batch, PUB_a_gift, PUB_a_gift_detail, PUB_p_partner, PUB_p_partner AS RecipientPartner
 WHERE PUB_a_gift_batch.a_ledger_number_i = ?
 AND PUB_a_gift_batch.a_batch_status_c <> 'Cancelled'

@@ -51,12 +51,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport
         {
             int stmtCounter = 0;
 
-            DataView GiftDetailByAmountAndDonor = new DataView(AMainDS.AGiftDetail,
-                string.Empty,
-                AGiftDetailTable.GetGiftAmountDBName() + "," +
-                BankImportTDSAGiftDetailTable.GetDonorKeyDBName(),
-                DataViewRowState.CurrentRows);
-
             // go through all statements in the dataset, and find gift matches for those days
             foreach (AEpStatementRow stmt in AMainDS.AEpStatement.Rows)
             {
@@ -84,15 +78,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
                 // Get all gifts at given date
                 GetGiftsByDate(stmt.LedgerNumber, AMainDS, stmt.Date);
-                TLogging.Log("after GetGiftsByDate");
+
+                // create the dataview only after loading, otherwise loading is much slower
+                DataView GiftDetailByAmountAndDonor = new DataView(AMainDS.AGiftDetail,
+                    string.Empty,
+                    AGiftDetailTable.GetGiftAmountDBName() + "," +
+                    BankImportTDSAGiftDetailTable.GetDonorKeyDBName(),
+                    DataViewRowState.CurrentRows);
 
                 AMainDS.AEpTransaction.DefaultView.Sort = AEpTransactionTable.GetStatementKeyDBName();
                 AMainDS.PBankingDetails.DefaultView.Sort = BankImportTDSPBankingDetailsTable.GetBankSortCodeDBName() + "," +
                                                            BankImportTDSPBankingDetailsTable.GetBankAccountNumberDBName();
 
                 DataRowView[] transactionsOfStatement = AMainDS.AEpTransaction.DefaultView.FindRows(stmt.StatementKey);
-
-                TLogging.Log("before transaction loop");
 
                 foreach (DataRowView rv in transactionsOfStatement)
                 {
@@ -124,7 +122,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 }
 
                 if ((SelectedGiftBatch == -1)
-                    || ((AMainDS.AEpTransaction.DefaultView.Count > 2) && (CountMatches < AMainDS.AEpTransaction.DefaultView.Count / 2)))
+                    || ((transactionsOfStatement.Length > 2) && (CountMatches < transactionsOfStatement.Length / 2)))
                 {
                     // continue to next statement. we cannot find the right gift batch
                     continue;
@@ -132,7 +130,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
                 TLogging.Log("before MatchTransactionsToGiftBatch");
 
-                while (MatchTransactionsToGiftBatch(AMainDS, SelectedGiftBatch, postedBatch))
+                while (MatchTransactionsToGiftBatch(AMainDS,
+                           transactionsOfStatement,
+                           SelectedGiftBatch, postedBatch))
                 {
                 }
 
@@ -159,15 +159,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             parameters[0].Value = ALedgerNumber;
             parameters[1] = new OdbcParameter("ADateEffective", OdbcType.Date);
             parameters[1].Value = ADateEffective;
-            TLogging.Log("getgiftsbydate before select giftdetail " + AMainDS.AGiftDetail.Rows.Count.ToString());
-            DataTable test = DBAccess.GDBAccessObj.SelectDT(stmt, AMainDS.AGiftDetail.TableName, transaction, parameters);
-            TLogging.Log("getgiftsbydate after test");
 
-            AMainDS.AGiftDetail.Merge(test);
-            TLogging.Log("getgiftsbydate after test2 " + AMainDS.AGiftDetail[0].RecipientKey.ToString());
-
-            DBAccess.GDBAccessObj.Select(AMainDS, stmt, AMainDS.AGiftDetail.TableName, transaction, parameters);
-            TLogging.Log("getgiftsbydate after select giftdetail");
+            DBAccess.GDBAccessObj.SelectDT(AMainDS.AGiftDetail, stmt, transaction, parameters, 0, 0);
 
             // get PartnerKey and banking details (most important BankAccountNumber) for all donations on the given date
             stmt = TDataBase.ReadSqlFile("BankImport.GetBankAccountByDate.sql");
@@ -200,22 +193,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             return -1;
         }
 
-        private static void MarkTransactionMatched(BankImportTDS AMainDS,
+        private static void MarkTransactionMatched(
+            BankImportTDS AMainDS,
+            DataView AGiftDetailView,
             ref BankImportTDSAEpTransactionRow transactionRow,
             BankImportTDSAGiftDetailRow giftDetail, bool AMatchAllGiftDetails)
         {
             if (AMatchAllGiftDetails)
             {
                 // recursive call, for each gift detail that is matched by this transaction
-                AMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
-                                                            giftDetail.BatchNumber.ToString() +
-                                                            " AND " + BankImportTDSAGiftDetailTable.GetGiftTransactionNumberDBName() + " = " +
-                                                            giftDetail.GiftTransactionNumber.ToString() +
-                                                            " AND AlreadyMatched = false";
+                DataRowView[] rows = AGiftDetailView.FindRows(new object[] { giftDetail.BatchNumber, giftDetail.GiftTransactionNumber, false });
 
-                foreach (DataRowView rv in AMainDS.AGiftDetail.DefaultView)
+                foreach (DataRowView rv in rows)
                 {
-                    MarkTransactionMatched(AMainDS, ref transactionRow, (BankImportTDSAGiftDetailRow)rv.Row, false);
+                    MarkTransactionMatched(AMainDS, AGiftDetailView, ref transactionRow, (BankImportTDSAGiftDetailRow)rv.Row, false);
                 }
 
                 return;
@@ -313,7 +304,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport
         /// match imported transactions from bank statement to an existing gift batch
         /// </summary>
         /// <returns>true while new matches are found</returns>
-        private static bool MatchTransactionsToGiftBatch(BankImportTDS AMainDS, Int32 ASelectedGiftBatch, bool APostedBatch)
+        private static bool MatchTransactionsToGiftBatch(BankImportTDS AMainDS,
+            DataRowView[] AFilteredTransactions,
+            Int32 ASelectedGiftBatch,
+            bool APostedBatch)
         {
             bool newMatchFound = false;
 
@@ -338,7 +332,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 AGiftDetailTable.GetGiftTransactionNumberDBName(),
                 DataViewRowState.CurrentRows);
 
-            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+            DataView GiftDetailByGiftTransactionNumberMatchStatus = new DataView(AMainDS.AGiftDetail,
+                string.Empty,
+                AGiftDetailTable.GetBatchNumberDBName() + "," +
+                AGiftDetailTable.GetGiftTransactionNumberDBName() + "," +
+                BankImportTDSAGiftDetailTable.GetAlreadyMatchedDBName(),
+                DataViewRowState.CurrentRows);
+
+            DataView GiftDetailByBatchNumberMatchStatus = new DataView(AMainDS.AGiftDetail,
+                string.Empty,
+                AGiftDetailTable.GetBatchNumberDBName() + "," +
+                BankImportTDSAGiftDetailTable.GetAlreadyMatchedDBName(),
+                DataViewRowState.CurrentRows);
+
+            foreach (DataRowView rv in AFilteredTransactions)
             {
                 BankImportTDSAEpTransactionRow transaction = (BankImportTDSAEpTransactionRow)rv.Row;
 
@@ -356,7 +363,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                     {
                         // found exactly one match
                         newMatchFound = true;
-                        MarkTransactionMatched(AMainDS, ref transaction, (BankImportTDSAGiftDetailRow)GiftDetailsWithAmount[0].Row, false);
+                        MarkTransactionMatched(AMainDS,
+                            GiftDetailByGiftTransactionNumberMatchStatus,
+                            ref transaction,
+                            (BankImportTDSAGiftDetailRow)GiftDetailsWithAmount[0].Row,
+                            false);
                     }
                     else if (GiftDetailsWithAmount.Length > 1)
                     {
@@ -382,7 +393,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                         {
                             // found a match
                             newMatchFound = true;
-                            MarkTransactionMatched(AMainDS, ref transaction, MaxRow, false);
+                            MarkTransactionMatched(AMainDS, GiftDetailByGiftTransactionNumberMatchStatus, ref transaction, MaxRow, false);
                         }
                     }
                     else if (GiftDetailsWithAmount.Length == 0)
@@ -427,6 +438,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                                 // found a match
                                 newMatchFound = true;
                                 MarkTransactionMatched(AMainDS,
+                                    GiftDetailByGiftTransactionNumberMatchStatus,
                                     ref transaction,
                                     matchingGiftDetail,
                                     Convert.ToDecimal(matchingGiftDetail.GiftTransactionAmount) != Convert.ToDecimal(transaction.TransactionAmount));
@@ -446,13 +458,12 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
                     if (stmtRow.MatchAction != Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED)
                     {
-                        AMainDS.AGiftDetail.DefaultView.RowFilter = BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
-                                                                    ASelectedGiftBatch.ToString() +
-                                                                    " AND AlreadyMatched = false";
+                        DataRowView[] filteredRows = GiftDetailByBatchNumberMatchStatus.FindRows(new object[] { ASelectedGiftBatch, false });
+
                         BankImportTDSAGiftDetailRow BestMatch = null;
                         int BestMatchNumber = 0;
 
-                        foreach (DataRowView rv in AMainDS.AGiftDetail.DefaultView)
+                        foreach (DataRowView rv in filteredRows)
                         {
                             BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
 
@@ -473,6 +484,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                         {
                             newMatchFound = true;
                             MarkTransactionMatched(AMainDS,
+                                GiftDetailByGiftTransactionNumberMatchStatus,
                                 ref stmtRow,
                                 BestMatch,
                                 Convert.ToDecimal(BestMatch.GiftTransactionAmount) != Convert.ToDecimal(stmtRow.TransactionAmount));
@@ -526,58 +538,32 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             return matchtext;
         }
 
-        /// <summary>
-        /// return the filter for GiftDetail to show all the gifts associated with the given transaction;
-        /// this is useful after a bank statement has been matched against an imported gift batch, to train the system
-        /// </summary>
-        /// <returns>the filter; empty string if no transactions selected</returns>
-        private static string FilterForMatchedGiftTransactions(BankImportTDSAEpTransactionRow ATransactionRow, Int32 ASelectedGiftBatch)
-        {
-            if (ATransactionRow.IsGiftTransactionNumberNull())
-            {
-                return String.Empty;
-            }
-
-            string Filter = BankImportTDSAGiftDetailTable.GetGiftTransactionNumberDBName() + " = " +
-                            ATransactionRow.GiftTransactionNumber;
-
-            if (ATransactionRow.GiftDetailNumber != -1)
-            {
-                Filter += " AND " + BankImportTDSAGiftDetailTable.GetDetailNumberDBName() + " = " +
-                          ATransactionRow.GiftDetailNumber;
-            }
-
-            return BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + " = " +
-                   ASelectedGiftBatch.ToString() +
-                   " AND AlreadyMatched = true " +
-                   " AND " + Filter;
-        }
-
         /// add new (or modified) matches
-        private static void CreateNewMatches(BankImportTDS AMainDS, BankImportTDS AMatchDS, string AMatchText)
+        private static Int32 CreateNewMatches(BankImportTDS AMainDS, DataView AMatchView,
+            DataRowView[] AGiftDetails,
+            string AMatchText)
         {
+            AEpMatchRow newMatch = null;
+
             // create a match with the same matchtext for each gift detail (split gift)
-            foreach (DataRowView gv in AMainDS.AGiftDetail.DefaultView)
+            foreach (DataRowView gv in AGiftDetails)
             {
                 BankImportTDSAGiftDetailRow giftRow = (BankImportTDSAGiftDetailRow)gv.Row;
 
-                AEpMatchRow newMatch;
+                DataRowView[] FilteredMatches = AMatchView.FindRows(new object[] { AMatchText, giftRow.DetailNumber });
 
-                AMatchDS.AEpMatch.DefaultView.RowFilter = AEpMatchTable.GetMatchTextDBName() + " = '" + AMatchText + "' and " +
-                                                          AEpMatchTable.GetDetailDBName() + " = " + giftRow.DetailNumber.ToString();
-
-                if (AMatchDS.AEpMatch.DefaultView.Count == 0)
+                if (FilteredMatches.Length == 0)
                 {
-                    newMatch = AMatchDS.AEpMatch.NewRowTyped();
+                    newMatch = AMainDS.AEpMatch.NewRowTyped();
 
                     // matchkey will be set properly on save, by sequence
-                    newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + 1);
+                    newMatch.EpMatchKey = -1 * (AMainDS.AEpMatch.Count + 1);
                     newMatch.MatchText = AMatchText;
-                    AMatchDS.AEpMatch.Rows.Add(newMatch);
+                    AMainDS.AEpMatch.Rows.Add(newMatch);
                 }
                 else
                 {
-                    newMatch = (AEpMatchRow)AMatchDS.AEpMatch.DefaultView[0].Row;
+                    newMatch = (AEpMatchRow)FilteredMatches[0].Row;
                 }
 
                 newMatch.Detail = giftRow.DetailNumber;
@@ -602,9 +588,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 newMatch.ChargeFlag = giftRow.ChargeFlag;
                 newMatch.ConfidentialGiftFlag = giftRow.ConfidentialGiftFlag;
                 newMatch.GiftTransactionAmount = giftRow.GiftTransactionAmount;
-
-                AMatchDS.AEpMatch.DefaultView.RowFilter = "";
             }
+
+            return newMatch.EpMatchKey;
         }
 
         /// <summary>
@@ -612,42 +598,68 @@ namespace Ict.Petra.Server.MFinance.ImportExport
         /// </summary>
         private static void StoreCurrentMatches(BankImportTDS AMainDS, AEpStatementRow ACurrentStatement, Int32 ASelectedGiftBatch)
         {
-            TDBTransaction dbtransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            // for all matched FMainDS.AEpTransactions
-            AMainDS.AEpTransaction.DefaultView.RowFilter +=
-                String.Format("{0}={1} AND {2}='{3}'",
-                    AEpTransactionTable.GetStatementKeyDBName(),
-                    ACurrentStatement.StatementKey,
-                    BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
-                    Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED);
-
-            BankImportTDS MatchDS = new BankImportTDS();
+            TDBTransaction dbtransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // TODO: would it help not to load all?
-            AEpMatchAccess.LoadViaALedger(MatchDS, ACurrentStatement.LedgerNumber, dbtransaction);
+            AEpMatchAccess.LoadViaALedger(AMainDS, ACurrentStatement.LedgerNumber, dbtransaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
-            MatchDS.AEpMatch.AcceptChanges();
+            TLogging.Log("before acceptchanges load matches");
+            AMainDS.AEpMatch.AcceptChanges();
+            TLogging.Log("after acceptchanges load matches");
 
-            foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
+            DataView MatchesByTextAndDetail = new DataView(
+                AMainDS.AEpMatch, string.Empty,
+                AEpMatchTable.GetMatchTextDBName() + "," + AEpMatchTable.GetDetailDBName(),
+                DataViewRowState.CurrentRows);
+
+            DataView GiftDetailView = new DataView(
+                AMainDS.AGiftDetail, string.Empty,
+                BankImportTDSAGiftDetailTable.GetBatchNumberDBName() + "," +
+                BankImportTDSAGiftDetailTable.GetGiftTransactionNumberDBName() + "," +
+                BankImportTDSAGiftDetailTable.GetDetailNumberDBName() + "," +
+                BankImportTDSAGiftDetailTable.GetAlreadyMatchedDBName(),
+                DataViewRowState.CurrentRows);
+
+            // for all matched FMainDS.AEpTransactions
+            DataView MatchedTransactionsView = new DataView(AMainDS.AEpTransaction,
+                string.Empty,
+                AEpTransactionTable.GetStatementKeyDBName() + "," +
+                BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
+                DataViewRowState.CurrentRows);
+            DataRowView[] matchedTransactions =
+                MatchedTransactionsView.FindRows(new object[] {
+                        ACurrentStatement.StatementKey,
+                        Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED
+                    });
+
+            foreach (DataRowView rv in matchedTransactions)
             {
                 BankImportTDSAEpTransactionRow tr = (BankImportTDSAEpTransactionRow)rv.Row;
-
-                // get the gift details assigned to this transaction
-                AMainDS.AGiftDetail.DefaultView.RowFilter = FilterForMatchedGiftTransactions(tr, ASelectedGiftBatch);
 
                 // create a match text which uniquely identifies this transaction
                 string MatchText = CalculateMatchText(ACurrentStatement.BankAccountCode, tr);
 
-                // add new (or modified) matches
-                CreateNewMatches(AMainDS, MatchDS, MatchText);
+                // get the gift details assigned to this transaction
+                DataRowView[] FilteredGiftDetails =
+                    GiftDetailView.FindRows(
+                        new object[] {
+                            tr.GiftBatchNumber,
+                            tr.GiftTransactionNumber,
+                            tr.GiftDetailNumber,
+                            true
+                        });
 
-                tr.EpMatchKey = ((AEpMatchRow)MatchDS.AEpMatch.DefaultView[0].Row).EpMatchKey;
+                // add new (or modified) matches
+                tr.EpMatchKey = CreateNewMatches(AMainDS, MatchesByTextAndDetail, FilteredGiftDetails, MatchText);
             }
 
             TVerificationResultCollection Verification;
-            AEpMatchAccess.SubmitChanges(MatchDS.AEpMatch.GetChangesTyped(), dbtransaction, out Verification);
-            DBAccess.GDBAccessObj.CommitTransaction();
+            BankImportTDSAccess.SubmitChanges(AMainDS, out Verification);
+
+            TLogging.Log("before acceptchanges after saving");
+            AMainDS.AcceptChanges();
+            TLogging.Log("after acceptchanges after saving");
         }
     }
 }
