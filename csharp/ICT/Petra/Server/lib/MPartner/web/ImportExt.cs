@@ -1127,7 +1127,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             StaffDataRow.Key = ReadInt64();
             StaffDataRow.StartOfCommitment = ReadDate();
             StaffDataRow.StartDateApprox = ReadBoolean();
-            StaffDataRow.EndOfCommitment = ReadNullableDate();
+            StaffDataRow.EndOfCommitment = ReadDate();
             StaffDataRow.StatusCode = ReadString();
             StaffDataRow.ReceivingField = ReadInt64();
             StaffDataRow.HomeOffice = ReadInt64();
@@ -1213,8 +1213,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PastExperienceRow.SiteKey = ReadInt64();
             PastExperienceRow.Key = ReadInt64();
             PastExperienceRow.PrevLocation = ReadString();
-            PastExperienceRow.StartDate = ReadNullableDate();
-            PastExperienceRow.EndDate = ReadNullableDate();
+            PastExperienceRow.StartDate = ReadDate();
+            PastExperienceRow.EndDate = ReadDate();
             PastExperienceRow.PrevWorkHere = ReadBoolean();
             PastExperienceRow.PrevWork = ReadBoolean();
             PastExperienceRow.OtherOrganisation = ReadString();
