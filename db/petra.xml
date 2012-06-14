@@ -173,14 +173,6 @@
                 columnlabel="Country Name"
                 help="Enter the full name of the country"
                 notnull="yes"/>
-    <tablefield name="p_nationality_name_c"
-                type="varchar"
-                descr="The nationality of people in this country"
-                format="X(40)"
-                label="Nationality Name"
-                columnlabel="Nationality Name"
-                help="Enter the nationality of people from this country"
-                notnull="yes"/>
     <tablefield name="p_undercover_l"
                 type="bit"
                 descr="Describes if the country is politically sensitive."
