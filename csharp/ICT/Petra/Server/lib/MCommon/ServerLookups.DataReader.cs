@@ -65,14 +65,17 @@ namespace Ict.Petra.Server.MCommon.DataReader
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
             // TODO: check access permissions for the current user
-
+            
+            bool NewTransaction = false;
             TDBTransaction ReadTransaction;
 
             TTypedDataTable tempTable = null;
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead, 5);
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead, 
+                        TEnforceIsolationLevel.eilMinimum,
+                        out NewTransaction);                                                                                   
 
                 // TODO: auto generate
                 if (ATablename == AApSupplierTable.GetTableDBName())
@@ -164,19 +167,28 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 }
                 else
                 {
-                    throw new Exception("TCommonDataReader.LoadData: unknown table " + ATablename);
+                    throw new Exception("TCommonDataReader.GetData: unknown table " + ATablename);
                 }
             }
             catch (Exception Exp)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.Log("TCommonDataReader.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
+                TLogging.Log("TCommonDataReader.GetData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                 TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
                 throw Exp;
             }
             finally
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+#if DEBUGMODE
+                    if (TLogging.DL >= 7)
+                    {
+                        Console.WriteLine("TCommonDataReader.GetData: committed own transaction.");
+                    }
+#endif
+                }
             }
 
             // Accept row changes here so that the Client gets 'unmodified' rows
