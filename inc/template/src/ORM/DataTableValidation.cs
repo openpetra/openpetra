@@ -30,6 +30,9 @@ public class {#TABLENAME}Validation
     /// <summary>
     /// Validates a row in the {#TABLENAME} DataTable.
     /// </summary>
+{#IFNDEF VALIDATECOLUMNS}
+    /// <remarks>No automatic data validation code was generated for this DB Table.</remarks>
+{#ENDIFN VALIDATECOLUMNS}
     /// <param name="AContext">Context that describes where the data validation failed.</param>
     /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
     /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
@@ -39,11 +42,16 @@ public class {#TABLENAME}Validation
     public static void Validate(object AContext, {#TABLENAME}Row ARow,
         ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
     {
+{#IFDEF VALIDATECOLUMNS}
         DataColumn ValidationColumn;
         TValidationControlsData ValidationControlsData;
         TVerificationResult VerificationResult;
 
         {#VALIDATECOLUMNS}
+{#ENDIF VALIDATECOLUMNS}
+{#IFNDEF VALIDATECOLUMNS}
+        // No automatic data validation code was generated for this DB Table.
+{#ENDIFN VALIDATECOLUMNS}
     }
 
     /// <summary>
@@ -76,6 +84,8 @@ public class {#TABLENAME}Validation
 }
 
 {##VALIDATECOLUMN}
+
+// {#COLUMNSPECIFICCOMMENT}
 ValidationColumn = ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id];
 
 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))

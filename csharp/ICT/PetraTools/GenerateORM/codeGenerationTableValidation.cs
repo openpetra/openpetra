@@ -50,16 +50,20 @@ namespace Ict.Tools.CodeGeneration.DataStore
         public static void InsertTableValidation(ProcessTemplate Template, TTable currentTable, TTable origTable, string WhereToInsert)
         {
             ProcessTemplate snippet = Template.GetSnippet("TABLEVALIDATION");
-
+            string ColumnSpecificCommentPart;
+            
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
-
+            
             foreach (TTableField col in currentTable.grpTableField)
             {
                 ProcessTemplate columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                 columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
-                if (!col.bNotNull)
+                
+                if ((col.bNotNull)
+                    || (col.bPartOfPrimKey)
+                    || (col.bPartOfFirstUniqueKey))
                 {
                     if (col.GetDotNetType().Contains("String"))
                     {
@@ -76,6 +80,22 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
                     }
+                    
+                   
+                    if (col.bPartOfPrimKey)
+                    {
+                        ColumnSpecificCommentPart = "(it is part of the Primary Key) and must not be an empty string!";
+                    }
+                    else if (col.bPartOfFirstUniqueKey)
+                    {
+                        ColumnSpecificCommentPart = "(it is part of the first Unique Key) and must not be an empty string!";
+                    }
+                    else
+                    {
+                        ColumnSpecificCommentPart = "(NOT NULL constraint)";    
+                    }
+                    
+                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' must have a value " + ColumnSpecificCommentPart);    
                 }
 
                 // only insert checks for column if there are any
