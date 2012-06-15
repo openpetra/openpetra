@@ -86,8 +86,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
-            dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
-            dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
+            //dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
+            //dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
             txtDetailBatchControlTotal.Enabled = false;
         }
 
@@ -149,6 +149,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        
+        private void ValidateDataManual(ABatchRow ARow)
+        {
+        	
+        }
+        
+        private void ValidateDataDetailsManual(ABatchRow ARow)
+        {
+        	
+        }
+        
         private void ShowDetailsManual(ABatchRow ARow)
         {
             UpdateChangeableStatus(ARow != null);
@@ -366,6 +377,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            //TODO: Correct this if needed
+			DateTime StartDateCurrentPeriod;
+			DateTime EndDateLastForwardingPeriod;
+			
+			TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(FMainDS.ALedger[0].LedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod);
+
+			if (dtpDetailDateEffective.Date < StartDateCurrentPeriod || dtpDetailDateEffective.Date > EndDateLastForwardingPeriod)
+			{
+				MessageBox.Show(String.Format(Catalog.GetString("The Date Effective is outside the allowable period range. Enter a date betweenn {0:d} and {1:d}."),
+				                             StartDateCurrentPeriod,
+				                            EndDateLastForwardingPeriod));
+				
+				return;
+			}
+			
+            
             if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
                         FSelectedBatchNumber),
                     Catalog.GetString("Question"),
