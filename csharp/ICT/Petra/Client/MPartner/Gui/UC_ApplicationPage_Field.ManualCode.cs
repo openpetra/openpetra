@@ -41,6 +41,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         // <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         //private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
+	    /// <summary>event to signalize change in field applied for</summary>
+	    public event TDelegatePartnerChanged ApplicationFieldChanged;
+        
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -120,6 +123,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             //TODO
         }
 
+        private void ProcessApplicationFieldChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)
+        {
+        	// trigger event so other controls can react to it
+        	this.ApplicationFieldChanged(APartnerKey, APartnerShortName, AValidSelection);
+        }
+        
         #endregion
     }
 }

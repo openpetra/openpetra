@@ -12,17 +12,19 @@ RootNode:
         pnlDetails:
             Controls: [grpField, grpPlacement]
             Dock: Fill
-        grpField: {NoLabel=true}
+        grpField: {NoLabel=true, Stretch=horizontally}
             Controls: 
                 Row0: [txtField]
                 Row1: [dtpAvailableFrom, dtpAvailableTo]
-        grpPlacement: {NoLabel=true}
+        grpPlacement: {NoLabel=true, Stretch=horizontally}
             Controls: 
-                Row0: [txtPlacementPerson]
+                Row0: [cmbApplicationType]
+                Row1: [txtPlacementPerson]
               
-        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, ColSpan=2}
+        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, ColSpan=2, OnChange=ProcessApplicationFieldChanged}
         dtpAvailableFrom: {Label=Available from, DataField=PmYearProgramApplication.StartOfCommitment}
         dtpAvailableTo: {Label=Available to, DataField=PmYearProgramApplication.EndOfCommitment}
 
+        cmbApplicationType: {Label=Application Type, List=FieldApplicationTypeList, DataField=PmGeneralApplication.AppTypeName}
         txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey}
         

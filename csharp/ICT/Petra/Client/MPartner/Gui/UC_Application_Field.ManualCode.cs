@@ -45,7 +45,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
         private ApplicationTDS FApplicationDS;
 
-        #region Properties
+	    /// <summary>Application Field changed</summary>
+	    public delegate void TDelegateApplicationFieldChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice, Int64 AFieldKey, String AFieldName);
+	    
+	    /// <summary>event to signalize change in field applied for</summary>
+	    public event TDelegateApplicationFieldChanged ApplicationFieldChanged;
+
+	    #region Properties
         
         /// dataset for the whole screen
         public IndividualDataTDS MainDS
@@ -79,12 +85,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseUserControl()
         {
             FApplicationDS = new ApplicationTDS();
-            //FApplicationDS.Tables.Add(new PmGeneralApplicationTable());
-           	//FApplicationDS.Tables.Add(new PmYearProgramApplicationTable());
             FApplicationDS.InitVars();
 
             ucoField.PetraUtilsObject = FPetraUtilsObject;
 			ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
+			
+			// enable control to react to modified event or field key in details part
+			ucoField.ApplicationFieldChanged += new TDelegatePartnerChanged(ProcessApplicationFieldChanged);
         }
         
         /// <summary>
@@ -159,8 +166,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ShowData(PmGeneralApplicationRow AGeneralAppRow, PmYearProgramApplicationRow AFieldAppRow)
         {
         	// clear dataset and create a copy of the row to be displayed so Dataset contains only one set of records
-            FApplicationDS.PmShortTermApplication.Rows.Clear();
             FApplicationDS.PmYearProgramApplication.Rows.Clear();
+            FApplicationDS.PmGeneralApplication.Rows.Clear();
             
             PmGeneralApplicationRow GeneralAppRowCopy = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.NewRow();
             PmYearProgramApplicationRow FieldAppRowCopy = (PmYearProgramApplicationRow)FApplicationDS.PmYearProgramApplication.NewRow();
@@ -187,6 +194,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataUtilities.CopyAllColumnValues(FApplicationDS.PmYearProgramApplication[0], AFieldAppRow);
  	    }
         
+        private void ProcessApplicationFieldChanged(Int64 AFieldKey, String AFieldName, bool AValidSelection)
+        {
+        	PmGeneralApplicationRow Row;
+        	
+        	Row = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.Rows[0];
+        	
+        	// trigger event so parent controls can react
+        	this.ApplicationFieldChanged(Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, AFieldKey, AFieldName);
+        }
+ 	    
         #endregion
     }
 }

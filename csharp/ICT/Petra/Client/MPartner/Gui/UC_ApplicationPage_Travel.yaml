@@ -12,14 +12,14 @@ RootNode:
         pnlDetails:
             Controls: [grpArrivalInfo, grpDepartureInfo]
             Dock: Fill
-        grpArrivalInfo: {Label=Arrival Details}
+        grpArrivalInfo: {Label=Arrival Details, Stretch=horizontally}
             Controls: 
                 Row0: [cmbArrivalTravelMethod]
                 Row1: [cmbArrivalPoint]
                 Row2: [dtpArrival, txtArrivalTimeHour, txtArrivalTimeMinute]
                 Row3: [txtArrivalTransportCode, chkArrivalTransportNeeded]
                 Row4: [txtArrivalComment]
-        grpDepartureInfo: {Label=Departure Details}
+        grpDepartureInfo: {Label=Departure Details, Stretch=horizontally}
             Controls: 
                 Row0: [cmbDepartureTravelMethod]
                 Row1: [cmbDeparturePoint]

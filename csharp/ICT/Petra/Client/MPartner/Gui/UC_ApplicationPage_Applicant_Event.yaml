@@ -12,16 +12,16 @@ RootNode:
         pnlDetails:
             Controls: [grpComments, grpStatus, grpEventRoles]
             Dock: Fill
-        grpComments: {Label=Additional Preferences or Comments}
+        grpComments: {Label=Additional Preferences or Comments, Stretch=horizontally}
             Controls: 
                 Row0: [txtComments]
-        grpStatus: {Label=Status}
+        grpStatus: {Label=Status, Stretch=horizontally}
             Controls: 
                 Row0: [cmbApplicationStatus]
                 Row1: [txtReason]
                 Row2: [dtpCancellationDate, dtpAcceptanceDate]
                 Row3: [chkAcceptedByReceivingField, dtpFieldAcceptance]
-        grpEventRoles: {Label=At Event}
+        grpEventRoles: {Label=At Event, Stretch=horizontally}
             Controls: 
                 Row0: [cmbConferenceRole]
                 Row1: [cmbConferenceLanguage]

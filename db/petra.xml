@@ -18645,9 +18645,6 @@
     <primarykey name="pm_staff_data_pk"
                 descr=""
                 thisFields="p_site_key_n, pm_key_n"/>
-    <uniquekey name="pm_commitment_data_uk"
-               descr=""
-               thisFields="p_partner_key_n, pm_start_of_commitment_d, pm_end_of_commitment_d"/>
     <foreignkey name="pm_staff_data_fk1"
                 descr=""
                 thisFields="p_partner_key_n"

@@ -33,6 +33,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MPartner;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
@@ -85,6 +86,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             LoadDataOnDemand();
 
+            grdDetails.Columns.Clear();
+            grdDetails.AddDateColumn(Catalog.GetString("Date entered"), FMainDS.PmGeneralApplication.Columns[PmGeneralApplicationTable.GetDateCreatedDBName()]);
+            grdDetails.AddTextColumn(Catalog.GetString("Applied for"), FMainDS.PmGeneralApplication.ColumnApplicationForEventOrField);
+            grdDetails.AddTextColumn(Catalog.GetString("Field / Event Name"), FMainDS.PmGeneralApplication.ColumnEventOrFieldName);
+            grdDetails.AddTextColumn(Catalog.GetString("Status"), FMainDS.PmGeneralApplication.Columns[PmGeneralApplicationTable.GetGenApplicationStatusDBName()], 100);
+
             // initialize tab controls
             ucoApplicationEvent.InitialiseUserControl();
             ucoApplicationField.InitialiseUserControl();
@@ -93,6 +100,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
             grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
 
+			// enable grid to react to modified event or field key in details part
+			ucoApplicationEvent.ApplicationEventChanged += new TUC_Application_Event.TDelegateApplicationEventChanged(ProcessApplicationEventOrFieldChanged);
+			ucoApplicationField.ApplicationFieldChanged += new TUC_Application_Field.TDelegateApplicationFieldChanged(ProcessApplicationEventOrFieldChanged);
+			
             if (grdDetails.Rows.Count <= 1)
             {
                 pnlDetails.Visible = false;
@@ -129,13 +140,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 	        if(ValidateAllData(true, true))
 	        {
 	            // we create the table locally, no dataset
-	            PmGeneralApplicationRow NewRowGeneralApp = FMainDS.PmGeneralApplication.NewRowTyped(true);
+	            IndividualDataTDSPmGeneralApplicationRow NewRowGeneralApp = FMainDS.PmGeneralApplication.NewRowTyped(true);
 	            PmShortTermApplicationRow NewRowShortTermApp = FMainDS.PmShortTermApplication.NewRowTyped(true);
 	            
 	            NewRowGeneralApp.PartnerKey = FMainDS.PPerson[0].PartnerKey;
 				NewRowGeneralApp.ApplicationKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_application));
 	            NewRowGeneralApp.RegistrationOffice = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
 	            NewRowGeneralApp.GenAppDate = DateTime.Today;
+	            NewRowGeneralApp.ApplicationForEventOrField = Catalog.GetString("Event");
 	            
 	            //TODO temp, needs to be changed
 	            NewRowGeneralApp.AppTypeName = "TEENSTREET";
@@ -175,17 +187,27 @@ namespace Ict.Petra.Client.MPartner.Gui
 	        if(ValidateAllData(true, true))
 	        {
 	            // we create the table locally, no dataset
-	            PmGeneralApplicationRow NewRowGeneralApp = FMainDS.PmGeneralApplication.NewRowTyped(true);
+	            IndividualDataTDSPmGeneralApplicationRow NewRowGeneralApp = FMainDS.PmGeneralApplication.NewRowTyped(true);
 	            PmYearProgramApplicationRow NewRowLongTermApp = FMainDS.PmYearProgramApplication.NewRowTyped(true);
 	            
 	            NewRowGeneralApp.PartnerKey = FMainDS.PPerson[0].PartnerKey;
 				NewRowGeneralApp.ApplicationKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_application));
 	            NewRowGeneralApp.RegistrationOffice = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
 	            NewRowGeneralApp.GenAppDate = DateTime.Today;
+	            NewRowGeneralApp.ApplicationForEventOrField = Catalog.GetString("Field");
 				
+	            //TODO temp, needs to be changed
+	            NewRowGeneralApp.AppTypeName = "FIELD";
+	            NewRowGeneralApp.OldLink = "0";
+	            NewRowGeneralApp.GenApplicantType = "Participant";
+
 	            NewRowLongTermApp.PartnerKey = NewRowGeneralApp.PartnerKey;
 	            NewRowLongTermApp.ApplicationKey = NewRowGeneralApp.ApplicationKey;
 	            NewRowLongTermApp.RegistrationOffice = NewRowGeneralApp.RegistrationOffice;
+
+	            //TODO temp, needs to be changed
+	            NewRowLongTermApp.YpAppDate = NewRowGeneralApp.GenAppDate;
+	            NewRowLongTermApp.YpBasicAppType = "Field";
 	            
 	            FMainDS.PmGeneralApplication.Rows.Add(NewRowGeneralApp);
 	            FMainDS.PmYearProgramApplication.Rows.Add(NewRowLongTermApp);
@@ -200,9 +222,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             	pnlApplicationEvent.Visible = false;
 	        }
         }
-
         
-        private void NewRowManual(ref PmGeneralApplicationRow ARow)
+        private void NewRowManual(ref IndividualDataTDSPmGeneralApplicationRow ARow)
         {
         }
         
@@ -218,13 +239,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this record ({0} - {1}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.GenAppDate.ToString(),
-                        FPreviouslySelectedDetailRow.AppTypeName),
+                            "You have choosen to delete the record for {0} {1}).\n\nDo you really want to delete it?"),
+                        FPreviouslySelectedDetailRow.ApplicationForEventOrField,
+                        FPreviouslySelectedDetailRow.EventOrFieldName),
                     Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = grdDetails.SelectedRowIndex();
+                
+                // along with the general application record the specific record needs to be deleted
+                if (IsEventApplication(FPreviouslySelectedDetailRow))
+                {
+                	GetEventApplicationRow(FPreviouslySelectedDetailRow).Delete();
+                }
+                else
+                {
+                	GetFieldApplicationRow(FPreviouslySelectedDetailRow).Delete();
+                }
                 FPreviouslySelectedDetailRow.Delete();
                 FPetraUtilsObject.SetChangedFlag();
 
@@ -251,7 +282,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 });
         }
 
-        private bool IsEventApplication(PmGeneralApplicationRow ARow)
+        private bool IsEventApplication(IndividualDataTDSPmGeneralApplicationRow ARow)
         {
         	// check if there is a corresponding record in short term applications
         	if (FMainDS.PmShortTermApplication.Rows.Contains
@@ -265,7 +296,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         	}
         }
 
-        private PmShortTermApplicationRow GetEventApplicationRow(PmGeneralApplicationRow ARow)
+        private PmShortTermApplicationRow GetEventApplicationRow(IndividualDataTDSPmGeneralApplicationRow ARow)
         {
         	DataRow Row;
         	
@@ -274,7 +305,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         	return (PmShortTermApplicationRow)Row;
         }
         
-        private PmYearProgramApplicationRow GetFieldApplicationRow(PmGeneralApplicationRow ARow)
+        private PmYearProgramApplicationRow GetFieldApplicationRow(IndividualDataTDSPmGeneralApplicationRow ARow)
         {
         	DataRow Row;
         	
@@ -283,7 +314,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         	return (PmYearProgramApplicationRow)Row;
         }
 
-        private void ShowDetailsManual(PmGeneralApplicationRow ARow)
+        private void ShowDetailsManual(IndividualDataTDSPmGeneralApplicationRow ARow)
         {
             if (ARow != null)
             {
@@ -295,12 +326,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
             	PmShortTermApplicationRow EventApplicationRow;
             	EventApplicationRow = GetEventApplicationRow(ARow);
+            	pnlApplicationEvent.Visible = true;
+            	pnlApplicationField.Visible = false;
             	ucoApplicationEvent.ShowDetails(ARow, EventApplicationRow);
             }
             else
             {
             	PmYearProgramApplicationRow FieldApplicationRow;
             	FieldApplicationRow = GetFieldApplicationRow(ARow);
+            	pnlApplicationEvent.Visible = false;
+            	pnlApplicationField.Visible = true;
             	ucoApplicationField.ShowDetails(ARow, FieldApplicationRow);
             }
 
@@ -310,7 +345,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DoRecalculateScreenParts();
         }
 
-	    private void GetDetailsFromControls(PmGeneralApplicationRow ARow)
+	    private void GetDetailsFromControls(IndividualDataTDSPmGeneralApplicationRow ARow)
 	    {
             if (IsEventApplication(ARow))
             {
@@ -454,95 +489,110 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.DeleteRow(this, null);
             }
         }
-    private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
-    {
-        if (grdDetails.Focused)
-        {
-            if (!ValidateAllData(true, true))
-            {
-                e.Cancel = true;
-            }
-        }
-        else
-        {
-            // This is needed because of a strange quirk in the Grid: if the user clicks with the Mouse to a different Row
-            // (not when using the keyboard!), then the Method 'FocusRowLeaving' gets called twice, the second time
-            // grdDetails.Focused is false. We need to Cancel in this case, otherwise the user can leave the Row with a
-            // mouse click on another Row although it contains invalid data!!!
-            e.Cancel = true;
-        }
-    }
+	    private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+	    {
+	        if (grdDetails.Focused)
+	        {
+	            if (!ValidateAllData(true, true))
+	            {
+	                e.Cancel = true;
+	            }
+	        }
+	        else
+	        {
+	            // This is needed because of a strange quirk in the Grid: if the user clicks with the Mouse to a different Row
+	            // (not when using the keyboard!), then the Method 'FocusRowLeaving' gets called twice, the second time
+	            // grdDetails.Focused is false. We need to Cancel in this case, otherwise the user can leave the Row with a
+	            // mouse click on another Row although it contains invalid data!!!
+	            e.Cancel = true;
+	        }
+	    }
+	
+	    private void ProcessApplicationEventOrFieldChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice, 
+	                                                       Int64 AEventOrFieldKey, String AEventOrFieldName)
+	    {
+        	IndividualDataTDSPmGeneralApplicationRow Row;
+        	
+        	Row = (IndividualDataTDSPmGeneralApplicationRow)FMainDS.PmGeneralApplication.Rows.Find
+        	    		(new object[]{APartnerKey, AApplicationKey, ARegistrationOffice});
+        	
+        	if (Row != null)
+        	{
+        		Row.EventOrFieldName = AEventOrFieldName;
+        	}
+	    }
+
     
-    /// <summary>
-    /// Performs data validation.
-    /// </summary>
-    /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
-    /// the UserControl.</remarks>
-    /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
-    /// to another record, otherwise set it to false.</param>
-    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-    /// user, otherwise set it to false.</param>
-    /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
-    /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
-    /// <para>
-    /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
-    /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
-    /// this Argument.
-    /// </para>
-    /// </param>
-    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
-    {
-        bool ReturnValue = false;
-        Control ControlToValidate;
-        PmGeneralApplicationRow CurrentRow;
-
-        CurrentRow = GetSelectedDetailRow();
-
-        if (CurrentRow != null)
-        {
-            if (AValidateSpecificControl != null)
-            {
-                ControlToValidate = AValidateSpecificControl;
-            }
-            else
-            {
-                ControlToValidate = this.ActiveControl;
-            }
-
-            GetDetailsFromControls(CurrentRow);
-
-            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
-
-            if (AProcessAnyDataValidationErrors)
-            {
-                // Only process the Data Validations here if ControlToValidate is not null.
-                // It can be null if this.ActiveControl yields null - this would happen if no Control
-                // on this UserControl has got the Focus.
-                if(ControlToValidate.FindUserControlOrForm(true) == this)
-                {
-                    ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                        this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
-                }
-                else
-                {
-                    ReturnValue = true;
-                }
-            }
-        }
-        else
-        {
-            ReturnValue = true;
-        }
-
-        if(ReturnValue)
-        {
-            // Remove a possibly shown Validation ToolTip as the data validation succeeded
-            FPetraUtilsObject.ValidationToolTip.RemoveAll();
-        }
-
-        return ReturnValue;
-    }
+	    /// <summary>
+	    /// Performs data validation.
+	    /// </summary>
+	    /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+	    /// the UserControl.</remarks>
+	    /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
+	    /// to another record, otherwise set it to false.</param>
+	    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+	    /// user, otherwise set it to false.</param>
+	    /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+	    /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+	    /// <para>
+	    /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+	    /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+	    /// this Argument.
+	    /// </para>
+	    /// </param>
+	    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+	    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+	    {
+	        bool ReturnValue = false;
+	        Control ControlToValidate;
+	        IndividualDataTDSPmGeneralApplicationRow CurrentRow;
+	
+	        CurrentRow = GetSelectedDetailRow();
+	
+	        if (CurrentRow != null)
+	        {
+	            if (AValidateSpecificControl != null)
+	            {
+	                ControlToValidate = AValidateSpecificControl;
+	            }
+	            else
+	            {
+	                ControlToValidate = this.ActiveControl;
+	            }
+	
+	            GetDetailsFromControls(CurrentRow);
+	
+	            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+	
+	            if (AProcessAnyDataValidationErrors)
+	            {
+	                // Only process the Data Validations here if ControlToValidate is not null.
+	                // It can be null if this.ActiveControl yields null - this would happen if no Control
+	                // on this UserControl has got the Focus.
+	                if(ControlToValidate.FindUserControlOrForm(true) == this)
+	                {
+	                    ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+	                        this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+	                }
+	                else
+	                {
+	                    ReturnValue = true;
+	                }
+	            }
+	        }
+	        else
+	        {
+	            ReturnValue = true;
+	        }
+	
+	        if(ReturnValue)
+	        {
+	            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+	            FPetraUtilsObject.ValidationToolTip.RemoveAll();
+	        }
+	
+	        return ReturnValue;
+	    }
     
     }
 }

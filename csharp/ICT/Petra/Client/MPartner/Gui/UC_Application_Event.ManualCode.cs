@@ -45,7 +45,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
         private ApplicationTDS FApplicationDS;
 
-        #region Properties
+	    /// <summary>Application Event changed</summary>
+	    public delegate void TDelegateApplicationEventChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice, Int64 AEventKey, String AEventName);
+
+	    /// <summary>event to signalize change in event applied for</summary>
+	    public event TDelegateApplicationEventChanged ApplicationEventChanged;
+
+	    #region Properties
         
         /// dataset for the whole screen
         public IndividualDataTDS MainDS
@@ -79,13 +85,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void InitialiseUserControl()
         {
             FApplicationDS = new ApplicationTDS();
-            //FApplicationDS.Tables.Add(new PmGeneralApplicationTable());
-           	//FApplicationDS.Tables.Add(new PmShortTermApplicationTable());
             FApplicationDS.InitVars();
             
 			ucoEvent.PetraUtilsObject = FPetraUtilsObject;
 			ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
 			ucoTravel.PetraUtilsObject = FPetraUtilsObject;
+			
+			// enable control to react to modified event or field key in details part
+			ucoEvent.ApplicationEventChanged += new TDelegatePartnerChanged(ProcessApplicationEventChanged);
         }
         
         /// <summary>
@@ -190,6 +197,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataUtilities.CopyAllColumnValues(FApplicationDS.PmGeneralApplication[0], ARow);
             DataUtilities.CopyAllColumnValues(FApplicationDS.PmShortTermApplication[0], AEventAppRow);
  	    }
+ 	    
+        private void ProcessApplicationEventChanged(Int64 AEventKey, String AEventName, bool AValidSelection)
+        {
+        	PmGeneralApplicationRow Row;
+        	
+        	Row = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.Rows[0];
+        	
+        	// trigger event so parent controls can react
+        	this.ApplicationEventChanged(Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, AEventKey, AEventName);
+        }
+ 	    
        #endregion
     }
 }

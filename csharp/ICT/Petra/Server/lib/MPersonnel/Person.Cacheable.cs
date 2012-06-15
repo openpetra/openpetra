@@ -199,6 +199,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheablePersonTablesEnum.ApplicationTypeList:
+                        {
+                            DataTable TmpTable = PtApplicationTypeAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheablePersonTablesEnum.ArrivalDeparturePointList:
                         {
                             DataTable TmpTable = PtArrivalPointAccess.LoadAll(ReadTransaction);
@@ -298,6 +304,18 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.OutreachPreferenceLevelList:
                         {
                             DataTable TmpTable = PtOutreachPreferenceLevelAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.EventApplicationTypeList:
+                        {
+                            DataTable TmpTable = GetEventApplicationTypeListTable(ReadTransaction, TableName);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.FieldApplicationTypeList:
+                        {
+                            DataTable TmpTable = GetFieldApplicationTypeListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -461,6 +479,23 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 if (AVerificationResult.Count == 0)
                                 {
                                     if (PtApplicantStatusAccess.SubmitChanges((PtApplicantStatusTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
+                        case TCacheablePersonTablesEnum.ApplicationTypeList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateApplicationTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateApplicationTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (AVerificationResult.Count == 0)
+                                {
+                                    if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
                                     {
                                         SubmissionResult = TSubmitChangesResult.scrOK;
@@ -832,6 +867,10 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateApplicantStatusListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateApplicationTypeList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateApplicationTypeListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateArrivalDeparturePointList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateArrivalDeparturePointListManual(TValidationControlsDict ValidationControlsDict,
@@ -902,5 +941,23 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
+
+        private DataTable GetEventApplicationTypeListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+            PtApplicationTypeRow template = new PtApplicationTypeTable().NewRowTyped(false);
+            template.AppFormType = "SHORT FORM";
+            return PtApplicationTypeAccess.LoadUsingTemplate(template, AReadTransaction);
+#endregion ManualCode        
+        }
+
+        private DataTable GetFieldApplicationTypeListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+            PtApplicationTypeRow template = new PtApplicationTypeTable().NewRowTyped(false);
+            template.AppFormType = "LONG FORM";
+            return PtApplicationTypeAccess.LoadUsingTemplate(template, AReadTransaction);
+#endregion ManualCode        
+        }
     }
 }

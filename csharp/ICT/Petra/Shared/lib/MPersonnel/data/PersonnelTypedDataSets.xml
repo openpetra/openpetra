@@ -15,8 +15,11 @@
 
     <DataSet name="IndividualDataTDS">
         <Table sqltable="p_person"/>                      <!-- Personal Data -->
-        <Table sqltable="pm_general_application"/>        <!-- General Application Data -->
-        <Table sqltable="pm_short_term_application"/>     <!-- Short Term Application Data -->
+        <Table sqltable="pm_general_application">         <!-- General Application Data -->
+          <Field name="EventOrFieldName" sqltable="p_unit" sqlfield="p_unit_name_c"/>
+          <CustomField name="ApplicationForEventOrField" type="string"/>
+        </Table>
+        <Table sqltable="pm_short_term_application"/>      <!-- Short Term Application Data -->
         <Table sqltable="pm_year_program_application"/>   <!-- Long Term Application Data -->
         <Table sqltable="pm_personal_data"/>              <!-- Personal Data -->
         <Table sqltable="pt_personal_data_labels"/>       <!-- Personal Data -->

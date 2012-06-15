@@ -47,6 +47,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
         private PartnerEditTDS FPartnerEditTDS;
 
+        #region Events
+
+        /// <summary>todoComment</summary>
+        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
+
+        #endregion
+        
         #region Properties
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -97,6 +104,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoApplications.MainDS = FMainDS;
             ucoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
             ucoApplications.SpecialInitUserControl(FMainDS);
+
+            // Hook up RecalculateScreenParts Event
+            ucoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(DoRecalculateScreenParts);
         }
 
         /// <summary>
@@ -220,6 +230,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Private Methods
 
+        private void DoRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
+        {
+        	// trigger event so outer controls can react
+            if (RecalculateScreenParts != null)
+            {
+                RecalculateScreenParts(sender, e);
+            }
+        }
+        
         #endregion
 
 

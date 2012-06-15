@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPersonnelApplications;
 
                     // Hook up RecalculateScreenParts Event
-// TODO                    FUcoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+                    FUcoApplications.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
                     CorrectDataGridWidthsAfterDataChange();
                 }

@@ -135,7 +135,13 @@ namespace Ict.Petra.Client.CommonControls
             DocumentTypeList,
 
             /// <summary>todoComment</summary>
+            EventApplicationTypeList,
+
+            /// <summary>todoComment</summary>
             EventRoleList,
+
+            /// <summary>todoComment</summary>
+            FieldApplicationTypeList,
 
             /// <summary>todoComment</summary>
             FrequencyList,
@@ -563,6 +569,16 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.EventApplicationTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.EventApplicationTypeList),
+                    PtApplicationTypeTable.GetAppTypeNameDBName(),
+                    PtApplicationTypeTable.GetAppTypeDescrDBName(),
+                    null
+                    );
+                    break;
+
                 case TListTableEnum.EventRoleList:
 
                     InitialiseUserControl(
@@ -572,6 +588,16 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.FieldApplicationTypeList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.FieldApplicationTypeList),
+                    PtApplicationTypeTable.GetAppTypeNameDBName(),
+                    PtApplicationTypeTable.GetAppTypeDescrDBName(),
+                    null
+                    );
+                    break;
+                    
                 case TListTableEnum.FoundationOwnerList:
 
                     InitialiseUserControl(
@@ -1194,6 +1220,11 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 200;
                     break;
 
+                case TListTableEnum.EventApplicationTypeList:
+                    this.ColumnWidthCol1 = 150;
+                    this.ColumnWidthCol2 = 300;
+                    break;
+                    
                 case TListTableEnum.EventRoleList:
                     this.ColumnWidthCol1 = 120;
                     this.ColumnWidthCol2 = 250;
@@ -1203,6 +1234,11 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 200;
                     break;
 
+                case TListTableEnum.FieldApplicationTypeList:
+                    this.ColumnWidthCol1 = 150;
+                    this.ColumnWidthCol2 = 300;
+                    break;
+                    
                 case TListTableEnum.FoundationOwnerList:
                     this.ColumnWidthCol1 = 120;
                     break;

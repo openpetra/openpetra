@@ -12,16 +12,16 @@ RootNode:
         pnlDetails:
             Controls: [grpComments, grpStatus, grpFinance]
             Dock: Fill
-        grpComments: {Label=Additional Preferences or Comments}
+        grpComments: {Label=Additional Preferences or Comments, Stretch=horizontally}
             Controls: 
                 Row0: [txtComments]
-        grpStatus: {Label=Status}
+        grpStatus: {Label=Status, Stretch=horizontally}
             Controls: 
                 Row0: [cmbApplicationStatus]
                 Row1: [txtReason]
                 Row2: [dtpCancellationDate, dtpAcceptanceDate]
                 Row3: [chkAcceptedByReceivingField, dtpFieldAcceptance]
-        grpFinance: {Label=Finance}
+        grpFinance: {Label=Finance, Stretch=horizontally}
             Controls: 
                 Row0: [cmbApplicationCurrency]
                 Row1: [txtJoiningCharge, txtAgreedSupport]

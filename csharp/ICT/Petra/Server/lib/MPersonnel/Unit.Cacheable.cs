@@ -164,18 +164,6 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 
                     switch(ACacheableTable)
                     {
-                        case TCacheableUnitTablesEnum.OutreachList:
-                        {
-                            DataTable TmpTable = GetOutreachListTable(ReadTransaction, TableName);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
-                        case TCacheableUnitTablesEnum.ConferenceList:
-                        {
-                            DataTable TmpTable = GetConferenceListTable(ReadTransaction, TableName);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheableUnitTablesEnum.PositionList:
                         {
                             DataTable TmpTable = PtPositionAccess.LoadAll(ReadTransaction);
@@ -191,6 +179,18 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                         case TCacheableUnitTablesEnum.LeavingCodeList:
                         {
                             DataTable TmpTable = PtLeavingCodeAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableUnitTablesEnum.OutreachList:
+                        {
+                            DataTable TmpTable = GetOutreachListTable(ReadTransaction, TableName);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableUnitTablesEnum.ConferenceList:
+                        {
+                            DataTable TmpTable = GetConferenceListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }

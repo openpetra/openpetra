@@ -191,6 +191,41 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     PmGeneralApplicationAccess.LoadViaPPersonPartnerKey(IndividualDataDS, APartnerKey, AReadTransaction);
                     PmShortTermApplicationAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
                     PmYearProgramApplicationAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
+                    
+                    IndividualDataTDSPmGeneralApplicationRow GenAppRow;
+                    TPartnerClass PartnerClass;
+                    TStdPartnerStatusCode PartnerStatus;
+                    String EventOrFieldName;
+                    
+                    //TODO: now go through all short and long term apps and set the 
+                    // two fields in general app for EventOrFieldName and ApplicationForEventOrField
+                    foreach (PmShortTermApplicationRow ShortTermRow in IndividualDataDS.PmShortTermApplication.Rows)
+                    {
+                    	GenAppRow = (IndividualDataTDSPmGeneralApplicationRow)IndividualDataDS.PmGeneralApplication.Rows.Find
+                    		(new object[] {ShortTermRow.PartnerKey, 
+                    		 	ShortTermRow.ApplicationKey, ShortTermRow.RegistrationOffice});
+                    	GenAppRow.ApplicationForEventOrField = Catalog.GetString("Event");
+                    	if (!ShortTermRow.IsStConfirmedOptionNull())
+                    	{
+                    		Ict.Petra.Server.MCommon.MCommonMain.RetrievePartnerShortName
+                    			(ShortTermRow.StConfirmedOption, out EventOrFieldName, out PartnerClass, out PartnerStatus);
+                    		GenAppRow.EventOrFieldName = EventOrFieldName;
+                    	}
+                    }
+
+                    foreach (PmYearProgramApplicationRow LongTermRow in IndividualDataDS.PmYearProgramApplication.Rows)
+                    {
+                    	GenAppRow = (IndividualDataTDSPmGeneralApplicationRow)IndividualDataDS.PmGeneralApplication.Rows.Find
+                    		(new object[] {LongTermRow.PartnerKey, 
+                    		 	LongTermRow.ApplicationKey, LongTermRow.RegistrationOffice});
+                    	GenAppRow.ApplicationForEventOrField = Catalog.GetString("Field");
+                    	if (!GenAppRow.IsGenAppPossSrvUnitKeyNull())
+                    	{
+                    		Ict.Petra.Server.MCommon.MCommonMain.RetrievePartnerShortName
+                    			(GenAppRow.GenAppPossSrvUnitKey, out EventOrFieldName, out PartnerClass, out PartnerStatus);
+                    		GenAppRow.EventOrFieldName = EventOrFieldName;
+                    	}
+                    }
                     break;
                     
                 // TODO: work on all cases/load data for all Individual Data items

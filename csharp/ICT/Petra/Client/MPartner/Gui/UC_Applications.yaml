@@ -27,18 +27,13 @@ RootNode:
         btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             Dock: Fill
-            TableName: PmGeneralApplication
-            Columns: [GenAppDate, GenApplicationStatus, AppTypeName]
-            CustomColumns:
-                GenAppDate: {Label=Date entered, Format=Date}
-                GenApplicationStatus: {Label=Status}
-                AppTypeName: {Label=Type}
+            Columns: []
             ActionFocusRow: FocusedRowChanged
             
         pnlDetails:
             Dock: Bottom
             Controls: [pnlApplicationEvent, pnlApplicationField]
-            Height: 300
+            Height: 350
             
         pnlApplicationEvent:
             Dock: Fill

@@ -12,4 +12,5 @@ RootNode:
             Dock: Fill
 
         ucoApplications:
+            Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.TUC_Applications
