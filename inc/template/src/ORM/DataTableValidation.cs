@@ -106,6 +106,11 @@ VerificationResult = TStringChecks.StringLengthLesserOrEqual(ARow.{#COLUMNNAME},
     ValidationControlsData.ValidationControlLabel,
     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
+{##CHECKNUMBERRANGE}
+VerificationResult = TNumericalChecks.IsNumberPrecisionNotExceeded(ARow.{#COLUMNNAME}, {#NUMBEROFDECIMALDIGITS}, {#NUMBEROFFRACTIONALDIGITS},
+    ValidationControlsData.ValidationControlLabel,
+    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
 {##CHECKGENERALNOTNULL}
 VerificationResult = TGeneralChecks.ValueMustNotBeNull(ARow.Is{#COLUMNNAME}Null() ? null : "",
     ValidationControlsData.ValidationControlLabel,

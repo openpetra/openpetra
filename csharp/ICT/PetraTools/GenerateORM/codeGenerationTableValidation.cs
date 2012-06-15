@@ -119,6 +119,23 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                 }                    
+                
+                // Number Range checks
+                if (col.strType == "number")
+                {
+                    columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
+                    columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                    
+                    ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKNUMBERRANGE");
+                    validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                    validateColumnTemplate.SetCodelet("NUMBEROFDECIMALDIGITS", col.iLength.ToString());
+                    validateColumnTemplate.SetCodelet("NUMBEROFFRACTIONALDIGITS", col.iDecimals.ToString());
+
+                    columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);                                        
+                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' must not have more than " + (col.iLength - col.iDecimals).ToString() + " digits before the decimal point and not more than " + col.iDecimals.ToString() + " after the decimal point");
+                    
+                    snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
+                }                                    
             }
 
             Template.InsertSnippet(WhereToInsert, snippet);
