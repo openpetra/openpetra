@@ -247,10 +247,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
             
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            
             txtDetailBatchDescription.Focus();
-            // dtpDetailDateEffective.Date = DefaultDate;
 
-            // grdDetails.Selection.SelectRow(1,true);
         }
 
         /// <summary>
@@ -299,6 +300,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.Merge(mergeDS);
                     GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
                     //FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                    grdDetails.Refresh();
 
                     foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                     {
@@ -342,6 +344,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 		                FPreviouslySelectedDetailRow = null;
 			            EnableButtonControl(false);
 			            ClearDetailControls();
+			            pnlDetails.Enabled = false;
 		            }
 
 		            MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
