@@ -1855,8 +1855,6 @@ namespace Ict.Common.DB
             IDictionaryEnumerator BatchStatementEntryIterator;
             TSQLBatchStatementEntry BatchStatementEntryValue;
 
-            DbParameter[] ParametersArray;
-
             if (AStatementHashTable == null)
             {
                 throw new ArgumentNullException("AStatementHashTable", "This method must be called with an initialized HashTable!!");
@@ -1883,10 +1881,10 @@ namespace Ict.Common.DB
                     while (BatchStatementEntryIterator.MoveNext())
                     {
                         BatchStatementEntryValue = (TSQLBatchStatementEntry)BatchStatementEntryIterator.Value;
-                        BatchStatementEntryValue.GetWholeParameterArray(out ParametersArray);
                         CurrentBatchEntryKey = BatchStatementEntryIterator.Key.ToString();
                         CurrentBatchEntrySQLStatement = BatchStatementEntryValue.SQLStatement;
-                        ExecuteNonQuery(CurrentBatchEntrySQLStatement, ATransaction, false, ParametersArray);
+                        ExecuteNonQuery(CurrentBatchEntrySQLStatement, ATransaction, false,
+                            BatchStatementEntryValue.Parameters);
                         SqlCommandNumber = SqlCommandNumber + 1;
                     }
 
@@ -2627,7 +2625,7 @@ namespace Ict.Common.DB
     /// </summary>
     /// <remarks>Once instantiated, Batch Statment Entry values can
     /// only be read!</remarks>
-    public class TSQLBatchStatementEntry : object
+    public class TSQLBatchStatementEntry
     {
         /// <summary>Holds the SQL Statement for one Batch Statement Entry</summary>
         private string FSQLStatement;
@@ -2669,18 +2667,6 @@ namespace Ict.Common.DB
         {
             FSQLStatement = ASQLStatement;
             FParametersArray = AParametersArray;
-        }
-
-        /// <summary>
-        /// Returns the ParameterArray.
-        ///
-        /// </summary>
-        /// <param name="AParametersArray">ParameterArray
-        /// </param>
-        /// <returns>void</returns>
-        public void GetWholeParameterArray(out DbParameter[] AParametersArray)
-        {
-            AParametersArray = FParametersArray;
         }
 
         #endregion
