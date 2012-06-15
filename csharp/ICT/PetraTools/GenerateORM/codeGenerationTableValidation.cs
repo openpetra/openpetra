@@ -57,14 +57,16 @@ namespace Ict.Tools.CodeGeneration.DataStore
             
             foreach (TTableField col in currentTable.grpTableField)
             {
-                ProcessTemplate columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
-                columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
-
+                ProcessTemplate columnTemplate;
                 
+                // NOT NULL checks
                 if ((col.bNotNull)
                     || (col.bPartOfPrimKey)
                     || (col.bPartOfFirstUniqueKey))
                 {
+                    columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
+                    columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                    
                     if (col.GetDotNetType().Contains("String"))
                     {
                         ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKEMPTYSTRING");
@@ -96,13 +98,27 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     }
                     
                     columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' must have a value " + ColumnSpecificCommentPart);    
-                }
-
-                // only insert checks for column if there are any
-                if (columnTemplate.FCodelets.Contains("COLUMNSPECIFICCHECK"))
-                {
+                    
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                 }
+                
+                // String Length checks
+                if (((col.strType == "varchar") || (col.strType == "text"))
+                    && ((col.strName != "s_created_by_c") 
+                        && (col.strName != "s_modified_by_c")))
+                {
+                    columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
+                    columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                    
+                    ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKSTRINGLENGTH");
+                    validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                    validateColumnTemplate.SetCodelet("COLUMNLENGTH", (col.iCharLength * 2).ToString());
+
+                    columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);                                        
+                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' must not contain more than " + (col.iCharLength * 2).ToString() + " characters");
+                    
+                    snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
+                }                    
             }
 
             Template.InsertSnippet(WhereToInsert, snippet);

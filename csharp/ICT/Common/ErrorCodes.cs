@@ -117,6 +117,11 @@ namespace Ict.Common
              FullDescription = "The value may not be empty.")]
         public const String ERR_NONULL = "GENC.00010V";
 
+        /// <summary>Alphanumeric value is too long.</summary>
+        [ErrCodeAttribute("Alphanumeric value is too long.",
+             FullDescription = "The value entered contains too many characters.")]
+        public const String ERR_STRINGTOOLONG = "GENC.00011V";
+        
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
 

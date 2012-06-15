@@ -101,6 +101,11 @@ VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.{#COLUMNNAME},
     ValidationControlsData.ValidationControlLabel,
     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
+{##CHECKSTRINGLENGTH}
+VerificationResult = TStringChecks.StringLengthLesserOrEqual(ARow.{#COLUMNNAME}, {#COLUMNLENGTH},
+    ValidationControlsData.ValidationControlLabel,
+    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
 {##CHECKGENERALNOTNULL}
 VerificationResult = TGeneralChecks.ValueMustNotBeNull(ARow.Is{#COLUMNNAME}Null() ? null : "",
     ValidationControlsData.ValidationControlLabel,
