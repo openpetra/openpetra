@@ -151,7 +151,12 @@ namespace Ict.Testing.SampleDataConstructor
                     SampleDataGiftBatches.PostBatches(0, 6, 1);
                 }
 
-                SampleDataBankImportFiles.ExportGiftBatches(datadirectory);
+                operation = TAppSettingsManager.GetValue("operation", "exportGifts");
+
+                if ((operation == "exportGifts") || (operation == "all"))
+                {
+                    SampleDataBankImportFiles.ExportGiftBatches(datadirectory);
+                }
 
                 TLogging.Log("(8) Posting and paying invoices");
 

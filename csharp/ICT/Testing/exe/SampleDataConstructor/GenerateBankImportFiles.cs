@@ -28,6 +28,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.IO;
 using System.Globalization;
+using System.Text;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;
@@ -58,7 +59,7 @@ namespace Ict.Testing.SampleDataConstructor
             // store all gift batches in first period of current year
             string SelectGiftBatchesJanuaryFromAndWhere =
                 "FROM PUB_a_ledger, PUB_a_gift_batch, PUB_a_gift, PUB_a_gift_detail, " +
-                "   PUB_p_partner donor, PUB_p_partner_banking_details, PUB_p_banking_details_usage, PUB_p_banking_details, PUB_p_partner bank " +
+                "   PUB_p_partner donor, PUB_p_partner_banking_details, PUB_p_banking_details_usage, PUB_p_banking_details, PUB_p_bank bank " +
                 "WHERE PUB_a_ledger.a_ledger_number_i = " + FLedgerNumber.ToString() + " " +
                 "AND PUB_a_gift_batch.a_ledger_number_i = PUB_a_ledger.a_ledger_number_i " +
                 "AND PUB_a_gift_batch.a_batch_year_i = PUB_a_ledger.a_current_financial_year_i " +
@@ -90,7 +91,7 @@ namespace Ict.Testing.SampleDataConstructor
 
             // get all banking details of donors involved in this gift batch
             string SelectBankingDetailsJanuary =
-                "SELECT DISTINCT PUB_p_banking_details.*, bank.a_branch_code_c AS BankSortCode, donor.p_partner_key_n AS PartnerKey " +
+                "SELECT DISTINCT PUB_p_banking_details.*, bank.p_branch_code_c AS BankSortCode, donor.p_partner_key_n AS PartnerKey " +
                 SelectGiftBatchesJanuaryFromAndWhere;
             DBAccess.GDBAccessObj.Select(MainDS, SelectBankingDetailsJanuary, MainDS.PBankingDetails.TableName, null);
 
@@ -114,12 +115,12 @@ namespace Ict.Testing.SampleDataConstructor
         {
             string outfile = Path.GetFullPath(AOutputPath + Path.DirectorySeparatorChar + ADateEffective.ToString("yyyy-MMM-dd") + ".sta");
 
-            StreamWriter sw = new StreamWriter(outfile);
+            StreamWriter sw = new StreamWriter(outfile, false, Encoding.UTF8);
 
             sw.WriteLine(":20:STARTUMS");
             sw.WriteLine(":25:20090500/0006853030");
             sw.WriteLine(":28C:" + AStatementCounter.ToString("00000") + "/001");
-            sw.WriteLine(":60F:C" + ADateEffective.AddDays(-1).ToString("yymmdd") + "EUR" +
+            sw.WriteLine(":60F:C" + ADateEffective.AddDays(-1).ToString("yyMMdd") + "EUR" +
                 ABalance.ToString(CultureInfo.InvariantCulture.NumberFormat).Replace(".", ","));
 
             DataRowView[] giftDetails = AMainDS.AGiftDetail.DefaultView.FindRows(ABatchNumber);
@@ -131,17 +132,17 @@ namespace Ict.Testing.SampleDataConstructor
                 BankImportTDSPBankingDetailsRow bankingDetails = (BankImportTDSPBankingDetailsRow)
                                                                  AMainDS.PBankingDetails.DefaultView.FindRows(giftDetail.DonorKey)[0].Row;
 
-                sw.WriteLine(":61:" + ADateEffective.ToString("yymmdd") + ADateEffective.ToString("mmdd") +
+                sw.WriteLine(":61:" + ADateEffective.ToString("yyMMdd") + ADateEffective.ToString("MMdd") +
                     "C" + giftDetail.GiftTransactionAmount.ToString(CultureInfo.InvariantCulture.NumberFormat).Replace(".", ",") + "N" +
                     "051" + "NONREF");
-                sw.WriteLine(":86:051:?00Gutschrift?10999?20" + giftDetail.RecipientKey.ToString() + "?21" + giftDetail.MotivationDetailCode +
+                sw.WriteLine(":86:051?00Gutschrift?10999?20" + giftDetail.RecipientKey.ToString() + "?21" + giftDetail.MotivationDetailCode +
                     "?30" + bankingDetails.BankSortCode + "?31" + bankingDetails.BankAccountNumber +
                     "?32" + bankingDetails.AccountName);
 
                 ABalance += giftDetail.GiftTransactionAmount;
             }
 
-            sw.WriteLine(":62F:C" + ADateEffective.ToString("yymmdd") + "EUR" +
+            sw.WriteLine(":62F:C" + ADateEffective.ToString("yyMMdd") + "EUR" +
                 ABalance.ToString(CultureInfo.InvariantCulture.NumberFormat).Replace(".", ","));
 
             sw.Close();
