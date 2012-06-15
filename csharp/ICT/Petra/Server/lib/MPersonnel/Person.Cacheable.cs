@@ -371,8 +371,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.CommitmentStatusList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PmCommitmentStatusValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateCommitmentStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PmCommitmentStatusValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateCommitmentStatusListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -388,8 +388,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.DocumentTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PmDocumentTypeValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateDocumentTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PmDocumentTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateDocumentTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -405,8 +405,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.DocumentTypeCategoryList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PmDocumentCategoryValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateDocumentTypeCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PmDocumentCategoryValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateDocumentTypeCategoryListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -422,8 +422,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.AbilityAreaList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtAbilityAreaValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateAbilityAreaListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtAbilityAreaValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateAbilityAreaListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -439,8 +439,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.AbilityLevelList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtAbilityLevelValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateAbilityLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtAbilityLevelValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateAbilityLevelListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -456,8 +456,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.ApplicantStatusList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtApplicantStatusValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateApplicantStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtApplicantStatusValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateApplicantStatusListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -473,8 +473,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.ArrivalDeparturePointList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtArrivalPointValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateArrivalDeparturePointListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtArrivalPointValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateArrivalDeparturePointListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -490,8 +490,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.EventRoleList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtCongressCodeValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateEventRoleListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtCongressCodeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateEventRoleListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -507,8 +507,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.ContactList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtContactValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateContactListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtContactValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateContactListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -524,8 +524,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.DriverStatusList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtDriverStatusValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateDriverStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtDriverStatusValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateDriverStatusListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -541,8 +541,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.LanguageLevelList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtLanguageLevelValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateLanguageLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtLanguageLevelValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateLanguageLevelListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -558,8 +558,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.LeadershipRatingList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtLeadershipRatingValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateLeadershipRatingListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtLeadershipRatingValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateLeadershipRatingListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -575,8 +575,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.PartyTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtPartyTypeValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidatePartyTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtPartyTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidatePartyTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -592,8 +592,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.PassportTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtPassportTypeValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidatePassportTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtPassportTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidatePassportTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -609,8 +609,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.TransportTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtTravelTypeValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateTransportTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtTravelTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateTransportTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -626,8 +626,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.QualificationAreaList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtQualificationAreaValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateQualificationAreaListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtQualificationAreaValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateQualificationAreaListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -643,8 +643,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.QualificationLevelList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtQualificationLevelValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateQualificationLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtQualificationLevelValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateQualificationLevelListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -660,8 +660,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.SkillCategoryList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtSkillCategoryValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateSkillCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtSkillCategoryValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateSkillCategoryListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -677,8 +677,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.SkillLevelList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtSkillLevelValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateSkillLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtSkillLevelValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateSkillLevelListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -694,8 +694,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.ValuableItemList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtValuableItemValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateValuableItemListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtValuableItemValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateValuableItemListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -711,8 +711,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.VisionAreaList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtVisionAreaValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateVisionAreaListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtVisionAreaValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateVisionAreaListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -728,8 +728,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.VisionLevelList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtVisionLevelValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateVisionLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtVisionLevelValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateVisionLevelListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -745,8 +745,8 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.OutreachPreferenceLevelList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PtOutreachPreferenceLevelValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateOutreachPreferenceLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtOutreachPreferenceLevelValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateOutreachPreferenceLevelListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -809,52 +809,29 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
 
 #region Data Validation
 
-        partial void ValidateCommitmentStatusListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDocumentTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDocumentTypeCategoryListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAbilityAreaListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAbilityLevelListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateApplicantStatusListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateArrivalDeparturePointListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateEventRoleListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateContactListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDriverStatusListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateLanguageLevelListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateLeadershipRatingListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePartyTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePassportTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateTransportTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateQualificationAreaListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateQualificationLevelListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateSkillCategoryListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateSkillLevelListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateValuableItemListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateVisionAreaListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateVisionLevelListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateOutreachPreferenceLevelListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateCommitmentStatusListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDocumentTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDocumentTypeCategoryListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAbilityAreaListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAbilityLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateApplicantStatusListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateArrivalDeparturePointListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateEventRoleListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateContactListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDriverStatusListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLanguageLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLeadershipRatingListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePartyTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePassportTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateTransportTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateQualificationAreaListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateQualificationLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateSkillCategoryListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateSkillLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateValuableItemListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateVisionAreaListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateVisionLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateOutreachPreferenceLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
     }

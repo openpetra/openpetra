@@ -84,18 +84,22 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
-            // 'Time Zone From' must be <= 'Time Zone To'
-            ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnTimeZoneMinimumId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            if (!ARow.IsTimeZoneMinimumNull() 
+                  && !ARow.IsTimeZoneMaximumNull())
             {
-                VerificationResult = TNumericalChecks.FirstLesserOrEqualThanSecondDecimal(
-                    ARow.TimeZoneMinimum, ARow.TimeZoneMaximum,
-                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                // 'Time Zone From' must be <= 'Time Zone To'
+                ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnTimeZoneMinimumId];
+    
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = TNumericalChecks.FirstLesserOrEqualThanSecondDecimal(
+                        ARow.TimeZoneMinimum, ARow.TimeZoneMaximum,
+                        ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }               
             }
 
             // 'International Postal Type' must be in 'p_international_postal_type' DB Table (this DB Table is not a Cacheable DataTable)

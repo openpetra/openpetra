@@ -61,12 +61,17 @@ public class {#TABLENAME}Validation
     /// <param name="AVerificationResult">Will be filled with any <see cref="TVerificationResult" /> items if
     /// data validation errors occur.</param>
     /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-    /// display data that is about to be validated. If there are no columns in the dictionary, then all columns will be checked.</param>
+    /// display data that is about to be validated. If there are no columns in the dictionary, then all columns will be checked (defaults to null, in which case an empty <see cref="TValidationControlsDict" /> will be created on-the-fly).</param>
     public static void Validate(
         TTypedDataTable ASubmitTable,
         ref TVerificationResultCollection AVerificationResult,
-        TValidationControlsDict AValidationControlsDict)
+        TValidationControlsDict AValidationControlsDict = null)
     {
+        if (AValidationControlsDict == null) 
+        {
+            AValidationControlsDict = new TValidationControlsDict();
+        }            
+        
         if (AValidationControlsDict.Count == 0)
         {
             // add all columns
@@ -85,15 +90,18 @@ public class {#TABLENAME}Validation
 
 {##VALIDATECOLUMN}
 
-// {#COLUMNSPECIFICCOMMENT}
-ValidationColumn = ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id];
-
-if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+if (!ARow.Is{#COLUMNNAME}Null())
 {
-    {#COLUMNSPECIFICCHECK}
+    // {#COLUMNSPECIFICCOMMENT}
+    ValidationColumn = ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id];
 
-    // Handle addition to/removal from TVerificationResultCollection
-    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+    if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+{
+        {#COLUMNSPECIFICCHECK}
+
+        // Handle addition to/removal from TVerificationResultCollection
+        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+    }
 }
 
 {##CHECKEMPTYSTRING}

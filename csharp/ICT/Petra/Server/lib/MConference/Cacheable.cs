@@ -236,8 +236,8 @@ namespace Ict.Petra.Server.MConference.Cacheable
                         case TCacheableConferenceTablesEnum.ConferenceOptionTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PcConferenceOptionTypeValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateConferenceOptionTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PcConferenceOptionTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateConferenceOptionTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -300,8 +300,7 @@ namespace Ict.Petra.Server.MConference.Cacheable
 
 #region Data Validation
 
-        partial void ValidateConferenceOptionTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateConferenceOptionTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
     }

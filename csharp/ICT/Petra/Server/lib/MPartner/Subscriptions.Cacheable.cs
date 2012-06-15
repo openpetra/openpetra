@@ -260,8 +260,8 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                         case TCacheableSubscriptionsTablesEnum.PublicationList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PPublicationValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidatePublicationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PPublicationValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidatePublicationListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -277,8 +277,8 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                         case TCacheableSubscriptionsTablesEnum.PublicationCostList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PPublicationCostValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidatePublicationCostListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PPublicationCostValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidatePublicationCostListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -294,8 +294,8 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PReasonSubscriptionGivenValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateReasonSubscriptionGivenListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PReasonSubscriptionGivenValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateReasonSubscriptionGivenListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -311,8 +311,8 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                PReasonSubscriptionCancelledValidation.Validate(ASubmitTable, ref AVerificationResult, ValidationControlsDict);
-                                ValidateReasonSubscriptionCancelledListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PReasonSubscriptionCancelledValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateReasonSubscriptionCancelledListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -384,14 +384,10 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 
 #region Data Validation
 
-        partial void ValidatePublicationListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePublicationCostListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateReasonSubscriptionGivenListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateReasonSubscriptionCancelledListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePublicationListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePublicationCostListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateReasonSubscriptionGivenListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateReasonSubscriptionCancelledListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
 
