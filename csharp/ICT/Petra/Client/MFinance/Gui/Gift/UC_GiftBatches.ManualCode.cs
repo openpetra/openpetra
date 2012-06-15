@@ -303,7 +303,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
-                //ShowDetails(FPreviouslySelectedDetailRow);
+                ShowDetails(FPreviouslySelectedDetailRow);
             }
             else
             {

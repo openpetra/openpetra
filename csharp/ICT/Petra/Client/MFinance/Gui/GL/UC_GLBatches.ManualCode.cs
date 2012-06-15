@@ -198,10 +198,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AEnable"></param>
         private void EnableButtonControl(bool AEnable)
         {
-			btnPostBatch.Enabled = AEnable;
+			if (AEnable)
+			{
+				if (!pnlDetails.Enabled)
+				{
+					pnlDetails.Enabled = true;
+				}
+			}
+        	btnPostBatch.Enabled = AEnable;
             btnTestPostBatch.Enabled = AEnable;
             btnCancel.Enabled = AEnable;
         }
+        
+        
+        private void ClearDetailControls()
+        {
+        	txtDetailBatchDescription.Text = string.Empty;
+        	dtpDetailDateEffective.Date = DateTime.Today;
+        }
+        
         
         /// <summary>
         /// add a new batch
@@ -215,6 +230,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 rbtEditing.Checked = true;
             }
             
+            ClearDetailControls();
             EnableButtonControl(true);
         	
         	FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
@@ -231,7 +247,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
             
-            
+            txtDetailBatchDescription.Focus();
             // dtpDetailDateEffective.Date = DefaultDate;
 
             // grdDetails.Selection.SelectRow(1,true);
@@ -306,16 +322,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         transactionDV[0].Delete();
                     }
 
-                    MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    //SelectByIndex(rowIndex);
-		            grdDetails.Refresh();
-		
 		            //If some row(s) still exist after deletion
 		            if (grdDetails.Rows.Count > 1)
 		            {
@@ -328,16 +334,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 		                grdDetails.Selection.ResetSelection(false);
 		                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
 		                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+		                
+		                ShowDetails(FPreviouslySelectedDetailRow);
 		            }
 		            else
 		            {
 		                FPreviouslySelectedDetailRow = null;
 			            EnableButtonControl(false);
+			            ClearDetailControls();
 		            }
-                }
 
-                //LoadBatches(FLedgerNumber);
+		            MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                    FPetraUtilsObject.SetChangedFlag();
+                }
             }
+            
         }
 
         /// <summary>
