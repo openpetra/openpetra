@@ -84,6 +84,8 @@ namespace Ict.Testing.SampleDataConstructor
 
             int countUnPosted = MainDS.AGiftBatch.Count;
 
+            List <Int32>GiftBatchesToPost = new List <int>();
+
             foreach (AGiftBatchRow batch in MainDS.AGiftBatch.Rows)
             {
                 if (countUnPosted <= ALeaveBatchesUnposted)
@@ -93,13 +95,15 @@ namespace Ict.Testing.SampleDataConstructor
 
                 countUnPosted--;
 
-                TVerificationResultCollection VerificationResult;
+                GiftBatchesToPost.Add(batch.BatchNumber);
+            }
 
-                if (!TTransactionWebConnector.PostGiftBatch(batch.LedgerNumber, batch.BatchNumber, out VerificationResult))
-                {
-                    TLogging.Log(VerificationResult.BuildVerificationResultString());
-                    return false;
-                }
+            TVerificationResultCollection VerificationResult;
+
+            if (!TTransactionWebConnector.PostGiftBatches(FLedgerNumber, GiftBatchesToPost, out VerificationResult))
+            {
+                TLogging.Log(VerificationResult.BuildVerificationResultString());
+                return false;
             }
 
             return true;

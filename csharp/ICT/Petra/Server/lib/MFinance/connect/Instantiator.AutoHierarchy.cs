@@ -2585,6 +2585,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public System.Boolean PostGiftBatches(Int32 ALedgerNumber,
+                                              List<Int32>ABatchNumbers,
+                                              out TVerificationResultCollection AVerifications)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "PostGiftBatches", ";INT;INT?;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatches(ALedgerNumber, ABatchNumbers, out AVerifications);
+        }
+
+        /// generated method from connector
         public Int32 ExportAllGiftBatchData(Hashtable requestParams,
                                             out String exportString,
                                             out TVerificationResultCollection AMessages)

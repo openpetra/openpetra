@@ -493,10 +493,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = null;
+            bool NewTransaction = false;
 
             try
             {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
 
                 AGiftAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
@@ -560,7 +563,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             finally
             {
-                if (Transaction != null)
+                if ((Transaction != null) && NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
@@ -1015,7 +1018,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftBatchTDS MainDS = LoadTransactions(ALedgerNumber, ABatchNumber);
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
@@ -1026,7 +1034,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AFeesReceivableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
             AProcessedFeeAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return MainDS;
         }
@@ -1250,19 +1261,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        /// <summary>
-        /// post a Gift Batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        [RequireModulePermission("FINANCE-2")]
-        public static bool PostGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        private static GiftBatchTDS PrepareGiftBatchForPosting(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications)
         {
-            AVerifications = new TVerificationResultCollection();
-            bool ResultValue = false;
-
             GiftBatchTDS MainDS = LoadGiftBatchForPosting(ALedgerNumber, ABatchNumber);
+
+            AVerifications = new TVerificationResultCollection();
 
             // check that the Gift Batch BatchPeriod matches the date effective
             int DateEffectivePeriod, DateEffectiveYear;
@@ -1281,7 +1286,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             MainDS.AGiftBatch[0].BatchPeriod,
                             MainDS.AGiftBatch[0].GlEffectiveDate),
                         TResultSeverity.Resv_Critical));
-                return false;
+                return null;
             }
 
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
@@ -1333,41 +1338,103 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // TODO if already posted, fail
             MainDS.AGiftBatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
 
+            return MainDS;
+        }
+
+        /// <summary>
+        /// post a Gift Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        [RequireModulePermission("FINANCE-2")]
+        public static bool PostGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        {
+            List <Int32>GiftBatches = new List <int>();
+            GiftBatches.Add(ABatchNumber);
+
+            return PostGiftBatches(ALedgerNumber, GiftBatches, out AVerifications);
+        }
+
+        /// <summary>
+        /// post several gift batches at once
+        /// </summary>
+        [RequireModulePermission("FINANCE-2")]
+        public static bool PostGiftBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = new TVerificationResultCollection();
+
+            bool NewTransaction;
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            List <Int32>GLBatchNumbers = new List <int>();
+
             try
             {
-                // create GL batch
-                GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS);
-
-                ABatchRow batch = GLDataset.ABatch[0];
-
-                // save the batch
-                if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                        out AVerifications) == TSubmitChangesResult.scrOK)
+                // first prepare all the gift batches, mark them as posted, and create the GL batches
+                foreach (Int32 BatchNumber in ABatchNumbers)
                 {
-                    // post the batch
-                    if (!TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber,
-                            out AVerifications))
+                    GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out AVerifications);
+
+                    if (MainDS == null)
                     {
-                        // TODO: what if posting fails? do we have an orphaned GL batch lying around? can this be put into one single transaction? probably not
-                        // TODO: we should cancel that GL batch
+                        return false;
+                    }
+
+                    if (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) != TSubmitChangesResult.scrOK)
+                    {
+                        return false;
+                    }
+
+                    // create GL batch
+                    GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS);
+
+                    ABatchRow batch = GLDataset.ABatch[0];
+
+                    // save the batch
+                    if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                            out AVerifications) == TSubmitChangesResult.scrOK)
+                    {
+                        GLBatchNumbers.Add(batch.BatchNumber);
                     }
                     else
                     {
-                        ResultValue = (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) == TSubmitChangesResult.scrOK);
+                        return false;
+                    }
+                }
+
+                // now post the GL batches
+                if (!TGLPosting.PostGLBatches(ALedgerNumber, GLBatchNumbers,
+                        out AVerifications))
+                {
+                    // Transaction will be rolled back, no open GL batch flying around
+                    return false;
+                }
+                else
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                        NewTransaction = false;
+                        return true;
                     }
                 }
             }
             catch (Exception e)
             {
-                // we should not get here; how would the database get broken?
-                // TODO do we need a bigger transaction around everything?
-
-                TLogging.Log("after submitchanges: exception " + e.Message);
+                TLogging.Log("In posting Gift batches: exception " + e.Message);
 
                 throw new Exception(e.ToString() + " " + e.Message);
             }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
 
-            return ResultValue;
+            return true;
         }
 
         /// <summary>
@@ -1430,7 +1497,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static string IdentifyPartnerCostCentre(Int32 ledgerNumber, Int64 fieldNumber)
         {
             bool NewTransaction = false;
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             string costCentre = string.Empty;
 

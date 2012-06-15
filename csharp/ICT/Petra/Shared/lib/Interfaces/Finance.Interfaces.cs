@@ -629,6 +629,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                      Int32 ABatchNumber,
                                      out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        System.Boolean PostGiftBatches(Int32 ALedgerNumber,
+                                       List<Int32> ABatchNumbers,
+                                       out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         Int32 ExportAllGiftBatchData(Hashtable requestParams,
                                      out String exportString,
                                      out TVerificationResultCollection AMessages);
