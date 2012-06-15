@@ -1027,7 +1027,17 @@ namespace Ict.Common.Verification
 
             #region Check #2 - Number of significant digits to the right of the decimal point
             
-            FractionOnlyStr = (AValue.Value - Decimal.Truncate(AValue.Value)).ToString().Substring(2);
+            FractionOnlyStr = (AValue.Value - Decimal.Truncate(AValue.Value)).ToString();
+            
+            if (FractionOnlyStr.Length > 2) 
+            {
+                FractionOnlyStr = FractionOnlyStr.Substring(2);
+            }
+            else if (FractionOnlyStr.Length > 1) 
+            {
+                FractionOnlyStr = FractionOnlyStr.Substring(1);
+            }
+                                
             
             // Remove any trailing zeroes as they do not form a significant part of the fraction for our purposes
             while (FractionOnlyStr.EndsWith("0")) 
