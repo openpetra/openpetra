@@ -3781,6 +3781,12 @@
                 thisFields="p_type_c"
                 otherTable="p_banking_details_usage_type"
                 otherFields="p_type_c"/>
+    <!-- this foreign key is needed so that the p_banking_details_key_i is set when saving the dataset -->
+    <foreignkey name="p_banking_details_usage_fk3"
+                descr=""
+                thisFields="p_banking_details_key_i"
+                otherTable="p_banking_details"
+                otherFields="p_banking_details_key_i"/>
     <!-- Explicit Indexes on table p_banking_details_usage  -->
   </table>
   <table name="p_partner_tax_deductible_pct"

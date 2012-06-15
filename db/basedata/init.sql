@@ -25,6 +25,7 @@ COPY a_budget_type FROM '{#ABSOLUTEBASEDATAPATH}/a_budget_type.csv' WITH DELIMIT
 COPY a_frequency FROM '{#ABSOLUTEBASEDATAPATH}/a_frequency.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_business FROM '{#ABSOLUTEBASEDATAPATH}/p_business.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_banking_type FROM '{#ABSOLUTEBASEDATAPATH}/p_banking_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_banking_details_usage_type FROM '{#ABSOLUTEBASEDATAPATH}/p_banking_details_usage_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_reason_subscription_cancelled FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscription_cancelled.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_reason_subscription_given FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscription_given.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_application_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_application_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

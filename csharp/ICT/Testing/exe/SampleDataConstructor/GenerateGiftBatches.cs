@@ -58,6 +58,7 @@ namespace Ict.Testing.SampleDataConstructor
             GiftBatchTDS MainDS = CreateGiftBatches(GiftsPerDate);
 
             TVerificationResultCollection VerificationResult;
+            MainDS.ThrowAwayAfterSubmitChanges = true;
             GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
             if (VerificationResult.HasCriticalOrNonCriticalErrors)
