@@ -1,7 +1,7 @@
 RootNode:
-    BaseYaml: ../../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../CommonForms/PetraForm.yaml
     FormTitle: Select Event
-    Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
+    Namespace: Ict.Petra.Client.MCommon.Gui
     FormType: browse
     Template: window
     WindowWidth: 600
