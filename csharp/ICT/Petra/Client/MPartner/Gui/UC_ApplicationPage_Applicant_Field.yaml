@@ -37,10 +37,10 @@ RootNode:
         txtReason: {Label=Reason, DataField=PmGeneralApplication.GenApplicationHoldReason, ColSpan=2}
         dtpCancellationDate: {Label= Cancellation Date, DataField=PmGeneralApplication.GenAppCancelled}
         dtpAcceptanceDate: {Label=Sending Field Acceptance Date, DataField=PmGeneralApplication.GenAppSendFldAcceptDate}
-        chkAcceptedByReceivingField: {Label=Accepted by Receiving Field, DataField=PmGeneralApplication.GenAppSrvFldAccept}
+        chkAcceptedByReceivingField: {Label=Accepted by Receiving Field, DataField=PmGeneralApplication.GenAppSrvFldAccept, OnChange=EnableDisableReceivingFieldAcceptanceDate}
         dtpFieldAcceptance: {Label=Receiving Field Acceptance Date, DataField=PmGeneralApplication.GenAppRecvgFldAccept}
         
-        cmbApplicationCurrency: {Label=Application Currency, List=CurrencyCodeList, DataField=PmGeneralApplication.GenAppCurrencyCode, ColSpan=2}
+        cmbApplicationCurrency: {Label=Application Currency, List=CurrencyCodeList, DataField=PmGeneralApplication.GenAppCurrencyCode, OnChange=ApplicationCurrencyChanged, ColSpan=2}
         txtJoiningCharge: {Label=Joining Charge, Format=Currency, DataField=PmYearProgramApplication.YpAgreedJoiningCharge}
         txtAgreedSupport: {Label=Agreed Support, Format=Currency, DataField=PmYearProgramApplication.YpAgreedSupportFigure}
         cmbSupportPeriod: {Label=Support Period, DataField=PmYearProgramApplication.YpSupportPeriod, ColSpan=2}

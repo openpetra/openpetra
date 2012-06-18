@@ -60,10 +60,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         public void ShowDetails(PmGeneralApplicationRow ARow)
         {
-            // set member
-            //FApplicationDR = ARow;
-
             ShowData(ARow);
+            EnableDisableReceivingFieldAcceptanceDate(null, null);
+            ApplicationCurrencyChanged(null, null);
         }
 
         /// <summary>
@@ -120,6 +119,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             //TODO
         }
 
+        private void EnableDisableReceivingFieldAcceptanceDate(Object sender, EventArgs e)
+        {
+        	dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
+
+            if (!chkAcceptedByReceivingField.Checked)
+            {
+                dtpFieldAcceptance.Date = null;
+            }
+            else
+            {
+                dtpFieldAcceptance.Date = DateTime.Now.Date;
+            }
+        }
+        
+        private void ApplicationCurrencyChanged(Object sender, EventArgs e)
+        {
+        	String Currency;
+        	
+        	Currency = cmbApplicationCurrency.GetSelectedString();
+        	
+        	txtJoiningCharge.CurrencySymbol = Currency;
+        	txtAgreedSupport.CurrencySymbol = Currency;
+        }
+	
         #endregion
     }
 }

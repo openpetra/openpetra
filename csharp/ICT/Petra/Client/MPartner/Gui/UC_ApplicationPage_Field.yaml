@@ -21,10 +21,10 @@ RootNode:
                 Row0: [cmbApplicationType]
                 Row1: [txtPlacementPerson]
               
-        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, ColSpan=2, OnChange=ProcessApplicationFieldChanged}
+        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, PartnerClass=UNIT, ColSpan=2, OnChange=ProcessApplicationFieldChanged}
         dtpAvailableFrom: {Label=Available from, DataField=PmYearProgramApplication.StartOfCommitment}
         dtpAvailableTo: {Label=Available to, DataField=PmYearProgramApplication.EndOfCommitment}
 
         cmbApplicationType: {Label=Application Type, List=FieldApplicationTypeList, DataField=PmGeneralApplication.AppTypeName}
-        txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey}
+        txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey, PartnerClass=PERSON}
         

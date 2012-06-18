@@ -25,7 +25,7 @@ RootNode:
                 Row1: [rbtOutreach, rbtConference, rbtTeenstreet, rbtAll]
                 Row2: [chkCurrentFutureOnly]
         rbtOutreach:
-            Label: Outreachs Only
+            Label: Outreaches Only
             OnChange: EventTypeChanged
         rbtConference:
             Label: Conferences Only

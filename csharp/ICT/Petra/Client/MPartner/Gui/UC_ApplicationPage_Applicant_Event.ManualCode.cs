@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //FApplicationDR = ARow;
 
             ShowData(ARow);
+            EnableDisableReceivingFieldAcceptanceDate(null, null);
         }
 
         /// <summary>
@@ -120,6 +121,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             //TODO
         }
 
+        private void EnableDisableReceivingFieldAcceptanceDate(Object sender, EventArgs e)
+        {
+        	dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
+
+            if (!chkAcceptedByReceivingField.Checked)
+            {
+                dtpFieldAcceptance.Date = null;
+            }
+            else
+            {
+                dtpFieldAcceptance.Date = DateTime.Now.Date;
+            }
+        }
+        
         #endregion
     }
 }

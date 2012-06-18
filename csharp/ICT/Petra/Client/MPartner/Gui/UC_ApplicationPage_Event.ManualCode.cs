@@ -34,6 +34,10 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 
+//using Ict.Petra.Client.MReporting.Gui;
+//using Ict.Petra.Client.MReporting.Gui.MPersonnel;
+//using Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm;
+
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_ApplicationPage_Event
@@ -127,6 +131,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         	// trigger event so other controls can react to it
         	this.ApplicationEventChanged(APartnerKey, APartnerShortName, AValidSelection);
+        }
+        
+        private void OnBtnEventClicked(object sender, EventArgs e)
+        {
+//            TFrmSelectEvent SelectEventForm = new TFrmSelectEvent(FPetraUtilsObject.GetForm());
+
+//            if (SelectEventForm.ShowDialog() == DialogResult.OK)
+//            {
+//                txtEvent.Text = SelectEventForm.FSelectedPartnerKey;
+//                lblEventName.Text = SelectEventForm.FSelectedUnitName;
+//            }
         }
         
         #endregion

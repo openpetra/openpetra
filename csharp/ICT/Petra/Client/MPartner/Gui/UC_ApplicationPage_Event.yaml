@@ -14,6 +14,7 @@ RootNode:
             Dock: Fill
         grpEventInfo: {NoLabel=true, Stretch=horizontally}
             Controls: 
+                #Row0: [lblEvent, btnEvent, txtEvent, lblEventName1]
                 Row0: [txtEvent]
                 Row1: [txtFieldCharged]
         grpMiscellaneous: {NoLabel=true, Stretch=horizontally}
@@ -23,11 +24,15 @@ RootNode:
                 Row2: [cmbContact2]
                 Row3: [txtPlacementPerson]
               
+        #lblEvent: {Label=Event}
+        #btnEvent: {Label=Find, OnClick=OnBtnEventClicked}
+        #txtEvent: {NoLabel=true}
+        #lblEventName1: {Label=test}
         txtEvent: {Label=Event, DataField=PmShortTermApplication.StConfirmedOption, Type=PartnerKey, OnChange=ProcessApplicationEventChanged}
-        txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey}
+        txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=Conference, PartnerClass=UNIT}
 
         cmbApplicationType: {Label=Application Type, List=EventApplicationTypeList, DataField=PmGeneralApplication.AppTypeName}
         cmbContact1: {Label=Organization Contact 1, List=ContactList, DataField=PmGeneralApplication.GenContact1}
         cmbContact2: {Label=Organization Contact 2, List=ContactList, DataField=PmGeneralApplication.GenContact2}
-        txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey}
+        txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey, PartnerClass=PERSON}
         
