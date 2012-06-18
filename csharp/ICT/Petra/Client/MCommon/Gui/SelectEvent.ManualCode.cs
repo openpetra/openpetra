@@ -217,4 +217,48 @@ namespace Ict.Petra.Client.MCommon.Gui
             FEventTable.DefaultView.RowFilter = RowFilter;
         }
     }
+    
+    /// <summary>
+    /// Manages the opening of a new/showing of an existing Instance of the Event Find Screen.
+    /// </summary>
+    public static class TEventFindScreenManager
+    {
+        /// <summary>
+        /// Opens a Modal instance of the Event Find screen.
+        /// </summary>
+        /// <param name="AEventNamePattern">Mathcing pattern for the event name</param>
+        /// <param name="AEventKey">Partner key of the found event</param>
+        /// <param name="AEventName">Partner ShortName name of the found event</param>
+        /// <param name="AOutreachCode">Matching patterns for the outreach code</param>
+        /// <param name="AParentForm"></param>
+        /// <returns>True if an event was found and accepted by the user,
+        /// otherwise false.</returns>
+        public static bool OpenModalForm(String AEventNamePattern,
+            out Int64 AEventKey,
+            out String AEventName,
+            out String AOutreachCode,
+            Form AParentForm)
+        {
+            DialogResult dlgResult;
+
+            AEventKey = -1;
+            AEventName = String.Empty;
+            AOutreachCode = String.Empty;
+
+            TFrmSelectEvent SelectEvent = new TFrmSelectEvent(AParentForm);
+
+            dlgResult = SelectEvent.ShowDialog();
+
+            if (dlgResult == DialogResult.OK)
+            {
+                AEventKey = SelectEvent.FSelectedPartnerKey;
+                AEventName = SelectEvent.FSelectedUnitName;
+				AOutreachCode = SelectEvent.FSelectedOutreachCode;
+                return true;
+            }
+
+            return false;
+        }
+    }
+    
 }

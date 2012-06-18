@@ -35,6 +35,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
     {
         static TDelegateOpenPartnerFindScreen FOpenPartnerFindScreen;
         static TDelegateOpenConferenceFindScreen FOpenConferenceFindScreen;
+        static TDelegateOpenEventFindScreen FOpenEventFindScreen;
 
         /// <summary>
         /// This property is used to provide a function which opens a modal Partner Find screen.
@@ -67,6 +68,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenConferenceFindScreen = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which opens the event find screen.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenEventFindScreen OpenEventFindScreen
+        {
+            get
+            {
+                return FOpenEventFindScreen;
+            }
+
+            set
+            {
+                FOpenEventFindScreen = value;
             }
         }
     }
