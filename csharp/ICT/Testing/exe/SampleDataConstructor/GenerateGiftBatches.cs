@@ -274,7 +274,7 @@ namespace Ict.Testing.SampleDataConstructor
                                     Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_keymin_" +
                                             counter.ToString())) % KeyMinKeys.Rows.Count;
                                 giftDetail.RecipientKey = Convert.ToInt64(KeyMinKeys.Rows[recipientID].ItemArray[0]);
-                                giftDetail.RecipientLedgerNumber = TTransactionWebConnector.SearchRecipientLedgerKey(giftDetail.RecipientKey);
+                                giftDetail.RecipientLedgerNumber = TTransactionWebConnector.GetRecipientLedgerNumber(giftDetail.RecipientKey);
                                 giftDetail.CostCentreCode = (giftDetail.RecipientLedgerNumber / 10000).ToString("0000");
                             }
 

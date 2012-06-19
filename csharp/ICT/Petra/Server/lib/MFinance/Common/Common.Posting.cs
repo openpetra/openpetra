@@ -615,6 +615,7 @@ namespace Ict.Petra.Server.MFinance.Common
             SortedList <string, TAmount>APostingLevel, ABatchRow ABatchToPost)
         {
             DataView myView = new DataView(MainDS.ATransaction);
+
             myView.Sort = ATransactionTable.GetJournalNumberDBName();
 
             foreach (AJournalRow journal in MainDS.AJournal.Rows)
@@ -1305,25 +1306,17 @@ namespace Ict.Petra.Server.MFinance.Common
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                                                  (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
 
-                ALedgerTable LedgerTable;
-                LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
                 ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
                 NewRow.LedgerNumber = ALedgerNumber;
-                LedgerTable[0].LastBatchNumber++;
-                NewRow.BatchNumber = LedgerTable[0].LastBatchNumber;
-                NewRow.BatchPeriod = LedgerTable[0].CurrentPeriod;
-                NewRow.BatchYear = LedgerTable[0].CurrentFinancialYear;
+                MainDS.ALedger[0].LastBatchNumber++;
+                NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+                NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
                 MainDS.ABatch.Rows.Add(NewRow);
 
-                if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult))
-                {
-                    if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
-                    {
-                        MainDS.AcceptChanges();
-                    }
-                }
-
+                if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
                 {
                     MainDS.AcceptChanges();
                 }

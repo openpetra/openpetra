@@ -75,6 +75,11 @@ namespace Ict.Petra.Shared
         MethodOfPaymentList,
 
         /// <summary>
+        /// List of foreign ledgers (eg, other fields) which the local ledger may send transctions to.
+        /// </summary>
+        ValidLedgerNumberList,
+
+        /// <summary>
         /// This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes
         /// </summary>
         MotivationGroupList,

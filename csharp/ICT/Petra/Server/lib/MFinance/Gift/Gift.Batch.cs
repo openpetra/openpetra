@@ -119,7 +119,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <param name="LedgerTable"></param>
         /// <param name="ALedgerNumber"></param>
         /// <returns>the new gift batch row</returns>
-        public static ARecurringGiftBatchRow CreateANewRecurringGiftBatchRow(ref RecurringGiftBatchTDS MainDS,
+        public static ARecurringGiftBatchRow CreateANewRecurringGiftBatchRow(ref GiftBatchTDS MainDS,
             ref TDBTransaction Transaction,
             ref ALedgerTable LedgerTable,
             Int32 ALedgerNumber)
