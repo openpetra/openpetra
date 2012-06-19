@@ -128,28 +128,29 @@ public class TDropUnwantedStrings
                 sw.WriteLine(line);
                 line = sr.ReadLine();   //get the empty line
 
-                if(line != null)
+                if (line != null)
                 {
-                    if(line.Contains("todoComment"))
+                    if (line.Contains("todoComment"))
                     {
                         //Console.WriteLine("here");
                     }
+
                     while (line.StartsWith("#.") && !line.Contains("todoComment"))   //take over the comments(if they exist)
                     {
                         string line_part1 = AdaptString(line, "/");
                         string line_part2 = AdaptString(line_part1, "<summary>");
                         string line_part3 = AdaptString(line_part2, "</summary>");
-    
+
                         sw_all.WriteLine(line_part3);
                         sw.WriteLine(line_part3);
                         line = sr.ReadLine();
                     }
 
-    
                     if (line.StartsWith("#:"))   //take over the first source code line (if it exists)
                     {
                         sw_all.WriteLine(line);
-                        if(line.Contains("GenerateI18N.CollectedGettext.cs"))
+
+                        if (line.Contains("GenerateI18N.CollectedGettext.cs"))
                         {
                             //sw.WriteLine("#: This item was created automatically from a designer file");
                             line = sr.ReadLine();
@@ -166,20 +167,20 @@ public class TDropUnwantedStrings
                         sw_all.WriteLine(line);
                         line = sr.ReadLine();
                     }
-                    
-                                        
-                    if(line.Contains("todoComment"))
+
+                    if (line.Contains("todoComment"))
                     {
                         line = sr.ReadLine();   //ignore todoComment
                     }
                 }
             }
-            else if (line != null && line.StartsWith("msgid"))
+            else if ((line != null) && line.StartsWith("msgid"))
             {
-                if(line.Contains("Maintain Month Names for Different Languages"))
-               {
-                  // Console.WriteLine("here");
-               }
+                if (line.Contains("Maintain Month Names for Different Languages"))
+                {
+                    // Console.WriteLine("here");
+                }
+
                 StringCollection OriginalLines;
                 string messageId = ParsePoLine(sr, ref line, out OriginalLines);
 
@@ -207,11 +208,12 @@ public class TDropUnwantedStrings
         sw_all.Close();
         sw.Close();
         
-        ReviewTemplateFile(ATranslationFile);
-        
         TTextFile.UpdateFile(ATranslationFile);
+
+        ReviewTemplateFile(ATranslationFile);
+
     }
-    
+
     /// <summary>
     /// open template.pot again and remove source code lines of not translated msgids
     /// </summary>
@@ -220,42 +222,50 @@ public class TDropUnwantedStrings
         StreamReader sr = new StreamReader(ATranslationFile);
         Encoding enc = new UTF8Encoding(false);
         StreamWriter sw = new StreamWriter(ATranslationFile + ".new", false, enc);
-        
+
         string line = sr.ReadLine();
-        
-        while(line != null)
+
+        while (line != null)
         {
-            if(line.StartsWith("#:"))
+            if (line.StartsWith("#:"))
             {
                 string currentLine = line;
                 //write line only to new template file if the following line is not empty
                 line = sr.ReadLine();
-                if(line != "")
+
+                if (line != "")
                 {
                     sw.WriteLine(currentLine);
                 }
             }
-            if(line == "")
+            else if (line == "")
             {
                 //add empty line only it the next line is not aswell an empty line
                 string currentLine = line;
                 line = sr.ReadLine();
-                if(line != "")
+
+                if (line != "")
                 {
                     sw.WriteLine(currentLine);
-                }                
+                }
             }
             else
             {
                 sw.WriteLine(line);
                 line = sr.ReadLine();
             }
+            
+            /*if(line.Contains("txtAutoPopulatedButtonLabel"))
+            {
+                Console.WriteLine("here");
+            }*/
         }
-        
+
         sr.Close();
         sw.Close();
-    }
         
+        TTextFile.UpdateFile(ATranslationFile);
+    }
 
     /// <summary>
     /// remove a substring from a String

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-19 12:04-0500\n"
+"POT-Creation-Date: 2012-06-19 13:32-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -393,6 +393,9 @@ msgstr ""
 msgid "invalid database system"
 msgstr ""
 
+
+
+
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Core\Cache.cs:268
 msgid "You do not have enough permissions to access the Finance module"
 msgstr ""
@@ -496,6 +499,10 @@ msgstr ""
 msgid "OpenPetra Client Has Lost Its Connection To The OpenPetra Server"
 msgstr ""
 
+
+
+
+
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Core\UnhandledExceptionDialog.cs:223
 msgid "Error &Details..."
 msgstr ""
@@ -507,6 +514,7 @@ msgstr ""
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Core\UnhandledExceptionDialog.cs:225
 msgid "&Report Error"
 msgstr ""
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Core\UnhandledExceptionDialog.cs:340
 msgid "Application Error"
@@ -710,17 +718,14 @@ msgstr ""
 
 #.  String for the title
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:37
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind.ManualCode.cs:80
 msgid "Partner"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:40
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\Setup\LocalDataFieldSetup.ManualCode.cs:164
 msgid "Partner Class"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\app\Gui\Resourcestrings.cs:43
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:82
 msgid "PartnerKey"
 msgstr ""
 
@@ -874,6 +879,7 @@ msgstr ""
 msgid "Custom Text can be displayed here..."
 msgstr ""
 
+
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\CommonControls\Gui\btnSplitButton.cs:229
 msgid "Starts with search term --*"
 msgstr ""
@@ -899,6 +905,9 @@ msgstr ""
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.cs:112
 msgid "NOT A VALID OCCUPATION CODE!"
 msgstr ""
+
+
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.cs:640
 msgid "&Occupation..."
@@ -939,7 +948,6 @@ msgid "No valid Extract selected"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\CommonControls\Gui\txtAutoPopulatedButtonLabel.cs:1163
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:43
 msgid "Error"
 msgstr ""
 
@@ -1304,6 +1312,7 @@ msgstr ""
 msgid "To"
 msgstr ""
 
+
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\Setup\FrequencySetup-generated.cs:81
 msgid "Number Of Years:"
 msgstr ""
@@ -1637,12 +1646,10 @@ msgid "You must check at least one box in the list of Application types."
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:91
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:109
 msgid "&New"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\Setup\SetupCurrency-generated.cs:92
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:115
 msgid "&Delete"
 msgstr ""
 
@@ -1687,7 +1694,6 @@ msgid "Opening of Field Of Service screen got cancelled by user."
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\FieldOfService.cs:55
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:92
 msgid "Screen opening cancelled"
 msgstr ""
 
@@ -1712,9 +1718,12 @@ msgid "Reset Search"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\UC_CollapsibleSearchPane.cs:484
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MFinance\Gui\AP\APMain-generated.cs:69
 msgid "&Search"
 msgstr ""
+
+
+
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\Gui\UC_PartnerAddress.cs:139
 msgid "Valid To:"
@@ -1933,7 +1942,6 @@ msgid ""
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\FieldOfService.cs:50
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:86
 msgid "OpenPetra Server Too Busy"
 msgstr ""
 
@@ -1942,22 +1950,18 @@ msgid "Information"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:40
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MFinance\Gui\Gift\GiftRevertAdjust.ManualCode.cs:238
 msgid "Warning"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:46
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\PrintPreview.cs:99
 msgid "Ready"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:49
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:584
 msgid "Details: "
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MCommon\logic\Resourcestrings.cs:52
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\UC_PartnerSubscriptions.cs:69
 msgid " (inactive)"
 msgstr ""
 
@@ -2851,6 +2855,8 @@ msgstr ""
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MFinance\Gui\AP\APPayment-generated.cs:76
 msgid "Cheque Number:"
 msgstr ""
+
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MFinance\Gui\AP\APPayment-generated.cs:79
 msgid "Amount To Pay"
@@ -7042,7 +7048,6 @@ msgid "&Worker Field..."
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\PartnerFind-generated.cs:111
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:237
 msgid "&Personnel/Individual Data..."
 msgstr ""
 
@@ -7731,7 +7736,6 @@ msgid " to "
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_FamilyMembers.ManualCode.cs:58
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\UC_FamilyMembers.cs:63
 msgid "Family ID Change Done"
 msgstr ""
 
@@ -8917,6 +8921,7 @@ msgstr ""
 msgid "Enter the unit type"
 msgstr ""
 
+
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerDetails_Unit-generated.cs:149
 msgid "Enter the cost of this outreach"
 msgstr ""
@@ -9154,12 +9159,10 @@ msgid "Custom Criteria Demo"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:202
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:166
 msgid "Fin&d Result"
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_ByPartnerDetails.cs:203
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\Resourcestrings.cs:157
 msgid "Searching..."
 msgstr ""
 
@@ -9217,6 +9220,7 @@ msgstr ""
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:325
 msgid "Worker Families O&nly"
 msgstr ""
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_Criteria.cs:329
 msgid "(trailing 0 = --*)"
@@ -9278,9 +9282,11 @@ msgstr ""
 msgid "From/To:"
 msgstr ""
 
+
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs:62
 msgid "Only Current"
 msgstr ""
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\Gui\UC_PartnerFind_PersonnelCriteria_CollapsiblePart.cs:65
 msgid "Eve&nt/Confer./Camp.:"
@@ -9611,7 +9617,6 @@ msgid "No e-mail address for this Partner in the selected address record."
 msgstr ""
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:575
-#: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MPartner\logic\PartnerFind.cs:587
 msgid "Cannot Send E-mail To Partner"
 msgstr ""
 
@@ -10741,6 +10746,7 @@ msgstr ""
 msgid "&Open..."
 msgstr ""
 
+
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\MConference\AbsenteeReport-generated.cs:88
 msgid "&Load Settings"
 msgstr ""
@@ -11398,6 +11404,7 @@ msgstr ""
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\MFinance\ARConferencePayments-generated.cs:104
 msgid "Payments for Conference"
 msgstr ""
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\MFinance\BalanceSheetMultiLedger-generated.cs:79
 msgid "Standard"
@@ -12783,6 +12790,7 @@ msgstr ""
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\PrintPreview.cs:103
 msgid "Text Preview"
 msgstr ""
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Client\MReporting\Gui\PrintPreview.cs:106
 msgid ""
@@ -14524,6 +14532,7 @@ msgstr ""
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Server\lib\MPartner\Common\DataAggregates.PPartnerAddress.cs:527
 msgid "** restricted **"
 msgstr ""
+
 
 #: E:\openpetra\bzr\work-690\csharp\ICT\Petra\Server\lib\MPartner\Common\ImportPartnerForm.cs:497
 msgid "We were not able to send the email to {0}"

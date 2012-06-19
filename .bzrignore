@@ -65,3 +65,4 @@ inc/cfg/benerator/benerator.log
 ./i18n/template - Kopie.pot_beforeremove
 ./nantbuildTranslationTemplate_output
 ./i18n/template - Kopie.pot
+./log.log
