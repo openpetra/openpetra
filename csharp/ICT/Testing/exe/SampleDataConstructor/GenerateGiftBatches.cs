@@ -251,6 +251,8 @@ namespace Ict.Testing.SampleDataConstructor
 
                                 // TODO: ignore this gift detail, if there is no valid commitment period for the worker
                                 // if (InvalidCommitment(giftBatch.GlEffectiveDate)) continue;
+
+                                // TODO giftDetail.RecipientLedgerNumber =
                             }
                             else if (motivation == "FIELD")
                             {

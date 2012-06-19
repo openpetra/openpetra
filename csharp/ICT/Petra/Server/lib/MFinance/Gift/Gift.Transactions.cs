@@ -1324,7 +1324,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
-            TLogging.Log("before loading ");
             bool NewTransaction = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
@@ -1345,8 +1344,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            TLogging.Log("after loading ");
-
             AVerifications = new TVerificationResultCollection();
 
             // check that the Gift Batch BatchPeriod matches the date effective
@@ -1356,7 +1353,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 out DateEffectivePeriod,
                 out DateEffectiveYear,
                 null);
-            TLogging.Log("after valid posting period");
 
             if (MainDS.AGiftBatch[0].BatchPeriod != DateEffectivePeriod)
             {
@@ -1369,8 +1365,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         TResultSeverity.Resv_Critical));
                 return null;
             }
-
-            TLogging.Log("before loop");
 
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
@@ -1457,7 +1451,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // first prepare all the gift batches, mark them as posted, and create the GL batches
                 foreach (Int32 BatchNumber in ABatchNumbers)
                 {
-                    TLogging.Log("post gift batch: before PrepareGiftBatchForPosting");
                     GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out AVerifications);
 
                     if (MainDS == null)
@@ -1465,22 +1458,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         return false;
                     }
 
-                    TLogging.Log("post gift batch: before SubmitChanges");
+                    MainDS.ThrowAwayAfterSubmitChanges = true;
 
                     if (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) != TSubmitChangesResult.scrOK)
                     {
                         return false;
                     }
 
+                    // it is faster to reload the batch and details, than to load the modification id after saving
+                    MainDS = new GiftBatchTDS();
+
+                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, BatchNumber, WriteTransaction);
+                    AGiftDetailAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, BatchNumber, WriteTransaction);
+
                     // create GL batch
-                    TLogging.Log("post gift batch: before CreateGLBatchAndTransactionsForPostingGifts");
                     GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS);
 
                     ABatchRow batch = GLDataset.ABatch[0];
 
                     // save the batch
-                    TLogging.Log("post gift batch: before SaveGLBatchTDS");
-
                     if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
                             out AVerifications) == TSubmitChangesResult.scrOK)
                     {
@@ -1493,8 +1489,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 // now post the GL batches
-                TLogging.Log("post gift batch: before PostGLBatches");
-
                 if (!TGLPosting.PostGLBatches(ALedgerNumber, GLBatchNumbers,
                         out AVerifications))
                 {
@@ -1507,8 +1501,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
                         NewTransaction = false;
-                        return true;
                     }
+
+                    return true;
                 }
             }
             catch (Exception e)
@@ -1524,8 +1519,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
-
-            return true;
         }
 
         /// <summary>
