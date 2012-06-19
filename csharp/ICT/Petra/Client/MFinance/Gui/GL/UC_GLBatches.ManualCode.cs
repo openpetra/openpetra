@@ -250,7 +250,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             
+            txtDetailBatchDescription.Text = "Please enter a batch description.";
             txtDetailBatchDescription.Focus();
+            
+			((TFrmGLBatch)ParentForm).SaveChanges();
 
         }
 
