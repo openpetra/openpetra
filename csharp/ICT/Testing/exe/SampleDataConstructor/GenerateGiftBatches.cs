@@ -183,9 +183,14 @@ namespace Ict.Testing.SampleDataConstructor
                 string sqlGetFieldPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_unit WHERE u_unit_type_code_c = 'F'";
                 DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", ReadTransaction);
 
-                // get a list of key ministries (all class UNIT, with unit type KEY-MIN)
-                string sqlGetKeyMinPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_unit WHERE u_unit_type_code_c = 'KEY-MIN'";
-                DataTable KeyMinKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetKeyMinPartnerKeys, "keys", ReadTransaction);
+                // get a list of key ministries (all class UNIT, with unit type KEY-MIN), and their field ledger number and cost centre code
+                string sqlGetKeyMinPartnerKeys =
+                    "SELECT u.p_partner_key_n, us.um_parent_unit_key_n, vl.a_cost_centre_code_c " +
+                    "FROM PUB_p_unit u, PUB_um_unit_structure us, PUB_a_valid_ledger_number vl " +
+                    "WHERE u.u_unit_type_code_c = 'KEY-MIN' " +
+                    "AND us.um_child_unit_key_n = u.p_partner_key_n " +
+                    "AND vl.p_partner_key_n = us.um_parent_unit_key_n";
+                DataTable KeyMinistries = DBAccess.GDBAccessObj.SelectDT(sqlGetKeyMinPartnerKeys, "keys", ReadTransaction);
 
                 LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);
 
@@ -264,7 +269,7 @@ namespace Ict.Testing.SampleDataConstructor
                             }
                             else if (motivation == "KEYMIN")
                             {
-                                if (KeyMinKeys.Rows.Count == 0)
+                                if (KeyMinistries.Rows.Count == 0)
                                 {
                                     continue;
                                 }
@@ -272,10 +277,13 @@ namespace Ict.Testing.SampleDataConstructor
                                 giftDetail.MotivationDetailCode = "KEYMIN";
                                 int recipientID =
                                     Convert.ToInt32(TXMLParser.GetAttribute(RecordNode, "recipient_keymin_" +
-                                            counter.ToString())) % KeyMinKeys.Rows.Count;
-                                giftDetail.RecipientKey = Convert.ToInt64(KeyMinKeys.Rows[recipientID].ItemArray[0]);
-                                giftDetail.RecipientLedgerNumber = TTransactionWebConnector.GetRecipientLedgerNumber(giftDetail.RecipientKey);
-                                giftDetail.CostCentreCode = (giftDetail.RecipientLedgerNumber / 10000).ToString("0000");
+                                            counter.ToString())) % KeyMinistries.Rows.Count;
+                                giftDetail.RecipientKey = Convert.ToInt64(KeyMinistries.Rows[recipientID].ItemArray[0]);
+
+                                giftDetail.RecipientLedgerNumber = Convert.ToInt64(KeyMinistries.Rows[recipientID].ItemArray[1]);
+                                // TTransactionWebConnector.GetRecipientLedgerNumber(giftDetail.RecipientKey);
+                                giftDetail.CostCentreCode = KeyMinistries.Rows[recipientID].ItemArray[2].ToString();
+                                // TTransactionWebConnector.IdentifyPartnerCostCentre(FLedgerNumber, giftDetail.RecipientLedgerNumber);
                             }
 
                             giftDetail.DetailNumber = gift.LastDetailNumber + 1;

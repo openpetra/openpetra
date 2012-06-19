@@ -890,9 +890,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ALedgerNumber, Int32 ABatchNumber,
             TDBTransaction ATransaction)
         {
-            // load all donor shortnames and partner types in one go
+            // load all donor shortnames in one go
             string getDonorSQL =
-                "SELECT DISTINCT dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g " +
+                "SELECT DISTINCT dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g " +
                 "WHERE g.a_ledger_number_i = ? AND g.a_batch_number_i = ? AND g.p_donor_key_n = dp.p_partner_key_n";
 
             if (ARecurring)
@@ -923,20 +923,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientSQL, AGiftDS.RecipientPartners.TableName,
-                ATransaction,
-                parameters.ToArray(), 0, 0);
-
-
-            string getRecipientTypesSQL =
-                "SELECT DISTINCT pt.* FROM PUB_p_partner_type pt, PUB_a_gift_detail gd " +
-                "WHERE gd.a_ledger_number_i = ? AND gd.a_batch_number_i = ? AND gd.p_recipient_key_n = pt.p_partner_key_n";
-
-            if (ARecurring)
-            {
-                getRecipientTypesSQL = getRecipientTypesSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
-            }
-
-            DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientTypesSQL, AGiftDS.RecipientPartnerTypes.TableName,
                 ATransaction,
                 parameters.ToArray(), 0, 0);
 
@@ -1039,6 +1025,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null));
 
             if (NewTransaction)
             {
@@ -1627,14 +1614,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            PPartnerTypeAccess.LoadByPrimaryKey(MainDS, partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER, null);
+            MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null));
             MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(partnerKey, null));
-            UmUnitStructureAccess.LoadAll(MainDS, null);
             MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(partnerKey, null));
             MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(partnerKey, null));
             MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(partnerKey, null));
+            MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null));
 
-            MainDS.RecipientPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPPartner(partnerKey, null));
+            UmUnitStructureAccess.LoadAll(MainDS, null);
+            MainDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
 
             return GetRecipientLedgerNumber(MainDS, partnerKey);
         }
@@ -1645,7 +1633,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // TODO Get the field in p_person.p_om_field_key_n
             // TODO Get the field in p_family.p_om_field_key_n
 
-            if (AMainDS.RecipientPartnerTypes.Rows.Find(new object[] { partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)
+            if (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)
             {
                 return partnerKey;
             }
@@ -1732,7 +1720,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         private static PUnitTable LoadKeyMinistriesOfField(Int64 partnerKey, TDBTransaction ATransaction)
         {
             string sqlLoadKeyMinistriesOfField =
-                "SELECT unit.* FROM PUB_um_unit_structure us, PUB_p_unit unit, PUB_p_partner partner" +
+                "SELECT unit.* FROM PUB_um_unit_structure us, PUB_p_unit unit, PUB_p_partner partner " +
                 "WHERE us.um_parent_unit_key_n = " + partnerKey.ToString() + " " +
                 "AND unit.p_partner_key_n = us.um_child_unit_key_n " +
                 "AND unit.u_unit_type_code_c = '" + MPartnerConstants.UNIT_TYPE_KEYMIN + "' " +

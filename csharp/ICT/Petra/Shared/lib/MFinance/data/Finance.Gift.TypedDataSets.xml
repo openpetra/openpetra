@@ -49,7 +49,7 @@
         <Table sqltable="p_family" name="RecipientFamily"/>
         <Table sqltable="p_person" name="RecipientPerson"/>
         <Table sqltable="p_unit" name="RecipientUnit"/>
-        <Table sqltable="p_partner_type" name="RecipientPartnerTypes"/>
+        <Table sqltable="p_partner_type" name="LedgerPartnerTypes"/>
         <Table sqltable="um_unit_structure"/>
     </DataSet>
 
