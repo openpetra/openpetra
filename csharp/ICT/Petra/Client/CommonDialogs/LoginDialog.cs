@@ -386,6 +386,54 @@ namespace Ict.Petra.Client.CommonDialogs
 #endif
 #if  TESTMODE
 #else
+                // on Standalone, we can find the Server.log file, and check the last 10 lines for "System.Exception: Unsupported upgrade"
+                string ServerLog = Path.GetDirectoryName(TLogging.GetLogFileName()) + Path.DirectorySeparatorChar + "Server.log";
+
+                if (File.Exists(ServerLog))
+                {
+                    int countExceptionLine = 0;
+                    string ErrorMessage = string.Empty;
+
+                    StreamReader sr = new StreamReader(ServerLog);
+
+                    while (!sr.EndOfStream)
+                    {
+                        string line = sr.ReadLine();
+
+                        if (line.Contains("System.Exception: Unsupported upgrade"))
+                        {
+                            countExceptionLine = 12;
+                            ErrorMessage = line.Substring("System.Exception: Unsupported upgrade".Length + 2);
+                        }
+                        else
+                        {
+                            countExceptionLine--;
+                        }
+                    }
+
+                    sr.Close();
+
+                    if (countExceptionLine > 0)
+                    {
+                        MessageBox.Show(ErrorMessage.Replace('/', Path.DirectorySeparatorChar),
+                            Catalog.GetString("Unsupported upgrade"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            Catalog.GetString(
+                                "The OpenPetra Server cannot be reached!") + Environment.NewLine + StrDetailsInLogfile + ": " +
+                            ServerLog,
+                            Catalog.GetString("No Server Response"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                    }
+
+                    return false;
+                }
+
                 MessageBox.Show(Catalog.GetString("The OpenPetra Server cannot be reached!"),
                     Catalog.GetString("No Server Response"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
 #endif

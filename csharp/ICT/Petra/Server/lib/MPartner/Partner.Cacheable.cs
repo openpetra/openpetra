@@ -418,7 +418,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateAddresseeTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateAddresseeTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PAddresseeTypeAccess.SubmitChanges((PAddresseeTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -435,7 +435,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateAcquisitionCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateAcquisitionCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PAcquisitionAccess.SubmitChanges((PAcquisitionTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -452,7 +452,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateBusinessCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateBusinessCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PBusinessAccess.SubmitChanges((PBusinessTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -469,7 +469,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateCurrencyCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateCurrencyCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (ACurrencyAccess.SubmitChanges((ACurrencyTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -486,7 +486,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateDataLabelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateDataLabelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PDataLabelAccess.SubmitChanges((PDataLabelTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -503,7 +503,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateDataLabelUseList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateDataLabelUseListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PDataLabelUseAccess.SubmitChanges((PDataLabelUseTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -520,7 +520,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateDataLabelLookupCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateDataLabelLookupCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PDataLabelLookupCategoryAccess.SubmitChanges((PDataLabelLookupCategoryTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -537,7 +537,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateDataLabelLookupList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateDataLabelLookupListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PDataLabelLookupAccess.SubmitChanges((PDataLabelLookupTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -554,7 +554,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateDenominationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateDenominationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PDenominationAccess.SubmitChanges((PDenominationTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -571,7 +571,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateInterestList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateInterestListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PInterestAccess.SubmitChanges((PInterestTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -588,7 +588,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateInterestCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateInterestCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PInterestCategoryAccess.SubmitChanges((PInterestCategoryTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -605,7 +605,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateLocationTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateLocationTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PLocationTypeAccess.SubmitChanges((PLocationTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -622,7 +622,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateMaritalStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMaritalStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtMaritalStatusAccess.SubmitChanges((PtMaritalStatusTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -639,7 +639,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateMethodOfContactList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMethodOfContactListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PMethodOfContactAccess.SubmitChanges((PMethodOfContactTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -656,7 +656,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateOccupationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateOccupationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (POccupationAccess.SubmitChanges((POccupationTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -673,7 +673,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidatePartnerStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidatePartnerStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PPartnerStatusAccess.SubmitChanges((PPartnerStatusTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -690,7 +690,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidatePartnerTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidatePartnerTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PTypeAccess.SubmitChanges((PTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -707,7 +707,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateProposalStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateProposalStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PFoundationProposalStatusAccess.SubmitChanges((PFoundationProposalStatusTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -724,7 +724,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateProposalSubmissionTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateProposalSubmissionTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PProposalSubmissionTypeAccess.SubmitChanges((PProposalSubmissionTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -741,7 +741,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateRelationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateRelationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PRelationAccess.SubmitChanges((PRelationTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -758,7 +758,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateRelationCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateRelationCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PRelationCategoryAccess.SubmitChanges((PRelationCategoryTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -775,7 +775,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                                 ValidateUnitTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateUnitTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (UUnitTypeAccess.SubmitChanges((UUnitTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
