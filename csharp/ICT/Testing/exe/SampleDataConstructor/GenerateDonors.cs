@@ -50,6 +50,10 @@ namespace Ict.Testing.SampleDataConstructor
         /// <param name="AInputBeneratorFile"></param>
         public static void GenerateFamilyPartners(string AInputBeneratorFile)
         {
+            // get a list of banks (all class BANK)
+            string sqlGetBankPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_bank";
+            DataTable BankKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetBankPartnerKeys, "keys", null);
+
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AInputBeneratorFile, ",", Encoding.UTF8);
@@ -89,6 +93,13 @@ namespace Ict.Testing.SampleDataConstructor
 
                 SampleDataWorkers.GenerateAddressForFamily(RecordNode, familyRecord, MainDS);
 
+                SampleDataWorkers.GenerateBankDetails(RecordNode, familyRecord, MainDS, BankKeys);
+
+                if (MainDS.PFamily.Rows.Count % 100 == 0)
+                {
+                    TLogging.Log("created donor " + MainDS.PFamily.Rows.Count.ToString() + " " + familyRecord.FamilyName);
+                }
+
                 RecordNode = RecordNode.NextSibling;
             }
 
@@ -119,12 +130,15 @@ namespace Ict.Testing.SampleDataConstructor
             }
 
             TVerificationResultCollection VerificationResult;
+            MainDS.ThrowAwayAfterSubmitChanges = true;
             PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
             if (VerificationResult.HasCriticalOrNonCriticalErrors)
             {
                 throw new Exception(VerificationResult.BuildVerificationResultString());
             }
+
+            TLogging.Log("after saving donors");
         }
     }
 }

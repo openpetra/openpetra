@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1012,7 +1012,7 @@ namespace Ict.Common.Printing
                 // todo: header div style with tray information; config file with local tray names???
             }
 
-            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos())
+            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos() && (FRowsLeftOver == null))
             {
                 throw new Exception("page too small, at " + curNode.Name);
             }

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             dtpEffectiveDate.Date = DateTime.Now;
         }
 
-        private Ict.Petra.Shared.MFinance.Gift.Data.RecurringGiftBatchTDS FMainDS;
+        private GiftBatchTDS FMainDS;
         private Int32 FLedgerNumber;
         private Int32 FBatchNumber;
         private ARecurringGiftBatchRow batchRow;
@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         DateTime StartDateCurrentPeriod;
         DateTime EndDateLastForwardingPeriod;
         /// dataset for the whole screen
-        public Ict.Petra.Shared.MFinance.Gift.Data.RecurringGiftBatchTDS MainDS
+        public GiftBatchTDS MainDS
         {
             set
             {
