@@ -156,28 +156,11 @@ public class TDropUnwantedStrings
                         }
                         else
                         {
-                            string currentLine = line;
+                            sw.WriteLine(line);
                             line = sr.ReadLine();
-
-                            //only add the source line if the next line contains a message to translate
-                            //StringCollection OriginalLines;
-                            //string messageId = ParsePoLine(sr, ref line, out OriginalLines);
-                            
-                            //if(!DoNotTranslate.Contains(messageId))
-                            {
-                                //if(line != null)    //make sure that the next line is not an empty line because then one source line would follow another one
-                                sw.WriteLine(currentLine);
-                            }
                         }
                     }
-    
-                    /* if(line.StartsWith("#:"))
-                     * {
-                     *   sw_all.WriteLine(line);
-                     *   sw.WriteLine(line);
-                     *   line = sr.ReadLine();
-                     * }
-                     */
+
                     while (line.StartsWith("#:") || line.StartsWith("#,"))  //ignore all other source code lines
                     {
                         sw_all.WriteLine(line);
