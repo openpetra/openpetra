@@ -347,12 +347,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 			            pnlDetails.Enabled = false;
 		            }
 
-		            MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
+
+                    //Need to call save
+		            if (((TFrmGLBatch)ParentForm).SaveChanges())
+		            {
+			            MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
+	                        Catalog.GetString("Success"),
+	                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+	                    //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
+		            }
+		            else
+		            {
+						// saving failed, therefore do not try to post
+	                    MessageBox.Show(Catalog.GetString("The batch has been cancelled but there were problems during saving; ") + Environment.NewLine +
+	                        Catalog.GetString("Please try and save the cancellation immediately."),
+	                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+		            }
+		            
                 }
             }
             
