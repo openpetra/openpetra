@@ -130,6 +130,10 @@ public class TDropUnwantedStrings
 
                 if(line != null)
                 {
+                    if(line.Contains("todoComment"))
+                    {
+                        //Console.WriteLine("here");
+                    }
                     while (line.StartsWith("#.") && !line.Contains("todoComment"))   //take over the comments(if they exist)
                     {
                         string line_part1 = AdaptString(line, "/");
@@ -140,9 +144,11 @@ public class TDropUnwantedStrings
                         sw.WriteLine(line_part3);
                         line = sr.ReadLine();
                     }
+
     
                     if (line.StartsWith("#:"))   //take over the first source code line (if it exists)
                     {
+                        sw_all.WriteLine(line);
                         if(line.Contains("GenerateI18N.CollectedGettext.cs"))
                         {
                             //sw.WriteLine("#: This item was created automatically from a designer file");
@@ -152,13 +158,17 @@ public class TDropUnwantedStrings
                         {
                             string currentLine = line;
                             line = sr.ReadLine();
-                            DoNotTranslate.Contains(messageId)
-                            123
-                            if(line != null)    //make sure that the next line is not an empty line because then one source line would follow another one
-                            sw.WriteLine(currentLine);
+
+                            //only add the source line if the next line contains a message to translate
+                            //StringCollection OriginalLines;
+                            //string messageId = ParsePoLine(sr, ref line, out OriginalLines);
+                            
+                            //if(!DoNotTranslate.Contains(messageId))
+                            {
+                                //if(line != null)    //make sure that the next line is not an empty line because then one source line would follow another one
+                                sw.WriteLine(currentLine);
+                            }
                         }
-                        sw_all.WriteLine(line);
-                        
                     }
     
                     /* if(line.StartsWith("#:"))
@@ -172,6 +182,12 @@ public class TDropUnwantedStrings
                     {
                         sw_all.WriteLine(line);
                         line = sr.ReadLine();
+                    }
+                    
+                                        
+                    if(line.Contains("todoComment"))
+                    {
+                        line = sr.ReadLine();   //ignore todoComment
                     }
                 }
             }
@@ -207,8 +223,56 @@ public class TDropUnwantedStrings
         sr.Close();
         sw_all.Close();
         sw.Close();
+        
+        ReviewTemplateFile(ATranslationFile);
+        
         TTextFile.UpdateFile(ATranslationFile);
     }
+    
+    /// <summary>
+    /// open template.pot again and remove source code lines of not translated msgids
+    /// </summary>
+    private static void ReviewTemplateFile(string ATranslationFile)
+    {
+        StreamReader sr = new StreamReader(ATranslationFile);
+        Encoding enc = new UTF8Encoding(false);
+        StreamWriter sw = new StreamWriter(ATranslationFile + ".new", false, enc);
+        
+        string line = sr.ReadLine();
+        
+        while(line != null)
+        {
+            if(line.StartsWith("#:"))
+            {
+                string currentLine = line;
+                //write line only to new template file if the following line is not empty
+                line = sr.ReadLine();
+                if(line != "")
+                {
+                    sw.WriteLine(currentLine);
+                }
+            }
+            if(line == "")
+            {
+                //add empty line only it the next line is not aswell an empty line
+                string currentLine = line;
+                line = sr.ReadLine();
+                if(line != "")
+                {
+                    sw.WriteLine(currentLine);
+                }                
+            }
+            else
+            {
+                sw.WriteLine(line);
+                line = sr.ReadLine();
+            }
+        }
+        
+        sr.Close();
+        sw.Close();
+    }
+        
 
     /// <summary>
     /// remove a substring from a String
