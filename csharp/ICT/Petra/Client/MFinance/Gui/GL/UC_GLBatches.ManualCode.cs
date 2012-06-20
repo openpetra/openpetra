@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
             //dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
             //dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
-            txtDetailBatchControlTotal.Enabled = false;
+            //txtDetailBatchControlTotal.Enabled = false;
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -214,6 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ClearDetailControls()
         {
         	txtDetailBatchDescription.Text = string.Empty;
+        	txtDetailBatchControlTotal.NumberValueDecimal = 0;
         	dtpDetailDateEffective.Date = DateTime.Today;
         }
         
@@ -411,6 +412,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+			//get index position of row to post
+            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+            
             //TODO: Correct this if needed
 			DateTime StartDateCurrentPeriod;
 			DateTime EndDateLastForwardingPeriod;
@@ -464,6 +468,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     this.FPreviouslySelectedDetailRow = null;
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                     LoadBatches(FLedgerNumber);
+                    
+                    if (grdDetails.Rows.Count > 1)
+		            {
+		                //If last row just deleted, select row at old position - 1
+		                if (newCurrentRowPos == grdDetails.Rows.Count)
+		                {
+		                    newCurrentRowPos--;
+		                }
+		
+		                grdDetails.Selection.ResetSelection(false);
+		                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+		                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+		                
+		                ShowDetails(FPreviouslySelectedDetailRow);
+		            }
+		            else
+		            {
+		                FPreviouslySelectedDetailRow = null;
+			            EnableButtonControl(false);
+			            ClearDetailControls();
+			            pnlDetails.Enabled = false;
+		            }
                 }
             }
         }
@@ -655,7 +681,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 //            ;
 //        }
 
-        private void RefreshFilter(Object sender, EventArgs e)
+        void RefreshFilter(Object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
@@ -703,7 +729,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FStatusFilter = "1 = 1";
                 btnNew.Enabled = true;
             }
-            else if (rbtPosting.Checked)
+            else //(rbtPosting.Checked)
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting, SelectedYear,
                         SelectedPeriod));
@@ -718,6 +744,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FMainDS.ABatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            
+            if (grdDetails.Rows.Count < 2)
+            {
+            	ClearDetailControls();
+            }
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)
