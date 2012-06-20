@@ -1458,19 +1458,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         return false;
                     }
 
-                    MainDS.ThrowAwayAfterSubmitChanges = true;
-
-                    if (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) != TSubmitChangesResult.scrOK)
-                    {
-                        return false;
-                    }
-
-                    // it is faster to reload the batch and details, than to load the modification id after saving
-                    MainDS = new GiftBatchTDS();
-
-                    AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, BatchNumber, WriteTransaction);
-                    AGiftDetailAccess.LoadViaAGiftBatch(MainDS, ALedgerNumber, BatchNumber, WriteTransaction);
-
                     // create GL batch
                     GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS);
 
@@ -1481,6 +1468,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             out AVerifications) == TSubmitChangesResult.scrOK)
                     {
                         GLBatchNumbers.Add(batch.BatchNumber);
+
+                        MainDS.ThrowAwayAfterSubmitChanges = true;
+
+                        if (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) != TSubmitChangesResult.scrOK)
+                        {
+                            return false;
+                        }
                     }
                     else
                     {
