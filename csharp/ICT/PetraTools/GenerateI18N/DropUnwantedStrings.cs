@@ -152,13 +152,21 @@ public class TDropUnwantedStrings
 
                         if (line.Contains("GenerateI18N.CollectedGettext.cs"))
                         {
-                            //sw.WriteLine("#: This item was created automatically from a designer file");
+                            sw.WriteLine("#: This item was created automatically from a designer file");
                             line = sr.ReadLine();
                         }
                         else
                         {
-                            sw.WriteLine(line);
+                            string currentLine = line;
                             line = sr.ReadLine();
+                            if(line.StartsWith("#:"))
+                            {
+                                sw.WriteLine(currentLine + " (first of several occurrences)");
+                            }
+                            else
+                            {
+                                sw.WriteLine(currentLine);
+                            }
                         }
                     }
 
@@ -229,7 +237,16 @@ public class TDropUnwantedStrings
         {
             if (line.StartsWith("#:"))
             {
-                string currentLine = line;
+                string currentLine;
+                if(line.Contains("csharp"))
+                {
+                    //cut away first part of source location 
+                    currentLine = line.Remove(3, line.IndexOf("csharp")-3);
+                }
+                else
+                {
+                    currentLine = line;
+                }
                 //write line only to new template file if the following line is not empty
                 line = sr.ReadLine();
 
