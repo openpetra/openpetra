@@ -152,7 +152,7 @@ public class TDropUnwantedStrings
 
                         if (line.Contains("GenerateI18N.CollectedGettext.cs"))
                         {
-                            sw.WriteLine("#: This item was created automatically from a designer file");
+                            sw.WriteLine("#: - This item was created automatically from a designer file");
                             line = sr.ReadLine();
                         }
                         else
@@ -161,7 +161,7 @@ public class TDropUnwantedStrings
                             line = sr.ReadLine();
                             if(line.StartsWith("#:"))
                             {
-                                sw.WriteLine(currentLine + " (first of several occurrences)");
+                                sw.WriteLine(currentLine + " (first of several occurrences - the whole list can be found in i8n\template.pot.withallsources)");
                             }
                             else
                             {
