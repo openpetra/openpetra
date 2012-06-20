@@ -73,23 +73,34 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 Catalog.GetString("Saving to database"),
                 0);
 
-            TSubmitChangesResult SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
-            AFirstStatementKey = -1;
-
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
+            try
             {
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("starting to train"),
-                    1);
+                SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
 
-                AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
+                AFirstStatementKey = -1;
 
-                // search for already posted gift batches, and do the matching for these imported statements
-                TBankImportMatching.Train(AStatementAndTransactionsDS);
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("starting to train"),
+                        1);
+
+                    AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
+
+                    // search for already posted gift batches, and do the matching for these imported statements
+                    TBankImportMatching.Train(AStatementAndTransactionsDS);
+                }
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.ToString());
+                TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
+                throw ex;
+            }
 
             return SubmissionResult;
         }
@@ -271,7 +282,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             // reloading is faster than deleting all matches that are not needed
             string sqlLoadMatchesOfStatement =
-                "SELECT m.* FROM PUB_a_ep_match m, PUB_a_ep_transaction t WHERE t.a_statement_key_i = ? AND m.a_ep_match_key_i = t.a_ep_match_key_i";
+                "SELECT m.* FROM PUB_a_ep_match m, PUB_a_ep_transaction t WHERE t.a_statement_key_i = ? AND m.a_match_text_c = t.a_match_text_c";
 
             OdbcParameter param = new OdbcParameter("statementkey", OdbcType.Int);
             param.Value = AStatementKey;
