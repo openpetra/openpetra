@@ -50,7 +50,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         public static void InsertTableValidation(ProcessTemplate Template, TTable currentTable, TTable origTable, string WhereToInsert)
         {
             ProcessTemplate snippet = Template.GetSnippet("TABLEVALIDATION");
-            string ColumnSpecificCommentPart;
+            string ReasonForAutomValidation;
             
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
@@ -60,9 +60,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 ProcessTemplate columnTemplate;
                 
                 // NOT NULL checks
-                if ((col.bNotNull)
-                    || (col.bPartOfPrimKey)
-                    || (col.bPartOfFirstUniqueKey))
+                if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNotNullChecks,
+                    out ReasonForAutomValidation))
                 {
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
@@ -82,30 +81,15 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
                     }
-                    
-                   
-                    if (col.bPartOfPrimKey)
-                    {
-                        ColumnSpecificCommentPart = "(it is part of the Primary Key) and must not be an empty string!";
-                    }
-                    else if (col.bPartOfFirstUniqueKey)
-                    {
-                        ColumnSpecificCommentPart = "(it is part of the first Unique Key) and must not be an empty string!";
-                    }
-                    else
-                    {
-                        ColumnSpecificCommentPart = "(NOT NULL constraint)";    
-                    }
-                    
-                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' must have a value " + ColumnSpecificCommentPart);    
+                                       
+                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);    
                     
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                 }
-                
-                // String Length checks
-                if (((col.strType == "varchar") || (col.strType == "text"))
-                    && ((col.strName != "s_created_by_c") 
-                        && (col.strName != "s_modified_by_c")))
+
+                // String Length checks                
+                if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsStringLengthChecks,
+                    out ReasonForAutomValidation))
                 {
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
@@ -115,13 +99,14 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     validateColumnTemplate.SetCodelet("COLUMNLENGTH", (col.iCharLength * 2).ToString());
 
                     columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);                                        
-                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' must not contain more than " + (col.iCharLength * 2).ToString() + " characters");
+                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
                     
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                 }                    
                 
                 // Number Range checks
-                if (col.strType == "number")
+                if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNumberRangeChecks,
+                    out ReasonForAutomValidation))
                 {
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
@@ -129,10 +114,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKNUMBERRANGE");
                     validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                     validateColumnTemplate.SetCodelet("NUMBEROFDECIMALDIGITS", col.iLength.ToString());
-                    validateColumnTemplate.SetCodelet("NUMBEROFFRACTIONALDIGITS", col.iDecimals.ToString());
+                    validateColumnTemplate.SetCodelet("NUMBEROFFRACTIONALDIGITS", col.iDecimals > 0 ? col.iDecimals.ToString() : "0");
 
                     columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);                                        
-                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' must not have more than " + (col.iLength - col.iDecimals).ToString() + " digits before the decimal point and not more than " + col.iDecimals.ToString() + " after the decimal point");
+                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
                     
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                 }                                    
