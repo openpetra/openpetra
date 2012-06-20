@@ -110,9 +110,19 @@ namespace Ict.Common
                 SWriter = new StreamWriter(FStream);
 
                 SWriter.BaseStream.Seek(0, SeekOrigin.End);
-                SWriter.WriteLine(
-                    Environment.NewLine + DateTime.Now.ToLongDateString() + ", " + DateTime.Now.ToLongTimeString() + ULogtextPrefix + " : " +
-                    strMessage);
+
+                if (TLogging.DebugLevel > 0)
+                {
+                    SWriter.WriteLine(Environment.NewLine + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") + "  " + ULogtextPrefix + " : " +
+                        strMessage);
+                }
+                else
+                {
+                    SWriter.WriteLine(
+                        Environment.NewLine + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss") + ULogtextPrefix + " : " +
+                        strMessage);
+                }
+
                 SWriter.Flush();
                 SWriter.Close();
                 FStream.Close();

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -130,8 +130,13 @@ namespace Ict.Common.DB
                 m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
             }
 
-            ReturnValue = ReturnValue.Replace("_l = true", "_l = 1");
-            ReturnValue = ReturnValue.Replace("_l = false", "_l = 0");
+            ReturnValue = ReturnValue.Replace("= false", "= 0");
+            ReturnValue = ReturnValue.Replace("= true", "= 1");
+            ReturnValue = ReturnValue.Replace("=false", "=0");
+            ReturnValue = ReturnValue.Replace("=true", "=1");
+            ReturnValue = ReturnValue.Replace(" as ", " AS ");
+            ReturnValue = ReturnValue.Replace("true AS ", "1 AS ");
+            ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");
 
             // Get the correct function for DAYOFYEAR
             while (ReturnValue.Contains("DAYOFYEAR("))

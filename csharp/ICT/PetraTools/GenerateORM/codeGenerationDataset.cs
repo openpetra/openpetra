@@ -309,7 +309,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 CodeGenerationTable.InsertRowDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
                             }
 
-                            tables.Add(table.tableorig, table);
+                            tables.Add(variablename, table);
 
                             AddTableToDataset(tabletype, variablename,
                                 snippetDataset);

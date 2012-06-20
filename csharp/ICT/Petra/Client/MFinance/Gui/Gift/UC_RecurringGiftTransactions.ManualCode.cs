@@ -172,7 +172,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     FLastDonor = APartnerKey;
 
-                    foreach (RecurringGiftBatchTDSARecurringGiftDetailRow giftDetail in FMainDS.ARecurringGiftDetail.Rows)
+                    foreach (GiftBatchTDSARecurringGiftDetailRow giftDetail in FMainDS.ARecurringGiftDetail.Rows)
                     {
                         if (giftDetail.BatchNumber.Equals(FBatchNumber)
                             && giftDetail.GiftTransactionNumber.Equals(FPreviouslySelectedDetailRow.GiftTransactionNumber))
@@ -460,7 +460,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 foreach (DataRowView rv in giftDetailView)
                 {
-                    RecurringGiftBatchTDSARecurringGiftDetailRow row = (RecurringGiftBatchTDSARecurringGiftDetailRow)rv.Row;
+                    GiftBatchTDSARecurringGiftDetailRow row = (GiftBatchTDSARecurringGiftDetailRow)rv.Row;
 
                     if (row.DetailNumber > oldDetailNumber)
                     {
@@ -577,7 +577,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // we create the table locally, no dataset
             ARecurringGiftDetailRow ARecurringGiftDetailRow = NewGiftDetail(
-                (RecurringGiftBatchTDSARecurringGiftDetailRow)FPreviouslySelectedDetailRow);                                                             // returns ARecurringGiftDetailRow
+                (GiftBatchTDSARecurringGiftDetailRow)FPreviouslySelectedDetailRow);
 
             if (ARecurringGiftDetailRow != null)
             {
@@ -615,7 +615,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMainDS.ARecurringGift.Rows.Add(giftRow);
 
-            RecurringGiftBatchTDSARecurringGiftDetailRow newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
+            GiftBatchTDSARecurringGiftDetailRow newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
             newRow.LedgerNumber = batchRow.LedgerNumber;
             newRow.BatchNumber = batchRow.BatchNumber;
             newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
@@ -635,7 +635,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// add another gift detail to an existing gift
         /// </summary>
-        private ARecurringGiftDetailRow NewGiftDetail(RecurringGiftBatchTDSARecurringGiftDetailRow ACurrentRow)
+        private ARecurringGiftDetailRow NewGiftDetail(GiftBatchTDSARecurringGiftDetailRow ACurrentRow)
         {
             if (ACurrentRow == null)
             {
@@ -647,7 +647,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             giftRow.LastDetailNumber++;
 
-            RecurringGiftBatchTDSARecurringGiftDetailRow newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
+            GiftBatchTDSARecurringGiftDetailRow newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
             newRow.LedgerNumber = giftRow.LedgerNumber;
             newRow.BatchNumber = giftRow.BatchNumber;
             newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
@@ -715,7 +715,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
-            txtDetailDonorKey.Text = ((RecurringGiftBatchTDSARecurringGiftDetailRow)ARow).DonorKey.ToString();
+            txtDetailDonorKey.Text = ((GiftBatchTDSARecurringGiftDetailRow)ARow).DonorKey.ToString();
 
             if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
             {

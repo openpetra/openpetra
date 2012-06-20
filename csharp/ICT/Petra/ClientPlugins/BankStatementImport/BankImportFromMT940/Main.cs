@@ -32,6 +32,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
@@ -46,27 +47,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
     /// </summary>
     public class TBankStatementImport : IImportBankStatement
     {
-        /// <summary>
-        /// the file extensions that should be used for the file open dialog
-        /// </summary>
-        public string GetFileFilter()
-        {
-            return "MT940 Datei (*.sta)|*.sta";
-        }
-
-        /// <summary>
-        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
-        /// </summary>
-        /// <returns></returns>
-        public string GetFilterGifts()
-        {
-            string typeName = AEpTransactionTable.GetTransactionTypeCodeDBName();
-
-            // TODO: match GL transactions as well; independent of amount
-            return typeName + " = '052' OR " + typeName + " = '051' OR " + typeName + " = '053' OR " + typeName + " = '067' OR " + typeName +
-                   " = '068' OR " + typeName + " = '069'";
-        }
-
         /// <summary>
         /// asks the user to open a csv file and imports the contents according to the config file
         /// </summary>
@@ -116,19 +96,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                             stmt.StatementKey);
 
                     stmt.LedgerNumber = ALedgerNumber;
-                    DateTime latestDate = DateTime.MinValue;
-
-                    foreach (DataRowView v in MainDS.AEpTransaction.DefaultView)
-                    {
-                        AEpTransactionRow tr = (AEpTransactionRow)v.Row;
-
-                        if (tr.DateEffective > latestDate)
-                        {
-                            latestDate = tr.DateEffective;
-                        }
-                    }
-
-                    stmt.Date = latestDate;
                 }
 
                 Thread t = new Thread(() => ProcessStatementsOnServer(MainDS));
@@ -142,6 +109,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 }
                 else
                 {
+                    AStatementKey = FStatementKey;
                     return FStatementKey != -1;
                 }
             }
@@ -213,6 +181,16 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     row.TransactionAmount = tr.amount;
                     row.Description = tr.description;
                     row.TransactionTypeCode = tr.typecode;
+
+                    if ((row.TransactionTypeCode == "052")
+                        || (row.TransactionTypeCode == "051")
+                        || (row.TransactionTypeCode == "053")
+                        || (row.TransactionTypeCode == "067")
+                        || (row.TransactionTypeCode == "068")
+                        || (row.TransactionTypeCode == "069"))
+                    {
+                        row.TransactionTypeCode += MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
+                    }
 
                     AMainDS.AEpTransaction.Rows.Add(row);
 

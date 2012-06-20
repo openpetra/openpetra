@@ -29,6 +29,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Xml;
 using System.Data;
+using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
@@ -97,6 +98,58 @@ namespace Ict.Common.Data.Testing
             result = GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "SubmitChanges of update should be ok");
             Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "there are critical errors in UPDATE");
+        }
+
+        /// <summary>
+        /// investigating the speed of loading a table.
+        /// in the end, in my specific case, it was a DataView that slowed down the load, and also the merge
+        /// </summary>
+        [Test, Explicit]
+        public void SpeedTestLoadIntoTypedTable()
+        {
+            string sql = "SELECT PUB_a_gift_detail.*, false AS AlreadyMatched, PUB_a_gift_batch.a_batch_status_c AS BatchStatus " +
+                         "FROM PUB_a_gift_batch, PUB_a_gift_detail " +
+                         "WHERE PUB_a_gift_detail.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i";
+
+            DateTime before = DateTime.Now;
+            DataTable untyped = DBAccess.GDBAccessObj.SelectDT(sql, "test", null);
+            DateTime after = DateTime.Now;
+
+            TLogging.Log(String.Format("loading all {0} gift details into an untyped table took {1} milliseconds",
+                    untyped.Rows.Count,
+                    (after.Subtract(before)).TotalMilliseconds));
+
+            BankImportTDSAGiftDetailTable typed = new BankImportTDSAGiftDetailTable();
+            before = DateTime.Now;
+            DBAccess.GDBAccessObj.SelectDT(typed, sql, null, new OdbcParameter[0], 0, 0);
+            after = DateTime.Now;
+
+            TLogging.Log(String.Format("loading all {0} gift details into a typed table took {1} milliseconds",
+                    typed.Rows.Count,
+                    (after.Subtract(before)).TotalMilliseconds));
+
+            BankImportTDS ds = new BankImportTDS();
+
+            ACostCentreAccess.LoadAll(ds, null);
+            TLogging.Log(ds.ACostCentre.Rows.Count.ToString() + " cost centres loaded ");
+
+            AMotivationDetailAccess.LoadAll(ds, null);
+
+            before = DateTime.Now;
+            DBAccess.GDBAccessObj.Select(ds, sql, ds.AGiftDetail.TableName, null);
+            after = DateTime.Now;
+
+            TLogging.Log(String.Format("loading all {0} gift details into a typed dataset took {1} milliseconds",
+                    ds.AGiftDetail.Rows.Count,
+                    (after.Subtract(before)).TotalMilliseconds));
+
+            before = DateTime.Now;
+            BankImportTDS ds2 = new BankImportTDS();
+            ds2.Merge(ds.AGiftDetail);
+            after = DateTime.Now;
+
+            TLogging.Log(String.Format("merging typed table into other dataset took {0} milliseconds",
+                    (after.Subtract(before)).TotalMilliseconds));
         }
 
 #if EXPERIMENT_NOT_FINISHED

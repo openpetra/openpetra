@@ -62,15 +62,20 @@ namespace Ict.Testing.SampleDataConstructor
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 
+            Int32 NumberOfPartnerKeysReserved = 100;
+            Int64 NextPartnerKey = TNewPartnerKey.ReservePartnerKeys(-1, ref NumberOfPartnerKeysReserved);
+
             while (RecordNode != null)
             {
-                long OrgPartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
-
-                if (!TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey,
-                        OrgPartnerKey, ref OrgPartnerKey))
+                if (NumberOfPartnerKeysReserved == 0)
                 {
-                    throw new Exception("create organisation: problems getting a new partner key");
+                    NumberOfPartnerKeysReserved = 100;
+                    NextPartnerKey = TNewPartnerKey.ReservePartnerKeys(-1, ref NumberOfPartnerKeysReserved);
                 }
+
+                long OrgPartnerKey = NextPartnerKey;
+                NextPartnerKey++;
+                NumberOfPartnerKeysReserved--;
 
                 POrganisationRow organisationRecord = MainDS.POrganisation.NewRowTyped();
                 organisationRecord.PartnerKey = OrgPartnerKey;

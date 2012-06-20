@@ -145,7 +145,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 FMainDS.AEpStatement.DefaultView.RowFilter = string.Empty;
             }
 
-            rbtListAll.Checked = true;
             TransactionFilterChanged(null, null);
             grdAllTransactions.SelectRowInGrid(1);
         }
@@ -383,6 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             if (CurrentlySelectedMatch != null)
             {
                 txtAmount.NumberValueDecimal = CurrentlySelectedMatch.GiftTransactionAmount;
+                txtRecipientKey.Text = StringHelper.FormatStrToPartnerKeyString(CurrentlySelectedMatch.RecipientKey.ToString());
 
                 if (CurrentlySelectedMatch.IsMotivationGroupCodeNull())
                 {
@@ -428,6 +428,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 CurrentlySelectedMatch.CostCentreCode = txtGiftCostCentre.Text;
                 CurrentlySelectedMatch.GiftTransactionAmount = txtAmount.NumberValueDecimal.Value;
                 CurrentlySelectedMatch.DonorKey = Convert.ToInt64(txtDonorKey.Text);
+                CurrentlySelectedMatch.RecipientKey = Convert.ToInt64(txtRecipientKey.Text);
 
                 FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
                     ACostCentreTable.GetCostCentreCodeDBName(), CurrentlySelectedMatch.CostCentreCode);
@@ -721,11 +722,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
                             "Full bank statement") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
-            else if (rbtListUnmatched.Checked)
+            else if (rbtListUnmatchedGift.Checked)
             {
                 HtmlDocument =
                     PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
                             "Unmatched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+            else if (rbtListUnmatchedGL.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Unmatched GL") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListGift.Checked)
             {
@@ -885,13 +892,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
                     MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT);
             }
-            else if (rbtListUnmatched.Checked)
+            else if (rbtListUnmatchedGift.Checked)
             {
-                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}' and {4} LIKE '%{5}'",
                     AEpStatementTable.GetStatementKeyDBName(),
                     CurrentStatement.StatementKey,
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
-                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED);
+                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED,
+                    BankImportTDSAEpTransactionTable.GetTransactionTypeCodeDBName(),
+                    MFinanceConstants.BANK_STMT_POTENTIAL_GIFT);
+            }
+            else if (rbtListUnmatchedGL.Checked)
+            {
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}' and {4} NOT LIKE '%{5}'",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    CurrentStatement.StatementKey,
+                    BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
+                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED,
+                    BankImportTDSAEpTransactionTable.GetTransactionTypeCodeDBName(),
+                    MFinanceConstants.BANK_STMT_POTENTIAL_GIFT);
             }
             else if (rbtListIgnored.Checked)
             {
@@ -930,6 +949,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             txtCreditSum.NumberValueDecimal = sumCredit;
             txtDebitSum.NumberValueDecimal = sumDebit;
+            txtTransactionCount.Text = FTransactionView.Count.ToString();
 
             if (FTransactionView.Count > 0)
             {
