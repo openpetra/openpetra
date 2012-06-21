@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-				EnableButtonControl(false);
+                EnableButtonControl(false);
             }
         }
 
@@ -149,17 +149,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        
         private void ValidateDataManual(ABatchRow ARow)
         {
-        	
         }
-        
+
         private void ValidateDataDetailsManual(ABatchRow ARow)
         {
-        	
         }
-        
+
         private void ShowDetailsManual(ABatchRow ARow)
         {
             UpdateChangeableStatus(ARow != null);
@@ -191,34 +188,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Journals);
         }
 
-        
         /// <summary>
         /// Controls the enabled status of the Cancel, Test and Post buttons
         /// </summary>
         /// <param name="AEnable"></param>
         private void EnableButtonControl(bool AEnable)
         {
-			if (AEnable)
-			{
-				if (!pnlDetails.Enabled)
-				{
-					pnlDetails.Enabled = true;
-				}
-			}
-        	btnPostBatch.Enabled = AEnable;
+            if (AEnable)
+            {
+                if (!pnlDetails.Enabled)
+                {
+                    pnlDetails.Enabled = true;
+                }
+            }
+
+            btnPostBatch.Enabled = AEnable;
             btnTestPostBatch.Enabled = AEnable;
             btnCancel.Enabled = AEnable;
         }
-        
-        
+
         private void ClearDetailControls()
         {
-        	txtDetailBatchDescription.Text = string.Empty;
-        	txtDetailBatchControlTotal.NumberValueDecimal = 0;
-        	dtpDetailDateEffective.Date = DateTime.Today;
+            txtDetailBatchDescription.Text = string.Empty;
+            txtDetailBatchControlTotal.NumberValueDecimal = 0;
+            dtpDetailDateEffective.Date = DateTime.Today;
         }
-        
-        
+
         /// <summary>
         /// add a new batch
         /// </summary>
@@ -230,11 +225,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 rbtEditing.Checked = true;
             }
-            
+
             ClearDetailControls();
             EnableButtonControl(true);
-        	
-        	FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
+
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
             ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
 
@@ -247,15 +242,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
-            
+
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-            
+
             txtDetailBatchDescription.Text = "Please enter a batch description.";
             txtDetailBatchDescription.Focus();
-            
-			((TFrmGLBatch)ParentForm).SaveChanges();
 
+            ((TFrmGLBatch)ParentForm).SaveChanges();
         }
 
         /// <summary>
@@ -269,7 +263,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-            
+
             int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
@@ -283,7 +277,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TVerificationResultCollection Verifications;
                 GLBatchTDS mergeDS;
                 //save the position of the actual row
-                int rowIndex = CurrentRowIndex();
+                //int rowIndex = CurrentRowIndex();
 
                 if (!TRemote.MFinance.GL.WebConnectors.CancelGLBatch(out mergeDS, FLedgerNumber, FSelectedBatchNumber, out Verifications))
                 {
@@ -328,51 +322,50 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         transactionDV[0].Delete();
                     }
 
-		            //If some row(s) still exist after deletion
-		            if (grdDetails.Rows.Count > 1)
-		            {
-		                //If last row just deleted, select row at old position - 1
-		                if (newCurrentRowPos == grdDetails.Rows.Count)
-		                {
-		                    newCurrentRowPos--;
-		                }
-		
-		                grdDetails.Selection.ResetSelection(false);
-		                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
-		                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-		                
-		                ShowDetails(FPreviouslySelectedDetailRow);
-		            }
-		            else
-		            {
-		                FPreviouslySelectedDetailRow = null;
-			            EnableButtonControl(false);
-			            ClearDetailControls();
-			            pnlDetails.Enabled = false;
-		            }
+                    //If some row(s) still exist after deletion
+                    if (grdDetails.Rows.Count > 1)
+                    {
+                        //If last row just deleted, select row at old position - 1
+                        if (newCurrentRowPos == grdDetails.Rows.Count)
+                        {
+                            newCurrentRowPos--;
+                        }
+
+                        grdDetails.Selection.ResetSelection(false);
+                        TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+                        ShowDetails(FPreviouslySelectedDetailRow);
+                    }
+                    else
+                    {
+                        FPreviouslySelectedDetailRow = null;
+                        EnableButtonControl(false);
+                        ClearDetailControls();
+                        pnlDetails.Enabled = false;
+                    }
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
 
                     //Need to call save
-		            if (((TFrmGLBatch)ParentForm).SaveChanges())
-		            {
-			            MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
-	                        Catalog.GetString("Success"),
-	                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-	                    //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
-		            }
-		            else
-		            {
-						// saving failed, therefore do not try to post
-	                    MessageBox.Show(Catalog.GetString("The batch has been cancelled but there were problems during saving; ") + Environment.NewLine +
-	                        Catalog.GetString("Please try and save the cancellation immediately."),
-	                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-		            }
-		            
+                    if (((TFrmGLBatch)ParentForm).SaveChanges())
+                    {
+                        MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
+                            Catalog.GetString("Success"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        //((TFrmGLBatch)ParentForm).GetJournalsControl() .ClearCurrentSelection();
+                    }
+                    else
+                    {
+                        // saving failed, therefore do not try to post
+                        MessageBox.Show(Catalog.GetString(
+                                "The batch has been cancelled but there were problems during saving; ") + Environment.NewLine +
+                            Catalog.GetString("Please try and save the cancellation immediately."),
+                            Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
-            
         }
 
         /// <summary>
@@ -412,25 +405,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-			//get index position of row to post
+            //get index position of row to post
             int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
-            
-            //TODO: Correct this if needed
-			DateTime StartDateCurrentPeriod;
-			DateTime EndDateLastForwardingPeriod;
-			
-			TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(FMainDS.ALedger[0].LedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod);
 
-			if (dtpDetailDateEffective.Date < StartDateCurrentPeriod || dtpDetailDateEffective.Date > EndDateLastForwardingPeriod)
-			{
-				MessageBox.Show(String.Format(Catalog.GetString("The Date Effective is outside the allowable period range. Enter a date betweenn {0:d} and {1:d}."),
-				                             StartDateCurrentPeriod,
-				                            EndDateLastForwardingPeriod));
-				
-				return;
-			}
-			
-            
+            //TODO: Correct this if needed
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+
+            TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(FMainDS.ALedger[0].LedgerNumber,
+                out StartDateCurrentPeriod,
+                out EndDateLastForwardingPeriod);
+
+            if ((dtpDetailDateEffective.Date < StartDateCurrentPeriod) || (dtpDetailDateEffective.Date > EndDateLastForwardingPeriod))
+            {
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The Date Effective is outside the allowable period range. Enter a date betweenn {0:d} and {1:d}."),
+                        StartDateCurrentPeriod,
+                        EndDateLastForwardingPeriod));
+
+                return;
+            }
+
             if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
                         FSelectedBatchNumber),
                     Catalog.GetString("Question"),
@@ -468,28 +463,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     this.FPreviouslySelectedDetailRow = null;
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                     LoadBatches(FLedgerNumber);
-                    
+
                     if (grdDetails.Rows.Count > 1)
-		            {
-		                //If last row just deleted, select row at old position - 1
-		                if (newCurrentRowPos == grdDetails.Rows.Count)
-		                {
-		                    newCurrentRowPos--;
-		                }
-		
-		                grdDetails.Selection.ResetSelection(false);
-		                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
-		                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-		                
-		                ShowDetails(FPreviouslySelectedDetailRow);
-		            }
-		            else
-		            {
-		                FPreviouslySelectedDetailRow = null;
-			            EnableButtonControl(false);
-			            ClearDetailControls();
-			            pnlDetails.Enabled = false;
-		            }
+                    {
+                        //If last row just deleted, select row at old position - 1
+                        if (newCurrentRowPos == grdDetails.Rows.Count)
+                        {
+                            newCurrentRowPos--;
+                        }
+
+                        grdDetails.Selection.ResetSelection(false);
+                        TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
+                        ShowDetails(FPreviouslySelectedDetailRow);
+                    }
+                    else
+                    {
+                        FPreviouslySelectedDetailRow = null;
+                        EnableButtonControl(false);
+                        ClearDetailControls();
+                        pnlDetails.Enabled = false;
+                    }
                 }
             }
         }
@@ -601,9 +596,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // TODO Select the actual row again in updated
                     SelectByIndex(rowIndex);
                     // UpdateChangeableStatus();
-                    
+
                     bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
-		            EnableButtonControl(enablePosting);
+                    EnableButtonControl(enablePosting);
                 }
             }
         }
@@ -744,10 +739,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FMainDS.ABatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-            
+
             if (grdDetails.Rows.Count < 2)
             {
-            	ClearDetailControls();
+                ClearDetailControls();
             }
         }
 

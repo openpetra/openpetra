@@ -89,6 +89,9 @@ namespace Ict.Testing.SampleDataConstructor
                 if ((operation == "importPartners") || (operation == "all"))
                 {
                     TLogging.Log("(2) Import partners");
+                    SampleDataBankPartners.GenerateBanks(
+                        Path.Combine(datadirectory, "banks.csv"));
+
                     SampleDataDonors.GenerateFamilyPartners(
                         Path.Combine(datadirectory, "people.csv"));
 
@@ -146,6 +149,13 @@ namespace Ict.Testing.SampleDataConstructor
 
                     TLogging.Log("posting gift batches of period 6");
                     SampleDataGiftBatches.PostBatches(0, 6, 1);
+                }
+
+                operation = TAppSettingsManager.GetValue("operation", "exportGifts");
+
+                if ((operation == "exportGifts") || (operation == "all"))
+                {
+                    SampleDataBankImportFiles.ExportGiftBatches(datadirectory);
                 }
 
                 TLogging.Log("(8) Posting and paying invoices");

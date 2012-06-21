@@ -255,7 +255,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
             txtDetailBatchDescription.Focus();
-            
+
             dtpDetailGlEffectiveDate.Date = DateTime.Today;
             ((TFrmGiftBatch)ParentForm).SaveChanges();
         }
@@ -291,15 +291,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
             FPetraUtilsObject.SetChangedFlag();
-            
-			// save first, then post
+
+            // save first, then post
             if (!((TFrmGiftBatch)ParentForm).SaveChanges())
             {
                 // saving failed, therefore do not try to post
                 MessageBox.Show(Catalog.GetString("The cancelled batch cannot be saved!") + Environment.NewLine +
                     Catalog.GetString("Please click Save to confirm the deletion."));
             }
-            
+
             grdDetails.Refresh();
 
             //If some row(s) still exist after deletion

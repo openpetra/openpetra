@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -205,6 +205,59 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// reserve a number of partner keys, to be used by the calling function.
+        /// useful to create many partner at once, eg. for the demodata
+        /// </summary>
+        /// <param name="AFieldPartnerKey"></param>
+        /// <param name="ANumberOfKeys"></param>
+        /// <returns>the first valid partner key to use</returns>
+        public static System.Int64 ReservePartnerKeys(System.Int64 AFieldPartnerKey, ref Int32 ANumberOfKeys)
+        {
+            if (AFieldPartnerKey == -1)
+            {
+                AFieldPartnerKey = DomainManager.GSiteKey;
+            }
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            PPartnerLedgerTable PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, WriteTransaction);
+
+            Int64 NextPartnerKey = PartnerLedgerDT[0].PartnerKey + PartnerLedgerDT[0].LastPartnerId + 1;
+
+            Int64 NextUsedKey =
+                Convert.ToInt64(DBAccess.GDBAccessObj.ExecuteScalar("SELECT MIN(p_partner_key_n) FROM PUB_p_partner WHERE p_partner_key_n >= " +
+                        NextPartnerKey.ToString(), WriteTransaction));
+
+            if (NextUsedKey < NextPartnerKey + ANumberOfKeys)
+            {
+                ANumberOfKeys = Convert.ToInt32(NextUsedKey - NextPartnerKey);
+            }
+
+            PartnerLedgerDT[0].LastPartnerId = Convert.ToInt32((NextPartnerKey + ANumberOfKeys - 1) - PartnerLedgerDT[0].PartnerKey);
+
+            bool NewPartnerKeySubmissionOK = false;
+            TVerificationResultCollection VerificationResult;
+
+            try
+            {
+                NewPartnerKeySubmissionOK = PPartnerLedgerAccess.SubmitChanges(PartnerLedgerDT, WriteTransaction, out VerificationResult);
+            }
+            finally
+            {
+                if (NewPartnerKeySubmissionOK)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return NextPartnerKey;
         }
     }
 }

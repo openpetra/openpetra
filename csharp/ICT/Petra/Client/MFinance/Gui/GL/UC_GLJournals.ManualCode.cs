@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // recalculate the base currency amounts for the transactions
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTotals();
-            
+
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
         }
 
@@ -198,7 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-            	btnGetSetExchangeRate.Enabled = (ARow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+                btnGetSetExchangeRate.Enabled = (ARow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
 
                 ((TFrmGLBatch)ParentForm).LoadTransactions(
                     ARow.LedgerNumber,

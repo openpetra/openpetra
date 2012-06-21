@@ -624,22 +624,23 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
-            GLBatchTDS MainDS = new GLBatchTDS();
+            GLPostingTDS PostingDS = new GLPostingTDS();
+            GLBatchTDS BatchDS = new GLBatchTDS();
 
             //Load tables needed: AccountingPeriod, Ledger, Account, Cost Centre, Transaction, Gift Batch, ICHStewardship
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, DBTransaction);
-            //AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-            ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-            ATransactionAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-            //AIchStewardshipAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-            //AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-            AJournalAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
+            ALedgerAccess.LoadByPrimaryKey(PostingDS, ALedgerNumber, DBTransaction);
+            //AAccountAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+            ACostCentreAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+            ATransactionAccess.LoadViaALedger(BatchDS, ALedgerNumber, DBTransaction);
+            //AIchStewardshipAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+            //AAccountHierarchyAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+            AJournalAccess.LoadViaALedger(BatchDS, ALedgerNumber, DBTransaction);
 
 
             try
             {
 #if TODO
-                ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
+                ALedgerRow LedgerRow = (ALedgerRow)PostingDS.ALedger.Rows[0];
 
                 //Find the Ledger Name = Partner Short Name
                 PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(LedgerRow.PartnerKey, DBTransaction);
@@ -656,7 +657,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 string OrderBy = ACostCentreTable.GetCostCentreCodeDBName();
 
-                DataRow[] FoundCCRows = MainDS.ACostCentre.Select(WhereClause, OrderBy);
+                DataRow[] FoundCCRows = PostingDS.ACostCentre.Select(WhereClause, OrderBy);
 
                 //AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
 
@@ -672,7 +673,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                     WhereClause = AJournalTable.GetLedgerNumberDBName() + " = " + ALedgerNumber.ToString() +
                                   " AND " + AJournalTable.GetJournalPeriodDBName() + " = " + APeriodNumber.ToString();
 
-                    DataRow[] FoundJnlRows = MainDS.AJournal.Select(WhereClause);
+                    DataRow[] FoundJnlRows = BatchDS.AJournal.Select(WhereClause);
 
                     foreach (DataRow untypedJnlRow in FoundJnlRows)
                     {
@@ -689,7 +690,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                                       "      OR " + ATransactionTable.GetIchNumberDBName() + " = " + AIchNumber.ToString() +
                                       ")";
 
-                        DataRow[] FoundTransRows = MainDS.ATransaction.Select(WhereClause);
+                        DataRow[] FoundTransRows = BatchDS.ATransaction.Select(WhereClause);
 
                         foreach (DataRow untypedTransRow in FoundTransRows)
                         {

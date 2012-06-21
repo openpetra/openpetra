@@ -175,7 +175,7 @@ namespace Ict.Tools.CodeGeneration
                     table.grpTableField.Add(newField);
                 }
 
-                result.Add(tablename, table);
+                result.Add(table.strVariableNameInDataset, table);
             }
 
             FDatasetTables.Add(ADataSetTypeWithNamespace, result);
