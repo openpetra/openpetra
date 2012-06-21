@@ -1385,6 +1385,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
                 {
                     // TODO make sure the correct costcentres and accounts are used, recipient ledger number
+                    giftDetail.RecipientLedgerNumber = GetRecipientLedgerNumber(MainDS, giftDetail.RecipientKey);
                 }
 
                 giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
@@ -1442,7 +1443,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AVerifications = new TVerificationResultCollection();
 
             bool NewTransaction;
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             List <Int32>GLBatchNumbers = new List <int>();
 
@@ -1616,12 +1617,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         private static Int64 GetRecipientLedgerNumber(GiftBatchTDS AMainDS, Int64 partnerKey)
         {
-            // TODO at the moment this only is implemented for units?
-            // TODO Get the field in p_person.p_om_field_key_n
-            // TODO Get the field in p_family.p_om_field_key_n
+            // TODO check pm_staff_data for commitments
+
+            PFamilyRow familyRow;
+            PPersonRow personRow;
+
+            if ((familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(partnerKey)) != null)
+            {
+                return familyRow.FieldKey;
+            }
+
+            if ((personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(partnerKey)) != null)
+            {
+                return personRow.FieldKey;
+            }
 
             if (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)
             {
+                //TODO Warning on inactive Fund
                 return partnerKey;
             }
 
@@ -1635,14 +1648,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (structureRow.ParentUnitKey == structureRow.ChildUnitKey)
                 {
+                    // should not get here
                     return 0;
                 }
 
+                // recursive call until we find a partner that has partnertype LEDGER
                 return GetRecipientLedgerNumber(AMainDS, structureRow.ParentUnitKey);
             }
-
-            //TODO Warning on inactive Fund
-            return partnerKey;
+            else
+            {
+                TLogging.Log("cannot find Recipient LedgerNumber for partner " + partnerKey.ToString());
+                return partnerKey;
+            }
         }
 
         /// <summary>
