@@ -220,7 +220,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
             else
             {
+                GLPostingDS.ThrowAwayAfterSubmitChanges = true;
                 GLPostingTDSAccess.SubmitChanges(GLPostingDS, out AVerificationResult);
+                GLPostingDS.Clear();
 
                 if (AVerificationResult.HasCriticalErrors)
                 {
