@@ -116,6 +116,22 @@ namespace Ict.Petra.Client.CommonForms
         /// This holds a reference to ALL controls on the screen that have child controls, even if they are buried in GroupBoxes, Panels, or TabPages
         protected ArrayList FControlsWithChildren;
 
+        /// Used for keeping track of data verification errors
+        protected TVerificationResultCollection FVerificationResultCollection;
+
+        /// Used for keeping track of data verification errors
+        public TVerificationResultCollection VerificationResultCollection
+        {
+            get
+            {
+                return FVerificationResultCollection;
+            }
+            set
+            {
+                FVerificationResultCollection = value;
+            }
+        }
+        
         /// <summary>
         /// constructor
         /// </summary>
@@ -125,6 +141,7 @@ namespace Ict.Petra.Client.CommonForms
         public TFrmPetraUtils(Form ACallerForm, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
         {
             FFormActivatedForFirstTime = true;
+            FVerificationResultCollection = new TVerificationResultCollection();
 
             FTheForm = ATheForm;
             FWinForm = (Form)ATheForm;

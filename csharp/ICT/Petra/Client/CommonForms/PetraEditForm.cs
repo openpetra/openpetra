@@ -90,9 +90,6 @@ namespace Ict.Petra.Client.CommonForms
         /// Tells whether a Detail of a list of Items is in protected mode (readonly)
         protected Boolean FDetailProtectedMode;
 
-        /// Used for keeping track of data verification errors
-        protected TVerificationResultCollection FVerificationResultCollection;
-
         /// Set this to true to prevent the Save button and MenuItem beeing autoenabled when data changes in the form
         protected Boolean FNoAutoEnableOfSaving;
 
@@ -107,19 +104,6 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>todoComment</summary>
         public event TDataSavedHandler DataSaved;
-
-        /// Used for keeping track of data verification errors
-        public TVerificationResultCollection VerificationResultCollection
-        {
-            get
-            {
-                return FVerificationResultCollection;
-            }
-            set
-            {
-                FVerificationResultCollection = value;
-            }
-        }
 
         /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
         public bool SubmitChangesContinue
@@ -213,8 +197,7 @@ namespace Ict.Petra.Client.CommonForms
         public TFrmPetraEditUtils(Form ACallerForm, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerForm,
                                                                                                                 (IFrmPetra)ATheForm,
                                                                                                                 AStatusBar)
-        {
-            FVerificationResultCollection = new TVerificationResultCollection();
+        {          
             FCloseFormCheckRun = false;
             FFormLoadedTime = DateTime.Now;
 
