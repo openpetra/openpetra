@@ -182,15 +182,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
 
             Int64 RecipientKey = Convert.ToInt64(txtRecipientKey.Text);
+            FInKeyMinistryChanging++;
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, RecipientKey);
+            FInKeyMinistryChanging--;
 
-            if (RecipientKey != 0)
-            {
-                TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, RecipientKey);
+            long FieldNumber = Convert.ToInt64(txtField.Text);
 
-                long FieldNumber = Convert.ToInt64(txtField.Text);
-
-                txtGiftCostCentre.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
-            }
+            txtGiftCostCentre.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
         }
 
         private void MotivationDetailChanged(System.Object sender, EventArgs e)
@@ -198,15 +196,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             SetRecipientCostCentreAndField();
         }
 
-        bool FInKeyMinistryChanging = false;
+        Int16 FInKeyMinistryChanging = 0;
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
-            if (FInKeyMinistryChanging || FPetraUtilsObject.SuppressChangeDetection)
+            if (FInKeyMinistryChanging > 0 || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
 
-            FInKeyMinistryChanging = true;
+            FInKeyMinistryChanging ++;
             try
             {
                 Int64 rcp = cmbMinistry.GetSelectedInt64();
@@ -215,7 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
             finally
             {
-                FInKeyMinistryChanging = false;
+                FInKeyMinistryChanging--;
             }
         }
 

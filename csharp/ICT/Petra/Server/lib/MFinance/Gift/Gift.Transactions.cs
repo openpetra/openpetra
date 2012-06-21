@@ -1385,6 +1385,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
                 {
                     // TODO make sure the correct costcentres and accounts are used, recipient ledger number
+                    giftDetail.RecipientLedgerNumber = GetRecipientLedgerNumber(MainDS, giftDetail.RecipientKey);
                 }
 
                 giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);

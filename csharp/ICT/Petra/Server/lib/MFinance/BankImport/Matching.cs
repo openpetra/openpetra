@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
                 DataView GiftByAmountAndDonor = new DataView(MainDS.AGift,
                     string.Empty,
-                    "TotalAmount," +
+                    BankImportTDSAGiftTable.GetTotalAmountDBName() + "," +
                     AGiftTable.GetDonorKeyDBName(),
                     DataViewRowState.CurrentRows);
 
@@ -127,7 +127,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                         // check if we can find a gift with several gift details, that would match this transaction amount
                         DataRowView[] gifts = GiftByAmountAndDonor.FindRows(new object[] { transaction.TransactionAmount, DonorKey });
 
-                        if (gifts.Length == 1)
+                        if (gifts.Length >= 1)
                         {
                             AGiftRow gift = (AGiftRow)gifts[0].Row;
                             detailrow =
