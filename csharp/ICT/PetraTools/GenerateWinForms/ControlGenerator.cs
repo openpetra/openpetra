@@ -279,6 +279,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return writer.FTemplate;
         }
+        
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return ctrl.controlName + ".Checked = (bool)" + AFieldOrNull + ";";
+        }        
     }
 
     /// <summary>
