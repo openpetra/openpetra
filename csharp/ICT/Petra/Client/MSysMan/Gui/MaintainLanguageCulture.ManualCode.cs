@@ -73,6 +73,13 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             cmbCulture.SetSelectedString(CultureCode);
             cmbLanguage.SetSelectedString(LanguageCode);
+            
+            this.lblLanguageNotFound.Text = Catalog.GetString("Language not found?\nIf your language is not available or the translation need improving, please consider helping. See");
+            this.lblLanguageNotFound.Size = new System.Drawing.Size(360, 40);
+
+            this.llbLaunchpadLink.Size = new System.Drawing.Size(360, 28);
+            //this.llbLaunchpadLink.Location = new System.Drawing.Point(8,this.lblLanguageNotFound.Height);
+            this.llbLaunchpadLink.Location = new System.Drawing.Point(8, 100);
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)
@@ -109,5 +116,16 @@ namespace Ict.Petra.Client.MSysMan.Gui
             // set local settings for client
             Catalog.Init(LanguageCode, CultureCode);
         }
+                /// <summary>
+        /// Event is fired when the Launchpad Translation Platform LinkLabel is 'clicked'.
+        /// </summary>
+        /// <param name="ASender">The Launchpad Translation Platform LinkLabel.</param>
+        /// <param name="e">Not evaluated.</param>
+        /// <returns>void</returns>
+        private void LaunchpadLinkClicked(object ASender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://translations.launchpad.net/openpetraorg/trunk/+pots/template1");
+        }
+        
     }
 }

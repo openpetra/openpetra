@@ -3,15 +3,22 @@ RootNode:
     FormTitle: Maintain Language and Culture
     Namespace: Ict.Petra.Client.MSysMan.Gui
     FormType: dialog
-    WindowWidth: 320
-    WindowHeight: 190
+    WindowWidth: 410
+    WindowHeight: 280
     Template: window
+    Actions:
+        actLaunchpadLinkClicked: {ActionClick=LaunchpadLinkClicked}
+
 
     Controls:
         pnlDialogContent:
             Controls: 
                 Row0: [cmbLanguage]
                 Row1: [cmbCulture]
+                Row2: [lblLanguageNotFound]
+                Row3: [llbLaunchpadLink]
 
         cmbLanguage: {Width=204}
         cmbCulture: {Width=204}
+        lblLanguageNotFound: {Text=Language not found?}
+        llbLaunchpadLink: {Label=Launchpad Translation Platform, Action=actLaunchpadLinkClicked}
