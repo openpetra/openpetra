@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -154,7 +154,9 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("= true", "= 1");
             ReturnValue = ReturnValue.Replace("=false", "=0");
             ReturnValue = ReturnValue.Replace("=true", "=1");
-            ReturnValue = ReturnValue.Replace("true as ", "1 as ");
+            ReturnValue = ReturnValue.Replace(" as ", " AS ");
+            ReturnValue = ReturnValue.Replace("true AS ", "1 AS ");
+            ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");
 
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
@@ -392,21 +394,12 @@ namespace Ict.Common.DB
         public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
             string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
         {
-            // there have been drastic changes to the database after 0.2.8-1, which means we have to start with a clean database
-            // otherwise there are definitely errors with the s_login sequence, and outreach tables might cause a problem as well
-            if (ADBVersion.Compare(new TFileVersionInfo("0.2.8-1")) == 0)
+            // we do not support updating standalone databases at the moment
+            if (AExeVersion.FileMajorPart == 0)
             {
                 DBAccess.GDBAccessObj.CloseDBConnection();
-
-                TLogging.Log("Please find your old data in " + TFileHelper.MoveToBackup(AHostOrFile));
-
-                DBAccess.GDBAccessObj.EstablishDBConnection(TDBType.SQLite,
-                    AHostOrFile,
-                    ADatabasePort,
-                    ADatabaseName,
-                    AUsername,
-                    APassword,
-                    "");
+                throw new Exception(String.Format("Unsupported upgrade: Please rename your file {0} so that we can start with a fresh database!",
+                        AHostOrFile));
             }
 
             string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
@@ -430,7 +423,7 @@ namespace Ict.Common.DB
 
                     foreach (string sqlFile in sqlFiles)
                     {
-                        if (!sqlFile.EndsWith("pg.sql") && ((TPatchFileVersionInfo)ADBVersion).PatchApplies(sqlFile, AExeVersion))
+                        if (!sqlFile.EndsWith("pg.sql") && (new TPatchFileVersionInfo(ADBVersion)).PatchApplies(sqlFile, AExeVersion))
                         {
                             foundUpdate = true;
                             StreamReader sr = new StreamReader(sqlFile);

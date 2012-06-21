@@ -588,7 +588,7 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        RecurringGiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber);
+        GiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         Boolean SubmitRecurringGiftBatch(Hashtable requestParams,
                                          out TVerificationResultCollection AMessages);
@@ -602,21 +602,21 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                     Int32 AYear,
                                     Int32 APeriod);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        RecurringGiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber);
+        GiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS LoadTransactions(Int32 ALedgerNumber,
                                       Int32 ABatchNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        GiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
+                                               Int32 ABatchNumber);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         GiftBatchTDS LoadDonorRecipientHistory(Hashtable requestParams,
                                                out TVerificationResultCollection AMessages);
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        RecurringGiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
-                                                        Int32 ABatchNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
                                               out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
+        TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
                                                        out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         System.Decimal CalculateAdminFee(GiftBatchTDS MainDS,
@@ -629,6 +629,10 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
                                      Int32 ABatchNumber,
                                      out TVerificationResultCollection AVerifications);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
+        System.Boolean PostGiftBatches(Int32 ALedgerNumber,
+                                       List<Int32> ABatchNumbers,
+                                       out TVerificationResultCollection AVerifications);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         Int32 ExportAllGiftBatchData(Hashtable requestParams,
                                      out String exportString,
                                      out TVerificationResultCollection AMessages);
@@ -639,13 +643,13 @@ namespace Ict.Petra.Shared.Interfaces.MFinance.Gift.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
         PPartnerTable LoadPartnerData(System.Int64 PartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        System.String IdentifyPartnerCostCentre(Int32 ledgerNumber,
-                                                Int64 fieldNumber);
+        System.String IdentifyPartnerCostCentre(Int32 ALedgerNumber,
+                                                Int64 AFieldNumber);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
-                                                                          out Int64 fieldNumber);
+        Int64 GetRecipientLedgerNumber(Int64 partnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector)</summary>
-        Int64 SearchRecipientLedgerKey(Int64 partnerKey);
+        PUnitTable LoadKeyMinistry(Int64 partnerKey,
+                                   out Int64 fieldNumber);
     }
 
 }

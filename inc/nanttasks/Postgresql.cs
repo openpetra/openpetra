@@ -68,6 +68,40 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FDatabasePort = "5432";
+
+        /// <summary>
+        /// port where the database is running
+        /// </summary>
+        [TaskAttribute("port", Required = false)]
+        public string DatabasePort {
+            get
+            {
+                return FDatabasePort;
+            }
+            set
+            {
+                FDatabasePort = value;
+            }
+        }
+
+        private string FDatabaseHost = "localhost";
+
+        /// <summary>
+        /// hostname where the database is running
+        /// </summary>
+        [TaskAttribute("host", Required = false)]
+        public string DatabaseHost {
+            get
+            {
+                return FDatabaseHost;
+            }
+            set
+            {
+                FDatabaseHost = value;
+            }
+        }
+
         private string FSQLCommand = String.Empty;
 
         /// <summary>
@@ -190,7 +224,8 @@ namespace Ict.Tools.NAntTasks
             }
 
             process.StartInfo.Arguments += " --username=" + FUsername;
-
+            process.StartInfo.Arguments += " -p " + FDatabasePort;
+            process.StartInfo.Arguments += " -h " + FDatabaseHost;
             process.StartInfo.Arguments += " " + FDatabase;
 
             string SuperUser = string.Empty;

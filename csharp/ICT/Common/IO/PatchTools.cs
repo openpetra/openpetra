@@ -43,6 +43,15 @@ namespace Ict.Common.IO
     public class TPatchFileVersionInfo : TFileVersionInfo
     {
         /// <summary>
+        /// constructor for base class
+        /// </summary>
+        /// <param name="version"></param>
+        public TPatchFileVersionInfo(TFileVersionInfo version)
+            : base(version)
+        {
+        }
+
+        /// <summary>
         /// returns the version numbers of the patch;
         /// e.g. Patch-win_2.2.35_2.2.43.zip should return 2.2.35 and 2.2.43
         /// </summary>

@@ -2484,7 +2484,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public RecurringGiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber)
+        public GiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateARecurringGiftBatch", ";INT;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateARecurringGiftBatch(ALedgerNumber);
@@ -2518,7 +2518,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public RecurringGiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber)
+        public GiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadARecurringGiftBatch", ";INT;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadARecurringGiftBatch(ALedgerNumber);
@@ -2533,19 +2533,19 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public GiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
+                                                      Int32 ABatchNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadRecurringTransactions", ";INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS LoadDonorRecipientHistory(Hashtable requestParams,
                                                       out TVerificationResultCollection AMessages)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadDonorRecipientHistory", ";HASHTABLE;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadDonorRecipientHistory(requestParams, out AMessages);
-        }
-
-        /// generated method from connector
-        public RecurringGiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
-                                                               Int32 ABatchNumber)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadRecurringTransactions", ";INT;INT;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
         }
 
         /// generated method from connector
@@ -2557,10 +2557,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
+        public TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
                                                               out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SaveRecurringGiftBatchTDS", ";RECURRINGGIFTBATCHTDS;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SaveRecurringGiftBatchTDS", ";GIFTBATCHTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveRecurringGiftBatchTDS(ref AInspectDS, out AVerificationResult);
         }
 
@@ -2582,6 +2582,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "PostGiftBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
+        public System.Boolean PostGiftBatches(Int32 ALedgerNumber,
+                                              List<Int32>ABatchNumbers,
+                                              out TVerificationResultCollection AVerifications)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "PostGiftBatches", ";INT;INT?;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatches(ALedgerNumber, ABatchNumbers, out AVerifications);
         }
 
         /// generated method from connector
@@ -2610,26 +2619,26 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public System.String IdentifyPartnerCostCentre(Int32 ledgerNumber,
-                                                       Int64 fieldNumber)
+        public System.String IdentifyPartnerCostCentre(Int32 ALedgerNumber,
+                                                       Int64 AFieldNumber)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "IdentifyPartnerCostCentre", ";INT;LONG;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.IdentifyPartnerCostCentre(ledgerNumber, fieldNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "IdentifyPartnerCostCentre", ";INT;LONG;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.IdentifyPartnerCostCentre(ALedgerNumber, AFieldNumber);
         }
 
         /// generated method from connector
-        public Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
-                                                                                 out Int64 fieldNumber)
+        public Int64 GetRecipientLedgerNumber(Int64 partnerKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "GetRecipientLedgerNumber", ";LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
+        }
+
+        /// generated method from connector
+        public PUnitTable LoadKeyMinistry(Int64 partnerKey,
+                                          out Int64 fieldNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadKeyMinistry", ";LONG;LONG;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadKeyMinistry(partnerKey, out fieldNumber);
-        }
-
-        /// generated method from connector
-        public Int64 SearchRecipientLedgerKey(Int64 partnerKey)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SearchRecipientLedgerKey", ";LONG;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SearchRecipientLedgerKey(partnerKey);
         }
     }
 }

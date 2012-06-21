@@ -129,10 +129,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                 {
                     SQLCommandDefines.Add("BYDATERANGE");
                     param = new OdbcParameter("BatchDateFrom", OdbcType.DateTime);
-                    param.Value = (Int32)requestParams["BatchDateFrom"];
+                    param.Value = (DateTime)requestParams["BatchDateFrom"];
                     parameters.Add(param);
                     param = new OdbcParameter("BatchDateTo", OdbcType.DateTime);
-                    param.Value = (Int32)requestParams["BatchDateTo"];
+                    param.Value = (DateTime)requestParams["BatchDateTo"];
                     parameters.Add(param);
                 }
 

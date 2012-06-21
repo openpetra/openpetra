@@ -217,6 +217,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableFinanceTablesEnum.ValidLedgerNumberList:
+                        {
+                            DataTable TmpTable = AValidLedgerNumberAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.LedgerNameList:
                         {
                             DataTable TmpTable = GetLedgerNameListTable(ReadTransaction, TableName);
@@ -590,6 +596,23 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             }
 
                             break;
+                        case TCacheableFinanceTablesEnum.ValidLedgerNumberList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateValidLedgerNumberList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateValidLedgerNumberListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (AValidLedgerNumberAccess.SubmitChanges((AValidLedgerNumberTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
 
                         default:
 
@@ -648,6 +671,10 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         partial void ValidateEmailDestinationListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfGivingListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfPaymentListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateValidLedgerNumberList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateValidLedgerNumberListManual(TValidationControlsDict ValidationControlsDict,
 
 #endregion Data Validation
 

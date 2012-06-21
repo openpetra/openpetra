@@ -133,6 +133,11 @@ namespace Ict.Petra.Server.App.Core
                 TProgressState state = FProgressStates[AClientID];
                 state.CancelJob = true;
 
+                if (TLogging.DebugLevel >= DEBUG_PROGRESS)
+                {
+                    TLogging.Log("Cancelled the job for " + AClientID);
+                }
+
                 return true;
             }
 
@@ -148,6 +153,11 @@ namespace Ict.Petra.Server.App.Core
             {
                 TProgressState state = FProgressStates[AClientID];
                 state.JobFinished = true;
+
+                if (TLogging.DebugLevel >= DEBUG_PROGRESS)
+                {
+                    TLogging.Log("Finished the job for " + AClientID);
+                }
 
                 return true;
             }
