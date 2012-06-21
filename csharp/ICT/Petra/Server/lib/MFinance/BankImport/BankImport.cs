@@ -365,6 +365,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 return -1;
             }
 
+            ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
+
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
