@@ -199,12 +199,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         Int16 FInKeyMinistryChanging = 0;
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
-            if (FInKeyMinistryChanging > 0 || FPetraUtilsObject.SuppressChangeDetection)
+            if ((FInKeyMinistryChanging > 0) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
 
-            FInKeyMinistryChanging ++;
+            FInKeyMinistryChanging++;
             try
             {
                 Int64 rcp = cmbMinistry.GetSelectedInt64();
