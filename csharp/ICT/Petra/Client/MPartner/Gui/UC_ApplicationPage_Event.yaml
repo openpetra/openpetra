@@ -26,7 +26,7 @@ RootNode:
         txtEvent: {Label=Event, DataField=PmShortTermApplication.StConfirmedOption, Type=Event, OnChange=ProcessApplicationEventChanged}
         txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey, PartnerClass=UNIT}
 
-        cmbApplicationType: {Label=Application Type, List=EventApplicationTypeList, DataField=PmGeneralApplication.AppTypeName}
+        cmbApplicationType: {Label=Application Type, List=EventApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true}
         cmbContact1: {Label=Organization Contact 1, List=ContactList, DataField=PmGeneralApplication.GenContact1}
         cmbContact2: {Label=Organization Contact 2, List=ContactList, DataField=PmGeneralApplication.GenContact2}
         txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey, PartnerClass=PERSON}

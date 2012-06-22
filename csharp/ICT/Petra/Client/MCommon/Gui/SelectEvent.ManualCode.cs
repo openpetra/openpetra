@@ -79,6 +79,27 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.Cursor = Cursors.Default;
         }
 
+        private void FilterEvents(System.Object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+
+            SetTableFilter();
+            grdEvent.AutoSizeCells();
+
+            this.Cursor = Cursors.Default;
+        }
+
+        private void ClearFilterEvents(System.Object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+
+            txtEventName.Text = "";
+            SetTableFilter();
+            grdEvent.AutoSizeCells();
+
+            this.Cursor = Cursors.Default;
+        }
+        
         private void grdEventDoubleClick(System.Object sender, EventArgs e)
         {
             AcceptSelection(sender, e);
@@ -122,7 +143,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             grdEvent.AddDateColumn("Start Date", FEventTable.Columns[PPartnerLocationTable.GetDateEffectiveDBName()]);
             grdEvent.AddDateColumn("End Date", FEventTable.Columns[PPartnerLocationTable.GetDateGoodUntilDBName()]);
             grdEvent.AddTextColumn("Event Key", FEventTable.Columns[PPartnerTable.GetPartnerKeyDBName()]);
-            grdEvent.AddTextColumn("Event Type", FEventTable.Columns[PUnitTable.GetUnitTypeCodeDBName()]);
+            grdEvent.AddTextColumn("Event Type", FEventTable.Columns[PUnitTable.GetUnitTypeCodeDBName()], 80);
 
             FEventTable.DefaultView.AllowDelete = false;
             FEventTable.DefaultView.AllowEdit = false;
@@ -150,7 +171,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             FEventTable.Rows.Clear();
 
-            if (rbtOutreach.Checked || rbtTeenstreet.Checked || rbtAll.Checked)
+            if (rbtOutreach.Checked || rbtAll.Checked)
             {
                 // get all the outreaches
                 DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
@@ -159,7 +180,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 AddTableToGrid(TmpTable);
             }
 
-            if (rbtConference.Checked || rbtTeenstreet.Checked || rbtAll.Checked)
+            if (rbtConference.Checked || rbtAll.Checked)
             {
                 // get all the conferences
                 DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
@@ -198,22 +219,26 @@ namespace Ict.Petra.Client.MCommon.Gui
         private void SetTableFilter()
         {
             String RowFilter = "";
+            String EventName = "";
 
             if (chkCurrentFutureOnly.Checked)
             {
                 RowFilter = PPartnerLocationTable.GetDateGoodUntilDBName() + " >= #" + DateTime.Today.ToString("yyyy-MM-dd") + "#";
             }
 
-            if (rbtTeenstreet.Checked)
+            if (txtEventName.Text.Length > 0)
             {
+                // in case there is a filter set for the event name
+
                 if (RowFilter.Length > 0)
                 {
                     RowFilter = RowFilter + " AND ";
                 }
 
-                RowFilter = RowFilter + PUnitTable.GetOutreachCodeDBName() + " LIKE 'TS%'";
+                EventName = txtEventName.Text.Replace('*', '%') + "%";
+                RowFilter = RowFilter + PPartnerTable.GetPartnerShortNameDBName() + " LIKE '" + EventName + "'";
             }
-
+            
             FEventTable.DefaultView.RowFilter = RowFilter;
         }
     }

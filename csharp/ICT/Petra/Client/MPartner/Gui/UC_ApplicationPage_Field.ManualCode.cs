@@ -29,7 +29,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MPersonnel.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
@@ -120,7 +120,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            //TODO
+            TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+
+            TSharedPersonnelValidation_Personnel.ValidateFieldApplicationManual(this, FMainDS.PmYearProgramApplication[0], ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         private void ProcessApplicationFieldChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)

@@ -44,6 +44,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
         private ApplicationTDS FApplicationDS;
+        private int CurrentTabIndex = 0;
 
 	    /// <summary>Application Field changed</summary>
 	    public delegate void TDelegateApplicationFieldChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice, Int64 AFieldKey, String AFieldName);
@@ -90,8 +91,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoField.PetraUtilsObject = FPetraUtilsObject;
 			ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
 			
-			// enable control to react to modified event or field key in details part
+            ucoField.MainDS = FApplicationDS;
+            ucoApplicant.MainDS = FApplicationDS;
+
+            // enable control to react to modified event or field key in details part
 			ucoField.ApplicationFieldChanged += new TDelegatePartnerChanged(ProcessApplicationFieldChanged);
+			
+			// handle tab changing in case validation fails
+            tabApplicationField.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
         }
         
         /// <summary>
@@ -121,6 +128,28 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void GetDetails(PmGeneralApplicationRow ARow, PmYearProgramApplicationRow AFieldAppRow)
         {
             GetDataFromControls(ARow, AFieldAppRow);
+        }
+        
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
+        {
+            bool ReturnValue = false;
+
+            ReturnValue = ucoField.ValidateAllData(AProcessAnyDataValidationErrors);
+
+            if (ReturnValue)
+            {
+                ReturnValue = ucoApplicant.ValidateAllData(AProcessAnyDataValidationErrors);
+            }
+
+            return ReturnValue;
         }
         
         #endregion
@@ -178,9 +207,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FApplicationDS.PmGeneralApplication.Rows.Add(GeneralAppRowCopy);
             FApplicationDS.PmYearProgramApplication.Rows.Add(FieldAppRowCopy);
             
-            ucoField.MainDS = FApplicationDS;
-            ucoApplicant.MainDS = FApplicationDS;
-            
             ucoField.ShowDetails(GeneralAppRowCopy);
             ucoApplicant.ShowDetails(GeneralAppRowCopy);
         }        
@@ -203,7 +229,49 @@ namespace Ict.Petra.Client.MPartner.Gui
         	// trigger event so parent controls can react
         	this.ApplicationFieldChanged(Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, AFieldKey, AFieldName);
         }
- 	    
+
+        private int standardTabIndex = 0;
+        
+        private void TUC_Application_Field_Load(object sender, EventArgs e)
+        {
+            FPetraUtilsObject.TFrmPetra_Load(sender, e);
+
+            tabApplicationField.SelectedIndex = standardTabIndex;
+            //TabSelectionChanged(null, null);
+            tabApplicationField.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+        }
+
+        private void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (CurrentTabIndex == 0)
+            {
+                FCurrentUserControl = ucoField;
+                if (!ucoField.ValidateAllData(true, FCurrentUserControl))
+                {
+	                e.Cancel = true;
+	
+	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                }
+            }
+            else
+            {
+                FCurrentUserControl = ucoApplicant;
+                if (!ucoApplicant.ValidateAllData(true, FCurrentUserControl))
+                {
+	                e.Cancel = true;
+	
+	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                }
+            }
+
+            if (!e.Cancel)
+            {
+            	CurrentTabIndex = tabApplicationField.SelectedIndex;
+            }
+        }
+        
         #endregion
     }
 }

@@ -238,7 +238,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 RecalculateScreenParts(sender, e);
             }
         }
-        
+
         #endregion
 
 

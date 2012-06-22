@@ -738,5 +738,74 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
+
+        /// <summary>
+        /// Validates the general application record of a Person.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateGeneralApplicationManual(object AContext, PmGeneralApplicationRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Application Type' must have a value
+            ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnAppTypeNameId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.AppTypeName,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the event (short term) application record of a Person.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateEventApplicationManual(object AContext, PmShortTermApplicationRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+        }
+
+        /// <summary>
+        /// Validates the field (long term) application record of a Person.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateFieldApplicationManual(object AContext, PmYearProgramApplicationRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+        }
     }
 }

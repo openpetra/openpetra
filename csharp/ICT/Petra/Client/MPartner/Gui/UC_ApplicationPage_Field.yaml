@@ -25,6 +25,6 @@ RootNode:
         dtpAvailableFrom: {Label=Available from, DataField=PmYearProgramApplication.StartOfCommitment}
         dtpAvailableTo: {Label=Available to, DataField=PmYearProgramApplication.EndOfCommitment}
 
-        cmbApplicationType: {Label=Application Type, List=FieldApplicationTypeList, DataField=PmGeneralApplication.AppTypeName}
+        cmbApplicationType: {Label=Application Type, List=FieldApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true}
         txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey, PartnerClass=PERSON}
         

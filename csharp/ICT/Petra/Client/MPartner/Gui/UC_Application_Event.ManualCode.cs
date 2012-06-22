@@ -44,6 +44,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private IndividualDataTDS FMainDS;          // FMainDS is NOT of Type 'PartnerEditTDS' in this UserControl!!!
         private ApplicationTDS FApplicationDS;
+        private int CurrentTabIndex = 0;
 
 	    /// <summary>Application Event changed</summary>
 	    public delegate void TDelegateApplicationEventChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice, Int64 AEventKey, String AEventName);
@@ -90,9 +91,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 			ucoEvent.PetraUtilsObject = FPetraUtilsObject;
 			ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
 			ucoTravel.PetraUtilsObject = FPetraUtilsObject;
+
+            ucoEvent.MainDS = FApplicationDS;
+            ucoApplicant.MainDS = FApplicationDS;
+            ucoTravel.MainDS = FApplicationDS;
 			
 			// enable control to react to modified event or field key in details part
 			ucoEvent.ApplicationEventChanged += new TDelegatePartnerChanged(ProcessApplicationEventChanged);
+
+			// handle tab changing in case validation fails
+            tabApplicationEvent.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
         }
         
         /// <summary>
@@ -157,12 +165,39 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
-        private void ValidateDataDetailsManual(PmGeneralApplicationRow ARow)
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
         {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            bool ReturnValue = false;
 
-            //TODO
+            ReturnValue = ucoEvent.ValidateAllData(AProcessAnyDataValidationErrors);
+
+            if (ReturnValue)
+            {
+                ReturnValue = ucoApplicant.ValidateAllData(AProcessAnyDataValidationErrors);
+            }
+
+            if (ReturnValue)
+            {
+                ReturnValue = ucoTravel.ValidateAllData(AProcessAnyDataValidationErrors);
+            }
+
+            return ReturnValue;
         }
+
+//        private void ValidateDataDetailsManual(PmGeneralApplicationRow ARow)
+//        {
+//            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+//
+//            //TODO
+//        }
 
         private void ShowData(PmGeneralApplicationRow AGeneralAppRow, PmShortTermApplicationRow AEventAppRow)
         {
@@ -178,10 +213,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             FApplicationDS.PmGeneralApplication.Rows.Add(GeneralAppRowCopy);
             FApplicationDS.PmShortTermApplication.Rows.Add(EventAppRowCopy);
-            
-            ucoEvent.MainDS = FApplicationDS;
-            ucoApplicant.MainDS = FApplicationDS;
-            ucoTravel.MainDS = FApplicationDS;
             
             ucoEvent.ShowDetails(GeneralAppRowCopy);
             ucoApplicant.ShowDetails(GeneralAppRowCopy);
@@ -208,6 +239,48 @@ namespace Ict.Petra.Client.MPartner.Gui
         	this.ApplicationEventChanged(Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, AEventKey, AEventName);
         }
  	    
+        
+        private void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (CurrentTabIndex == 0)
+            {
+                FCurrentUserControl = ucoEvent;
+                if (!ucoEvent.ValidateAllData(true, FCurrentUserControl))
+                {
+	                e.Cancel = true;
+	
+	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                }
+            }
+            else if (CurrentTabIndex == 1)
+            {
+                FCurrentUserControl = ucoApplicant;
+                if (!ucoApplicant.ValidateAllData(true, FCurrentUserControl))
+                {
+	                e.Cancel = true;
+	
+	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                }
+            }
+            else
+            {
+                FCurrentUserControl = ucoTravel;
+                if (!ucoTravel.ValidateAllData(true, FCurrentUserControl))
+                {
+	                e.Cancel = true;
+	
+	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                }
+            }
+            
+            if (!e.Cancel)
+            {
+            	CurrentTabIndex = tabApplicationEvent.SelectedIndex;
+            }
+        }
+        
        #endregion
     }
 }

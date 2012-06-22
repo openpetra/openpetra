@@ -95,6 +95,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // initialize tab controls
             ucoApplicationEvent.InitialiseUserControl();
             ucoApplicationField.InitialiseUserControl();
+
+            // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
             
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
@@ -508,6 +511,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 	        }
 	    }
 	
+        /// <summary>
+        /// This Procedure will get called from the SaveChanges procedure before it
+        /// actually performs any saving operation.
+        /// </summary>
+        /// <param name="sender">The Object that throws this Event</param>
+        /// <param name="e">Event Arguments.
+        /// </param>
+        /// <returns>void</returns>
+        private void DataSavingStarted(System.Object sender, System.EventArgs e)
+        {
+        	GetDetailsFromControls(GetSelectedDetailRow());
+        }
+        
 	    private void ProcessApplicationEventOrFieldChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice, 
 	                                                       Int64 AEventOrFieldKey, String AEventOrFieldName)
 	    {
@@ -522,7 +538,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         	}
 	    }
 
-    
 	    /// <summary>
 	    /// Performs data validation.
 	    /// </summary>
@@ -546,6 +561,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 	        bool ReturnValue = false;
 	        Control ControlToValidate;
 	        IndividualDataTDSPmGeneralApplicationRow CurrentRow;
+	        object OuterControl;
 	
 	        CurrentRow = GetSelectedDetailRow();
 	
@@ -563,13 +579,24 @@ namespace Ict.Petra.Client.MPartner.Gui
 	            GetDetailsFromControls(CurrentRow);
 	
 	            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+	            if (IsEventApplication(CurrentRow))
+	            {
+	            	ucoApplicationEvent.ValidateAllData(AProcessAnyDataValidationErrors);
+	            }
+	            else
+	            {
+	            	ucoApplicationField.ValidateAllData(AProcessAnyDataValidationErrors);
+	            }
 	
 	            if (AProcessAnyDataValidationErrors)
 	            {
 	                // Only process the Data Validations here if ControlToValidate is not null.
 	                // It can be null if this.ActiveControl yields null - this would happen if no Control
 	                // on this UserControl has got the Focus.
-	                if(ControlToValidate.FindUserControlOrForm(true) == this)
+	                OuterControl = ControlToValidate.FindUserControlOrForm(true);
+	                if(   OuterControl == this
+	                   || OuterControl == this.Parent
+	                   || OuterControl == this.Parent.Parent)
 	                {
 	                    ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
 	                        this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());

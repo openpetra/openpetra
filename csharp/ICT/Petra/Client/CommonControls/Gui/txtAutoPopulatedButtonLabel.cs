@@ -1530,6 +1530,12 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
                                         LabelStringOut = mResultStringLbl;
+                                        
+                                        if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
+                                        {
+                                            bool ValidResult = true;
+                                            ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
+                                        }
                                     }
                                     else
                                     {
@@ -1577,6 +1583,12 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
                                         LabelStringOut = mResultStringLbl;
+
+                                        if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
+                                        {
+                                            bool ValidResult = true;
+                                            ValueChanged(mResultIntTxt, mResultStringLbl, ValidResult);
+                                        }
                                     }
                                     else
                                     {

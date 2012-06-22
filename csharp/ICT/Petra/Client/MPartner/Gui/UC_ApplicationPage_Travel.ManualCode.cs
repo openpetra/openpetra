@@ -29,7 +29,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MPersonnel.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
@@ -117,7 +117,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            //TODO
+            TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+
+            TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this, FMainDS.PmShortTermApplication[0], ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         #endregion
