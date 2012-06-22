@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             pnlDetails.Enabled = true;
             ucoValues.Enabled = true;
             txtDetailAnalysisTypeCode.Enabled = true;
-            
+
             ShowDetails(GetSelectedDetailRow());
         }
 

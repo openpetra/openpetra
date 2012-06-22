@@ -59,6 +59,10 @@ namespace Ict.Testing.SampleDataConstructor
             string sqlGetFieldPartnerKeys = "SELECT p_partner_key_n, p_unit_name_c FROM PUB_p_unit WHERE u_unit_type_code_c = 'F'";
             DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", null);
 
+            // get a list of banks (all class BANK)
+            string sqlGetBankPartnerKeys = "SELECT p_partner_key_n FROM PUB_p_bank";
+            DataTable BankKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetBankPartnerKeys, "keys", null);
+
             XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AInputBeneratorFile, ",", Encoding.UTF8);
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
@@ -124,10 +128,18 @@ namespace Ict.Testing.SampleDataConstructor
 
                 GenerateCommitmentRecord(RecordNode, familyRecord, MainDS, PersonnelDS, FieldKeys);
 
+                GenerateBankDetails(RecordNode, familyRecord, MainDS, BankKeys);
+
+                if (MainDS.PFamily.Rows.Count % 100 == 0)
+                {
+                    TLogging.Log("created worker " + MainDS.PFamily.Rows.Count.ToString() + " " + familyRecord.FamilyName);
+                }
+
                 RecordNode = RecordNode.NextSibling;
             }
 
             TVerificationResultCollection VerificationResult;
+            MainDS.ThrowAwayAfterSubmitChanges = true;
             PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
             if (VerificationResult.HasCriticalOrNonCriticalErrors)
@@ -135,13 +147,19 @@ namespace Ict.Testing.SampleDataConstructor
                 throw new Exception(VerificationResult.BuildVerificationResultString());
             }
 
+            PersonnelDS.ThrowAwayAfterSubmitChanges = true;
             PersonnelTDSAccess.SubmitChanges(PersonnelDS, out VerificationResult);
 
             if (VerificationResult.HasCriticalOrNonCriticalErrors)
             {
                 throw new Exception(VerificationResult.BuildVerificationResultString());
             }
+
+            TLogging.Log("after saving workers");
         }
+
+        static Int32 NumberOfPartnerKeysReserved = 0;
+        static Int64 NextPartnerKey = -1;
 
         /// <summary>
         /// generate a family record
@@ -151,12 +169,15 @@ namespace Ict.Testing.SampleDataConstructor
             PFamilyRow FamilyRow = AMainDS.PFamily.NewRowTyped();
             PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
 
-            long PartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
-
-            if (!TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, PartnerKey, ref PartnerKey))
+            if (NumberOfPartnerKeysReserved == 0)
             {
-                throw new Exception("create family: problems getting a new partner key");
+                NumberOfPartnerKeysReserved = 100;
+                NextPartnerKey = TNewPartnerKey.ReservePartnerKeys(-1, ref NumberOfPartnerKeysReserved);
             }
+
+            long PartnerKey = NextPartnerKey;
+            NextPartnerKey++;
+            NumberOfPartnerKeysReserved--;
 
             PartnerRow.PartnerKey = PartnerKey;
             FamilyRow.PartnerKey = PartnerRow.PartnerKey;
@@ -191,12 +212,15 @@ namespace Ict.Testing.SampleDataConstructor
             PPersonRow PersonRow = AMainDS.PPerson.NewRowTyped();
             PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
 
-            long PartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
-
-            if (!TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, PartnerKey, ref PartnerKey))
+            if (NumberOfPartnerKeysReserved == 0)
             {
-                throw new Exception("create person: problems getting a new partner key");
+                NumberOfPartnerKeysReserved = 100;
+                NextPartnerKey = TNewPartnerKey.ReservePartnerKeys(-1, ref NumberOfPartnerKeysReserved);
             }
+
+            long PartnerKey = NextPartnerKey;
+            NextPartnerKey++;
+            NumberOfPartnerKeysReserved--;
 
             PartnerRow.PartnerKey = PartnerKey;
             PersonRow.PartnerKey = PartnerRow.PartnerKey;
@@ -432,6 +456,41 @@ namespace Ict.Testing.SampleDataConstructor
                     PartnerTypeRow.TypeCode = SpecialType;
                     AMainDS.PPartnerType.Rows.Add(PartnerTypeRow);
                 }
+            }
+        }
+
+        /// <summary>
+        /// create PPartnerBankingDetail records for the FAMILY partner
+        /// </summary>
+        public static void GenerateBankDetails(XmlNode ACurrentNode, PFamilyRow AFamilyRow, PartnerEditTDS AMainDS,
+            DataTable ABankKeys)
+        {
+            if (TXMLParser.HasAttribute(ACurrentNode, "bankaccount_bank"))
+            {
+                Int32 BankID =
+                    Convert.ToInt32(TXMLParser.GetAttribute(ACurrentNode, "bankaccount_bank")) % ABankKeys.Rows.Count;
+                long BankPartnerKey = Convert.ToInt64(ABankKeys.Rows[BankID].ItemArray[0]);
+
+                PBankingDetailsRow bankingDetailsRow = AMainDS.PBankingDetails.NewRowTyped();
+
+                bankingDetailsRow.BankingDetailsKey = (AMainDS.PBankingDetails.Rows.Count + 1) * -1;
+                bankingDetailsRow.BankKey = BankPartnerKey;
+                bankingDetailsRow.BankAccountNumber = TXMLParser.GetAttribute(ACurrentNode, "bankaccount_account");
+                bankingDetailsRow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
+                bankingDetailsRow.AccountName = AFamilyRow.FirstName + " " + AFamilyRow.FamilyName;
+
+                AMainDS.PBankingDetails.Rows.Add(bankingDetailsRow);
+
+                PPartnerBankingDetailsRow partnerBankingRow = AMainDS.PPartnerBankingDetails.NewRowTyped();
+                partnerBankingRow.PartnerKey = AFamilyRow.PartnerKey;
+                partnerBankingRow.BankingDetailsKey = bankingDetailsRow.BankingDetailsKey;
+                AMainDS.PPartnerBankingDetails.Rows.Add(partnerBankingRow);
+
+                PBankingDetailsUsageRow bankingUsageRow = AMainDS.PBankingDetailsUsage.NewRowTyped();
+                bankingUsageRow.BankingDetailsKey = bankingDetailsRow.BankingDetailsKey;
+                bankingUsageRow.PartnerKey = AFamilyRow.PartnerKey;
+                bankingUsageRow.Type = MPartnerConstants.BANKINGUSAGETYPE_MAIN;
+                AMainDS.PBankingDetailsUsage.Rows.Add(bankingUsageRow);
             }
         }
     }

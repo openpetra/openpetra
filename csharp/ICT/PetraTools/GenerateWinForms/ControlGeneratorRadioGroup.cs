@@ -34,109 +34,30 @@ using Ict.Tools.DBXML;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
-    /// this is for radiogroup just with several strings in OptionalValues
-    public class RadioGroupSimpleGenerator : GroupBoxGenerator
+    /// <summary>
+    /// base class for radio button groups
+    /// </summary>
+    public class RadioGroupBase : GroupBoxGenerator
     {
-        string FDefaultValueRadioButton = String.Empty;
-        bool FNoDefaultValue = false;
+        /// <summary>
+        /// default button
+        /// </summary>
+        protected string FDefaultValueRadioButton = String.Empty;
+        /// <summary>
+        /// there is no default value
+        /// </summary>
+        protected bool FNoDefaultValue = false;
 
         /// <summary>constructor</summary>
-        public RadioGroupSimpleGenerator()
+        public RadioGroupBase()
             : base("rgr")
         {
-            FChangeEventName = "";
         }
 
         /// <summary>constructor</summary>
-        public RadioGroupSimpleGenerator(string prefix, System.Type type)
+        public RadioGroupBase(string prefix, System.Type type)
             : base(prefix, type)
         {
-            FChangeEventName = "";
-        }
-
-        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
-        public override bool ControlFitsNode(XmlNode curNode)
-        {
-            if (base.ControlFitsNode(curNode))
-            {
-                if (TXMLParser.GetChild(curNode, "OptionalValues") != null)
-                {
-                    return !TYml2Xml.HasAttribute(curNode,
-                        "BorderVisible") || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// get the radio buttons
-        /// </summary>
-        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
-        {
-            StringCollection optionalValues =
-                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
-            string DefaultValue;
-
-            if ((TXMLParser.HasAttribute(ctrl.xmlNode, "NoDefaultValue")
-                 && ((TXMLParser.GetAttribute(ctrl.xmlNode, "NoDefaultValue")) == "true")))
-            {
-                DefaultValue = String.Empty;
-                FNoDefaultValue = true;
-            }
-            else
-            {
-                DefaultValue = optionalValues[0];
-            }
-
-            if (TXMLParser.HasAttribute(ctrl.xmlNode, "DefaultValue"))
-            {
-                DefaultValue = TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue");
-            }
-            else
-            {
-                // DefaultValue with = sign before control name
-                for (int counter = 0; counter < optionalValues.Count; counter++)
-                {
-                    if (optionalValues[counter].StartsWith("="))
-                    {
-                        optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
-                        DefaultValue = optionalValues[counter];
-                    }
-                }
-            }
-
-            // add the radiobuttons on the fly
-
-            foreach (string optionalValue in optionalValues)
-            {
-                string radioButtonName = "rbt" +
-                                         StringHelper.UpperCamelCase(optionalValue.Replace("'", "").Replace(" ",
-                        "_").Replace("&",
-                        ""), false, false);
-                TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, ctrl.controlName);
-                newCtrl.Label = optionalValue;
-
-                if (StringHelper.IsSame(DefaultValue, optionalValue))
-                {
-                    newCtrl.SetAttribute("RadioChecked", "true");
-                    FDefaultValueRadioButton = radioButtonName;
-                }
-
-                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SuppressChangeDetection"))
-                {
-                    newCtrl.SetAttribute("SuppressChangeDetection", TYml2Xml.GetAttribute(ctrl.xmlNode, "SuppressChangeDetection"));
-                }
-
-                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "OnChange"))
-                {
-                    newCtrl.SetAttribute("OnChange", TYml2Xml.GetAttribute(ctrl.xmlNode, "OnChange"));
-                }
-
-                ctrl.Children.Add(newCtrl);
-            }
-
-            base.ProcessChildren(writer, ctrl);
         }
 
         /// <summary>
@@ -233,6 +154,109 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
     }
 
+    /// this is for radiogroup just with several strings in OptionalValues
+    public class RadioGroupSimpleGenerator : RadioGroupBase
+    {
+        /// <summary>constructor</summary>
+        public RadioGroupSimpleGenerator()
+            : base()
+        {
+            FChangeEventName = "";
+        }
+
+        /// <summary>constructor</summary>
+        public RadioGroupSimpleGenerator(string prefix, System.Type type)
+            : base(prefix, type)
+        {
+            FChangeEventName = "";
+        }
+
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                if (TXMLParser.GetChild(curNode, "OptionalValues") != null)
+                {
+                    return !TYml2Xml.HasAttribute(curNode,
+                        "BorderVisible") || TYml2Xml.GetAttribute(curNode, "BorderVisible").ToLower() != "false";
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// get the radio buttons
+        /// </summary>
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
+        {
+            StringCollection optionalValues =
+                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
+            string DefaultValue;
+
+            if ((TXMLParser.HasAttribute(ctrl.xmlNode, "NoDefaultValue")
+                 && ((TXMLParser.GetAttribute(ctrl.xmlNode, "NoDefaultValue")) == "true")))
+            {
+                DefaultValue = String.Empty;
+                FNoDefaultValue = true;
+            }
+            else
+            {
+                DefaultValue = optionalValues[0];
+            }
+
+            if (TXMLParser.HasAttribute(ctrl.xmlNode, "DefaultValue"))
+            {
+                DefaultValue = TXMLParser.GetAttribute(ctrl.xmlNode, "DefaultValue");
+            }
+            else
+            {
+                // DefaultValue with = sign before control name
+                for (int counter = 0; counter < optionalValues.Count; counter++)
+                {
+                    if (optionalValues[counter].StartsWith("="))
+                    {
+                        optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
+                        DefaultValue = optionalValues[counter];
+                    }
+                }
+            }
+
+            // add the radiobuttons on the fly
+
+            foreach (string optionalValue in optionalValues)
+            {
+                string radioButtonName = "rbt" +
+                                         StringHelper.UpperCamelCase(optionalValue.Replace("'", "").Replace(" ",
+                        "_").Replace("&",
+                        ""), false, false);
+                TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, ctrl.controlName);
+                newCtrl.Label = optionalValue;
+
+                if (StringHelper.IsSame(DefaultValue, optionalValue))
+                {
+                    newCtrl.SetAttribute("RadioChecked", "true");
+                    FDefaultValueRadioButton = radioButtonName;
+                }
+
+                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SuppressChangeDetection"))
+                {
+                    newCtrl.SetAttribute("SuppressChangeDetection", TYml2Xml.GetAttribute(ctrl.xmlNode, "SuppressChangeDetection"));
+                }
+
+                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "OnChange"))
+                {
+                    newCtrl.SetAttribute("OnChange", TYml2Xml.GetAttribute(ctrl.xmlNode, "OnChange"));
+                }
+
+                ctrl.Children.Add(newCtrl);
+            }
+
+            base.ProcessChildren(writer, ctrl);
+        }
+    }
+
     /// this is for radiogroup just with several strings in OptionalValues, but no border; uses a panel instead
     public class RadioGroupNoBorderGenerator : RadioGroupSimpleGenerator
     {
@@ -264,11 +288,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
     }
 
     /// this is for radiogroup with all sorts of sub controls
-    public class RadioGroupComplexGenerator : GroupBoxGenerator
+    public class RadioGroupComplexGenerator : RadioGroupBase
     {
         /// <summary>constructor</summary>
-        public RadioGroupComplexGenerator()
-            : base("rgr")
+        public RadioGroupComplexGenerator() : base()
         {
         }
 

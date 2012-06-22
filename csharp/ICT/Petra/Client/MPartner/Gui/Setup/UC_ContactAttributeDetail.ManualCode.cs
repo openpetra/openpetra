@@ -234,7 +234,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
                 FCurrentRow = -1;
-                
+
                 if (myDataView.Count > 0)
                 {
                     grdDetails.Selection.ResetSelection(false);

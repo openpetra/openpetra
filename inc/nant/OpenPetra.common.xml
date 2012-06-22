@@ -293,6 +293,9 @@
 <property name="DBMS.DBHostOrFile" value="127.0.0.1"
           overwrite="false"/>
 
+<property name="DBMS.Setup.DBName" value="openpetra_basedb"
+          overwrite="false"/>
+
 <!-- smtp -->
 <property name="smtp.host" value="smtp.example.org"
           overwrite="false"/>

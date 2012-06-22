@@ -148,14 +148,16 @@ ENDLOCAL
   <!-- if GenerateI18N.CollectedGettext.cs was generated, we need to analyze it for po file -->
   <exec program="${external.Poedit.gettext}" workingdir="${dir.root}/i18n/"
         if="${file::exists(path::combine(tempdir,'i18n/GenerateI18N.CollectedGettext.cs'))}" >
-    <arg line="-j --add-comments=/// --no-location --from-code=UTF-8" />
+    <arg line="-j --add-comments=/ --add-location --from-code=UTF-8" />
     <arg value="${tempdir}/i18n/GenerateI18N.CollectedGettext.cs" />
     <arg value="-o" />
     <arg value="${template.pot.file}" />
   </exec>
   
   <!-- remove all strings that should not be translated: demo labels, etc -->
-  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>   
+  <echo>arguments: -do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;</echo>
+  <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" commandline="-do:removeDoNotTranslate &quot;-dntFile:${doNotTranslate.po.file}&quot;  &quot;-poFile:${template.pot.file}&quot;"/>
+
 </target>
 
 </project>
