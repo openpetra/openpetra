@@ -40,6 +40,7 @@ using Ict.Common.Remoting.Sinks.Encryption;
 using Ict.Petra.Server.App.Core;
 
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 namespace PetraServerConsole
 {
@@ -284,15 +285,23 @@ public class TServer
                         Console.WriteLine(Environment.NewLine + "-> Available commands <-");
                         Console.WriteLine("     c: list connected Clients / C: list disconnected Clients");
                         Console.WriteLine("     d: disconnect a certain Client");
-#if DEBUGMODE
-                        Console.WriteLine("     l: load AppDomain for a fake Client (for debugging purposes only!)");
-#endif
+
+                        if (TLogging.DebugLevel > 0)
+                        {
+                            Console.WriteLine("     l: load AppDomain for a fake Client (for debugging purposes only!)");
+                        }
+
                         Console.WriteLine("     q: queue a Client Task for a certain Client");
                         Console.WriteLine("     s: Server Status");
-#if DEBUGMODE
-                        Console.WriteLine("     y: show Server memory");
-                        Console.WriteLine("     g: perform Server garbage collection (for debugging purposes only!)");
-#endif
+
+                        if (TLogging.DebugLevel > 0)
+                        {
+                            Console.WriteLine("     y: show Server memory");
+                            Console.WriteLine("     g: perform Server garbage collection (for debugging purposes only!)");
+                        }
+
+                        Console.WriteLine("     e: export the database to yml.gz");
+                        Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
 
                         Console.WriteLine("     u: unconditional Server shutdown (forces disconnection of all Clients!)");
                         WriteServerPrompt();
@@ -361,6 +370,64 @@ public class TServer
                         WriteServerPrompt();
 
                         // load AppDomain for a fake Client (for debugging purposes only!)
+                        break;
+
+
+                    case 'e':
+                    case 'E':
+                        string YmlGZData = TImportExportWebConnector.ExportAllTables();
+                        Console.Write("     Please enter filename of yml.gz file: ");
+                        string backupFile = Path.GetFullPath(Console.ReadLine());
+
+                        if (!backupFile.EndsWith(".yml.gz"))
+                        {
+                            Console.WriteLine("filename has to end with .yml.gz. Please try again");
+                        }
+                        else
+                        {
+                            FileStream fs = new FileStream(backupFile, FileMode.Create);
+                            byte[] buffer = Convert.FromBase64String(YmlGZData);
+                            fs.Write(buffer, 0, buffer.Length);
+                            fs.Close();
+                            TLogging.Log("backup has been written to " + backupFile);
+                        }
+
+                        WriteServerPrompt();
+                        break;
+
+                    case 'i':
+                    case 'I':
+                        Console.WriteLine(Environment.NewLine + "-> DELETING YOUR DATABASE <-");
+                        Console.Write("     Enter YES to import the new database (anything else to leave command): ");
+
+                        if (Console.ReadLine() == "YES")
+                        {
+                            Console.Write("     Please enter filename of yml.gz file: ");
+                            string restoreFile = Path.GetFullPath(Console.ReadLine());
+
+                            if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
+                            {
+                                Console.WriteLine("invalid filename, please try again");
+                            }
+                            else
+                            {
+                                FileStream fsRead = new FileStream(restoreFile, FileMode.Open);
+                                byte[] bufferRead = new byte[fsRead.Length];
+                                fsRead.Read(bufferRead, 0, bufferRead.Length);
+                                fsRead.Close();
+                                YmlGZData = Convert.ToBase64String(bufferRead);
+                                TImportExportWebConnector.ResetDatabase(YmlGZData);
+                                TLogging.Log("backup has been restored from " + restoreFile);
+                            }
+
+                            WriteServerPrompt();
+                        }
+                        else
+                        {
+                            Console.WriteLine("     Reset of database cancelled!");
+                            WriteServerPrompt();
+                        }
+
                         break;
 
                     case 's':

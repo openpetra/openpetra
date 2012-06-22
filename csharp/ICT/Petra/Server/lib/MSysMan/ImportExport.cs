@@ -138,6 +138,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             AModuleNode.AppendChild(tableNode);
 
+            if (table.Rows.Count == 0)
+            {
+                return;
+            }
+
             // for SQLite the table is not sorted by primary key. Therefore do it manually
             DataView v = table.DefaultView;
             DataTable t = (DataTable)AAsm.CreateInstance(ATableType.Namespace + "." + ATableType.Name);
