@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -322,6 +322,23 @@ namespace Ict.Common.Remoting.Server
         {
             GC.Collect();
             return GC.GetTotalMemory(false);
+        }
+
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        public virtual string BackupDatabaseToYmlGZ()
+        {
+            // implemented in derived class
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        public virtual void RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        {
+            // implemented in derived class
         }
     }
 }

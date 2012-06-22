@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -131,5 +131,17 @@ namespace Ict.Common.Remoting.Shared
         /// <param name="ACantDisconnectReason"></param>
         /// <returns></returns>
         bool DisconnectClient(System.Int16 AClientID, out String ACantDisconnectReason);
+
+        /// <summary>
+        /// returns a string with yml.gz data
+        /// </summary>
+        /// <returns></returns>
+        string BackupDatabaseToYmlGZ();
+
+        /// <summary>
+        /// restore the database from a string with yml.gz data
+        /// </summary>
+        /// <returns></returns>
+        void RestoreDatabaseFromYmlGZ(string AYmlGzData);
     }
 }

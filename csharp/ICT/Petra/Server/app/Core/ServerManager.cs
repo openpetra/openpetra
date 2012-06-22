@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -150,6 +150,42 @@ namespace Ict.Petra.Server.App.Core
                 "");
 
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
+        }
+
+        /// <summary>
+        /// set this on startup
+        /// </summary>
+        public IImportExportManager FImportExportManager = null;
+
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        public override string BackupDatabaseToYmlGZ()
+        {
+            if (FImportExportManager != null)
+            {
+                return FImportExportManager.BackupDatabaseToYmlGZ();
+            }
+            else
+            {
+                TLogging.Log("please initialize FImportExportManager");
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        public override void RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        {
+            if (FImportExportManager != null)
+            {
+                FImportExportManager.RestoreDatabaseFromYmlGZ(AYmlGzData);
+            }
+            else
+            {
+                TLogging.Log("please initialize FImportExportManager");
+            }
         }
     }
 }

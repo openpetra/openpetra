@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,22 @@ namespace Ict.Common.Remoting.Server
         IPrincipal PerformUserAuthentication(string AUserName, string APassword,
             out Int32 AProcessID,
             out Boolean ASystemEnabled);
+    }
+
+    /// <summary>
+    /// for saving and loading the database
+    /// </summary>
+    public interface IImportExportManager
+    {
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        string BackupDatabaseToYmlGZ();
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        void RestoreDatabaseFromYmlGZ(string AYmlGzData);
     }
 
     /// <summary>

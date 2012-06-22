@@ -87,6 +87,8 @@ public class TServer
 
             TheServerManager = new TServerManager();
 
+            TheServerManager.FImportExportManager = new TImportExportManager();
+
             // Ensure Logging and an 'ordered cooperative shutdown' in case of an Unhandled Exception
             TheServerManager.HookupProperShutdownProcessing();
 

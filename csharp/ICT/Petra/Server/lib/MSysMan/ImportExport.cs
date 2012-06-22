@@ -549,4 +549,26 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
         }
     }
+
+    /// <summary>
+    /// this manager is called from the server admin console
+    /// </summary>
+    public class TImportExportManager : IImportExportManager
+    {
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        public string BackupDatabaseToYmlGZ()
+        {
+            return TImportExportWebConnector.ExportAllTables();
+        }
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        public void RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        {
+            TImportExportWebConnector.ResetDatabase(AYmlGzData);
+        }
+    }
 }
