@@ -774,6 +774,18 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
         }
 
         /// generated method from connector
+        public String ExportToFile(Boolean AExportDonationData,
+                                   Boolean AExportFieldData,
+                                   Boolean AExportPersonData,
+                                   String APswd,
+                                   Int32 ADaySpan,
+                                   String AOptionalMetadata)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector), "ExportToFile", ";BOOL;BOOL;BOOL;STRING;INT;STRING;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector.ExportToFile(AExportDonationData, AExportFieldData, AExportPersonData, APswd, ADaySpan, AOptionalMetadata);
+        }
+
+        /// generated method from connector
         public Int64 GetNextSequence(TSequenceNames ASequence)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TSequenceWebConnector), "GetNextSequence", ";TSEQUENCENAMES;");

@@ -168,6 +168,13 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.WebConnectors
     /// <summary>auto generated</summary>
     public interface IWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector)</summary>
+        String ExportToFile(Boolean AExportDonationData,
+                            Boolean AExportFieldData,
+                            Boolean AExportPersonData,
+                            String APswd,
+                            Int32 ADaySpan,
+                            String AOptionalMetadata);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TSequenceWebConnector)</summary>
         Int64 GetNextSequence(TSequenceNames ASequence);
     }

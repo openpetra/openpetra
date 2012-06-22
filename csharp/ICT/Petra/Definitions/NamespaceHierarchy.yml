@@ -4,7 +4,7 @@ NamespaceHierarchy:
         UIConnectors: {Description = User Interface Connectors}
         WebConnectors: {Description = Web Connectors}
         DataReader: {Description="Simple Data Connector for reading data; checks for permissions; returns typed tables"}
-    Partner: {Description=Partner Module}
+     Partner: {Description=Partner Module}
         Extracts: {Description=Extracts Sub-System}
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description=Web Connectors}
@@ -102,5 +102,3 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
             UserManager:
         Cacheable: {Description=Cacheable DataTables}
-        IntranetExport: {Description=Export data to Intranet}
-            WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}

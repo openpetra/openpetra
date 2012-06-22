@@ -57,7 +57,6 @@ using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
 using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
-using Ict.Petra.Shared.Interfaces.MSysMan.IntranetExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
@@ -69,7 +68,6 @@ using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport.WebConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security.UserManager;
-using Ict.Petra.Shared.Interfaces.MSysMan.IntranetExport.WebConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Application;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance;
 using Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance;
@@ -77,7 +75,6 @@ using Ict.Petra.Server.MSysMan.Instantiator.ImportExport;
 using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement;
 using Ict.Petra.Server.MSysMan.Instantiator.Security;
 using Ict.Petra.Server.MSysMan.Instantiator.Cacheable;
-using Ict.Petra.Server.MSysMan.Instantiator.IntranetExport;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups;
 using Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults;
@@ -89,7 +86,6 @@ using Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors;
 using Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager;
-using Ict.Petra.Server.MSysMan.Instantiator.IntranetExport.WebConnectors;
 //using Ict.Petra.Server.MSysMan.Application;
 using Ict.Petra.Server.MSysMan.Maintenance;
 //using Ict.Petra.Server.MSysMan.TableMaintenance;
@@ -97,7 +93,6 @@ using Ict.Petra.Server.MSysMan.Maintenance;
 //using Ict.Petra.Server.MSysMan.PrintManagement;
 using Ict.Petra.Server.MSysMan.Security;
 using Ict.Petra.Server.MSysMan.Cacheable;
-using Ict.Petra.Server.MSysMan.IntranetExport;
 //using Ict.Petra.Server.MSysMan.Application.UIConnectors;
 using Ict.Petra.Server.MSysMan.Application.ServerLookups;
 //using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults;
@@ -109,7 +104,6 @@ using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 //using Ict.Petra.Server.MSysMan.PrintManagement.UIConnectors;
 //using Ict.Petra.Server.MSysMan.Security.UIConnectors;
 //using Ict.Petra.Server.MSysMan.Security.UserManager;
-using Ict.Petra.Server.MSysMan.IntranetExport.WebConnectors;
 
 #region ManualCode
 using Ict.Common.Verification;
@@ -219,7 +213,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
         private TPrintManagementNamespace FPrintManagementSubNamespace;
         private TSecurityNamespace FSecuritySubNamespace;
         private TCacheableNamespace FCacheableSubNamespace;
-        private TIntranetExportNamespace FIntranetExportSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMSysMan()
@@ -482,35 +475,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
                 }
 
                 return FCacheableSubNamespace;
-            }
-
-        }
-
-        /// <summary>The 'IntranetExport' subnamespace contains further subnamespaces.</summary>
-        public IIntranetExportNamespace IntranetExport
-        {
-            get
-            {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.IntranetExport' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.IntranetExport' sub-namespace
-                //
-
-                // accessing TIntranetExportNamespace the first time? > instantiate the object
-                if (FIntranetExportSubNamespace == null)
-                {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TIntranetExportNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MSysMan.Instantiator.IntranetExport') should be automatically contructable.
-                    FIntranetExportSubNamespace = new TIntranetExportNamespace();
-                }
-
-                return FIntranetExportSubNamespace;
             }
 
         }
@@ -2479,192 +2443,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
             #region ManualCode
             return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
             #endregion ManualCode                                    
-        }
-    }
-}
-
-namespace Ict.Petra.Server.MSysMan.Instantiator.IntranetExport
-{
-    /// <summary>auto generated class </summary>
-    public class TIntranetExportNamespace : MarshalByRefObject, IIntranetExportNamespace
-    {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TIntranetExportWebConnectorsNamespace FIntranetExportWebConnectorsSubNamespace;
-
-        /// <summary>Constructor</summary>
-        public TIntranetExportNamespace()
-        {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
-        }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TIntranetExportNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
-
-        /// NOTE AutoGeneration: This function is all-important!!!
-        public override object InitializeLifetimeService()
-        {
-            return null; // make sure that the TIntranetExportNamespace object exists until this AppDomain is unloaded!
-        }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
-        /// <summary>The 'IntranetExportWebConnectors' subnamespace contains further subnamespaces.</summary>
-        public IIntranetExportWebConnectorsNamespace WebConnectors
-        {
-            get
-            {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'IntranetExport.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'IntranetExport.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FIntranetExportWebConnectorsSubNamespace == null)
-                {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TIntranetExportWebConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.IntranetExport.Instantiator.WebConnectors') should be automatically contructable.
-                    FIntranetExportWebConnectorsSubNamespace = new TIntranetExportWebConnectorsNamespace();
-                }
-
-                return FIntranetExportWebConnectorsSubNamespace;
-            }
-
-        }
-    }
-}
-
-namespace Ict.Petra.Server.MSysMan.Instantiator.IntranetExport.WebConnectors
-{
-    /// <summary>auto generated class </summary>
-    public class TIntranetExportWebConnectorsNamespace : MarshalByRefObject, IIntranetExportWebConnectorsNamespace
-    {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-
-        /// <summary>Constructor</summary>
-        public TIntranetExportWebConnectorsNamespace()
-        {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
-        }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TIntranetExportWebConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
-
-        /// NOTE AutoGeneration: This function is all-important!!!
-        public override object InitializeLifetimeService()
-        {
-            return null; // make sure that the TIntranetExportWebConnectorsNamespace object exists until this AppDomain is unloaded!
-        }
-
-        /// generated method from connector
-        public String ExportToFile(Boolean ExportDonationData,
-                                   Boolean ExportFieldData,
-                                   Boolean ExportPersonData,
-                                   String Pswd,
-                                   Int32 DaySpan,
-                                   String OptionalMetadata)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.IntranetExport.WebConnectors.TIntranetExportWebConnector), "ExportToFile", ";BOOL;BOOL;BOOL;STRING;INT;STRING;");
-            return Ict.Petra.Server.MSysMan.IntranetExport.WebConnectors.TIntranetExportWebConnector.ExportToFile(ExportDonationData, ExportFieldData, ExportPersonData, Pswd, DaySpan, OptionalMetadata);
         }
     }
 }

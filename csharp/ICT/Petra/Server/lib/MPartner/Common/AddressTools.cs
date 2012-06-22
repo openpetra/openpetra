@@ -108,6 +108,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
                         ACountryNameLocal = CountryTable[CountryTable.DefaultView.Find(AAddress[0].CountryCode)].CountryNameLocal;
                     }
+                    break;
                 }
             }
 

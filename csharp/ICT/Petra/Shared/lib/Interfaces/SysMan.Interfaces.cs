@@ -40,7 +40,6 @@ using Ict.Petra.Shared.Interfaces.MSysMan.ImportExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.PrintManagement;
 using Ict.Petra.Shared.Interfaces.MSysMan.Security;
 using Ict.Petra.Shared.Interfaces.MSysMan.Cacheable;
-using Ict.Petra.Shared.Interfaces.MSysMan.IntranetExport;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.UIConnectors;
 using Ict.Petra.Shared.Interfaces.MSysMan.Application.ServerLookups;
 using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
@@ -59,7 +58,6 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MSysMan;
 #endregion ManualCode
-using Ict.Petra.Shared.Interfaces.MSysMan.IntranetExport.WebConnectors;
 namespace Ict.Petra.Shared.Interfaces.MSysMan
 {
     /// <summary>auto generated</summary>
@@ -103,12 +101,6 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan
 
         /// <summary>access to sub namespace</summary>
         ICacheableNamespace Cacheable
-        {
-            get;
-        }
-
-        /// <summary>access to sub namespace</summary>
-        IIntranetExportNamespace IntranetExport
         {
             get;
         }
@@ -451,39 +443,6 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Cacheable
         TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
                                                                ref TTypedDataTable ASubmitTable,
                                                                out TVerificationResultCollection AVerificationResult);
-    }
-
-}
-
-
-namespace Ict.Petra.Shared.Interfaces.MSysMan.IntranetExport
-{
-    /// <summary>auto generated</summary>
-    public interface IIntranetExportNamespace : IInterface
-    {
-        /// <summary>access to sub namespace</summary>
-        IIntranetExportWebConnectorsNamespace WebConnectors
-        {
-            get;
-        }
-
-    }
-
-}
-
-
-namespace Ict.Petra.Shared.Interfaces.MSysMan.IntranetExport.WebConnectors
-{
-    /// <summary>auto generated</summary>
-    public interface IIntranetExportWebConnectorsNamespace : IInterface
-    {
-        /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.IntranetExport.WebConnectors.TIntranetExportWebConnector)</summary>
-        String ExportToFile(Boolean ExportDonationData,
-                            Boolean ExportFieldData,
-                            Boolean ExportPersonData,
-                            String Pswd,
-                            Int32 DaySpan,
-                            String OptionalMetadata);
     }
 
 }
