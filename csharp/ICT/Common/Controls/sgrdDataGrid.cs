@@ -141,6 +141,23 @@ namespace Ict.Common.Controls
         private Boolean FAutoFindListRebuildNeeded;
 
         /// <summary>
+        /// A flag that is true during the 'Sorted' event.
+        /// </summary>
+        private Boolean FSorting;
+
+        /// <summary>
+        /// Returns true when the grid is re-ordering rows after a sort operation.  Can be used to ignore updates from a panel to the grid
+        /// because the sort operation never changes the selected row.
+        /// </summary>
+        public Boolean Sorting
+        {
+            get
+            {
+                return FSorting;
+            }
+        }
+
+        /// <summary>
         /// Read access to the View for the ColumnHeaders of this Grid (used by
         /// sgrdDataGrid.Columns).
         ///
@@ -1068,6 +1085,7 @@ namespace Ict.Common.Controls
         {
             base.OnSortedRangeRows(e);
 
+            FSorting = true;
             // MessageBox.Show('Length(FRowsSelectedBeforeSort): ' + Convert.ToString(Length(FRowsSelectedBeforeSort)));
             if (FRowsSelectedBeforeSort.Length > 0)
             {
@@ -1081,6 +1099,7 @@ namespace Ict.Common.Controls
                 this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
             }
 
+            FSorting = false;
             // MessageBox.Show('TSgrdDataGrid.OnSortedRangeRows');
         }
 
@@ -1299,14 +1318,24 @@ namespace Ict.Common.Controls
         ///
         /// DataSourceRowToIndex2 manually iterates through the Grid's DataView and compares Rows objects. This works!
         /// </summary>
-        /// <returns>int</returns>
+        /// <returns>The 0-based index of the specified DataRowView in the grid's DataView</returns>
         public int DataSourceRowToIndex2(DataRowView ADataRowView)
+        {
+            return DataSourceRowToIndex2(ADataRowView.Row);
+        }
+
+        /// <summary>
+        /// This overload takes a DataRow as the parameter in place of a DataRowView.  See also the comment for the DataRowView overload.
+        /// </summary>
+        /// <param name="ADataRow">The Row object whose rowindex is required</param>
+        /// <returns>The 0-based index of the specified DataRow in the grid's DataView</returns>
+        public int DataSourceRowToIndex2(DataRow ADataRow)
         {
             int RowIndex = -1;
 
             for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).DataView.Count; Counter2++)
             {
-                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRowView.Row)
+                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRow)
                 {
                     RowIndex = Counter2;
                 }
@@ -1339,7 +1368,7 @@ namespace Ict.Common.Controls
             SelectRowInGrid(ARowNumberInGrid, false);
         }
 
-        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        /// select a row in the grid, and invoke the event for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
         {
             if (ASelectBorderIfOutsideLimit)

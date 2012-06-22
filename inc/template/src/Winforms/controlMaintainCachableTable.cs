@@ -117,6 +117,7 @@ namespace {#NAMESPACE}
     {
         if(ValidateAllData(true, true))
         {
+            int previousGridRow = grdDetails.Selection.ActivePosition.Row;
 {#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
             // we create the table locally, no dataset
             {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
@@ -132,6 +133,14 @@ namespace {#NAMESPACE}
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
             grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+            int currentGridRow = grdDetails.Selection.ActivePosition.Row;
+            if (currentGridRow == previousGridRow)
+            {
+                // The grid must be sorted so the new row is displayed where the old one was.  We will not have received a RowChanged event.
+                // We need to enforce showing the new details.
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
 
             return true;
         }
@@ -232,18 +241,25 @@ namespace {#NAMESPACE}
     private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
     {
         bool ReturnValue = false;
-        {#DETAILTABLE}Row CurrentRow;
 
-        // AlanP chnaged this from = GetSelectedDetailRow() because that caused errors when the sort headers of the grid were clicked       
-        CurrentRow = FPreviouslySelectedDetailRow;
-
-        if (CurrentRow != null)
+        if (FPreviouslySelectedDetailRow != null)
         {
-            GetDetailsFromControls(CurrentRow);
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
             
-            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
 {#IFDEF VALIDATEDATADETAILSMANUAL}
-            ValidateDataDetailsManual(CurrentRow);
+            // Remember the current rowID and perform automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+            int previousRowNum = FCurrentRow;// grdDetails.DataSourceRowToIndex2(CurrentRow) + 1;
+            ValidateDataDetailsManual(FPreviouslySelectedDetailRow);
+
+            // Validation might have moved the row, so we need to locate it again, updating our FCurrentRow global variable
+            FCurrentRow = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1;
+            if (FCurrentRow != previousRowNum)
+            {
+                // Yes it did move so we need to keep the row selected, without firing off the event that brought us here in the first place!
+                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+                grdDetails.SelectRowInGrid(FCurrentRow);
+                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+            }
 {#ENDIF VALIDATEDATADETAILSMANUAL}
 
             if (AProcessAnyDataValidationErrors)
@@ -317,7 +333,7 @@ namespace {#NAMESPACE}
 
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        if(e.Row != FCurrentRow)
+        if(e.Row != FCurrentRow && !grdDetails.Sorting)
         {
             // Transfer data from Controls into the DataTable
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
@@ -326,16 +342,15 @@ namespace {#NAMESPACE}
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             ShowDetails(FPreviouslySelectedDetailRow);
             pnlDetails.Enabled = true;
-            
-            FCurrentRow = e.Row;
         }
+        FCurrentRow = e.Row;
     }
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDETAILS}
     private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
     {
-        if (ARow != null)
+        if (ARow != null && !grdDetails.Sorting)
         {
             ARow.BeginEdit();
             {#SAVEDETAILS}
