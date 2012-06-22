@@ -59,11 +59,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool blnIsInModalMode;
 
-        private string SortByDateDescending = 
-                        ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + ", " +
-                        ADailyExchangeRateTable.GetToCurrencyCodeDBName() + ", " +
-                        ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
-                        ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+        private string SortByDateDescending =
+            ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + ", " +
+            ADailyExchangeRateTable.GetToCurrencyCodeDBName() + ", " +
+            ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
+            ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
 
         /// <summary>
         /// Public property that is not really used in release builds, but might be useful
@@ -85,7 +85,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // This code runs just before the auto-generated code binds the data to the grid
             // We need to set the RowFilter to something that returns no rows because we will return the rows we actually want
             // in RunOnceOnActivation.  By returning no rows now we reduce some horrible flicker on the screen (and save time!)
-            FMainDS.ADailyExchangeRate.DefaultView.RowFilter = FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom + " = '" + DateTime.MaxValue.ToShortDateString() + "'";
+            FMainDS.ADailyExchangeRate.DefaultView.RowFilter = FMainDS.ADailyExchangeRate.ColumnDateEffectiveFrom + " = '" +
+                                                               DateTime.MaxValue.ToShortDateString() + "'";
 
             // Now we set some default settings that apply when the screen is MODELESS
             //  (If the screen will be MODAL one of the ShowDialog methods will be called below)
@@ -100,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void RunOnceOnActivationManual()
         {
             // Activate events we will use in manual code
-            this.txtDetailRateOfExchange.TextChanged += 
+            this.txtDetailRateOfExchange.TextChanged +=
                 new EventHandler(txtDetailRateOfExchange_TextChanged);
             this.cmbDetailFromCurrencyCode.SelectedValueChanged +=
                 new System.EventHandler(this.ValueChangedCurrencyCode);
@@ -115,10 +116,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             theView.Sort = SortByDateDescending;
 
             // Set the RowFilter - in MODAL mode it has already been set, but in MODELESS mode we need to set up to see all rows
-            if (!blnIsInModalMode) theView.RowFilter = "";
+            if (!blnIsInModalMode)
+            {
+                theView.RowFilter = "";
+            }
 
             // Having changed the sort order we need to put the correct details in the panel (assuming we have a row to display)
-            if (theView.Count > 0) grdDetails.Selection.SelectRow(1, true);
+            if (theView.Count > 0)
+            {
+                grdDetails.Selection.SelectRow(1, true);
+            }
+
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();          // can be null
             ShowDetails(FPreviouslySelectedDetailRow);
         }
@@ -129,7 +137,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <returns>An error</returns>
         public new DialogResult ShowDialog()
         {
-            throw new NotSupportedException("You cannot call ShowDialog with empty parameters.  Use one of the method signatures with multiple parameters");
+            throw new NotSupportedException(
+                "You cannot call ShowDialog with empty parameters.  Use one of the method signatures with multiple parameters");
         }
 
         /// <summary>
@@ -138,7 +147,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <returns>An error</returns>
         public new DialogResult ShowDialog(IWin32Window Parent)
         {
-            throw new NotSupportedException("You cannot call ShowDialog with a single parameter.  Use one of the method signatures with multiple parameters");
+            throw new NotSupportedException(
+                "You cannot call ShowDialog with a single parameter.  Use one of the method signatures with multiple parameters");
         }
 
         /// <summary>
@@ -174,8 +184,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             decimal ExchangeDefault)
         {
             ALedgerRow ledger =
-               ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
-                    TCacheableFinanceTablesEnum.LedgerDetails, LedgerNumber))[0];
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                     TCacheableFinanceTablesEnum.LedgerDetails, LedgerNumber))[0];
+
             baseCurrencyOfLedger = ledger.BaseCurrency;
 
             DateTime dateEnd2 = dteEnd.AddDays(1.0);
@@ -189,6 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "'";
+
             if (dteStart > DateTime.MinValue)
             {
                 filter += (" and " + ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'");
@@ -220,8 +232,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string strCurrencyTo)
         {
             ALedgerRow ledger =
-               ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
-                    TCacheableFinanceTablesEnum.LedgerDetails, LedgerNumber))[0];
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                     TCacheableFinanceTablesEnum.LedgerDetails, LedgerNumber))[0];
+
             baseCurrencyOfLedger = ledger.BaseCurrency;
 
             DateTime dateEnd2 = dteEnd.AddDays(1.0);
@@ -330,7 +343,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void NewRow(System.Object sender, EventArgs e)
         {
             // Check the current panel data and get it into the current record
-            if (!ValidateAllData(true, true)) return;
+            if (!ValidateAllData(true, true))
+            {
+                return;
+            }
 
             // Now create an appropriate new record
             DateTime dateTimeNow;
@@ -413,6 +429,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.SetChangedFlag();
             SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
             int currentGridRow = grdDetails.Selection.ActivePosition.Row;
+
             if (currentGridRow == previousGridRow)
             {
                 // The grid must be sorted so the new row is displayed where the old one was.  We will not have received a RowChanged event.
@@ -487,6 +504,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // Set the Enabled state of the two combo boxes
             ADailyExchangeRateRow row = FPreviouslySelectedDetailRow;
             bool bEnable = (row != null && row.RowState == DataRowState.Added && !blnIsInModalMode);
+
             cmbDetailFromCurrencyCode.Enabled = bEnable;
             cmbDetailToCurrencyCode.Enabled = bEnable;
 
@@ -508,14 +526,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             btnClose.Enabled = (row != null);
 
-            if (row == null) txtDetailRateOfExchange.NumberValueDecimal = null;
+            if (row == null)
+            {
+                txtDetailRateOfExchange.NumberValueDecimal = null;
+            }
 
             UpdateExchangeRateLabels();
         }
 
         private void txtDetailRateOfExchange_TextChanged(object sender, EventArgs e)
         {
-            if (txtDetailRateOfExchange.Text.Trim() != String.Empty) UpdateExchangeRateLabels();
+            if (txtDetailRateOfExchange.Text.Trim() != String.Empty)
+            {
+                UpdateExchangeRateLabels();
+            }
         }
 
         private void GetDetailDataFromControlsManual(ADailyExchangeRateRow ARow)
@@ -539,9 +563,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool RateHasBeenUsed()
         {
-            
             //AJournalTable t = new AJournalTable();
-            
+
             //Ict.Common.Data.TTypedDataTable TypedTable;
             //TRemote.MCommon.DataReader.GetData(AJournalTable.GetTableDBName(), null, out TypedTable);
             //t.Merge(TypedTable);

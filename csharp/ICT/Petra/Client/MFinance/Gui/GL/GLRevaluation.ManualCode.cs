@@ -462,9 +462,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 TFrmSetupDailyExchangeRate frmExchangeRate =
                     new TFrmSetupDailyExchangeRate(mainForm);
+
                 if (frmExchangeRate.ShowDialog(mainForm.FLedgerNumber, dteStart, dteEnd,
-                    currencyExchangeList[iRow].Currency,
-                    currencyExchangeList[iRow].ExchangeRate) == DialogResult.Cancel) return;
+                        currencyExchangeList[iRow].Currency,
+                        currencyExchangeList[iRow].ExchangeRate) == DialogResult.Cancel)
+                {
+                    return;
+                }
 
                 currencyExchangeList[iRow].updateExchangeRate(
                     frmExchangeRate.CurrencyExchangeRate);
