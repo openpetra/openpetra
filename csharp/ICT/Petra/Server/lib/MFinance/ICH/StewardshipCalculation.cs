@@ -212,15 +212,17 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 NewBatchRow.DateEffective = PeriodEndDate;
 
                 //Load tables needed: AccountingPeriod, Ledger, Account, Cost Centre, Transaction, Gift Batch, ICHStewardship
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, DBTransaction);
-                AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
+                GLPostingTDS PostingDS = new GLPostingTDS();
+                ALedgerAccess.LoadByPrimaryKey(PostingDS, ALedgerNumber, DBTransaction);
+                AAccountAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+                ACostCentreAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+                AIchStewardshipAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+                AAccountHierarchyAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+
                 ATransactionAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                AIchStewardshipAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
                 AJournalAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
 
-                ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
+                ALedgerRow LedgerRow = (ALedgerRow)PostingDS.ALedger.Rows[0];
 
                 //Create a new journal in the Batch
                 //Run gl1120o.p
@@ -245,7 +247,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 // ***************************
                 // Ln: 242
 
-                AAccountRow AccountRow = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.INCOME_HEADING });
+                AAccountRow AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.INCOME_HEADING });
 
                 //Process income accounts
                 if (AccountRow != null)
@@ -272,7 +274,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 //Process expense accounts
                 AccountRow = null;
-                AccountRow = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.EXPENSE_HEADING });
+                AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.EXPENSE_HEADING });
 
                 if (AccountRow != null)
                 {
@@ -298,7 +300,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 //Process P&L accounts
                 AccountRow = null;
-                AccountRow = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.PROFIT_AND_LOSS_HEADING });
+                AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.PROFIT_AND_LOSS_HEADING });
 
                 if (AccountRow != null)
                 {
@@ -326,7 +328,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                      " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'";
                 string OrderBy = ACostCentreTable.GetCostCentreCodeDBName();
 
-                DataRow[] FoundCCRows = MainDS.ACostCentre.Select(WhereClause, OrderBy);
+                DataRow[] FoundCCRows = PostingDS.ACostCentre.Select(WhereClause, OrderBy);
 
                 AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
 

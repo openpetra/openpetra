@@ -33,6 +33,9 @@ namespace {#NAMESPACE}
 
     /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
     private {#UICONNECTORTYPE} FUIConnector = null;
+{#IFDEF SHOWDETAILS}
+    private int FCurrentRow;
+{#ENDIF SHOWDETAILS}
 
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
@@ -91,17 +94,23 @@ namespace {#NAMESPACE}
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-{#IFDEF SAVEDETAILS}
-        // get the details from the previously selected row
-        if (FPreviouslySelectedDetailRow != null)
+        if(e.Row != FCurrentRow)
         {
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
-        }
+{#IFDEF SAVEDETAILS}
+            // Transfer data from Controls into the DataTable
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            }
 {#ENDIF SAVEDETAILS}
-        // display the details of the currently selected row
-        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-        ShowDetails(FPreviouslySelectedDetailRow);
-        pnlDetails.Enabled = true;
+
+            // Display the details of the currently selected Row
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+            pnlDetails.Enabled = true;
+            
+            FCurrentRow = e.Row;
+        }
     }
 {#ENDIF SHOWDETAILS}
     

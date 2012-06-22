@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Xml;
 using System.Windows.Forms;
+using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
@@ -51,6 +52,13 @@ namespace Ict.Petra.Client.MSysMan.Gui
             TImportExportDialogs.ExportWithDialogYMLGz(zippedYml, Catalog.GetString("Save Database into File"));
         }
 
+        private static bool WebConnectorResult = false;
+
+        private static void ResetDatabaseInThread(string AZippedYml)
+        {
+            WebConnectorResult = TRemote.MSysMan.ImportExport.WebConnectors.ResetDatabase(AZippedYml);
+        }
+
         /// <summary>
         /// this will delete the current database, and reset it with the data selected
         /// </summary>
@@ -70,7 +78,17 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                 if (zippedYml != null)
                 {
-                    if (TRemote.MSysMan.ImportExport.WebConnectors.ResetDatabase(zippedYml))
+                    Thread t = new Thread(() => ResetDatabaseInThread(zippedYml));
+                    t.Start();
+
+                    TProgressDialog dialog = new TProgressDialog();
+
+                    if (dialog.ShowDialog() == DialogResult.Cancel)
+                    {
+                        return;
+                    }
+
+                    if (WebConnectorResult)
                     {
                         // TODO: reset all caches? for comboboxes etc
                         MessageBox.Show(Catalog.GetString("Import of database was successful. Please restart your OpenPetra client"));

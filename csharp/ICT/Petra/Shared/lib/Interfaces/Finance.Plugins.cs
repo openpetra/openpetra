@@ -48,12 +48,6 @@ namespace Ict.Petra.Shared.Interfaces.Plugins.MFinance
     public interface IImportBankStatement
     {
         /// <summary>
-        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
-        /// </summary>
-        /// <returns></returns>
-        string GetFilterGifts();
-
-        /// <summary>
         /// this can ask the user to select a file, or could connect directly to the bank, etc;
         /// it should get the data of one or several bank statements and store the transactions in the tables
         /// a_ep_statement and a_ep_transaction in the database

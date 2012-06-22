@@ -25,11 +25,14 @@ using System;
 using System.IO;
 using System.Data;
 using System.Windows.Forms;
+using System.Threading;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
@@ -45,30 +48,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
     public class TBankStatementImport : IImportBankStatement
     {
         /// <summary>
-        /// the file extensions that should be used for the file open dialog
-        /// </summary>
-        public string GetFileFilter()
-        {
-            // each time the button btnImportNewStatement is clicked, do a split and move action
-            SplitFilesAndMove();
-
-            return "MT940 Datei (*.sta)|*.sta";
-        }
-
-        /// <summary>
-        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
-        /// </summary>
-        /// <returns></returns>
-        public string GetFilterGifts()
-        {
-            string typeName = AEpTransactionTable.GetTransactionTypeCodeDBName();
-
-            // TODO: match GL transactions as well; independent of amount
-            return typeName + " = '052' OR " + typeName + " = '051' OR " + typeName + " = '053' OR " + typeName + " = '067' OR " + typeName +
-                   " = '068' OR " + typeName + " = '069'";
-        }
-
-        /// <summary>
         /// asks the user to open a csv file and imports the contents according to the config file
         /// </summary>
         /// <param name="AStatementKey">this returns the first key of a statement that was imported. depending on the implementation, several statements can be created from one file</param>
@@ -78,6 +57,9 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         public bool ImportBankStatement(out Int32 AStatementKey, Int32 ALedgerNumber, string ABankAccountCode)
         {
             AStatementKey = -1;
+
+            // each time the button btnImportNewStatement is clicked, do a split and move action
+            SplitFilesAndMove();
 
             OpenFileDialog DialogOpen = new OpenFileDialog();
 
@@ -114,34 +96,39 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                             stmt.StatementKey);
 
                     stmt.LedgerNumber = ALedgerNumber;
-                    DateTime latestDate = DateTime.MinValue;
-
-                    foreach (DataRowView v in MainDS.AEpTransaction.DefaultView)
-                    {
-                        AEpTransactionRow tr = (AEpTransactionRow)v.Row;
-
-                        if (tr.DateEffective > latestDate)
-                        {
-                            latestDate = tr.DateEffective;
-                        }
-                    }
-
-                    stmt.Date = latestDate;
                 }
 
-                TVerificationResultCollection VerificationResult;
-                TLogging.Log("writing to db");
+                Thread t = new Thread(() => ProcessStatementsOnServer(MainDS));
+                t.Start();
 
-                if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
-                        MainDS,
-                        out AStatementKey,
-                        out VerificationResult) == TSubmitChangesResult.scrOK)
+                TProgressDialog dialog = new TProgressDialog();
+
+                if (dialog.ShowDialog() == DialogResult.Cancel)
                 {
-                    return AStatementKey != -1;
+                    return false;
+                }
+                else
+                {
+                    AStatementKey = FStatementKey;
+                    return FStatementKey != -1;
                 }
             }
 
             return false;
+        }
+
+        private int FStatementKey = -1;
+
+        private void ProcessStatementsOnServer(BankImportTDS AMainDS)
+        {
+            TVerificationResultCollection VerificationResult;
+
+            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
+                    AMainDS,
+                    out FStatementKey,
+                    out VerificationResult) == TSubmitChangesResult.scrOK)
+            {
+            }
         }
 
         /// <summary>
@@ -156,7 +143,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
             parser.ProcessFile(AFilename);
 
             Int32 statementCounter = AMainDS.AEpStatement.Rows.Count;
-            TLogging.Log(parser.statements.Count.ToString());
 
             foreach (TStatement stmt in parser.statements)
             {
@@ -195,6 +181,16 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     row.TransactionAmount = tr.amount;
                     row.Description = tr.description;
                     row.TransactionTypeCode = tr.typecode;
+
+                    if ((row.TransactionTypeCode == "052")
+                        || (row.TransactionTypeCode == "051")
+                        || (row.TransactionTypeCode == "053")
+                        || (row.TransactionTypeCode == "067")
+                        || (row.TransactionTypeCode == "068")
+                        || (row.TransactionTypeCode == "069"))
+                    {
+                        row.TransactionTypeCode += MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
+                    }
 
                     AMainDS.AEpTransaction.Rows.Add(row);
 
@@ -288,6 +284,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
         {
             if (!TAppSettingsManager.HasValue("BankAccounts"))
             {
+                TLogging.Log("missing parameter BankAccounts in config file");
                 return false;
             }
 
@@ -302,6 +299,8 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
             foreach (string RawFile in RawSTAFiles)
             {
+                TLogging.Log("BankImport MT940 plugin: splitting file " + RawFile);
+
                 TSwiftParser Parser = new TSwiftParser();
                 Parser.ProcessFile(RawFile);
 
@@ -336,7 +335,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
                         if (!Backupfilename.StartsWith(lastDate.ToString("yyyyMMdd")))
                         {
-                            Backupfilename = lastDate + Backupfilename;
+                            Backupfilename = lastDate.ToString("yyyyMMdd") + Backupfilename;
                         }
 
                         string BackupName = OutputPath + Path.DirectorySeparatorChar + "imported" + Path.DirectorySeparatorChar + Backupfilename;

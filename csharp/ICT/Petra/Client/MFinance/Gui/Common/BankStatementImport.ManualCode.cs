@@ -25,12 +25,14 @@ using System;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
+using System.Drawing;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Printing;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
@@ -38,6 +40,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MFinance.Gui.Gift;
 
 namespace Ict.Petra.Client.MFinance.Gui.Common
 {
@@ -67,7 +70,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private BankImportTDS FMainDS = new BankImportTDS();
         private DataView FMatchView = null;
         private DataView FTransactionView = null;
 
@@ -96,6 +98,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             CurrentlySelectedMatch = null;
             CurrentStatement = null;
 
+            // merge the cost centres and the motivation details from the cacheable tables
+            FMainDS.ACostCentre.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber));
+            FMainDS.AMotivationDetail.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, FLedgerNumber));
+
             // load the transactions of the selected statement, and the matches
             FMainDS.Merge(
                 TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
@@ -115,9 +121,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             FTransactionView.Sort = AEpTransactionTable.GetOrderDBName() + " ASC";
             grdAllTransactions.DataSource = new DevAge.ComponentModel.BoundDataView(FTransactionView);
 
+            TFinanceControls.InitialiseMotivationGroupList(ref cmbMotivationGroup, FLedgerNumber, true);
             TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, true);
-            TFinanceControls.InitialiseCostCentreList(ref cmbGiftCostCentre, FLedgerNumber, true, false, true, true);
-            TFinanceControls.InitialiseAccountList(ref cmbGiftAccount, FLedgerNumber, true, false, true, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbGLCostCentre, FLedgerNumber, true, false, true, true);
             TFinanceControls.InitialiseAccountList(ref cmbGLAccount, FLedgerNumber, true, false, true, false);
 
@@ -143,35 +148,73 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 FMainDS.AEpStatement.DefaultView.RowFilter = string.Empty;
             }
 
-            rbtListAll.Checked = true;
             TransactionFilterChanged(null, null);
             grdAllTransactions.SelectRowInGrid(1);
         }
 
+        private AMotivationDetailRow GetCurrentMotivationDetail(string AMotivationGroupCode, string AMotivationDetailCode)
+        {
+            return (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, AMotivationGroupCode, AMotivationDetailCode });
+        }
+
+        private void FilterMotivationDetail(object sender, EventArgs e)
+        {
+            TFinanceControls.ChangeFilterMotivationDetailList(ref cmbMotivationDetail, cmbMotivationGroup.GetSelectedString());
+        }
+
+        private void SetRecipientCostCentreAndField()
+        {
+            // look for the motivation detail.
+            AMotivationDetailRow motivationDetailRow = GetCurrentMotivationDetail(
+                cmbMotivationGroup.GetSelectedString(),
+                cmbMotivationDetail.GetSelectedString());
+
+            if (motivationDetailRow != null)
+            {
+                txtGiftAccount.Text = motivationDetailRow.AccountCode;
+                txtGiftCostCentre.Text = motivationDetailRow.CostCentreCode;
+            }
+            else
+            {
+                txtGiftAccount.Text = string.Empty;
+                txtGiftCostCentre.Text = string.Empty;
+            }
+
+            Int64 RecipientKey = Convert.ToInt64(txtRecipientKey.Text);
+            FInKeyMinistryChanging++;
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, RecipientKey);
+            FInKeyMinistryChanging--;
+
+            long FieldNumber = Convert.ToInt64(txtField.Text);
+
+            txtGiftCostCentre.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
+        }
+
         private void MotivationDetailChanged(System.Object sender, EventArgs e)
         {
-            cmbGiftCostCentre.Enabled = false;
-            cmbGiftAccount.Enabled = false;
+            SetRecipientCostCentreAndField();
+        }
 
-            // look for the motivation detail.
-            if (cmbMotivationDetail.SelectedIndex == -1)
+        Int16 FInKeyMinistryChanging = 0;
+        private void KeyMinistryChanged(object sender, EventArgs e)
+        {
+            if ((FInKeyMinistryChanging > 0) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
 
-            DataView v = new DataView(FMainDS.AMotivationDetail);
-            v.RowFilter = AMotivationDetailTable.GetMotivationDetailCodeDBName() +
-                          " = '" + cmbMotivationDetail.GetSelectedString() + "'";
-
-            if (v.Count == 0)
+            FInKeyMinistryChanging++;
+            try
             {
-                return;
+                Int64 rcp = cmbMinistry.GetSelectedInt64();
+
+                txtRecipientKey.Text = String.Format("{0:0000000000}", rcp);
             }
-
-            AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)v[0].Row;
-
-            cmbGiftAccount.SetSelectedString(motivationDetailRow.AccountCode);
-            cmbGiftCostCentre.SetSelectedString(motivationDetailRow.CostCentreCode);
+            finally
+            {
+                FInKeyMinistryChanging--;
+            }
         }
 
         private void NewTransactionCategory(System.Object sender, EventArgs e)
@@ -382,6 +425,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             if (CurrentlySelectedMatch != null)
             {
                 txtAmount.NumberValueDecimal = CurrentlySelectedMatch.GiftTransactionAmount;
+                txtRecipientKey.Text = StringHelper.FormatStrToPartnerKeyString(CurrentlySelectedMatch.RecipientKey.ToString());
+
+                if (CurrentlySelectedMatch.IsMotivationGroupCodeNull())
+                {
+                    cmbMotivationGroup.SelectedIndex = -1;
+                }
+                else
+                {
+                    cmbMotivationGroup.SetSelectedString(CurrentlySelectedMatch.MotivationGroupCode);
+                }
 
                 if (CurrentlySelectedMatch.IsMotivationDetailCodeNull())
                 {
@@ -392,23 +445,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     cmbMotivationDetail.SetSelectedString(CurrentlySelectedMatch.MotivationDetailCode);
                 }
 
-                if (CurrentlySelectedMatch.IsAccountCodeNull())
-                {
-                    cmbGiftAccount.SelectedIndex = -1;
-                }
-                else
-                {
-                    cmbGiftAccount.SetSelectedString(CurrentlySelectedMatch.AccountCode);
-                }
-
-                if (CurrentlySelectedMatch.IsCostCentreCodeNull())
-                {
-                    cmbGiftCostCentre.SelectedIndex = -1;
-                }
-                else
-                {
-                    cmbGiftCostCentre.SetSelectedString(CurrentlySelectedMatch.CostCentreCode);
-                }
+                SetRecipientCostCentreAndField();
             }
         }
 
@@ -416,13 +453,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         {
             if (CurrentlySelectedMatch != null)
             {
-                // TODO: support more motivation groups.
-                CurrentlySelectedMatch.MotivationGroupCode = FMainDS.AMotivationDetail[0].MotivationGroupCode;
+                CurrentlySelectedMatch.MotivationGroupCode = cmbMotivationGroup.GetSelectedString();
                 CurrentlySelectedMatch.MotivationDetailCode = cmbMotivationDetail.GetSelectedString();
-                CurrentlySelectedMatch.AccountCode = cmbGiftAccount.GetSelectedString();
-                CurrentlySelectedMatch.CostCentreCode = cmbGiftCostCentre.GetSelectedString();
+                CurrentlySelectedMatch.CostCentreCode = txtGiftCostCentre.Text;
                 CurrentlySelectedMatch.GiftTransactionAmount = txtAmount.NumberValueDecimal.Value;
                 CurrentlySelectedMatch.DonorKey = Convert.ToInt64(txtDonorKey.Text);
+                CurrentlySelectedMatch.RecipientKey = Convert.ToInt64(txtRecipientKey.Text);
 
                 FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
                     ACostCentreTable.GetCostCentreCodeDBName(), CurrentlySelectedMatch.CostCentreCode);
@@ -557,18 +593,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private void SaveMatches(System.Object sender, EventArgs e)
+        /// <summary>
+        /// save the matches
+        /// </summary>
+        /// <returns></returns>
+        public bool SaveChanges()
         {
             GetValuesFromScreen();
 
             if (TRemote.MFinance.ImportExport.WebConnectors.CommitMatches(FMainDS.GetChangesTyped(true)))
             {
                 FMainDS.AcceptChanges();
+                return true;
             }
             else
             {
                 MessageBox.Show(Catalog.GetString(
                         "The matches could not be stored. Please ask your System Administrator to check the log file on the server."));
+                return false;
             }
         }
 
@@ -577,7 +619,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             GetValuesFromScreen();
 
             // TODO: should we first ask? also when closing the window?
-            SaveMatches(null, null);
+            SaveChanges();
 
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
@@ -612,7 +654,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             GetValuesFromScreen();
 
             // TODO: should we first ask? also when closing the window?
-            SaveMatches(null, null);
+            SaveChanges();
 
             TVerificationResultCollection VerificationResult;
             Int32 GLBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGLBatch(FMainDS,
@@ -639,6 +681,222 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                         Catalog.GetString("Error"));
                 }
             }
+        }
+
+        /// <summary>
+        /// this is useful for the situation, where we are using OpenPetra only for the bankimport,
+        /// but need to post the gift batches in the old Petra 2.x database
+        /// </summary>
+        private void ExportGiftBatch(System.Object sender, EventArgs e)
+        {
+            GetValuesFromScreen();
+
+            // TODO: should we first ask? also when closing the window?
+            SaveChanges();
+
+            TVerificationResultCollection VerificationResult;
+            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
+                FLedgerNumber,
+                CurrentStatement.StatementKey,
+                -1,
+                out VerificationResult);
+
+            if (GiftBatchNumber != -1)
+            {
+                // export to csv
+                TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
+                exportForm.LedgerNumber = FLedgerNumber;
+                exportForm.FirstBatchNumber = GiftBatchNumber;
+                exportForm.LastBatchNumber = GiftBatchNumber;
+                exportForm.IncludeUnpostedBatches = true;
+                exportForm.OutputFilename = TAppSettingsManager.GetValue("BankImport.GiftBatchExportFilename",
+                    TAppSettingsManager.GetValue("OpenPetra.PathTemp") +
+                    Path.DirectorySeparatorChar +
+                    "giftBatch" + GiftBatchNumber.ToString("000000") + ".csv");
+                exportForm.ExportBatches(null, null);
+            }
+            else
+            {
+                if (VerificationResult != null)
+                {
+                    MessageBox.Show(
+                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Problem: No gift batch has been created"));
+                }
+                else
+                {
+                    MessageBox.Show(
+                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Problem: No gift batch has been created"));
+                }
+            }
+        }
+
+        private void PrintReport(System.Object sender, EventArgs e)
+        {
+            if (FMainDS.AEpTransaction.DefaultView.Count == 0)
+            {
+                return;
+            }
+
+            System.Drawing.Printing.PrintDocument doc = new System.Drawing.Printing.PrintDocument();
+            bool PrinterInstalled = doc.PrinterSettings.IsValid;
+
+            if (!PrinterInstalled)
+            {
+                MessageBox.Show("The program cannot find a printer, and therefore cannot print!", "Problem with printing");
+                return;
+            }
+
+            string ShortCodeOfBank = txtBankStatement.Text;
+            string DateOfStatement = StringHelper.DateToLocalizedString(dtpBankStatementDate.Date.Value);
+            string HtmlDocument = String.Empty;
+
+            if (rbtListAll.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Full bank statement") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+            else if (rbtListUnmatchedGift.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Unmatched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+            else if (rbtListUnmatchedGL.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Unmatched GL") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+            else if (rbtListGift.Checked)
+            {
+                HtmlDocument =
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                            "Matched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
+            }
+
+            if (HtmlDocument.Length == 0)
+            {
+                MessageBox.Show(Catalog.GetString("nothing to print"));
+                return;
+            }
+
+            TGfxPrinter GfxPrinter = new TGfxPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(HtmlDocument,
+                String.Empty,
+                GfxPrinter);
+            GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.eDefaultMargins);
+
+            PrintDialog dlg = new PrintDialog();
+            dlg.Document = GfxPrinter.Document;
+            dlg.AllowCurrentPage = true;
+            dlg.AllowSomePages = true;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                dlg.Document.Print();
+            }
+        }
+
+        /// <summary>
+        /// dump unmatched gifts or other transactions to a HTML table for printing
+        /// </summary>
+        private static string PrintHTML(DataView AEpTransactions, string ATitle)
+        {
+            string letterTemplateFilename = TAppSettingsManager.GetValue("BankImport.ReportHTMLTemplate", false);
+
+            if ((letterTemplateFilename.Length == 0) || !File.Exists(letterTemplateFilename))
+            {
+                OpenFileDialog DialogOpen = new OpenFileDialog();
+                DialogOpen.Filter = "Report template (*.html)|*.html";
+                DialogOpen.RestoreDirectory = true;
+                DialogOpen.Title = "Open Report Template";
+
+                if (DialogOpen.ShowDialog() == DialogResult.OK)
+                {
+                    letterTemplateFilename = DialogOpen.FileName;
+                }
+            }
+
+            // message body from HTML template
+            StreamReader reader = new StreamReader(letterTemplateFilename);
+            string msg = reader.ReadToEnd();
+
+            reader.Close();
+
+            msg = msg.Replace("#TITLE", ATitle);
+            msg = msg.Replace("#PRINTDATE", DateTime.Now.ToShortDateString());
+
+            // recognise detail lines automatically
+            string RowTemplate;
+            msg = TPrinterHtml.GetTableRow(msg, "#DESCRIPTION", out RowTemplate);
+            string rowTexts = "";
+
+            BankImportTDSAEpTransactionRow row = null;
+
+            AEpTransactions.Sort = BankImportTDSAEpTransactionTable.GetNumberOnPaperStatementDBName();
+
+            Decimal Sum = 0.0m;
+
+            foreach (DataRowView rv in AEpTransactions)
+            {
+                row = (BankImportTDSAEpTransactionRow)rv.Row;
+
+                string rowToPrint = RowTemplate;
+
+                rowToPrint = rowToPrint.Replace("#NAME", row.AccountName);
+                rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.Description);
+
+#if TODO
+                if (row.IsDonorKeyNull())
+                {
+                    rowToPrint = rowToPrint.Replace("#NAME", row.AccountName);
+                }
+                else
+                {
+                    rowToPrint = rowToPrint.Replace("#NAME", row.DonorShortName);
+                }
+
+                if (row.IsRecipientDescriptionNull() || (row.RecipientDescription.Length == 0))
+                {
+                    rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.Description);
+                }
+                else
+                {
+                    rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.RecipientDescription);
+                }
+#endif
+
+                //                if (row.IsRecipientKeyNull() || row.RecipientKey <= 0)
+                //                {
+                //                      rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", row.RecipientKey.ToString());
+                //                }
+                // TODO: print recipientkey
+                rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", "");
+
+                if (row.IsDonorKeyNull() || (row.DonorKey <= 0))
+                {
+                    rowToPrint = rowToPrint.Replace("#DONORKEY", "");
+                }
+                else
+                {
+                    rowToPrint = rowToPrint.Replace("#DONORKEY", row.DonorKey.ToString());
+                }
+
+                rowTexts += rowToPrint.
+                            Replace("#NRONSTATEMENT", row.NumberOnPaperStatement.ToString()).
+                            Replace("#AMOUNT", String.Format("{0:C}", row.TransactionAmount)).
+                            Replace("#ACCOUNTNUMBER", row.BankAccountNumber).
+                            Replace("#BANKSORTCODE", row.BranchCode);
+
+                Sum += Convert.ToDecimal(row.TransactionAmount);
+            }
+
+            Sum = Math.Round(Sum, 2);
+
+            return msg.Replace("#ROWTEMPLATE", rowTexts).Replace("#TOTALAMOUNT", String.Format("{0:C}", Sum));
         }
 
         private void TransactionFilterChanged(System.Object sender, EventArgs e)
@@ -670,13 +928,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
                     MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT);
             }
-            else if (rbtListUnmatched.Checked)
+            else if (rbtListUnmatchedGift.Checked)
             {
-                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}' and {4} LIKE '%{5}'",
                     AEpStatementTable.GetStatementKeyDBName(),
                     CurrentStatement.StatementKey,
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
-                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED);
+                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED,
+                    BankImportTDSAEpTransactionTable.GetTransactionTypeCodeDBName(),
+                    MFinanceConstants.BANK_STMT_POTENTIAL_GIFT);
+            }
+            else if (rbtListUnmatchedGL.Checked)
+            {
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}' and {4} NOT LIKE '%{5}'",
+                    AEpStatementTable.GetStatementKeyDBName(),
+                    CurrentStatement.StatementKey,
+                    BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
+                    MFinanceConstants.BANK_STMT_STATUS_UNMATCHED,
+                    BankImportTDSAEpTransactionTable.GetTransactionTypeCodeDBName(),
+                    MFinanceConstants.BANK_STMT_POTENTIAL_GIFT);
             }
             else if (rbtListIgnored.Checked)
             {
@@ -715,6 +985,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             txtCreditSum.NumberValueDecimal = sumCredit;
             txtDebitSum.NumberValueDecimal = sumDebit;
+            txtTransactionCount.Text = FTransactionView.Count.ToString();
 
             if (FTransactionView.Count > 0)
             {

@@ -33,6 +33,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using GNU.Gettext;
@@ -45,16 +46,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
     /// </summary>
     public class TBankStatementImport : IImportBankStatement
     {
-        /// <summary>
-        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
-        /// </summary>
-        /// <returns></returns>
-        public string GetFilterGifts()
-        {
-            // TODO
-            return "";
-        }
-
         /// <summary>
         /// asks the user to open a csv file and imports the contents according to the config file
         /// </summary>
@@ -215,6 +206,12 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
 
                         row.TransactionAmount = Convert.ToDecimal(Value, System.Globalization.CultureInfo.InvariantCulture);
                     }
+                }
+
+                // all transactions with positive amount can be donations
+                if (row.TransactionAmount > 0)
+                {
+                    row.TransactionTypeCode = MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
                 }
 
                 MainDS.AEpTransaction.Rows.Add(row);

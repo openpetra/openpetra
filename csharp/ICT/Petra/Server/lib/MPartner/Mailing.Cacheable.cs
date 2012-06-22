@@ -274,7 +274,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                                 ValidateContactAttributeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateContactAttributeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PContactAttributeAccess.SubmitChanges((PContactAttributeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -291,7 +291,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                                 ValidateContactAttributeDetailList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateContactAttributeDetailListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PContactAttributeDetailAccess.SubmitChanges((PContactAttributeDetailTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -308,7 +308,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                                 ValidateMethodOfContactList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMethodOfContactListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PMethodOfContactAccess.SubmitChanges((PMethodOfContactTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -325,7 +325,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                                 ValidateMergeFormList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMergeFormListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PMergeFormAccess.SubmitChanges((PMergeFormTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -342,7 +342,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                                 ValidateMergeFieldList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMergeFieldListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PMergeFieldAccess.SubmitChanges((PMergeFieldTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -359,7 +359,7 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
                                 ValidateMailingList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMailingListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))

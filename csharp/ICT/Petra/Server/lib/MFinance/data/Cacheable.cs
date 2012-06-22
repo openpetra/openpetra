@@ -214,6 +214,12 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheableFinanceTablesEnum.ValidLedgerNumberList:
+                        {
+                            DataTable TmpTable = AValidLedgerNumberAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableFinanceTablesEnum.LedgerNameList:
                         {
                             DataTable TmpTable = GetLedgerNameListTable(ReadTransaction, TableName);
@@ -457,7 +463,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateAnalysisTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateAnalysisTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -474,7 +480,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateFreeformAnalysisList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateFreeformAnalysisListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AFreeformAnalysisAccess.SubmitChanges((AFreeformAnalysisTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -491,7 +497,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateAnalysisAttributeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateAnalysisAttributeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AAnalysisAttributeAccess.SubmitChanges((AAnalysisAttributeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -508,7 +514,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateBudgetTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateBudgetTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (ABudgetTypeAccess.SubmitChanges((ABudgetTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -525,7 +531,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateCostCentreTypesList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateCostCentreTypesListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (ACostCentreTypesAccess.SubmitChanges((ACostCentreTypesTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -542,7 +548,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateEmailDestinationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateEmailDestinationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AEmailDestinationAccess.SubmitChanges((AEmailDestinationTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -559,7 +565,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateMethodOfGivingList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMethodOfGivingListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AMethodOfGivingAccess.SubmitChanges((AMethodOfGivingTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -576,9 +582,26 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateMethodOfPaymentList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMethodOfPaymentListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AMethodOfPaymentAccess.SubmitChanges((AMethodOfPaymentTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
+                        case TCacheableFinanceTablesEnum.ValidLedgerNumberList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidateValidLedgerNumberList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateValidLedgerNumberListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (AValidLedgerNumberAccess.SubmitChanges((AValidLedgerNumberTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
                                     {
                                         SubmissionResult = TSubmitChangesResult.scrOK;
@@ -669,6 +692,10 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfPaymentListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateValidLedgerNumberList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateValidLedgerNumberListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
 
@@ -722,7 +749,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                                 ValidateMotivationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateMotivationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))

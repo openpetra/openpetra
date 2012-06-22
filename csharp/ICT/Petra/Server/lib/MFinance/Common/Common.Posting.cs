@@ -54,7 +54,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ACostCentreCode"></param>
         /// <returns>The new glm sequence, which is negative until SubmitChanges</returns>
         private static Int32 CreateGLMYear(
-            ref GLBatchTDS AMainDS,
+            ref GLPostingTDS AMainDS,
             Int32 ALedgerNumber,
             string AAccountCode,
             string ACostCentreCode)
@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ACostCentreCode"></param>
         /// <returns> The GLM Sequence</returns>
         public static Int32 CreateGLMYear(
-            ref GLBatchTDS AMainDS,
+            ref GLPostingTDS AMainDS,
             Int32 ALedgerNumber,
             int AYear,
             string AAccountCode,
@@ -170,6 +170,33 @@ namespace Ict.Petra.Server.MFinance.Common
 
             ATransAnalAttribAccess.LoadViaABatch(ADataSet, ALedgerNumber, ABatchNumber, Transaction);
 
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// load the tables that are needed for posting
+        /// </summary>
+        /// <param name="ADataSet"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>false if batch does not exist at all</returns>
+        private static bool LoadDataForPosting(out GLPostingTDS ADataSet,
+            Int32 ALedgerNumber)
+        {
+            ADataSet = new GLPostingTDS();
+
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            ALedgerAccess.LoadByPrimaryKey(ADataSet, ALedgerNumber, Transaction);
+
             // load all accounts of ledger, because we need them later for the account hierarchy tree for summarisation
             AAccountAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
 
@@ -178,6 +205,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             // TODO: use cached table?
             ACostCentreAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
+
+            AAnalysisTypeAccess.LoadAll(ADataSet, Transaction);
+            AFreeformAnalysisAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
+            AAnalysisAttributeAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
 
             if (NewTransaction)
             {
@@ -191,7 +222,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Load all GLM and GLMPeriod records for the batch period and the following periods, since that will avoid loading them one by one during submitchanges.
         /// this is called after ValidateBatchAndTransactions, because the BatchYear and BatchPeriod are validated and recalculated there
         /// </summary>
-        private static void LoadGLMData(ref GLBatchTDS ADataSet, Int32 ALedgerNumber, ABatchRow ABatchToPost)
+        private static void LoadGLMData(ref GLPostingTDS ADataSet, Int32 ALedgerNumber, ABatchRow ABatchToPost)
         {
             bool NewTransaction = false;
 
@@ -237,12 +268,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// runs validations on batch, journals and transactions
         /// some things are even modified, eg. batch period etc from date effective
         /// </summary>
-        /// <param name="ADataSet"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchToPost"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns></returns>
         private static bool ValidateBatchAndTransactions(ref GLBatchTDS ADataSet,
+            GLPostingTDS APostingDS,
             Int32 ALedgerNumber,
             ABatchRow ABatchToPost,
             out TVerificationResultCollection AVerifications)
@@ -273,10 +300,10 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             else if (ABatchToPost.BatchCreditTotal == 0)
             {
-//                AVerifications.Add(new TVerificationResult(
-//                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-//                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
-//                        TResultSeverity.Resv_Critical));
+                AVerifications.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
+                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
+                        TResultSeverity.Resv_Critical));
             }
             else if ((ABatchToPost.BatchControlTotal != 0)
                      && (Convert.ToDecimal(ABatchToPost.BatchControlTotal) != Convert.ToDecimal(ABatchToPost.BatchCreditTotal)))
@@ -374,7 +401,7 @@ namespace Ict.Petra.Server.MFinance.Common
                           && (journal.TransactionTypeCode == CommonAccountingTransactionTypesEnum.REVAL.ToString())))
                     {
                         // get the account that this transaction is writing to
-                        AAccountRow Account = (AAccountRow)ADataSet.AAccount.Rows.Find(new object[] { ALedgerNumber, transaction.AccountCode });
+                        AAccountRow Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, transaction.AccountCode });
 
                         if (Account == null)
                         {
@@ -413,23 +440,13 @@ namespace Ict.Petra.Server.MFinance.Common
         /// validate the attributes of the transactions
         /// some things are even modified, eg. batch period etc from date effective
         /// </summary>
-        /// <param name="ADataSet"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns></returns>
         private static bool ValidateAnalysisAttributes(ref GLBatchTDS ADataSet,
+            GLPostingTDS APostingDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
             AVerifications = new TVerificationResultCollection();
-            // fetch all the analysis tables
-
-            GLSetupTDS analysisDS = new GLSetupTDS();
-            AAnalysisTypeAccess.LoadAll(analysisDS, null);
-            AFreeformAnalysisAccess.LoadViaALedger(analysisDS, ALedgerNumber, null);
-            AAnalysisAttributeAccess.LoadViaALedger(analysisDS, ALedgerNumber, null);
 
             DataView TransactionsOfJournalView = new DataView(ADataSet.ATransaction);
 
@@ -443,7 +460,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         ATransactionRow trans = (ATransactionRow)transRowView.Row;
                         // 1. check that all atransanalattrib records are there for all analattributes entries
-                        DataView ANView = analysisDS.AAnalysisAttribute.DefaultView;
+                        DataView ANView = APostingDS.AAnalysisAttribute.DefaultView;
                         ANView.RowFilter = String.Format("{0} = '{1}' AND {2} = true",
                             AAnalysisAttributeTable.GetAccountCodeDBName(),
                             trans.AccountCode, AAnalysisAttributeTable.GetActiveDBName());
@@ -484,7 +501,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                 }
                                 else
                                 {
-                                    AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)analysisDS.AFreeformAnalysis.Rows.Find(
+                                    AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)APostingDS.AFreeformAnalysis.Rows.Find(
                                         new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
 
                                     if (afaRow == null)
@@ -589,13 +606,16 @@ namespace Ict.Petra.Server.MFinance.Common
         /// add sums for costcentre/account combinations
         /// </summary>
         /// <param name="MainDS">can contain several batches and journals and transactions</param>
+        /// <param name="APostingDS"></param>
+        /// <param name="APostingLevel">the balance changes at the posting level</param>
         /// <param name="ABatchToPost">the batch to post</param>
         /// <returns>a list with the sums for each costcentre/account combination</returns>
-        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(ref GLBatchTDS MainDS, ABatchRow ABatchToPost)
+        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(GLBatchTDS MainDS,
+            GLPostingTDS APostingDS,
+            SortedList <string, TAmount>APostingLevel, ABatchRow ABatchToPost)
         {
-            SortedList <string, TAmount>PostingLevel = new SortedList <string, TAmount>();
-
             DataView myView = new DataView(MainDS.ATransaction);
+
             myView.Sort = ATransactionTable.GetJournalNumberDBName();
 
             foreach (AJournalRow journal in MainDS.AJournal.Rows)
@@ -617,7 +637,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     transaction.TransactionStatus = true;
 
                     // get the account that this transaction is writing to
-                    AAccountRow Account = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { transaction.LedgerNumber, transaction.AccountCode });
+                    AAccountRow Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { transaction.LedgerNumber, transaction.AccountCode });
 
                     // Set the sign of the amounts according to the debit/credit indicator
                     decimal SignBaseAmount = transaction.AmountInBaseCurrency;
@@ -634,17 +654,17 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     string key = TAmount.MakeKey(transaction.AccountCode, transaction.CostCentreCode);
 
-                    if (!PostingLevel.ContainsKey(key))
+                    if (!APostingLevel.ContainsKey(key))
                     {
-                        PostingLevel.Add(key, new TAmount());
+                        APostingLevel.Add(key, new TAmount());
                     }
 
-                    PostingLevel[key].baseAmount += SignBaseAmount;
+                    APostingLevel[key].baseAmount += SignBaseAmount;
 
                     // Only foreign currency accounts store a value in the transaction currency
                     if (Account.ForeignCurrencyFlag)
                     {
-                        PostingLevel[key].transAmount += SignTransAmount;
+                        APostingLevel[key].transAmount += SignTransAmount;
                     }
                 }
 
@@ -653,7 +673,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             ABatchToPost.BatchStatus = MFinanceConstants.BATCH_POSTED;
 
-            return PostingLevel;
+            return APostingLevel;
         }
 
         /// <summary>
@@ -662,18 +682,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// excluding the base posting/posting combination, is the set of
         /// accounts that receive the summary data.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="APostingLevel"></param>
-        /// <param name="AAccountTree"></param>
-        /// <param name="ACostCentreTree"></param>
-        /// <param name="AMainDS"></param>
-        /// <returns></returns>
         private static bool CalculateTrees(
             Int32 ALedgerNumber,
             ref SortedList <string, TAmount>APostingLevel,
             out SortedList <string, TAccountTreeElement>AAccountTree,
             out SortedList <string, string>ACostCentreTree,
-            GLBatchTDS AMainDS)
+            GLPostingTDS APostingDS)
         {
             // get all accounts that each posting level account is directly or indirectly posting to
             AAccountTree = new SortedList <string, TAccountTreeElement>();
@@ -688,18 +702,18 @@ namespace Ict.Petra.Server.MFinance.Common
                     continue;
                 }
 
-                AAccountRow Account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
+                AAccountRow Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
                 bool DebitCreditIndicator = Account.DebitCreditIndicator;
                 AAccountTree.Add(TAccountTreeElement.MakeKey(AccountCode, AccountCode),
                     new TAccountTreeElement(false, Account.ForeignCurrencyFlag));
 
                 AAccountHierarchyDetailRow HierarchyDetail =
-                    (AAccountHierarchyDetailRow)AMainDS.AAccountHierarchyDetail.Rows.Find(
+                    (AAccountHierarchyDetailRow)APostingDS.AAccountHierarchyDetail.Rows.Find(
                         new object[] { ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, AccountCode });
 
                 while (HierarchyDetail != null)
                 {
-                    Account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, HierarchyDetail.AccountCodeToReportTo });
+                    Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, HierarchyDetail.AccountCodeToReportTo });
 
                     if (Account == null)
                     {
@@ -710,7 +724,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     AAccountTree.Add(TAccountTreeElement.MakeKey(AccountCode, HierarchyDetail.AccountCodeToReportTo),
                         new TAccountTreeElement(DebitCreditIndicator != Account.DebitCreditIndicator, Account.ForeignCurrencyFlag));
 
-                    HierarchyDetail = (AAccountHierarchyDetailRow)AMainDS.AAccountHierarchyDetail.Rows.Find(
+                    HierarchyDetail = (AAccountHierarchyDetailRow)APostingDS.AAccountHierarchyDetail.Rows.Find(
                         new object[] { ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, HierarchyDetail.AccountCodeToReportTo });
                 }
             }
@@ -730,14 +744,14 @@ namespace Ict.Petra.Server.MFinance.Common
                 ACostCentreTree.Add(CostCentreCode + ":" + CostCentreCode,
                     CostCentreCode + ":" + CostCentreCode);
 
-                ACostCentreRow CostCentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentreCode });
+                ACostCentreRow CostCentre = (ACostCentreRow)APostingDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentreCode });
 
                 while (!CostCentre.IsCostCentreToReportToNull())
                 {
                     ACostCentreTree.Add(CostCentreCode + ":" + CostCentre.CostCentreToReportTo,
                         CostCentreCode + ":" + CostCentre.CostCentreToReportTo);
 
-                    CostCentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentre.CostCentreToReportTo });
+                    CostCentre = (ACostCentreRow)APostingDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentre.CostCentreToReportTo });
                 }
             }
 
@@ -749,26 +763,24 @@ namespace Ict.Petra.Server.MFinance.Common
         /// also propagate the value from the posting period through the following periods;
         /// </summary>
         private static bool SummarizeData(
-            ref GLBatchTDS AMainDS,
-            ref ABatchRow ABatchToPost,
+            GLPostingTDS APostingDS,
+            Int32 AFromPeriod,
             ref SortedList <string, TAmount>APostingLevel,
             ref SortedList <string, TAccountTreeElement>AAccountTree,
             ref SortedList <string, string>ACostCentreTree)
         {
-            Int32 FromPeriod = ABatchToPost.BatchPeriod;
-
-            if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
+            if (APostingDS.ALedger[0].ProvisionalYearEndFlag)
             {
                 // If the year end close is running, then we are posting the year end
                 // reallocations.  These appear as part of the final period, but
                 // should only be written to the forward periods.
                 // In year end, a_current_period_i = a_number_of_accounting_periods_i = a_batch_period_i.
-                FromPeriod++;
+                AFromPeriod++;
             }
 
-            DataView GLMMasterView = AMainDS.AGeneralLedgerMaster.DefaultView;
+            DataView GLMMasterView = APostingDS.AGeneralLedgerMaster.DefaultView;
             GLMMasterView.Sort = AGeneralLedgerMasterTable.GetAccountCodeDBName() + "," + AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
-            DataView GLMPeriodView = AMainDS.AGeneralLedgerMasterPeriod.DefaultView;
+            DataView GLMPeriodView = APostingDS.AGeneralLedgerMasterPeriod.DefaultView;
             GLMPeriodView.Sort = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "," + AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName();
 
             // Loop through the posting data collected earlier.  Summarize it to a
@@ -812,8 +824,8 @@ namespace Ict.Petra.Server.MFinance.Common
                                 if (GLMMasterIndex == -1)
                                 {
                                     CreateGLMYear(
-                                        ref AMainDS,
-                                        AMainDS.ALedger[0].LedgerNumber,
+                                        ref APostingDS,
+                                        APostingDS.ALedger[0].LedgerNumber,
                                         AccountCodeToReportTo,
                                         CostCentreCodeToReportTo);
 
@@ -836,14 +848,14 @@ namespace Ict.Petra.Server.MFinance.Common
                                     }
                                 }
 
-                                if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
+                                if (APostingDS.ALedger[0].ProvisionalYearEndFlag)
                                 {
                                     GlmRow.ClosingPeriodActualBase += SignBaseAmount;
                                 }
 
                                 // Add the period data from the posting level to the summary levels
-                                for (Int32 PeriodCount = FromPeriod;
-                                     PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
+                                for (Int32 PeriodCount = AFromPeriod;
+                                     PeriodCount <= APostingDS.ALedger[0].NumberOfAccountingPeriods + APostingDS.ALedger[0].NumberFwdPostingPeriods;
                                      PeriodCount++)
                                 {
                                     int GLMPeriodIndex = GLMPeriodView.Find(new object[] { GlmRow.GlmSequence, PeriodCount });
@@ -851,7 +863,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                                     if (GLMPeriodIndex == -1)
                                     {
-                                        GlmPeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
+                                        GlmPeriodRow = APostingDS.AGeneralLedgerMasterPeriod.NewRowTyped();
                                         GlmPeriodRow.GlmSequence = GlmRow.GlmSequence;
                                         GlmPeriodRow.PeriodNumber = PeriodCount;
                                     }
@@ -889,19 +901,17 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         private static bool SummarizeDataSimple(
             Int32 ALedgerNumber,
-            ref GLBatchTDS AMainDS,
-            ABatchRow ABatchToPost,
+            GLPostingTDS AMainDS,
+            Int32 AFromPeriod,
             ref SortedList <string, TAmount>APostingLevel)
         {
-            Int32 FromPeriod = ABatchToPost.BatchPeriod;
-
             if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
             {
                 // If the year end close is running, then we are posting the year end
                 // reallocations.  These appear as part of the final period, but
                 // should only be written to the forward periods.
                 // In year end, a_current_period_i = a_number_of_accounting_periods_i = a_batch_period_i.
-                FromPeriod++;
+                AFromPeriod++;
             }
 
             DataView GLMMasterView = AMainDS.AGeneralLedgerMaster.DefaultView;
@@ -959,7 +969,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 } // Last use of GlmRow in this routine ...
 
                 // propagate the data through the following periods
-                for (Int32 PeriodCount = FromPeriod;
+                for (Int32 PeriodCount = AFromPeriod;
                      PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
                      PeriodCount++)
                 {
@@ -999,20 +1009,66 @@ namespace Ict.Petra.Server.MFinance.Common
             return true;
         }
 
+        private static void SummarizeInternal(Int32 ALedgerNumber,
+            GLPostingTDS APostingDS,
+            SortedList <string, TAmount>APostingLevel,
+            Int32 AFromPeriod,
+            bool ACalculatePostingTree)
+        {
+            // we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
+            // for testing the balances, we don't need to calculate the whole tree
+            if (ACalculatePostingTree)
+            {
+                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+                {
+                    TLogging.Log("Posting: CalculateTrees...");
+                }
+
+                // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
+                SortedList <string, TAccountTreeElement>AccountTree;
+
+                // key is the PostingCostCentre, the value is the parent Cost Centre
+                SortedList <string, string>CostCentreTree;
+
+                // TODO Can anything of this be done in StoredProcedures? Only SQLite here?
+
+                // this was in Petra 2.x; takes a lot of time, which the reports could do better
+                // TODO: can we just calculate the cost centre tree, since that is needed for Balance Sheet,
+                // but avoid calculating the whole account tree?
+                CalculateTrees(ALedgerNumber, ref APostingLevel, out AccountTree, out CostCentreTree, APostingDS);
+
+                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+                {
+                    TLogging.Log("Posting: SummarizeData...");
+                }
+
+                SummarizeData(APostingDS, AFromPeriod, ref APostingLevel, ref AccountTree, ref CostCentreTree);
+            }
+            else
+            {
+                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+                {
+                    TLogging.Log("Posting: SummarizeDataSimple...");
+                }
+
+                SummarizeDataSimple(ALedgerNumber, APostingDS, AFromPeriod, ref APostingLevel);
+            }
+        }
+
         /// <summary>
         /// write all changes to the database; on failure the whole transaction is rolled back
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="AVerifications"></param>
         /// <returns></returns>
-        private static bool SubmitChanges(GLBatchTDS AMainDS, out TVerificationResultCollection AVerifications)
+        private static bool SubmitChanges(GLPostingTDS AMainDS, out TVerificationResultCollection AVerifications)
         {
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
                 TLogging.Log("Posting: SubmitChanges...");
             }
 
-            GLBatchTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), out AVerifications);
+            GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), out AVerifications);
 
             if (AVerifications.HasCriticalErrors)
             {
@@ -1035,22 +1091,43 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AVerifications"></param>
         public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
+            List <Int32>BatchNumbers = new List <int>();
+            BatchNumbers.Add(ABatchNumber);
+            return PostGLBatches(ALedgerNumber, BatchNumbers, out AVerifications);
+        }
+
+        /// <summary>
+        /// post several GL Batches at once
+        /// </summary>
+        public static bool PostGLBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
+        {
             // TODO: get a lock on this ledger, no one else is allowed to change anything.
 
-            GLBatchTDS PostingDS;
+            GLPostingTDS PostingDS;
 
-            if (PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out PostingDS, true))
+            LoadDataForPosting(out PostingDS, ALedgerNumber);
+
+            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
+
+            Int32 BatchPeriod = -1;
+
+            foreach (Int32 BatchNumber in ABatchNumbers)
             {
-                PostingDS.ThrowAwayAfterSubmitChanges = true;
-
-                bool result = SubmitChanges(PostingDS, out AVerifications);
-
-                // TODO: release the lock
-
-                return result;
+                if (!PostGLBatchPrepare(ALedgerNumber, BatchNumber, out AVerifications, PostingDS, PostingLevel, ref BatchPeriod))
+                {
+                    return false;
+                }
             }
 
-            return false;
+            SummarizeInternal(ALedgerNumber, PostingDS, PostingLevel, BatchPeriod, true);
+
+            PostingDS.ThrowAwayAfterSubmitChanges = true;
+
+            bool result = SubmitChanges(PostingDS, out AVerifications);
+
+            // TODO: release the lock
+
+            return result;
         }
 
         /// <summary>
@@ -1059,9 +1136,20 @@ namespace Ict.Petra.Server.MFinance.Common
         public static bool TestPostGLBatch(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications,
-            out GLBatchTDS AMainDS)
+            out GLPostingTDS APostingDS,
+            ref Int32 ABatchPeriod)
         {
-            return PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out AMainDS, false);
+            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
+
+            LoadDataForPosting(out APostingDS, ALedgerNumber);
+
+            if (PostGLBatchPrepare(ALedgerNumber, ABatchNumber, out AVerifications, APostingDS, PostingLevel, ref ABatchPeriod))
+            {
+                SummarizeInternal(ALedgerNumber, APostingDS, PostingLevel, ABatchPeriod, false);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -1071,14 +1159,16 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber">Batch to post</param>
         /// <param name="AVerifications"></param>
-        /// <param name="AMainDS">modified dataset, but not submitted to database yet</param>
-        /// <param name="ACalculatePostingTree">for testing a batch, we don't need to calculate the whole tree</param>
+        /// <param name="APostingDS">account, costcentre, hierarchy tables</param>
+        /// <param name="APostingLevel">collected new balances</param>
+        /// <param name="ABatchPeriod">make sure that all batches that are posted together, are from the same period</param>
         /// <returns></returns>
-        private static bool PostGLBatchInternal(Int32 ALedgerNumber,
+        private static bool PostGLBatchPrepare(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications,
-            out GLBatchTDS AMainDS,
-            bool ACalculatePostingTree)
+            GLPostingTDS APostingDS,
+            SortedList <string, TAmount>APostingLevel,
+            ref Int32 ABatchPeriod)
         {
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
@@ -1086,7 +1176,9 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // get the data from the database into the MainDS
-            if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            GLBatchTDS BatchDS;
+
+            if (!LoadData(out BatchDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
@@ -1097,15 +1189,29 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             ABatchRow BatchToPost =
-                ((ABatchRow)AMainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
+                ((ABatchRow)BatchDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
+
+            if (ABatchPeriod == -1)
+            {
+                ABatchPeriod = BatchToPost.BatchPeriod;
+            }
+            else if (ABatchPeriod != BatchToPost.BatchPeriod)
+            {
+                AVerifications = new TVerificationResultCollection();
+                AVerifications.Add(new TVerificationResult(
+                        Catalog.GetString("Cannot post Batches from different periods at once!"),
+                        Catalog.GetString("Batches from more than one period."),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
 
             // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, BatchToPost, out AVerifications))
+            if (!ValidateBatchAndTransactions(ref BatchDS, APostingDS, ALedgerNumber, BatchToPost, out AVerifications))
             {
                 return false;
             }
 
-            if (!ValidateAnalysisAttributes(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!ValidateAnalysisAttributes(ref BatchDS, APostingDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
@@ -1115,7 +1221,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.Log("Posting: Load GLM Data...");
             }
 
-            LoadGLMData(ref AMainDS, ALedgerNumber, BatchToPost);
+            // TODO
+            LoadGLMData(ref APostingDS, ALedgerNumber, BatchToPost);
 
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
@@ -1123,48 +1230,15 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             // post each journal, each transaction; add sums for costcentre/account combinations
-            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS, BatchToPost);
+            MarkAsPostedAndCollectData(BatchDS, APostingDS, APostingLevel, BatchToPost);
 
-            // we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
-            // for testing the balances, we don't need to calculate the whole tree
-            if (ACalculatePostingTree)
+            if (GLBatchTDSAccess.SubmitChanges(BatchDS, out AVerifications) == TSubmitChangesResult.scrOK)
             {
-                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-                {
-                    TLogging.Log("Posting: CalculateTrees...");
-                }
-
-                // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
-                SortedList <string, TAccountTreeElement>AccountTree;
-
-                // key is the PostingCostCentre, the value is the parent Cost Centre
-                SortedList <string, string>CostCentreTree;
-
-                // TODO Can anything of this be done in StoredProcedures? Only SQLite here?
-
-                // this was in Petra 2.x; takes a lot of time, which the reports could do better
-                // TODO: can we just calculate the cost centre tree, since that is needed for Balance Sheet,
-                // but avoid calculating the whole account tree?
-                CalculateTrees(ALedgerNumber, ref PostingLevel, out AccountTree, out CostCentreTree, AMainDS);
-
-                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-                {
-                    TLogging.Log("Posting: SummarizeData...");
-                }
-
-                SummarizeData(ref AMainDS, ref BatchToPost, ref PostingLevel, ref AccountTree, ref CostCentreTree);
-            }
-            else
-            {
-                SummarizeDataSimple(ALedgerNumber, ref AMainDS, BatchToPost, ref PostingLevel);
+                // if posting goes wrong later, the transation will be rolled back
+                return true;
             }
 
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: SummarizeDataSimple...");
-            }
-
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -1179,8 +1253,6 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
-            AVerifications = new TVerificationResultCollection();
-
             // get the data from the database into the MainDS
             if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {

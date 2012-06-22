@@ -205,6 +205,8 @@
           overwrite="false" />
 <property name="dir.bin" value="${path::combine(dir.delivery, 'bin')}"
           overwrite="false" />
+<property name="dir.obj" value="${path::combine(dir.delivery, 'obj')}"
+          overwrite="false" />
 <property name="dir.setup" value="${path::combine(dir.delivery, 'setup')}"
           overwrite="false" />
  <!-- projectfiles -->
@@ -289,6 +291,9 @@
 <property name="DBMS.DBPort" value="5432"
           overwrite="false"/>
 <property name="DBMS.DBHostOrFile" value="127.0.0.1"
+          overwrite="false"/>
+
+<property name="DBMS.Setup.DBName" value="openpetra_basedb"
           overwrite="false"/>
 
 <!-- smtp -->

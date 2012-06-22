@@ -70,7 +70,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
+
             // 'International Telephone Code' must be positive
             ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatTelephoneCodeId];
 

@@ -774,15 +774,20 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
         }
 
         /// generated method from connector
-        public String ExportToFile(Boolean AExportDonationData,
-                                   Boolean AExportFieldData,
-                                   Boolean AExportPersonData,
-                                   String APswd,
-                                   Int32 ADaySpan,
-                                   String AOptionalMetadata)
+        public System.Boolean GetCurrentState(out System.String ACaption,
+                                              out System.String AStatusMessage,
+                                              out System.Int32 APercentageDone,
+                                              out System.Boolean AJobFinished)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector), "ExportToFile", ";BOOL;BOOL;BOOL;STRING;INT;STRING;");
-            return Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector.ExportToFile(AExportDonationData, AExportFieldData, AExportPersonData, APswd, ADaySpan, AOptionalMetadata);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector), "GetCurrentState", ";STRING;STRING;INT;BOOL;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector.GetCurrentState(out ACaption, out AStatusMessage, out APercentageDone, out AJobFinished);
+        }
+
+        /// generated method from connector
+        public System.Boolean CancelJob()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector), "CancelJob", ";");
+            return Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector.CancelJob();
         }
 
         /// generated method from connector

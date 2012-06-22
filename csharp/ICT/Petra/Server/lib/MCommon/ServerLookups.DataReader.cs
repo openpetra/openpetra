@@ -309,7 +309,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         ValidateInternationalPostalType(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                         ValidateInternationalPostalTypeManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                        if (AVerificationResult.Count == 0)
+                        if (!AVerificationResult.HasCriticalErrors)
                         {
                             if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))

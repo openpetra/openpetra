@@ -44,6 +44,11 @@ namespace Ict.Common.Remoting.Client
         private System.Int16 FServerIPPort;
 
         /// <summary>
+        /// the minimum debuglevel which should display log messages for the connector
+        /// </summary>
+        protected const int CONNECTOR_LOGGING = 2;
+
+        /// <summary>
         /// if you want to overwrite GetRemoteServerConnection, you need to be able to set this variable.
         /// can only connect once.
         /// </summary>
@@ -128,9 +133,10 @@ namespace Ict.Common.Remoting.Client
                 }
                 else
                 {
-#if DEBUGMODE
-                    TLogging.Log("GetRemoteServerConnection: connected.", TLoggingType.ToLogfile);
-#endif
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("GetRemoteServerConnection: connected.", TLoggingType.ToLogfile);
+                    }
                 }
             }
             catch (Exception exp)
@@ -155,16 +161,22 @@ namespace Ict.Common.Remoting.Client
 
             ARemote = null;
             strServer = null;
-#if DEBUGMODE
-            TLogging.Log("Entering GetRemotePollClientTasks()...", TLoggingType.ToLogfile);
-#endif
+
+            if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+            {
+                TLogging.Log("Entering GetRemotePollClientTasks()...", TLoggingType.ToLogfile);
+            }
+
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + FServerIPPort.ToString();
                 strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-#if DEBUGMODE
-                TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
-#endif
+
+                if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                {
+                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                }
+
                 ARemote = (IPollClientTasksInterface)RemotingServices.Connect(typeof(IPollClientTasksInterface), strTCP);
 
                 if (ARemote == null)
@@ -173,9 +185,10 @@ namespace Ict.Common.Remoting.Client
                 }
                 else
                 {
-#if DEBUGMODE
-                    TLogging.Log("GetRemotePollClientTasks: connected.", TLoggingType.ToLogfile);
-#endif
+                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
+                    {
+                        TLogging.Log("GetRemotePollClientTasks: connected.", TLoggingType.ToLogfile);
+                    }
                 }
             }
             catch (Exception exp)
