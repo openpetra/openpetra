@@ -86,6 +86,14 @@ namespace Ict.Petra.Server.App.Core
                 new TErrorLog(),
                 new TMaintenanceLogonMessage(),
                 new TClientAppDomainConnection());
+
+            Assembly SysManAssembly = Assembly.Load("Ict.Petra.Server.lib.MSysMan");
+            Type ImportExportType = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportManager");
+            FImportExportManager = (IImportExportManager)Activator.CreateInstance(ImportExportType,
+                (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
+                null,
+                null,
+                null);
         }
 
         private List <TDataBase>FDBConnections = new List <TDataBase>();
@@ -152,10 +160,7 @@ namespace Ict.Petra.Server.App.Core
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
         }
 
-        /// <summary>
-        /// set this on startup
-        /// </summary>
-        public IImportExportManager FImportExportManager = null;
+        private IImportExportManager FImportExportManager = null;
 
         /// <summary>
         /// BackupDatabaseToYmlGZ
@@ -176,16 +181,9 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// RestoreDatabaseFromYmlGZ
         /// </summary>
-        public override void RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        public override bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
         {
-            if (FImportExportManager != null)
-            {
-                FImportExportManager.RestoreDatabaseFromYmlGZ(AYmlGzData);
-            }
-            else
-            {
-                TLogging.Log("please initialize FImportExportManager");
-            }
+            return FImportExportManager.RestoreDatabaseFromYmlGZ(AYmlGzData);
         }
     }
 }

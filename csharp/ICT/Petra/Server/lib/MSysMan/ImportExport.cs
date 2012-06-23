@@ -566,9 +566,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// <summary>
         /// RestoreDatabaseFromYmlGZ
         /// </summary>
-        public void RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        public bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
         {
-            TImportExportWebConnector.ResetDatabase(AYmlGzData);
+            return TImportExportWebConnector.ResetDatabase(AYmlGzData);
         }
     }
 }

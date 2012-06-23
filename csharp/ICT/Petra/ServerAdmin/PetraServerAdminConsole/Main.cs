@@ -197,8 +197,15 @@ public class TAdminConsole
             fs.Read(buffer, 0, buffer.Length);
             fs.Close();
             string YmlGZData = Convert.ToBase64String(buffer);
-            TRemote.RestoreDatabaseFromYmlGZ(YmlGZData);
-            TLogging.Log("backup has been restored from " + restoreFile);
+
+            if (TRemote.RestoreDatabaseFromYmlGZ(YmlGZData))
+            {
+                TLogging.Log("backup has been restored from " + restoreFile);
+            }
+            else
+            {
+                TLogging.Log("there have been problems with the restore");
+            }
         }
         else
         {

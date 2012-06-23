@@ -56,7 +56,7 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// RestoreDatabaseFromYmlGZ
         /// </summary>
-        void RestoreDatabaseFromYmlGZ(string AYmlGzData);
+        bool RestoreDatabaseFromYmlGZ(string AYmlGzData);
     }
 
     /// <summary>

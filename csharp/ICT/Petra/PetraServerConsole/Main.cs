@@ -87,8 +87,6 @@ public class TServer
 
             TheServerManager = new TServerManager();
 
-            TheServerManager.FImportExportManager = new TImportExportManager();
-
             // Ensure Logging and an 'ordered cooperative shutdown' in case of an Unhandled Exception
             TheServerManager.HookupProperShutdownProcessing();
 
@@ -418,8 +416,15 @@ public class TServer
                                 fsRead.Read(bufferRead, 0, bufferRead.Length);
                                 fsRead.Close();
                                 YmlGZData = Convert.ToBase64String(bufferRead);
-                                TImportExportWebConnector.ResetDatabase(YmlGZData);
-                                TLogging.Log("backup has been restored from " + restoreFile);
+
+                                if (TImportExportWebConnector.ResetDatabase(YmlGZData))
+                                {
+                                    TLogging.Log("backup has been restored from " + restoreFile);
+                                }
+                                else
+                                {
+                                    TLogging.Log("there have been problems with the restore");
+                                }
                             }
 
                             WriteServerPrompt();

@@ -336,9 +336,10 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// RestoreDatabaseFromYmlGZ
         /// </summary>
-        public virtual void RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        public virtual bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
         {
             // implemented in derived class
+            return false;
         }
     }
 }

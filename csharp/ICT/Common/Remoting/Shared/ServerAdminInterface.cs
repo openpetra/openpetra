@@ -142,6 +142,6 @@ namespace Ict.Common.Remoting.Shared
         /// restore the database from a string with yml.gz data
         /// </summary>
         /// <returns></returns>
-        void RestoreDatabaseFromYmlGZ(string AYmlGzData);
+        bool RestoreDatabaseFromYmlGZ(string AYmlGzData);
     }
 }
