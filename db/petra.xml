@@ -14722,7 +14722,7 @@
                 columnlabel="Leadership Rating"
                 help="Indicates the Leadership Rating."
                 notnull="yes"
-                initial=""/>
+                initial="-1"/>
     <tablefield name="pm_confirmed_option_code_c"
                 type="varchar"
                 descr="Indicates the outreach code of the confirmed option."

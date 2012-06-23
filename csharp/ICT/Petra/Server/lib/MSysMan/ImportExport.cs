@@ -138,6 +138,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             AModuleNode.AppendChild(tableNode);
 
+            if (table.Rows.Count == 0)
+            {
+                return;
+            }
+
             // for SQLite the table is not sorted by primary key. Therefore do it manually
             DataView v = table.DefaultView;
             DataTable t = (DataTable)AAsm.CreateInstance(ATableType.Namespace + "." + ATableType.Name);
@@ -542,6 +547,28 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
         {
             return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
+        }
+    }
+
+    /// <summary>
+    /// this manager is called from the server admin console
+    /// </summary>
+    public class TImportExportManager : IImportExportManager
+    {
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        public string BackupDatabaseToYmlGZ()
+        {
+            return TImportExportWebConnector.ExportAllTables();
+        }
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        public bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        {
+            return TImportExportWebConnector.ResetDatabase(AYmlGzData);
         }
     }
 }
