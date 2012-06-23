@@ -88,7 +88,7 @@ namespace Ict.Petra.Server.App.Core
                 new TClientAppDomainConnection());
 
             Assembly SysManAssembly = Assembly.Load("Ict.Petra.Server.lib.MSysMan");
-            Type ImportExportType = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.ImportExport.WebConnectors.TImportExportManager");
+            Type ImportExportType = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.ImportExport.TImportExportManager");
             FImportExportManager = (IImportExportManager)Activator.CreateInstance(ImportExportType,
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                 null,

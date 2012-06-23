@@ -41,6 +41,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
@@ -549,7 +550,10 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
         }
     }
+}
 
+namespace Ict.Petra.Server.MSysMan.ImportExport
+{
     /// <summary>
     /// this manager is called from the server admin console
     /// </summary>

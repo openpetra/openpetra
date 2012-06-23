@@ -210,8 +210,6 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
             return null; // make sure that the TMHospitality object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'UIConnectors' subnamespace contains further subnamespaces.</summary>
         public IUIConnectorsNamespace UIConnectors
         {
