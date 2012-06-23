@@ -926,7 +926,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (systemDefaults.Rows.Count == 0)
             {
                 SSystemDefaultsRow systemDefaultsRow = MainDS.SSystemDefaults.NewRowTyped();
-                systemDefaultsRow.DefaultCode = "SiteKey";
+                systemDefaultsRow.DefaultCode = SharedConstants.SYSDEFAULT_SITEKEY;
                 systemDefaultsRow.DefaultDescription = "there has to be one site key for the database";
                 systemDefaultsRow.DefaultValue = PartnerKey.ToString("0000000000");
                 MainDS.SSystemDefaults.Rows.Add(systemDefaultsRow);
