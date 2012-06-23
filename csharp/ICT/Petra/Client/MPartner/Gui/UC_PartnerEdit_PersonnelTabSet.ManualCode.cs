@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,12 +129,59 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             tpgApplications.Enabled = false;    // TODO This feature isn't implemented yet.
 
+            tabPersonnel.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
             SelectTabPage(FInitiallySelectedTabPage);
 
             CalculateTabHeaderCounters(this);
 
             OnDataLoadingFinished();
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+        /// the UserControl.</remarks>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+        /// specific Control for which Data Validation errors might have been recorded. (Default=null).
+        /// <para>
+        /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+        /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+        /// this Argument.
+        /// </para>
+        /// </param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+        {
+            bool ReturnValue = true;
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucIndividualData))
+            {
+                TUC_IndividualData UCIndividualData =
+                    (TUC_IndividualData)FTabSetup[TDynamicLoadableUserControls.dlucIndividualData];
+
+                if (!UCIndividualData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucApplications))
+            {
+                // TUC_Applications UCApplications =
+                //    (TUC_Applications)FTabSetup[TDynamicLoadableUserControls.dlucApplications];
+
+                //TODO: UCApplications not implemented yet
+                //if (!UCApplications.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                //{
+                //    ReturnValue = false;
+                //}
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -256,6 +303,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (HookupPartnerEditDataChange != null)
             {
                 HookupPartnerEditDataChange(this, e);
+            }
+        }
+
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (!ValidateAllData(true, FCurrentUserControl))
+            {
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
         }
 

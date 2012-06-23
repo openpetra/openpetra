@@ -19,6 +19,7 @@ list of available commands:
       nant quickCompile                    will compile the OpenPetra.sln
       nant quickCompile -D:solution=Tools  will compile the OpenPetra.Tools.sln
                                            other solutions are: Client, Server, Testing
+  start: start both the local server and client
   startPetraServer: run a local Petra Server
   stopPetraServer: stop the local Petra Server
   startPetraClient: run the Petra Client
@@ -44,6 +45,8 @@ compat:
   generateWinform: generate a single yaml file, and optionally compile and start the client
        nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
        nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
+  previewWinform: preview a single yaml file
+       nant previewWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
   cleanPetra: prepare for a clean build
   compilePetra: build all Petra C# code
   translation: download new language files, and create the dlls required to be delivered with a new release
@@ -110,7 +113,19 @@ useful parameters
 
 <target name="quickClean" description="cleans all generated files and the delivery directory">
   <!-- Do not remove dir.delivery, because this would change all UUIDs from the project files -->
-  <delete dir="${dir.bin}"/>
+  <!-- Do not remove dir.bin, because this fails on Windows Jenkins server for NUnit tests -->
+  <delete>
+    <fileset basedir="${dir.bin}">
+      <include name="**" />
+      <exclude name="."/>
+    </fileset>
+  </delete>
+  <delete>
+    <fileset basedir="${dir.obj}">
+      <include name="**" />
+      <exclude name="."/>
+    </fileset>
+  </delete>
   <delete file="${namespaceFile}"/>
   <delete file="${projectDependenciesFile}"/>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
@@ -213,6 +228,12 @@ useful parameters
 <!-- tasks for creating demodata -->
 <include buildfile="demodata/demodata.build"/>
 
+<target name="MsBuildTarget">
+    <msbuild project="${solution.file}" verbosity="Minimal">
+        <property name="Configuration" value="${Configuration}"/>
+    </msbuild>
+</target>
+
 <target name="quickCompile">
   <!-- this is very different from the compile target. quickCompile does not generate any code. 
        quickCompile uses the solution and csproj files and msbuild.
@@ -224,31 +245,7 @@ useful parameters
                               path::combine(devenv-msbuild, 'OpenPetra.'+solution+'.sln'))}"/>
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
 
-  <if test="${not platform::is-windows()}" >
-    <!-- on linux, xbuild could work as well. 
-         but it shows so many warnings, and the return code is not reliable... -->
-    <CompileSolution SolutionFile="${solution.file}"/>
-
-    <!--
-    <property name="solution.file" value="${path::combine(dir.projectfiles,
-                                  path::combine(devenv-xbuild, 'OpenPetra.'+solution+'.sln'))}"/>
-    <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
-    <exec program="xbuild" commandline="/verbosity:quiet ${solution.file}"/>
-    -->
-  </if>
-
-  <if test="${platform::is-windows()}" >
-    <if test="${file::exists(msbuildtask.file)}">
-      <msbuild project="${solution.file}" verbosity="Minimal">
-        <property name="Configuration" value="${Configuration}"/>
-      </msbuild>
-    </if>
-    <if test="${not file::exists(msbuildtask.file)}">
-      <!-- CompileSolution is quite slower than msbuild. so only use CompileSolution if msbuild is not available -->
-      <CompileSolution SolutionFile="${solution.file}"/>
-      <echo message="For faster compile, you need the NAnt.Contrib.Tasks.dll for msbuild" />
-    </if>
-  </if>
+  <CompileSolution SolutionFile="${solution.file}"/>
 </target>
 
 <target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess">
@@ -272,6 +269,10 @@ useful parameters
 
 <target name="generateWinform">
   <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="previewWinform">
+  <nant inheritall="true" target="previewWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
 </target>
 
 <target name="test" depends="initConfigFiles">

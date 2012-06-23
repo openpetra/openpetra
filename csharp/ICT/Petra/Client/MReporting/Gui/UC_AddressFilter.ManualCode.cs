@@ -46,6 +46,16 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             FPetraUtilsObject = APetraUtilsObject;
+
+            // hide those fields by default
+            ShowCountyStateField(false);
+            ShowAddressDateFields(false);
+
+            // make sure date fields are not initialized with today's date but later on with default settings
+            dtpAddressStartFrom.Text = "";
+            dtpAddressStartTo.Text = "";
+            dtpAddressEndFrom.Text = "";
+            dtpAddressEndTo.Text = "";
         }
 
         /// <summary>
@@ -56,14 +66,23 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_city", this.txtCity.Text);
+            ACalc.AddParameter("param_county", this.txtCounty.Text);
             ACalc.AddParameter("param_postcode_from", this.txtPostCodeFrom.Text);
             ACalc.AddParameter("param_postcode_to", this.txtPostCodeTo.Text);
-            ACalc.AddParameter("param_region", this.cmbRegion.Text);
-            ACalc.AddParameter("param_country", this.cmbCountry.Text);
+            ACalc.AddParameter("param_region", this.cmbRegion.GetSelectedString());
+            ACalc.AddParameter("param_country", this.cmbCountry.GetSelectedString());
 
             // manually add validity date here until we introduce a checkbox and/or date field in control
             ACalc.AddParameter("param_only_addresses_valid_on", this.chkCurrentAddressesOnly.Checked);
             ACalc.AddParameter("param_address_date_valid_on", DateTime.Today);
+
+            if (!chkCurrentAddressesOnly.Checked)
+            {
+                ACalc.AddParameter("param_address_start_from", this.dtpAddressStartFrom.Date);
+                ACalc.AddParameter("param_address_start_to", this.dtpAddressStartTo.Date);
+                ACalc.AddParameter("param_address_end_from", this.dtpAddressEndFrom.Date);
+                ACalc.AddParameter("param_address_end_to", this.dtpAddressEndTo.Date);
+            }
         }
 
         /// <summary>
@@ -73,10 +92,19 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void SetControls(TParameterList AParameters)
         {
             txtCity.Text = AParameters.Get("param_city").ToString();
+            txtCounty.Text = AParameters.Get("param_county").ToString();
             txtPostCodeFrom.Text = AParameters.Get("param_postcode_from").ToString();
             txtPostCodeTo.Text = AParameters.Get("param_postcode_to").ToString();
-            cmbRegion.Text = AParameters.Get("param_region").ToString();
-            cmbCountry.Text = AParameters.Get("param_country").ToString();
+            cmbRegion.SetSelectedString(AParameters.Get("param_region").ToString(), -1);
+            cmbCountry.SetSelectedString(AParameters.Get("param_country").ToString(), -1);
+
+            chkCurrentAddressesOnly.Checked = AParameters.Get("param_only_addresses_valid_on").ToBool();
+            dtpAddressStartFrom.Date = AParameters.Get("param_address_start_from").ToDate();
+            dtpAddressStartTo.Date = AParameters.Get("param_address_start_to").ToDate();
+            dtpAddressEndFrom.Date = AParameters.Get("param_address_end_from").ToDate();
+            dtpAddressEndTo.Date = AParameters.Get("param_address_end_to").ToDate();
+
+            EnableDisableDateFields();
         }
 
         /// <summary>
@@ -85,6 +113,50 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void SetAvailableFunctions(ArrayList AAvailableFunctions)
         {
             //TODO
+        }
+
+        /// <summary>
+        /// hide/show field for "County/State"
+        /// </summary>
+        public void ShowCountyStateField(bool AShow)
+        {
+            lblCounty.Visible = AShow;
+            txtCounty.Visible = AShow;
+        }
+
+        /// <summary>
+        /// hide/show fields for address valid from/to
+        /// </summary>
+        public void ShowAddressDateFields(bool AShow)
+        {
+            lblAddressStartFrom.Visible = AShow;
+            dtpAddressStartFrom.Visible = AShow;
+            lblAddressStartTo.Visible = AShow;
+            dtpAddressStartTo.Visible = AShow;
+            lblAddressEndFrom.Visible = AShow;
+            dtpAddressEndFrom.Visible = AShow;
+            lblAddressEndTo.Visible = AShow;
+            dtpAddressEndTo.Visible = AShow;
+        }
+
+        private void OnCurrentAddressBoxChecked(object sender, EventArgs e)
+        {
+            EnableDisableDateFields();
+        }
+
+        private void EnableDisableDateFields()
+        {
+            bool SetEnabled = !chkCurrentAddressesOnly.Checked;
+
+            // if checkbox for "current addresses only" is ticked then disable date fields
+            lblAddressStartFrom.Enabled = SetEnabled;
+            dtpAddressStartFrom.Enabled = SetEnabled;
+            lblAddressStartTo.Enabled = SetEnabled;
+            dtpAddressStartTo.Enabled = SetEnabled;
+            lblAddressEndFrom.Enabled = SetEnabled;
+            dtpAddressEndFrom.Enabled = SetEnabled;
+            lblAddressEndTo.Enabled = SetEnabled;
+            dtpAddressEndTo.Enabled = SetEnabled;
         }
     }
 }

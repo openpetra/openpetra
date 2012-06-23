@@ -19,13 +19,16 @@ RootNode:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
         tpgGeneralSettings:
+            Label: General Settings
             Controls: 
                 Row0: [pnlTop]
                 Row1: [pnlFields]
-                Row2: [pnlCommitments]
+                Row3: [grpCommitmentStatuses]
         pnlTop:
             Controls: 
                 Row0: [grpDates, ucoChkFilter]
+            Dock: Top
+            Height: 130
         grpDates:
             NoLabel: true
             Controls:
@@ -33,13 +36,11 @@ RootNode:
                 Row1: [dtpEndDateFrom, dtpEndDateTo]
                 Row2: [dtpDateValidOn]
         pnlFields:
+            Dock: Top
             Controls:
                 Row0: [txtFieldSending]
                 Row1: [txtFieldReceiving]
-        pnlCommitments:
-            Controls:
-                Row0: [chkCommitmentStatus]
-                Row1: [grpCommitmentStatuses]
+                Row2: [chkCommitmentStatus]
 
         dtpStartDateFrom: {Label="&Start Date from", DefaultValue=null, ParameterName= param_start_date_from}
         dtpStartDateTo: {Label="to", Value=null, ParameterName= param_start_date_to}
@@ -53,18 +54,25 @@ RootNode:
         chkCommitmentStatus:
             Label: "&Include only Persons with one or more of the selected Commitment Status(es)"
             OnChange: chkCommitmentStatus_Changed
+            CheckBoxAttachedLabel: right
             ParameterName: param_consider_commitment_status
         grpCommitmentStatuses:
+            Dock: Fill
             Label: "Commitment Statuses"
             Controls:
                 Row0: [grdCommitmentStatusChoices]
-                Row1: [chkCommitmentStatusOthers]
+                Row1: [pnlBottomCommitmentStatuses]
         grdCommitmentStatusChoices:
             Dock: Fill
             ParameterName: param_commitment_status_choices
+        pnlBottomCommitmentStatuses:
+            Dock: Bottom
+            Controls: [chkCommitmentStatusOthers]
         chkCommitmentStatusOthers:
             Label: "Include Persons with &no Commitment Status set"
+            CheckBoxAttachedLabel: right
             ParameterName: param_include_no_commitment_status
         ucoChkFilter:
-            Dock: Left
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Height: 120
+            Width: 200

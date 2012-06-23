@@ -43,6 +43,15 @@ namespace Ict.Common.IO
     public class TPatchFileVersionInfo : TFileVersionInfo
     {
         /// <summary>
+        /// constructor for base class
+        /// </summary>
+        /// <param name="version"></param>
+        public TPatchFileVersionInfo(TFileVersionInfo version)
+            : base(version)
+        {
+        }
+
+        /// <summary>
         /// returns the version numbers of the patch;
         /// e.g. Patch-win_2.2.35_2.2.43.zip should return 2.2.35 and 2.2.43
         /// </summary>
@@ -188,6 +197,14 @@ namespace Ict.Common.IO
     /// </summary>
     public class TPatchTools
     {
+        #region Resourcestrings
+
+        private static readonly string StrProblemConnecting = Catalog.GetString("There is a problem connecting to {0}");
+
+        private static readonly string StrProblemConnectingTitle = Catalog.GetString("Cannot find patches on server");
+
+        #endregion
+
         /// <summary>maximum is 9, quite slow, and memory consuming</summary>
         public const Int32 BZ_COMPRESSION_LEVEL = 5;
 
@@ -955,8 +972,6 @@ namespace Ict.Common.IO
         /// <paramref name="AShowStatus" /> is false.</param>
         public Boolean CheckForRecentPatch(bool AShowStatus, out string AStatusMessage)
         {
-            const string ProblemMessage = "There is a problem connecting to {0}";
-
             string localname;
             TFileVersionInfo fileStartVersion;
             TFileVersionInfo filePatchVersion;
@@ -987,12 +1002,12 @@ namespace Ict.Common.IO
                 {
                     if (AShowStatus)
                     {
-                        MessageBox.Show(String.Format(ProblemMessage, FRemotePatchesPath),
-                            "Cannot find patches on server");
+                        MessageBox.Show(String.Format(StrProblemConnecting, FRemotePatchesPath),
+                            StrProblemConnectingTitle);
                     }
                     else
                     {
-                        AStatusMessage = String.Format(ProblemMessage, FRemotePatchesPath);
+                        AStatusMessage = String.Format(StrProblemConnecting, FRemotePatchesPath);
                     }
 
                     return false;

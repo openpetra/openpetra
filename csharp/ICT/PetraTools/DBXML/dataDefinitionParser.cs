@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,7 +33,7 @@ namespace Ict.Tools.DBXML
     /// <summary>
     /// This is a special XML parser for the datadefinition file for Petra
     /// </summary>
-    public class TDataDefinitionParser : TXMLGroupParser
+    public class TDataDefinitionParser : TXMLParser
     {
         /// <summary>
         /// constructor
@@ -56,36 +56,19 @@ namespace Ict.Tools.DBXML
 
         /// <summary>
         /// Knows how to parse all the entities in the document.
-        /// It reads a group of entities.
-        /// </summary>
-        /// <param name="cur2">The current node in the document that should be parsed</param>
-        /// <param name="groupId">The id of the previous group object of this type</param>
-        /// <param name="entity">The name of the elements that make up the group</param>
-        /// <param name="newcur">After parsing, the then current node is returned in this parameter</param>
-        /// <returns>The group of elements, or null</returns>
-        public override TXMLGroup ParseGroup(XmlNode cur2, ref int groupId, string entity, ref XmlNode newcur)
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// Knows how to parse all the entities in the document.
         /// Reads one or more entities of the same type.
         /// </summary>
         /// <param name="cur">The current node</param>
         /// <param name="groupId">The id of the current group that the elements will belong to</param>
         /// <param name="entity">The name of the entity that should be read</param>
         /// <returns>the last of the read entities</returns>
-        public override TXMLElement Parse(XmlNode cur, ref int groupId, string entity)
+        public Object Parse(XmlNode cur, ref int groupId, string entity)
         {
-            TXMLElement ReturnValue;
-
             cur = NextNotBlank(cur);
-            ReturnValue = null;
 
             if ((cur == null) || (cur.Name.ToLower() != entity.ToLower()))
             {
-                return ReturnValue;
+                return null;
             }
 
             groupId++;
@@ -94,42 +77,42 @@ namespace Ict.Tools.DBXML
             {
                 if (entity == "table")
                 {
-                    ReturnValue = ParseTable(cur);
+                    return ParseTable(cur);
                 }
                 else
                 {
                     if (entity == "tablefield")
                     {
-                        ReturnValue = ParseTableField(cur);
+                        return ParseTableField(cur);
                     }
                     else if (entity == "primarykey")
                     {
-                        ReturnValue = ParseConstraint(cur, TXMLParser.GetAttribute(cur.ParentNode, "name"));
+                        return ParseConstraint(cur, TXMLParser.GetAttribute(cur.ParentNode, "name"));
                     }
                     else if (entity == "foreignkey")
                     {
-                        ReturnValue = ParseConstraint(cur, TXMLParser.GetAttribute(cur.ParentNode, "name"));
+                        return ParseConstraint(cur, TXMLParser.GetAttribute(cur.ParentNode, "name"));
                     }
                     else if (entity == "uniquekey")
                     {
-                        ReturnValue = ParseConstraint(cur, TXMLParser.GetAttribute(cur.ParentNode, "name"));
+                        return ParseConstraint(cur, TXMLParser.GetAttribute(cur.ParentNode, "name"));
                     }
                     else if (entity == "index")
                     {
-                        ReturnValue = ParseIndex(cur);
+                        return ParseIndex(cur);
                     }
                     else if (entity == "indexfield")
                     {
-                        ReturnValue = ParseIndexField(cur);
+                        return ParseIndexField(cur);
                     }
                     else if (entity == "sequence")
                     {
-                        ReturnValue = ParseSequence(cur);
+                        return ParseSequence(cur);
                     }
                 }
             }
 
-            return ReturnValue;
+            return null;
         }
 
         /// <summary>
@@ -206,8 +189,6 @@ namespace Ict.Tools.DBXML
             return ParseDocument(ref myStore, true, true);
         }
 
-        static int tableCounter = 0;
-
         /// <summary>
         /// Parse the definition of one database table
         /// </summary>
@@ -224,7 +205,6 @@ namespace Ict.Tools.DBXML
 
             cur = cur2;
             table = new TTable();
-            table.order = tableCounter++;
             table.strName = GetAttribute(cur, "name");
             table.strDotNetName = TTable.NiceTableName(table.strName);
             table.strDumpName = GetAttribute(cur, "dumpname");
@@ -264,8 +244,8 @@ namespace Ict.Tools.DBXML
                 if (tableField != null)
                 {
                     tableField.strTableName = table.strName;
-                    tableField.iOrder = table.grpTableField.List.Count;
-                    table.grpTableField.List.Add(tableField);
+                    tableField.iOrder = table.grpTableField.Count;
+                    table.grpTableField.Add(tableField);
                 }
 
                 myConstraint = (TConstraint)Parse(cur, ref groupId, "foreignkey");
@@ -282,7 +262,7 @@ namespace Ict.Tools.DBXML
 
                 if (myConstraint != null)
                 {
-                    table.grpConstraint.List.Add(myConstraint);
+                    table.grpConstraint.Add(myConstraint);
                 }
 
                 myIndex = (TIndex)Parse(cur, ref groupId, "index");
@@ -472,7 +452,7 @@ namespace Ict.Tools.DBXML
 
                 if (myIndexField != null)
                 {
-                    element.grpIndexField.List.Add(myIndexField);
+                    element.grpIndexField.Add(myIndexField);
                 }
 
                 cur = GetNextEntity(cur);

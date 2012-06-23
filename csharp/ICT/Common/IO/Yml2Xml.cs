@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,9 +76,18 @@ namespace Ict.Common.IO
     /// </summary>
     public class TYml2Xml
     {
-        string[] lines = null;
-        Int32 currentLine = -1;
-        string filename = "";
+        /// <summary>
+        /// contains the lines of the yml document
+        /// </summary>
+        protected string[] lines = null;
+        /// <summary>
+        /// the current line that we are parsing
+        /// </summary>
+        protected Int32 currentLine = -1;
+        /// <summary>
+        /// the filename of the file that we are parsing
+        /// </summary>
+        protected string filename = "";
 
         /// <summary>
         /// constructor
@@ -436,7 +445,10 @@ namespace Ict.Common.IO
             return line;
         }
 
-        private bool SplitNode(string line, out string nodeName, out string nodeContent)
+        /// <summary>
+        /// split a line into the node name and the node content
+        /// </summary>
+        protected bool SplitNode(string line, out string nodeName, out string nodeContent)
         {
             Int32 posFirstColon = -1;
 
@@ -510,7 +522,10 @@ namespace Ict.Common.IO
             return true;
         }
 
-        private string StripQuotes(string s)
+        /// <summary>
+        /// strip the quotes from a string
+        /// </summary>
+        protected string StripQuotes(string s)
         {
             if ((s != null) && (s.Length > 1))
             {

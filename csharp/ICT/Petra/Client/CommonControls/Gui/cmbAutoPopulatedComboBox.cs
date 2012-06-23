@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, markusm, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using Ict.Common;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MCommon;
@@ -36,8 +37,11 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common.Controls;
 using System.Globalization;
@@ -149,10 +153,22 @@ namespace Ict.Petra.Client.CommonControls
             LeavingCodeList,
 
             /// <summary>todoComment</summary>
+            LedgerNameList,
+
+            /// <summary>todoComment</summary>
             LocationTypeList,
 
             /// <summary>todoComment</summary>
+            MailingList,
+
+            /// <summary>todoComment</summary>
             MaritalStatusList,
+
+            /// <summary>todoComment</summary>
+            MethodOfGivingList,
+
+            /// <summary>todoComment</summary>
+            MethodOfPaymentList,
 
             /// <summary>todoComment</summary>
             PartnerClassList,
@@ -188,7 +204,7 @@ namespace Ict.Petra.Client.CommonControls
             ProposalSubmitFrequencyList,
 
             /// <summary>todoComment</summary>
-            PublicationList,
+            PublicationInfoList,
 
             /// <summary>todoComment</summary>
             ReasonSubscriptionCancelledList,
@@ -212,7 +228,10 @@ namespace Ict.Petra.Client.CommonControls
             SubscriptionStatus,
 
             /// <summary>todoComment</summary>
-            UnitTypeList
+            UnitTypeList,
+
+            /// <summary>todoComment</summary>
+            UserList
         };
 
         private DataTable FDataCache_ListTable = null;
@@ -593,12 +612,30 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.LedgerNameList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList),
+                    "LedgerNumber",
+                    "LedgerName",
+                    null);
+                    break;
+
                 case TListTableEnum.LocationTypeList:
 
                     InitialiseUserControl(
                     TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.LocationTypeList),
                     PLocationTypeTable.GetCodeDBName(),
                     null,
+                    null);
+                    break;
+
+                case TListTableEnum.MailingList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.MailingList),
+                    PMailingTable.GetMailingCodeDBName(),
+                    PMailingTable.GetMailingDescriptionDBName(),
                     null);
                     break;
 
@@ -611,6 +648,23 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.MethodOfGivingList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfGivingList),
+                    AMethodOfGivingTable.GetMethodOfGivingCodeDBName(),
+                    AMethodOfGivingTable.GetMethodOfGivingDescDBName(),
+                    null);
+                    break;
+
+                case TListTableEnum.MethodOfPaymentList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MethodOfPaymentList),
+                    AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName(),
+                    AMethodOfPaymentTable.GetMethodOfPaymentDescDBName(),
+                    null);
+                    break;
 
                 case TListTableEnum.PartnerClassList:
 
@@ -661,8 +715,32 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PostCodeRegionList:
 
-                    InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.PostCodeRegionList),
+                    /* Region table contains several records per actual region, depending on how many
+                    * postcode ranges there are in a region. Therefore it is important to remove "duplicate"
+                    * rows and just have one row per actual region code in the combobox. It is important
+                    *                     that region rows arrive in "order by Region" from server */
+                    PPostcodeRegionTable RegionTable = (PPostcodeRegionTable)TDataCache.TMPartner.GetCacheableMailingTable(
+                    TCacheableMailingTablesEnum.PostCodeRegionList);
+                    PPostcodeRegionRow RegionRow;
+                    int CountRegionRows = RegionTable.Rows.Count;
+                    string CurrentRegion = "";
+
+                    // go through table in reverse order so rows can be deleted and only one row per region code remains
+                    for (int Index = CountRegionRows - 1; Index >= 0; Index--)
+                    {
+                        RegionRow = (PPostcodeRegionRow)RegionTable.Rows[Index];
+
+                        if (RegionRow.Region != CurrentRegion)
+                        {
+                            CurrentRegion = RegionRow.Region;
+                        }
+                        else
+                        {
+                            RegionRow.Delete();
+                        }
+                    }
+
+                    InitialiseUserControl(RegionTable,
                     PPostcodeRegionTable.GetRegionDBName(),
                     null,
                     null);
@@ -722,10 +800,10 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
-                case TListTableEnum.PublicationList:
+                case TListTableEnum.PublicationInfoList:
 
                     InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationList),
+                    TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationInfoList),
                     PPublicationTable.GetPublicationCodeDBName(),
                     PPublicationTable.GetPublicationDescriptionDBName(),
                     null);
@@ -786,6 +864,15 @@ namespace Ict.Petra.Client.CommonControls
                     UUnitTypeTable.GetUnitTypeNameDBName(),
                     null);
                     break;
+
+                case TListTableEnum.UserList:
+
+                    InitialiseUserControl(
+                    TDataCache.TMSysMan.GetCacheableSysManTable(TCacheableSysManTablesEnum.UserList),
+                    SUserTable.GetUserIdDBName(),
+                    MSysManConstants.USER_LAST_AND_FIRST_NAME_COLUMNNAME,
+                    null);
+                    break;
             }
         }
 
@@ -810,8 +897,13 @@ namespace Ict.Petra.Client.CommonControls
 
             // Pass on any set Tag
             cmbCombobox.Tag = this.Tag;
-            this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
-            this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
+
+            // only add event handlers once
+            if (!FUserControlInitialised)
+            {
+                this.cmbCombobox.SelectedValueChanged += new System.EventHandler(this.CmbCombobox_SelectedValueChanged);
+                this.cmbCombobox.TextChanged += new System.EventHandler(this.CmbCombobox_TextChanged);
+            }
 
             if (FAddNotSetValue)
             {
@@ -1081,8 +1173,18 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 200;
                     break;
 
+                case TListTableEnum.LedgerNameList:
+                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
                 case TListTableEnum.LocationTypeList:
                     this.ColumnWidthCol1 = 110;
+                    break;
+
+                case TListTableEnum.MailingList:
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 250;
                     break;
 
                 case TListTableEnum.MaritalStatusList:
@@ -1134,7 +1236,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 450;
                     break;
 
-                case TListTableEnum.PublicationList:
+                case TListTableEnum.PublicationInfoList:
                     this.ColumnWidthCol1 = 110;
                     this.ColumnWidthCol2 = 350;
                     this.ColumnWidthCol3 = 80;
@@ -1166,6 +1268,10 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.UnitTypeList:
                     this.ColumnWidthCol1 = 90;
                     this.ColumnWidthCol2 = 200;
+                    break;
+
+                case TListTableEnum.UserList:
+                    this.ColumnWidthCol1 = 120;
                     this.ColumnWidthCol2 = 200;
                     break;
             }

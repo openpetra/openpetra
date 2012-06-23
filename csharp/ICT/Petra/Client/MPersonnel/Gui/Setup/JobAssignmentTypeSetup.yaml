@@ -40,7 +40,7 @@ RootNode:
         txtDetailAssignmentTypeCode: {Label=Job Assignment Type, CharacterCasing=Upper, Width=60}
         txtDetailAssignmentCodeDescr: {Label=Description, Width=385}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

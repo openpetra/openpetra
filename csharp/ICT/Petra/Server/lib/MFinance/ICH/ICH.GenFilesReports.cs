@@ -67,13 +67,12 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="ALedgerNumber">ICH Ledger number</param>
         /// <param name="APeriodNumber">Period</param>
-        /// <param name="AICHNumber"></param>
-        /// <param name="ACurrencyType">Currency type</param>
+        /// <param name="AICHNumber">ICH Processing Number</param>
+        /// <param name="ACurrencyType">Currency type: 1 = base, 2 = intl</param>
         /// <param name="AFileName">File name to process</param>
         /// <param name="AEmail">If true then send email</param>
         /// <param name="AVerificationResult">Error messaging</param>
-        /// <returns></returns>
-        public void GenerateStewardshipFile(int ALedgerNumber,
+        public static void GenerateStewardshipFile(int ALedgerNumber,
             int APeriodNumber,
             int AICHNumber,
             int ACurrencyType,
@@ -164,16 +163,17 @@ namespace Ict.Petra.Server.MFinance.ICH
                             {
                                 DataRow DR = (DataRow)TableForExport.NewRow();
 
-                                DR.ItemArray[0] = PeriodEndDate;
-                                DR.ItemArray[1] = StandardCostCentre;
-                                DR.ItemArray[2] = DateToday;
-                                DR.ItemArray[3] = Currency;
-                                DR.ItemArray[4] = CostCentre;
-                                DR.ItemArray[5] = IncomeAmount;
-                                DR.ItemArray[6] = ExpenseAmount;
-                                DR.ItemArray[7] = XferAmount;
+                                DR[0] = PeriodEndDate;
+                                DR[1] = StandardCostCentre;
+                                DR[2] = DateToday;
+                                DR[3] = Currency;
+                                DR[4] = CostCentre;
+                                DR[5] = IncomeAmount;
+                                DR[6] = ExpenseAmount;
+                                DR[7] = XferAmount;
 
                                 TableForExport.Rows.Add(DR);
+                                TableForExport.AcceptChanges();
                             }
 
                             IncomeAmount = 0;
@@ -202,16 +202,17 @@ namespace Ict.Petra.Server.MFinance.ICH
                 {
                     DataRow DR = (DataRow)TableForExport.NewRow();
 
-                    DR.ItemArray[0] = PeriodEndDate;
-                    DR.ItemArray[1] = StandardCostCentre;
-                    DR.ItemArray[2] = DateToday;
-                    DR.ItemArray[3] = Currency;
-                    DR.ItemArray[4] = CostCentre;
-                    DR.ItemArray[5] = IncomeAmount;
-                    DR.ItemArray[6] = ExpenseAmount;
-                    DR.ItemArray[7] = XferAmount;
+                    DR[0] = PeriodEndDate;
+                    DR[1] = StandardCostCentre;
+                    DR[2] = DateToday;
+                    DR[3] = Currency;
+                    DR[4] = CostCentre;
+                    DR[5] = IncomeAmount;
+                    DR[6] = ExpenseAmount;
+                    DR[7] = XferAmount;
 
                     TableForExport.Rows.Add(DR);
+                    TableForExport.AcceptChanges();
                 }
 
                 //Create the XMLDoc ready for export to CSV
@@ -221,27 +222,16 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if (AEmail)
                 {
-                    AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
-                    AEmailDestinationRow TemplateRow2 = (AEmailDestinationRow)AEmailDestTable.NewRowTyped(false);
-
-                    TemplateRow2.FileCode = MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP;
-
-                    StringCollection operators2 = StringHelper.InitStrArr(new string[] { "=" });
-
-                    AEmailDestinationTable AEmailDestinationTable = AEmailDestinationAccess.LoadUsingTemplate(TemplateRow2,
-                        operators2,
-                        null,
-                        DBTransaction);
-                    AEmailDestinationRow EmailDestinationRow = (AEmailDestinationRow)AEmailDestinationTable.Rows[0];
-
-                    string SenderAddress = "";
-                    string EmailAddress = EmailDestinationRow.EmailAddress;
+                    string SenderAddress = TAppSettingsManager.GetValue("LocalFieldFinance.EmailAddress");
                     string EmailSubject = string.Format(Catalog.GetString("Stewardship File from {0}"), LedgerName);
                     string HTMLText = string.Empty;
 
-                    //Read the file title
-                    FileInfo FileDetails = new FileInfo(AFileName);
-                    string FileTitle = FileDetails.Name;
+                    string EmailAddress = GetICHEmailAddress(DBTransaction);
+
+                    if (EmailAddress.Length == 0)
+                    {
+                        throw new Exception("No destination email addresses found!");
+                    }
 
                     if (!File.Exists(AFileName))
                     {
@@ -249,7 +239,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     }
                     else
                     {
-                        HTMLText = "<html><body>" + EmailSubject + ": " + FileTitle + Catalog.GetString(" is attached.") + "</body></html>";
+                        HTMLText = "<html><body>" + EmailSubject + ": " + Path.GetFileName(AFileName) + Catalog.GetString(" is attached.") +
+                                   "</body></html>";
                     }
 
                     TSmtpSender SendMail = new TSmtpSender();
@@ -350,6 +341,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
             if (!MatchFound)
             {
+#if TODO
                 /* look in previous periods (need to compare date of transactions to the month of the stewardship
                  *             because there may be a batch present which was for last years stewardship - eg. Dec 2007
                  *             Stewardship for US may have been processed in Jan 2008) */
@@ -426,6 +418,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         }
                     }
                 }
+#endif
             }
 
             return BatchNumber;
@@ -508,6 +501,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 return ExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
             }
 
+#if TODO
             /* now check previous periods if batch wasn't in current period */
             AThisYearOldBatchTable ThisYearOldBatchTable = AThisYearOldBatchAccess.LoadByPrimaryKey(AICHLedgerNumber, ABatchNumber, ADBTransaction);
             AThisYearOldBatchRow ThisYearOldBatchRow = (AThisYearOldBatchRow)ThisYearOldBatchTable.Rows[0];
@@ -631,6 +625,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return ExistingIncExpTotal == (AIncomeAmount + AExpenseAmount);
             }
+#endif
 
             DBAccess.GDBAccessObj.RollbackTransaction();
             return false;
@@ -901,7 +896,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if ((LedgerNo != PreviousLedger) || (PeriodNo != PreviousPeriod) || (RunNo != PreviousRunNumber))
                 {
-                    Successful = GenerateStewardshipBatch(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
+                    Successful = GenerateStewardshipBatchFromReportFile(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
                             "00") + "00", FileName, ref ALogWriter);
                 }
                 else
@@ -950,7 +945,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="AFromCostCentre">Fund to which stewardship relates</param>
         /// <param name="AFileName">Filename of stewardship report to process</param>
         /// <param name="ALogWriter">TextWriter for log file</param>
-        private bool GenerateStewardshipBatch(int ALedgerNumber,
+        private bool GenerateStewardshipBatchFromReportFile(int ALedgerNumber,
             int AYear,
             int APeriod,
             int ARunNumber,
@@ -1594,6 +1589,7 @@ PostGenerateBatch:
                 return;
             }
 
+#if TODO
             /* if the batch wasn't in the current period try previous periods. In this case we can't assume
              * that the transaction reference will be in the "new style" (ie. LLLPPRRR). It might be in the
              * old style (ie. LLLPP). We are able to do more checks where it is in the new style as we can
@@ -1854,6 +1850,31 @@ PostGenerateBatch:
                         AProcessFile = true;
                     }
                 }
+            }
+#endif
+        }
+
+        /// <summary>
+        /// get the Email address for the International Clearing House, where the stewardship should be sent to
+        /// </summary>
+        /// <param name="ADBTransaction"></param>
+        /// <returns></returns>
+        public static string GetICHEmailAddress(TDBTransaction ADBTransaction)
+        {
+            AEmailDestinationTable AEmailDestTable = new AEmailDestinationTable();
+            AEmailDestinationRow TemplateRow2 = (AEmailDestinationRow)AEmailDestTable.NewRowTyped(false);
+
+            TemplateRow2.FileCode = MFinanceConstants.EMAIL_FILE_CODE_STEWARDSHIP;
+
+            AEmailDestinationTable AEmailDestinationTable = AEmailDestinationAccess.LoadUsingTemplate(TemplateRow2, ADBTransaction);
+
+            if (AEmailDestinationTable.Count == 0)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return ((AEmailDestinationRow)AEmailDestinationTable.Rows[0]).EmailAddress;
             }
         }
 

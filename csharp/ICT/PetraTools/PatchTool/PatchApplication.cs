@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -119,7 +119,7 @@ namespace Ict.Tools.PatchTool
                 {
                     patchTools.CheckForRecentPatch();
                     TLogging.Log("The patch was installed successfully.");
-                    TLogging.Log("Your Petra was on patch " + oldPatchVersion + ", " + "and is now on patch " + patchTools.GetCurrentPatchVersion());
+                    TLogging.Log("Your OpenPetra was on patch " + oldPatchVersion + ", " + "and is now on patch " + patchTools.GetCurrentPatchVersion());
                 }
                 else
                 {
@@ -289,6 +289,7 @@ namespace Ict.Tools.PatchTool
                     {
                         // prepare for undo; make a copy of the original file
                         System.IO.File.Copy(TargetFile, TargetFile + ".bak", true);
+                        File.Delete(TargetFile);
                     }
 
                     // unzip the file
@@ -595,59 +596,6 @@ namespace Ict.Tools.PatchTool
             }
         }
 
-        private bool AddToConfigFile(string AConfigFileName, string AKeyName, string AValue)
-        {
-            string OrigFilename = FInstallPath + Path.DirectorySeparatorChar +
-                                  "etc" + FVersionPostFix +
-                                  Path.DirectorySeparatorChar + AConfigFileName;
-
-            if (!File.Exists(OrigFilename))
-            {
-                return false;
-            }
-
-            StreamReader sr = new StreamReader(OrigFilename);
-            StreamWriter sw = new StreamWriter(OrigFilename + ".new");
-
-            bool hasKey = false;
-
-            while (!sr.EndOfStream)
-            {
-                string line = sr.ReadLine();
-
-                if (line.Contains("\"" + AKeyName + "\""))
-                {
-                    hasKey = true;
-                    line = "    <add key=\"" + AKeyName + "\" value=\"" + AValue + "\" />";
-                }
-
-                if (line.Contains("</appSettings>") && !hasKey)
-                {
-                    sw.WriteLine("    <add key=\"" + AKeyName + "\" value=\"" + AValue + "\" />");
-                }
-
-                sw.WriteLine(line);
-            }
-
-            sr.Close();
-            sw.Close();
-
-            TTextFile.UpdateFile(OrigFilename);
-
-            return true;
-        }
-
-        private Boolean SpecialOperationsConfigAndScripts()
-        {
-            // TODO: this should go into a special patch plugin DLL?
-
-            // 0.0.11.0 => 0.0.11.1
-            // add dll for bank import from csv
-            // AddToConfigFile("PetraClient-Remote.config", "Plugin.BankStatementImport", "Plugin.BankImportFromCSV");
-
-            return true;
-        }
-
         private Boolean ApplyPetraPatch(String APatchFile)
         {
             Boolean ReturnValue;
@@ -749,8 +697,6 @@ namespace Ict.Tools.PatchTool
                         System.IO.File.Delete(filename);
                     }
                 }
-
-                SpecialOperationsConfigAndScripts();
 
                 TLogging.Log("Patch " + APatchFile + " has been applied successfully!");
                 ReturnValue = true;

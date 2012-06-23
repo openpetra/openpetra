@@ -47,7 +47,7 @@ RootNode:
         txtKeyCount: {Label=Key Count, ReadOnly=true}
         chkDeletable:{Label=Deletable}
         chkFrozen:{Label=Frozen}
-        txtExtractDesc: {Label=Description, ColSpan=3, Multiline=true, ScrollBars=Vertical, Height=50, Width=500}
+        txtExtractDesc: {Label=Description, ColSpan=2, Multiline=true, ScrollBars=Vertical, Height=50, Width=500}
         #chkManualMod:{Label=Manually updated, ReadOnly=true}
         dtpManualMod:{Label=Manually modified, ReadOnly=true}
         txtManualModBy:{Label=By, ReadOnly=true}

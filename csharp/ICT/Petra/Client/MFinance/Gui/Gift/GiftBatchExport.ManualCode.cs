@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash,timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,6 +76,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = value;
                 //TFinanceControls.InitialiseAccountList(ref cmbDontSummarizeAccount, FLedgerNumber, true, false, false, false);
+            }
+        }
+
+        /// set the batch number range
+        public Int32 FirstBatchNumber
+        {
+            set
+            {
+                rbtBatchNumberSelection.Checked = true;
+                txtBatchNumberStart.NumberValueInt = value;
+            }
+        }
+
+        /// set the batch number range
+        public Int32 LastBatchNumber
+        {
+            set
+            {
+                rbtBatchNumberSelection.Checked = true;
+                txtBatchNumberEnd.NumberValueInt = value;
+            }
+        }
+
+        /// set whether unposted batches should be exported as well
+        public bool IncludeUnpostedBatches
+        {
+            set
+            {
+                chkIncludeUnposted.Checked = value;
+            }
+        }
+
+        /// set the output filename
+        public string OutputFilename
+        {
+            set
+            {
+                txtFilename.Text = value;
             }
         }
 
@@ -154,7 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
-        private void ExportBatches(object sender, EventArgs e)
+        public void ExportBatches(object sender, EventArgs e)
         {
             String fileName = txtFilename.Text;
 
@@ -204,7 +242,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (AMessages.Count > 0)
             {
-                if (AMessages.HasCriticalError())
+                if (AMessages.HasCriticalErrors)
                 {
                     MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
                         MessageBoxButtons.OK,
@@ -244,7 +282,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            MessageBox.Show(Catalog.GetString("Your data was exported successfully!"),
+            MessageBox.Show(Catalog.GetString("Your data was exported successfully!") + Environment.NewLine +
+                fileName,
                 Catalog.GetString("Success"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);

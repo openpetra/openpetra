@@ -16,7 +16,7 @@ RootNode:
             Label: Believer since
             Controls: [txtBelieverSinceYear, txtBelieverSinceComment]
                    
-        txtBelieverSinceYear:
+        txtBelieverSinceYear: {Width=50, Format=Integer}
             Label: Year
         txtBelieverSinceComment:
             Width: 340

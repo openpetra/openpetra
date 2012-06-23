@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, wolfgangu
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -135,6 +135,9 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Bank statements</summary>
         public const String BANK_STMT_STATUS_UNMATCHED = "UNMATCHED";
 
+        /// <summary>Bank statements</summary>
+        public const String BANK_STMT_POTENTIAL_GIFT = "POTENTIALGIFT";
+
         /// <summary>Sub Systems, General Ledger</summary>
         public const String SUB_SYSTEM_GL = "GL";
 
@@ -176,6 +179,11 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Logical values for debit and credit transactions.
         public const bool POSTED = true;
+
+        /// Logical account and cost centre flags
+        public const bool ACTIVE = true;
+        /// Logical account and cost centre flags
+        public const bool POSTING = true;
 
         /// standard account for earnings bf
         public const string EARNINGS_BF_ACCT = "9700";
@@ -251,8 +259,11 @@ namespace Ict.Petra.Shared.MFinance
         /// standard account
         public const string INTERNAL_XFER_ACCT = "9800";
 
-        /// Cost Centres
-        public const string FOREIGN_CC_TYPE = "FOREIGN";
+        /// Cost Centres Types
+        public const string FOREIGN_CC_TYPE = "Foreign";
+
+        /// Cost Centres Types
+        public const string LOCAL_CC_TYPE = "Local";
 
         /// admin fee accounts.
         public const string FUND_TRANSFER_INCOME_ACC = "3300";
@@ -322,6 +333,13 @@ namespace Ict.Petra.Shared.MFinance
 
         /// Email File Code Types
         public const string EMAIL_FILE_CODE_STEWARDSHIP = "STEWARDSHIP";
+
+        /// Narratives
+        public const string NARRATIVE_YEAR_END_REALLOCATION = "Year end re-allocation";
+        /// Narratives
+        public const string NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH = "Gifts received - Gift Batch";
+        /// Narratives
+        public const string NARRATIVE_GB_GIFT_BATCH = "GB - Gift Batch";
     }
 
     /// <summary>

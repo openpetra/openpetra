@@ -401,7 +401,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableConferenceTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -411,7 +411,16 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable)
+        public System.Data.DataTable GetCacheableTablea(TCacheableConferenceTablesEnum ACacheableTable)
+        {
+            #region ManualCode
+            System.Type TmpType;
+            return GetCacheableTable(ACacheableTable, "", out TmpType);
+            #endregion ManualCode
+        }
+
+        /// generated method from interface
+        public void RefreshCacheableTable(TCacheableConferenceTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -420,7 +429,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MConference.TCacheableConferenceTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableConferenceTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode

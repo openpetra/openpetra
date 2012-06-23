@@ -52,9 +52,9 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountCode"></param>
         /// <param name="ACostCentreCode"></param>
-        /// <returns>the glm sequence</returns>
+        /// <returns>The new glm sequence, which is negative until SubmitChanges</returns>
         private static Int32 CreateGLMYear(
-            ref GLBatchTDS AMainDS,
+            ref GLPostingTDS AMainDS,
             Int32 ALedgerNumber,
             string AAccountCode,
             string ACostCentreCode)
@@ -93,7 +93,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ACostCentreCode"></param>
         /// <returns> The GLM Sequence</returns>
         public static Int32 CreateGLMYear(
-            ref GLBatchTDS AMainDS,
+            ref GLPostingTDS AMainDS,
             Int32 ALedgerNumber,
             int AYear,
             string AAccountCode,
@@ -139,9 +139,11 @@ namespace Ict.Petra.Server.MFinance.Common
             AVerifications = new TVerificationResultCollection();
             ADataSet = new GLBatchTDS();
 
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             if (!ABatchAccess.Exists(ALedgerNumber, ABatchNumber, Transaction))
             {
@@ -149,7 +151,12 @@ namespace Ict.Petra.Server.MFinance.Common
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
                         Catalog.GetString("The batch does not exist at all."),
                         TResultSeverity.Resv_Critical));
-                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
                 return false;
             }
 
@@ -163,6 +170,33 @@ namespace Ict.Petra.Server.MFinance.Common
 
             ATransAnalAttribAccess.LoadViaABatch(ADataSet, ALedgerNumber, ABatchNumber, Transaction);
 
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// load the tables that are needed for posting
+        /// </summary>
+        /// <param name="ADataSet"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>false if batch does not exist at all</returns>
+        private static bool LoadDataForPosting(out GLPostingTDS ADataSet,
+            Int32 ALedgerNumber)
+        {
+            ADataSet = new GLPostingTDS();
+
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            ALedgerAccess.LoadByPrimaryKey(ADataSet, ALedgerNumber, Transaction);
+
             // load all accounts of ledger, because we need them later for the account hierarchy tree for summarisation
             AAccountAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
 
@@ -172,7 +206,11 @@ namespace Ict.Petra.Server.MFinance.Common
             // TODO: use cached table?
             ACostCentreAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
 
-            if (IsMyOwnTransaction)
+            AAnalysisTypeAccess.LoadAll(ADataSet, Transaction);
+            AFreeformAnalysisAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
+            AAnalysisAttributeAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
+
+            if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -184,18 +222,18 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Load all GLM and GLMPeriod records for the batch period and the following periods, since that will avoid loading them one by one during submitchanges.
         /// this is called after ValidateBatchAndTransactions, because the BatchYear and BatchPeriod are validated and recalculated there
         /// </summary>
-        /// <param name="ADataSet"></param>
-        /// <param name="ALedgerNumber"></param>
-        private static void LoadGLMData(ref GLBatchTDS ADataSet, Int32 ALedgerNumber)
+        private static void LoadGLMData(ref GLPostingTDS ADataSet, Int32 ALedgerNumber, ABatchRow ABatchToPost)
         {
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             AGeneralLedgerMasterRow GLMTemplateRow = ADataSet.AGeneralLedgerMaster.NewRowTyped(false);
 
             GLMTemplateRow.LedgerNumber = ALedgerNumber;
-            GLMTemplateRow.Year = ADataSet.ABatch[0].BatchYear;
+            GLMTemplateRow.Year = ABatchToPost.BatchYear;
             AGeneralLedgerMasterAccess.LoadUsingTemplate(ADataSet, GLMTemplateRow, Transaction);
 
             string query = "SELECT PUB_a_general_ledger_master_period.* " +
@@ -211,16 +249,16 @@ namespace Ict.Petra.Server.MFinance.Common
             parameter.Value = ALedgerNumber;
             parameters.Add(parameter);
             parameter = new OdbcParameter("year", OdbcType.Int);
-            parameter.Value = ADataSet.ABatch[0].BatchYear;
+            parameter.Value = ABatchToPost.BatchYear;
             parameters.Add(parameter);
             parameter = new OdbcParameter("period", OdbcType.Int);
-            parameter.Value = ADataSet.ABatch[0].BatchPeriod;
+            parameter.Value = ABatchToPost.BatchPeriod;
             parameters.Add(parameter);
             DBAccess.GDBAccessObj.Select(ADataSet,
                 query,
                 ADataSet.AGeneralLedgerMasterPeriod.TableName, Transaction, parameters.ToArray());
 
-            if (IsMyOwnTransaction)
+            if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -230,24 +268,19 @@ namespace Ict.Petra.Server.MFinance.Common
         /// runs validations on batch, journals and transactions
         /// some things are even modified, eg. batch period etc from date effective
         /// </summary>
-        /// <param name="ADataSet"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns></returns>
         private static bool ValidateBatchAndTransactions(ref GLBatchTDS ADataSet,
+            GLPostingTDS APostingDS,
             Int32 ALedgerNumber,
-            Int32 ABatchNumber,
+            ABatchRow ABatchToPost,
             out TVerificationResultCollection AVerifications)
         {
             AVerifications = new TVerificationResultCollection();
-            ABatchRow Batch = ADataSet.ABatch[0];
 
-            if ((Batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED) || (Batch.BatchStatus == MFinanceConstants.BATCH_POSTED))
+            if ((ABatchToPost.BatchStatus == MFinanceConstants.BATCH_CANCELLED) || (ABatchToPost.BatchStatus == MFinanceConstants.BATCH_POSTED))
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It has status {0}"), Batch.BatchStatus),
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("It has status {0}"), ABatchToPost.BatchStatus),
                         TResultSeverity.Resv_Critical));
             }
 
@@ -255,56 +288,86 @@ namespace Ict.Petra.Server.MFinance.Common
             // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
 
             // Calculate the credit and debit totals
-            GLRoutines.UpdateTotalsOfBatch(ref ADataSet, Batch);
+            GLRoutines.UpdateTotalsOfBatch(ref ADataSet, ABatchToPost);
 
-            if (Convert.ToDecimal(Batch.BatchCreditTotal) != Convert.ToDecimal(Batch.BatchDebitTotal))
+            if (Convert.ToDecimal(ABatchToPost.BatchCreditTotal) != Convert.ToDecimal(ABatchToPost.BatchDebitTotal))
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It does not balance: Debit is {0:n2}, Credit is {1:n2}"), Batch.BatchDebitTotal,
-                            Batch.BatchCreditTotal),
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("It does not balance: Debit is {0:n2}, Credit is {1:n2}"), ABatchToPost.BatchDebitTotal,
+                            ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
-            else if (Batch.BatchCreditTotal == 0)
-            {
-//                AVerifications.Add(new TVerificationResult(
-//                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-//                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
-//                        TResultSeverity.Resv_Critical));
-            }
-            else if ((Batch.BatchControlTotal != 0) && (Convert.ToDecimal(Batch.BatchControlTotal) != Convert.ToDecimal(Batch.BatchCreditTotal)))
+            else if (ABatchToPost.BatchCreditTotal == 0)
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
+                        Catalog.GetString("It has no monetary value. Please cancel it or add meaningful transactions."),
+                        TResultSeverity.Resv_Critical));
+            }
+            else if ((ABatchToPost.BatchControlTotal != 0)
+                     && (Convert.ToDecimal(ABatchToPost.BatchControlTotal) != Convert.ToDecimal(ABatchToPost.BatchCreditTotal)))
+            {
+                AVerifications.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                         String.Format(Catalog.GetString("The control total {0:n2} does not fit the Credit/Debit Total {1:n2}."),
-                            Batch.BatchControlTotal,
-                            Batch.BatchCreditTotal),
+                            ABatchToPost.BatchControlTotal,
+                            ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
-            if (!TFinancialYear.IsValidPostingPeriod(Batch.LedgerNumber, Batch.DateEffective, out DateEffectivePeriodNumber,
+            bool NewTransaction = false;
+            //TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            if (!TFinancialYear.IsValidPostingPeriod(ABatchToPost.LedgerNumber, ABatchToPost.DateEffective, out DateEffectivePeriodNumber,
                     out DateEffectiveYearNumber,
                     Transaction))
             {
                 AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                         String.Format(Catalog.GetString("The Date Effective {0:d-MMM-yyyy} does not fit any open accounting period."),
-                            Batch.DateEffective),
+                            ABatchToPost.DateEffective),
                         TResultSeverity.Resv_Critical));
             }
             else
             {
                 // just make sure that the correct BatchPeriod is used
-                Batch.BatchPeriod = DateEffectivePeriodNumber;
-                Batch.BatchYear = DateEffectiveYearNumber;
+                ABatchToPost.BatchPeriod = DateEffectivePeriodNumber;
+                ABatchToPost.BatchYear = DateEffectiveYearNumber;
             }
 
-            if (IsMyOwnTransaction)
+            // check that all transactions are inside the same period as the GL date effective of the batch
+            DateTime PostingPeriodStartDate, PostingPeriodEndDate;
+            TFinancialYear.GetStartAndEndDateOfPeriod(ABatchToPost.LedgerNumber,
+                DateEffectivePeriodNumber,
+                out PostingPeriodStartDate,
+                out PostingPeriodEndDate,
+                Transaction);
+
+            foreach (ATransactionRow transRow in ADataSet.ATransaction.Rows)
+            {
+                if ((transRow.BatchNumber == ABatchToPost.BatchNumber)
+                    && (transRow.TransactionDate < PostingPeriodStartDate) || (transRow.TransactionDate > PostingPeriodEndDate))
+                {
+                    AVerifications.Add(new TVerificationResult(
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
+                            String.Format(
+                                "invalid transaction date for transaction {0} in Batch {1} Journal {2}: {3:d-MMM-yyyy} must be inside period {4} ({5:d-MMM-yyyy} till {6:d-MMM-yyyy})",
+                                transRow.TransactionNumber, transRow.BatchNumber, transRow.JournalNumber,
+                                transRow.TransactionDate,
+                                DateEffectivePeriodNumber,
+                                PostingPeriodStartDate,
+                                PostingPeriodEndDate),
+                            TResultSeverity.Resv_Critical));
+                }
+            }
+
+            if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -313,13 +376,13 @@ namespace Ict.Petra.Server.MFinance.Common
 
             foreach (AJournalRow journal in ADataSet.AJournal.Rows)
             {
-                journal.DateEffective = Batch.DateEffective;
-                journal.JournalPeriod = Batch.BatchPeriod;
+                journal.DateEffective = ABatchToPost.DateEffective;
+                journal.JournalPeriod = ABatchToPost.BatchPeriod;
 
                 if (Convert.ToDecimal(journal.JournalCreditTotal) != Convert.ToDecimal(journal.JournalDebitTotal))
                 {
                     AVerifications.Add(new TVerificationResult(
-                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                            String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                             String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:n2}, Credit is {2:n2}"),
                                 journal.JournalNumber,
                                 journal.JournalDebitTotal, journal.JournalCreditTotal),
@@ -338,7 +401,7 @@ namespace Ict.Petra.Server.MFinance.Common
                           && (journal.TransactionTypeCode == CommonAccountingTransactionTypesEnum.REVAL.ToString())))
                     {
                         // get the account that this transaction is writing to
-                        AAccountRow Account = (AAccountRow)ADataSet.AAccount.Rows.Find(new object[] { ALedgerNumber, transaction.AccountCode });
+                        AAccountRow Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, transaction.AccountCode });
 
                         if (Account == null)
                         {
@@ -349,7 +412,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency != Account.ForeignCurrencyCode))
                         {
                             AVerifications.Add(new TVerificationResult(
-                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                                     String.Format(Catalog.GetString(
                                             "Transaction {0} in Journal {1} with currency {2} does not fit the foreign currency {3} of account {4}."),
                                         transaction.TransactionNumber, transaction.JournalNumber, journal.TransactionCurrency,
@@ -362,7 +425,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     if ((transaction.AmountInBaseCurrency == 0) && (transaction.TransactionAmount != 0))
                     {
                         AVerifications.Add(new TVerificationResult(
-                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
                                 String.Format(Catalog.GetString("Transaction {0} in Journal {1} has invalid base transaction amount of 0."),
                                     transaction.TransactionNumber, transaction.JournalNumber),
                                 TResultSeverity.Resv_Critical));
@@ -370,30 +433,20 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// <summary>
         /// validate the attributes of the transactions
         /// some things are even modified, eg. batch period etc from date effective
         /// </summary>
-        /// <param name="ADataSet"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns></returns>
         private static bool ValidateAnalysisAttributes(ref GLBatchTDS ADataSet,
+            GLPostingTDS APostingDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
             AVerifications = new TVerificationResultCollection();
-            // fetch all the analysis tables
-
-            GLSetupTDS analysisDS = new GLSetupTDS();
-            AAnalysisTypeAccess.LoadAll(analysisDS, null);
-            AFreeformAnalysisAccess.LoadViaALedger(analysisDS, ALedgerNumber, null);
-            AAnalysisAttributeAccess.LoadViaALedger(analysisDS, ALedgerNumber, null);
 
             DataView TransactionsOfJournalView = new DataView(ADataSet.ATransaction);
 
@@ -407,7 +460,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         ATransactionRow trans = (ATransactionRow)transRowView.Row;
                         // 1. check that all atransanalattrib records are there for all analattributes entries
-                        DataView ANView = analysisDS.AAnalysisAttribute.DefaultView;
+                        DataView ANView = APostingDS.AAnalysisAttribute.DefaultView;
                         ANView.RowFilter = String.Format("{0} = '{1}' AND {2} = true",
                             AAnalysisAttributeTable.GetAccountCodeDBName(),
                             trans.AccountCode, AAnalysisAttributeTable.GetActiveDBName());
@@ -448,7 +501,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                 }
                                 else
                                 {
-                                    AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)analysisDS.AFreeformAnalysis.Rows.Find(
+                                    AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)APostingDS.AFreeformAnalysis.Rows.Find(
                                         new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
 
                                     if (afaRow == null)
@@ -482,7 +535,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            return !AVerifications.HasCriticalError();
+            return !AVerifications.HasCriticalErrors;
         }
 
         /// Helper class for storing the amounts of a batch at posting level for account/costcentre combinations
@@ -552,24 +605,39 @@ namespace Ict.Petra.Server.MFinance.Common
         /// mark each journal, each transaction as being posted;
         /// add sums for costcentre/account combinations
         /// </summary>
-        /// <param name="MainDS">only contains the batch to post, and its journals and transactions</param>
+        /// <param name="MainDS">can contain several batches and journals and transactions</param>
+        /// <param name="APostingDS"></param>
+        /// <param name="APostingLevel">the balance changes at the posting level</param>
+        /// <param name="ABatchToPost">the batch to post</param>
         /// <returns>a list with the sums for each costcentre/account combination</returns>
-        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(ref GLBatchTDS MainDS)
+        private static SortedList <string, TAmount>MarkAsPostedAndCollectData(GLBatchTDS MainDS,
+            GLPostingTDS APostingDS,
+            SortedList <string, TAmount>APostingLevel, ABatchRow ABatchToPost)
         {
-            SortedList <string, TAmount>PostingLevel = new SortedList <string, TAmount>();
-
             DataView myView = new DataView(MainDS.ATransaction);
+
             myView.Sort = ATransactionTable.GetJournalNumberDBName();
 
             foreach (AJournalRow journal in MainDS.AJournal.Rows)
             {
+                if (journal.BatchNumber != ABatchToPost.BatchNumber)
+                {
+                    continue;
+                }
+
                 foreach (DataRowView transactionview in myView.FindRows(journal.JournalNumber))
                 {
                     ATransactionRow transaction = (ATransactionRow)transactionview.Row;
+
+                    if (transaction.BatchNumber != ABatchToPost.BatchNumber)
+                    {
+                        continue;
+                    }
+
                     transaction.TransactionStatus = true;
 
                     // get the account that this transaction is writing to
-                    AAccountRow Account = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { transaction.LedgerNumber, transaction.AccountCode });
+                    AAccountRow Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { transaction.LedgerNumber, transaction.AccountCode });
 
                     // Set the sign of the amounts according to the debit/credit indicator
                     decimal SignBaseAmount = transaction.AmountInBaseCurrency;
@@ -586,26 +654,26 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     string key = TAmount.MakeKey(transaction.AccountCode, transaction.CostCentreCode);
 
-                    if (!PostingLevel.ContainsKey(key))
+                    if (!APostingLevel.ContainsKey(key))
                     {
-                        PostingLevel.Add(key, new TAmount());
+                        APostingLevel.Add(key, new TAmount());
                     }
 
-                    PostingLevel[key].baseAmount += SignBaseAmount;
+                    APostingLevel[key].baseAmount += SignBaseAmount;
 
                     // Only foreign currency accounts store a value in the transaction currency
                     if (Account.ForeignCurrencyFlag)
                     {
-                        PostingLevel[key].transAmount += SignTransAmount;
+                        APostingLevel[key].transAmount += SignTransAmount;
                     }
                 }
 
                 journal.JournalStatus = MFinanceConstants.BATCH_POSTED;
             }
 
-            MainDS.ABatch[0].BatchStatus = MFinanceConstants.BATCH_POSTED;
+            ABatchToPost.BatchStatus = MFinanceConstants.BATCH_POSTED;
 
-            return PostingLevel;
+            return APostingLevel;
         }
 
         /// <summary>
@@ -614,18 +682,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// excluding the base posting/posting combination, is the set of
         /// accounts that receive the summary data.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="APostingLevel"></param>
-        /// <param name="AAccountTree"></param>
-        /// <param name="ACostCentreTree"></param>
-        /// <param name="AMainDS"></param>
-        /// <returns></returns>
         private static bool CalculateTrees(
             Int32 ALedgerNumber,
             ref SortedList <string, TAmount>APostingLevel,
             out SortedList <string, TAccountTreeElement>AAccountTree,
             out SortedList <string, string>ACostCentreTree,
-            GLBatchTDS AMainDS)
+            GLPostingTDS APostingDS)
         {
             // get all accounts that each posting level account is directly or indirectly posting to
             AAccountTree = new SortedList <string, TAccountTreeElement>();
@@ -640,18 +702,18 @@ namespace Ict.Petra.Server.MFinance.Common
                     continue;
                 }
 
-                AAccountRow Account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
+                AAccountRow Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
                 bool DebitCreditIndicator = Account.DebitCreditIndicator;
                 AAccountTree.Add(TAccountTreeElement.MakeKey(AccountCode, AccountCode),
                     new TAccountTreeElement(false, Account.ForeignCurrencyFlag));
 
                 AAccountHierarchyDetailRow HierarchyDetail =
-                    (AAccountHierarchyDetailRow)AMainDS.AAccountHierarchyDetail.Rows.Find(
+                    (AAccountHierarchyDetailRow)APostingDS.AAccountHierarchyDetail.Rows.Find(
                         new object[] { ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, AccountCode });
 
                 while (HierarchyDetail != null)
                 {
-                    Account = (AAccountRow)AMainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, HierarchyDetail.AccountCodeToReportTo });
+                    Account = (AAccountRow)APostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, HierarchyDetail.AccountCodeToReportTo });
 
                     if (Account == null)
                     {
@@ -662,7 +724,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     AAccountTree.Add(TAccountTreeElement.MakeKey(AccountCode, HierarchyDetail.AccountCodeToReportTo),
                         new TAccountTreeElement(DebitCreditIndicator != Account.DebitCreditIndicator, Account.ForeignCurrencyFlag));
 
-                    HierarchyDetail = (AAccountHierarchyDetailRow)AMainDS.AAccountHierarchyDetail.Rows.Find(
+                    HierarchyDetail = (AAccountHierarchyDetailRow)APostingDS.AAccountHierarchyDetail.Rows.Find(
                         new object[] { ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, HierarchyDetail.AccountCodeToReportTo });
                 }
             }
@@ -682,14 +744,14 @@ namespace Ict.Petra.Server.MFinance.Common
                 ACostCentreTree.Add(CostCentreCode + ":" + CostCentreCode,
                     CostCentreCode + ":" + CostCentreCode);
 
-                ACostCentreRow CostCentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentreCode });
+                ACostCentreRow CostCentre = (ACostCentreRow)APostingDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentreCode });
 
                 while (!CostCentre.IsCostCentreToReportToNull())
                 {
                     ACostCentreTree.Add(CostCentreCode + ":" + CostCentre.CostCentreToReportTo,
                         CostCentreCode + ":" + CostCentre.CostCentreToReportTo);
 
-                    CostCentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentre.CostCentreToReportTo });
+                    CostCentre = (ACostCentreRow)APostingDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, CostCentre.CostCentreToReportTo });
                 }
             }
 
@@ -700,31 +762,25 @@ namespace Ict.Petra.Server.MFinance.Common
         /// for each posting level, propagate the value upwards through both the account and the cost centre hierarchy in glm master;
         /// also propagate the value from the posting period through the following periods;
         /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="APostingLevel"></param>
-        /// <param name="AAccountTree"></param>
-        /// <param name="ACostCentreTree"></param>
-        /// <returns></returns>
         private static bool SummarizeData(
-            ref GLBatchTDS AMainDS,
+            GLPostingTDS APostingDS,
+            Int32 AFromPeriod,
             ref SortedList <string, TAmount>APostingLevel,
             ref SortedList <string, TAccountTreeElement>AAccountTree,
             ref SortedList <string, string>ACostCentreTree)
         {
-            Int32 FromPeriod = AMainDS.ABatch[0].BatchPeriod;
-
-            if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
+            if (APostingDS.ALedger[0].ProvisionalYearEndFlag)
             {
                 // If the year end close is running, then we are posting the year end
                 // reallocations.  These appear as part of the final period, but
                 // should only be written to the forward periods.
                 // In year end, a_current_period_i = a_number_of_accounting_periods_i = a_batch_period_i.
-                FromPeriod++;
+                AFromPeriod++;
             }
 
-            DataView GLMMasterView = AMainDS.AGeneralLedgerMaster.DefaultView;
+            DataView GLMMasterView = APostingDS.AGeneralLedgerMaster.DefaultView;
             GLMMasterView.Sort = AGeneralLedgerMasterTable.GetAccountCodeDBName() + "," + AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
-            DataView GLMPeriodView = AMainDS.AGeneralLedgerMasterPeriod.DefaultView;
+            DataView GLMPeriodView = APostingDS.AGeneralLedgerMasterPeriod.DefaultView;
             GLMPeriodView.Sort = AGeneralLedgerMasterPeriodTable.GetGlmSequenceDBName() + "," + AGeneralLedgerMasterPeriodTable.GetPeriodNumberDBName();
 
             // Loop through the posting data collected earlier.  Summarize it to a
@@ -768,8 +824,8 @@ namespace Ict.Petra.Server.MFinance.Common
                                 if (GLMMasterIndex == -1)
                                 {
                                     CreateGLMYear(
-                                        ref AMainDS,
-                                        AMainDS.ALedger[0].LedgerNumber,
+                                        ref APostingDS,
+                                        APostingDS.ALedger[0].LedgerNumber,
                                         AccountCodeToReportTo,
                                         CostCentreCodeToReportTo);
 
@@ -792,14 +848,14 @@ namespace Ict.Petra.Server.MFinance.Common
                                     }
                                 }
 
-                                if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
+                                if (APostingDS.ALedger[0].ProvisionalYearEndFlag)
                                 {
                                     GlmRow.ClosingPeriodActualBase += SignBaseAmount;
                                 }
 
                                 // Add the period data from the posting level to the summary levels
-                                for (Int32 PeriodCount = FromPeriod;
-                                     PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
+                                for (Int32 PeriodCount = AFromPeriod;
+                                     PeriodCount <= APostingDS.ALedger[0].NumberOfAccountingPeriods + APostingDS.ALedger[0].NumberFwdPostingPeriods;
                                      PeriodCount++)
                                 {
                                     int GLMPeriodIndex = GLMPeriodView.Find(new object[] { GlmRow.GlmSequence, PeriodCount });
@@ -807,7 +863,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                                     if (GLMPeriodIndex == -1)
                                     {
-                                        GlmPeriodRow = AMainDS.AGeneralLedgerMasterPeriod.NewRowTyped();
+                                        GlmPeriodRow = APostingDS.AGeneralLedgerMasterPeriod.NewRowTyped();
                                         GlmPeriodRow.GlmSequence = GlmRow.GlmSequence;
                                         GlmPeriodRow.PeriodNumber = PeriodCount;
                                     }
@@ -843,24 +899,19 @@ namespace Ict.Petra.Server.MFinance.Common
         /// on the posting level propagate the value from the posting period through the following periods;
         /// in this version of SummarizeData, there is no calculation of summary accounts/cost centres, since that can be done by the reports
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AMainDS"></param>
-        /// <param name="APostingLevel"></param>
-        /// <returns></returns>
         private static bool SummarizeDataSimple(
             Int32 ALedgerNumber,
-            ref GLBatchTDS AMainDS,
+            GLPostingTDS AMainDS,
+            Int32 AFromPeriod,
             ref SortedList <string, TAmount>APostingLevel)
         {
-            Int32 FromPeriod = AMainDS.ABatch[0].BatchPeriod;
-
             if (AMainDS.ALedger[0].ProvisionalYearEndFlag)
             {
                 // If the year end close is running, then we are posting the year end
                 // reallocations.  These appear as part of the final period, but
                 // should only be written to the forward periods.
                 // In year end, a_current_period_i = a_number_of_accounting_periods_i = a_batch_period_i.
-                FromPeriod++;
+                AFromPeriod++;
             }
 
             DataView GLMMasterView = AMainDS.AGeneralLedgerMaster.DefaultView;
@@ -918,7 +969,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 } // Last use of GlmRow in this routine ...
 
                 // propagate the data through the following periods
-                for (Int32 PeriodCount = FromPeriod;
+                for (Int32 PeriodCount = AFromPeriod;
                      PeriodCount <= AMainDS.ALedger[0].NumberOfAccountingPeriods + AMainDS.ALedger[0].NumberFwdPostingPeriods;
                      PeriodCount++)
                 {
@@ -958,92 +1009,12 @@ namespace Ict.Petra.Server.MFinance.Common
             return true;
         }
 
-        /// <summary>
-        /// write all changes to the database; on failure the whole transaction is rolled back
-        /// </summary>
-        /// <param name="AMainDS"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns></returns>
-        private static bool SubmitChanges(GLBatchTDS AMainDS, out TVerificationResultCollection AVerifications)
-        {
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: SubmitChanges...");
-            }
-
-            GLBatchTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), out AVerifications);
-
-            if (AVerifications.HasCriticalError())
-            {
-                return false;
-            }
-
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Finished...");
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// prepare posting a GL Batch, without saving to database yet.
-        /// This is called by the actual PostGLBatch routine, but also by the routine for testing what would happen to the balances.
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber">Batch to post</param>
-        /// <param name="AVerifications"></param>
-        /// <param name="AMainDS">modified dataset, but not submitted to database yet</param>
-        /// <param name="ACalculatePostingTree">for testing a batch, we don't need to calculate the whole tree</param>
-        /// <returns></returns>
-        public static bool PostGLBatchInternal(Int32 ALedgerNumber,
-            Int32 ABatchNumber,
-            out TVerificationResultCollection AVerifications,
-            out GLBatchTDS AMainDS,
+        private static void SummarizeInternal(Int32 ALedgerNumber,
+            GLPostingTDS APostingDS,
+            SortedList <string, TAmount>APostingLevel,
+            Int32 AFromPeriod,
             bool ACalculatePostingTree)
         {
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: LoadData...");
-            }
-
-            // get the data from the database into the MainDS
-            if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
-            {
-                return false;
-            }
-
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Validation...");
-            }
-
-            // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
-            if (!ValidateBatchAndTransactions(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
-            {
-                return false;
-            }
-
-            if (!ValidateAnalysisAttributes(ref AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
-            {
-                return false;
-            }
-
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Load GLM Data...");
-            }
-
-            LoadGLMData(ref AMainDS, ALedgerNumber);
-
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Mark as posted and collect data...");
-            }
-
-            // post each journal, each transaction; add sums for costcentre/account combinations
-            SortedList <string, TAmount>PostingLevel = MarkAsPostedAndCollectData(ref AMainDS);
-
             // we need the tree, because of the cost centre tree, which is not calculated by the balance sheet and other reports.
             // for testing the balances, we don't need to calculate the whole tree
             if (ACalculatePostingTree)
@@ -1064,23 +1035,49 @@ namespace Ict.Petra.Server.MFinance.Common
                 // this was in Petra 2.x; takes a lot of time, which the reports could do better
                 // TODO: can we just calculate the cost centre tree, since that is needed for Balance Sheet,
                 // but avoid calculating the whole account tree?
-                CalculateTrees(ALedgerNumber, ref PostingLevel, out AccountTree, out CostCentreTree, AMainDS);
+                CalculateTrees(ALedgerNumber, ref APostingLevel, out AccountTree, out CostCentreTree, APostingDS);
 
                 if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
                 {
                     TLogging.Log("Posting: SummarizeData...");
                 }
 
-                SummarizeData(ref AMainDS, ref PostingLevel, ref AccountTree, ref CostCentreTree);
+                SummarizeData(APostingDS, AFromPeriod, ref APostingLevel, ref AccountTree, ref CostCentreTree);
             }
             else
             {
-                SummarizeDataSimple(ALedgerNumber, ref AMainDS, ref PostingLevel);
+                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+                {
+                    TLogging.Log("Posting: SummarizeDataSimple...");
+                }
+
+                SummarizeDataSimple(ALedgerNumber, APostingDS, AFromPeriod, ref APostingLevel);
+            }
+        }
+
+        /// <summary>
+        /// write all changes to the database; on failure the whole transaction is rolled back
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="AVerifications"></param>
+        /// <returns></returns>
+        private static bool SubmitChanges(GLPostingTDS AMainDS, out TVerificationResultCollection AVerifications)
+        {
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: SubmitChanges...");
+            }
+
+            GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true), out AVerifications);
+
+            if (AVerifications.HasCriticalErrors)
+            {
+                return false;
             }
 
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
-                TLogging.Log("Posting: SummarizeDataSimple...");
+                TLogging.Log("Posting: Finished...");
             }
 
             return true;
@@ -1094,17 +1091,151 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AVerifications"></param>
         public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
+            List <Int32>BatchNumbers = new List <int>();
+            BatchNumbers.Add(ABatchNumber);
+            return PostGLBatches(ALedgerNumber, BatchNumbers, out AVerifications);
+        }
+
+        /// <summary>
+        /// post several GL Batches at once
+        /// </summary>
+        public static bool PostGLBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
+        {
             // TODO: get a lock on this ledger, no one else is allowed to change anything.
 
-            GLBatchTDS MainDS;
+            GLPostingTDS PostingDS;
 
-            if (PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, true))
+            LoadDataForPosting(out PostingDS, ALedgerNumber);
+
+            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
+
+            Int32 BatchPeriod = -1;
+
+            foreach (Int32 BatchNumber in ABatchNumbers)
             {
-                bool result = SubmitChanges(MainDS, out AVerifications);
+                if (!PostGLBatchPrepare(ALedgerNumber, BatchNumber, out AVerifications, PostingDS, PostingLevel, ref BatchPeriod))
+                {
+                    return false;
+                }
+            }
 
-                // TODO: release the lock
+            SummarizeInternal(ALedgerNumber, PostingDS, PostingLevel, BatchPeriod, true);
 
-                return result;
+            PostingDS.ThrowAwayAfterSubmitChanges = true;
+
+            bool result = SubmitChanges(PostingDS, out AVerifications);
+
+            // TODO: release the lock
+
+            return result;
+        }
+
+        /// <summary>
+        /// only used for precalculating the new balances before the user actually posts the batch
+        /// </summary>
+        public static bool TestPostGLBatch(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications,
+            out GLPostingTDS APostingDS,
+            ref Int32 ABatchPeriod)
+        {
+            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
+
+            LoadDataForPosting(out APostingDS, ALedgerNumber);
+
+            if (PostGLBatchPrepare(ALedgerNumber, ABatchNumber, out AVerifications, APostingDS, PostingLevel, ref ABatchPeriod))
+            {
+                SummarizeInternal(ALedgerNumber, APostingDS, PostingLevel, ABatchPeriod, false);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// prepare posting a GL Batch, without saving to database yet.
+        /// This is called by the actual PostGLBatch routine, but also by the routine for testing what would happen to the balances.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber">Batch to post</param>
+        /// <param name="AVerifications"></param>
+        /// <param name="APostingDS">account, costcentre, hierarchy tables</param>
+        /// <param name="APostingLevel">collected new balances</param>
+        /// <param name="ABatchPeriod">make sure that all batches that are posted together, are from the same period</param>
+        /// <returns></returns>
+        private static bool PostGLBatchPrepare(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AVerifications,
+            GLPostingTDS APostingDS,
+            SortedList <string, TAmount>APostingLevel,
+            ref Int32 ABatchPeriod)
+        {
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: LoadData...");
+            }
+
+            // get the data from the database into the MainDS
+            GLBatchTDS BatchDS;
+
+            if (!LoadData(out BatchDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                return false;
+            }
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Validation...");
+            }
+
+            ABatchRow BatchToPost =
+                ((ABatchRow)BatchDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
+
+            if (ABatchPeriod == -1)
+            {
+                ABatchPeriod = BatchToPost.BatchPeriod;
+            }
+            else if (ABatchPeriod != BatchToPost.BatchPeriod)
+            {
+                AVerifications = new TVerificationResultCollection();
+                AVerifications.Add(new TVerificationResult(
+                        Catalog.GetString("Cannot post Batches from different periods at once!"),
+                        Catalog.GetString("Batches from more than one period."),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
+
+            // first validate Batch, and Transactions; check credit/debit totals; check currency, etc
+            if (!ValidateBatchAndTransactions(ref BatchDS, APostingDS, ALedgerNumber, BatchToPost, out AVerifications))
+            {
+                return false;
+            }
+
+            if (!ValidateAnalysisAttributes(ref BatchDS, APostingDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            {
+                return false;
+            }
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Load GLM Data...");
+            }
+
+            // TODO
+            LoadGLMData(ref APostingDS, ALedgerNumber, BatchToPost);
+
+            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
+            {
+                TLogging.Log("Posting: Mark as posted and collect data...");
+            }
+
+            // post each journal, each transaction; add sums for costcentre/account combinations
+            MarkAsPostedAndCollectData(BatchDS, APostingDS, APostingLevel, BatchToPost);
+
+            if (GLBatchTDSAccess.SubmitChanges(BatchDS, out AVerifications) == TSubmitChangesResult.scrOK)
+            {
+                // if posting goes wrong later, the transation will be rolled back
+                return true;
             }
 
             return false;
@@ -1122,8 +1253,6 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
-            AVerifications = new TVerificationResultCollection();
-
             // get the data from the database into the MainDS
             if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
@@ -1149,9 +1278,6 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Critical));
                 return false;
             }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
 
             return true;
         }
@@ -1187,6 +1313,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 MainDS.ALedger[0].LastBatchNumber++;
                 NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
                 NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
                 MainDS.ABatch.Rows.Add(NewRow);
 
                 if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)

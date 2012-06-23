@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,104 +25,40 @@ using System;
 using Ict.Common.IO;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using Ict.Common;
 
 namespace Ict.Tools.DBXML
 {
     /// <summary>
-    /// a list of tables
-    /// </summary>
-    public class TGrpTable : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="id">id of the group</param>
-        public TGrpTable(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// a group of columns in a table
-    /// </summary>
-    public class TGrpTableField : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="id">id for the group</param>
-        public TGrpTableField(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// a group of constraints
-    /// </summary>
-    public class TGrpConstraint : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="id">id of the group</param>
-        public TGrpConstraint(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// group of indexes
-    /// </summary>
-    public class TGrpIndex : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="id">id of the group</param>
-        public TGrpIndex(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
-    /// Group of columns that make up an index
-    /// </summary>
-    public class TGrpIndexField : TXMLGroup
-    {
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="id">id of the group</param>
-        public TGrpIndexField(int id) : base(id)
-        {
-        }
-    }
-
-    /// <summary>
     /// all information about the structure of a database table
     /// </summary>
-    public class TTable : TXMLElement
+    public class TTable
     {
         /// <summary>
         /// the columns of the table
         /// </summary>
-        public TGrpTableField grpTableField;
+        public List <TTableField>grpTableField;
 
         /// <summary>
         /// the indexes in the table
         /// </summary>
-        public TGrpIndex grpIndex;
+        public List <TIndex>grpIndex;
 
         /// <summary>
         /// the constraints (foreign, unique, primary) of the table
         /// </summary>
-        public TGrpConstraint grpConstraint;
+        public List <TConstraint>grpConstraint;
 
         /// <summary>
         /// the name of the table (as it is in the database)
         /// </summary>
         public string strName;
+
+        /// <summary>
+        /// order of the table
+        /// </summary>
+        public int iOrder;
 
         /// <summary>
         /// the name of the table as it should be used in dotnet
@@ -179,12 +115,12 @@ namespace Ict.Tools.DBXML
         /// <summary>
         /// constructor
         /// </summary>
-        public TTable() : base(-1)
+        public TTable()
         {
             FReferenced = new ArrayList();
-            grpTableField = new TGrpTableField(-1);
-            grpConstraint = new TGrpConstraint(-1);
-            grpIndex = new TGrpIndex(-1);
+            grpTableField = new List <TTableField>();
+            grpConstraint = new List <TConstraint>();
+            grpIndex = new List <TIndex>();
         }
 
         /// <summary>
@@ -194,22 +130,22 @@ namespace Ict.Tools.DBXML
         /// <param name="AOtherTable"></param>
         public void Assign(TTable AOtherTable)
         {
-            foreach (TTableField f in AOtherTable.grpTableField.List)
+            foreach (TTableField f in AOtherTable.grpTableField)
             {
-                this.grpTableField.List.Add(f);
+                this.grpTableField.Add(f);
             }
 
-            foreach (TIndex i in AOtherTable.grpIndex.List)
+            foreach (TIndex i in AOtherTable.grpIndex)
             {
-                this.grpIndex.List.Add(i);
+                this.grpIndex.Add(i);
             }
 
-            foreach (TConstraint c in AOtherTable.grpConstraint.List)
+            foreach (TConstraint c in AOtherTable.grpConstraint)
             {
-                this.grpConstraint.List.Add(c);
+                this.grpConstraint.Add(c);
             }
 
-            this.order = AOtherTable.order;
+            this.iOrder = AOtherTable.iOrder;
             this.strName = AOtherTable.strName;
             this.strDotNetName = AOtherTable.strDotNetName;
             this.strVariableNameInDataset = AOtherTable.strVariableNameInDataset;
@@ -345,7 +281,7 @@ namespace Ict.Tools.DBXML
 
             ReturnValue = null;
 
-            foreach (TTableField t in grpTableField.List)
+            foreach (TTableField t in grpTableField)
             {
                 if ((t.strName == s) || (t.strNameDotNet == s))
                 {
@@ -356,7 +292,7 @@ namespace Ict.Tools.DBXML
             if (ReturnValue == null)
             {
                 // should be disabled for creating the diff between two Petra versions.
-                if ((GEnabledLoggingMissingFields) && (s != "s_modification_id_c") && AShowWarningNonExistingField)
+                if ((GEnabledLoggingMissingFields) && (s != "s_modification_id_t") && AShowWarningNonExistingField)
                 {
                     System.Console.WriteLine("Warning: TTable.GetField: cannot find field " + strName + '.' + s);
                 }
@@ -374,7 +310,7 @@ namespace Ict.Tools.DBXML
         {
             Boolean same;
 
-            foreach (TConstraint c in grpConstraint.List)
+            foreach (TConstraint c in grpConstraint)
             {
                 same = true;
 
@@ -408,7 +344,7 @@ namespace Ict.Tools.DBXML
         /// <returns>true if the field is part of a key of the given type</returns>
         public Boolean IsKey(String AFieldname, String AKeyType)
         {
-            foreach (TConstraint c in grpConstraint.List)
+            foreach (TConstraint c in grpConstraint)
             {
                 if ((c.strType == AKeyType) && (c.strThisFields.Contains(AFieldname)))
                 {
@@ -425,7 +361,7 @@ namespace Ict.Tools.DBXML
         /// <returns>true if the table has a primary key constraint</returns>
         public bool HasPrimaryKey()
         {
-            foreach (TConstraint constr in grpConstraint.List)
+            foreach (TConstraint constr in grpConstraint)
             {
                 if (constr.strType == "primarykey")
                 {
@@ -442,7 +378,7 @@ namespace Ict.Tools.DBXML
         /// <returns>true if the table has a unique key constraint</returns>
         public bool HasUniqueKey()
         {
-            foreach (TConstraint constr in grpConstraint.List)
+            foreach (TConstraint constr in grpConstraint)
             {
                 if (constr.strType == "uniquekey")
                 {
@@ -459,7 +395,7 @@ namespace Ict.Tools.DBXML
         /// <returns>true if the table has at least one foreign key constraint</returns>
         public bool HasForeignKey()
         {
-            foreach (TConstraint constr in grpConstraint.List)
+            foreach (TConstraint constr in grpConstraint)
             {
                 if (constr.strType == "foreignkey")
                 {
@@ -476,7 +412,7 @@ namespace Ict.Tools.DBXML
         /// <returns>the primary key of the table</returns>
         public TConstraint GetPrimaryKey()
         {
-            foreach (TConstraint c in grpConstraint.List)
+            foreach (TConstraint c in grpConstraint)
             {
                 if (c.strType == "primarykey")
                 {
@@ -493,7 +429,7 @@ namespace Ict.Tools.DBXML
         /// <returns>the first unique key of the table</returns>
         public TConstraint GetFirstUniqueKey()
         {
-            foreach (TConstraint c in grpConstraint.List)
+            foreach (TConstraint c in grpConstraint)
             {
                 if (c.strType == "uniquekey")
                 {
@@ -531,9 +467,9 @@ namespace Ict.Tools.DBXML
             TIndex index;
             TIndexField indexfield;
 
-            grpConstraint.List.Sort(new ConstraintComparer());
+            grpConstraint.Sort(new ConstraintComparer());
 
-            foreach (TConstraint constr in grpConstraint.List)
+            foreach (TConstraint constr in grpConstraint)
             {
                 if (constr.strType == "foreignkey")
                 {
@@ -561,7 +497,7 @@ namespace Ict.Tools.DBXML
                         indexfield = new TIndexField();
                         indexfield.strName = s;
                         indexfield.strOrder = "ascending";
-                        index.grpIndexField.List.Add(indexfield);
+                        index.grpIndexField.Add(indexfield);
                     }
 
                     AddIndex(index);
@@ -588,7 +524,7 @@ namespace Ict.Tools.DBXML
                         indexfield = new TIndexField();
                         indexfield.strName = s;
                         indexfield.strOrder = "ascending";
-                        index.grpIndexField.List.Add(indexfield);
+                        index.grpIndexField.Add(indexfield);
                     }
 
                     AddIndex(index);
@@ -605,7 +541,7 @@ namespace Ict.Tools.DBXML
                         indexfield = new TIndexField();
                         indexfield.strName = s;
                         indexfield.strOrder = "ascending";
-                        index.grpIndexField.List.Add(indexfield);
+                        index.grpIndexField.Add(indexfield);
                     }
 
                     db.GetTable(constr.strOtherTable).AddIndex(index);
@@ -626,7 +562,7 @@ namespace Ict.Tools.DBXML
                         indexfield = new TIndexField();
                         indexfield.strName = s;
                         indexfield.strOrder = "ascending";
-                        index.grpIndexField.List.Add(indexfield);
+                        index.grpIndexField.Add(indexfield);
                     }
 
                     AddIndex(index);
@@ -659,8 +595,8 @@ namespace Ict.Tools.DBXML
 
                 // bNotNull: row required for historic data
                 field.bNotNull = false;
-                field.iOrder = grpTableField.List.Count;
-                grpTableField.List.Add(field);
+                field.iOrder = grpTableField.Count;
+                grpTableField.Add(field);
                 field = new TTableField();
                 field.strName = "s_created_by_c";
                 field.strTableName = this.strName;
@@ -676,8 +612,8 @@ namespace Ict.Tools.DBXML
                 field.ExistsStrLabel = true;
                 field.strInitialValue = "";
                 field.ExistsStrInitialValue = true;
-                field.iOrder = grpTableField.List.Count;
-                grpTableField.List.Add(field);
+                field.iOrder = grpTableField.Count;
+                grpTableField.Add(field);
 
                 if (this.strName != "s_user")
                 {
@@ -688,7 +624,7 @@ namespace Ict.Tools.DBXML
                     constr.strThisFields = StringHelper.StrSplit("s_created_by_c", ",");
                     constr.strOtherTable = "s_user";
                     constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
-                    grpConstraint.List.Add(constr);
+                    grpConstraint.Add(constr);
                 }
 
                 field = new TTableField();
@@ -702,8 +638,8 @@ namespace Ict.Tools.DBXML
                 // no default date, because when the record is created, the date modified should be NULL
                 field.strLabel = "Modified Date";
                 field.ExistsStrLabel = true;
-                field.iOrder = grpTableField.List.Count;
-                grpTableField.List.Add(field);
+                field.iOrder = grpTableField.Count;
+                grpTableField.Add(field);
                 field = new TTableField();
                 field.strName = "s_modified_by_c";
                 field.strTableName = this.strName;
@@ -717,8 +653,8 @@ namespace Ict.Tools.DBXML
                 field.ExistsStrLabel = true;
                 field.strInitialValue = "";
                 field.ExistsStrInitialValue = true;
-                field.iOrder = grpTableField.List.Count;
-                grpTableField.List.Add(field);
+                field.iOrder = grpTableField.Count;
+                grpTableField.Add(field);
 
                 if (this.strName != "s_user")
                 {
@@ -729,28 +665,25 @@ namespace Ict.Tools.DBXML
                     constr.strThisFields = StringHelper.StrSplit("s_modified_by_c", ",");
                     constr.strOtherTable = "s_user";
                     constr.strOtherFields = StringHelper.StrSplit("s_user_id_c", ",");
-                    grpConstraint.List.Add(constr);
+                    grpConstraint.Add(constr);
                 }
             }
 
             field = new TTableField();
-            field.strName = "s_modification_id_c";
+            field.strName = "s_modification_id_t";
             field.strTableName = this.strName;
-            field.strType = "varchar";
+            field.strType = "timestamp";
             field.strDescription = "This identifies the current version of the record.";
-            field.strFormat = "X(150)";
-            field.iLength = 150;
-            field.iCharLength = 150;
             field.bNotNull = false;
-            field.iOrder = grpTableField.List.Count;
-            grpTableField.List.Add(field);
+            field.iOrder = grpTableField.Count;
+            grpTableField.Add(field);
         }
 
         /** checks if all the fields of the index exist in the table
          */
         public Boolean TestIndex(TIndex AIndex)
         {
-            foreach (TIndexField indexfield in AIndex.grpIndexField.List)
+            foreach (TIndexField indexfield in AIndex.grpIndexField)
             {
                 if (GetField(indexfield.strName).strName != indexfield.strName)
                 {
@@ -767,7 +700,7 @@ namespace Ict.Tools.DBXML
          */
         public Boolean AddIndex(TIndex AIndex)
         {
-            foreach (TIndex i in grpIndex.List)
+            foreach (TIndex i in grpIndex)
             {
                 if (i.Similar(AIndex) == true)
                 {
@@ -782,7 +715,7 @@ namespace Ict.Tools.DBXML
             {
                 AIndex.bUnique = true;
 
-                foreach (TIndex i in grpIndex.List)
+                foreach (TIndex i in grpIndex)
                 {
                     if (i.Similar(AIndex) == true)
                     {
@@ -797,7 +730,7 @@ namespace Ict.Tools.DBXML
             }
 
             // We might still not want to add this index if an index already exists that just has other sorting orders
-            foreach (TIndex i in grpIndex.List)
+            foreach (TIndex i in grpIndex)
             {
                 if ((i.SimilarFields(AIndex, false) == true) && (i.bUnique == AIndex.bUnique))
                 {
@@ -813,7 +746,7 @@ namespace Ict.Tools.DBXML
                 return false;
             }
 
-            grpIndex.List.Add(AIndex);
+            grpIndex.Add(AIndex);
             return true;
         }
     }
@@ -826,14 +759,14 @@ namespace Ict.Tools.DBXML
     /// </summary>
     public class TTableSort
     {
-        private static TTable GetTableWithoutUnsatisfiedDependancies(ArrayList ASortedList, ArrayList AUnsortedTables)
+        private static TTable GetTableWithoutUnsatisfiedDependancies(List <TTable>ASortedList, List <TTable>AUnsortedTables)
         {
             foreach (TTable t in AUnsortedTables)
             {
                 bool unsatisfiedDependancy = false;
 
                 // find a table that has no dependancies on Tables that are still in ATables
-                foreach (TConstraint c in t.grpConstraint.List)
+                foreach (TConstraint c in t.grpConstraint)
                 {
                     if ((c.strType == "foreignkey") && (c.strOtherTable != t.strName))
                     {
@@ -856,7 +789,7 @@ namespace Ict.Tools.DBXML
             return null;
         }
 
-        private static Int32 GetTableIndex(ArrayList ATables, string ADBName)
+        private static Int32 GetTableIndex(List <TTable>ATables, string ADBName)
         {
             Int32 i = 0;
 
@@ -879,10 +812,10 @@ namespace Ict.Tools.DBXML
         /// <param name="AStore"></param>
         /// <param name="AOrigTables"></param>
         /// <returns></returns>
-        public static ArrayList TopologicalSort(TDataDefinitionStore AStore, ArrayList AOrigTables)
+        public static List <TTable>TopologicalSort(TDataDefinitionStore AStore, List <TTable>AOrigTables)
         {
-            ArrayList Result = new ArrayList();
-            ArrayList Tables = new ArrayList(AOrigTables);
+            List <TTable>Result = new List <TTable>();
+            List <TTable>Tables = new List <TTable>(AOrigTables);
 
             // manually put s_user first. it does depend on p_partner, but we are not using that at the moment
             Result.Add(Tables[GetTableIndex(Tables, "s_user")]);
@@ -915,7 +848,7 @@ namespace Ict.Tools.DBXML
     /// <summary>
     /// this describes a column of a table
     /// </summary>
-    public class TTableField : TXMLElement
+    public class TTableField
     {
         /// <summary>
         /// the name of the column
@@ -1068,7 +1001,7 @@ namespace Ict.Tools.DBXML
         /// <summary>
         /// constructor
         /// </summary>
-        public TTableField() : base(-1)
+        public TTableField()
         {
             strNameDotNet = "";
             strTypeDotNet = "";
@@ -1090,7 +1023,7 @@ namespace Ict.Tools.DBXML
         /// copy constructor
         /// </summary>
         /// <param name="t"></param>
-        public TTableField(TTableField t) : base(-1)
+        public TTableField(TTableField t)
         {
             strName = t.strName;
             strTableName = t.strTableName;
@@ -1184,6 +1117,10 @@ namespace Ict.Tools.DBXML
             {
                 return "DateTime";
             }
+            else if (strType.ToLower() == "timestamp")
+            {
+                return "DateTime";
+            }
             else if (strType.ToLower() == "string")
             {
                 return "String";
@@ -1198,7 +1135,7 @@ namespace Ict.Tools.DBXML
     /// <summary>
     /// constraints can be foreign keys or primary keys
     /// </summary>
-    public class TConstraint : TXMLElement
+    public class TConstraint
     {
         /// <summary>
         /// name of the constraint
@@ -1233,7 +1170,7 @@ namespace Ict.Tools.DBXML
         /// <summary>
         /// constructor
         /// </summary>
-        public TConstraint() : base(-1)
+        public TConstraint()
         {
             strThisFields = new StringCollection();
             strOtherFields = new StringCollection();
@@ -1243,7 +1180,7 @@ namespace Ict.Tools.DBXML
     /// <summary>
     /// data of an index
     /// </summary>
-    public class TIndex : TXMLElement
+    public class TIndex
     {
         /// <summary>
         /// name of the index
@@ -1276,7 +1213,7 @@ namespace Ict.Tools.DBXML
         /// <summary>
         /// the fields that are part of this index
         /// </summary>
-        public TGrpIndexField grpIndexField;
+        public List <TIndexField>grpIndexField;
 
         /// list of strings, names of similar indexes (not added)
         public ArrayList aliases;
@@ -1284,11 +1221,11 @@ namespace Ict.Tools.DBXML
         /// <summary>
         /// constructor
         /// </summary>
-        public TIndex() : base(-1)
+        public TIndex()
         {
             strArea = "";
             strDescr = "";
-            grpIndexField = new TGrpIndexField(-1);
+            grpIndexField = new List <TIndexField>();
             aliases = new ArrayList();
         }
 
@@ -1300,29 +1237,24 @@ namespace Ict.Tools.DBXML
         /// <returns>true if same fields are part of each index</returns>
         public bool SimilarFields(TIndex i, bool checkSortingOrder)
         {
-            bool ReturnValue;
-            Int32 c;
-
-            ReturnValue = true;
-
-            if (this.grpIndexField.List.Count != i.grpIndexField.List.Count)
+            if (this.grpIndexField.Count != i.grpIndexField.Count)
             {
-                ReturnValue = false;
+                return false;
             }
             else
             {
-                for (c = 0; c <= this.grpIndexField.List.Count - 1; c += 1)
+                for (Int32 c = 0; c <= this.grpIndexField.Count - 1; c += 1)
                 {
-                    if ((((TIndexField) this.grpIndexField.List[c]).strName != ((TIndexField)i.grpIndexField.List[c]).strName)
+                    if ((this.grpIndexField[c].strName != i.grpIndexField[c].strName)
                         || ((checkSortingOrder == true)
-                            && (((TIndexField) this.grpIndexField.List[c]).strOrder != ((TIndexField)i.grpIndexField.List[c]).strOrder)))
+                            && (this.grpIndexField[c].strOrder != i.grpIndexField[c].strOrder)))
                     {
-                        ReturnValue = false;
+                        return false;
                     }
                 }
             }
 
-            return ReturnValue;
+            return true;
         }
 
         /// <summary>
@@ -1332,20 +1264,16 @@ namespace Ict.Tools.DBXML
         /// <returns>true if same fields and uniqueness</returns>
         public bool Similar(TIndex i)
         {
-            bool ReturnValue;
-
-            ReturnValue = true;
-
             if (this.bUnique != i.bUnique)
             {
-                ReturnValue = false;
+                return false;
             }
             else if (!SimilarFields(i, true))
             {
-                ReturnValue = false;
+                return false;
             }
 
-            return ReturnValue;
+            return true;
         }
 
         private const Int32 MAX_INDEX_NAME_LEN = 32;
@@ -1361,11 +1289,7 @@ namespace Ict.Tools.DBXML
         /// <returns></returns>
         public static String MakeIndexName(String AKeyName, String AMsg, string APostfix)
         {
-            String ReturnValue;
-            Int32 RightLen;
-            Int32 Offset;
-
-            ReturnValue = "inx_" + AKeyName + APostfix;
+            String ReturnValue = "inx_" + AKeyName + APostfix;
 
             if ((ReturnValue.Length) > MAX_INDEX_NAME_LEN)
             {
@@ -1373,8 +1297,8 @@ namespace Ict.Tools.DBXML
                 // Console.Write('    Index name too long: ' + result + ', truncate to ');
                 // problem: index names are not unique across the whole database?
                 // this seems to be a problem for Postgresql: solution: use full length name, using constraint name
-                RightLen = MAX_INDEX_NAME_LEN - INDEX_PREFIX_LEN;
-                Offset = ReturnValue.Length - RightLen;
+                Int32 RightLen = MAX_INDEX_NAME_LEN - INDEX_PREFIX_LEN;
+                Int32 Offset = ReturnValue.Length - RightLen;
                 ReturnValue = "inx_" + ReturnValue.Substring(Offset);
             }
 
@@ -1398,7 +1322,7 @@ namespace Ict.Tools.DBXML
     /// <summary>
     /// data of an index
     /// </summary>
-    public class TIndexField : TXMLElement
+    public class TIndexField
     {
         /// <summary>
         /// name of the index
@@ -1409,19 +1333,12 @@ namespace Ict.Tools.DBXML
         /// ascending or descending order
         /// </summary>
         public String strOrder;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TIndexField() : base(-1)
-        {
-        }
     }
 
     /// <summary>
     /// all necessary data of a sequence
     /// </summary>
-    public class TSequence : TXMLElement
+    public class TSequence
     {
         /// <summary>
         /// name of the sequence
@@ -1462,13 +1379,6 @@ namespace Ict.Tools.DBXML
         /// increment by this integer each time
         /// </summary>
         public System.Int32 iIncrement;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TSequence() : base(-1)
-        {
-        }
     }
 
     /// <summary>
@@ -1478,16 +1388,16 @@ namespace Ict.Tools.DBXML
     /// </summary>
     public class TDataDefinitionStore
     {
-        private ArrayList tables;
-        private ArrayList sequences;
+        private List <TTable>tables;
+        private List <TSequence>sequences;
 
         /// <summary>
         /// constructor
         /// </summary>
         public TDataDefinitionStore() : base()
         {
-            tables = new ArrayList();
-            sequences = new ArrayList();
+            tables = new List <TTable>();
+            sequences = new List <TSequence>();
         }
 
         /// <summary>
@@ -1506,14 +1416,11 @@ namespace Ict.Tools.DBXML
         /// <returns>the table object</returns>
         public TTable GetTable(string tableName)
         {
-            TTable element;
-            int counter;
-
-            counter = 0;
+            int counter = 0;
 
             while (counter < tables.Count)
             {
-                element = (TTable)tables[counter];
+                TTable element = tables[counter];
 
                 if ((element.strName == tableName.Trim()) || (TTable.NiceTableName(element.strName) == tableName.Trim()))
                 {
@@ -1530,7 +1437,7 @@ namespace Ict.Tools.DBXML
         /// get the tables
         /// </summary>
         /// <returns></returns>
-        public ArrayList GetTables()
+        public List <TTable>GetTables()
         {
             return tables;
         }
@@ -1541,6 +1448,7 @@ namespace Ict.Tools.DBXML
         /// <param name="table"></param>
         public void AddTable(TTable table)
         {
+            table.iOrder = tables.Count;
             tables.Add(table);
         }
 
@@ -1548,7 +1456,7 @@ namespace Ict.Tools.DBXML
         /// get the sequences
         /// </summary>
         /// <returns></returns>
-        public ArrayList GetSequences()
+        public List <TSequence>GetSequences()
         {
             return sequences;
         }
@@ -1627,30 +1535,22 @@ namespace Ict.Tools.DBXML
     /// <summary>
     /// for comparing constraints for sorting and to test if they are the same
     /// </summary>
-    public class ConstraintComparer : System.Object, IComparer
+    public class ConstraintComparer : IComparer <TConstraint>
     {
         /** Calls CaseInsensitiveComparer.Compare with the parameters
          */
-        public System.Int32 Compare(System.Object x, System.Object y)
+        public System.Int32 Compare(TConstraint x, TConstraint y)
         {
-            System.Int32 ReturnValue;
-            String name1;
-            String name2;
-            StringCollection strCollection;
-            System.Int32 nr1;
-            System.Int32 nr2;
-
             // order: primarykey, uniquekey, foreignkey
-            ReturnValue = -1;
 
-            if (((TConstraint)x).strType == ((TConstraint)y).strType)
+            if (x.strType == y.strType)
             {
-                name1 = ((TConstraint)x).strName;
-                name2 = ((TConstraint)y).strName;
+                string name1 = x.strName;
+                string name2 = y.strName;
 
                 if (name1 == name2)
                 {
-                    ReturnValue = 0;
+                    return 0;
                 }
                 else if ((name1.IndexOf("_fk") != -1) && (name2.IndexOf("_fk") != -1))
                 {
@@ -1658,7 +1558,7 @@ namespace Ict.Tools.DBXML
                     {
                         // use the number of the foreign key to compare the keys
                         // _fk1_key
-                        strCollection = StringHelper.StrSplit(name1, "_");
+                        StringCollection strCollection = StringHelper.StrSplit(name1, "_");
 
                         if (strCollection[strCollection.Count - 1] == "key")
                         {
@@ -1669,7 +1569,7 @@ namespace Ict.Tools.DBXML
                             name1 = strCollection[strCollection.Count - 1];
                         }
 
-                        nr1 = Convert.ToInt32(name1.Substring(2));
+                        Int32 nr1 = Convert.ToInt32(name1.Substring(2));
                         strCollection = StringHelper.StrSplit(name2, "_");
 
                         if (strCollection[strCollection.Count - 1] == "key")
@@ -1681,47 +1581,47 @@ namespace Ict.Tools.DBXML
                             name2 = strCollection[strCollection.Count - 1];
                         }
 
-                        nr2 = Convert.ToInt32(name2.Substring(2));
+                        Int32 nr2 = Convert.ToInt32(name2.Substring(2));
 
                         if ((nr1 == -1) || (nr2 == -1) || (nr1 == nr2))
                         {
-                            ReturnValue = new CaseInsensitiveComparer().Compare(((TConstraint)x).strName, ((TConstraint)y).strName);
+                            return new CaseInsensitiveComparer().Compare(x.strName, y.strName);
                         }
                         else
                         {
-                            ReturnValue = nr1 - nr2;
+                            return nr1 - nr2;
                         }
                     }
                     catch (Exception)
                     {
                         // Console.WriteLine('One of these Constraint names is strange: ' + (x as TConstraint).strName + ' ' + (y as TConstraint).strName);
                         // is used for the fkcr and fkmd (created and modified foreign key)
-                        ReturnValue = new CaseInsensitiveComparer().Compare(((TConstraint)x).strName, ((TConstraint)y).strName);
+                        return new CaseInsensitiveComparer().Compare(x.strName, y.strName);
                     }
                 }
                 else
                 {
-                    ReturnValue = new CaseInsensitiveComparer().Compare(((TConstraint)x).strName, ((TConstraint)y).strName);
+                    return new CaseInsensitiveComparer().Compare(x.strName, y.strName);
                 }
             }
-            else if (((TConstraint)x).strType == "primarykey")
+            else if (x.strType == "primarykey")
             {
-                ReturnValue = -1;
+                return -1;
             }
-            else if (((TConstraint)y).strType == "primarykey")
+            else if (y.strType == "primarykey")
             {
-                ReturnValue = 1;
+                return 1;
             }
-            else if (((TConstraint)x).strType == "uniquekey")
+            else if (x.strType == "uniquekey")
             {
-                ReturnValue = -1;
+                return -1;
             }
-            else if (((TConstraint)y).strType == "uniquekey")
+            else if (y.strType == "uniquekey")
             {
-                ReturnValue = 1;
+                return 1;
             }
 
-            return ReturnValue;
+            return -1;
         }
     }
 }

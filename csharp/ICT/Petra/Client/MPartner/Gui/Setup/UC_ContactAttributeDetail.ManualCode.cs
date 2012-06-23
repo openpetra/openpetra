@@ -197,11 +197,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         }
 
         /// <summary>
+        /// Call this method from the parent page's GetDetailDataFromControlsManual method. This will trigger a call to this control's method below
+        /// </summary>
+        public void GetDetailsFromControls()
+        {
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        }
+
+        private void GetDetailDataFromControlsManual(PContactAttributeDetailRow ARow)
+        {
+        }
+
+        /// <summary>
         /// Call this method when the Contact Attribute changes in the Contact Attribute grid on the parent page
         /// </summary>
         /// <param name="NewValue">New value for the contact attribute</param>
         public void SetContactAttribute(string NewValue)
         {
+            // Save the current data
+            ValidateAllData(true, true);
+
             // Save the current contact attribute in our member variable
             _currentContactAttribute = NewValue;
 
@@ -218,10 +233,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 myDataView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
+                FCurrentRow = -1;
+
                 if (myDataView.Count > 0)
                 {
                     grdDetails.Selection.ResetSelection(false);
                     grdDetails.Selection.SelectRow(1, true);
+                    grdDetails.Selection.Focus(new SourceGrid.Position(1, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighed (overcome buggy behaviour of SourceGrid)
                     FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
                     pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
                 }

@@ -31,6 +31,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
@@ -64,8 +65,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //clbIncludePublication.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbIncludePublication.Columns.Clear();
             clbIncludePublication.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Code"), NewTable.Columns[ValueMember], 100);
-            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Description"), NewTable.Columns[DisplayMember], 200);
+            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Code"), NewTable.Columns[ValueMember], 150);
+            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Description"), NewTable.Columns[DisplayMember], 300);
             clbIncludePublication.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
 
             dtpDateOfSendingCopy.Date = DateTime.Now;

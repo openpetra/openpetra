@@ -2,7 +2,7 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
-    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.RecurringGiftBatchTDS
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: ARecurringGiftDetail
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: edit
@@ -78,12 +78,12 @@ RootNode:
         dtpEndDonations: {Label=To}
         chkDetailActive: {Label=Active Gift}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=3, Unbound=true, OnChange=DonorKeyChanged}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=2, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=3, OnChange=RecipientKeyChanged}
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=2, OnChange=RecipientKeyChanged}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}

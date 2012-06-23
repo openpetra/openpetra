@@ -124,7 +124,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     // PBankAccess.LoadViaPPartnerPartnerKey
                     // PBankAccess.LoadViaPPartnerContactPartnerKey
                     string DifferentField = CodeGenerationAccess.FindOtherConstraintSameOtherTable(
-                        OtherTable.grpConstraint.List,
+                        OtherTable.grpConstraint,
                         constraint);
                     string LoadViaProcedureName = TTable.NiceTableName(ACurrentTable.strName);
                     string MyOtherTableName = "My" + TTable.NiceTableName(constraint.strThisTable);

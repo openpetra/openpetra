@@ -91,8 +91,8 @@ namespace Ict.Petra.Server.MFinance.Common
             if (Apeo.JobSize == 0)
             {
                 // Non Critical Problem but the user shall be informed ...
-                String strTitle = Catalog.GetString("Peridic end routine hint");
-                String strMessage = Catalog.GetString("There is nothing to do for the module: [{0}]");
+                String strTitle = Catalog.GetString("Periodic end routine hint");
+                String strMessage = Catalog.GetString("There is nothing to be done for the module: [{0}]");
                 strMessage = String.Format(strMessage, AOperationName);
                 TVerificationResult tvt =
                     new TVerificationResult(strTitle, strMessage, "",
@@ -113,7 +113,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     String strTitle = Catalog.GetString("Problem occurs in module [{0}]");
                     strTitle = String.Format(strTitle, AOperationName);
                     String strMessage = Catalog.GetString(
-                        "The operation has heft {0} elements which are not transformed!");
+                        "The operation has left {0} elements which are not transformed!");
                     strMessage = String.Format(strMessage, newApeo.JobSize.ToString());
                     TVerificationResult tvt =
                         new TVerificationResult(strTitle, strMessage, "",
@@ -503,11 +503,6 @@ namespace Ict.Petra.Server.MFinance.Common
                         blnFound = true;
                     }
 
-                    if (accountingPeriodRow.EffectiveDate.Year == intActualYear)
-                    {
-                        blnFound = true;
-                    }
-
                     if (blnFound)
                     {
                         ++cnt;
@@ -529,23 +524,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     accountingPeriodRow = accountingPeriodTable[i];
 
-                    if (accountingPeriodRow.PeriodStartDate.Year == intActualYear)
-                    {
-                        accountingPeriodRow.PeriodStartDate =
-                            accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
-                    }
-
-                    if (accountingPeriodRow.PeriodEndDate.Year == intActualYear)
-                    {
-                        accountingPeriodRow.PeriodEndDate =
-                            accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
-                    }
-
-                    if (accountingPeriodRow.EffectiveDate.Year == intActualYear)
-                    {
-                        accountingPeriodRow.EffectiveDate =
-                            accountingPeriodRow.EffectiveDate.AddDays(1).AddYears(1).AddDays(-1);
-                    }
+                    accountingPeriodRow.PeriodStartDate =
+                        accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
+                    accountingPeriodRow.PeriodEndDate =
+                        accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
                 }
 
                 TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
@@ -571,8 +553,8 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TGlmNewYearInit : AbstractPeriodEndOperation
     {
-        GLBatchTDS glBatchFrom = null;
-        GLBatchTDS glBatchTo = null;
+        GLPostingTDS PostingFromDS = null;
+        GLPostingTDS PostingToDS = null;
         AGeneralLedgerMasterRow generalLedgerMasterRowFrom = null;
         AGeneralLedgerMasterRow generalLedgerMasterRowTo = null;
 
@@ -592,8 +574,8 @@ namespace Ict.Petra.Server.MFinance.Common
             intThisYear = AYear;
             intNextYear = intNextYear + 1;
             intLedgerNumber = ALedgerNumber;
-            glBatchFrom = LoadTable(ALedgerNumber, AYear);
-            glBatchTo = LoadTable(ALedgerNumber, ++AYear);
+            PostingFromDS = LoadTable(ALedgerNumber, AYear);
+            PostingToDS = LoadTable(ALedgerNumber, ++AYear);
         }
 
         /// <summary>
@@ -618,7 +600,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-        private GLBatchTDS LoadTable(int ALedgerNumber, int AYear)
+        private GLPostingTDS LoadTable(int ALedgerNumber, int AYear)
         {
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[2];
@@ -631,15 +613,15 @@ namespace Ict.Petra.Server.MFinance.Common
             strSQL += "WHERE " + AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " = ? ";
             strSQL += "AND " + AGeneralLedgerMasterTable.GetYearDBName() + " = ? ";
 
-            GLBatchTDS gLBatchTDS = new GLBatchTDS();
+            GLPostingTDS PostingDS = new GLPostingTDS();
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
             try
             {
-                DBAccess.GDBAccessObj.Select(gLBatchTDS,
+                DBAccess.GDBAccessObj.Select(PostingDS,
                     strSQL, AGeneralLedgerMasterTable.GetTableName(), transaction, ParametersArray);
                 DBAccess.GDBAccessObj.CommitTransaction();
-                return gLBatchTDS;
+                return PostingDS;
             }
             catch (Exception exception)
             {
@@ -657,18 +639,18 @@ namespace Ict.Petra.Server.MFinance.Common
 
             intEntryCount = 0;
 
-            if (glBatchFrom.AGeneralLedgerMaster.Rows.Count > 0)
+            if (PostingFromDS.AGeneralLedgerMaster.Rows.Count > 0)
             {
-                for (int i = 0; i < glBatchFrom.AGeneralLedgerMaster.Rows.Count; ++i)
+                for (int i = 0; i < PostingFromDS.AGeneralLedgerMaster.Rows.Count; ++i)
                 {
                     generalLedgerMasterRowFrom =
-                        (AGeneralLedgerMasterRow)glBatchFrom.AGeneralLedgerMaster[i];
+                        (AGeneralLedgerMasterRow)PostingFromDS.AGeneralLedgerMaster[i];
                     generalLedgerMasterRowTo = null;
 
-                    for (int j = 0; j < glBatchTo.AGeneralLedgerMaster.Rows.Count; ++j)
+                    for (int j = 0; j < PostingToDS.AGeneralLedgerMaster.Rows.Count; ++j)
                     {
                         generalLedgerMasterRowTo =
-                            (AGeneralLedgerMasterRow)glBatchTo.AGeneralLedgerMaster[j];
+                            (AGeneralLedgerMasterRow)PostingToDS.AGeneralLedgerMaster[j];
 
                         if ((generalLedgerMasterRowFrom.AccountCode == generalLedgerMasterRowTo.AccountCode)
                             && (generalLedgerMasterRowFrom.CostCentreCode == generalLedgerMasterRowTo.CostCentreCode))
@@ -686,10 +668,10 @@ namespace Ict.Petra.Server.MFinance.Common
                         if (!blnIsInInfoMode)
                         {
                             generalLedgerMasterRowTo =
-                                (AGeneralLedgerMasterRow)glBatchTo.AGeneralLedgerMaster.NewRowTyped(true);
+                                (AGeneralLedgerMasterRow)PostingToDS.AGeneralLedgerMaster.NewRowTyped(true);
                             generalLedgerMasterRowTo.GlmSequence = TempGLMSequence;
                             TempGLMSequence--;
-                            glBatchTo.AGeneralLedgerMaster.Rows.Add(generalLedgerMasterRowTo);
+                            PostingToDS.AGeneralLedgerMaster.Rows.Add(generalLedgerMasterRowTo);
                         }
 
                         ++intEntryCount;
@@ -709,7 +691,7 @@ namespace Ict.Petra.Server.MFinance.Common
             if (DoExecuteableCode)
             {
                 TSubmitChangesResult tSubmitChangesResult =
-                    GLBatchTDSAccess.SubmitChanges(glBatchTo, out verificationResults);
+                    GLPostingTDSAccess.SubmitChanges(PostingToDS, out verificationResults);
 
                 if (tSubmitChangesResult == TSubmitChangesResult.scrError)
                 {

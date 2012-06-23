@@ -61,7 +61,7 @@ RootNode:
             Label: Organisation
             DataField: PmPastExperience.OtherOrganisation
             Width: 200
-            ColSpan: 3
+            ColSpan: 2
         
         txtLocation:
             Label: Location
@@ -73,9 +73,11 @@ RootNode:
         dtpStartDate:
             Label: Start Date
             DataField: PmPastExperience.StartDate
+            Validation: true
         dtpEndDate:
             Label: End Date
             DataField: PmPastExperience.EndDate
+            Validation: Pair(dtpStartDate)
         
         txtComment:
             DataField: PmPastExperience.PastExpComments
@@ -83,4 +85,4 @@ RootNode:
             ScrollBars: Vertical
             Height: 110
             Width: 380
-            ColSpan: 3
+            ColSpan: 2

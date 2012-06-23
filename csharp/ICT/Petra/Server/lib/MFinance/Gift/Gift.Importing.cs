@@ -99,10 +99,18 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
-            FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            //Assume it is a new transaction
+            bool NewTransaction = true;
+
+            //TDBTransaction FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            //Set this to true to committ or rollback the calling transaction at this point
+            NewTransaction = true;
 
             AGiftBatchRow giftBatch = null;
             //AGiftRow gift = null;
+            decimal totalBatchAmount = 0;
             FImportMessage = Catalog.GetString("Parsing first line");
             Int32 RowNumber = 0;
             bool ok = false;
@@ -123,16 +131,43 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         if (RowType == "B")
                         {
-                            previousGift = null;
+                            //Check if
+                            if ((previousGift != null) && (giftBatch != null))
+                            {
+                                //New batch so set total amount of Batch for previous batch
+                                giftBatch.BatchTotal = totalBatchAmount;
+
+                                if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+                                {
+                                    if (NewTransaction)
+                                    {
+                                        DBAccess.GDBAccessObj.RollbackTransaction();
+                                    }
+
+                                    sr.Close();
+                                    return false;
+                                }
+
+                                FMainDS.AGiftBatch.AcceptChanges();
+                                previousGift = null;
+                            }
+
+                            totalBatchAmount = 0;
+
+                            string BatchDescription = ImportString(Catalog.GetString("batch description"));
+                            string BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
+                            decimal HashTotal = ImportDecimal(Catalog.GetString("hash total"));
+                            DateTime GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
+
                             giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref FMainDS,
                                 ref FTransaction,
                                 ref LedgerTable,
                                 FLedgerNumber,
-                                DateTime.Today);
-                            giftBatch.BatchDescription = ImportString(Catalog.GetString("batch description"));
-                            giftBatch.BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
-                            giftBatch.HashTotal = ImportDecimal(Catalog.GetString("hash total"));
-                            giftBatch.GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
+                                GlEffectiveDate);
+
+                            giftBatch.BatchDescription = BatchDescription;
+                            giftBatch.BankAccountCode = BankAccountCode;
+                            giftBatch.HashTotal = HashTotal;
                             giftBatch.CurrencyCode = ImportString(Catalog.GetString("currency code"));
                             giftBatch.ExchangeRateToBase = ImportDecimal(Catalog.GetString("exchange rate to base"));
                             giftBatch.BankCostCentre = ImportString(Catalog.GetString("bank cost centre"));
@@ -141,6 +176,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
                             {
+                                if (NewTransaction)
+                                {
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
+                                }
+
+                                sr.Close();
                                 return false;
                             }
 
@@ -148,7 +189,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                         else if (RowType == "T")
                         {
-                            int numberOfElements = FImportLine.Split(FDelimiter.ToCharArray()).Length;
+                            int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count;
+
                             //this is the format with extra columns
                             FExtraColumns = numberOfElements > 22;
 
@@ -216,8 +258,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 giftDetails.RecipientLedgerNumber = ImportInt32(Catalog.GetString("recipient ledger number"));
                             }
 
-                            giftDetails.GiftAmount = ImportDecimal(Catalog.GetString("Gift amount"));
-                            giftDetails.GiftTransactionAmount = giftDetails.GiftAmount;
+                            decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"));
+                            giftDetails.GiftAmount = currentGiftAmount;
+                            giftDetails.GiftTransactionAmount = currentGiftAmount;
+                            totalBatchAmount += currentGiftAmount;
                             // TODO: currency translation
 
                             if (FExtraColumns)
@@ -254,6 +298,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
                             {
+                                if (NewTransaction)
+                                {
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
+                                }
+
+                                sr.Close();
                                 return false;
                             }
 
@@ -262,12 +312,28 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (!AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out AMessages))
                             {
+                                if (NewTransaction)
+                                {
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
+                                }
+
+                                sr.Close();
                                 return false;
                             }
 
                             FMainDS.AGiftDetail.AcceptChanges();
                         }
+                        else
+                        {
+                            throw new Exception(Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"));
+                        }
                     }
+                }
+
+                //Update batch total for the last batch entered.
+                if (giftBatch != null)
+                {
+                    giftBatch.BatchTotal = totalBatchAmount;
                 }
 
                 FImportMessage = Catalog.GetString("Saving all data into the database");
@@ -282,37 +348,49 @@ namespace Ict.Petra.Server.MFinance.Gift
                         ok = true;
                     }
                 }
+
+                sr.Close();
             }
             catch (Exception ex)
             {
+                TLogging.Log(ex.ToString());
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
-
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
-                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                sr.Close();
                 return false;
             }
-            finally
-            {
-                try
-                {
-                    sr.Close();
-                }
-                catch
-                {
-                };
-            }
+//            finally  //Can't use return with Finally
+//            {
+//                try
+//                {
+//                    sr.Close();
+//                }
+//                catch
+//                {
+//                };
+//            }
 
-            if (ok)
+            if (ok && NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
             else
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         Catalog.GetString("Data could not be saved."),
                         TResultSeverity.Resv_Critical));
@@ -394,7 +472,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 return Catalog.GetString("Invalid cost centre");
             }
 
-            return ex.ToString();
+            return ex.Message;
         }
 
         private String ImportString(String message)
@@ -443,7 +521,17 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             FImportMessage = String.Format(Catalog.GetString("Parsing the {0}:"), message);
             String sDate = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
-            DateTime dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
+            DateTime dtReturn;
+
+            try
+            {
+                dtReturn = Convert.ToDateTime(sDate, FCultureInfoDate);
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Problem parsing " + sDate + " with format " + FCultureInfoDate.DateTimeFormat.ShortDatePattern);
+                throw;
+            }
             return dtReturn;
         }
     }

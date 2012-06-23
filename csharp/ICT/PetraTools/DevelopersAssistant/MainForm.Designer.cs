@@ -137,6 +137,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkAutoStopServer = new System.Windows.Forms.CheckBox();
             this.chkAutoStartServer = new System.Windows.Forms.CheckBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.ShutdownTimer = new System.Windows.Forms.Timer(this.components);
+            this.btnPreviewWinform = new System.Windows.Forms.Button();
+            this.btnAdvancedOptions = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.TaskPage.SuspendLayout();
             this.grpMultiple.SuspendLayout();
@@ -347,6 +350,7 @@ namespace Ict.Tools.DevelopersAssistant
             // grpSingle
             //
             this.grpSingle.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.grpSingle.Controls.Add(this.btnPreviewWinform);
             this.grpSingle.Controls.Add(this.chkStartClientAfterGenerateWinform);
             this.grpSingle.Controls.Add(this.chkCompileWinform);
             this.grpSingle.Controls.Add(this.btnCompilation);
@@ -865,6 +869,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // groupBox4
             //
+            this.groupBox4.Controls.Add(this.btnAdvancedOptions);
             this.groupBox4.Controls.Add(this.btnBrowseBazaar);
             this.groupBox4.Controls.Add(this.txtBazaarPath);
             this.groupBox4.Controls.Add(this.label17);
@@ -873,7 +878,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox4.Controls.Add(this.label13);
             this.groupBox4.Location = new System.Drawing.Point(21, 296);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(691, 108);
+            this.groupBox4.Size = new System.Drawing.Size(691, 124);
             this.groupBox4.TabIndex = 2;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Miscellaneous Options";
@@ -1094,6 +1099,33 @@ namespace Ict.Tools.DevelopersAssistant
                                            "dy running";
             this.chkAutoStartServer.UseVisualStyleBackColor = true;
             //
+            // ShutdownTimer
+            //
+            this.ShutdownTimer.Interval = 200;
+            this.ShutdownTimer.Tick += new System.EventHandler(this.ShutdownTimer_Tick);
+            //
+            // btnPreviewWinform
+            //
+            this.btnPreviewWinform.Location = new System.Drawing.Point(9, 142);
+            this.btnPreviewWinform.Name = "btnPreviewWinform";
+            this.btnPreviewWinform.Size = new System.Drawing.Size(58, 23);
+            this.btnPreviewWinform.TabIndex = 22;
+            this.btnPreviewWinform.Text = "Preview";
+            this.toolTip.SetToolTip(this.btnPreviewWinform, "Preview the Windows Form");
+            this.btnPreviewWinform.UseVisualStyleBackColor = true;
+            this.btnPreviewWinform.Click += new System.EventHandler(this.btnPreviewWinform_Click);
+            //
+            // btnAdvancedOptions
+            //
+            this.btnAdvancedOptions.Location = new System.Drawing.Point(29, 95);
+            this.btnAdvancedOptions.Name = "btnAdvancedOptions";
+            this.btnAdvancedOptions.Size = new System.Drawing.Size(75, 23);
+            this.btnAdvancedOptions.TabIndex = 6;
+            this.btnAdvancedOptions.Text = "Advanced";
+            this.toolTip.SetToolTip(this.btnAdvancedOptions, "Click to set more advanced options.");
+            this.btnAdvancedOptions.UseVisualStyleBackColor = true;
+            this.btnAdvancedOptions.Click += new System.EventHandler(this.btnAdvancedOptions_Click);
+            //
             // MainForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1215,5 +1247,8 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.CheckBox chkTreatWarningsAsErrors;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.Timer ShutdownTimer;
+        private System.Windows.Forms.Button btnPreviewWinform;
+        private System.Windows.Forms.Button btnAdvancedOptions;
     }
 }

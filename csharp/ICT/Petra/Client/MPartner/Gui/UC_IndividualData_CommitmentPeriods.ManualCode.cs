@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Formatting;
@@ -39,6 +40,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Person;
+using Ict.Petra.Shared.MPersonnel.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -107,6 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.Key = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_staff_data));
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
             ARow.ReceivingField = 0;
+            ARow.SetReceivingFieldOfficeNull();
             ARow.OfficeRecruitedBy = 0;
             ARow.HomeOffice = 0;
             ARow.StartOfCommitment = DateTime.Now.Date;
@@ -319,7 +322,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.DeleteRow(this, null);
             }
         }
+
+        private void GetDetailDataFromControlsManual(PmStaffDataRow ARow)
+        {
+            //TODO THis is a workaround, where is the input of ReceivingFieldOffice?
+            ARow.ReceivingFieldOffice = Convert.ToInt64(txtReceivingField.Text);
+        }
+
+        private void ValidateDataDetailsManual(PmStaffDataRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPersonnelValidation_Personnel.ValidateCommitmentManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+        }
     }
 }
-
-// TODO: 15-Jan-2012, vtn2@calvin.edu: need to add code to generate a unique key for each row.

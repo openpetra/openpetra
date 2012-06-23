@@ -30,6 +30,8 @@ using System.Drawing.Printing;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MPartner.Verification;
+using Ict.Petra.Shared.MPersonnel.Validation;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
@@ -168,94 +170,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             return rowIndex;
         }
 
-        /// <summary>
-        /// validate the data entered, so that the caller can cancel the current operation if data is missing
-        /// </summary>
-        /// <param name="ARow"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns>true if everything is fine</returns>
-        private bool ValidateDetailsManual(PmStaffDataRow ARow, out TVerificationResultCollection AVerifications)
+        private void ValidateDataDetailsManual(PmStaffDataRow ARow)
         {
-            AVerifications = new TVerificationResultCollection();
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            try
-            {
-                Int64 ReceivingField = Convert.ToInt64(txtDetailReceivingField.Text);
-
-                if (ReceivingField == 0)
-                {
-                    throw new Exception("invalid office 0");
-                }
-            }
-            catch (Exception)
-            {
-                AVerifications.Add(new TVerificationResult(Catalog.GetString("Receiving Field"),
-                        Catalog.GetString("You need to select the office that the person will join"),
-                        TResultSeverity.Resv_Critical));
-            }
-
-            try
-            {
-                if (!dtpDetailStartOfCommitment.Date.HasValue)
-                {
-                    throw new Exception();
-                }
-            }
-            catch (Exception)
-            {
-                AVerifications.Add(new TVerificationResult(Catalog.GetString("Start of Commitment"),
-                        Catalog.GetString("Please enter a valid start date"),
-                        TResultSeverity.Resv_Critical));
-            }
-
-            try
-            {
-                if (!dtpDetailEndOfCommitment.Date.HasValue)
-                {
-                    throw new Exception();
-                }
-            }
-            catch (Exception)
-            {
-                AVerifications.Add(new TVerificationResult(Catalog.GetString("End of Commitment"),
-                        Catalog.GetString("Please enter a valid end date"),
-                        TResultSeverity.Resv_Critical));
-            }
-
-            try
-            {
-                Int64 HomeOffice = Convert.ToInt64(txtDetailHomeOffice.Text);
-
-                if (HomeOffice == 0)
-                {
-                    throw new Exception("invalid office 0");
-                }
-            }
-            catch (Exception)
-            {
-                AVerifications.Add(new TVerificationResult(Catalog.GetString("Home office"),
-                        Catalog.GetString("You need to select the office that is sending the person"),
-                        TResultSeverity.Resv_Critical));
-            }
-
-            try
-            {
-                Int64 OfficeRecruitedBy = Convert.ToInt64(txtDetailOfficeRecruitedBy.Text);
-
-                if (OfficeRecruitedBy == 0)
-                {
-                    throw new Exception("invalid office 0");
-                }
-            }
-            catch (Exception)
-            {
-                AVerifications.Add(new TVerificationResult(Catalog.GetString("Recruiting Office"),
-                        Catalog.GetString("You need to select the office that has recruited the person"),
-                        TResultSeverity.Resv_Critical));
-            }
-
-
-            return !AVerifications.HasCriticalError();
+            TSharedPersonnelValidation_Personnel.ValidateCommitmentManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         private void GetDetailDataFromControlsManual(PmStaffDataRow ARow)

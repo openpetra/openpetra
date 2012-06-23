@@ -13,9 +13,9 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
         pnlGrid:
-            Width: 300
-            Height: 250
+            Dock: Fill
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
@@ -31,7 +31,9 @@ RootNode:
             Controls:
                 Row0: [cmbDetailAnalysisTypeCode]
                 Row1: [chkDetailActive]
-        cmbDetailAnalysisTypeCode: {List=AnalysisTypeList}
+        cmbDetailAnalysisTypeCode:
+            List:   AnalysisTypeList
+            OnChange: OnDetailAnalysisTypeCodeChange
         chkDetailActive: {Label=Active}
     Toolbar:
         tbbNew:

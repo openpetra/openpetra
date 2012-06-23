@@ -54,7 +54,7 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
     /// and which would be retrieved numerous times from the Server as UI windows
     /// are opened.
     /// </summary>
-    public class TCacheable : TCacheableTablesLoader
+    public partial class TCacheable : TCacheableTablesLoader
     {
         /// time when this object was instantiated
         private DateTime FStartTime;
@@ -87,6 +87,22 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
         }
 #endif
 
+#region ManualCode
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Wrapper for other GetCacheableTable method
+        /// </summary>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <returns>DataTable</returns>
+        public DataTable GetCacheableTable(TCacheableSysManTablesEnum ACacheableTable)
+        {
+            System.Type TmpType;
+            return GetCacheableTable(ACacheableTable, "", false, out TmpType);
+        }
+#endregion ManualCode
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
         /// rows of a specified table.
@@ -144,15 +160,15 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
 
                     switch(ACacheableTable)
                     {
-                        case TCacheableSysManTablesEnum.UserList:
-                        {
-                            DataTable TmpTable = SUserAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheableSysManTablesEnum.LanguageSpecificList:
                         {
                             DataTable TmpTable = SLanguageSpecificAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableSysManTablesEnum.UserList:
+                        {
+                            DataTable TmpTable = GetUserListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -205,6 +221,7 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableSysManTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering SysMan.SaveChangedStandardCacheableTable...");
@@ -221,20 +238,24 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
                 {
                     switch (ACacheableTable)
                     {
-                        case TCacheableSysManTablesEnum.UserList:
-                            if (SUserAccess.SubmitChanges((SUserTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                            break;
                         case TCacheableSysManTablesEnum.LanguageSpecificList:
-                            if (SLanguageSpecificAccess.SubmitChanges((SLanguageSpecificTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateLanguageSpecificList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateLanguageSpecificListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (SLanguageSpecificAccess.SubmitChanges((SLanguageSpecificTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
+
                         default:
 
                             throw new Exception(
@@ -263,18 +284,49 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
                 }
             }
 
-            /*
-            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
-            /// the next time something in the Client accesses it.
-             */
+            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            // the next time something in the Client accesses it.
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
             }
 
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+
             return SubmissionResult;
+        }
+
+#region Data Validation
+
+        partial void ValidateLanguageSpecificList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLanguageSpecificListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+#endregion Data Validation
+
+        private DataTable GetUserListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+			DataColumn LastAndFirstNameColumn;
+            DataTable TmpTable = SUserAccess.LoadAll(AReadTransaction);
+
+	        // add column to display a combination of last and first name
+	        LastAndFirstNameColumn = new DataColumn();
+	        LastAndFirstNameColumn.DataType = System.Type.GetType("System.String");
+	        LastAndFirstNameColumn.ColumnName = MSysManConstants.USER_LAST_AND_FIRST_NAME_COLUMNNAME;
+	        LastAndFirstNameColumn.Expression = string.Format("{0} + ' ' + {1}", SUserTable.GetFirstNameDBName(), SUserTable.GetLastNameDBName());
+	        TmpTable.Columns.Add(LastAndFirstNameColumn);
+            
+            return TmpTable;
+#endregion ManualCode
         }
     }
 }

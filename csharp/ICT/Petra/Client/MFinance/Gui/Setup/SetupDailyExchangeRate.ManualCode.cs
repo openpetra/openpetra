@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using System.Data;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
@@ -244,17 +245,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (CanClose())
                 {
-                    ModalFormReturnValue = Convert.ToDecimal(txtDetailRateOfExchange.Text);
+                    if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
+                    {
+                        ModalFormReturnValue = txtDetailRateOfExchange.NumberValueDecimal.Value;
+                    }
+
                     blnUseDateTimeDefault = false;
                     SaveChanges();
                     Close();
                 }
             }
-            else
-            {
-                blnUseDateTimeDefault = false;
-                Close();
-            }
+
+/*
+ *          else
+ *          {
+ *              blnUseDateTimeDefault = false;
+ *              Close();
+ *          }
+ */
         }
 
         /// <summary>

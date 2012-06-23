@@ -30,8 +30,8 @@ RootNode:
                 StatusCode: {Label=Commitment Status}
                 StartOfCommitment: {Label=Start Date, Type=DateTime}
                 EndOfCommitment: {Label=End Date, Type=DateTime}
-                ReceivingField: {Label=Receiving Field}
-                HomeOffice: {Label=Sending Field}
+                ReceivingField: {Label=Receiving Field, Type=PartnerKey}
+                HomeOffice: {Label=Sending Field, Type=PartnerKey}
             ActionFocusRow: FocusedRowChanged
             SortOrder: StatusCode ASC
             
@@ -52,23 +52,27 @@ RootNode:
             Type: PartnerKey
             PartnerClass: UNIT
             DataField: PmStaffData.ReceivingField
-        dtpStartDate: {Label=Commitment Start Date, DataField=PmStaffData.StartOfCommitment}
-        dtpEndDate: {Label=Commitment End Date, DataField=PmStaffData.EndOfCommitment}
+            Validation: true
+        dtpStartDate: {Label=Commitment Start Date, DataField=PmStaffData.StartOfCommitment, Validation=true}
+        dtpEndDate: {Label=Commitment End Date, DataField=PmStaffData.EndOfCommitment, Validation=Pair(dtpStartDate)}
         cmbCommitmentStatus:
             Label: Commitment Status
             DataField: PmStaffData.StatusCode
             List: CommitmentStatusList
             Width: 400
+            Validation: true
         txtSendingField:
             Label: Sending Field
             Type: PartnerKey
             PartnerClass: UNIT
             DataField: PmStaffData.HomeOffice
+            Validation: true
         txtRecruitingField:
             Label: Recruiting Field
             Type: PartnerKey
             PartnerClass: UNIT
             DataField: PmStaffData.OfficeRecruitedBy
+            Validation: true
         txtStaffDataComments:
             Label: Comments
             DataField: PmStaffData.StaffDataComments
@@ -76,6 +80,7 @@ RootNode:
             ScrollBars: Vertical
             Height: 50
             Width: 380
+            Validation: true
         txtJobTitle: {Label=Job Title, DataField=PmStaffData.JobTitle, Width=200}
 
         

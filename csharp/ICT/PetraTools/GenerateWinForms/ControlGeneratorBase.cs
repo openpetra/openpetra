@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -107,14 +107,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// </summary>
         /// <param name="ctrl"></param>
         /// <returns></returns>
-        public bool GenerateLabel(TControlDef ctrl)
+        public virtual bool GenerateLabel(TControlDef ctrl)
         {
             if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
             {
+                ctrl.hasLabel = false;
                 return false;
             }
 
-            return FGenerateLabel;
+            ctrl.hasLabel = FGenerateLabel;
+            return ctrl.hasLabel;
         }
 
         /// <summary>
@@ -177,6 +179,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// generate all code for the control
+        /// </summary>
+        public void GenerateControl(TFormWriter writer, TControlDef ctrl)
+        {
+            GenerateDeclaration(writer, ctrl);
+            ProcessChildren(writer, ctrl);
+            SetControlProperties(writer, ctrl);
+            OnChangeDataType(writer, ctrl.xmlNode, ctrl.controlName);
+            writer.InitialiseDataSource(ctrl.xmlNode, ctrl.controlName);
+            writer.ApplyDerivedFunctionality(this, ctrl.xmlNode);
+            AddChildren(writer, ctrl);
+        }
+
+        /// <summary>
         /// declaration and code creation in the designer file
         /// </summary>
         /// <param name="writer"></param>
@@ -197,6 +213,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// add the children to this control
+        /// </summary>
+        public virtual void AddChildren(TFormWriter writer, TControlDef ctrl)
+        {
+        }
+
+        /// <summary>
+        /// generate the children, and write the size of this control
+        /// </summary>
+        public virtual void ProcessChildren(TFormWriter writer, TControlDef ctrl)
+        {
+        }
+
+        /// <summary>
         /// how to assign a value to the control
         /// </summary>
         protected virtual string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
@@ -207,6 +237,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             return ctrl.controlName + ".Value = " + AFieldOrNull + ";";
+        }
+
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected virtual string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return AssignValue(ctrl, AFieldOrNull + ".ToString()", AFieldTypeDotNet);
         }
 
         /// <summary>
@@ -329,16 +367,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            writer.Template.AddToCodelet("CONTROLINITIALISATION",
-                "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
+            writer.SetControlProperty(ctrl, "Name", "\"" + ctrl.controlName + "\"");
 
             if (FLocation && !ctrl.HasAttribute("Dock"))
             {
                 writer.SetControlProperty(ctrl, "Location", "new System.Drawing.Point(2,2)");
             }
-
-            writer.SetControlProperty(ctrl, "Name", "\"" + ctrl.controlName + "\"");
-
 
             #region Aligning and stretching
 
@@ -565,7 +599,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (ctrl.GetAttribute("BorderStyle").ToLower() == "none")
                 {
-                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(0, 7, 0, 0)");
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(0, 5, 0, 0)");
                 }
             }
 
@@ -576,7 +610,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.HasAttribute("Margin"))
             {
-                writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(" + ctrl.GetAttribute("Margin") + ")");
+                string margin = ctrl.GetAttribute("Margin");
+
+                if (margin != "0")
+                {
+                    writer.SetControlProperty(ctrl, "Margin", "new System.Windows.Forms.Padding(" + margin + ")");
+                }
             }
 
             if (ctrl.HasAttribute("BackColor"))
@@ -584,7 +623,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.SetControlProperty(ctrl, "BackColor", ctrl.GetAttribute("BackColor"));
             }
 
-            if ((ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height")) && (ctrl.GetAttribute("GenerateWithOtherControls") != "yes"))
+            if (ctrl.HasAttribute("AutoScroll"))
+            {
+                writer.SetControlProperty(ctrl, "AutoScroll", ctrl.GetAttribute("AutoScroll"));
+            }
+
+            // needed so that ctrl.Height and ctrl.Width return correct values
+            ctrl.SetAttribute("DefaultWidth", FDefaultWidth.ToString());
+            ctrl.SetAttribute("DefaultHeight", FDefaultHeight.ToString());
+
+            if (ctrl.HasAttribute("Width") || ctrl.HasAttribute("Height"))
             {
                 if (!ctrl.HasAttribute("Width"))
                 {
@@ -593,15 +641,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (!ctrl.HasAttribute("Height"))
                 {
-                    if ((ctrl.GetAttribute("Dock") == "Left") || (ctrl.GetAttribute("Dock") == "Right"))
-                    {
-                        // this is useful for AP Payments, left dock list of suppliers
-                        writer.SetControlProperty(ctrl, "Width", ctrl.GetAttribute("Width"));
-                    }
-                    else
-                    {
-                        ctrl.SetAttribute("Height", FDefaultHeight.ToString());
-                    }
+                    ctrl.SetAttribute("Height", FDefaultHeight.ToString());
                 }
 
                 if (ctrl.HasAttribute("Width") && ctrl.HasAttribute("Height"))
@@ -610,26 +650,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
                 }
             }
-            else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() == "fill"))
+            else if (ctrl.GetAttribute("Dock").ToLower() == "fill")
             {
-                if ((ctrl.controlTypePrefix == "pnl") || (ctrl.controlTypePrefix == "grp")
-                    || ctrl.controlName.StartsWith("tableLayoutPanel"))
-                {
-                    // for Mono, no other size information required; AutoSize would make the elements too high
-                    // for Windows .Net, we need AutoSize, otherwise the controls have no size at all
-                    if (writer.CodeStorage.FTargetWinforms == "net")
-                    {
-                        writer.SetControlProperty(ctrl, "AutoSize", "true");
-                    }
-                }
-            }
-            else if (FAutoSize)
-            {
-                writer.SetControlProperty(ctrl, "AutoSize", "true");
-            }
-            else if (ctrl.HasAttribute("Dock") && (ctrl.GetAttribute("Dock").ToLower() != "fill"))
-            {
-                writer.SetControlProperty(ctrl, "AutoSize", "true");
+                // no size information for Dock Fill
             }
             else
             {
@@ -709,11 +732,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
                 }
 
-/*                for (string propertyName in FCodeStorage.GetFittingProperties(ctrl.GetAttribute("ActionOpenScreen")))
- *              {
- *                  ActionHandler += "    frm." + propertyName + " = F" + propertyName + ";" + Environment.NewLine;
- *              }
- */
+                /*                for (string propertyName in FCodeStorage.GetFittingProperties(ctrl.GetAttribute("ActionOpenScreen")))
+                 *              {
+                 *                  ActionHandler += "    frm." + propertyName + " = F" + propertyName + ";" + Environment.NewLine;
+                 *              }
+                 */
                 ActionHandler += "    frm.Show();" + Environment.NewLine;
                 ActionHandler += "}" + Environment.NewLine + Environment.NewLine;
 
@@ -769,6 +792,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TTableField field = TDataBinding.GetTableField(ctrl, dataField, out IsDetailNotMaster, true);
 
                 LinkControlDataField(writer, ctrl, field, IsDetailNotMaster);
+                DataFieldUndoCapability(writer, ctrl, field, IsDetailNotMaster);
             }
             else if (writer.CodeStorage.HasAttribute("MasterTable") || writer.CodeStorage.HasAttribute("DetailTable"))
             {
@@ -782,6 +806,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (field != null)
                     {
                         LinkControlDataField(writer, ctrl, field, IsDetailNotMaster);
+                        DataFieldUndoCapability(writer, ctrl, field, IsDetailNotMaster);
                     }
                 }
             }
@@ -790,6 +815,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
                     ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
+
+                writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
+                writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
             }
             else if (ctrl.HasAttribute("DynamicControlType"))
             {
@@ -823,50 +851,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            return writer.Template;
-        }
-
-        /// <summary>
-        /// this is useful for radiobuttons or checkboxes which have other controls that depend on them
-        /// </summary>
-        /// <param name="ctrl"></param>
-        protected void CheckForOtherControls(TControlDef ctrl)
-        {
-            XmlNode Controls = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
-
-            if (Controls != null)
+            if ((ctrl.HasAttribute("Validation"))
+                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
             {
-                StringCollection childControls = TYml2Xml.GetElements(Controls);
-
-                // this is a checkbox that enables another control or a group of controls
-                ctrl.SetAttribute("GenerateWithOtherControls", "yes");
-
-                if (childControls.Count == 1)
-                {
-                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
-                    ChildCtrl.parentName = ctrl.controlName;
-
-                    // use the label of the child control
-                    if (ChildCtrl.HasAttribute("Label"))
-                    {
-                        ctrl.Label = ChildCtrl.Label;
-                    }
-                }
-                else
-                {
-                    foreach (string child in childControls)
-                    {
-                        TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(child);
-
-                        if (ChildCtrl == null)
-                        {
-                            throw new Exception("cannot find control " + child + " which should belong to " + ctrl.controlName);
-                        }
-
-                        ChildCtrl.parentName = ctrl.controlName;
-                    }
-                }
+                AssignEventHandlerToControl(writer, ctrl, "Validated", "ControlValidatedHandler");
             }
+
+            return writer.Template;
         }
 
         /// <summary>
@@ -902,8 +893,33 @@ namespace Ict.Tools.CodeGeneration.Winforms
             writer.Template.AddToCodelet("SHOWDATA", showData);
         }
 
+        private void DataFieldUndoCapability(TFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
+        {
+            if (AField == null)
+            {
+                return;
+            }
+
+            string tablename = TTable.NiceTableName(AField.strTableName);
+            string fieldname = TTable.NiceFieldName(AField);
+            string TestForNullTable = "FMainDS." + tablename;
+
+            if ((tablename == writer.CodeStorage.GetAttribute("DetailTable")) || (tablename == writer.CodeStorage.GetAttribute("MasterTable")))
+            {
+                TestForNullTable = "";
+            }
+
+            string targetCodelet = "UNDODATA";
+
+            ProcessTemplate snippetShowData = GenerateUndoDataSnippetCode(ref tablename, ref fieldname, ref TestForNullTable, writer, ctrl, AField);
+
+            writer.Template.InsertSnippet(targetCodelet, snippetShowData);
+        }
+
         private void LinkControlDataField(TFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
         {
+            ProcessTemplate snippetValidationControlsDictAdd;
+
             if (AField == null)
             {
                 return;
@@ -927,27 +943,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 targetCodelet = "SHOWDETAILS";
             }
 
-            ProcessTemplate snippetShowData = writer.Template.GetSnippet("SHOWDATAFORCOLUMN");
-
-            if (AField.GetDotNetType().ToLower().Contains("string"))
-            {
-                snippetShowData.SetCodelet("SETVALUEORNULL", "{#SETCONTROLVALUE}");
-                snippetShowData.SetCodelet("SETROWVALUEORNULL", "{#SETROWVALUE}");
-            }
-            else
-            {
-                snippetShowData.InsertSnippet("SETVALUEORNULL", writer.Template.GetSnippet("SETVALUEORNULL"));
-                snippetShowData.InsertSnippet("SETROWVALUEORNULL", writer.Template.GetSnippet("SETROWVALUEORNULL"));
-            }
-
-            snippetShowData.SetCodelet("CANBENULL", !AField.bNotNull ? "yes" : "");
-            snippetShowData.SetCodelet("DETERMINECONTROLISNULL", this.GetControlValue(ctrl, null));
-            snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
-            snippetShowData.SetCodelet("ROW", RowName);
-            snippetShowData.SetCodelet("COLUMNNAME", fieldname);
-            snippetShowData.SetCodelet("SETNULLVALUE", this.AssignValue(ctrl, null, null));
-            snippetShowData.SetCodelet("SETCONTROLVALUE", this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()));
-            snippetShowData.InsertSnippet("SETROWVALUE", writer.Template.GetSnippet("SETROWVALUE"));
+            ProcessTemplate snippetShowData = GenerateShowDataSnippetCode(ref fieldname, ref RowName, ref TestForNullTable, writer, ctrl, AField);
 
             writer.Template.InsertSnippet(targetCodelet, snippetShowData);
 
@@ -957,7 +953,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 writer.Template.AddToCodelet(targetCodelet, ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = " +
                     "(" + RowName + ".RowState " + (FHasReadOnlyProperty ? "!=" : "==") + " DataRowState.Added);" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
-                    ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly" : "Enabled") + " = AReadOnly;" + Environment.NewLine);
+                    ctrl.controlName + "." + (FHasReadOnlyProperty ? "ReadOnly = " : "Enabled = !") + "AReadOnly;" + Environment.NewLine);
             }
 
             if (ctrl.GetAttribute("ReadOnly").ToLower() != "true")
@@ -999,9 +995,140 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "FPetraUtilsObject.SetStatusBarText(" + ctrl.controlName +
                     ", Catalog.GetString(\"" +
-                    helpText.Replace("\"", "\\\"") +  // properly escape double quotation marks
+                    helpText.Replace("\"", "\\\"") +                           // properly escape double quotation marks
                     "\"));" + Environment.NewLine);
             }
+
+            // Data Validation
+            if ((ctrl.HasAttribute("Validation"))
+                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
+            {
+                writer.FTemplate.SetCodelet("DATAVALIDATION", "TRUE");
+
+                string targetCodeletValidation = "ADDCONTROLTOVALIDATIONCONTROLSDICT";
+
+                if (!ctrl.GetAttribute("Validation").ToLower().StartsWith("pair("))
+                {
+                    snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADD");
+                }
+                else
+                {
+                    snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADDMULTI");
+
+                    string PairControlName = ctrl.GetAttribute("Validation").Substring(5, ctrl.GetAttribute("Validation").Length - 6);
+                    TControlDef SecondValidationControl = writer.CodeStorage.GetControl(PairControlName);
+
+                    if (SecondValidationControl != null)
+                    {
+                        snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL2", SecondValidationControl.controlName);
+
+                        if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(SecondValidationControl.Label)))
+                        {
+                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2",
+                                "Catalog.GetString(" + "\"" + SecondValidationControl.Label + "\")");
+                        }
+                        else
+                        {
+                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2", "\"" + SecondValidationControl.Label + "\"");
+                        }
+                    }
+                    else
+                    {
+                        throw new ApplicationException(
+                            "Pair Control for Validation '" + PairControlName + "' does not exist. Please specify a valid control!");
+                    }
+                }
+
+                snippetValidationControlsDictAdd.SetCodelet("COLUMNID",
+                    "FMainDS." + tablename + ".Columns[" + tablename + "Table.Column" + fieldname + "Id" + "]");
+                snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL", ctrl.controlName);
+
+                if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(ctrl.Label)))
+                {
+                    snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "Catalog.GetString(" + "\"" + ctrl.Label + "\")");
+                }
+                else
+                {
+                    snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "\"" + ctrl.Label + "\"");
+                }
+
+                writer.Template.InsertSnippet(targetCodeletValidation, snippetValidationControlsDictAdd);
+            }
+        }
+
+        /// <summary>
+        /// Generates code for the SHOWDATA Snippet.
+        /// </summary>
+        /// <param name="fieldname">Name of field</param>
+        /// <param name="RowName">Name of row</param>
+        /// <param name="TestForNullTable"></param>
+        /// <param name="writer">FormWriter instance.</param>
+        /// <param name="ctrl">TControlDef instance.</param>
+        /// <param name="AField">TTableField instance.</param>
+        /// <returns>A <see cref="ProcessTemplate"></see>.</returns>
+        ProcessTemplate GenerateShowDataSnippetCode(ref string fieldname,
+            ref string RowName,
+            ref string TestForNullTable,
+            TFormWriter writer,
+            TControlDef ctrl,
+            TTableField AField)
+        {
+            ProcessTemplate snippetShowData = writer.Template.GetSnippet("SHOWDATAFORCOLUMN");
+
+            if (AField.GetDotNetType().ToLower().Contains("string"))
+            {
+                snippetShowData.SetCodelet("SETVALUEORNULL", "{#SETCONTROLVALUE}");
+                snippetShowData.SetCodelet("SETROWVALUEORNULL", "{#SETROWVALUE}");
+            }
+            else
+            {
+                snippetShowData.InsertSnippet("SETVALUEORNULL", writer.Template.GetSnippet("SETVALUEORNULL"));
+                snippetShowData.InsertSnippet("SETROWVALUEORNULL", writer.Template.GetSnippet("SETROWVALUEORNULL"));
+            }
+
+            snippetShowData.SetCodelet("CANBENULL", !AField.bNotNull ? "yes" : "");
+            snippetShowData.SetCodelet("DETERMINECONTROLISNULL", this.GetControlValue(ctrl, null));
+            snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
+            snippetShowData.SetCodelet("ROW", RowName);
+            snippetShowData.SetCodelet("COLUMNNAME", fieldname);
+            snippetShowData.SetCodelet("SETNULLVALUE", this.AssignValue(ctrl, null, null));
+            snippetShowData.SetCodelet("SETCONTROLVALUE", this.AssignValue(ctrl, RowName + "." + fieldname, AField.GetDotNetType()));
+            snippetShowData.InsertSnippet("SETROWVALUE", writer.Template.GetSnippet("SETROWVALUE"));
+
+            return snippetShowData;
+        }
+
+        /// <summary>
+        /// Generates code for the UNDODATA Snippet.
+        /// </summary>
+        /// <param name="tablename">Name of table</param>
+        /// <param name="fieldname">Name of field</param>
+        /// <param name="TestForNullTable"></param>
+        /// <param name="writer">FormWriter instance.</param>
+        /// <param name="ctrl">TControlDef instance.</param>
+        /// <param name="AField">TTableField instance.</param>
+        /// <returns>A <see cref="ProcessTemplate"></see>.</returns>
+        ProcessTemplate GenerateUndoDataSnippetCode(ref string tablename,
+            ref string fieldname,
+            ref string TestForNullTable,
+            TFormWriter writer,
+            TControlDef ctrl,
+            TTableField AField)
+        {
+            ProcessTemplate snippetShowData = writer.Template.GetSnippet("UNDODATAFORCOLUMN");
+
+            snippetShowData.SetCodelet("NOTDEFAULTTABLE", TestForNullTable);
+
+            snippetShowData.SetCodelet("UNDOCONTROLVALUE",
+                this.UndoValue(ctrl, "ARow[FMainDS." + tablename + ".Columns[(short)FMainDS." + tablename + ".GetType().GetField(\"Column" +
+                    fieldname +
+                    "Id\", BindingFlags.Public | BindingFlags.Static).GetValue(FMainDS." + tablename + ".GetType())], DataRowVersion.Original]",
+                    AField.GetDotNetType()));
+            snippetShowData.InsertSnippet("UNDOROWVALUE", writer.Template.GetSnippet("UNDOROWVALUE"));
+
+            snippetShowData.SetCodelet("CONTROLNAME", ctrl.controlName);
+
+            return snippetShowData;
         }
 
         /// <summary>
@@ -1047,24 +1174,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 writer.Template.AddToCodelet("CONTROLINITIALISATION",
                     "this." + controlName + ".Leave += new EventHandler(this." + StringHelper.UpperCamelCase(controlName,
-                        ",",
+                        ',',
                         false,
                         false) + "_SelectionChangeCommitted);" + Environment.NewLine +
                     "this." + controlName + ".SelectionChangeCommitted += new EventHandler(this." +
-                    StringHelper.UpperCamelCase(controlName, ",", false, false) + "_SelectionChangeCommitted);" + Environment.NewLine);
+                    StringHelper.UpperCamelCase(controlName, ',', false, false) + "_SelectionChangeCommitted);" + Environment.NewLine);
                 writer.CodeStorage.FEventHandlersImplementation +=
                     "private void " +
-                    StringHelper.UpperCamelCase(controlName, ",", false,
+                    StringHelper.UpperCamelCase(controlName, ',', false,
                         false) + "_SelectionChangeCommitted(System.Object sender, System.EventArgs e)" + Environment.NewLine +
                     "{" + Environment.NewLine +
                     "  " +
-                    StringHelper.UpperCamelCase(controlName, ",", false,
+                    StringHelper.UpperCamelCase(controlName, ',', false,
                         false) + "_Initialise(" + controlName + ".GetSelected" + TYml2Xml.GetAttribute(
                         curNode,
                         "OnChangeDataType") + "());" + Environment.NewLine +
                     "}" + Environment.NewLine + Environment.NewLine;
                 writer.CodeStorage.FEventHandlersImplementation +=
-                    "private void " + StringHelper.UpperCamelCase(controlName, ",", false, false) + "_Initialise(" + TYml2Xml.GetAttribute(curNode,
+                    "private void " + StringHelper.UpperCamelCase(controlName, ',', false, false) + "_Initialise(" + TYml2Xml.GetAttribute(curNode,
                         "OnChangeDataType") + " AParam)" + Environment.NewLine +
                     "{" + Environment.NewLine +
                     "  Int32 Index;" + Environment.NewLine +
@@ -1087,287 +1214,96 @@ namespace Ict.Tools.CodeGeneration.Winforms
     }
 
     /// <summary>
-    /// Providers are not added to any control; they don't have a name, size of position
+    /// this is used for checkboxes and radio button which have other controls dependant on them
     /// </summary>
-    public class ProviderGenerator : TControlGenerator
+    public class TControlWithDependantControlsGenerator : TControlGenerator
     {
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="APrefix"></param>
-        /// <param name="AType"></param>
-        public ProviderGenerator(string APrefix, System.Type AType)
-            : base(APrefix, AType)
-        {
-            FLocation = false;
-            FGenerateLabel = false;
-            FAddControlToContainer = false;
-        }
-
-        /// <summary>write the code for the designer file where the properties of the control are written</summary>
-        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
-        {
-            // don't call base, because it should not have size, location, or name
-            writer.Template.AddToCodelet("CONTROLINITIALISATION",
-                "//" + Environment.NewLine + "// " + ctrl.controlName + Environment.NewLine + "//" + Environment.NewLine);
-
-            return writer.FTemplate;
-        }
-    }
-
-    /// <summary>
-    /// base class for generators for container controls
-    /// </summary>
-    public class ContainerGenerator : TControlGenerator
-    {
-        List <TControlDef>FChildren = new List <TControlDef>();
-        bool FCreateControlsAddStatements = true;
-
-        /// <summary>
-        /// the children of this container, ie. controls that live in this container
-        /// </summary>
-        public List <TControlDef>Children
-        {
-            get
-            {
-                return FChildren;
-            }
-        }
-
-        /// <summary>
-        /// code for creating the controls and adding them to the container
-        /// </summary>
-        public bool CreateControlsAddStatements
-        {
-            get
-            {
-                return FCreateControlsAddStatements;
-            }
-
-            set
-            {
-                FCreateControlsAddStatements = value;
-            }
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="prefix"></param>
-        /// <param name="type"></param>
-        public ContainerGenerator(string prefix, System.Type type)
-            : base(prefix, type)
-        {
-        }
-
-        /// constructor
-        public ContainerGenerator(string prefix, System.String type)
-            : base(prefix, type)
+        public TControlWithDependantControlsGenerator(string APrefix, Type AControlType)
+            : base(APrefix, AControlType)
         {
         }
 
         /// <summary>
-        /// declaring the container control
+        /// generate the children, and write the size of this control
         /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="ctrl"></param>
-        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
         {
-            base.GenerateDeclaration(writer, ctrl);
-            writer.AddContainer(ctrl.controlName);
-        }
+            XmlNode Controls = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
 
-        /// <summary>write the code for the designer file where the properties of the control are written</summary>
-        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
-        {
-            FChildren = new List <TControlDef>();
-
-            // add all the children
-            foreach (TControlDef child in container.FCodeStorage.FSortedControlList.Values)
+            if (Controls != null)
             {
-                if (child.parentName == container.controlName)
+                StringCollection childControls = TYml2Xml.GetElements(Controls);
+
+                // this is a checkbox that enables another control or a group of controls
+                ctrl.SetAttribute("GenerateWithOtherControls", "yes");
+
+                if (childControls.Count == 1)
                 {
-                    FChildren.Add(child);
-                }
-            }
+                    TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(childControls[0]);
+                    ChildCtrl.parentName = ctrl.controlName;
+                    ctrl.Children.Add(ChildCtrl);
 
-            FChildren.Sort(new CtrlItemOrderComparer());
+                    ChildCtrl.SetAttribute("DependsOnRadioButton", "true");
 
-            base.SetControlProperties(writer, container);
-
-            if (FCreateControlsAddStatements)
-            {
-                foreach (TControlDef child in FChildren)
-                {
-                    writer.CallControlFunction(container.controlName,
-                        "Controls.Add(this." +
-                        child.controlName + ")");
-                }
-            }
-
-            return writer.FTemplate;
-        }
-    }
-
-    /// <summary>
-    /// generator for the toolstrip
-    /// </summary>
-    public class ToolStripGenerator : TControlGenerator
-    {
-        /// <summary>
-        /// where to dock
-        /// </summary>
-        public string FDocking = "Top";
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="prefix"></param>
-        /// <param name="AType"></param>
-        public ToolStripGenerator(string prefix, System.Type AType)
-            : base(prefix, AType)
-        {
-            FGenerateLabel = false;
-            FLocation = false;
-            FDefaultHeight = 24;
-            FDefaultWidth = 10;
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="prefix"></param>
-        /// <param name="AType"></param>
-        public ToolStripGenerator(string prefix, string AType)
-            : base(prefix, AType)
-        {
-            FGenerateLabel = false;
-            FLocation = false;
-            FDefaultHeight = 24;
-            FDefaultWidth = 10;
-        }
-
-        /// <summary>
-        /// declare the control
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="ctrl"></param>
-        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
-        {
-            base.GenerateDeclaration(writer, ctrl);
-            writer.AddContainer(ctrl.controlName);
-        }
-
-        /// <summary>
-        /// get the controls that belong to the toolstrip
-        /// </summary>
-        /// <param name="writer"></param>
-        /// <param name="container"></param>
-        /// <returns></returns>
-        public static string GetListOfChildren(TFormWriter writer, TControlDef container)
-        {
-            // add all the children
-            string addChildren = "";
-
-            // TODO add Container elements in statusbar
-            if (container.controlName.StartsWith("stb"))
-            {
-                return addChildren;
-            }
-
-            List <XmlNode>childrenlist;
-
-            if (TYml2Xml.GetChild(container.xmlNode, "Controls") != null)
-            {
-                // this is for generated toolbar, eg. for the PrintPreviewControl
-                StringCollection childrenNames = TYml2Xml.GetElements(container.xmlNode, "Controls");
-                childrenlist = new List <XmlNode>();
-
-                foreach (string name in childrenNames)
-                {
-                    childrenlist.Add(container.xmlNode.OwnerDocument.CreateElement(name));
-                }
-            }
-            else
-            {
-                // usually, the toolbar buttons are direct children of the toolbar control
-                childrenlist = TYml2Xml.GetChildren(container.xmlNode, true);
-            }
-
-            //Console.WriteLine("Container: " + container.controlName);
-            foreach (XmlNode child in childrenlist)
-            {
-                // Console.WriteLine("Child: " + child.Name);
-                if (addChildren.Length > 0)
-                {
-                    addChildren += "," + Environment.NewLine + "            ";
-                }
-
-                /* Get unique name if we need it
-                 * at the moment we need it only for menu separators
-                 */
-                String UniqueChildName = child.Name;
-                TControlDef ControlDefChild = container.FCodeStorage.GetControl(child.Name);
-
-                if (ControlDefChild == null)
-                {
-                    UniqueChildName = TYml2Xml.GetAttribute(child, "UniqueName");
-                    ControlDefChild = container.FCodeStorage.GetControl(UniqueChildName);
-                }
-
-                addChildren = addChildren + UniqueChildName;                 //child.Name; //controlName;
-
-                if (ControlDefChild != null)
-                {
-                    IControlGenerator ctrlGenerator = writer.FindControlGenerator(ControlDefChild);
-
-                    // add control itself
-                    if (ctrlGenerator != null)
+                    // use the label of the child control
+                    if (ChildCtrl.HasAttribute("Label"))
                     {
-                        ctrlGenerator.GenerateDeclaration(writer, ControlDefChild);
-                        ctrlGenerator.SetControlProperties(writer, ControlDefChild);
+                        ctrl.Label = ChildCtrl.Label;
+                    }
+                }
+                else
+                {
+                    foreach (string child in childControls)
+                    {
+                        TControlDef ChildCtrl = ctrl.FCodeStorage.GetControl(child);
+
+                        if (ChildCtrl == null)
+                        {
+                            throw new Exception("cannot find control " + child + " which should belong to " + ctrl.controlName);
+                        }
+
+                        ChildCtrl.parentName = ctrl.controlName;
+                        ctrl.Children.Add(ChildCtrl);
+
+                        ChildCtrl.SetAttribute("DependsOnRadioButton", "true");
+
+                        IControlGenerator ctrlGenerator = writer.FindControlGenerator(ChildCtrl);
+                        ctrlGenerator.GenerateControl(writer, ChildCtrl);
                     }
                 }
             }
-
-            return addChildren;
         }
 
-        /// <summary>write the code for the designer file where the properties of the control are written</summary>
-        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef container)
+        /// add and install event handler for change of selection
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            string controlName = container.controlName;
+            base.SetControlProperties(writer, ctrl);
 
-            // add all the children
-            string addChildren = GetListOfChildren(writer, container);
+            writer.Template.AddToCodelet("CHECKEDCHANGED_" + ctrl.controlName, string.Empty);
 
-            container.SetAttribute("Dock", FDocking);
-            base.SetControlProperties(writer, container);
-
-            if (addChildren.Length > 0)
+            foreach (TControlDef ChildCtrl in ctrl.Children)
             {
-                writer.CallControlFunction(controlName,
-                    "Items.AddRange(new System.Windows.Forms.ToolStripItem[] {" + Environment.NewLine +
-                    "               " + addChildren +
-                    "})");
+                // make sure the control is enabled/disabled depending on the selection of the radiobutton
+                writer.Template.AddToCodelet("CHECKEDCHANGED_" + ctrl.controlName,
+                    ChildCtrl.controlName + ".Enabled = " + ctrl.controlName + ".Checked;" + Environment.NewLine);
             }
 
-            // todo: location?
-            // todo: event handler
+            writer.CodeStorage.FEventHandlersImplementation += "void " + ctrl.controlName + "CheckedChanged(object sender, System.EventArgs e)" +
+                                                               Environment.NewLine + "{" + Environment.NewLine + "  {#CHECKEDCHANGED_" +
+                                                               ctrl.controlName + "}" + Environment.NewLine +
+                                                               "}" + Environment.NewLine + Environment.NewLine;
+            writer.Template.AddToCodelet("INITIALISESCREEN", ctrl.controlName + "CheckedChanged(null, null);" + Environment.NewLine);
+            writer.Template.AddToCodelet("CONTROLINITIALISATION",
+                "this." + ctrl.controlName +
+                ".CheckedChanged += new System.EventHandler(this." +
+                ctrl.controlName +
+                "CheckedChanged);" + Environment.NewLine);
+            writer.Template.AddToCodelet("INITACTIONSTATE", ctrl.controlName + "CheckedChanged(null, null);" + Environment.NewLine);
 
-            /*
-             * this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
-             * this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-             * this.toolStripMenuItem1});
-             * this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-             * this.menuStrip1.Name = "menuStrip1";
-             * this.menuStrip1.Size = new System.Drawing.Size(138, 24);
-             * this.menuStrip1.TabIndex = 1;
-             * this.menuStrip1.Text = "menuStrip1";
-             * this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MenuStrip1ItemClicked);
-             */
-
-            return writer.FTemplate;
+            return writer.Template;
         }
     }
 }

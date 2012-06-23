@@ -31,18 +31,18 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailMotivationGroupCode]
+                Row0: [cmbDetailMotivationGroupCode]
                 Row1: [txtDetailMotivationDetailCode, txtDetailMotivationDetailDesc]
                 Row3: [cmbDetailAccountCode]
                 Row4: [cmbDetailCostCentreCode]
                 Row5: [chkDetailMotivationStatus, chkDetailReceipt]
                 Row6: [clbDetailFeesPayable, clbDetailFeesReceivable]
             ColWidths: [1=Fixed:200]
-        txtDetailMotivationGroupCode: {Label=Group}
+        cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
         txtDetailMotivationDetailDesc: {Label=Description, Width=195}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, ColSpan=3}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ColSpan=3}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, ColSpan=2}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
         clbDetailFeesPayable:

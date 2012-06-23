@@ -275,13 +275,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (grdResult.TotalPages > 0)
             {
-                grdResult.BringToFront();
+                //
+                // I don't want to do either of these things, if I'm being called from a child form
+                // that's just been saved..
+//              grdResult.BringToFront();
+//              grdResult.Focus();
 
                 // Highlight first Row
                 grdResult.Selection.SelectRow(1, true);
 
                 // Make the Grid respond on updown keys
-                grdResult.Focus();
                 UpdateDisplayedBalance();
                 RefreshSumTagged(null, null);
             }

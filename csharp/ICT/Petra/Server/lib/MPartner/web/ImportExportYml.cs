@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, thomass
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -264,9 +264,78 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         partnerlocation.MobileNumber = TYml2Xml.GetAttributeRecursive(addressNode, "MobilePhone");
                         AMainDS.PPartnerLocation.Rows.Add(partnerlocation);
                     }
+
+                    // import finance details (bank account number)
+                    XmlNode financialDetailsNode = TYml2Xml.GetChild(LocalNode, "FinancialDetails");
+
+                    ParseFinancialDetails(AMainDS, financialDetailsNode, newPartner.PartnerKey);
                 }
 
                 LocalNode = LocalNode.NextSibling;
+            }
+        }
+
+        private static void ParseFinancialDetails(PartnerImportExportTDS AMainDS, XmlNode AFinancialDetailsNode, Int64 APartnerKey)
+        {
+            if (AFinancialDetailsNode != null)
+            {
+                string BankAccountNumber = TYml2Xml.GetAttributeRecursive(AFinancialDetailsNode, "AccountNumber");
+                string BankSortCode = TYml2Xml.GetAttributeRecursive(AFinancialDetailsNode, "BankSortCode");
+
+                // do we already have a bank with this sort code?
+                Int64 bankPartnerKey = 0;
+
+                AMainDS.PBank.DefaultView.Sort = PBankTable.GetBranchCodeDBName();
+                int bankIndex = AMainDS.PBank.DefaultView.Find(BankSortCode);
+
+                if (bankIndex != -1)
+                {
+                    bankPartnerKey = ((PBankRow)AMainDS.PBank.DefaultView[bankIndex].Row).PartnerKey;
+                }
+
+                if (bankPartnerKey == 0)
+                {
+                    string sqlFindBankBySortCode =
+                        String.Format("SELECT * FROM PUB_{0} WHERE {1}=?",
+                            PBankTable.GetTableDBName(),
+                            PBankTable.GetBranchCodeDBName());
+
+                    OdbcParameter param = new OdbcParameter("branchcode", OdbcType.VarChar);
+                    param.Value = BankSortCode;
+                    PBankTable bank = new PBankTable();
+                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, null, new OdbcParameter[] {
+                            param
+                        }, -1, -1);
+
+                    if (bank.Count > 0)
+                    {
+                        bankPartnerKey = bank[0].PartnerKey;
+                    }
+                }
+
+                if (bankPartnerKey == 0)
+                {
+                    // create a new bank record
+                    PBankRow bankRow = AMainDS.PBank.NewRowTyped(true);
+                    bankRow.PartnerKey = TImportExportYml.NewPartnerKey;
+                    TImportExportYml.NewPartnerKey--;
+                    bankRow.BranchCode = BankSortCode;
+                    bankRow.BranchName = BankSortCode;
+                    AMainDS.PBank.Rows.Add(bankRow);
+                    bankPartnerKey = bankRow.PartnerKey;
+                }
+
+                PBankingDetailsRow bankingDetailsRow = AMainDS.PBankingDetails.NewRowTyped(true);
+                bankingDetailsRow.BankingDetailsKey = (AMainDS.PBankingDetails.Rows.Count + 1) * -1;
+                bankingDetailsRow.BankingType = 0;
+                bankingDetailsRow.BankAccountNumber = BankAccountNumber;
+                bankingDetailsRow.BankKey = bankPartnerKey;
+                AMainDS.PBankingDetails.Rows.Add(bankingDetailsRow);
+
+                PPartnerBankingDetailsRow partnerBankingDetailsRow = AMainDS.PPartnerBankingDetails.NewRowTyped(true);
+                partnerBankingDetailsRow.PartnerKey = APartnerKey;
+                partnerBankingDetailsRow.BankingDetailsKey = bankingDetailsRow.BankingDetailsKey;
+                AMainDS.PPartnerBankingDetails.Rows.Add(partnerBankingDetailsRow);
             }
         }
 

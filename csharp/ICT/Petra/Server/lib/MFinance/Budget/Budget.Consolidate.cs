@@ -56,7 +56,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <summary>
         /// Main Budget tables dataset
         /// </summary>
-        public static BudgetTDS BudgetTDS = new BudgetTDS();
+        public static BudgetTDS FBudgetTDS = null;
+        private static GLPostingTDS GLPostingDS = null;
 
         /// <summary>
         /// load budgets
@@ -66,18 +67,80 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool LoadBudgetForConsolidate(Int32 ALedgerNumber)
         {
-            //TODO: need to filter on Year
-            ABudgetAccess.LoadViaALedger(BudgetTDS, ALedgerNumber, null);
-            ABudgetRevisionAccess.LoadViaALedger(BudgetTDS, ALedgerNumber, null);
-            //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
-            ABudgetPeriodAccess.LoadAll(BudgetTDS, null);
-            ALedgerAccess.LoadByPrimaryKey(BudgetTDS, ALedgerNumber, null);
+            FBudgetTDS = new BudgetTDS();
+
+            ALedgerAccess.LoadByPrimaryKey(FBudgetTDS, ALedgerNumber, null);
+
+            string sqlLoadBudgetForThisAndNextYear =
+                string.Format("SELECT * FROM PUB_{0} WHERE {1}=? AND ({2} = ? OR {2} = ?)",
+                    ABudgetTable.GetTableDBName(),
+                    ABudgetTable.GetLedgerNumberDBName(),
+                    ABudgetTable.GetYearDBName());
+
+            List <OdbcParameter>parameters = new List <OdbcParameter>();
+            OdbcParameter param = new OdbcParameter("ledgernumber", OdbcType.Int);
+            param.Value = ALedgerNumber;
+            parameters.Add(param);
+            param = new OdbcParameter("thisyear", OdbcType.Int);
+            param.Value = FBudgetTDS.ALedger[0].CurrentFinancialYear;
+            parameters.Add(param);
+            param = new OdbcParameter("nextyear", OdbcType.Int);
+            param.Value = FBudgetTDS.ALedger[0].CurrentFinancialYear + 1;
+            parameters.Add(param);
+
+            DBAccess.GDBAccessObj.Select(FBudgetTDS, sqlLoadBudgetForThisAndNextYear, FBudgetTDS.ABudget.TableName, null, parameters.ToArray());
+
+            string sqlLoadBudgetPeriodForThisAndNextYear =
+                string.Format("SELECT {0}.* FROM PUB_{0}, PUB_{1} WHERE {0}.a_budget_sequence_i = {1}.a_budget_sequence_i AND " +
+                    "{2}=? AND ({3} = ? OR {3} = ?)",
+                    ABudgetPeriodTable.GetTableDBName(),
+                    ABudgetTable.GetTableDBName(),
+                    ABudgetTable.GetLedgerNumberDBName(),
+                    ABudgetTable.GetYearDBName());
+
+            DBAccess.GDBAccessObj.Select(FBudgetTDS,
+                sqlLoadBudgetPeriodForThisAndNextYear,
+                FBudgetTDS.ABudgetPeriod.TableName,
+                null,
+                parameters.ToArray());
 
             // Accept row changes here so that the Client gets 'unmodified' rows
-            BudgetTDS.AcceptChanges();
+            FBudgetTDS.AcceptChanges();
 
-            // Remove all Tables that were not filled with data before remoting them.
-            BudgetTDS.RemoveEmptyTables();
+            GLPostingDS = new GLPostingTDS();
+            AAccountAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, null);
+            AAccountHierarchyDetailAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, null);
+            ACostCentreAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, null);
+            ALedgerAccess.LoadByPrimaryKey(GLPostingDS, ALedgerNumber, null);
+
+            // get the glm sequences for this year and next year
+            for (int i = 0; i <= 1; i++)
+            {
+                int Year = GLPostingDS.ALedger[0].CurrentFinancialYear + i;
+
+                AGeneralLedgerMasterRow TemplateRow = (AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.NewRowTyped(false);
+
+                TemplateRow.LedgerNumber = ALedgerNumber;
+                TemplateRow.Year = Year;
+
+                GLPostingDS.AGeneralLedgerMaster.Merge(AGeneralLedgerMasterAccess.LoadUsingTemplate(TemplateRow, null));
+            }
+
+            string sqlLoadGlmperiodForThisAndNextYear =
+                string.Format("SELECT {0}.* FROM PUB_{0}, PUB_{1} WHERE {0}.a_glm_sequence_i = {1}.a_glm_sequence_i AND " +
+                    "{2}=? AND ({3} = ? OR {3} = ?)",
+                    AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                    AGeneralLedgerMasterTable.GetTableDBName(),
+                    AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
+                    AGeneralLedgerMasterTable.GetYearDBName());
+
+            DBAccess.GDBAccessObj.Select(GLPostingDS,
+                sqlLoadGlmperiodForThisAndNextYear,
+                GLPostingDS.AGeneralLedgerMasterPeriod.TableName,
+                null,
+                parameters.ToArray());
+
+            GLPostingDS.AcceptChanges();
 
             return true;
         }
@@ -88,112 +151,96 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AConsolidateAll"></param>
         /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+        /// <returns>false (always!)</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll,
             out TVerificationResultCollection AVerificationResult)
         {
-            bool retVal = false;
+            bool retVal = true;
 
-            int Year;
-            int Period;
-
-            string PreviousAccount = string.Empty;
-
-            string CurrentGLMAccountCode;
-            int CurrentGLMSequence;
-
+            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out IsMyOwnTransaction);
 
             AVerificationResult = null;
 
-            //Create the temp table
-            // Same as the wtPeriodData table in 4GL
-            DataTable PeriodDataTempTable = CreateTempTable();
+            ALedgerRow LedgerRow = FBudgetTDS.ALedger[0];
 
-            ABudgetTable BudgetTable = BudgetTDS.ABudget;
-            ABudgetRow BudgetRow = null;
-
-            ALedgerTable LedgerTable = BudgetTDS.ALedger;
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
+            // first clear the old budget from GLMPeriods
             if (AConsolidateAll)
             {
-                for (int i = 0; i < BudgetTable.Count; i++)
+                foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
                 {
-                    BudgetRow = (ABudgetRow)BudgetTable.Rows[i];
-                    BudgetRow.BeginEdit();
                     BudgetRow.BudgetStatus = false;
-                    BudgetRow.EndEdit();
                 }
 
-                for (int i = 0; i <= 1; i++)
+                foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in GLPostingDS.AGeneralLedgerMaster.Rows)
                 {
-                    Year = LedgerRow.CurrentFinancialYear + i;
-
-                    AGeneralLedgerMasterTable GenLedgerMasterTable = new AGeneralLedgerMasterTable();
-                    AGeneralLedgerMasterRow TemplateRow = (AGeneralLedgerMasterRow)GenLedgerMasterTable.NewRowTyped(false);
-
-                    TemplateRow.LedgerNumber = ALedgerNumber;
-                    TemplateRow.Year = Year;
-
-                    StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "=" });
-                    StringCollection OrderList = new StringCollection();
-
-                    OrderList.Add("ORDER BY");
-                    OrderList.Add(AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " ASC");
-                    OrderList.Add(AGeneralLedgerMasterTable.GetYearDBName() + " ASC");
-
-                    AGeneralLedgerMasterTable GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(TemplateRow,
-                        operators,
-                        null,
-                        null,
-                        OrderList,
-                        0,
-                        0);
-
-                    AGeneralLedgerMasterRow GeneralLedgerMasterRow = null;
-
-                    for (int j = 0; j < GeneralLedgerMasterTable.Count; j++)
+                    for (int Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
                     {
-                        GeneralLedgerMasterRow = (AGeneralLedgerMasterRow)GeneralLedgerMasterTable.Rows[j];
-
-                        CurrentGLMAccountCode = GeneralLedgerMasterRow.AccountCode;
-                        CurrentGLMSequence = GeneralLedgerMasterRow.GlmSequence;
-
-                        if (PreviousAccount != CurrentGLMAccountCode)
-                        {
-                            PreviousAccount = CurrentGLMAccountCode;
-                        }
-
-                        for (Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
-                        {
-                            ClearAllBudgetValues(ref PeriodDataTempTable, CurrentGLMSequence, Period);
-                        }
+                        ClearAllBudgetValues(GeneralLedgerMasterRow.GlmSequence, Period);
+                    }
+                }
+            }
+            else
+            {
+                foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
+                {
+                    if (!BudgetRow.BudgetStatus)
+                    {
+                        UnPostBudget(BudgetRow, ALedgerNumber);
                     }
                 }
             }
 
-            for (int k = 0; k < BudgetTable.Count; k++)
+            foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
             {
-                BudgetRow = (ABudgetRow)BudgetTable.Rows[k];
-
                 if (!BudgetRow.BudgetStatus || AConsolidateAll)
                 {
-                    if (!AConsolidateAll)
+                    List <ABudgetPeriodRow>budgetPeriods = new List <ABudgetPeriodRow>();
+
+                    FBudgetTDS.ABudgetPeriod.DefaultView.RowFilter = ABudgetPeriodTable.GetBudgetSequenceDBName() + " = " +
+                                                                     BudgetRow.BudgetSequence.ToString();
+
+                    foreach (DataRowView rv in FBudgetTDS.ABudgetPeriod.DefaultView)
                     {
-                        UnPostBudget(ref PeriodDataTempTable, ref BudgetRow, ALedgerNumber);
+                        budgetPeriods.Add((ABudgetPeriodRow)rv.Row);
                     }
 
-                    PostBudget(ref PeriodDataTempTable, ref BudgetRow, ALedgerNumber);
+                    PostBudget(ALedgerNumber, BudgetRow, budgetPeriods);
                 }
             }
 
-            FinishConsolidateBudget(ALedgerNumber, ref PeriodDataTempTable, ref BudgetTable);
+            FinishConsolidateBudget(SubmitChangesTransaction, out AVerificationResult);
 
-            //Check for any unclosed transactions
-            if (DBAccess.GDBAccessObj.Transaction != null)
+            if (AVerificationResult.HasCriticalErrors)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                retVal = false;
+                TLogging.Log(AVerificationResult.BuildVerificationResultString());
+            }
+            else
+            {
+                GLPostingDS.ThrowAwayAfterSubmitChanges = true;
+                GLPostingTDSAccess.SubmitChanges(GLPostingDS, out AVerificationResult);
+                GLPostingDS.Clear();
+
+                if (AVerificationResult.HasCriticalErrors)
+                {
+                    retVal = false;
+                    TLogging.Log(AVerificationResult.BuildVerificationResultString());
+                }
+            }
+
+            if (IsMyOwnTransaction)
+            {
+                if (retVal)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return retVal;
@@ -202,65 +249,22 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <summary>
         /// Complete the Budget consolidation process
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="APeriodDataTable"></param>
-        /// <param name="ABudgetTable"></param>
-        private static void FinishConsolidateBudget(int ALedgerNumber, ref DataTable APeriodDataTable, ref ABudgetTable ABudgetTable)
+        /// <param name="ATransaction"></param>
+        /// <param name="AVerificationResult"></param>
+        private static void FinishConsolidateBudget(
+            TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
         {
-            decimal IntlExchangeRate;
-            int PreviousSequence = 0;
-            int CurrentSequence;
-
-            bool NewTransaction = false;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            if (TExchangeRateTools.GetLatestIntlCorpExchangeRate(ALedgerNumber, out IntlExchangeRate))
+            /*Consolidate_Budget*/
+            foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
             {
-                /*Consolidate_Budget*/
-
-                AGeneralLedgerMasterPeriodTable GLMPTable = null;
-                AGeneralLedgerMasterPeriodRow GLMPRow = null;
-                DataRow DR = null;
-
-                for (int i = 0; i < APeriodDataTable.Rows.Count; i++)
-                {
-                    DR = (DataRow)APeriodDataTable.Rows[i];
-                    CurrentSequence = Convert.ToInt32(DR.ItemArray[0]);
-
-                    if (PreviousSequence != CurrentSequence)
-                    {
-                        PreviousSequence = CurrentSequence;
-                    }
-
-                    GLMPTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(PreviousSequence, Convert.ToInt32(DR.ItemArray[1]), transaction);
-                    GLMPRow = (AGeneralLedgerMasterPeriodRow)GLMPTable.Rows[0];
-
-                    GLMPRow.BeginEdit();
-                    GLMPRow.BudgetBase = Convert.ToDecimal(DR.ItemArray[2]);
-                    GLMPRow.BudgetIntl = Math.Round(Convert.ToDecimal(DR.ItemArray[2]) / IntlExchangeRate);
-                    GLMPRow.EndEdit();
-                }
-
-                ABudgetRow BudgetRow = null;
-
-                for (int i = 0; i < ABudgetTable.Count; i++)
-                {
-                    BudgetRow = (ABudgetRow)ABudgetTable.Rows[i];
-
-                    BudgetRow.BeginEdit();
-                    BudgetRow.BudgetStatus = true;
-                    BudgetRow.EndEdit();
-                }
+                BudgetRow.BudgetStatus = true;
             }
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            ABudgetAccess.SubmitChanges(FBudgetTDS.ABudget, ATransaction, out AVerificationResult);
         }
 
         /// <summary>
-        /// Return the budget amount from the temp table wtPeriodData.
+        /// Return the budget amount from the temp table APeriodDataTable.
         ///   if the record is not already in the temp table, it is fetched
         /// </summary>
         /// <param name="APeriodDataTable"></param>
@@ -286,9 +290,9 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
 
                     DataRow DR = (DataRow)APeriodDataTable.NewRow();
-                    DR.ItemArray[0] = AGLMSequence;
-                    DR.ItemArray[1] = APeriodNumber;
-                    DR.ItemArray[2] = GeneralLedgerMasterPeriodRow.BudgetBase;
+                    DR["GLMSequence"] = AGLMSequence;
+                    DR["PeriodNumber"] = APeriodNumber;
+                    DR["BudgetBase"] = GeneralLedgerMasterPeriodRow.BudgetBase;
 
                     APeriodDataTable.Rows.Add(DR);
                 }
@@ -296,7 +300,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             else
             {
                 //Set to budget base
-                GetBudgetValue = Convert.ToDecimal(TempRow.ItemArray[2]);
+                GetBudgetValue = Convert.ToDecimal(TempRow["BudgetBase"]);
             }
 
             return GetBudgetValue;
@@ -305,127 +309,60 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <summary>
         /// Unpost a budget
         /// </summary>
-        /// <param name="APeriodDataTable"></param>
         /// <param name="ABudgetRow"></param>
         /// <param name="ALedgerNumber"></param>
-        /// <returns></returns>
-        private static bool UnPostBudget(ref DataTable APeriodDataTable, ref ABudgetRow ABudgetRow, int ALedgerNumber)
+        /// <returns>true if it seemed to go OK</returns>
+        private static bool UnPostBudget(ABudgetRow ABudgetRow, int ALedgerNumber)
         {
-            decimal[] TempAmountsThisYear = new decimal[19];                 // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
-            decimal[] TempAmountsNextYear = new decimal[19];                 // AS DECIMAL EXTENT {&MAX-PERIODS} NO-UNDO. Max-Periods = 20
-            //bool lv_answer_l = false;
-            int GLMSequenceThisYear;
-            int GLMSequenceNextYear;
+            /* post the negative budget, which will result in an empty a_glm_period.budget */
 
-            ALedgerRow LedgerRow = (ALedgerRow)BudgetTDS.ALedger.Rows[0];
+            // get the current budget value for each GLM Period, and unpost that budget
 
-            GLMSequenceThisYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber,
-                ABudgetRow.AccountCode,
-                ABudgetRow.CostCentreCode,
-                LedgerRow.CurrentFinancialYear);
-            GLMSequenceNextYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber,
-                ABudgetRow.AccountCode,
-                ABudgetRow.CostCentreCode,
-                LedgerRow.CurrentFinancialYear + 1);
+            GLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
+                AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
+                AGeneralLedgerMasterTable.GetYearDBName(),
+                AGeneralLedgerMasterTable.GetAccountCodeDBName(),
+                AGeneralLedgerMasterTable.GetCostCentreCodeDBName());
 
-            if ((GLMSequenceThisYear != -1) || (GLMSequenceNextYear != -1))
+            int glmIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(
+                new object[] { ALedgerNumber, ABudgetRow.Year, ABudgetRow.AccountCode, ABudgetRow.CostCentreCode });
+
+            if (glmIndex != -1)
             {
-                AGeneralLedgerMasterPeriodTable GenLedgerMasterPeriodTable = new AGeneralLedgerMasterPeriodTable();
-                AGeneralLedgerMasterPeriodRow TemplateRow = (AGeneralLedgerMasterPeriodRow)GenLedgerMasterPeriodTable.NewRowTyped(false);
+                AGeneralLedgerMasterRow glmRow = (AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.DefaultView[glmIndex].Row;
 
-                TemplateRow.GlmSequence = GLMSequenceThisYear;
-                TemplateRow.BudgetBase = 0;
+                List <ABudgetPeriodRow>budgetPeriods = new List <ABudgetPeriodRow>();
 
-                StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "<>" });
-
-                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadUsingTemplate(TemplateRow,
-                    operators,
-                    null,
-                    null,
-                    null,
-                    0,
-                    0);
-
-
-                bool BudgetValueExists = false;
-
-                if (GeneralLedgerMasterPeriodTable.Count > 0)
+                for (int Period = 1; Period <= GLPostingDS.ALedger[0].NumberOfAccountingPeriods; Period++)
                 {
-                    BudgetValueExists = true;
-                }
-                else
-                {
-                    AGeneralLedgerMasterPeriodTable GenLedgerMasterPeriodTable2 = new AGeneralLedgerMasterPeriodTable();
-                    AGeneralLedgerMasterPeriodRow TemplateRow2 = (AGeneralLedgerMasterPeriodRow)GenLedgerMasterPeriodTable2.NewRowTyped(false);
+                    AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow =
+                        (AGeneralLedgerMasterPeriodRow)GLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(
+                            new object[] { glmRow.GlmSequence, Period });
 
-                    TemplateRow2.GlmSequence = GLMSequenceNextYear;
-                    TemplateRow2.BudgetBase = 0;
+                    ABudgetPeriodRow budgetPeriodRow = FBudgetTDS.ABudgetPeriod.NewRowTyped(true);
+                    budgetPeriodRow.PeriodNumber = Period;
+                    budgetPeriodRow.BudgetSequence = ABudgetRow.BudgetSequence;
 
-                    StringCollection operators2 = StringHelper.InitStrArr(new string[] { "=", "<>" });
+                    // use negative amount for unposting
+                    budgetPeriodRow.BudgetBase = -1 * GeneralLedgerMasterPeriodRow.BudgetBase;
 
-                    AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable2 = AGeneralLedgerMasterPeriodAccess.LoadUsingTemplate(TemplateRow,
-                        operators2,
-                        null,
-                        null,
-                        null,
-                        0,
-                        0);
-
-                    if (GeneralLedgerMasterPeriodTable2.Count > 0)
-                    {
-                        BudgetValueExists = true;
-                    }
+                    // do not add to the budgetperiod table, but to our local list
+                    budgetPeriods.Add(budgetPeriodRow);
                 }
 
-                if (BudgetValueExists)
-                {
-                    ABudgetPeriodTable BPT = ABudgetPeriodAccess.LoadViaABudget(ABudgetRow.BudgetSequence, null);
-
-                    for (int i = 0; i < BPT.Count; i++)
-                    {
-                        ABudgetPeriodRow BPR = (ABudgetPeriodRow)BPT.Rows[i];
-
-                        TempAmountsThisYear[BPR.PeriodNumber] = BPR.BudgetThisYear;
-                        TempAmountsNextYear[BPR.PeriodNumber] = BPR.BudgetNextYear;
-                        BPR.BeginEdit();
-                        BPR.BudgetThisYear = -1 * GetBudgetValue(ref APeriodDataTable, GLMSequenceThisYear, BPR.PeriodNumber);
-                        BPR.BudgetNextYear = -1 * GetBudgetValue(ref APeriodDataTable, GLMSequenceNextYear, BPR.PeriodNumber);
-                        BPR.EndEdit();
-                    }
-
-                    /* post the negative budget, which will result in an empty a_glm_period.budget */
-                    PostBudget(ref APeriodDataTable, ref ABudgetRow, ALedgerNumber);
-
-                    BPT = null;
-                    BPT = ABudgetPeriodAccess.LoadViaABudget(ABudgetRow.BudgetSequence, null);
-
-                    for (int i = 0; i < BPT.Count; i++)
-                    {
-                        ABudgetPeriodRow BPR = (ABudgetPeriodRow)BPT.Rows[i];
-
-                        BPR.BeginEdit();
-                        BPR.BudgetThisYear = TempAmountsThisYear[BPR.PeriodNumber];
-                        BPR.BudgetNextYear = TempAmountsNextYear[BPR.PeriodNumber];
-                        BPR.EndEdit();
-                    }
-                }
-
-                ABudgetRow.BudgetStatus = false;                 //i.e. unposted
-                return true;
+                PostBudget(ALedgerNumber, ABudgetRow, budgetPeriods);
             }
 
-            return false;
+            ABudgetRow.BudgetStatus = false;                 //i.e. unposted
+
+            return true;
         }
 
         /// <summary>
         /// Post a budget
         /// </summary>
-        /// <param name="APeriodDataTable"></param>
-        /// <param name="ABudgetRow"></param>
-        /// <param name="ALedgerNumber"></param>
-        private static void PostBudget(ref DataTable APeriodDataTable, ref ABudgetRow ABudgetRow, int ALedgerNumber)
+        private static void PostBudget(int ALedgerNumber, ABudgetRow ABudgetRow, List <ABudgetPeriodRow>ABudgetPeriodRows)
         {
-            /* post the negative budget, which will result in an empty a_glm_period.budget */
             //gb5300.p
             string AccountCode = ABudgetRow.AccountCode;
 
@@ -435,138 +372,90 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             CostCentreParentsList(ALedgerNumber, ref CostCentreList);
 
             //Locate the row for the current account
-            GLBatchTDS GLBatchDS = new GLBatchTDS();
+            AAccountRow AccountRow = (AAccountRow)GLPostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
 
-            AAccountAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, null);
-
-            AAccountRow AccountRow = (AAccountRow)GLBatchDS.AAccount.Rows.Find(new object[] { ALedgerNumber, AccountCode });
+            GLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
+                AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
+                AGeneralLedgerMasterTable.GetYearDBName(),
+                AGeneralLedgerMasterTable.GetAccountCodeDBName(),
+                AGeneralLedgerMasterTable.GetCostCentreCodeDBName());
 
             /* calculate values for budgets and store them in a temp table; uses lb_budget */
-            ProcessAccountParent(ref APeriodDataTable,
+            ProcessAccountParent(
                 ALedgerNumber,
                 AccountCode,
                 AccountRow.DebitCreditIndicator,
                 CostCentreList,
-                ABudgetRow.BudgetSequence);
+                ABudgetRow,
+                ABudgetPeriodRows);
         }
 
         /// <summary>
         /// Process the account code parent codes
         /// </summary>
-        /// <param name="APeriodDataTable"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="CurrAccountCode"></param>
-        /// <param name="ADebitCreditIndicator"></param>
-        /// <param name="ACostCentreList"></param>
-        /// <param name="ABudgetSequence"></param>
-        private static void ProcessAccountParent(ref DataTable APeriodDataTable,
+        private static void ProcessAccountParent(
             int ALedgerNumber,
             string CurrAccountCode,
             bool ADebitCreditIndicator,
             string ACostCentreList,
-            int ABudgetSequence)
+            ABudgetRow ABudgetRow,
+            List <ABudgetPeriodRow>ABudgetPeriods)
         {
-            int GLMThisYear;
-            int GLMNextYear;
+            AAccountRow AccountRow = (AAccountRow)GLPostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, CurrAccountCode });
 
-            int DebitCreditMultiply;             /* needed if the debit credit indicator is not the same */
-            string CostCentreCode;
+            AAccountHierarchyDetailRow AccountHierarchyDetailRow = (AAccountHierarchyDetailRow)GLPostingDS.AAccountHierarchyDetail.Rows.Find(
+                new object[] { ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, CurrAccountCode });
 
-            AAccountHierarchyDetailTable AccountHierarchyDetailTable = null;
-            AAccountHierarchyDetailRow AccountHierarchyDetailRow = null;
-
-            //bool NewTransaction = false;
-            //TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            //Locate the row for the current account
-            GLBatchTDS GLBatchDS = new GLBatchTDS();
-
-            AAccountAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, null);     //transaction);
-
-            ALedgerAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, null);     //transaction);
-            ALedgerRow LedgerRow = (ALedgerRow)GLBatchDS.ALedger.Rows[0];
-
-            AAccountTable a_current_account_b = GLBatchDS.AAccount;
-            AAccountRow AccountRow = (AAccountRow)a_current_account_b.Rows.Find(new object[] { ALedgerNumber, CurrAccountCode });
-
-            try
+            if (AccountHierarchyDetailRow != null)
             {
-                AccountHierarchyDetailTable = GLBatchDS.AAccountHierarchyDetail;
-                AccountHierarchyDetailRow = (AAccountHierarchyDetailRow)AccountHierarchyDetailTable.Rows.Find(
-                    new object[] { ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, CurrAccountCode });
+                string AccountCodeToReportTo = AccountHierarchyDetailRow.AccountCodeToReportTo;
 
-                if (AccountHierarchyDetailRow != null)
+                if ((AccountCodeToReportTo != null) && (AccountCodeToReportTo != string.Empty))
                 {
-                    string AccountCodeToReportTo = AccountHierarchyDetailRow.AccountCodeToReportTo;
-
-                    if ((AccountCodeToReportTo != null) && (AccountCodeToReportTo != string.Empty))
-                    {
-                        //AAccountTable a_parent_account_b = GLBatchDS.AAccount;
-                        //AAccountRow AccountRowP = (AAccountRow)a_parent_account_b.Rows.Find(new object[] {ALedgerNumber, AccountCodeToReportTo});
-
-                        /* Recursively call this procedure. */
-                        ProcessAccountParent(ref APeriodDataTable,
-                            ALedgerNumber,
-                            AccountCodeToReportTo,
-                            ADebitCreditIndicator,
-                            ACostCentreList,
-                            ABudgetSequence);
-                    }
-                }
-
-                /* If the account has the same db/cr indicator as the original
-                 *          account for which the budget was created, add the budget amount.
-                 *         Otherwise, subtract. */
-                if (AccountRow.DebitCreditIndicator = ADebitCreditIndicator)
-                {
-                    DebitCreditMultiply = 1;
-                }
-                else
-                {
-                    DebitCreditMultiply = -1;
-                }
-
-                string[] CostCentres = ACostCentreList.Split(':');
-                string AccCode = AccountRow.AccountCode;
-                int CurrYear = LedgerRow.CurrentFinancialYear;
-
-                /* For each associated Cost Centre, update the General Ledger Master. */
-                for (int i = 1; i < CostCentres.Length; i++)
-                {
-                    CostCentreCode = CostCentres[i];
-
-                    GLMThisYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear);
-                    GLMNextYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber, AccCode, CostCentreCode, CurrYear + 1);
-
-                    /* If the posting CC/AC combination doesn't exist create it. */
-                    if (GLMThisYear == -1)
-                    {
-                        GLMThisYear = TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear, AccCode, CostCentreCode);
-                    }
-
-                    if (GLMNextYear == -1)
-                    {
-                        GLMNextYear = TGLPosting.CreateGLMYear(ref GLBatchDS, ALedgerNumber, CurrYear + 1, AccCode, CostCentreCode);
-                    }
-
-                    /* Update totals for the General Ledger Master record. */
-                    ABudgetPeriodTable BPT = ABudgetPeriodAccess.LoadViaABudget(ABudgetSequence, null);
-                    ABudgetPeriodRow BPR = null;
-
-                    for (int j = 0; j < BPT.Count; j++)
-                    {
-                        BPR = (ABudgetPeriodRow)BPT.Rows[j];
-                        AddBudgetValue(ref APeriodDataTable, GLMThisYear, BPR.PeriodNumber, DebitCreditMultiply * BPR.BudgetThisYear);
-                        AddBudgetValue(ref APeriodDataTable, GLMNextYear, BPR.PeriodNumber, DebitCreditMultiply * BPR.BudgetNextYear);
-                    }
+                    /* Recursively call this procedure. */
+                    ProcessAccountParent(
+                        ALedgerNumber,
+                        AccountCodeToReportTo,
+                        ADebitCreditIndicator,
+                        ACostCentreList,
+                        ABudgetRow,
+                        ABudgetPeriods);
                 }
             }
-            finally
+
+            int DebitCreditMultiply = 1;             /* needed if the debit credit indicator is not the same */
+
+            /* If the account has the same db/cr indicator as the original
+             *         account for which the budget was created, add the budget amount.
+             *         Otherwise, subtract. */
+            if (AccountRow.DebitCreditIndicator != ADebitCreditIndicator)
             {
-//                if (NewTransaction)
-//                {
-//                    DBAccess.GDBAccessObj.RollbackTransaction();
-//                }
+                DebitCreditMultiply = -1;
+            }
+
+            string[] CostCentres = ACostCentreList.Split(':');
+            string AccCode = AccountRow.AccountCode;
+
+            /* For each associated Cost Centre, update the General Ledger Master. */
+            foreach (string CostCentreCode in CostCentres)
+            {
+                int glmRowIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] { ALedgerNumber, ABudgetRow.Year, AccCode,
+                                                                                                   CostCentreCode });
+
+                if (glmRowIndex == -1)
+                {
+                    TGLPosting.CreateGLMYear(ref GLPostingDS, ALedgerNumber, ABudgetRow.Year, AccCode, CostCentreCode);
+                    glmRowIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] { ALedgerNumber, ABudgetRow.Year, AccCode,
+                                                                                                   CostCentreCode });
+                }
+
+                int GLMSequence = ((AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.DefaultView[glmRowIndex].Row).GlmSequence;
+
+                /* Update totals for the General Ledger Master period record. */
+                foreach (ABudgetPeriodRow BPR in ABudgetPeriods)
+                {
+                    AddBudgetValue(GLMSequence, BPR.PeriodNumber, DebitCreditMultiply * BPR.BudgetBase);
+                }
             }
         }
 
@@ -580,87 +469,38 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string ParentCostCentre;
             string CostCentreList = ACurrentCostCentreList;
 
-            bool NewTransaction = false;
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-
-            GLBatchTDS GLBatchDS = new GLBatchTDS();
-
-            ACostCentreAccess.LoadViaALedger(GLBatchDS, ALedgerNumber, DBTransaction);
-
-            //ACostCentreAccess.LoadByPrimaryKey(GLBatchDS, ALedgerNumber, ACurrentCostCentre, null);
-            ACostCentreRow CostCentreRow = (ACostCentreRow)GLBatchDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, ACurrentCostCentreList });
+            ACostCentreRow CostCentreRow = (ACostCentreRow)GLPostingDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, ACurrentCostCentreList });
 
             ParentCostCentre = CostCentreRow.CostCentreToReportTo;
 
             while (ParentCostCentre != string.Empty)
             {
-                ACostCentreRow CCRow = (ACostCentreRow)GLBatchDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, ParentCostCentre });
+                ACostCentreRow CCRow = (ACostCentreRow)GLPostingDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, ParentCostCentre });
 
                 CostCentreList += ":" + CCRow.CostCentreCode;
                 ParentCostCentre = CCRow.CostCentreToReportTo;
             }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-        }
-
-        /// <summary>
-        /// Create the temp table that stores the GLMSequence and budget data
-        /// </summary>
-        /// <returns></returns>
-        private static DataTable CreateTempTable()
-        {
-            DataTable wtPeriodData = new DataTable();
-
-            wtPeriodData.Columns.Add("GLMSequence", typeof(int));
-            wtPeriodData.Columns.Add("PeriodNumber", typeof(int));
-            wtPeriodData.Columns.Add("BudgetBase", typeof(decimal));
-            wtPeriodData.PrimaryKey = new DataColumn[2] {
-                wtPeriodData.Columns[0], wtPeriodData.Columns[1]
-            };
-
-            return wtPeriodData;
         }
 
         /// <summary>
         /// Write a budget value to the temporary table
         /// </summary>
-        /// <param name="APeriodDataTable"></param>
         /// <param name="AGLMSequence"></param>
         /// <param name="APeriodNumber"></param>
         /// <param name="APeriodAmount"></param>
-        private static void AddBudgetValue(ref DataTable APeriodDataTable, int AGLMSequence, int APeriodNumber, decimal APeriodAmount)
+        private static void AddBudgetValue(int AGLMSequence, int APeriodNumber, decimal APeriodAmount)
         {
-            /*  add a budget amount to the temp table wtPeriodData.
-             *          if the record is not already in the temp table, it is fetched */
-            DataRow TempRow = (DataRow)APeriodDataTable.Rows.Find(new object[] { AGLMSequence, APeriodNumber });
+            AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow =
+                (AGeneralLedgerMasterPeriodRow)GLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(
+                    new object[] { AGLMSequence, APeriodNumber });
 
-            if (TempRow == null)
+            if (GeneralLedgerMasterPeriodRow != null)
             {
-                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
-                    APeriodNumber,
-                    null);
-                AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
-
-                if (GeneralLedgerMasterPeriodTable.Count > 0)
-                {
-                    GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
-
-                    DataRow DR = (DataRow)APeriodDataTable.NewRow();
-                    DR.ItemArray[0] = AGLMSequence;
-                    DR.ItemArray[1] = APeriodNumber;
-                    DR.ItemArray[2] = GeneralLedgerMasterPeriodRow.BudgetBase;
-
-                    APeriodDataTable.Rows.Add(DR);
-                }
+                GeneralLedgerMasterPeriodRow.BudgetBase += APeriodAmount;
             }
             else
             {
-                TempRow.BeginEdit();
-                TempRow.ItemArray[2] = Convert.ToDecimal(TempRow.ItemArray[2]) + APeriodAmount;
-                TempRow.EndEdit();
+                throw new Exception("AddBudgetValue: cannot find glmp record for " + AGLMSequence.ToString() + " " + APeriodNumber.ToString());
             }
         }
 
@@ -668,49 +508,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// Reset the budget amount in the temp table wtPeriodData.
         ///   if the record is not already in the temp table, it is created empty
         /// </summary>
-        /// <param name="ATempTable"></param>
         /// <param name="AGLMSequence"></param>
         /// <param name="APeriodNumber"></param>
-        private static void ClearAllBudgetValues(ref DataTable ATempTable, int AGLMSequence, int APeriodNumber)
+        private static void ClearAllBudgetValues(int AGLMSequence, int APeriodNumber)
         {
-            DataRow TempRow = (DataRow)ATempTable.Rows.Find(new object[] { AGLMSequence, APeriodNumber });
+            AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow =
+                (AGeneralLedgerMasterPeriodRow)GLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { AGLMSequence, APeriodNumber });
 
-            try
+            if (GeneralLedgerMasterPeriodRow != null)
             {
-                if (TempRow == null)
-                {
-                    AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
-                        APeriodNumber,
-                        null);
-                    AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
-
-                    if (GeneralLedgerMasterPeriodTable.Count > 0)
-                    {
-                        GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
-
-                        /* only create records for periods which have a value. try to keep the number of records low,
-                         * to make the lock count in the write transaction smaller */
-                        if (GeneralLedgerMasterPeriodRow.BudgetBase != 0)
-                        {
-                            DataRow DR = (DataRow)ATempTable.NewRow();
-                            DR["GLMSequence"] = AGLMSequence;
-                            DR["PeriodNumber"] = APeriodNumber;
-                            DR["BudgetBase"] = 0;
-
-                            ATempTable.Rows.Add(DR);
-                        }
-                    }
-                }
-                else
-                {
-                    TempRow.BeginEdit();
-                    TempRow.ItemArray[2] = 0;
-                    TempRow.EndEdit();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
+                GeneralLedgerMasterPeriodRow.BudgetBase = 0;
             }
         }
     }

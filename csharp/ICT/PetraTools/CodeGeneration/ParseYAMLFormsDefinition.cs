@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -92,6 +92,11 @@ namespace Ict.Tools.CodeGeneration
             {
                 FCodeStorage.FWidth = Convert.ToInt32(TYml2Xml.GetAttribute(formNode, "WindowWidth"));
             }
+
+            if (TYml2Xml.HasAttribute(formNode, "Height") || TYml2Xml.HasAttribute(formNode, "Width"))
+            {
+                TLogging.Log("Warning: Please use WindowWidth and WindowHeight, because Width and Height for the root node are invalid");
+            }
         }
 
         /// <summary>
@@ -132,6 +137,14 @@ namespace Ict.Tools.CodeGeneration
         }
 
         static private SortedList <string, XmlDocument>CachedYamlFiles = new SortedList <string, XmlDocument>();
+
+        /// <summary>
+        /// clear the cached yaml files
+        /// </summary>
+        static public void ClearCachedYamlFiles()
+        {
+            CachedYamlFiles.Clear();
+        }
 
         /// <summary>
         /// this loads the contents of the yaml file.

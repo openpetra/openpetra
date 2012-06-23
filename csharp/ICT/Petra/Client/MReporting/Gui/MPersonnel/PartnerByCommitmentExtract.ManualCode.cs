@@ -27,6 +27,7 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MReporting;
@@ -46,7 +47,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private void InitializeManualCode()
         {
             SetControls(new TParameterList());
-            ucoChkFilter.ShowFamiliesOnly(false);
         }
 
         /// <summary>
@@ -59,6 +59,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
+
+            ucoChkFilter.ShowFamiliesOnly(false);
         }
 
         private void grdCommitmentStatusChoices_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)

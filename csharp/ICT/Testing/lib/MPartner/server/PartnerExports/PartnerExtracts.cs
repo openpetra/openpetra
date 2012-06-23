@@ -82,7 +82,7 @@ namespace Tests.MPartner.Server.PartnerExports
             TPartnerFileImport importer = new TPartnerFileImport();
             PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, false, out VerificationResult);
 
-            if (VerificationResult.HasCriticalError())
+            if (VerificationResult.HasCriticalErrors)
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
             }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,7 +33,9 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using GNU.Gettext;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
@@ -44,16 +46,6 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
     /// </summary>
     public class TBankStatementImport : IImportBankStatement
     {
-        /// <summary>
-        /// should return the text for the filter for AEpTransactionTable to get all the gifts, by transaction type
-        /// </summary>
-        /// <returns></returns>
-        public string GetFilterGifts()
-        {
-            // TODO
-            return "";
-        }
-
         /// <summary>
         /// asks the user to open a csv file and imports the contents according to the config file
         /// </summary>
@@ -129,8 +121,8 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
             // TODO: support splitting a file by month?
             // at the moment this only works for files that are already split by month
             // TODO: check if this statement has already been imported, by the stmt.Filename; delete old statement
-            AEpStatementTable stmtTable = new AEpStatementTable();
-            AEpStatementRow stmt = stmtTable.NewRowTyped();
+            BankImportTDS MainDS = new BankImportTDS();
+            AEpStatementRow stmt = MainDS.AEpStatement.NewRowTyped();
             stmt.StatementKey = -1;
 
             // TODO: depending on the path of BankStatementFilename you could determine between several bank accounts
@@ -147,11 +139,9 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
             stmt.LedgerNumber = ALedgerNumber;
             stmt.CurrencyCode = CurrencyCode;
             stmt.BankAccountCode = ABankAccountCode;
-            stmtTable.Rows.Add(stmt);
+            MainDS.AEpStatement.Rows.Add(stmt);
 
             DateTime latestDate = DateTime.MinValue;
-
-            AEpTransactionTable transactionsTable = new AEpTransactionTable();
 
             Int32 rowCount = 0;
 
@@ -161,7 +151,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
 
                 rowCount++;
 
-                AEpTransactionRow row = transactionsTable.NewRowTyped();
+                AEpTransactionRow row = MainDS.AEpTransaction.NewRowTyped();
                 row.StatementKey = stmt.StatementKey;
                 row.Order = rowCount;
 
@@ -218,17 +208,24 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
                     }
                 }
 
-                transactionsTable.Rows.Add(row);
+                // all transactions with positive amount can be donations
+                if (row.TransactionAmount > 0)
+                {
+                    row.TransactionTypeCode = MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
+                }
+
+                MainDS.AEpTransaction.Rows.Add(row);
             } while (!dataFile.EndOfStream);
 
             stmt.Date = latestDate;
 
             TVerificationResultCollection VerificationResult;
 
-            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(ref stmtTable, transactionsTable,
+            if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
+                    MainDS,
+                    out AStatementKey,
                     out VerificationResult) == TSubmitChangesResult.scrOK)
             {
-                AStatementKey = stmtTable[0].StatementKey;
                 return AStatementKey != -1;
             }
 

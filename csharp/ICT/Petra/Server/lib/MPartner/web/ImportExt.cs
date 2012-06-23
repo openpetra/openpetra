@@ -1876,7 +1876,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             AResultList = FResultList;
 
-            if (AResultList.HasCriticalError())
+            if (AResultList.HasCriticalErrors)
             {
                 return new PartnerImportExportTDS();
             }

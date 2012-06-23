@@ -46,11 +46,12 @@ CachedTables:
                 PostCodeRegionList:
         Subscriptions:
             DatabaseTables:
+                PPublication:
                 PPublicationCost:
                 PReasonSubscriptionGiven:
                 PReasonSubscriptionCancelled:
             CalculatedLists:
-                PublicationList: {Comment=available publications}
+                PublicationInfoList: {Comment=available publications}
     Common:
         Common:
             DatabaseTables:
@@ -105,7 +106,8 @@ CachedTables:
                 AEmailDestination:
                 AMethodOfGiving: {Comment="Special payment programs the donor may give money through. (ie, Gift Aid in the UK)"}
                 AMethodOfPayment:
-                AMotivationGroup: {Comment="This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes"}
+                AValidLedgerNumber:
+                AMotivationGroup: {Enum=MotivationGroupList, Comment="This is used to track a partner's reason for contacting the organisation/sending money. Divided into Motivation Detail codes", DependsOnLedger=true}
                 AMotivationDetail: {Enum=MotivationList, Comment="list of motivations (for gifts)", DependsOnLedger=true}
                 AFeesPayable: {DependsOnLedger=true}
                 AFeesReceivable: {DependsOnLedger=true}
@@ -124,5 +126,6 @@ CachedTables:
     SysMan:
         SysMan:
             DatabaseTables:
-                SUser:
                 SLanguageSpecific:
+            CalculatedLists:
+                UserList:

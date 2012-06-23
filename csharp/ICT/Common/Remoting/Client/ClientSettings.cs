@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -311,7 +311,7 @@ namespace Ict.Common.Remoting.Client
             }
         }
 
-        /// <summary>Email address of the openPETRA support team of an organisation</summary>
+        /// <summary>Email address of the OpenPetra support team of an organisation</summary>
         public static string PetraSupportTeamEmail
         {
             get
@@ -408,6 +408,7 @@ namespace Ict.Common.Remoting.Client
             UPathLog = GetPathLog();
 
             UDebugLevel = TAppSettingsManager.GetInt16("Client.DebugLevel", 0);
+            TLogging.DebugLevel = UDebugLevel;
 
             UBehaviourSeveralClients = "OnlyOneWithQuestion";
 

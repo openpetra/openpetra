@@ -28,6 +28,7 @@ using System.Drawing;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -67,7 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // only load from server if there are no journals loaded yet for this batch
             // otherwise we would overwrite journals that have already been modified
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ",");
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ',');
 
             if (view.Find(new object[] { FLedgerNumber, FBatchNumber }) == -1)
             {
@@ -87,9 +88,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // recalculate the base currency amounts for the transactions
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTotals();
+
+            btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
         }
 
-        private void ResetExchangeCurrenyRate(object sender, EventArgs e)
+        private void ResetCurrencyExchangeRate(object sender, EventArgs e)
         {
             if (!FPetraUtilsObject.SuppressChangeDetection)
             {
@@ -113,7 +116,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
             cmbDetailTransactionCurrency.SelectedValueChanged +=
-                new System.EventHandler(ResetExchangeCurrenyRate);
+                new System.EventHandler(ResetCurrencyExchangeRate);
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)
@@ -195,6 +198,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
+                btnGetSetExchangeRate.Enabled = (ARow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+
                 ((TFrmGLBatch)ParentForm).LoadTransactions(
                     ARow.LedgerNumber,
                     ARow.BatchNumber,
@@ -226,7 +231,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             DataView view = new DataView(FMainDS.ABatch);
 
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ",");
+            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ',');
             ABatchRow row = (ABatchRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber })[0].Row;
             ANewRow.LedgerNumber = row.LedgerNumber;
             ANewRow.BatchNumber = row.BatchNumber;

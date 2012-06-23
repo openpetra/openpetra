@@ -40,6 +40,7 @@ using Ict.Petra.Shared.Interfaces.MCommon.DataReader;
 #region ManualCode
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -84,13 +85,13 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.Cacheable
     public interface ICacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable);
+        void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MCommon.Instantiator.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
@@ -167,6 +168,13 @@ namespace Ict.Petra.Shared.Interfaces.MCommon.WebConnectors
     /// <summary>auto generated</summary>
     public interface IWebConnectorsNamespace : IInterface
     {
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector)</summary>
+        System.Boolean GetCurrentState(out System.String ACaption,
+                                       out System.String AStatusMessage,
+                                       out System.Int32 APercentageDone,
+                                       out System.Boolean AJobFinished);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector)</summary>
+        System.Boolean CancelJob();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MCommon.WebConnectors.TSequenceWebConnector)</summary>
         Int64 GetNextSequence(TSequenceNames ASequence);
     }

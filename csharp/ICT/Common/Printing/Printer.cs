@@ -611,6 +611,14 @@ namespace Ict.Common.Printing
         public abstract Boolean DrawLine(float AXPos1, float AXPos2, eLinePosition ALinePosition, eFont AFont);
 
         /// <summary>
+        /// Draws a line, at specified position
+        /// </summary>
+        public virtual void DrawLine(Int32 APenPixels, float AXPos1, float AYPos1, float AXPos2, float AYPos2)
+        {
+            // TTxtPrinter does not need this; so don't force implementation
+        }
+
+        /// <summary>
         /// draws a rectangle
         /// </summary>
         /// <returns>void</returns>
@@ -834,7 +842,50 @@ namespace Ict.Common.Printing
 
                     if (cell.borderWidth > 0)
                     {
-                        DrawRectangle(cell.borderWidth, currentXPos, CurrentYPos, cell.contentWidth, row.contentHeight);
+                        float horizontalDiff = Cm(0.1f);
+
+                        if (cell.borderBitField == (TTableCellGfx.BOTTOM | TTableCellGfx.TOP | TTableCellGfx.LEFT | TTableCellGfx.RIGHT))
+                        {
+                            DrawRectangle(cell.borderWidth, currentXPos, CurrentYPos - horizontalDiff, cell.contentWidth, row.contentHeight);
+                        }
+                        else
+                        {
+                            if ((cell.borderBitField & TTableCellGfx.TOP) != 0)
+                            {
+                                DrawLine(cell.borderWidth,
+                                    currentXPos,
+                                    CurrentYPos - horizontalDiff,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos - horizontalDiff);
+                            }
+
+                            if ((cell.borderBitField & TTableCellGfx.BOTTOM) != 0)
+                            {
+                                DrawLine(cell.borderWidth,
+                                    currentXPos,
+                                    CurrentYPos + row.contentHeight - horizontalDiff,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
+                            }
+
+                            if ((cell.borderBitField & TTableCellGfx.LEFT) != 0)
+                            {
+                                DrawLine(cell.borderWidth,
+                                    currentXPos,
+                                    CurrentYPos - 2,
+                                    currentXPos,
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
+                            }
+
+                            if ((cell.borderBitField & TTableCellGfx.RIGHT) != 0)
+                            {
+                                DrawLine(cell.borderWidth,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos - horizontalDiff,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
+                            }
+                        }
                     }
 
                     currentXPos += cell.contentWidth;

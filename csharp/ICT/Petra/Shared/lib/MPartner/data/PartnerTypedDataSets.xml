@@ -29,6 +29,7 @@
     <Table sqltable="p_bank"/>
     <Table sqltable="p_banking_details"/>
     <Table sqltable="p_partner_banking_details"/>
+    <Table sqltable="p_banking_details_usage"/>
     <Table sqltable="p_venue"/>
     <Table sqltable="p_foundation"/>
     <Table sqltable="p_foundation_deadline"/>
@@ -313,7 +314,7 @@
 
       <Field sqltable="p_partner" sqlfield="s_created_by_c"/>
       <Field sqltable="p_partner" sqlfield="s_date_created_d"/>
-      <Field sqltable="p_partner" sqlfield="s_modification_id_c"/>
+      <Field sqltable="p_partner" sqlfield="s_modification_id_t"/>
 
       <Field sqltable="p_person" sqlfield="p_first_name_c"/>
       <Field sqltable="p_person" sqlfield="p_family_name_c"/>
@@ -395,7 +396,10 @@
     <Table sqltable="p_church"/>
     <Table sqltable="p_bank"/>
     <Table sqltable="p_venue"/>
-  	
+
+    <Table sqltable="p_banking_details"/>
+    <Table sqltable="p_partner_banking_details"/>
+
     <Table sqltable="p_method_of_contact"/>
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>

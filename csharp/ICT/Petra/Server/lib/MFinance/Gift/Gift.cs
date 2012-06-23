@@ -53,7 +53,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <summary>
         /// constant for split gifts
         /// </summary>
-        public const String StrSplitGift = "Split Gift";
+        private static readonly string StrSplitGift = Catalog.GetString("Split Gift");
 
         /// <summary>
         /// get the details of the last gift of the partner

@@ -1,0 +1,40 @@
+﻿RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormTitle: Remittance Advice
+    FormType: browse
+    Template: windowPrint
+    WindowWidth: 754
+    WindowHeight: 623
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        pnlDialogContent:
+            Dock: Fill
+            Controls: [pnlTop, preLetters]
+        pnlTop:
+            Dock: Top
+            Controls:
+                Row1: [txtPaymentNum, btnLoad, btnCopy, btnPDF]
+                Row2: [lblLoadStatus]
+        txtPaymentNum:
+            Label: Payment Number
+            Format: Integer
+        btnLoad:
+            ActionClick: BtnLoad_Click
+            AcceptButton: true
+        btnCopy:
+            ActionClick: BtnCopy_Click
+            ToolTip: Copy text to clipboard
+        btnPDF:
+            ActionClick: BtnPDF_Click
+            ToolTip: Generate PDF document
+            Visible: false;
+        lblLoadStatus:
+            Label: Status
+        preLetters:
+            Dock: Fill
+    Menu:
+    Toolbar:
+           
+            

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1191,6 +1191,15 @@ namespace Ict.Common.DB
                 IDbDataAdapter TheAdapter = FDataBaseRDBMS.NewAdapter();
                 TheAdapter.SelectCommand = Command(ASqlStatement, AReadTransaction, AParametersArray);
                 FDataBaseRDBMS.FillAdapter(TheAdapter, ref ATypedDataTable, AStartRecord, AMaxRecords);
+
+                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                {
+                    TLogging.Log(((this.GetType().FullName + ".Select: finished filling IDbDataAdapter(DataTable '" +
+                                   ATypedDataTable.TableName) + "'). DT Row Count: " + ATypedDataTable.Rows.Count.ToString()));
+#if WITH_POSTGRESQL_LOGGING
+                    NpgsqlEventLog.Level = LogLevel.None;
+#endif
+                }
             }
             catch (Exception exp)
             {
@@ -1492,6 +1501,20 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
+        /// for debugging purposes, get the isolation level of the current transaction
+        /// </summary>
+        /// <returns>Isolation.Undefined if no transaction is open</returns>
+        public IsolationLevel GetIsolationLevel()
+        {
+            if (this.Transaction != null)
+            {
+                return this.Transaction.IsolationLevel;
+            }
+
+            return IsolationLevel.Unspecified;
+        }
+
+        /// <summary>
         /// Either starts a new Transaction on the current DB connection or returns
         /// a existing <see cref="TDBTransaction" />. What it does depends on two factors: whether a Transaction
         /// is currently running or not, and if so, whether it meets the specified
@@ -1508,21 +1531,14 @@ namespace Ict.Common.DB
         /// </param>
         /// <param name="ANewTransaction">True if a new Transaction was started and is returned,
         /// false if an already existing Transaction is returned</param>
-        /// <returns>Either an existing or a new Transaction that exactly meets the specified <see cref="IsolationLevel" /></returns>
-        /// <exception cref="EDBTransactionIsolationLevelWrongException">Thrown if the
-        /// <paramref name="ATryToEnforceIsolationLevel" /> Argument is set to
-        /// <see cref="TEnforceIsolationLevel.eilExact" /> and the existing Transactions' <see cref="IsolationLevel" /> does not
-        /// exactly match the <see cref="IsolationLevel" /> specified with Argument  <paramref name="ADesiredIsolationLevel" />,
-        /// <see cref="EDBTransactionIsolationLevelWrongException" /></exception>
-        /// <exception cref="EDBTransactionIsolationLevelTooLowException">Thrown if the
-        /// <paramref name="ATryToEnforceIsolationLevel" /> Argument is set to
-        /// <see cref="TEnforceIsolationLevel.eilExact" /> and the existing Transactions' <see cref="IsolationLevel" /> does not
-        /// exactly match the <see cref="IsolationLevel" /> specified with Argument  <paramref name="ADesiredIsolationLevel" />,
-        /// <see cref="EDBTransactionIsolationLevelWrongException" />Thrown if the
-        /// <paramref name="ATryToEnforceIsolationLevel" /> Argument is set to
-        /// <see cref="TEnforceIsolationLevel.eilMinimum" /> and the existing Transactions' <see cref="IsolationLevel" />
-        /// hasn't got at least the <see cref="IsolationLevel" /> specified with Argument
-        /// <paramref name="ADesiredIsolationLevel" />.</exception>
+        /// <returns>Either an existing or a new Transaction that exactly meets the specified IsolationLevel</returns>
+        /// <exception cref="EDBTransactionIsolationLevelWrongException">Thrown if the ATryToEnforceIsolationLevel Argument is set to
+        /// TEnforceIsolationLevel.eilExact and the existing Transactions' IsolationLevel does not
+        /// exactly match the IsolationLevel specified with Argument ADesiredIsolationLevel.</exception>
+        /// <exception cref="EDBTransactionIsolationLevelTooLowException">Thrown if ATryToEnforceIsolationLevel is set to
+        /// eilExact and the existing Transaction's Isolation Level does not exactly match the Isolation Level specified,</exception>
+        /// <exception cref="EDBTransactionIsolationLevelWrongException">Thrown if ATryToEnforceIsolationLevel Argument is set to
+        /// eilMinimum and the existing Transaction's Isolation Level hasn't got at least the Isolation Level specified.</exception>
         public TDBTransaction GetNewOrExistingTransaction(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel ATryToEnforceIsolationLevel,
             out Boolean ANewTransaction)
@@ -1546,11 +1562,12 @@ namespace Ict.Common.DB
                     {
                         case TEnforceIsolationLevel.eilExact:
                             throw new EDBTransactionIsolationLevelWrongException("Expected IsolationLevel: " +
-                            ADesiredIsolationLevel.ToString("G"));
+                            ADesiredIsolationLevel.ToString("G") + " but is: " + TheTransaction.IsolationLevel.ToString("G"));
 
                         case TEnforceIsolationLevel.eilMinimum:
                             throw new EDBTransactionIsolationLevelTooLowException(
-                            "Expected IsolationLevel: at least " + ADesiredIsolationLevel.ToString("G"));
+                            "Expected IsolationLevel: at least " + ADesiredIsolationLevel.ToString("G") +
+                            " but is: " + TheTransaction.IsolationLevel.ToString("G"));
                     }
                 }
             }
@@ -1719,6 +1736,11 @@ namespace Ict.Common.DB
                 {
                     int NumberOfRowsAffected = TransactionCommand.ExecuteNonQuery();
 
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log("Number of rows affected: " + NumberOfRowsAffected.ToString());
+                    }
+
                     if (ACommitTransaction)
                     {
                         CommitTransaction();
@@ -1833,8 +1855,6 @@ namespace Ict.Common.DB
             IDictionaryEnumerator BatchStatementEntryIterator;
             TSQLBatchStatementEntry BatchStatementEntryValue;
 
-            DbParameter[] ParametersArray;
-
             if (AStatementHashTable == null)
             {
                 throw new ArgumentNullException("AStatementHashTable", "This method must be called with an initialized HashTable!!");
@@ -1861,10 +1881,10 @@ namespace Ict.Common.DB
                     while (BatchStatementEntryIterator.MoveNext())
                     {
                         BatchStatementEntryValue = (TSQLBatchStatementEntry)BatchStatementEntryIterator.Value;
-                        BatchStatementEntryValue.GetWholeParameterArray(out ParametersArray);
                         CurrentBatchEntryKey = BatchStatementEntryIterator.Key.ToString();
                         CurrentBatchEntrySQLStatement = BatchStatementEntryValue.SQLStatement;
-                        ExecuteNonQuery(CurrentBatchEntrySQLStatement, ATransaction, false, ParametersArray);
+                        ExecuteNonQuery(CurrentBatchEntrySQLStatement, ATransaction, false,
+                            BatchStatementEntryValue.Parameters);
                         SqlCommandNumber = SqlCommandNumber + 1;
                     }
 
@@ -2605,7 +2625,7 @@ namespace Ict.Common.DB
     /// </summary>
     /// <remarks>Once instantiated, Batch Statment Entry values can
     /// only be read!</remarks>
-    public class TSQLBatchStatementEntry : object
+    public class TSQLBatchStatementEntry
     {
         /// <summary>Holds the SQL Statement for one Batch Statement Entry</summary>
         private string FSQLStatement;
@@ -2647,18 +2667,6 @@ namespace Ict.Common.DB
         {
             FSQLStatement = ASQLStatement;
             FParametersArray = AParametersArray;
-        }
-
-        /// <summary>
-        /// Returns the ParameterArray.
-        ///
-        /// </summary>
-        /// <param name="AParametersArray">ParameterArray
-        /// </param>
-        /// <returns>void</returns>
-        public void GetWholeParameterArray(out DbParameter[] AParametersArray)
-        {
-            AParametersArray = FParametersArray;
         }
 
         #endregion

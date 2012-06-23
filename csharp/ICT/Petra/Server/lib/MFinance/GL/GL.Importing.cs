@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -94,12 +94,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
             try
             {
-                ALedgerAccess.LoadByPrimaryKey(MainDS, LedgerNumber, Transaction);
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction);
                 AAnalysisTypeAccess.LoadAll(SetupDS, Transaction);
                 AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                 AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
-                ACostCentreAccess.LoadViaALedger(MainDS, LedgerNumber, Transaction);
-                AAccountAccess.LoadViaALedger(MainDS, LedgerNumber, Transaction);
+                ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+                AAccountAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
 
                 ABatchRow NewBatch = null;
                 AJournalRow NewJournal = null;
@@ -127,9 +127,9 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             NewBatch = MainDS.ABatch.NewRowTyped(true);
                             NewBatch.LedgerNumber = LedgerNumber;
-                            MainDS.ALedger[0].LastBatchNumber++;
-                            NewBatch.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-                            NewBatch.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                            LedgerTable[0].LastBatchNumber++;
+                            NewBatch.BatchNumber = LedgerTable[0].LastBatchNumber;
+                            NewBatch.BatchPeriod = LedgerTable[0].CurrentPeriod;
                             MainDS.ABatch.Rows.Add(NewBatch);
                             NewJournal = null;
 
@@ -201,11 +201,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.LastTransactionNumber++;
                             MainDS.ATransaction.Rows.Add(NewTransaction);
 
-
                             NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"));
 
-                            ACostCentreRow costcentre = (ACostCentreRow)MainDS.ACostCentre.Rows.Find(new object[] { LedgerNumber,
-                                                                                                                    NewTransaction.CostCentreCode });
+                            ACostCentreRow costcentre = (ACostCentreRow)SetupDS.ACostCentre.Rows.Find(new object[] { LedgerNumber,
+                                                                                                                     NewTransaction.CostCentreCode });
 
                             // check if cost centre exists, and is a posting costcentre.
                             // check if cost centre is active.
@@ -229,7 +228,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"));
 
-                            AAccountRow account = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { LedgerNumber, NewTransaction.AccountCode });
+                            AAccountRow account = (AAccountRow)SetupDS.AAccount.Rows.Find(new object[] { LedgerNumber, NewTransaction.AccountCode });
 
                             // check if account exists, and is a posting account.
                             // check if account is active
@@ -314,7 +313,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }
 
-                            if (AMessages.HasCriticalError())
+                            if (AMessages.HasCriticalErrors)
                             {
                                 return false;
                             }
@@ -352,7 +351,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 //Finally save all pending changes (last xxx number is updated)
                 if (ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AMessages))
                 {
-                    if (ALedgerAccess.SubmitChanges(MainDS.ALedger, Transaction, out AMessages))
+                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
                     {
                         if (AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction, out AMessages))
                         {

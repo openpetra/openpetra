@@ -184,7 +184,7 @@ list of available commands:
               commandline="/C start xsp4.bat --verbose --root . --port 8081 --applications /:."
               spawn="true">
         <environment>
-          <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
+          <variable name="PATH" path="${MonoBinPath};${environment::get-variable('PATH')}"/>
           <variable name="MONO_PATH" path="${MonoBinPath}\..\lib\mono\4.0"/>
           <variable name="MONO_OPTIONS" value="--debug"/>
           <!-- see http://www.mono-project.com/IOMap -->

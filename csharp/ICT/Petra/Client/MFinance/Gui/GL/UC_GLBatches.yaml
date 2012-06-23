@@ -20,7 +20,8 @@ RootNode:
             Dock: Fill
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
         pnlInfo: 
-            Controls: [pnlLedgerInfo, rgrShowBatches]
+            ControlsOrientation: horizontal
+            Controls: [rgrShowBatches, pnlPeriodFilter]
             Dock: Top
         rgrShowBatches: 
             Label: Show batches available for
@@ -28,9 +29,10 @@ RootNode:
             SuppressChangeDetection: true
             OptionalValues: [Posting, =Editing, All]
             OnChange: ChangeBatchFilter
-        pnlLedgerInfo:
-            Controls: [txtLedgerNumber]
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        cmbYearFilter: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
+        cmbPeriodFilter: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
+        pnlPeriodFilter:
+            Controls: [cmbYearFilter, cmbPeriodFilter]
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
@@ -56,7 +58,7 @@ RootNode:
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
         txtDetailBatchControlTotal: {Label=Batch Hash Total, Type=Currency, Format=Currency}
         lblValidDateRange:
-        dtpDetailDateEffective: {Label=Effective Date}
+        dtpDetailDateEffective: {Label=Effective Date, Validation = true}
         tbrTabPage: {NoAttribute=true}
         mnuTabPage: {NoAttribute=true}
     Menu:

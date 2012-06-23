@@ -33,7 +33,6 @@ RootNode:
                 YearsOfExperience: {Label=Years Of Experience}
                 YearsOfExperienceAsOf: {Label=as of, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: LanguageCode ASC
             
         pnlDetails:
             Dock: Bottom
@@ -45,10 +44,10 @@ RootNode:
                 Row2: [cmbLanguageLevel, btnShowLanguageLevelExplanation]
                 Row3: [txtComment]
                 
-        cmbLanguageCode: {Label=Language, DataField=PmPersonLanguage.LanguageCode, List=LanguageCodeList, Width=200, ColSpan=3}
+        cmbLanguageCode: {Label=Language, DataField=PmPersonLanguage.LanguageCode, List=LanguageCodeList, Width=200, ColSpan=2, Validation=true}
         txtYearsOfExperience: {DataField=PmPersonLanguage.YearsOfExperience, Width=25, Format=Integer}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonLanguage.YearsOfExperienceAsOf}
-        cmbLanguageLevel: {Label=Level, List=LanguageLevelList, Width=170}
+        cmbLanguageLevel: {Label=Level, List=LanguageLevelList, Width=170, Validation=true}
         btnShowLanguageLevelExplanation:
         txtComment:
             DataField: PmPersonLanguage.Comment
@@ -56,4 +55,4 @@ RootNode:
             ScrollBars: Vertical
             Height: 110
             Width: 380
-            ColSpan: 3
+            ColSpan: 2

@@ -307,6 +307,17 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// Draws a line, at specified position
+        /// </summary>
+        public override void DrawLine(Int32 APenPixels, float AXPos1, float AYPos1, float AXPos2, float AYPos2)
+        {
+            if (PrintingMode == ePrintingMode.eDoPrint)
+            {
+                FXGraphics.DrawLine(FXBlackPen, AXPos1, AYPos1, AXPos2, AYPos2);
+            }
+        }
+
+        /// <summary>
         /// draw a rectangle
         /// </summary>
         /// <param name="APenPixels"></param>

@@ -5,7 +5,7 @@
 //       christiank
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,6 +48,12 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>Publication Valid</summary>
         public const String PUBLICATION_VALID_TEXT_COLUMNNAME = "PublicationValidText";
+
+        /// <summary>Banking Type</summary>
+        public const Int16 BANKINGTYPE_BANKACCOUNT = 0;
+
+        /// <summary>Banking Details Usage Type</summary>
+        public const String BANKINGUSAGETYPE_MAIN = "MAIN";
 
         /// <summary>Subscription Statuses</summary>
         public const String SUBSCRIPTIONS_STATUS_PERMANENT = "PERMANENT";
@@ -96,6 +102,9 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>Partner Types (Special Types)</summary>
         public const String PARTNERTYPE_EX_WORKER = "EX-WORKER";
+
+        /// <summary>Partner Types (Special Types)</summary>
+        public const String PARTNERTYPE_WORKER = "WORKER";
 
         /// <summary>Partner Types</summary>
         public const String PARTNERTYPE_LEDGER = "LEDGER";
@@ -172,6 +181,15 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>1-FEMALE</summary>
         public const String ADDRESSEETYPE_FEMALE = "1-FEMALE";
 
+        /// <summary>addressee type</summary>
+        public const String ADDRESSEETYPE_COUPLE = "COUPLE";
+
+        /// <summary>addressee type</summary>
+        public const String ADDRESSEETYPE_FAMILY = "FAMILY";
+
+        /// <summary>addressee type</summary>
+        public const String ADDRESSEETYPE_ORGANISATION = "ORGANISA";
+
         /// <summary>DEFAULT</summary>
         public const String ADDRESSEETYPE_DEFAULT = "DEFAULT";
 
@@ -192,6 +210,9 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>HOME</summary>
         public const String LOCATIONTYPE_HOME = "HOME";
+
+        /// <summary>Location type</summary>
+        public const String LOCATIONTYPE_BUSINESS = "BUSINESS";
 
         /// <summary>PartnerClass</summary>
         public const String PARTNERIMPORT_PARTNERCLASS = "PartnerClass";

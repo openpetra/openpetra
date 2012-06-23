@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     Cursor.Current = Cursors.WaitCursor;
 
-                    bool LoadBudgetData = TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(ALedgerNumber);
+                    TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(ALedgerNumber);
 
                     TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(ALedgerNumber, true, out AVerificationResult);
 

@@ -469,7 +469,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
 
         #endregion ManualCode
         /// generated method from interface
-        public System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+        public System.Data.DataTable GetCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                                        System.String AHashCode,
                                                        out System.Type AType)
         {
@@ -479,7 +479,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable)
+        public void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable)
         {
             #region ManualCode
             System.Type TmpType;
@@ -488,7 +488,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
         }
 
         /// generated method from interface
-        public void RefreshCacheableTable(Ict.Petra.Shared.MCommon.TCacheableCommonTablesEnum ACacheableTable,
+        public void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
                                           out System.Data.DataTable ADataTable)
         {
             #region ManualCode
@@ -771,6 +771,23 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public System.Boolean GetCurrentState(out System.String ACaption,
+                                              out System.String AStatusMessage,
+                                              out System.Int32 APercentageDone,
+                                              out System.Boolean AJobFinished)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector), "GetCurrentState", ";STRING;STRING;INT;BOOL;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector.GetCurrentState(out ACaption, out AStatusMessage, out APercentageDone, out AJobFinished);
+        }
+
+        /// generated method from connector
+        public System.Boolean CancelJob()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector), "CancelJob", ";");
+            return Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector.CancelJob();
         }
 
         /// generated method from connector

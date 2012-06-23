@@ -54,7 +54,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
     /// and which would be retrieved numerous times from the Server as UI windows
     /// are opened.
     /// </summary>
-    public class TPartnerCacheable : TCacheableTablesLoader
+    public partial class TPartnerCacheable : TCacheableTablesLoader
     {
         /// time when this object was instantiated
         private DateTime FStartTime;
@@ -87,6 +87,22 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
         }
 #endif
 
+#region ManualCode
+        /// <summary>
+        /// Returns a certain cachable DataTable that contains all columns and all
+        /// rows of a specified table.
+        ///
+        /// @comment Wrapper for other GetCacheableTable method
+        /// </summary>
+        ///
+        /// <param name="ACacheableTable">Tells what cacheable DataTable should be returned.</param>
+        /// <returns>DataTable</returns>
+        public DataTable GetCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable)
+        {
+            System.Type TmpType;
+            return GetCacheableTable(ACacheableTable, "", false, out TmpType);
+        }
+#endregion ManualCode
         /// <summary>
         /// Returns a certain cachable DataTable that contains all columns and all
         /// rows of a specified table.
@@ -144,6 +160,12 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 
                     switch(ACacheableTable)
                     {
+                        case TCacheableSubscriptionsTablesEnum.PublicationList:
+                        {
+                            DataTable TmpTable = PPublicationAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheableSubscriptionsTablesEnum.PublicationCostList:
                         {
                             DataTable TmpTable = PPublicationCostAccess.LoadAll(ReadTransaction);
@@ -162,9 +184,9 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
-                        case TCacheableSubscriptionsTablesEnum.PublicationList:
+                        case TCacheableSubscriptionsTablesEnum.PublicationInfoList:
                         {
-                            DataTable TmpTable = GetPublicationListTable(ReadTransaction, TableName);
+                            DataTable TmpTable = GetPublicationInfoListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -217,6 +239,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Subscriptions.SaveChangedStandardCacheableTable...");
@@ -233,27 +256,75 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                 {
                     switch (ACacheableTable)
                     {
-                        case TCacheableSubscriptionsTablesEnum.PublicationCostList:
-                            if (PPublicationCostAccess.SubmitChanges((PPublicationCostTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                        case TCacheableSubscriptionsTablesEnum.PublicationList:
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidatePublicationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePublicationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (PPublicationAccess.SubmitChanges((PPublicationTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
+                            break;
+                        case TCacheableSubscriptionsTablesEnum.PublicationCostList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                ValidatePublicationCostList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidatePublicationCostListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (PPublicationCostAccess.SubmitChanges((PPublicationCostTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
                             break;
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList:
-                            if (PReasonSubscriptionGivenAccess.SubmitChanges((PReasonSubscriptionGivenTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateReasonSubscriptionGivenList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateReasonSubscriptionGivenListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (PReasonSubscriptionGivenAccess.SubmitChanges((PReasonSubscriptionGivenTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
                         case TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList:
-                            if (PReasonSubscriptionCancelledAccess.SubmitChanges((PReasonSubscriptionCancelledTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
+                            if (ASubmitTable.Rows.Count > 0)
                             {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
+                                ValidateReasonSubscriptionCancelledList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ValidateReasonSubscriptionCancelledListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (PReasonSubscriptionCancelledAccess.SubmitChanges((PReasonSubscriptionCancelledTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
                             }
+
                             break;
+
                         default:
 
                             throw new Exception(
@@ -282,21 +353,56 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
                 }
             }
 
-            /*
-            /// If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-            /// Cache and inform all other Clients that they need to reload this Cacheable DataTable
-            /// the next time something in the Client accesses it.
-             */
+            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            // the next time something in the Client accesses it.
             if (SubmissionResult == TSubmitChangesResult.scrOK)
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+#region ManualCode
+				// dependent tables: PublicationInfoList refers to same underlying table as PublicationList
+				// and therefore needs to be updated as well when Publications are modified
+				if (ACacheableTable == TCacheableSubscriptionsTablesEnum.PublicationList)
+				{
+	                GetCacheableTable(TCacheableSubscriptionsTablesEnum.PublicationInfoList, 
+					                  String.Empty, true, out TmpType);
+				}
+#endregion ManualCode
+            }
+
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
 
             return SubmissionResult;
         }
 
-        private DataTable GetPublicationListTable(TDBTransaction AReadTransaction, string ATableName)
+#region Data Validation
+
+        partial void ValidatePublicationList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePublicationListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePublicationCostList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePublicationCostListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateReasonSubscriptionGivenList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateReasonSubscriptionGivenListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateReasonSubscriptionCancelledList(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateReasonSubscriptionCancelledListManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+#endregion Data Validation
+
+        private DataTable GetPublicationInfoListTable(TDBTransaction AReadTransaction, string ATableName)
         {
 #region ManualCode
 			DataColumn ValidityColumn;

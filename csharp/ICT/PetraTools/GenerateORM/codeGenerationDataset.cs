@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -251,7 +251,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                     customField.strTypeDotNet = TXMLParser.GetAttribute(tableNodes, "type");
                                     customField.strDescription = TXMLParser.GetAttribute(tableNodes, "comment");
                                     customField.strDefault = TXMLParser.GetAttribute(tableNodes, "initial");
-                                    table.grpTableField.List.Add(customField);
+                                    table.grpTableField.Add(customField);
 
                                     OverloadTable = true;
                                 }
@@ -272,7 +272,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                         field.strDescription = TXMLParser.GetAttribute(tableNodes, "comment");
                                     }
 
-                                    table.grpTableField.List.Add(field);
+                                    table.grpTableField.Add(field);
 
                                     OverloadTable = true;
                                 }
@@ -302,14 +302,14 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 table.strVariableNameInDataset = variablename;
 
                                 // set tableid
-                                table.order = DataSetTableIdCounter++;
+                                table.iOrder = DataSetTableIdCounter++;
 
                                 // TODO: can we derive from the base table, and just overload a few functions?
                                 CodeGenerationTable.InsertTableDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
                                 CodeGenerationTable.InsertRowDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
                             }
 
-                            tables.Add(table.tableorig, table);
+                            tables.Add(variablename, table);
 
                             AddTableToDataset(tabletype, variablename,
                                 snippetDataset);
@@ -366,7 +366,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 null);
 
                             // set TableId
-                            customTable.order = DataSetTableIdCounter++;
+                            customTable.iOrder = DataSetTableIdCounter++;
                             customTable.strDescription = TXMLParser.GetAttribute(curChild, "comment");
                             customTable.strName = tabletype;
                             customTable.strDotNetName = tabletype;
@@ -381,7 +381,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                     customField.strTypeDotNet = TXMLParser.GetAttribute(customTableNodes, "type");
                                     customField.strDescription = TXMLParser.GetAttribute(customTableNodes, "comment");
                                     customField.strDefault = TXMLParser.GetAttribute(customTableNodes, "initial");
-                                    customTable.grpTableField.List.Add(customField);
+                                    customTable.grpTableField.Add(customField);
                                 }
 
                                 if (customTableNodes.Name.ToLower() == "field")
@@ -400,7 +400,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                         field.strDescription = TXMLParser.GetAttribute(customTableNodes, "comment");
                                     }
 
-                                    customTable.grpTableField.List.Add(field);
+                                    customTable.grpTableField.Add(field);
                                 }
 
                                 if (customTableNodes.Name.ToLower() == "primarykey")
@@ -410,7 +410,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                     primKeyConstraint.strType = "primarykey";
                                     primKeyConstraint.strThisFields = StringHelper.StrSplit(TXMLParser.GetAttribute(customTableNodes,
                                             "thisFields"), ",");
-                                    customTable.grpConstraint.List.Add(primKeyConstraint);
+                                    customTable.grpConstraint.Add(primKeyConstraint);
                                 }
 
                                 customTableNodes = customTableNodes.NextSibling;
@@ -430,7 +430,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     foreach (TDataSetTable table in tables.Values)
                     {
                         // todo? also other constraints, not only from original table?
-                        foreach (TConstraint constraint in table.grpConstraint.List)
+                        foreach (TConstraint constraint in table.grpConstraint)
                         {
                             if ((constraint.strType == "foreignkey") && tables.ContainsKey(constraint.strOtherTable))
                             {

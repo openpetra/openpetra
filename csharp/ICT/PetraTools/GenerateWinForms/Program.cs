@@ -23,9 +23,11 @@
 //
 using System;
 using System.Xml;
+using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Ict.Common;
 using Ict.Common.IO; // Implicit reference
 using Ict.Tools.DBXML;
@@ -80,13 +82,14 @@ namespace Ict.Tools.GenerateWinForms
                     new TLogging("generatewinforms.log");
                 }
 
-                TLogging.DebugLevel = TAppSettingsManager.GetInt16("DebugLevel", 10);
+                TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
                 if (!TAppSettingsManager.HasValue("op"))
                 {
                     Console.WriteLine("call: GenerateWinForms -op:generate -ymlfile:c:\\test.yaml -petraxml:petra.xml -localisation:en");
                     Console.WriteLine("  or: GenerateWinForms -op:generate -ymldir:c:\\myclient -petraxml:petra.xml -localisation:en");
                     Console.WriteLine("  or: GenerateWinForms -op:clean -ymldir:c:\\myclient");
+                    Console.WriteLine("  or: GenerateWinForms -op:preview");
                     Console.Write("Press any key to continue . . . ");
                     Console.ReadLine();
                     Environment.Exit(-1);
@@ -120,6 +123,31 @@ namespace Ict.Tools.GenerateWinForms
                         DeleteGeneratedFile(file, "-generated.Designer.cs");
                         DeleteGeneratedFile(file, "-generated.resx");
                     }
+                }
+                else if (TAppSettingsManager.GetValue("op") == "preview")
+                {
+                    string SelectedLocalisation = null;         // none selected by default; winforms autosize works quite well
+
+                    if (TAppSettingsManager.HasValue("localisation"))
+                    {
+                        SelectedLocalisation = TAppSettingsManager.GetValue("localisation");
+                    }
+
+                    TDataBinding.FPetraXMLStore = new TDataDefinitionStore();
+                    Console.WriteLine("parsing " + TAppSettingsManager.GetValue("petraxml", true));
+                    TDataDefinitionParser parser = new TDataDefinitionParser(TAppSettingsManager.GetValue("petraxml", true));
+                    parser.ParseDocument(ref TDataBinding.FPetraXMLStore, true, true);
+
+                    TFrmYamlPreview PreviewWindow = new TFrmYamlPreview(
+                        TAppSettingsManager.GetValue("ymlfile"),
+                        SelectedLocalisation);
+
+                    AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
+                    Application.ThreadException += new ThreadExceptionEventHandler(UnhandledThreadExceptionHandler);
+
+                    PreviewWindow.ShowDialog();
+
+                    return;
                 }
                 else if (TAppSettingsManager.GetValue("op") == "generate")
                 {
@@ -204,6 +232,16 @@ namespace Ict.Tools.GenerateWinForms
                 Environment.Exit(-1);
             }
         }
+
+        private static void UnhandledExceptionHandler(object ASender, UnhandledExceptionEventArgs AEventArgs)
+        {
+            TLogging.Log(AEventArgs.ExceptionObject.ToString());
+        }
+
+        private static void UnhandledThreadExceptionHandler(object ASender, ThreadExceptionEventArgs AEventArgs)
+        {
+            TLogging.Log(AEventArgs.Exception.ToString());
+        }
     }
 
 
@@ -220,8 +258,14 @@ namespace Ict.Tools.GenerateWinForms
         /// <returns>-1 if node1 depends on node2, +1 if node2 depends on node1, and 0 if they are identical</returns>
         public int Compare(string node1, string node2)
         {
-            string path1 = Path.GetDirectoryName(node1);
-            string path2 = Path.GetDirectoryName(node2);
+            string path1 = Path.GetDirectoryName(node1).Replace("\\", "/");
+            string path2 = Path.GetDirectoryName(node2).Replace("\\", "/");
+
+            if (path1.IndexOf("/Client/") != -1)
+            {
+                path1 = path1.Substring(path1.IndexOf("/Client/") + 8);
+                path2 = path2.Substring(path2.IndexOf("/Client/") + 8);
+            }
 
             if ((path1.Length > path2.Length) && path1.StartsWith(path2))
             {
@@ -235,10 +279,31 @@ namespace Ict.Tools.GenerateWinForms
 
             if (path1 == path2)
             {
-                return 0;
+                // compare the filename
+                return node1.CompareTo(node2);
             }
 
-            return -1;
+            string module1 = path1.Split(new char[] { '/' })[0];
+            string module2 = path2.Split(new char[] { '/' })[0];
+
+            if (module1 != module2)
+            {
+                // first process MReporting, so that we can link to it from the old Finance main screen (#695)
+                string ModuleOrder = "app,CommonForms,MCommon,MReporting,MConference,MPartner,MPersonnel,MFinance,MSysMan";
+
+                if (ModuleOrder.IndexOf(module1) < ModuleOrder.IndexOf(module2))
+                {
+                    return -1;
+                }
+                else if (ModuleOrder.IndexOf(module1) > ModuleOrder.IndexOf(module2))
+                {
+                    return +1;
+                }
+
+                return module1.CompareTo(module2);
+            }
+
+            return path1.CompareTo(path2);
         }
     }
 }

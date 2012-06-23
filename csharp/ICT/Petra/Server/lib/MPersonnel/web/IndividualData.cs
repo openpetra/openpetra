@@ -659,7 +659,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmSpecialNeedTable.GetTableName()].Merge(AInspectDS.PmSpecialNeed);
                     }
                     else
@@ -687,7 +687,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPersonAbilityTable.GetTableName()].Merge(AInspectDS.PmPersonAbility);
                     }
                     else
@@ -715,7 +715,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(AInspectDS.PmPassportDetails);
                     }
                     else
@@ -743,7 +743,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPersonalDataTable.GetTableName()].Merge(AInspectDS.PmPersonalData);
                     }
                     else
@@ -771,7 +771,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(AInspectDS.PmPersonLanguage);
                     }
                     else
@@ -799,7 +799,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPersonEvaluationTable.GetTableName()].Merge(AInspectDS.PmPersonEvaluation);
                     }
                     else
@@ -827,7 +827,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmStaffDataTable.GetTableName()].Merge(AInspectDS.PmStaffData);
                     }
                     else
@@ -855,7 +855,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPersonSkillTable.GetTableName()].Merge(AInspectDS.PmPersonSkill);
                     }
                     else
@@ -883,7 +883,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmPastExperienceTable.GetTableName()].Merge(AInspectDS.PmPastExperience);
                     }
                     else
@@ -911,7 +911,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmDocumentTable.GetTableName()].Merge(AInspectDS.PmDocument);
                     }
                     else
@@ -1007,7 +1007,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     {
                         SubmissionResult = TSubmitChangesResult.scrOK;
 
-                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_c is returned correctly to the Partner Edit screen!
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmJobAssignmentTable.GetTableName()].Merge(AInspectDS.PmJobAssignment);
                     }
                     else

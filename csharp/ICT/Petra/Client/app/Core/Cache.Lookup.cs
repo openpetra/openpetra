@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 

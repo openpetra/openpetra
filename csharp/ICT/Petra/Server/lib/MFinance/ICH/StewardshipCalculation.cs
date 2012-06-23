@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, christophert, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Data;
+using System.Data.Odbc;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
@@ -38,6 +39,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
@@ -49,13 +51,14 @@ using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MFinance.ICH
+namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 {
-    /// <summary>
-    /// Class for the performance of the Stewardship Calculation
-    /// </summary>
-    public class TStewardshipCalculation
+/// <summary>
+/// Class for the performance of the Stewardship Calculation
+/// </summary>
+    public class TStewardshipCalculationWebConnector
     {
         /// <summary>
         /// Performs the ICH Stewardship Calculation.
@@ -64,43 +67,50 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="APeriodNumber"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>True if calculation succeeded, otherwise false.</returns>
-        public bool PerformStewardshipCalculation(int ALedgerNumber,
+        [RequireModulePermission("FINANCE-3")]
+        public static bool PerformStewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
             out TVerificationResultCollection AVerificationResult
             )
         {
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine(this.GetType().FullName + ": PerformStewardshipCalculation called.");
+                //Console.WriteLine(this.GetType().FullName + ": PerformStewardshipCalculation called.");
             }
 
             AVerificationResult = new TVerificationResultCollection();
 
             //Begin the transaction
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            bool NewTransaction = false;
+
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
                 if (GenerateAdminFeeBatch(ALedgerNumber, APeriodNumber, false, DBTransaction, ref AVerificationResult))
                 {
-                    //&& PostToLedger(ALedgerNumber, APeriodNumber, DBTransaction, ref AVerificationResult))
-
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
 
                     if (TLogging.DL >= 8)
                     {
-                        Console.WriteLine(this.GetType().FullName + ".PerformStewardshipCalculation: Transaction committed!");
+                        //Console.WriteLine(this.GetType().FullName + ".PerformStewardshipCalculation: Transaction committed!");
                     }
 
-                    return true;
+                    return GenerateICHStewardshipBatch(ALedgerNumber, APeriodNumber, ref AVerificationResult);
                 }
                 else
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
 
                     if (TLogging.DL >= 8)
                     {
-                        Console.WriteLine(this.GetType().FullName + ".PerformStewardshipCalculation: Transaction ROLLED BACK because of an error!");
+                        //Console.WriteLine(this.GetType().FullName + ".PerformStewardshipCalculation: Transaction ROLLED BACK because of an error!");
                     }
 
                     return false;
@@ -112,8 +122,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                 if (TLogging.DL >= 8)
                 {
-                    Console.WriteLine(
-                        this.GetType().FullName + ".PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
+                    //Console.WriteLine(this.GetType().FullName + ".PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
                 }
 
                 TLogging.Log(Exp.Message);
@@ -133,25 +142,26 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APeriodNumber"></param>
-        /// <param name="DBTransaction"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>True if successful</returns>
-        private bool PostToLedger(int ALedgerNumber,
+        [RequireModulePermission("FINANCE-3")]
+        public static bool GenerateICHStewardshipBatch(int ALedgerNumber,
             int APeriodNumber,
-            TDBTransaction DBTransaction,
             ref TVerificationResultCollection AVerificationResult)
         {
+            string StandardCostCentre = (ALedgerNumber * 100).ToString("0000");
+
             bool IsSuccessful = false;
-            bool DrCrIndicator;
+            bool DrCrIndicator = true;
             bool IncomeDrCrIndicator;
             bool ExpenseDrCrIndicator;
             bool AccountDrCrIndicator;
-            //string BatchDescription = "ICH Stewardship";
 
-            string IncomeAccounts;
-            string ExpenseAccounts;
+            string IncomeAccounts = string.Empty;
+            string ExpenseAccounts = string.Empty;
 
             int ICHProcessing;
+            decimal ICHTotal = 0;
 
             decimal SettlementAmount;
             decimal IncomeAmount;
@@ -160,18 +170,21 @@ namespace Ict.Petra.Server.MFinance.ICH
             decimal IncomeAmount2;
             decimal ExpenseAmount2;
             decimal XferAmount2;
-            decimal ICHTotal = 0;
 
             bool TransferFound = false;
+            bool PostICHBatch = false;
 
             string CurrentAccountCode;
             decimal AmountInBaseCurrency;
             decimal AmountInIntlCurrency;
 
+            DateTime PeriodStartDate;
+            DateTime PeriodEndDate;
+
             int GLBatchNumber = 0;
             int GLJournalNumber = 0;
             int GLTransactionNumber = 0;
-            string BatchDescription = "ICH Clearing";
+            string BatchDescription = string.Empty; //"ICH Clearing";
 
             //Error handling
             string ErrorContext = String.Empty;
@@ -179,30 +192,64 @@ namespace Ict.Petra.Server.MFinance.ICH
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
+            bool NewTransaction = false;
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             //Generating the ICH batch...
-
-            //Tables needed: AccountingPeriod, Ledger, Account, Cost Centre, Transaction, Gift Batch, ICHStewardship
-            GLBatchTDS MainDS = new GLBatchTDS();
-
             try
             {
-                //Load tables needed
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, DBTransaction);
-                AAccountingPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
+                TFinancialYear.GetStartAndEndDateOfPeriod(ALedgerNumber, APeriodNumber, out PeriodStartDate, out PeriodEndDate, DBTransaction);
+
+                //Create a new batch
+                GLBatchTDS MainDS = TGLPosting.CreateABatch(ALedgerNumber);
+
+                ABatchRow NewBatchRow = MainDS.ABatch[0];
+                GLBatchNumber = NewBatchRow.BatchNumber;
+
+                //Run RUN gl1110o.p to create a batch
+                BatchDescription = "ICH Stewardship";
+                NewBatchRow.BatchDescription = BatchDescription;
+                NewBatchRow.DateEffective = PeriodEndDate;
+
+                //Load tables needed: AccountingPeriod, Ledger, Account, Cost Centre, Transaction, Gift Batch, ICHStewardship
+                GLPostingTDS PostingDS = new GLPostingTDS();
+                ALedgerAccess.LoadByPrimaryKey(PostingDS, ALedgerNumber, DBTransaction);
+                AAccountAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+                ACostCentreAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+                AIchStewardshipAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+                AAccountHierarchyAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
+
                 ATransactionAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                AIchStewardshipAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
                 AJournalAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
+
+                ALedgerRow LedgerRow = (ALedgerRow)PostingDS.ALedger.Rows[0];
+
+                //Create a new journal in the Batch
+                //Run gl1120o.p
+                AJournalRow NewJournalRow = MainDS.AJournal.NewRowTyped();
+                NewJournalRow.LedgerNumber = ALedgerNumber;
+                NewJournalRow.BatchNumber = GLBatchNumber;
+                NewJournalRow.JournalNumber = ++NewBatchRow.LastJournal;
+                NewJournalRow.JournalDescription = BatchDescription;
+                NewJournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+                NewJournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+                NewJournalRow.TransactionCurrency = LedgerRow.BaseCurrency;
+                NewJournalRow.ExchangeRateToBase = 1;
+                NewJournalRow.DateEffective = PeriodEndDate;
+                NewJournalRow.JournalPeriod = APeriodNumber;
+                MainDS.AJournal.Rows.Add(NewJournalRow);
+
+                GLJournalNumber = NewJournalRow.JournalNumber;
+                GLTransactionNumber = NewJournalRow.LastTransactionNumber + 1;
 
                 // ***************************
                 //  Generate the transactions
                 // ***************************
+                // Ln: 242
 
-                AAccountRow AccountRow = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.INCOME_HEADING });
+                AAccountRow AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.INCOME_HEADING });
 
+                //Process income accounts
                 if (AccountRow != null)
                 {
                     IncomeDrCrIndicator = AccountRow.DebitCreditIndicator;
@@ -218,13 +265,16 @@ namespace Ict.Petra.Server.MFinance.ICH
                     throw new System.InvalidOperationException(ErrorMessage);
                 }
 
-                IncomeAccounts = BuildChildAccountList(ALedgerNumber,
+                BuildChildAccountList(ALedgerNumber,
                     AccountRow,
                     DBTransaction,
+                    ref IncomeAccounts,
                     ref AVerificationResult);
 
+
+                //Process expense accounts
                 AccountRow = null;
-                AccountRow = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.EXPENSE_HEADING });
+                AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.EXPENSE_HEADING });
 
                 if (AccountRow != null)
                 {
@@ -241,13 +291,16 @@ namespace Ict.Petra.Server.MFinance.ICH
                     throw new System.InvalidOperationException(ErrorMessage);
                 }
 
-                ExpenseAccounts = BuildChildAccountList(ALedgerNumber,
+                BuildChildAccountList(ALedgerNumber,
                     AccountRow,
                     DBTransaction,
+                    ref ExpenseAccounts,
                     ref AVerificationResult);
 
+
+                //Process P&L accounts
                 AccountRow = null;
-                AccountRow = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.PROFIT_AND_LOSS_HEADING });
+                AccountRow = (AAccountRow)PostingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.PROFIT_AND_LOSS_HEADING });
 
                 if (AccountRow != null)
                 {
@@ -264,30 +317,26 @@ namespace Ict.Petra.Server.MFinance.ICH
                     throw new System.InvalidOperationException(ErrorMessage);
                 }
 
-                // string PLAccounts = BuildChildAccountList(ALedgerNumber,
-                //    AccountRow,
-                //    DBTransaction,
-                //    ref AVerificationResult);
+                // find out the stewardship number - Ln 275
+                // Increment the Last ICH No.
+                ICHProcessing = ++LedgerRow.LastIchNumber;
 
-                //Increment the Last ICH No.
-                ALedgerRow LedgerRow = (ALedgerRow)MainDS.ALedger.Rows[0];
-                ICHProcessing = LedgerRow.LastIchNumber + 1;
-                LedgerRow.LastIchNumber = ICHProcessing;
 
-                string CostCentre = "";
-
+                //Iterate through the cost centres
                 string WhereClause = ACostCentreTable.GetPostingCostCentreFlagDBName() + " = True" +
-                                     " AND UPPER('" + ACostCentreTable.GetCostCentreTypeDBName() + "')" +
-                                     " = '" + MFinanceConstants.FOREIGN_CC_TYPE + "'";
+                                     " AND " + ACostCentreTable.GetCostCentreTypeDBName() +
+                                     " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'";
                 string OrderBy = ACostCentreTable.GetCostCentreCodeDBName();
 
-                DataRow[] FoundCCRows = MainDS.ACostCentre.Select(WhereClause, OrderBy);
+                DataRow[] FoundCCRows = PostingDS.ACostCentre.Select(WhereClause, OrderBy);
+
+                AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
 
                 foreach (DataRow untypedCCRow in FoundCCRows)
                 {
                     ACostCentreRow CostCentreRow = (ACostCentreRow)untypedCCRow;
 
-                    CostCentre = CostCentreRow.CostCentreCode;
+                    string CostCentre = CostCentreRow.CostCentreCode;
 
                     //Initialise values for each Cost Centre
                     SettlementAmount = 0;
@@ -300,6 +349,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     TransferFound = false;
 
+                    /* 0008 Go through all of the transactions. Ln:301 */
                     WhereClause = ATransactionTable.GetCostCentreCodeDBName() + " = '" + CostCentre + "'" +
                                   " AND " + ATransactionTable.GetTransactionStatusDBName() + " = " + MFinanceConstants.POSTED +
                                   " AND " + ATransactionTable.GetIchNumberDBName() + " = 0";
@@ -328,6 +378,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         if (FoundJournalRows != null)
                         {
                             TransferFound = true;
+                            PostICHBatch = true;
                             TransactionRow.IchNumber = ICHProcessing;
 
                             if (TransactionRow.DebitCreditIndicator == AccountDrCrIndicator)
@@ -388,17 +439,10 @@ namespace Ict.Petra.Server.MFinance.ICH
                         }
                     }  //end of foreach transaction
 
-                    //Get the accounting period start and end dates
-                    DataRow AccountingPeriodRows = MainDS.Tables["AccountingPeriodTable"].Rows.Find(new object[] { ALedgerNumber, APeriodNumber });
-                    AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodRows;
-
-                    DateTime PeriodStartDate = AccountingPeriodRow.PeriodStartDate;
-                    DateTime PeriodEndDate = AccountingPeriodRow.PeriodEndDate;
-
                     /* now mark all the gifts as processed */
                     if (TransferFound)
                     {
-                        WhereClause = AGiftBatchTable.GetBatchStatusDBName() + " = " + MFinanceConstants.POSTED +
+                        WhereClause = AGiftBatchTable.GetBatchStatusDBName() + " = '" + MFinanceConstants.BATCH_POSTED + "'" +
                                       " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " >= #" + PeriodStartDate.ToString("yyyy-MM-dd") + "#" +
                                       " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= #" + PeriodEndDate.ToString("yyyy-MM-dd") + "#";
 
@@ -478,56 +522,39 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     /* Generate the transction to 'balance' the foreign fund -
                      *  in the ICH settlement account. */
-                    //IF lv_settlement_amount_n GT 0 THEN DO:
                     //RUN gl1130o.p ("new":U,
-                    GLBatchTDS AdminFeeDS = TGLPosting.CreateABatch(ALedgerNumber);
-                    ABatchRow AdminFeeBatchRow = AdminFeeDS.ABatch[0];
-                    GLBatchNumber = AdminFeeBatchRow.BatchNumber;
+                    //Create a transaction
+                    if (SettlementAmount > 0)
+                    {
+                        if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
+                                MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator, "ICH", true, 0,
+                                out GLTransactionNumber))
+                        {
+                            ErrorContext = "Generating the ICH batch";
+                            ErrorMessage =
+                                String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                    ALedgerNumber,
+                                    GLBatchNumber,
+                                    GLJournalNumber);
+                            ErrorType = TResultSeverity.Resv_Noncritical;
+                            throw new System.InvalidOperationException(ErrorMessage);
+                        }
 
-                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        MainDS.ALedger[0].CurrentPeriod,
-                        DBTransaction);
-                    AAccountingPeriodRow AccountingPeriodRow2 = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                    PeriodEndDate = AccountingPeriodRow2.PeriodEndDate;
-
-                    //GLBatchTDS AdminFeeDS2 = TGLPosting.CreateAJournal(ALedgerNumber, AdminFeeBatchRow);
-                    //AJournalRow AdminFeeJournalRow = AdminFeeDS2.AJournal[0];
-                    AJournalRow JournalRow = AdminFeeDS.AJournal.NewRowTyped();
-                    JournalRow.LedgerNumber = ALedgerNumber;
-                    JournalRow.BatchNumber = GLBatchNumber;
-                    JournalRow.JournalNumber = AdminFeeBatchRow.LastJournal + 1;
-                    AdminFeeBatchRow.LastJournal += 1;
-                    JournalRow.JournalDescription = BatchDescription;
-                    JournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
-                    JournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
-                    JournalRow.TransactionCurrency = LedgerRow.BaseCurrency;
-                    JournalRow.ExchangeRateToBase = 1;
-                    JournalRow.DateEffective = PeriodEndDate;
-                    JournalRow.JournalPeriod = APeriodNumber;
-                    AdminFeeDS.AJournal.Rows.Add(JournalRow);
-
-                    GLJournalNumber = JournalRow.JournalNumber;
-                    GLTransactionNumber = JournalRow.LastTransactionNumber + 1;
-
-                    ATransactionTable TransTable = ATransactionAccess.LoadByPrimaryKey(ALedgerNumber,
-                        GLBatchNumber,
-                        GLJournalNumber,
-                        GLTransactionNumber,
-                        DBTransaction);
-                    //Mark as processed
-                    ATransactionRow TransRow = (ATransactionRow)TransTable.Rows[0];
-                    TransRow.IchNumber = ICHProcessing;
+                        //Mark as processed
+                        ATransactionRow TransRow =
+                            (ATransactionRow)MainDS.ATransaction.Rows.Find(new object[] { ALedgerNumber, GLBatchNumber, GLJournalNumber,
+                                                                                          GLTransactionNumber });
+                        TransRow.IchNumber = ICHProcessing;
+                    }
 
                     /* can now create corresponding report row on stewardship table */
                     if ((IncomeAmount != 0)
                         || (ExpenseAmount != 0)
                         || (XferAmount != 0))
                     {
-                        AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
                         AIchStewardshipRow IchStewardshipRow = IchStewardshipTable.NewRowTyped(true);
 
-                        MainDS.Tables.Add(IchStewardshipTable);
+                        //MainDS.Tables.Add(IchStewardshipTable);
 
                         IchStewardshipRow.LedgerNumber = ALedgerNumber;
                         IchStewardshipRow.PeriodNumber = APeriodNumber;
@@ -563,30 +590,56 @@ namespace Ict.Petra.Server.MFinance.ICH
                  *  change of a gift from one field to another)  */
                 //IF lv_ich_total_n NE 0 THEN DO:
                 //RUN gl1130o.p
+                if (ICHTotal != 0)
+                {
+                    //Create a transaction
+                    if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber, "ICH Clearing Description",
+                            MFinanceConstants.ICH_ACCT_ICH, StandardCostCentre, ICHTotal, PeriodEndDate, DrCrIndicator, "ICH",
+                            true, 0,
+                            out GLTransactionNumber))
+                    {
+                        ErrorContext = "Generating the ICH batch";
+                        ErrorMessage =
+                            String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                ALedgerNumber,
+                                GLBatchNumber,
+                                GLJournalNumber);
+                        ErrorType = TResultSeverity.Resv_Noncritical;
+                        throw new System.InvalidOperationException(ErrorMessage);
+                    }
 
-                WhereClause = ATransactionTable.GetBatchNumberDBName() + " = " + GLBatchNumber.ToString();
+                    //Post the batch
+                    if (PostICHBatch)
+                    {
+                        IsSuccessful = AIchStewardshipAccess.SubmitChanges(IchStewardshipTable, DBTransaction, out AVerificationResult);
 
-                OrderBy = ATransactionTable.GetBatchNumberDBName() + ", " +
-                          ATransactionTable.GetJournalNumberDBName() + ", " +
-                          ATransactionTable.GetTransactionNumberDBName();
+                        if (IsSuccessful)
+                        {
+                            IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(MainDS, out AVerificationResult));
 
-                // DataRow[] FoundTransRow = MainDS.ATransaction.Select(WhereClause, OrderBy);
-
-                //Post the batch
-
-//                if (FoundTransRow != null
-//                    && TransferFound)
-//                {
-//                    //Run gl1210.p
-//                }
+                            if (IsSuccessful)
+                            {
+                                IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        AVerificationResult.Add(new TVerificationResult(ErrorContext,
+                                Catalog.GetString("There have not been any transactions for the stewardship run"),
+                                TResultSeverity.Resv_Status));
+                    }
+                }
             }
             catch (ArgumentException ex)
             {
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
+                Console.WriteLine(ex.Message);
             }
             catch (InvalidOperationException ex)
             {
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
+                Console.WriteLine(ex.Message);
             }
             catch (Exception ex)
             {
@@ -597,6 +650,16 @@ namespace Ict.Petra.Server.MFinance.ICH
                     APeriodNumber);
                 ErrorType = TResultSeverity.Resv_Critical;
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                Console.WriteLine(ex.Message);
+            }
+
+            if (IsSuccessful && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else if (!IsSuccessful && NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return IsSuccessful;
@@ -608,17 +671,16 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountRowFirst"></param>
         /// <param name="DBTransaction"></param>
+        /// <param name="AChildAccounts"></param>
         /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        private string BuildChildAccountList(int ALedgerNumber,
+        private static void BuildChildAccountList(int ALedgerNumber,
             AAccountRow AAccountRowFirst,
             TDBTransaction DBTransaction,
+            ref string AChildAccounts,
             ref TVerificationResultCollection AVerificationResult)
         {
             //Return value
-            string ChildAccounts = string.Empty;
             string AccountCode = AAccountRowFirst.AccountCode;
-
 
             //Error handling
             string ErrorContext = "List Child Accounts";
@@ -630,7 +692,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             {
                 if (AAccountRowFirst.PostingStatus)
                 {
-                    ChildAccounts += AccountCode + ",";
+                    AChildAccounts += AccountCode + ",";
                 }
                 else
                 {
@@ -662,9 +724,10 @@ namespace Ict.Petra.Server.MFinance.ICH
                             {
                                 AAccountRow AccountRow = (AAccountRow)AccountTable.Rows[0];
 
-                                ChildAccounts = BuildChildAccountList(ALedgerNumber,
+                                BuildChildAccountList(ALedgerNumber,
                                     AccountRow,
                                     DBTransaction,
+                                    ref AChildAccounts,
                                     ref AVerificationResult);
                             }
                             else
@@ -694,8 +757,6 @@ namespace Ict.Petra.Server.MFinance.ICH
                 ErrorType = TResultSeverity.Resv_Critical;
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
             }
-
-            return ChildAccounts;
         }
 
         /// <summary>
@@ -708,19 +769,19 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ADBTransaction"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        private bool GenerateAdminFeeBatch(int ALedgerNumber,
+        private static bool GenerateAdminFeeBatch(int ALedgerNumber,
             int APeriodNumber,
             bool APrintReport,
             TDBTransaction ADBTransaction,
             ref TVerificationResultCollection AVerificationResult
             )
         {
-            /*-----gl1250.p - begin-----*/
+            /*-----gl2150.p - begin-----*/
             //Return value
             bool IsSuccessful = false;
 
             bool CreatedSuccessfully = false;
-            decimal ATransactionAmount;
+            decimal TransactionAmount;
             string DrAccountCode;
             string DestCostCentreCode = string.Empty;
             string DestAccountCode = string.Empty;
@@ -739,9 +800,6 @@ namespace Ict.Petra.Server.MFinance.ICH
             GLStewardshipCalculationTDSCreditFeeTotalTable CreditFeeTotalDT = new GLStewardshipCalculationTDSCreditFeeTotalTable();
             //int x = CreditFeeTotalDT.Count;
             GLStewardshipCalculationTDSCreditFeeTotalRow CreditFeeTotalDR = null;
-
-            //CreditFeeTotalDR = CreditFeeTotalDT.NewRowTyped();
-            //GLStewardshipCalculationTDSCreditFeeTotalRow CreditFeeTotalRows = CreditFeeTotalDT.Rows.Find(new object[] {CreditFeeTotalDR.CostCentreCode, CreditFeeTotalDR.AccountCode, CreditFeeTotalDR.TransactionAmount});
 
             /* Retrieve info on the ledger. */
             ALedgerTable AvailableLedgers = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ADBTransaction);
@@ -774,23 +832,35 @@ namespace Ict.Petra.Server.MFinance.ICH
                  * NOTE: if the date in the processed fee table is ? then that fee
                  *  hasn't been processed. */
                 AProcessedFeeTable ProcessedFeeDataTable = new AProcessedFeeTable();
-                AProcessedFeeRow TemplateRow = (AProcessedFeeRow)ProcessedFeeDataTable.NewRowTyped(false);
 
-                TemplateRow.LedgerNumber = ALedgerNumber;
-                TemplateRow.PeriodicAmount = 0;
-                TemplateRow.PeriodNumber = APeriodNumber;
-                TemplateRow.SetProcessedDateNull();
+                string sqlStmt = String.Format("SELECT * FROM {0} WHERE {1} = ? AND {2} = ? AND {3} IS NULL AND {4} <> 0 ORDER BY {5}, {6}",
+                    AProcessedFeeTable.GetTableDBName(),
+                    AProcessedFeeTable.GetLedgerNumberDBName(),
+                    AProcessedFeeTable.GetPeriodNumberDBName(),
+                    AProcessedFeeTable.GetProcessedDateDBName(),
+                    AProcessedFeeTable.GetPeriodicAmountDBName(),
+                    AProcessedFeeTable.GetFeeCodeDBName(),
+                    AProcessedFeeTable.GetCostCentreCodeDBName()
+                    );
 
-                StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "<>", "=", "=" });
-                StringCollection OrderList = new StringCollection();
-                //Order by Fee Code
-                OrderList.Add("ORDER BY");
-                OrderList.Add(AProcessedFeeTable.GetFeeCodeDBName() + " ASC");
-                OrderList.Add(AProcessedFeeTable.GetCostCentreCodeDBName() + " ASC");
+                OdbcParameter[] parameters = new OdbcParameter[2];
+                parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                parameters[0].Value = ALedgerNumber;
+                parameters[1] = new OdbcParameter("PeriodNumber", OdbcType.Int);
+                parameters[1].Value = APeriodNumber;
 
-                AProcessedFeeTable ProcessedFee = AProcessedFeeAccess.LoadUsingTemplate(TemplateRow, operators, null, ADBTransaction, OrderList, 0, 0);
+                DBAccess.GDBAccessObj.SelectDT(ProcessedFeeDataTable, sqlStmt, ADBTransaction, parameters, -1, -1);
 
-                if (ProcessedFee.Count > 0)
+                if (ProcessedFeeDataTable.Count == 0)
+                {
+                    if (TLogging.DebugLevel > 0)
+                    {
+                        TLogging.Log("No fees to charge were found");
+                    }
+
+                    IsSuccessful = true;
+                }
+                else
                 {
                     //Post to Ledger - Ln 132
                     //****************4GL Transaction Starts Here********************
@@ -803,6 +873,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     GLBatchTDS AdminFeeDS = TGLPosting.CreateABatch(ALedgerNumber);
                     ABatchRow AdminFeeBatch = AdminFeeDS.ABatch[0];
+
                     AdminFeeBatch.BatchDescription = BatchDescription;
                     AdminFeeBatch.DateEffective = AccountingPeriodRow.PeriodEndDate;
                     AdminFeeBatch.BatchPeriod = APeriodNumber;
@@ -811,8 +882,8 @@ namespace Ict.Petra.Server.MFinance.ICH
                     AJournalRow JournalRow = AdminFeeDS.AJournal.NewRowTyped();
                     JournalRow.LedgerNumber = ALedgerNumber;
                     JournalRow.BatchNumber = AdminFeeBatch.BatchNumber;
-                    JournalRow.JournalNumber = AdminFeeBatch.LastJournal + 1;
-                    AdminFeeBatch.LastJournal += 1;
+                    JournalRow.JournalNumber = ++AdminFeeBatch.LastJournal;
+
                     JournalRow.JournalDescription = BatchDescription;
                     JournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
                     JournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
@@ -830,29 +901,46 @@ namespace Ict.Petra.Server.MFinance.ICH
                      * now has a record for each gift detail so it is necessary to sum up all the
                      * totals for each fee code/cost centre so that only one transaction is posted
                      * for each */
+                    int GLJournalNumber = JournalRow.JournalNumber;
+                    int GLTransactionNumber = 0;
                     string CurrentFeeCode = string.Empty;
                     string CostCentreCode = string.Empty;
+                    string CostCentreCodeDBName = AProcessedFeeTable.GetCostCentreCodeDBName();
 
-                    for (int i = 0; i < ProcessedFee.Count; i++)
+                    for (int i = 0; i < ProcessedFeeDataTable.Count; i++)
                     {
-                        AProcessedFeeRow pFR = (AProcessedFeeRow)ProcessedFee.Rows[i];
+                        AProcessedFeeRow pFR = (AProcessedFeeRow)ProcessedFeeDataTable.Rows[i];
 
                         if (CurrentFeeCode != pFR.FeeCode)
                         {
                             CurrentFeeCode = pFR.FeeCode;
-                            CostCentreCode = pFR.CostCentreCode;
+
                             // Find first
                             AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadByPrimaryKey(ALedgerNumber, CurrentFeeCode, ADBTransaction);
-                            AFeesPayableRow FeesPayableRow = (AFeesPayableRow)FeesPayableTable.Rows[0];
 
-                            if (FeesPayableTable.Count == 0)  //try payables instead
+                            if (FeesPayableTable.Count > 0)  //if null try receivables instead
+                            {
+                                AFeesPayableRow FeesPayableRow = (AFeesPayableRow)FeesPayableTable.Rows[0];
+                                DrAccountCode = FeesPayableRow.DrAccountCode;
+                                DestCostCentreCode = FeesPayableRow.CostCentreCode;
+                                DestAccountCode = FeesPayableRow.AccountCode;
+                                FeeDescription = FeesPayableRow.FeeDescription;
+                            }
+                            else
                             {
                                 AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadByPrimaryKey(ALedgerNumber,
                                     CurrentFeeCode,
                                     ADBTransaction);
-                                AFeesReceivableRow FeesReceivableRow = (AFeesReceivableRow)FeesReceivableTable.Rows[0];
 
-                                if (FeesReceivableTable.Count == 0)
+                                if (FeesReceivableTable.Count > 0)
+                                {
+                                    AFeesReceivableRow FeesReceivableRow = (AFeesReceivableRow)FeesReceivableTable.Rows[0];
+                                    DrAccountCode = FeesReceivableRow.DrAccountCode;
+                                    DestCostCentreCode = FeesReceivableRow.CostCentreCode;
+                                    DestAccountCode = FeesReceivableRow.AccountCode;
+                                    FeeDescription = FeesReceivableRow.FeeDescription;
+                                }
+                                else
                                 {
                                     //Petra error: X_0007
                                     ErrorContext = "Generate Transactions";
@@ -863,69 +951,88 @@ namespace Ict.Petra.Server.MFinance.ICH
                                     ErrorType = TResultSeverity.Resv_Critical;
                                     throw new System.InvalidOperationException(ErrorMessage);
                                 }
-                                else
-                                {
-                                    DrAccountCode = FeesReceivableRow.DrAccountCode;
-                                    DestCostCentreCode = FeesReceivableRow.CostCentreCode;
-                                    DestAccountCode = FeesReceivableRow.AccountCode;
-                                    FeeDescription = FeesReceivableRow.FeeDescription;
-                                }
-                            }
-                            else
-                            {
-                                DrAccountCode = FeesPayableRow.DrAccountCode;
-                                DestCostCentreCode = FeesPayableRow.CostCentreCode;
-                                DestAccountCode = FeesPayableRow.AccountCode;
-                                FeeDescription = FeesPayableRow.FeeDescription;
                             }
 
                             DrFeeTotal = 0;
 
-                            for (int j = 0; j < ProcessedFee.Count; j++)
+                            //Get all the distinct CostCentres
+                            DataView CostCentreView = ProcessedFeeDataTable.DefaultView;
+                            CostCentreView.Sort = CostCentreCodeDBName;
+                            CostCentreView.RowFilter = string.Format("{0} = '{1}'", AProcessedFeeTable.GetFeeCodeDBName(), CurrentFeeCode);
+                            DataTable ProcessedFeeCostCentresTable = CostCentreView.ToTable(true, CostCentreCodeDBName);
+
+                            foreach (DataRow r in ProcessedFeeCostCentresTable.Rows)
                             {
-                                AProcessedFeeRow pFR2 = (AProcessedFeeRow)ProcessedFee.Rows[j];
+                                CostCentreCode = r[0].ToString();
+                                DataView view = ProcessedFeeDataTable.DefaultView;
+                                view.Sort = CostCentreCodeDBName;
+                                view.RowFilter = string.Format("{0} = '{1}' AND {2} = '{3}'",
+                                    AProcessedFeeTable.GetFeeCodeDBName(),
+                                    CurrentFeeCode,
+                                    CostCentreCodeDBName,
+                                    CostCentreCode);
 
-                                if ((pFR2.FeeCode == CurrentFeeCode) && (pFR2.CostCentreCode == CostCentreCode))
+                                //ProcessedFeeDataTable2 = ProcessedFeeDataTable2.Clone();
+                                DataTable ProcessedFeeDataTable2 = view.ToTable();
+
+                                Int32 FeeCodeRowCount = ProcessedFeeDataTable2.Rows.Count;
+
+                                for (int j = 0; j < FeeCodeRowCount; j++)
                                 {
-                                    //TODO: check the rounding issues
-                                    DrFeeTotal += Math.Round(pFR2.PeriodicAmount, NumDecPlaces); //pFR2.PeriodicAmount; //ROUND(pFR2.PeriodicAmount, lv_dp)
-                                }
-                                else if ((pFR2.FeeCode == CurrentFeeCode) && (pFR2.CostCentreCode != CostCentreCode))
-                                {
-                                    if (DrFeeTotal != 0)
+                                    DataRow pFR2 = ProcessedFeeDataTable2.Rows[j];
+
+                                    DrFeeTotal = DrFeeTotal + Math.Round(Convert.ToDecimal(
+                                            pFR2[AProcessedFeeTable.GetPeriodicAmountDBName()]), NumDecPlaces);                                                                                    //pFR2.PeriodicAmount; //ROUND(pFR2.PeriodicAmount,
+                                                                                                                                                                                                   // lv_dp)
+
+                                    if (j == (FeeCodeRowCount - 1))                                      //implies last of the CostCentre rows for this feecode
                                     {
-                                        if (DrFeeTotal < 0)
+                                        if (DrFeeTotal != 0)
                                         {
-                                            DrCrIndicator = false; //Credit
-                                            DrFeeTotal = -DrFeeTotal;
-                                        }
-                                        else
-                                        {
-                                            DrCrIndicator = true; //Debit
-                                            //lv_dr_fee_total remains unchanged
-                                        }
+                                            if (DrFeeTotal < 0)
+                                            {
+                                                DrCrIndicator = false;     //Credit
+                                                DrFeeTotal = -DrFeeTotal;
+                                            }
+                                            else
+                                            {
+                                                DrCrIndicator = true;     //Debit
+                                                //lv_dr_fee_total remains unchanged
+                                            }
 
-                                        /* Generate the transction to deduct the fee amount from
-                                         *  the source cost centre. (Expense leg) */
-                                        //RUN gl1130o.p -> gl1130.i
-                                        ATransactionRow TransactionRow = AdminFeeDS.ATransaction.NewRowTyped();
-                                        TransactionRow.LedgerNumber = ALedgerNumber;
-                                        TransactionRow.BatchNumber = AdminFeeBatch.BatchNumber;
-                                        TransactionRow.JournalNumber = JournalRow.JournalNumber;
-                                        TransactionRow.Narrative = "Fee: " + FeeDescription + " (" + CurrentFeeCode + ")";
-                                        TransactionRow.AccountCode = DrAccountCode;
-                                        TransactionRow.CostCentreCode = CostCentreCode;
-                                        TransactionRow.TransactionAmount = DrFeeTotal;
-                                        TransactionRow.TransactionDate = AccountingPeriodRow.PeriodEndDate;
-                                        TransactionRow.DebitCreditIndicator = DrCrIndicator;
-                                        TransactionRow.Reference = "AG";
-                                        TransactionRow.SystemGenerated = true;
-                                        AdminFeeDS.ATransaction.Rows.Add(TransactionRow);
+                                            /* Generate the transction to deduct the fee amount from
+                                             *  the source cost centre. (Expense leg) */
+                                            //RUN gl1130o.p -> gl1130.i
+                                            //Create a transaction
+                                            if (!TGLPosting.CreateATransaction(AdminFeeDS,
+                                                    ALedgerNumber,
+                                                    AdminFeeBatch.BatchNumber,
+                                                    GLJournalNumber,
+                                                    "Fee: " + FeeDescription + " (" + CurrentFeeCode + ")",
+                                                    DrAccountCode,
+                                                    CostCentreCode,
+                                                    DrFeeTotal,
+                                                    AccountingPeriodRow.PeriodEndDate,
+                                                    DrCrIndicator,
+                                                    "AG",
+                                                    true,
+                                                    0,
+                                                    out GLTransactionNumber))
+                                            {
+                                                ErrorContext = "Generating the Admin Fee batch";
+                                                ErrorMessage =
+                                                    String.Format(Catalog.GetString(
+                                                            "Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                                        ALedgerNumber,
+                                                        AdminFeeBatch.BatchNumber,
+                                                        GLJournalNumber);
+                                                ErrorType = TResultSeverity.Resv_Noncritical;
+                                                throw new System.InvalidOperationException(ErrorMessage);
+                                            }
 
-                                        DrFeeTotal = 0;
+                                            DrFeeTotal = 0;
+                                        }
                                     }
-
-                                    CostCentreCode = pFR2.CostCentreCode;
                                 }
                             }
                         }
@@ -950,6 +1057,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                             CreditFeeTotalDR.CostCentreCode = DestCostCentreCode;
                             CreditFeeTotalDR.AccountCode = DestAccountCode;
                             CreditFeeTotalDR.TransactionAmount = pFR.PeriodicAmount;
+                            CreditFeeTotalDT.Rows.Add(CreditFeeTotalDR);
                         }
                     }
 
@@ -965,31 +1073,33 @@ namespace Ict.Petra.Server.MFinance.ICH
                              * It would only happen if, for instance, the was only
                              * a reversal but no new gifts for a certain ledger. */
                             DrCrIndicator = true; //Debit
-                            ATransactionAmount = -cFT.TransactionAmount;
+                            TransactionAmount = -cFT.TransactionAmount;
                         }
                         else
                         {
                             DrCrIndicator = false; //Credit
-                            ATransactionAmount = cFT.TransactionAmount;
+                            TransactionAmount = cFT.TransactionAmount;
                         }
 
                         /* 0002 - Ok for it to be 0 as just a correction */
+
                         if (cFT.TransactionAmount != 0)
                         {
-                            ATransactionRow TransactionRow = AdminFeeDS.ATransaction.NewRowTyped();
-                            TransactionRow.LedgerNumber = ALedgerNumber;
-                            TransactionRow.BatchNumber = AdminFeeBatch.BatchNumber;
-                            TransactionRow.JournalNumber = JournalRow.JournalNumber;
-                            TransactionRow.Narrative = "Collected admin charges";
-                            TransactionRow.AccountCode = cFT.AccountCode;
-                            TransactionRow.CostCentreCode = cFT.CostCentreCode;
-                            TransactionRow.TransactionAmount = ATransactionAmount;
-                            TransactionRow.TransactionDate = AccountingPeriodRow.PeriodEndDate;
-                            TransactionRow.DebitCreditIndicator = DrCrIndicator;
-                            TransactionRow.Reference = "AG";
-                            TransactionRow.SystemGenerated = true;
-                            AdminFeeDS.ATransaction.Rows.Add(TransactionRow);
-                            CreatedSuccessfully = true;
+                            GLTransactionNumber = 0;
+                            CreatedSuccessfully = TGLPosting.CreateATransaction(AdminFeeDS,
+                                ALedgerNumber,
+                                AdminFeeBatch.BatchNumber,
+                                JournalRow.JournalNumber,
+                                "Collected admin charges",
+                                cFT.AccountCode,
+                                cFT.CostCentreCode,
+                                TransactionAmount,
+                                AccountingPeriodRow.PeriodEndDate,
+                                DrCrIndicator,
+                                "AG",
+                                true,
+                                0,
+                                out GLTransactionNumber);
                         }
                     }
 
@@ -1006,11 +1116,20 @@ namespace Ict.Petra.Server.MFinance.ICH
                     {
                         //Post the batch just created
 
-                        /*RUN gl1210.p (pvedgerumber,lv_gl_batch_number,TRUE,OUTPUT IsSuccessful).*/
-                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AdminFeeBatch.BatchNumber, out Verification);
+                        IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(AdminFeeDS, out Verification));
+
+                        if (IsSuccessful)
+                        {
+                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AdminFeeBatch.BatchNumber, out Verification);
+                        }
+
+                        if (IsSuccessful)
+                        {
+                            AProcessedFeeAccess.SubmitChanges(ProcessedFeeDataTable, ADBTransaction, out Verification);
+                        }
                     }
 
-                    if ((Verification == null) || Verification.HasCriticalError())
+                    if ((Verification == null) || Verification.HasCriticalErrors)
                     {
                         //Petra error: GL0067
                         ErrorContext = "Posting Admin Fee Batch";
@@ -1026,11 +1145,6 @@ namespace Ict.Petra.Server.MFinance.ICH
                     {
                         //TODO
                     }
-                }
-                else
-                {
-                    /*     MESSAGE "No fees to charge were found." VIEW-AS ALERT-BOX MESSAGE. */
-                    IsSuccessful = true;
                 }
             }
             catch (InvalidOperationException ex)

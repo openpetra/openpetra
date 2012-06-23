@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, matthiash
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,30 +63,69 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// loads a list of batches for the given ledger
+        /// loads a list of batches for the given ledger;
         /// also get the ledger for the base currency etc
-        /// TODO: limit to period, limit to batch status, etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AFilterBatchStatus"></param>
-        /// <returns></returns>
+        /// <param name="AYear">if -1, the year will be ignored</param>
+        /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
+        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus)
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus, int AYear, int APeriod)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
+            string FilterByPeriod = string.Empty;
+
+            if (AYear != -1)
             {
-                ABatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
+                    ABatchTable.GetTableDBName(),
+                    ABatchTable.GetBatchYearDBName(),
+                    AYear);
+
+                if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+                {
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
+                        ABatchTable.GetTableDBName(),
+                        ABatchTable.GetBatchPeriodDBName(),
+                        MainDS.ALedger[0].CurrentPeriod);
+                }
+                else if (APeriod != -1)
+                {
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
+                        ABatchTable.GetTableDBName(),
+                        ABatchTable.GetBatchPeriodDBName(),
+                        APeriod);
+                }
             }
 
-            if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
+            string SelectClause =
+                String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
+                    ABatchTable.GetTableDBName(),
+                    ABatchTable.GetLedgerNumberDBName(),
+                    ALedgerNumber);
+
+            string FilterByBatchStatus = string.Empty;
+
+            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
             {
-                ABatchAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                // FilterByBatchStatus is empty
             }
+            else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
+            {
+                FilterByBatchStatus =
+                    string.Format(" AND {0} = '{1}'",
+                        ABatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
+            }
+
+            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus + FilterByPeriod,
+                MainDS.ABatch.TableName, Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
@@ -259,7 +298,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if (AInspectDS.ATransaction != null)
             {
-                GLBatchTDS TestAccountsAndCostCentres = new GLBatchTDS();
+                GLPostingTDS TestAccountsAndCostCentres = new GLPostingTDS();
 
                 foreach (ATransactionRow transaction in AInspectDS.ATransaction.Rows)
                 {
@@ -362,7 +401,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (AVerificationResult.HasCriticalError())
+                if (AVerificationResult.HasCriticalErrors)
                 {
                     return TSubmitChangesResult.scrError;
                 }
@@ -394,8 +433,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static List <TVariant>TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
-            GLBatchTDS MainDS;
-            bool success = TGLPosting.PostGLBatchInternal(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, false);
+            GLPostingTDS MainDS;
+            int BatchPeriod = -1;
+            bool success = TGLPosting.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, ref BatchPeriod);
 
             List <TVariant>Result = new List <TVariant>();
 
@@ -410,7 +450,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 foreach (AGeneralLedgerMasterPeriodRow glmpRow in MainDS.AGeneralLedgerMasterPeriod.Rows)
                 {
-                    if ((glmpRow.PeriodNumber == MainDS.ABatch[0].BatchPeriod) && (glmpRow.RowState != DataRowState.Unchanged))
+                    if ((glmpRow.PeriodNumber == BatchPeriod) && (glmpRow.RowState != DataRowState.Unchanged))
                     {
                         AGeneralLedgerMasterRow masterRow =
                             (AGeneralLedgerMasterRow)MainDS.AGeneralLedgerMaster.Rows.Find(glmpRow.GlmSequence);
@@ -503,17 +543,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// cancel a GL Batch
         /// </summary>
-        /// <param name="MainDS"></param>
+        /// <param name="AMainDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
         [RequireModulePermission("FINANCE-3")]
-        public static bool CancelGLBatch(out GLBatchTDS MainDS,
+        public static bool CancelGLBatch(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
-            return TGLPosting.CancelGLBatch(out MainDS, ALedgerNumber, ABatchNumber, out AVerifications);
+            return TGLPosting.CancelGLBatch(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications);
         }
 
         /// <summary>

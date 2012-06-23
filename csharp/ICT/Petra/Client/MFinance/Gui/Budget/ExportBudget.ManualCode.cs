@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if (AMessages.Count > 0)
             {
-                if (AMessages.HasCriticalError())
+                if (AMessages.HasCriticalErrors)
                 {
                     MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
                         MessageBoxButtons.OK,
@@ -188,7 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if (BatchCount == 0)
             {
-                MessageBox.Show(Catalog.GetString("There are no Budget matching your criteria"),
+                MessageBox.Show(Catalog.GetString("There are no Budgets matching your criteria"),
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
             }
 
-            MessageBox.Show(Catalog.GetString("Your data was exported successfully!"),
+            MessageBox.Show(Catalog.GetString("Data exported successfully!"),
                 Catalog.GetString("Success"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);

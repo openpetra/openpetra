@@ -305,13 +305,13 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Mailing.Cacheable
     public interface IMailingCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPartner.TCacheableMailingTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableMailingTablesEnum ACacheableTable);
+        void RefreshCacheableTable(TCacheableMailingTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableMailingTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
@@ -406,13 +406,13 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.Cacheable
     public interface IPartnerCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPartner.TCacheablePartnerTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheablePartnerTablesEnum ACacheableTable);
+        void RefreshCacheableTable(TCacheablePartnerTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheablePartnerTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
@@ -470,6 +470,7 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups.Class)</summary>
         Boolean VerifyPartner(Int64 APartnerKey,
                               TPartnerClass[] AValidPartnerClasses,
+                              out System.Boolean APartnerExists,
                               out String APartnerShortName,
                               out TPartnerClass APartnerClass,
                               out Boolean AIsMergedPartner);
@@ -700,7 +701,20 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         MExtractMasterTable GetAllExtractHeaders();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                 Boolean AAllUsers,
+                                                 String AUserCreated,
+                                                 String AUserModified);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean ExtractExists(String AExtractName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean CreateEmptyExtract(ref System.Int32 AExtractId,
+                                   String AExtractName,
+                                   String AExtractDescription);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean PurgeExtracts(System.Int32 ANumberOfDays,
+                              Boolean AAllUsers,
+                              String AUserName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         ExtractTDSMExtractTable GetExtractRowsWithPartnerData(System.Int32 AExtractId);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
@@ -716,15 +730,23 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
                                               Boolean ANewPartner,
                                               TLastPartnerUse ALastPartnerUse);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
+        TLocationPK DetermineBestAddress(Int64 APartnerKey);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
         System.Boolean ChangeFamily(Int64 APersonKey,
                                     Int64 AOldFamilyKey,
                                     Int64 ANewFamilyKey,
                                     out String AProblemMessage,
                                     out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
+        Int64 GetBankBySortCode(System.String ABranchCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
         PUnitTable GetConferenceUnits(System.String AConferenceName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
         PUnitTable GetOutreachUnits(System.String AOutreachName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
+        PUnitTable GetActiveFieldUnits(System.String AFieldName);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerDataReader)</summary>
+        PUnitTable GetLedgerUnits(System.String ALedgerName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
         Int64 NewPartnerKey(Int64 AFieldPartnerKey);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TSimplePartnerEditWebConnector)</summary>
@@ -799,13 +821,13 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Subscriptions.Cacheable
     public interface ISubscriptionsCacheableNamespace : IInterface
     {
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable.Class)</summary>
-        System.Data.DataTable GetCacheableTable(Ict.Petra.Shared.MPartner.TCacheableSubscriptionsTablesEnum ACacheableTable,
+        System.Data.DataTable GetCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
                                                 System.String AHashCode,
                                                 out System.Type AType);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableSubscriptionsTablesEnum ACacheableTable);
+        void RefreshCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable.Class)</summary>
-        void RefreshCacheableTable(Ict.Petra.Shared.MPartner.TCacheableSubscriptionsTablesEnum ACacheableTable,
+        void RefreshCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
                                    out System.Data.DataTable ADataTable);
         /// <summary>auto generated from Instantiator (Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable.Class)</summary>
         TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,

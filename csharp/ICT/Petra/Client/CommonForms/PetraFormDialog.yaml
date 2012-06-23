@@ -27,21 +27,26 @@ RootNode:
             Dock: Fill
             
         pnlDialogButtons: 
-            Margin: 0,0,0,0
+            Margin: 0
             Dock: Bottom
             Controls: 
-                Row0: [btnHelp, pnlRightButtons]
-            ColWidths: [0=Percent:30, 1=Percent:70]
+                Row0: [pnlLeftButtons, pnlRightButtons]
+        
+        pnlLeftButtons:
+            Dock: Fill
+            Margin: 0
+            Controls:
+                Row0: [btnHelp]
         
         btnHelp: {Label=&Help, TabIndex=999, Action=actHelp}
             
         pnlRightButtons:
-            Margin: 0,0,0,0
+            Margin: 0
             TabIndex: 998
-            Align: right
+            Dock: Right
             Controls: 
                 Row0: [btnOK, btnCancel, btnApply]
          
-        btnOK: {Label=&OK, TabIndex=0, ActionClick=BtnOK_Click}        
+        btnOK: {Label=&OK, TabIndex=0, AcceptButton=true, ActionClick=BtnOK_Click}        
         btnApply: {Label=&Apply, TabIndex=2, Visible=false}
         btnCancel: {Label=&Cancel, TabIndex=1, Action=actClose}

@@ -50,6 +50,7 @@ csharp/ICT/experimenting/treasurerEmails/obj
 /csharp/ICT/PetraTools/GenerateWinForms/YamlEdit/*
 *Setup-*.exe
 /tmp
+/var
 /delivery
 /data
 *.patch
@@ -60,3 +61,4 @@ csharp/ICT/experimenting/treasurerEmails/obj
 csharp/ICT/Petra/Server/lib/data/*.cs
 csharp/ICT/Petra/Shared/lib/data/*.cs
 *lang-template.js
+inc/cfg/benerator/benerator.log

@@ -9,3 +9,5 @@ if (TClientSettings.GUIRunningOnNonStandardDPI)
 {
     FUco{#CONTROLNAMEWITHOUTPREFIX}.AdjustAfterResizing();
 }
+
+FCurrentUserControl = FUco{#CONTROLNAMEWITHOUTPREFIX};

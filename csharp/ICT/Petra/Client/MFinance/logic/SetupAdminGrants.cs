@@ -28,6 +28,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
@@ -98,7 +99,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         public static void ChargeOptionComboChanged(TCmbAutoComplete AAChargeOptionComboBox, Label ADetailChargeAmountLabel,
             TTxtNumericTextBox ADetailChargeAmountTextBox, TTxtNumericTextBox ADetailChargePercentageTextBox)
         {
-            ADetailChargeAmountLabel.Text = AAChargeOptionComboBox.Items[AAChargeOptionComboBox.SelectedIndex] + Catalog.GetString(" Amount:");
+            ADetailChargeAmountLabel.Text = AAChargeOptionComboBox.GetSelectedString() + Catalog.GetString(" Amount:");
             ADetailChargeAmountTextBox.Enabled = true;
             ADetailChargePercentageTextBox.Enabled = true;
 

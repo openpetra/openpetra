@@ -282,6 +282,9 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>which plugin to use for importing bank statements</summary>
         public const String FINANCE_BANKIMPORT_PLUGIN = "BankImportPlugin";
 
+        /// <summary>which bank account to use</summary>
+        public const String FINANCE_BANKIMPORT_BANKACCOUNT = "BankImportBankAccount";
+
         // Put other User Default Constants here as well.
 
         /// <summary>todoComment</summary>
@@ -431,24 +434,16 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void RefreshCachedUserDefault(String AChangedUserDefaultCode, String AChangedUserDefaultValue, String AChangedUserDefaultModId)
         {
-            Int32 FoundInRow;
-            DataRowView Tmp;
-            Int16 Counter;
-
-            String[] ChangedUserDefaultCodes;
-            String[] ChangedUserDefaultValues;
-            String[] ChangedUserDefaultModIds;
-
             // TLogging.Log('Refreshing DefaultCode ''' + AChangedUserDefaultCode + ''' with Value: ''' + AChangedUserDefaultValue + '''');
             // Split String into String Array
-            ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
-            ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
-            ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0]]);
+            String[] ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
+            String[] ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
+            String[] ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
 
-            for (Counter = 0; Counter <= ChangedUserDefaultCodes.Length - 1; Counter += 1)
+            for (Int16 Counter = 0; Counter <= ChangedUserDefaultCodes.Length - 1; Counter += 1)
             {
                 // TLogging.Log('Refreshing UserDefault ''' + ChangedUserDefaultCodes[Counter] + ''' with value ''' + ChangedUserDefaultValues[Counter] + ''' (ModificationID: ''' + ChangedUserDefaultModIds[Counter] + '''');
-                FoundInRow = UUserDefaults.Find(ChangedUserDefaultCodes[Counter]);
+                Int32 FoundInRow = UUserDefaults.Find(ChangedUserDefaultCodes[Counter]);
 
                 if (FoundInRow != -1)
                 {
@@ -463,7 +458,7 @@ namespace Ict.Petra.Client.App.Core
                         UUserDefaults[FoundInRow][SUserDefaultsTable.GetDefaultValueDBName()] = ChangedUserDefaultValues[Counter];
                     }
 
-                    UUserDefaults[FoundInRow][SUserDefaultsTable.GetModificationIdDBName()] = ChangedUserDefaultModIds[Counter];
+                    UUserDefaults[FoundInRow][SUserDefaultsTable.GetModificationIdDBName()] = Convert.ToDateTime(ChangedUserDefaultModIds[Counter]);
 
                     // Mark this refreshed UserDefault as unchanged
                     UUserDefaults[FoundInRow].Row.AcceptChanges();
@@ -472,7 +467,7 @@ namespace Ict.Petra.Client.App.Core
                 {
                     // User default not found, add it to the user defaults table
                     // TLogging.Log('UserDefault doesn''t exist yet > creating new one');
-                    Tmp = UUserDefaults.AddNew();
+                    DataRowView Tmp = UUserDefaults.AddNew();
                     Tmp[SUserDefaultsTable.GetUserIdDBName()] = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
                     Tmp[SUserDefaultsTable.GetDefaultCodeDBName()] = ChangedUserDefaultCodes[Counter];
                     Tmp[SUserDefaultsTable.GetDefaultValueDBName()] = ChangedUserDefaultValues[Counter];

@@ -970,6 +970,71 @@ namespace Ict.Common.Controls
             AddTextColumn(AColumnTitle, ADataColumn, -1, null, BooleanEditor, null, null, null);
         }
 
+        class PartnerKeyConverter : System.ComponentModel.TypeConverter
+        {
+            /// <summary>
+            /// constructor
+            /// </summary>
+            public PartnerKeyConverter()
+            {
+            }
+
+            /// <summary>
+            /// we don't need conversions to PartnerKey, but somehow we need to return true so that the conversion works the other way
+            /// </summary>
+            public override bool CanConvertFrom(System.ComponentModel.ITypeDescriptorContext context,
+                Type sourceType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// allow all conversions from PartnerKey
+            /// </summary>
+            public override bool CanConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                Type destinationType)
+            {
+                return true;
+            }
+
+            /// <summary>
+            /// convert PartnerKey to string, the destinationType is ignored
+            /// </summary>
+            public override object ConvertTo(System.ComponentModel.ITypeDescriptorContext context,
+                System.Globalization.CultureInfo culture,
+                object value,
+                Type destinationType)
+            {
+                return String.Format("{0:0000000000}", (Int64)value);
+            }
+        }
+
+        /// <summary>
+        /// add a column that shows a PartnerKey value (include leading zeros to display a 10 digit number)
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn)
+        {
+            AddPartnerKeyColumn(AColumnTitle, ADataColumn, -1);
+        }
+
+        /// <summary>
+        /// add a column that shows a PartnerKey value (include leading zeros to display a 10 digit number)
+        /// </summary>
+        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
+        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
+        {
+            SourceGrid.Cells.Editors.TextBox PartnerKeyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(Int64));
+            PartnerKeyEditor.TypeConverter = new PartnerKeyConverter();
+
+            PartnerKeyEditor.EditableMode = EditableMode.None;
+
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, PartnerKeyEditor, null, null, null);
+        }
+
         #endregion
 
         #region Overridden Events
@@ -1234,7 +1299,7 @@ namespace Ict.Common.Controls
         ///
         /// DataSourceRowToIndex2 manually iterates through the Grid's DataView and compares Rows objects. This works!
         /// </summary>
-        /// <returns>void</returns>
+        /// <returns>int</returns>
         public int DataSourceRowToIndex2(DataRowView ADataRowView)
         {
             int RowIndex = -1;
@@ -1250,10 +1315,48 @@ namespace Ict.Common.Controls
             return RowIndex;
         }
 
+        /// <summary>
+        /// Returns the index of the currently selected row or -1 if no row is selected
+        /// </summary>
+        /// <returns>int</returns>
+        public int SelectedRowIndex()
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
         /// select a row in the grid, and invoke the even for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid)
         {
+            SelectRowInGrid(ARowNumberInGrid, false);
+        }
+
+        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
+        {
+            if (ASelectBorderIfOutsideLimit)
+            {
+                if (ARowNumberInGrid >= Rows.Count)
+                {
+                    ARowNumberInGrid = Rows.Count - 1;
+                }
+
+                if ((ARowNumberInGrid < 1) && (Rows.Count > 1))
+                {
+                    ARowNumberInGrid = 1;
+                }
+            }
+
             this.Selection.ResetSelection(false);
+            this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighed (overcome buggy behaviour of SourceGrid)
             this.Selection.SelectRow(ARowNumberInGrid, true);
 
             // scroll to the row
@@ -1263,6 +1366,13 @@ namespace Ict.Common.Controls
             this.Selection.FocusRow(ARowNumberInGrid);
 
             //FocusRowEntered.Invoke(this, new SourceGrid.RowEventArgs(ARowNumberInGrid));
+        }
+
+        /// make sure the grid scrolls to the selected row to have it in the visible area
+        public void ViewSelectedRow()
+        {
+            // scroll to the row
+            this.ShowCell(new SourceGrid.Position(this.SelectedRowIndex(), 0), true);
         }
 
         /// <summary>

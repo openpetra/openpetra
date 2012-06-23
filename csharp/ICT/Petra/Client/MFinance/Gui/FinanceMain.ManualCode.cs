@@ -29,6 +29,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Gui.AP;
 using Ict.Petra.Client.MFinance.Gui.Common;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
@@ -72,6 +73,51 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             // todo: load ledger details, display on the main finance screen, etc.
             // MessageBox.Show("selected ledger: " + FLedgerNumber.ToString());
+        }
+
+        /// Open screen for creating "Recipient by Field" Extract
+        public static void RecipientByFieldExtract(Form AParentForm)
+        {
+            TFrmRecipientByField frm = new TFrmRecipientByField(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Donor by Field" Extract
+        public static void DonorByFieldExtract(Form AParentForm)
+        {
+            TFrmDonorByField frm = new TFrmDonorByField(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Donor by Motivation" Extract
+        public static void DonorByMotivationExtract(Form AParentForm)
+        {
+            TFrmDonorByMotivation frm = new TFrmDonorByMotivation(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Donor by Amount" Extract
+        public static void DonorByAmountExtract(Form AParentForm)
+        {
+            TFrmDonorByAmount frm = new TFrmDonorByAmount(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Donor by Miscellaneous" Extract
+        public static void DonorByMiscellaneousExtract(Form AParentForm)
+        {
+            TFrmDonorByMiscellaneous frm = new TFrmDonorByMiscellaneous(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
         }
     }
 }

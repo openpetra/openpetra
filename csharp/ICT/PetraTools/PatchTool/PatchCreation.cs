@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -228,12 +228,16 @@ namespace Ict.Tools.PatchTool
                 }
             }
 
-            if (!System.IO.Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + newPatch))
+            if (Directory.Exists(ATmpDirectory + Path.DirectorySeparatorChar + newPatch))
             {
-                UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + newPatch,
-                    ADeliveryDirectory + Path.DirectorySeparatorChar + AZipName + "-" + newPatch + ".tar.gz",
-                    AAppName);
+                // never reuse an unzipped tar file, because we might have done two builds with the same build number.
+                // then the patch file would be old
+                Directory.Delete(ATmpDirectory + Path.DirectorySeparatorChar + newPatch, true);
             }
+
+            UnzipTarFile(ATmpDirectory + Path.DirectorySeparatorChar + newPatch,
+                ADeliveryDirectory + Path.DirectorySeparatorChar + AZipName + "-" + newPatch + ".tar.gz",
+                AAppName);
 
             string DiffDirectory = ATmpDirectory + '/' + "Patch-win" + "_" + oldPatch + '_' + newPatch;
 

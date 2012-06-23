@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -346,32 +347,14 @@ namespace Ict.Petra.Client.MFinance.Logic
             Int32 ALedgerNumber,
             bool AActiveOnly)
         {
-            AMotivationGroupTable groupTable = new AMotivationGroupTable();
-
-            DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
-
-            // since we get the details, we have duplicates for group; remove the duplicates
-            StringCollection groups = new StringCollection();
-
-            foreach (AMotivationDetailRow detail in detailTable.Rows)
-            {
-                if (((AActiveOnly && detail.MotivationStatus) || !AActiveOnly)
-                    && !groups.Contains(detail.MotivationGroupCode))
-                {
-                    groups.Add(detail.MotivationGroupCode);
-                    AMotivationGroupRow newGroup = groupTable.NewRowTyped(true);
-                    newGroup.MotivationGroupCode = detail.MotivationGroupCode;
-
-                    // also assign: description for group?
-
-                    groupTable.Rows.Add(newGroup);
-                }
-            }
+            DataTable groupTable =
+                (AMotivationGroupTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationGroupList, ALedgerNumber);
 
             AControl.InitialiseUserControl(groupTable,
                 AMotivationGroupTable.GetMotivationGroupCodeDBName(),
-                AMotivationGroupTable.GetMotivationGroupCodeDBName(),
+                AMotivationGroupTable.GetMotivationGroupDescriptionDBName(),
                 null);
+
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
         }
 
@@ -535,6 +518,61 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
         }
 
+        /// <summary>
+        /// Returns the current row index of a grid control
+        /// </summary>
+        /// <param name="AGrid"></param>
+        /// <returns></returns>
+        public static int GridCurrentRowIndex(TSgrdDataGridPaged AGrid)
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = AGrid.Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
+        /// <summary>
+        /// Select and scroll to the specified row index
+        /// </summary>
+        /// <param name="AGrid"></param>
+        /// <param name="ACurrentRowIndex"></param>
+        public static void ViewAndSelectRowInGrid(TSgrdDataGridPaged AGrid, int ACurrentRowIndex)
+        {
+            int NumRows = AGrid.Rows.Count;
+
+            if (NumRows == 1)
+            {
+                return;
+            }
+            else if ((ACurrentRowIndex < 1) || (ACurrentRowIndex >= NumRows))
+            {
+                return;
+            }
+
+            //Select and show specified row
+            AGrid.Selection.SelectRow(ACurrentRowIndex, true);
+            AGrid.ShowCell(new SourceGrid.Position(ACurrentRowIndex, 0), true);
+        }
+
+        /// <summary>
+        /// Scroll the data grid to view the currently selected row
+        /// </summary>
+        /// <param name="AGrid"></param>
+        public static void ViewRowInGrid(TSgrdDataGridPaged AGrid)
+        {
+            int currentRowIndex = GridCurrentRowIndex(AGrid);
+
+            if (currentRowIndex > 0)
+            {
+                AGrid.ShowCell(new SourceGrid.Position(currentRowIndex, 0), true);
+            }
+        }
 
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey

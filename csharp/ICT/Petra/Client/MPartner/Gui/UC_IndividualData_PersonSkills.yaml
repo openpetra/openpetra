@@ -55,20 +55,22 @@ RootNode:
             DataField: PmPersonSkill.SkillCategoryCode
             List: SkillCategoryList
             Width: 200
-            ColSpan: 3
+            ColSpan: 2
+            Validation: true
         cmbSkillLevel:
             Label: Skill Level
             DataField: PmPersonSkill.SkillLevel
             List: SkillLevelList
             Width: 200
-            ColSpan: 3
-        txtDescriptEnglish: {Label=Description, DataField=PmPersonSkill.DescriptionEnglish, Width=380, ColSpan=3}
+            ColSpan: 2
+            Validation: true
+        txtDescriptEnglish: {Label=Description, DataField=PmPersonSkill.DescriptionEnglish, Width=380, ColSpan=2}
         cmbLocalLanguage: 
             Label: Local Language
             DataField: PmPersonSkill.DescriptionLanguage
             List: LanguageCodeList
             Width: 200
-        txtDescriptInLocalLanguage: {Label=Description in local language, DataField=PmPersonSkill.DescriptionLocal, Width=380, ColSpan=3}
+        txtDescriptInLocalLanguage: {Label=Description in local language, DataField=PmPersonSkill.DescriptionLocal, Width=380, ColSpan=2}
         txtYearsOfExperience: {DataField=PmPersonSkill.YearsOfExperience, Width=25, Format=Integer}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonSkill.YearsOfExperienceAsOf}
         chkProfSkill: {Label=Is this a professional skill?, DataField=PmPersonSkill.ProfessionalSkill}
@@ -81,4 +83,4 @@ RootNode:
             ScrollBars: Vertical
             Height: 70
             Width: 380
-            ColSpan: 3
+            ColSpan: 2

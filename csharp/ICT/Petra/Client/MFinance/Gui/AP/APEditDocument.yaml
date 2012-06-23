@@ -38,7 +38,7 @@ RootNode:
                 Row3: [nudDiscountDays, txtDiscountPercentage]
                 Row4: [txtTotalAmount, txtExchangeRateToBase, btnLookupExchangeRate]
             Dock: Top
-        txtDocumentCode: {Label=Invoice &Number}
+        txtDocumentCode: {Label=Invoice &Number, Validation=true}
         cmbDocumentType:
             OptionalValues: [=Invoice, Credit Note]
             Label: T&ype
@@ -85,15 +85,16 @@ RootNode:
                 Row2: [txtDetailAmount, cmbDetailCostCentreCode]
                 Row3: [txtDetailBaseAmount, cmbDetailAccountCode]
                 Row4: [Empty1, pnlItemButtons]
-        txtDetailNarrative: {ColSpan=3}
+        txtDetailNarrative: {ColSpan=2}
             Width: 350
             Label: Narrati&ve
-        txtDetailItemRef: {ColSpan=3}
+        txtDetailItemRef: {ColSpan=2}
             Width: 350
             Label: Detail &Ref
         txtDetailAmount:
             Format: Currency(2)
             Label: A&mount
+            Validation: true
         txtDetailBaseAmount:
             Label: Base
             Format: Currency(2)

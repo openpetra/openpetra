@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -45,8 +46,27 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         Int32 FLedgerNumber;
         ALedgerRow FLedgerRow = null;
 
+        /// <summary>
+        /// When this document is saved in the database, I can check whether
+        /// my calling form should be updated.
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        private void OnDataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (e.Success)
+            {
+                if (FPetraUtilsObject.GetCallerForm().GetType() == typeof(TFrmAPSupplierTransactions))
+                {
+                    ((TFrmAPSupplierTransactions)FPetraUtilsObject.GetCallerForm()).Reload();
+                }
+            }
+        }
+
         private void InitializeManualCode()
         {
+            // When a doument is saved, I'll see about updating my caller.
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
         }
 
         private void RunOnceOnActivationManual()
@@ -55,8 +75,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             nudDiscountDays.Visible = false;        // There's currently no discounting, so this
             lblDiscountPercentage.Visible = false;  // just hides the associated controls.
             txtDiscountPercentage.Visible = false;
-            txtDetailAmount.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
-            txtExchangeRateToBase.ModifiedChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
         }
 
         private void LookupExchangeRate(Object sender, EventArgs e)
@@ -215,6 +235,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
             {
+                FMainDS.AApDocumentDetail.DefaultView.Sort = AApDocumentDetailTable.GetDetailNumberDBName();
+
                 // Create Text description of Anal Attribs for each DetailRow..
                 foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
                 {
@@ -331,6 +353,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
         }
 
+        private void ValidateDataManual(AccountsPayableTDSAApDocumentRow ARow)
+        {
+            DataColumn ValidationColumn;
+
+            ValidationColumn = ARow.Table.Columns[AccountsPayableTDSAApDocumentTable.ColumnDocumentCodeId];
+
+            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
+                TStringChecks.StringMustNotBeEmpty(ARow.DocumentCode,
+                    lblDocumentCode.Text,
+                    this, ValidationColumn, txtDocumentCode), ValidationColumn);
+        }
+
+        private void ValidateDataDetailsManual(AApDocumentDetailRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_AP.ValidateApDocumentDetailManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+        }
+
         private void UpdateCreditTerms(object sender, TPetraDateChangedEventArgs e)
         {
             if (sender == dtpDateDue)
@@ -368,8 +410,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if ((txtExchangeRateToBase.NumberValueDecimal.HasValue)
                 && (txtDetailAmount.NumberValueDecimal.HasValue))
             {
-                txtDetailBaseAmount.NumberValueDecimal =
-                    txtDetailAmount.NumberValueDecimal * txtExchangeRateToBase.NumberValueDecimal.Value;
+                decimal ExchangeRate = 1.0m;
+
+                if (txtExchangeRateToBase.NumberValueDecimal.HasValue)
+                {
+                    ExchangeRate = txtExchangeRateToBase.NumberValueDecimal.Value;
+                }
+
+                if (ExchangeRate != 0)
+                {
+                    txtDetailBaseAmount.NumberValueDecimal =
+                        txtDetailAmount.NumberValueDecimal / ExchangeRate;
+                }
             }
         }
 
@@ -402,7 +454,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 decimal DetailAmount = Convert.ToDecimal(ARow.Amount);
-                DetailAmount *= ExchangeRateToBase;
+                DetailAmount /= ExchangeRateToBase;
                 txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
             }
         }
@@ -435,6 +487,43 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         "The document Amount does not equal the sum of the detail lines."), Catalog.GetString("Balance Problem"));
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Check that the cost centres referred to are OK with the accounts I'm using. If not a message is displayed.
+        /// </summary>
+        /// <param name="Atds"></param>
+        /// <param name="AApDocument"></param>
+        /// <returns>false if any detail lines have incompatible cost centres.</returns>
+        public static bool AllLinesAccountsOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        {
+            List <String>AccountCodesCostCentres = new List <string>();
+
+            foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
+            {
+                if (Row.ApDocumentId == AApDocument.ApDocumentId)  // NOTE: When called from elsewhere, the TDS could contain data for several documents.
+                {
+                    String AccountCostCentre = Row.AccountCode + "|" + Row.CostCentreCode;
+
+                    if (!AccountCodesCostCentres.Contains(AccountCostCentre))
+                    {
+                        AccountCodesCostCentres.Add(AccountCostCentre);
+                    }
+                }
+            }
+
+            //
+            // The check is done on the server..
+
+            String ReportMsg = TRemote.MFinance.AP.WebConnectors.CheckAccountsAndCostCentres(AApDocument.LedgerNumber, AccountCodesCostCentres);
+
+            if (ReportMsg != "")
+            {
+                MessageBox.Show(ReportMsg, Catalog.GetString("Invalid Account"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -484,6 +573,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             if (!AllLinesHaveAttributes(Atds, Adocument))
+            {
+                CanPost = false;
+            }
+
+            if (!AllLinesAccountsOK(Atds, Adocument))
             {
                 CanPost = false;
             }

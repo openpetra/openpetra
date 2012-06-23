@@ -205,6 +205,8 @@
           overwrite="false" />
 <property name="dir.bin" value="${path::combine(dir.delivery, 'bin')}"
           overwrite="false" />
+<property name="dir.obj" value="${path::combine(dir.delivery, 'obj')}"
+          overwrite="false" />
 <property name="dir.setup" value="${path::combine(dir.delivery, 'setup')}"
           overwrite="false" />
  <!-- projectfiles -->
@@ -248,7 +250,9 @@
           
 <!-- logdir -->
 <property name="dir.log" value="${path::combine(dir.root, 'log')}" overwrite="false" />
+<mkdir dir="${dir.log}" failonerror="false"/>
 <property name="dir.var" value="${path::combine(dir.root, 'var')}" overwrite="false" />
+<mkdir dir="${dir.var}" failonerror="false"/>
 <property name="dir.petraclient.log" value="${dir.log}" overwrite="false" />
 <property name="dir.petraclient.var" value="${dir.var}" overwrite="false" />
 <property name="dir.petraclient.tmp" value="${tempdir}" overwrite="false" />
@@ -289,11 +293,24 @@
 <property name="DBMS.DBHostOrFile" value="127.0.0.1"
           overwrite="false"/>
 
+<property name="DBMS.Setup.DBName" value="openpetra_basedb"
+          overwrite="false"/>
+
 <!-- smtp -->
-<property name="smtp.host" value="smtp.example.org"/>
-<property name="smtp.username" value="smtpuser"/>
-<property name="smtp.password" value="YourSmtpPassword"/>
-<property name="smtp.enablessl" value="true"/>
+<property name="smtp.host" value="smtp.example.org"
+          overwrite="false"/>
+<property name="smtp.port" value="25"
+          overwrite="false"/>
+<property name="smtp.username" value="smtpuser"
+          overwrite="false"/>
+<property name="smtp.password" value="YourSmtpPassword"
+          overwrite="false"/>
+<property name="smtp.enablessl" value="true"
+          overwrite="false"/>
+<property name="LocalFieldFinance.EmailAddress" value="finance@myfield.example.org"
+          overwrite="false"/>
+<property name="ClearingHouse.EmailAddress" value="ich@example.org"
+          overwrite="false"/>
 
 <!-- Set correct .NET platform -->
 <property name="NETframework-version" value ="4.0" overwrite="false" />
@@ -318,10 +335,7 @@
 
 <!-- generateWinforms -->
 <property name="tool-generateWinForms" value="${dir.bin}/Ict.Tools.GenerateWinForms.exe" overwrite="false" />
-<!-- leave this empty for MS.net and AutoSize/TableLayoutPanel, mono-x.x needs GUILocalisation value en! -->
 <property name="GUILocalisation" value="" overwrite="false"/> 
-<!-- the gui is either generated for mono or net. This is due to some problems with AutoSize of filled docking panels -->
-<property name="TargetPlatformGUI" value="net" overwrite="false"/>
 
 <property name="tool-generateEncryptionKey" value="${dir.bin}/Ict.Tools.GenerateEncryptionKey.exe" overwrite="false" />
 
@@ -350,7 +364,7 @@
   <property name="external.Uncrustify" value="${OP::GetFileInProgramDirectory('/uncrustify/uncrustify.exe')}" 
             overwrite="false"/>
   <property name="external.Java" value="${OP::GetFileInProgramDirectory('/Java/jre6/bin/java.exe')}" overwrite="false"/>
-  <property name="external.Benerator" value="${OP::GetFileInProgramDirectory('/databene-benerator-0.7.1/bin/benerator.bat')}" overwrite="false"/>
+  <property name="external.Benerator" value="${OP::GetFileInProgramDirectory('/databene-benerator-0.7.6/bin/benerator.bat')}" overwrite="false"/>
   <property name="external.Poedit.gettext" value="${OP::GetFileInProgramDirectory('/Poedit/bin/xgettext.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgfmt" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgfmt.exe')}" overwrite="false"/>
   <property name="external.Poedit.msgcat" value="${OP::GetFileInProgramDirectory('/Poedit/bin/msgcat.exe')}" overwrite="false"/> 
@@ -360,7 +374,8 @@
   <if test="${'unix'==platform::get-name()}">
     <!-- Unix specific -->
     <property name="external.Uncrustify" value="uncrustify" overwrite="false"/>
-    <property name="external.Java" value="java" overwrite="false"/>
+    <property name="external.Benerator" value="/usr/local/benerator/bin/benerator.sh" overwrite="false"/>
+    <property name="external.Java" value="/usr/bin/java" overwrite="false"/>
     <property name="external.Poedit.gettext" value="/usr/bin/xgettext" overwrite="false"/>
     <property name="external.Poedit.msgfmt" value="/usr/bin/msgfmt" overwrite="false"/>
     <property name="external.Poedit.msgcat" value="/usr/bin/msgcat" overwrite="false"/>     

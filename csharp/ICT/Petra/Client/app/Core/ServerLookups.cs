@@ -24,6 +24,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using Ict.Common;
+using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -42,6 +45,29 @@ namespace Ict.Petra.Client.App.Core
     /// </summary>
     public class TServerLookup
     {
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        public class TMCommon
+        {
+            #region TServerLookup.TMCommon
+
+            /// <summary>
+            /// simple data reader;
+            /// checks for permissions of the current user;
+            /// </summary>
+            /// <param name="ATablename"></param>
+            /// <param name="ASearchCriteria">a set of search criteria</param>
+            /// <param name="AResultTable">returns typed datatable</param>
+            /// <returns></returns>
+            public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
+            {
+                return TRemote.MCommon.DataReader.GetData(ATablename, ASearchCriteria, out AResultTable);
+            }
+
+            #endregion
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -132,6 +158,7 @@ namespace Ict.Petra.Client.App.Core
             /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
             /// <param name="AValidPartnerClasses">Pass in a Set of valid PartnerClasses that the
             ///  Partner is allowed to have (eg. [PERSON, FAMILY], or an empty Set ( [] ).</param>
+            /// <param name="APartnerExists">True if the Partner exists in the database or if PartnerKey is 0.</param>
             /// <param name="APartnerShortName">ShortName for the found Partner ('' if Partner
             ///  doesn't exist or PartnerKey is 0)</param>
             /// <param name="APartnerClass">Partner Class of the found Partner (FAMILY if Partner
@@ -143,12 +170,14 @@ namespace Ict.Petra.Client.App.Core
             ///  Set) or PartnerKey is 0, otherwise false</returns>
             public static Boolean VerifyPartner(Int64 APartnerKey,
                 TPartnerClass[] AValidPartnerClasses,
+                out bool APartnerExists,
                 out String APartnerShortName,
                 out TPartnerClass APartnerClass,
                 out Boolean AIsMergedPartner)
             {
                 return TRemote.MPartner.Partner.ServerLookups.VerifyPartner(APartnerKey,
                     AValidPartnerClasses,
+                    out APartnerExists,
                     out APartnerShortName,
                     out APartnerClass,
                     out AIsMergedPartner);

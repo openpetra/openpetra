@@ -10,7 +10,7 @@
 <target name="custdepend"> 
   <!-- Remove generated files from generateWinForms -->
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
-  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation} -TargetPlatformGUI:${TargetPlatformGUI}"/>
+  <property name="generateWinformsParameters" value="-TemplateDir:${dir.incdir.template.src}/Winforms -ResourceDir:${dir.root}/resources -petraxml:${PetraXML.file} -localisation:${GUILocalisation}"/>
   <ExecDotNet program="${tool-generateWinForms}" commandline="-op:generate -ymldir:${dir.root}/csharp/ICT/Petra/PetraClient ${generateWinformsParameters}"/>
 </target>
 

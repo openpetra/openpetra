@@ -35,7 +35,7 @@ RootNode:
         txtDetailCode: {Label=Marital Status Code, Width=40}
         txtDetailDescription: {Width=285}
         chkDetailAssignableFlag: {Label=Assignable, OnChange=EnableDisableAssignableDate}
-        dtpDetailAssignableDate: {Label=Unassignable Date}
+        dtpDetailAssignableDate: {Label=Unassignable Date, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:

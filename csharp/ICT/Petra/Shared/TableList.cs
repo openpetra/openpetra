@@ -50,12 +50,10 @@ namespace Ict.Petra.Shared
             list.Add("p_country");
             list.Add("a_currency");
             list.Add("s_form");
-            list.Add("s_file");
             list.Add("s_group");
             list.Add("s_user_group");
             list.Add("s_module");
             list.Add("s_valid_output_form");
-            list.Add("s_module_file");
             list.Add("s_group_module_access_permission");
             list.Add("s_group_table_access_permission");
             list.Add("s_user_module_access_permission");
@@ -65,15 +63,10 @@ namespace Ict.Petra.Shared
             list.Add("s_logon_message");
             list.Add("s_patch_log");
             list.Add("s_reports_to_archive");
-            list.Add("s_report_file");
-            list.Add("s_report_options");
-            list.Add("s_selected_output_destination");
             list.Add("s_system_status");
             list.Add("s_system_status_log");
             list.Add("s_user_defaults");
             list.Add("s_system_defaults");
-            list.Add("s_batch_job");
-            list.Add("s_error_message");
             list.Add("s_error_log");
             list.Add("p_partner_status");
             list.Add("p_acquisition");
@@ -94,7 +87,6 @@ namespace Ict.Petra.Shared
             list.Add("p_type");
             list.Add("p_relation_category");
             list.Add("p_relation");
-            list.Add("p_reports");
             list.Add("m_extract_type");
             list.Add("m_extract_master");
             list.Add("m_extract_parameter");
@@ -105,8 +97,6 @@ namespace Ict.Petra.Shared
             list.Add("p_address_line");
             list.Add("p_addressee_title_override");
             list.Add("p_formality");
-            list.Add("p_form_letter_body");
-            list.Add("p_form_letter_design");
             list.Add("p_label");
             list.Add("p_merge_form");
             list.Add("p_merge_field");
@@ -142,9 +132,6 @@ namespace Ict.Petra.Shared
             list.Add("a_method_of_giving");
             list.Add("a_method_of_payment");
             list.Add("a_motivation_group");
-            list.Add("a_previous_year_batch");
-            list.Add("a_prev_year_corp_ex_rate");
-            list.Add("a_this_year_old_batch");
             list.Add("a_recurring_batch");
             list.Add("a_batch");
             list.Add("a_special_trans_type");
@@ -188,7 +175,6 @@ namespace Ict.Petra.Shared
             list.Add("pt_vision_area");
             list.Add("pt_vision_level");
             list.Add("pm_commitment_status");
-            list.Add("pt_reports");
             list.Add("pt_position");
             list.Add("pt_assignment_type");
             list.Add("pt_leaving_code");
@@ -224,7 +210,6 @@ namespace Ict.Petra.Shared
             list.Add("p_partner_ledger");
             list.Add("m_extract");
             list.Add("p_customised_greeting");
-            list.Add("p_form_letter_insert");
             list.Add("p_subscription");
             list.Add("p_partner_contact");
             list.Add("p_partner_contact_attribute");
@@ -235,8 +220,6 @@ namespace Ict.Petra.Shared
             list.Add("a_account_hierarchy_detail");
             list.Add("a_email_destination");
             list.Add("a_transaction_type");
-            list.Add("a_previous_year_journal");
-            list.Add("a_this_year_old_journal");
             list.Add("a_recurring_journal");
             list.Add("a_journal");
             list.Add("a_suspense_account");
@@ -325,10 +308,6 @@ namespace Ict.Petra.Shared
             list.Add("a_ep_match");
             list.Add("a_ep_transaction");
             list.Add("a_motivation_detail_fee");
-            list.Add("a_previous_year_transaction");
-            list.Add("a_prev_year_trans_anal_attrib");
-            list.Add("a_this_year_old_transaction");
-            list.Add("a_thisyearold_trans_anal_attrib");
             list.Add("a_recurring_transaction");
             list.Add("a_recurring_trans_anal_attrib");
             list.Add("a_recurring_gift_batch");
@@ -419,8 +398,6 @@ namespace Ict.Petra.Shared
             list.Add("seq_foundation_proposal");
             list.Add("seq_proposal_detail");
             list.Add("seq_form_letter_insert");
-            list.Add("seq_modification1");
-            list.Add("seq_modification2");
             list.Add("seq_workflow");
             list.Add("seq_file_info");
             list.Add("seq_person_skill");

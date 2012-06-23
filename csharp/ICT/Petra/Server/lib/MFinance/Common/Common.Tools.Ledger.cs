@@ -532,7 +532,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (VerificationResult != null)
             {
-                if (VerificationResult.HasCriticalError())
+                if (VerificationResult.HasCriticalErrors)
                 {
                     throw new ApplicationException("TLedgerInitFlagHandler does not work");
                 }

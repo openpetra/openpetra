@@ -42,14 +42,15 @@ RootNode:
                 Row3: [txtEvaluationComments]
                 Row4: [txtEvaluationAction]
                 
-        txtEvaluator: {Label=Reporter, DataField=PmPersonEvaluation.Evaluator, Width=150}
-        dtpEvaluationDate: {Label=Report Date, DataField=PmPersonEvaluation.EvaluationDate}
-        dtpNextEvalDate: {Label=Next Report Date, DataField=PmPersonEvaluation.NextEvaluationDate}
+        txtEvaluator: {Label=Reporter, DataField=PmPersonEvaluation.Evaluator, Width=150, Validation=true}
+        dtpEvaluationDate: {Label=Report Date, DataField=PmPersonEvaluation.EvaluationDate, Validation=true}
+        dtpNextEvalDate: {Label=Next Report Date, DataField=PmPersonEvaluation.NextEvaluationDate, Validation=true}
         cmbEvaluationType: 
             Label: Report Type 
             DataField: PmPersonEvaluation.EvaluationType
             Width: 100
             OptionalValues: [=Semi-Annual, Annual, Leaving]
+            Validation: true
         txtEvaluationComments:
             Label: Comments
             DataField: PmPersonEvaluation.EvaluationComments
@@ -57,7 +58,7 @@ RootNode:
             ScrollBars: Vertical
             Height: 50
             Width: 380
-            ColSpan: 3
+            ColSpan: 2
         txtEvaluationAction:
             Label: Next Action
             DataField: PmPersonEvaluation.PersonEvalAction
@@ -65,6 +66,6 @@ RootNode:
             ScrollBars: Vertical
             Height: 50
             Width: 380
-            ColSpan: 3
+            ColSpan: 2
 
         

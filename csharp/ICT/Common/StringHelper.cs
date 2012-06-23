@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -121,39 +121,54 @@ namespace Ict.Common
             return ReturnValue;
         }
 
+        private static void StrMergeHelper(ref StringBuilder builder, string element, char delim)
+        {
+            if (element.Contains("\\"))
+            {
+                element = element.Replace("\\", "\\\\");
+            }
+
+            // if the element already contains the delimiter, do something about it.
+            // strsplit and getNextCSV have to revert it
+            if (element.IndexOf(delim) != -1)
+            {
+                if (delim == '\t')
+                {
+                    builder.Append(element.Replace("\t", "\\t"));
+                }
+                else
+                {
+                    // replace a double quote with two double quotes inside the element
+                    builder.Append("\"").Append(element.Replace("\"", "\"\"")).Append("\"");
+                }
+            }
+            else
+            {
+                builder.Append(element);
+            }
+        }
+
         /// <summary>
         /// concatenate a string using the given delimiter
         /// </summary>
         /// <param name="l">the StringCollection containing the strings that should be concatenated</param>
         /// <param name="delim">the delimiter to be used between the strings</param>
         /// <returns>a string with the concatenated strings from the StringCollection</returns>
-        public static string StrMerge(StringCollection l, string delim)
+        public static string StrMerge(StringCollection l, char delim)
         {
-            string ReturnValue;
-            int i;
-            string element;
+            StringBuilder ReturnValue = new StringBuilder();
 
-            ReturnValue = "";
-
-            for (i = 0; i <= l.Count - 1; i += 1)
+            for (int i = 0; i <= l.Count - 1; i += 1)
             {
-                element = l[i];
-
-                // if the element already contains the delimiter, mark it with an escape sequence
-                // strsplit and getNextCSV have to revert it
-                // escape the escape marker
-                element = element.Replace("\\", "\\\\");
-                element = element.Replace(delim, "\\" + delim);
-
                 if (i != 0)
                 {
-                    ReturnValue = ReturnValue + delim;
+                    ReturnValue.Append(delim);
                 }
 
-                ReturnValue = ReturnValue + element;
+                StrMergeHelper(ref ReturnValue, l[i], delim);
             }
 
-            return ReturnValue;
+            return ReturnValue.ToString();
         }
 
         /// <summary>
@@ -162,29 +177,21 @@ namespace Ict.Common
         /// <param name="l">the string array containing the strings that should be concatenated</param>
         /// <param name="delim">the delimiter to be used between the strings</param>
         /// <returns>a string with the concatenated strings from the string array</returns>
-        public static string StrMerge(String[] l, string delim)
+        public static string StrMerge(String[] l, char delim)
         {
-            string ReturnValue = "";
+            StringBuilder ReturnValue = new StringBuilder();
 
-            for (int i = 0; i <= l.Length - 1; i++)
+            for (int i = 0; i <= l.Length - 1; i += 1)
             {
-                string element = l[i];
-
-                // if the element already contains the delimiter, mark it with an escape sequence
-                // strsplit and getNextCSV have to revert it
-                // escape the escape marker
-                element = element.Replace("\\", "\\\\");
-                element = element.Replace(delim, "\\" + delim);
-
                 if (i != 0)
                 {
-                    ReturnValue = ReturnValue + delim;
+                    ReturnValue.Append(delim);
                 }
 
-                ReturnValue = ReturnValue + element;
+                StrMergeHelper(ref ReturnValue, l[i], delim);
             }
 
-            return ReturnValue;
+            return ReturnValue.ToString();
         }
 
         /// <summary>
@@ -716,6 +723,24 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// parse a line of CSV values, and return a StringCollection with the values
+        /// </summary>
+        public static StringCollection GetCSVList(string list, string delimiter)
+        {
+            string listcsv = list;
+            StringCollection Result = new StringCollection();
+
+            Result.Add(GetNextCSV(ref listcsv, delimiter));
+
+            while ((listcsv.Length != 0))
+            {
+                Result.Add(GetNextCSV(ref listcsv, delimiter));
+            }
+
+            return Result;
+        }
+
+        /// <summary>
         /// checks if the list contains the given value
         /// </summary>
         /// <param name="list">separated values</param>
@@ -723,11 +748,8 @@ namespace Ict.Common
         /// <returns>true if the value is an element of the list</returns>
         public static Boolean ContainsCSV(string list, String AElement)
         {
-            String element;
-            String listcsv;
-
-            listcsv = list;
-            element = GetNextCSV(ref listcsv);
+            string listcsv = list;
+            string element = GetNextCSV(ref listcsv);
 
             while ((listcsv.Length != 0) && (element != AElement))
             {
@@ -969,7 +991,7 @@ namespace Ict.Common
         /// <returns>the string in new convention</returns>
         public static string UpperCamelCase(String AStr, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-            return UpperCamelCase(AStr, "_", AIgnorePrefix, AIgnorePostfix);
+            return UpperCamelCase(AStr, '_', AIgnorePrefix, AIgnorePostfix);
         }
 
         /// <summary>
@@ -980,9 +1002,9 @@ namespace Ict.Common
         /// <param name="AIgnorePrefix">should prefixes be ignored</param>
         /// <param name="AIgnorePostfix">should postfixes be ignored</param>
         /// <returns>the string in new convention</returns>
-        public static string UpperCamelCase(String AStr, String ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
+        public static string UpperCamelCase(String AStr, char ASeparator, bool AIgnorePrefix, bool AIgnorePostfix)
         {
-            string[] parts = AStr.Split(new string[] { ASeparator }, StringSplitOptions.None);
+            string[] parts = AStr.Split(new char[] { ASeparator }, StringSplitOptions.None);
 
             if (parts.Length <= 1)       // Handle string without seperator
             {

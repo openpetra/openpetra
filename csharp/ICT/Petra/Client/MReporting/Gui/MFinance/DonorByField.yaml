@@ -1,0 +1,78 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Donor by Field
+    WindowWidth: 800
+    WindowHeight: 600
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MFinance.queries.QueryDonorByField.CalculateExtract
+        ISOLATIONLEVEL: serializable
+        REPORTNAME: Donor by Field
+        CURRENTREPORT: Donor by Field
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        # TODO: the following things have to be set by generator
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Actions:
+        actFilter: {Label=Filter List, ActionClick=FilterList}
+    Controls:
+        tpgGeneralSettings: {ControlsOrientation=vertical}
+            Label: General Settings
+            Controls: [pnlFilter, pnlMiddle, pnlBottom]
+        pnlFilter: {ControlsOrientation=horizontal}
+            Dock: Top
+            Controls: [txtFilter, btnFilter]
+        pnlMiddle: {ControlsOrientation=horizontal}
+            Dock: Fill
+            Controls: [clbLedger, grpOptions]
+        pnlBottom:
+            Dock: Bottom
+            Controls: 
+                Row0: [chkAllLedgers]
+                Row1: [ucoAddress, ucoChkFilter]
+            Height: 200
+        grpOptions:
+            Label: Selection Criteria
+            Dock: Right
+            Controls:
+                Row0:[cmbReceiptLetterFrequency]
+                Row1:[chkNewDonorsOnly]
+                Row2:[chkReceiptEachGiftOnly]
+                Row3:[dtpDateFrom]
+                Row4:[dtpDateTo]
+            Width: 350
+        clbLedger:
+            NoLabel: true 
+            ParameterName: param_ledgers
+            Dock: Fill
+        txtFilter:
+            NoLabel: true
+            Width: 300
+        btnFilter:
+            Action: actFilter
+        cmbReceiptLetterFrequency: {Label=Receipt Letter Frequency, List=FrequencyList, ParameterName=param_receipt_letter_frequency}            
+        chkNewDonorsOnly: {Label=New Donors only, ParameterName=param_new_donors_only}
+        chkReceiptEachGiftOnly: {Label=Receipt each Gift only, ParameterName=param_receipt_each_gift_only}
+        dtpDateFrom:
+            Label: Date from
+            ParameterName: param_date_from
+        dtpDateTo:
+            Label: To
+            ParameterName: param_date_to
+        chkAllLedgers: {CheckBoxAttachedLabel=right}
+            Label: Select all ledgers (ignore selection in list above)
+            ParameterName: param_all_ledgers
+        ucoAddress:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Height: 170
+            Width: 500
+        ucoChkFilter:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Height: 170
+            Width: 200

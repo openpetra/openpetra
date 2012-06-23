@@ -298,26 +298,6 @@ namespace Ict.Petra.Client.CommonControls
             LeavingOnFailedValidationOK = true;
         }
 
-        /// <summary>
-        /// Default of maximalDateValue is the system Constant DateTime.MaxValue
-        /// Here you can override ...
-        /// </summary>
-        /// <param name="maximalValue">The new maximal value ...</param>
-        public void SetMaximalDate(DateTime maximalValue)
-        {
-            maximalDateValue = maximalValue;
-        }
-
-        /// <summary>
-        /// Default of minimalDateValue is the system Constant DateTime.MinValue
-        /// Here you can override ...
-        /// </summary>
-        /// <param name="minimalValue">The new minimal value ...</param>
-        public void SetMinimalDate(DateTime minimalValue)
-        {
-            minimalDateValue = minimalValue;
-        }
-
         void TtxtPetraDate_DoubleClick(object sender, EventArgs e)
         {
             DialogResult ReplaceExistingDate;
@@ -447,7 +427,7 @@ namespace Ict.Petra.Client.CommonControls
                         if (AShowVerificationError)
                         {
                             // Show appropriate Error Message to the user
-                            TMessages.MsgGeneralError(DateVerificationResult2);
+                            TMessages.MsgGeneralError(DateVerificationResult2, this.FindForm().GetType());
                         }
 
                         // Reset the Date to what it was before!
@@ -468,7 +448,7 @@ namespace Ict.Petra.Client.CommonControls
                         if (AShowVerificationError)
                         {
                             // Show appropriate Error Message to the user
-                            TMessages.MsgGeneralError(DateVerificationResult2);
+                            TMessages.MsgGeneralError(DateVerificationResult2, this.FindForm().GetType());
                         }
 
                         // Reset the Date to what it was before!
@@ -482,14 +462,14 @@ namespace Ict.Petra.Client.CommonControls
 
                 if (!FAllowEmpty)
                 {
-                    DateVerificationResult2 = TDateChecks.IsUndefinedDateTime(Text2Date, FDateDescription);
+                    DateVerificationResult2 = TDateChecks.IsNotUndefinedDateTime(Text2Date, FDateDescription);
 
                     if (DateVerificationResult2 != null)
                     {
                         if (AShowVerificationError)
                         {
                             // Show appropriate Error Message to the user
-                            TMessages.MsgGeneralError(DateVerificationResult2);
+                            TMessages.MsgGeneralError(DateVerificationResult2, this.FindForm().GetType());
                         }
 
                         // Reset the Date to what it was before!
@@ -513,7 +493,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 // set tag to "SuppressChangeDetection" so text change is not detected by TFrmPetraEditUtils.MultiEventHandler
                 object OriginalTag = this.Tag;
-                this.Tag = CommonResourcestrings.StrCtrlSuppressChangeDetection;
+                this.Tag = MCommonResourcestrings.StrCtrlSuppressChangeDetection;
                 FSuppressTextChangeEvent = true;
 
                 // Now update the TextBox's Text with the newly formatted date
