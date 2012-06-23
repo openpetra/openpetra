@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,7 +30,7 @@ using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
 using GNU.Gettext;
-using ExcelLibrary.SpreadSheet;
+using OfficeOpenXml;
 
 namespace Ict.Common.IO
 {
@@ -141,15 +141,13 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// store the data into Excel format, Biff8, Excel 5.0
+        /// store the data into Excel format, Open Office XML, .xlsx
         ///
-        /// this makes use of the ExcelLibrary, see ThirdParty directory.
-        /// http://code.google.com/p/excellibrary/
+        /// this makes use of the EPPlus library
+        /// http://epplus.codeplex.com/
         /// </summary>
-        private static Worksheet Xml2ExcelWorksheet(XmlDocument ADoc, string ATitle)
+        private static void Xml2ExcelWorksheet(XmlDocument ADoc, ExcelWorksheet AWorksheet)
         {
-            Worksheet worksheet = new Worksheet(ATitle);
-
             Int32 rowCounter = 0;
             Int16 colCounter = 0;
 
@@ -160,7 +158,7 @@ namespace Ict.Common.IO
 
             foreach (string attrName in AllAttributes)
             {
-                worksheet.Cells[rowCounter, colCounter] = new Cell("#" + attrName);
+                AWorksheet.Cells[rowCounter, colCounter].Value = "#" + attrName;
                 colCounter++;
             }
 
@@ -173,7 +171,7 @@ namespace Ict.Common.IO
                 {
                     if (attrName == "childOf")
                     {
-                        worksheet.Cells[rowCounter, colCounter] = new Cell(TXMLParser.GetAttribute(node.ParentNode, "name"));
+                        AWorksheet.Cells[rowCounter, colCounter].Value = TXMLParser.GetAttribute(node.ParentNode, "name");
                     }
                     else
                     {
@@ -181,15 +179,15 @@ namespace Ict.Common.IO
 
                         if (value.StartsWith(eVariantTypes.eDateTime.ToString() + ":"))
                         {
-                            worksheet.Cells[rowCounter, colCounter] = new Cell(TVariant.DecodeFromString(value).ToObject(), CellFormat.Date);
+                            AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToDate();
                         }
                         else if (value.StartsWith(eVariantTypes.eInteger.ToString() + ":"))
                         {
-                            worksheet.Cells[rowCounter, colCounter] = new Cell(TVariant.DecodeFromString(value).ToObject());
+                            AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToInt64();
                         }
                         else
                         {
-                            worksheet.Cells[rowCounter, colCounter] = new Cell(value);
+                            AWorksheet.Cells[rowCounter, colCounter].Value = value;
                         }
                     }
 
@@ -199,36 +197,35 @@ namespace Ict.Common.IO
                 rowCounter++;
                 colCounter = 0;
             }
-
-            return worksheet;
         }
 
         /// <summary>
-        /// store the data into Excel format, Biff8, Excel 5.0
+        /// store the data into Excel format, Open Office XML, .xlsx
         ///
-        /// this makes use of the ExcelLibrary, see ThirdParty directory.
-        /// http://code.google.com/p/excellibrary/
+        /// this makes use of the EPPlus library
+        /// http://epplus.codeplex.com/
         /// </summary>
         /// <param name="ADoc"></param>
         /// <param name="AStream"></param>
         /// <returns></returns>
         public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream)
         {
-            Workbook workbook = new Workbook();
+            ExcelPackage pck = new ExcelPackage();
 
-            Worksheet worksheet = Xml2ExcelWorksheet(ADoc, "Data Export");
+            ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
 
-            workbook.Worksheets.Add(worksheet);
+            Xml2ExcelWorksheet(ADoc, worksheet);
 
-            workbook.Save(AStream);
+            pck.SaveAs(AStream);
+
             return true;
         }
 
         /// <summary>
-        /// store the data into Excel format, Biff8, Excel 5.0
+        /// store the data into Excel format, Open Office XML, .xlsx
         ///
-        /// this makes use of the ExcelLibrary, see ThirdParty directory.
-        /// http://code.google.com/p/excellibrary/
+        /// this makes use of the EPPlus library
+        /// http://epplus.codeplex.com/
         ///
         /// this overload stores several worksheets
         /// </summary>
@@ -237,15 +234,16 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream)
         {
-            Workbook workbook = new Workbook();
+            ExcelPackage pck = new ExcelPackage();
 
             foreach (string WorksheetTitle in ADocs.Keys)
             {
-                Worksheet worksheet = Xml2ExcelWorksheet(ADocs[WorksheetTitle], WorksheetTitle);
-                workbook.Worksheets.Add(worksheet);
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(WorksheetTitle);
+
+                Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet);
             }
 
-            workbook.Save(AStream);
+            pck.SaveAs(AStream);
             return true;
         }
 
