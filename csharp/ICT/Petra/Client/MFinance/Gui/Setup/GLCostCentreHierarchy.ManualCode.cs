@@ -230,9 +230,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FCurrentNode != null)
             {
-                ACostCentreRow currentCostCentre = (ACostCentreRow)FCurrentNode.Tag;
-                GetDetailsFromControls(currentCostCentre);
+                GetDetailsFromControls(GetSelectedDetailRowManual());
             }
         }
+        
+        private ACostCentreRow GetSelectedDetailRowManual()
+        {
+            return (ACostCentreRow)FCurrentNode.Tag;;
+        }        
     }
 }
