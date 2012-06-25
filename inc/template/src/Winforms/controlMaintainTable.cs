@@ -23,8 +23,9 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
 using GNU.Gettext;
 using SourceGrid;
+{#IFDEF SHAREDVALIDATIONNAMESPACEMODULE}
 using {#SHAREDVALIDATIONNAMESPACEMODULE};
-
+{#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -151,19 +152,15 @@ namespace {#NAMESPACE}
 
         grdDetails.SelectRowInGrid(RowNumberGrid);
     }
+{#IFDEF SHOWDETAILS}
 
     /// return the selected row
     public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
-        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
-
-        if (SelectedGridRow.Length >= 1)
-        {
-            return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;
-        }
-
-        return null;
+        {#GETSELECTEDDETAILROW}
     }
+{#ENDIF SHOWDETAILS}
+
 
     /// make sure that the primary key cannot be edited anymore
     public void SetPrimaryKeyReadOnly(bool AReadOnly)
@@ -277,13 +274,28 @@ namespace {#NAMESPACE}
         }
     }
 {#ENDIF SHOWDETAILS}
-    
-{#IFDEF SAVEDETAILS}
+{#IFDEF MASTERTABLE}
+
+	/// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
+    {
+{#IFDEF SAVEDATA}
+        {#SAVEDATA}
+{#ENDIF SAVEDATA}
+    }
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+
     /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls()
     {
+{#IFDEF SAVEDETAILS}
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
+{#ENDIF SAVEDETAILS}
     }
+{#ENDIFN MASTERTABLE}
+    
+{#IFDEF SAVEDETAILS}
 
     private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
     {
@@ -316,27 +328,46 @@ namespace {#NAMESPACE}
     public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
     {
         bool ReturnValue = false;
-        Control ControlToValidate;
+        Control ControlToValidate = null;
+
+        // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+        FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+
+{#IFDEF SHOWDETAILS}
         {#DETAILTABLETYPE}Row CurrentRow;
 
         CurrentRow = GetSelectedDetailRow();
 
         if (CurrentRow != null)
         {
-            if (AValidateSpecificControl != null) 
-            {
-                ControlToValidate = AValidateSpecificControl;
-            }
-            else
-            {
-                ControlToValidate = this.ActiveControl;
-            }
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+        if (AValidateSpecificControl != null) 
+        {
+            ControlToValidate = AValidateSpecificControl;
+        }
+        else
+        {
+            ControlToValidate = this.ActiveControl;
+        }	
 
-            GetDetailsFromControls(CurrentRow);
-            
-            ValidateDataDetails(CurrentRow);
+{#IFDEF MASTERTABLE}
+        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
+        ValidateData(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIF MASTERTABLE}        
+{#ENDIFN SHOWDETAILS}
+{#IFDEF SHOWDETAILS}
+        GetDetailsFromControls(CurrentRow);
+        ValidateDataDetails(CurrentRow);
+{#ENDIF SHOWDETAILS}
+
 {#IFDEF VALIDATEDATADETAILSMANUAL}
+{#IFDEF SHOWDETAILS}
             ValidateDataDetailsManual(CurrentRow);
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+            ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIFN SHOWDETAILS}
 {#ENDIF VALIDATEDATADETAILSMANUAL}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
@@ -473,7 +504,16 @@ namespace {#NAMESPACE}
             }
         }
     }
+{#IFDEF MASTERTABLE}
+    private void ValidateData({#MASTERTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+        {#MASTERTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
+    }
+{#ENDIF MASTERTABLE}
+{#IFDEF DETAILTABLE}
     private void ValidateDataDetails({#DETAILTABLE}Row ARow)
     {
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -481,15 +521,17 @@ namespace {#NAMESPACE}
         {#DETAILTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
             FPetraUtilsObject.ValidationControlsDict);
     }
+{#ENDIF DETAILTABLE}
+{#IFDEF MASTERTABLE OR DETAILTABLE}
 
     private void BuildValidationControlsDict()
     {
-        FPetraUtilsObject.ValidationControlsDict = TValidationControlsDict.PopulateDictionaryWithAllColumns(FMainDS.{#DETAILTABLE});
 {#IFDEF ADDCONTROLTOVALIDATIONCONTROLSDICT}
         {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
 {#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
     }
-    
+{#ENDIF MASTERTABLE OR DETAILTABLE}    
+
 #endregion
   }
 }
