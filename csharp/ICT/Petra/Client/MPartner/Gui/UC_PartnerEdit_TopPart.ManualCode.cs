@@ -671,7 +671,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void ValidateDataDetailsManual(PPartnerRow ARow)
+        private void ValidateDataManual(PPartnerRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
