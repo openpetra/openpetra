@@ -107,6 +107,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
+        	// hour and minute text fields can only contain two digits maximum
+        	txtArrivalTimeHour.MaxLength = 2;
+        	txtArrivalTimeMinute.MaxLength = 2;
+        	txtDepartureTimeHour.MaxLength = 2;
+        	txtDepartureTimeMinute.MaxLength = 2;
         }
 
         private void GetDataFromControlsManual(PmGeneralApplicationRow ARow)
@@ -117,7 +122,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, ref VerificationResultCollection,
+            TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, true, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
             TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this, FMainDS.PmShortTermApplication[0], ref VerificationResultCollection,

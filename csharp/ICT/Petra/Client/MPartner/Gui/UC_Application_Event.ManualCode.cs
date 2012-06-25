@@ -101,6 +101,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 			// handle tab changing in case validation fails
             tabApplicationEvent.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            
+            // initialize delegate method on event page so it can be called from there for validation purposes
+            ucoEvent.InitialiseDelegateCheckEventApplicationDuplicate(CheckEventApplicationDuplicate);
         }
         
         /// <summary>
@@ -132,6 +135,32 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        /// <summary>
+        /// Check if there is already an application existing for that person at this event
+        /// </summary>
+        /// <param name="AApplicationKey"></param>
+        /// <param name="ARegistrationOfficeKey"></param>
+        /// <param name="AEventKey"></param>
+		public bool CheckEventApplicationDuplicate(int AApplicationKey, Int64 ARegistrationOfficeKey, 
+                                                   Int64 AEventKey)
+        {
+			PmShortTermApplicationRow EventApplicationRow;
+			
+			foreach (DataRow ApplicationRow in FMainDS.PmShortTermApplication.Rows)
+			{
+				EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
+				if (   (   EventApplicationRow.ApplicationKey != AApplicationKey
+				        || EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey)
+				    && !EventApplicationRow.IsStConfirmedOptionNull()
+				    && EventApplicationRow.StConfirmedOption == AEventKey)
+				{
+					return true;
+				}
+			}
+			
+			return false;
+        }
+        
         #endregion
 
         #region Private Methods

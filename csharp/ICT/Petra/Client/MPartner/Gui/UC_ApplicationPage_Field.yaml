@@ -21,9 +21,9 @@ RootNode:
                 Row0: [cmbApplicationType]
                 Row1: [txtPlacementPerson]
               
-        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, PartnerClass=UNIT, ColSpan=2, OnChange=ProcessApplicationFieldChanged}
-        dtpAvailableFrom: {Label=Available from, DataField=PmYearProgramApplication.StartOfCommitment}
-        dtpAvailableTo: {Label=Available to, DataField=PmYearProgramApplication.EndOfCommitment}
+        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, PartnerClass=UNIT, ColSpan=2, OnChange=ProcessApplicationFieldChanged, Validation=true}
+        dtpAvailableFrom: {Label=Available from, DataField=PmYearProgramApplication.StartOfCommitment, Validation=true}
+        dtpAvailableTo: {Label=Available to, DataField=PmYearProgramApplication.EndOfCommitment, Validation=Pair(dtpAvailableFrom)}
 
         cmbApplicationType: {Label=Application Type, List=FieldApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true}
         txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey, PartnerClass=PERSON}

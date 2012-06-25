@@ -116,7 +116,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, ref VerificationResultCollection,
+            TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, false, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
             TSharedPersonnelValidation_Personnel.ValidateFieldApplicationManual(this, FMainDS.PmYearProgramApplication[0], ref VerificationResultCollection,

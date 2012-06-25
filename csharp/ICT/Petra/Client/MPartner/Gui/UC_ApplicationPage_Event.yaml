@@ -23,8 +23,8 @@ RootNode:
                 Row2: [cmbContact2]
                 Row3: [txtPlacementPerson]
               
-        txtEvent: {Label=Event, DataField=PmShortTermApplication.StConfirmedOption, Type=Event, OnChange=ProcessApplicationEventChanged}
-        txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey, PartnerClass=UNIT}
+        txtEvent: {Label=Event, DataField=PmShortTermApplication.StConfirmedOption, Type=Event, OnChange=ProcessApplicationEventChanged, Validation=true}
+        txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey, PartnerClass=UNIT, Validation=true}
 
         cmbApplicationType: {Label=Application Type, List=EventApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true}
         cmbContact1: {Label=Organization Contact 1, List=ContactList, DataField=PmGeneralApplication.GenContact1}

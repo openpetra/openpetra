@@ -166,5 +166,16 @@ namespace Ict.Petra.Shared
         #endregion
 
         #endregion
+        
+        #region Personnel Module-specific error codes
+        
+        /// <summary>Duplicate application for event.</summary>
+        [ErrCodeAttribute("Duplicate application for event",
+             ErrorMessageText = "An application for event {0} already exists!\r\n" +
+                                "Please choose a different event.",
+             ErrorMessageTitle = "Duplicate application for event")]
+        public const String ERR_APPLICATION_DUPLICATE_EVENT = "PES.00001V";
+        
+        #endregion
     }
 }
