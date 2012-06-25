@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.ExtractTDS
     DetailTable: MExtract
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: controlMaintainTable
     #Template: window

@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MConference.Gui.Setup
     DetailTable: PcCostType
     CacheableTable: ConferenceCostTypeList
-    UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
+    UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 800

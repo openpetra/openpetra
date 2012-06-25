@@ -7,7 +7,7 @@ RootNode:
     Template: windowFind
     MasterTable: PcConference
     DetailTable: PPartner
-    UsingNamespaces: [Ict.Common.Data,Ict.Petra.Shared.MConference.Data]
+    UsingNamespaces: [Ict.Common.Data,Ict.Petra.Shared.MConference.Data,Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MConference.Validation,Ict.Petra.Shared.MPartner.Partner.Validation]
     TemplateParameters:
         INITMANUALCODE: InitGridManually();
     WindowWidth: 522
