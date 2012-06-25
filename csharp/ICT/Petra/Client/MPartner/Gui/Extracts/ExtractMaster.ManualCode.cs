@@ -329,13 +329,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        private void ShowDataManual()
-        {
-        }
-
-        /// <summary>
         /// Open screen to maintain contents of an extract
         /// </summary>
         /// <param name="sender"></param>
