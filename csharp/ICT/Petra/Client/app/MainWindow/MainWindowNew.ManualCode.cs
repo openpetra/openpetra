@@ -257,7 +257,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             return TFormsList.GFormsList.CanCloseAll(out NonClosableForms, out FirstNonClosableFormKey);
         }
-        
+
         private void HelpImproveTranslations(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Documentation_for_Translators");
