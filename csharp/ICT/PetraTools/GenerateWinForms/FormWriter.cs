@@ -1120,6 +1120,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            if (FCodeStorage.HasAttribute("GenerateGetSelectedDetailRow")
+               && FCodeStorage.GetAttribute("GenerateGetSelectedDetailRow") == "true")
+            {
+                FTemplate.AddToCodelet("GENERATEGETSELECTEDDETAILROW", "true");
+            }
+            
             // find the first control that is a panel or groupbox or tab control
             if (FCodeStorage.HasRootControl("content"))
             {
@@ -1285,6 +1291,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.SetCodelet("VALIDATEDATADETAILSMANUAL", "true");
             }
 
+            if (FCodeStorage.ManualFileExistsAndContains("GetSelectedDetailRowManual"))
+            {
+                FTemplate.AddToCodelet("GETSELECTEDDETAILROW", "return GetSelectedDetailRowManual();" + Environment.NewLine);
+            }
+            else
+            {
+                string getSelectedDetailRow =
+                    "DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;" + Environment.NewLine + Environment.NewLine +
+                    "if (SelectedGridRow.Length >= 1)" + Environment.NewLine +
+                    "{" + Environment.NewLine +
+                    "    return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;" + Environment.NewLine +
+                    "}" + Environment.NewLine + Environment.NewLine +
+                    "return null;" + Environment.NewLine + Environment.NewLine;
+                
+                FTemplate.SetCodelet("GETSELECTEDDETAILROW", getSelectedDetailRow);
+            }
+
+            
             InsertCodeIntoTemplate(AXAMLFilename);
         }
 
