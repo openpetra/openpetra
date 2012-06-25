@@ -70,14 +70,14 @@ namespace {#NAMESPACE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
-{#IFDEF SHOWDETAILS}
+{#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// return the selected row
     public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
         {#GETSELECTEDDETAILROW}
     }
-{#ENDIF SHOWDETAILS}
+{#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {

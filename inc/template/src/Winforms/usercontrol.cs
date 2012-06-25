@@ -121,14 +121,14 @@ namespace {#NAMESPACE}
     }
     
     {#EVENTHANDLERSIMPLEMENTATION}
-{#IFDEF SHOWDETAILS}
+{#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// return the selected row
     public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
         {#GETSELECTEDDETAILROW}
     }
-{#ENDIF SHOWDETAILS}
+{#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// make sure that the primary key cannot be edited anymore
     public void SetPrimaryKeyReadOnly(bool AReadOnly)

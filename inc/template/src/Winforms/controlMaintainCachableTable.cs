@@ -169,14 +169,14 @@ namespace {#NAMESPACE}
         grdDetails.SelectRowInGrid(RowNumberGrid);
     }
 
-{#IFDEF SHOWDETAILS}
+{#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// return the selected row
     public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
         {#GETSELECTEDDETAILROW}
     }
-{#ENDIF SHOWDETAILS}
+{#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
 
     private void SetPrimaryKeyReadOnly(bool AReadOnly)

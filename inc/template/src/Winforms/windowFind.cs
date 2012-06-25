@@ -351,6 +351,15 @@ namespace {#NAMESPACE}
     }
 {#ENDIF MASTERTABLE}
 {#IFDEF DETAILTABLE}
+{#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
+
+    /// return the selected row
+    public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
+    {
+        {#GETSELECTEDDETAILROW}
+    }
+{#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
+
     private void ValidateDataDetails({#DETAILTABLE}Row ARow)
     {
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
