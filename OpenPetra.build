@@ -158,7 +158,7 @@ useful parameters
 </target>
 
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
-        depends="csharp,nanttasks" />
+        depends="csharp,nanttasks,webserver" />
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
         depends="nanttasks,generateNamespaceMap,generateProjectFiles"/>

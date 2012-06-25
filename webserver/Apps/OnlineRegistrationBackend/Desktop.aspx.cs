@@ -651,7 +651,7 @@ namespace Ict.Petra.WebServer.MConference
                 SecondSibling.Clear();
                 CancelledByFinanceOffice.Clear();
 
-                if (rawDataObject.Contains("RegistrationCountryCode") && rawDataObject["RegistrationCountryCode"].ToString() == "sv-SE")
+                if (rawDataObject.Contains("RegistrationCountryCode") && (rawDataObject["RegistrationCountryCode"].ToString() == "sv-SE"))
                 {
                     X.Js.Call("SetDateFormat", "Y-m-d");
                 }
@@ -1602,8 +1602,9 @@ namespace Ict.Petra.WebServer.MConference
                 Object obj = Jayrock.Json.Conversion.JsonConvert.Import(AData);
 
                 if (obj is Jayrock.Json.JsonArray)
-                { 
-                    Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray) obj;
+                {
+                    Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)obj;
+
                     foreach (Jayrock.Json.JsonObject element in list)
                     {
                         string time = string.Empty;
