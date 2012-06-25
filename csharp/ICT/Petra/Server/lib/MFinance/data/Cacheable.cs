@@ -599,8 +599,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.ValidLedgerNumberList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateValidLedgerNumberList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateValidLedgerNumberListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AValidLedgerNumberValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateValidLedgerNumberListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -671,10 +671,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         partial void ValidateEmailDestinationListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfGivingListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateMethodOfPaymentListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateValidLedgerNumberList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateValidLedgerNumberListManual(TValidationControlsDict ValidationControlsDict,
+        partial void ValidateValidLedgerNumberListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
 
