@@ -149,8 +149,8 @@ namespace Ict.Common.IO
         /// </summary>
         private static void Xml2ExcelWorksheet(XmlDocument ADoc, ExcelWorksheet AWorksheet)
         {
-            Int32 rowCounter = 0;
-            Int16 colCounter = 0;
+            Int32 rowCounter = 1;
+            Int16 colCounter = 1;
 
             // first write the header of the csv file
             List <string>AllAttributes = new List <string>();
@@ -164,7 +164,7 @@ namespace Ict.Common.IO
             }
 
             rowCounter++;
-            colCounter = 0;
+            colCounter = 1;
 
             foreach (XmlNode node in AllNodes)
             {
@@ -181,6 +181,7 @@ namespace Ict.Common.IO
                         if (value.StartsWith(eVariantTypes.eDateTime.ToString() + ":"))
                         {
                             AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToDate();
+                            AWorksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
                         }
                         else if (value.StartsWith(eVariantTypes.eInteger.ToString() + ":"))
                         {
@@ -196,7 +197,7 @@ namespace Ict.Common.IO
                 }
 
                 rowCounter++;
-                colCounter = 0;
+                colCounter = 1;
             }
         }
 

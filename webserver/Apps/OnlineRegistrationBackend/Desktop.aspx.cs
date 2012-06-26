@@ -1037,9 +1037,9 @@ namespace Ict.Petra.WebServer.MConference
             ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
 
             this.Response.Clear();
-            this.Response.ContentType = "application/xls";
-            this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=Applicants.xls");
+            this.Response.ContentType = "application/xlsx";
+            this.Response.AddHeader("Content-Type", "application/xlsx");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=Applicants.xlsx");
             MemoryStream m = new MemoryStream();
             TApplicationManagement.DownloadApplications(EventPartnerKey, EventCode, ref CurrentApplicants, m);
             m.WriteTo(this.Response.OutputStream);
@@ -1300,9 +1300,9 @@ namespace Ict.Petra.WebServer.MConference
         protected void ExportTShirtNumbers(object sender, DirectEventArgs e)
         {
             this.Response.Clear();
-            this.Response.ContentType = "application/xls";
-            this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=TShirtNumbers.xls");
+            this.Response.ContentType = "application/xlsx";
+            this.Response.AddHeader("Content-Type", "application/xlsx");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=TShirtNumbers.xlsx");
             MemoryStream m = new MemoryStream();
             TConferenceFreeTShirt.DownloadTShirtNumbers(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
@@ -1313,9 +1313,9 @@ namespace Ict.Petra.WebServer.MConference
         protected void ExportArrivalRegistrationList(object sender, DirectEventArgs e)
         {
             this.Response.Clear();
-            this.Response.ContentType = "application/xls";
-            this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=ArrivalRegistration.xls");
+            this.Response.ContentType = "application/xlsx";
+            this.Response.AddHeader("Content-Type", "application/xlsx");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=ArrivalRegistration.xlsx");
             MemoryStream m = new MemoryStream();
             TConferenceExcelReports.DownloadArrivalRegistration(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
@@ -1326,9 +1326,9 @@ namespace Ict.Petra.WebServer.MConference
         protected void ExportRolesPerCountry(object sender, DirectEventArgs e)
         {
             this.Response.Clear();
-            this.Response.ContentType = "application/xls";
-            this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=RolesPerCountry.xls");
+            this.Response.ContentType = "application/xlsx";
+            this.Response.AddHeader("Content-Type", "application/xlsx");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=RolesPerCountry.xlsx");
             MemoryStream m = new MemoryStream();
             TConferenceExcelReports.GetNumbersOfRolesPerCountry(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
