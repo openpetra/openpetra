@@ -212,15 +212,23 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream)
         {
-            ExcelPackage pck = new ExcelPackage();
+            try
+            {
+                ExcelPackage pck = new ExcelPackage();
 
-            ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
 
-            Xml2ExcelWorksheet(ADoc, worksheet);
+                Xml2ExcelWorksheet(ADoc, worksheet);
 
-            pck.SaveAs(AStream);
+                pck.SaveAs(AStream);
 
-            return true;
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                return false;
+            }
         }
 
         /// <summary>
@@ -236,17 +244,25 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream)
         {
-            ExcelPackage pck = new ExcelPackage();
-
-            foreach (string WorksheetTitle in ADocs.Keys)
+            try
             {
-                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(WorksheetTitle);
+                ExcelPackage pck = new ExcelPackage();
 
-                Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet);
+                foreach (string WorksheetTitle in ADocs.Keys)
+                {
+                    ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(WorksheetTitle);
+
+                    Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet);
+                }
+
+                pck.SaveAs(AStream);
+                return true;
             }
-
-            pck.SaveAs(AStream);
-            return true;
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                return false;
+            }
         }
 
         /// <summary>
