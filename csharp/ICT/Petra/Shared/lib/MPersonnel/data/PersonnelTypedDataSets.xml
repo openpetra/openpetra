@@ -15,6 +15,12 @@
 
     <DataSet name="IndividualDataTDS">
         <Table sqltable="p_person"/>                      <!-- Personal Data -->
+        <Table sqltable="pm_general_application">         <!-- General Application Data -->
+          <Field name="EventOrFieldName" sqltable="p_unit" sqlfield="p_unit_name_c"/>
+          <CustomField name="ApplicationForEventOrField" type="string"/>
+        </Table>
+        <Table sqltable="pm_short_term_application"/>      <!-- Short Term Application Data -->
+        <Table sqltable="pm_year_program_application"/>   <!-- Long Term Application Data -->
         <Table sqltable="pm_personal_data"/>              <!-- Personal Data -->
         <Table sqltable="pt_personal_data_labels"/>       <!-- Personal Data -->
         <Table sqltable="pm_passport_details"/>           <!-- Passport Details -->
@@ -77,6 +83,7 @@
             <CustomField name="ItemsCountJobAssignments" type="Int32"/>
             <CustomField name="ItemsCountProgressReports" type="Int32"/>
             <CustomField name="ItemsCountPersonSkills" type="Int32"/>
+            <CustomField name="ItemsCountApplications" type="Int32"/>
             <PrimaryKey thisFields="PartnerKey"/>
         </CustomTable>                    
         
@@ -88,7 +95,30 @@
                 childTable="PmPassportDetails" childFields="PassportNationalityCode"
                 parentTable="PCountry" parentFields="CountryCode"
                 createConstraints="false"/>
+        <CustomRelation name="ShortTermApp"
+                childTable="PmShortTermApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                createConstraints="false"/>
+        <CustomRelation name="LongTermApp"
+                childTable="PmYearProgramApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                createConstraints="false"/>
         
    </DataSet>    
+   
+    <DataSet name="ApplicationTDS">
+        <Table sqltable="pm_general_application"/>        <!-- General Application Data -->
+        <Table sqltable="pm_short_term_application"/>     <!-- Short Term Application Data -->
+        <Table sqltable="pm_year_program_application"/>   <!-- Long Term Application Data -->
+        
+        <CustomRelation name="ShortTermApp"
+                childTable="PmShortTermApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                createConstraints="false"/>
+        <CustomRelation name="LongTermApp"
+                childTable="PmYearProgramApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"
+                createConstraints="false"/>
+    </DataSet>  
    
 </PetraDataSets>
