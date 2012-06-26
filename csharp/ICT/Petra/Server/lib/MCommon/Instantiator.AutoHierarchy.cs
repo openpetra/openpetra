@@ -230,8 +230,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             return null; // make sure that the TMCommon object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
         public ICacheableNamespace Cacheable
         {
@@ -771,6 +769,18 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public String ExportToFile(Boolean AExportDonationData,
+                                   Boolean AExportFieldData,
+                                   Boolean AExportPersonData,
+                                   String APswd,
+                                   Int32 ADaySpan,
+                                   String AOptionalMetadata)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector), "ExportToFile", ";BOOL;BOOL;BOOL;STRING;INT;STRING;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector.ExportToFile(AExportDonationData, AExportFieldData, AExportPersonData, APswd, ADaySpan, AOptionalMetadata);
         }
 
         /// generated method from connector

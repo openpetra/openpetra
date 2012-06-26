@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+// This code is based on the "Original Petra" 4GL file CalebExport.i
+
 using System;
 using System.IO;
 using System.Data;
@@ -29,6 +31,7 @@ using System.Collections.Generic;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -37,6 +40,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Common;
 
 namespace Ict.Petra.Server.MCommon.WebConnectors
 {
@@ -48,6 +52,11 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         private const string ExportDateFormat = "yyyy/mm/dd";
         private const string ExportVersion = "1.1.7";        // 1.1.7 is Petra's version - perhaps I should use a different one?
         private static TDBTransaction FTransaction;
+        private static string FExportTrace;
+        private static String FExportFilePath;
+        private static List<String> FZipFileNames = new List<String>();
+
+
         private class PartnerDetails
         {
             public String FirstName;
@@ -57,6 +66,24 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         }
 
         private static SortedList<Int64, PartnerDetails> RecipientList = new SortedList<Int64, PartnerDetails>();
+
+        private class PersonRec
+        {
+            public String Title;                //  LIKE p_person.p_title_c
+            public String FirstName;            //  LIKE p_person.p_first_name_c
+            public String MiddleName;           //  LIKE p_person.p_middle_name_1_c
+            public String LastName;             //  LIKE p_person.p_family_name_c
+            public String Academic;             //  LIKE p_person.p_academic_title_c
+            public String Decorations;          //  LIKE p_person.p_decorations_c
+            public String Gender;               //  LIKE p_person.p_gender_c
+            public String PreferredName;        //  LIKE p_person.p_prefered_name_c
+            public Int64 FamilyKey;             //  LIKE p_person.p_family_key_n
+            public Int64 HomeOffice;            //  LIKE pm_staff_data.pm_home_office_n
+            public DateTime DateOfBirth;        //  LIKE p_person.p_date_of_birth_d
+            public String EmailAddress;         //  LIKE p_partner_location.p_email_address_c
+            public String LocationType;         //  LIKE p_partner_location.p_location_type_c
+        };
+
 
         private class BatchKey
         {
@@ -76,12 +103,14 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// <param name="APartnerKey"></param>
         /// <param name="LocationRow"></param>
         /// <returns></returns>
+        [NoRemoting]
         public delegate TLocationPK GetLocationRow(Int64 APartnerKey, out PPartnerLocationRow LocationRow);
         private static GetLocationRow FGetLocationRowDelegate;
 
         /// <summary>
         /// 
         /// </summary>
+        [NoRemoting]
         public static GetLocationRow GetLocationRowDelegate
         {
             get
@@ -151,9 +180,9 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             String SqlQuery = "SELECT " +
                 "a_batch_number_i AS BatchNumber, " +
                 "a_ledger_number_i AS LedgerNumber " + 
-                "FROM PUB_gift_batch " +
+                "FROM PUB_a_batch " +
                 "WHERE a_batch_description_c LIKE 'Gift Batch %' " +
-                "AND a_date_of_entry_d > " + GiftsSince.ToString("yyyy-MM-dd") + " "
+                "AND a_date_of_entry_d > '" + GiftsSince.ToString("yyyy-MM-dd") + "' "
                 ;
             DataSet GiftBatchDS = DBAccess.GDBAccessObj.Select(SqlQuery, "GiftBatchTbl", FTransaction);
             GiftBatches.Clear();
@@ -197,13 +226,13 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             }
         }
 
-        private static Boolean ExportDonations(String AExportFilePath, Int32 ADaySpan)
+        private static Boolean ExportDonations(Int32 ADaySpan)
         {
             GetGiftBatches(ADaySpan);
 
-            StreamWriter sw1 = File.CreateText(AExportFilePath + "\\donor.csv");
+            StreamWriter sw1 = File.CreateText(FExportFilePath + "donor.csv");
             sw1.WriteLine("first_name,last_name,partner_key,email,address,telephone,anonymous,class");
-            StreamWriter sw2 = File.CreateText(AExportFilePath + "\\donation.csv");
+            StreamWriter sw2 = File.CreateText(FExportFilePath + "donation.csv");
             sw2.WriteLine("donor,recipient,trans_amount,trans_currency,base_amount,admin_gif,admin_ict,admin_other,"
              + "base_currency,intl_amount,intl_currency,date,id,source_ledger,recipient_field,anonymous,comment1,for1,comment2,for2,comment3,for3");
 
@@ -239,7 +268,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                     "WHERE PUB_a_gift_batch.a_ledger_number_i = " + Batch.LedgerNumber + " " +
                     "AND PUB_a_gift_batch.a_batch_number_i = " + Batch.BatchNumber + " " +
                     "AND PUB_a_motivation_detail.a_export_to_intranet_l = true " +
-                    "ORDER BY PUB_a_gift.p_donorKey_n";
+                    "ORDER BY PUB_a_gift.p_donor_key_n";
                 DataSet GiftBatchDS = DBAccess.GDBAccessObj.Select(GiftBatchQuery, "GiftBatchTbl", FTransaction);
 
                 foreach (DataRow Row in GiftBatchDS.Tables["GiftBatchTbl"].Rows)
@@ -292,7 +321,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                         Row["BaseCurrency"],        //  8
                         Row["IntlAmount"],          //  9
                         Row["IntlCurrency"],        // 10
-                        Row["EffectiveDate"],       // 11
+                        Convert.ToDateTime(Row["EffectiveDate"]).ToString(ExportDateFormat),       // 11
                         Batch.LedgerNumber,         // 12
                         Row["BatchNumber"],         // 13
                         Row["TransactionNumber"],   // 14
@@ -313,15 +342,20 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             sw1.Close();
             sw2.Close();
 
-            StreamWriter sw3 = File.CreateText(AExportFilePath + "\\recipient.csv");
+            StreamWriter sw3 = File.CreateText(FExportFilePath + "recipient.csv");
             sw3.WriteLine("recipient,first_name,last_name,email,class");
 
+            foreach (Int64 PartnerKey in RecipientList.Keys)
+            {
+                PartnerDetails Row = RecipientList[PartnerKey];
+                sw3.WriteLine(String.Format("{0},\"{1}\",\"{2}\",\"{3}\",{4}", PartnerKey, Row.FirstName, Row.LastName, Row.Email, Row.Class));
+            }
             sw3.Close();
             
             return true;
         }
 
-        private static Boolean ExportField(String AExportFilePath)
+        private static Boolean ExportField()
         {
             Int64 MySiteKey = DomainManagerBase.GSiteKey;
             /*
@@ -353,7 +387,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 "PUB_p_partner_location.p_telephone_number_c AS Telephone, " +
                 "PUB_p_partner_location.p_send_mail_l AS SendMail, " +
                 "PUB_p_country.p_time_zone_minimum_n AS TimeZoneMin, " +
-                "PUB_p_country.p_time_zone_maximum_n AS TimeZoneMax " +
+                "PUB_p_country.p_time_zone_maximum_n AS TimeZoneMax, " +
                 "PUB_p_country.p_internat_telephone_code_i AS InternationalPhone " +
                 "FROM PUB_p_partner_location LEFT JOIN PUB_p_location ON PUB_p_partner_location.p_site_key_n = PUB_p_location.p_site_key_n " +
                 "LEFT JOIN PUB_p_country ON PUB_p_location.p_country_code_c = PUB_p_country.p_country_code_c " + 
@@ -400,48 +434,30 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 TimeZone += (" " + Row["TimeZoneMax"].ToString());
             }
 
-            StreamWriter sw = File.CreateText(AExportFilePath + "\\field.csv");
+            String IntlPrefix = ("+" + Row["InternationalPhone"] + " ");
+            StreamWriter sw = File.CreateText(FExportFilePath + "field.csv");
             sw.WriteLine("key,value");
             sw.WriteLine("time_zone," + TimeZone);
             sw.WriteLine("postal_address, \"" + PostalAddress + "\"");
             sw.WriteLine("street_address, \"" + StreetAddress + "\"");
             sw.WriteLine("email," + Row["Email"]);
-            sw.WriteLine("fax," +  "+" + Row ["InternationalPhone"] + " " + Row["Fax"]);
+            sw.WriteLine("fax," + IntlPrefix + Row["Fax"]);
             sw.WriteLine("website," + Row["Website"]);
-            sw.WriteLine("telephone," + "+" + Row ["InternationalPhone"] + " " + Row["Telephone"]);
+            sw.WriteLine("telephone," + IntlPrefix + Row["Telephone"]);
             sw.Close();
             return true;
         }
 
-        private static Boolean ExportPersonnel(String AExportFilePath)
+        private static Boolean ExportPersonnel()
         {
-            DataTable wtPerson = new DataTable();
-
-            wtPerson.Columns.Add("cTitle", typeof(String));             //  LIKE p_person.p_title_c
-            wtPerson.Columns.Add("cFirstName", typeof(String));         //  LIKE p_person.p_first_name_c
-            wtPerson.Columns.Add("cMiddleName", typeof(String));        //  LIKE p_person.p_middle_name_1_c
-            wtPerson.Columns.Add("cLastName", typeof(String));          //  LIKE p_person.p_family_name_c
-            wtPerson.Columns.Add("cAcademic", typeof(String));          //  LIKE p_person.p_academic_title_c
-            wtPerson.Columns.Add("cDecorations", typeof(String));       //  LIKE p_person.p_decorations_c
-            wtPerson.Columns.Add("cGender", typeof(String));            //  LIKE p_person.p_gender_c
-            wtPerson.Columns.Add("cPreferredName", typeof(String));     //  LIKE p_person.p_prefered_name_c
-            wtPerson.Columns.Add("dPersonKey", typeof(Int64));          //  LIKE p_person.p_partner_key_n
-            wtPerson.Columns.Add("dFamilyKey", typeof(Int64));          //  LIKE p_person.p_partner_key_n
-            wtPerson.Columns.Add("dHomeOffice", typeof(Int64));         //  LIKE p_person.p_partner_key_n
-            wtPerson.Columns.Add("dtBirthDate", typeof(DateTime));      //  LIKE p_person.p_date_of_birth_d
-            wtPerson.Columns.Add("cEmailAddress", typeof(String));      //  LIKE p_partner_location.p_email_address_c
-            wtPerson.Columns.Add("cLocationType", typeof(String));      //  LIKE p_partner_location.p_location_type_c
-
-            wtPerson.DefaultView.Sort = "dPersonKey";
-
-
-            StreamWriter sw = File.CreateText(AExportFilePath + "\\position.csv");
+            SortedList<Int64, PersonRec> PersonnelList = new SortedList<Int64, PersonRec>();
+            StreamWriter sw = File.CreateText(FExportFilePath + "position.csv");
             sw.WriteLine("person_key,role,field_key,start_date,end_date,assistant");
 
             String SqlQuery = "SELECT " +
                 "PUB_pm_staff_data.p_partner_key_n AS person_key," +
-                "PUB_pm_staff_data.pm_status_code.c AS role," +
-                "PUB_pm_staff_data.pm_target_field_n AS field_key," +
+                "PUB_pm_staff_data.pm_status_code_c AS role," +
+                "PUB_pm_staff_data.pm_receiving_field_n AS field_key," +
                 "PUB_pm_staff_data.pm_start_of_commitment_d AS start_date," +
                 "PUB_pm_staff_data.pm_end_of_commitment_d AS end_date," +
                 "PUB_p_person.p_title_c AS cTitle," +
@@ -452,17 +468,16 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 "PUB_p_person.p_decorations_c AS cDecorations," +
                 "PUB_p_person.p_gender_c AS cGender," +
                 "PUB_p_person.p_prefered_name_c AS cPreferredName," +
-                "PUB_p_person.p_partner_key_n AS dPersonKey," +
                 "PUB_p_person.p_family_key_n AS dFamilyKey," +
-                "PUB_pm_home_office_n AS dHomeOffice," +
+                "PUB_pm_staff_data.pm_home_office_n AS dHomeOffice," +
                 "PUB_p_person.p_date_of_birth_d AS dtBirthDate, " +
                 "PUB_p_partner_location.p_email_address_c AS cEmailAddress," +  
                 "PUB_p_partner_location.p_location_type_c AS cLocationType " + 
 
                 "FROM PUB_pm_staff_data LEFT JOIN PUB_p_person ON PUB_pm_staff_data.p_partner_key_n = PUB_p_person.p_partner_key_n " +
                 "LEFT JOIN PUB_p_partner_location ON (PUB_pm_staff_data.p_partner_key_n = PUB_p_partner_location.p_partner_key_n) " +
-                "AND (PUB_p_partner_location.p_date_good_until_d = NULL OR PUB_p_partner_location.p_date_good_until_d > NOW()) " +
-                "WHERE PUB_pm_staff_data.pm_end_of_commitment_d = NULL OR PUB_pm_staff_data.pm_end_of_commitment_d > NOW();"; 
+                "WHERE (PUB_p_partner_location.p_date_good_until_d = NULL OR PUB_p_partner_location.p_date_good_until_d > NOW()) " +
+                "AND PUB_pm_staff_data.pm_end_of_commitment_d = NULL OR PUB_pm_staff_data.pm_end_of_commitment_d > NOW();"; 
 
             DataSet StaffPersonDS = DBAccess.GDBAccessObj.Select(SqlQuery, "StaffPersonTbl", FTransaction);
 
@@ -500,65 +515,62 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                     EndDate = ((DateTime)Row["end_date"]).ToString(ExportDateFormat);
                 }
 
-                sw.WriteLine(String.Format("{0},\"{1}\",{2},\"{3}\",\"{4}\",FALSE",
-                    ((Int64)Row["person_key"]).ToString("D10"), 
-                    Role, StartDate, EndDate));
+                Int64 PersonKey = Convert.ToInt64(Row["person_key"]);
 
-                // Produce a unique row in my temporary work table for person.csv and email.csv.
-                if (wtPerson.DefaultView.Find(Row["person_key"]) < 0)
+                sw.WriteLine(String.Format("{0:D10},\"{1}\",\"{2}\",\"{3}\",FALSE",
+                    PersonKey, Role, StartDate, EndDate));
+
+                // Produce a unique row in my temporary list for person.csv and email.csv.
+                if (!PersonnelList.ContainsKey(PersonKey))
                 {
-                    DataRow PersonRow = wtPerson.NewRow();
-                    PersonRow["cTitle"]       = Row["cTitle"];
-                    PersonRow["cFirstName"]   = Row["cFirstName"];
-                    PersonRow["cMiddleName"]  = Row["cMiddleName"];
-                    PersonRow["cLastName"]    = Row["cLastName"];
-                    PersonRow["cAcademic"]    = Row["cAcademic"];
-                    PersonRow["cDecorations"] = Row["cDecorations"];
-                    PersonRow["cGender"]      = Row["cGender"];
-                    PersonRow["cPreferredName"]=Row["cPreferredName"];
-                    PersonRow["dPersonKey"]   = Row["dPersonKey"];
-                    PersonRow["dFamilyKey"]   = Row["dFamilyKey"];
-                    PersonRow["dHomeOffice"]  = Row["dHomeOffice"];
-                    PersonRow["dtBirthDate"]  = Row["dtBirthDate"];
-                    PersonRow["cEmailAddress"] = Row["cEmailAddress"];
-                    PersonRow["cLocationType"] = Row["cLocationType"];
+                    PersonRec PersonRow = new PersonRec ();
+                    PersonRow.Title        = Row["cTitle"].ToString();
+                    PersonRow.FirstName    = Row["cFirstName"].ToString();
+                    PersonRow.MiddleName   = Row["cMiddleName"].ToString();
+                    PersonRow.LastName     = Row["cLastName"].ToString();
+                    PersonRow.Academic     = Row["cAcademic"].ToString();
+                    PersonRow.Decorations  = Row["cDecorations"].ToString();
+                    PersonRow.Gender       = Row["cGender"].ToString();
+                    PersonRow.PreferredName=Row["cPreferredName"].ToString();
+                    PersonRow.FamilyKey    = Convert.ToInt64(Row["dFamilyKey"]);
+                    PersonRow.HomeOffice   = Convert.ToInt64(Row["dHomeOffice"]);
+                    PersonRow.DateOfBirth  = (DateTime)Row["dtBirthDate"];
+                    PersonRow.EmailAddress = Row["cEmailAddress"].ToString();
+                    PersonRow.LocationType = Row["cLocationType"].ToString();
 
-                    wtPerson.Rows.Add(PersonRow);
+                    PersonnelList.Add(PersonKey, PersonRow);
                 }
             }
             sw.Close();
 
             // person.csv
-            sw = File.CreateText(AExportFilePath + "\\person.csv");
+            sw = File.CreateText(FExportFilePath + "person.csv");
             sw.WriteLine("title,first_name,middle_name,last_name,academic_title,decorations,gender,preferred_name,person_key,family_key,home_office,birth_date");
 
-            foreach(DataRow PersonRow in wtPerson.Rows)
+            foreach(Int64 PersonKey in PersonnelList.Keys)
             {
+                PersonRec PersonRow = PersonnelList[PersonKey];
                 String DateOfBirth = "";
-                if (PersonRow["dtBirthDate"] != null)
+                if (PersonRow.DateOfBirth != null)
                 {
-                    DateOfBirth = ((DateTime)PersonRow["dtBirthDate"]).ToString(ExportDateFormat);
+                    DateOfBirth = PersonRow.DateOfBirth.ToString(ExportDateFormat);
                 }
-                sw.WriteLine(String.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\"",
-                    PersonRow["cTitle"], PersonRow["cFirstName"], PersonRow["cMiddleName"], PersonRow["cLastName"],
-                    PersonRow["cAcademic"], PersonRow["cDecorations"], PersonRow["cGender"], PersonRow["cPreferredName"], 
-                    ((Int64)PersonRow["dPersonKey"]).ToString("D10"),
-                    ((Int64)PersonRow["dFamilyKey"]).ToString("D10"), 
-                    ((Int64)PersonRow["dHomeOffice"]).ToString("D10"),
-                    DateOfBirth
+                sw.WriteLine(String.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",{8:D10},{9:D10},{10:D10},\"{11}\"",
+                    PersonRow.Title, PersonRow.FirstName, PersonRow.MiddleName, PersonRow.LastName,
+                    PersonRow.Academic, PersonRow.Decorations, PersonRow.Gender, PersonRow.PreferredName, 
+                    PersonKey, PersonRow.FamilyKey, PersonRow.HomeOffice, DateOfBirth
                     ));
             }
             sw.Close();
 
             // email.csv
-            sw = File.CreateText(AExportFilePath + "\\email.csv");
+            sw = File.CreateText(FExportFilePath + "email.csv");
             sw.WriteLine("partner_key,email,type");
-            foreach (DataRow PersonRow in wtPerson.Rows)
+            foreach (Int64 PersonKey in PersonnelList.Keys)
             {
-                sw.WriteLine(String.Format("\"{0}\",\"{1}\",\"{2}\"",
-                    ((Int64)PersonRow["dPersonKey"]).ToString("D10"),
-                    PersonRow["cEmailAddress"],
-                    PersonRow["cLocationType"]
+                PersonRec PersonRow = PersonnelList[PersonKey];
+                sw.WriteLine(String.Format("{0:D10},\"{1}\",\"{2}\"",
+                    PersonKey, PersonRow.EmailAddress, PersonRow.LocationType
                     ));
             }
             sw.Close();
@@ -567,13 +579,14 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
      * set system default to record the date on which this was run
      * SetSystemDefault( "LastCalebExportPersonnel":U,FormatInternationalDate(TODAY)).
      */
-
+            // TODO: SetSystemDefault("LastCalebExportPersonnel", DateTime.Now.ToString(ExportDateFormat));
+            
             return true;
         }
 
-        private static Boolean ExportMetadata(String AExportFilePath, String AOptionalMetadata, String APassword)
+        private static Boolean ExportMetadata(String AOptionalMetadata, String APassword)
         {
-            StreamWriter sw = File.CreateText(AExportFilePath + "\\metadata.csv");
+            StreamWriter sw = File.CreateText(FExportFilePath + "metadata.csv");
             sw.WriteLine("key,value");
             sw.WriteLine("version," + ExportVersion);
             sw.WriteLine("office," + ((Int64)DomainManagerBase.GSiteKey).ToString ("D10"));
@@ -585,8 +598,10 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             return true;
         }
 
-        private static void AddToZipFile(String ZipFilename, String Filename)
+        private static void AddZipFile(String AFilename)
         {
+            FExportTrace += ("    " + AFilename + "\r\n");
+            FZipFileNames.Add(FExportFilePath + AFilename);
         }
 
         /// <summary>
@@ -603,37 +618,49 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         public static String ExportToFile(Boolean AExportDonationData, Boolean AExportFieldData, Boolean AExportPersonData,
             String APswd, Int32 ADaySpan, String AOptionalMetadata)
         {
-            String ExportFilePath = "c:\temp";
-            String ZipFilename = ExportFilePath + "\\data.zip";
-            FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            // InitialiseZipFile (ZipFilename);
-
-            if (AExportDonationData)
+            try
             {
-                ExportDonations(ExportFilePath, ADaySpan);
-                AddToZipFile(ZipFilename, "donor.csv");
-                AddToZipFile(ZipFilename, "donation.csv");
-                AddToZipFile(ZipFilename, "recipient.csv");
-            }
-            if (AExportFieldData)
-            {
-                ExportField(ExportFilePath);
-                AddToZipFile(ZipFilename, "field.csv");
-            }
-            if (AExportPersonData)
-            {
-                ExportPersonnel(ExportFilePath);
-                AddToZipFile(ZipFilename, "position.csv");
-                AddToZipFile(ZipFilename, "person.csv");
-                AddToZipFile(ZipFilename, "email.csv");
-            }
+                FZipFileNames.Clear();
+                FExportTrace = "Exporting\r\n";
+                FExportFilePath = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + @"\";
+                FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ExportMetadata(ExportFilePath, AOptionalMetadata, APswd);
-            AddToZipFile(ZipFilename, "metadata.csv");
+                if (AExportDonationData)
+                {
+                    ExportDonations(ADaySpan);
+                    AddZipFile("donor.csv");
+                    AddZipFile("donation.csv");
+                    AddZipFile("recipient.csv");
+                }
+                if (AExportFieldData)
+                {
+                    if (ExportField())
+                    {
+                        AddZipFile("field.csv");
+                    }
+                }
+                if (AExportPersonData)
+                {
+                    ExportPersonnel();
+                    AddZipFile("position.csv");
+                    AddZipFile("person.csv");
+                    AddZipFile("email.csv");
+                }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
-            return "This string returned from the server.";
+                ExportMetadata(AOptionalMetadata, APswd);
+                AddZipFile("metadata.csv");
+
+                MemoryStream ZippedStream = TFileHelper.Streams.Compression.DeflateFilesIntoMemoryStream(FZipFileNames.ToArray(), false, APswd);
+                TFileHelper.Streams.FileHandling.SaveStreamToFile(ZippedStream, FExportFilePath + "data.zip");
+                FExportTrace += "Files compressed to data.zip.";
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                RecipientList.Clear();  // These lists are static so they'll stick around for ever,
+                FZipFileNames.Clear();   // but I don't need to keep the data which is taking up memory.
+            }
+            return FExportTrace;
         }
     }
 }
