@@ -36,7 +36,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
+namespace Ict.Petra.Client.MCommon.Gui
 {
     /// <summary>
     /// manual code for TFrmSelectEvent class
@@ -73,6 +73,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
         {
             this.Cursor = Cursors.WaitCursor;
 
+            SetTableFilter();
+            grdEvent.AutoSizeCells();
+
+            this.Cursor = Cursors.Default;
+        }
+
+        private void FilterEvents(System.Object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+
+            SetTableFilter();
+            grdEvent.AutoSizeCells();
+
+            this.Cursor = Cursors.Default;
+        }
+
+        private void ClearFilterEvents(System.Object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+
+            txtEventName.Text = "";
             SetTableFilter();
             grdEvent.AutoSizeCells();
 
@@ -122,7 +143,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
             grdEvent.AddDateColumn("Start Date", FEventTable.Columns[PPartnerLocationTable.GetDateEffectiveDBName()]);
             grdEvent.AddDateColumn("End Date", FEventTable.Columns[PPartnerLocationTable.GetDateGoodUntilDBName()]);
             grdEvent.AddTextColumn("Event Key", FEventTable.Columns[PPartnerTable.GetPartnerKeyDBName()]);
-            grdEvent.AddTextColumn("Event Type", FEventTable.Columns[PUnitTable.GetUnitTypeCodeDBName()]);
+            grdEvent.AddTextColumn("Event Type", FEventTable.Columns[PUnitTable.GetUnitTypeCodeDBName()], 80);
 
             FEventTable.DefaultView.AllowDelete = false;
             FEventTable.DefaultView.AllowEdit = false;
@@ -150,7 +171,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
 
             FEventTable.Rows.Clear();
 
-            if (rbtOutreach.Checked || rbtTeenstreet.Checked || rbtAll.Checked)
+            if (rbtOutreach.Checked || rbtAll.Checked)
             {
                 // get all the outreaches
                 DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
@@ -159,7 +180,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
                 AddTableToGrid(TmpTable);
             }
 
-            if (rbtConference.Checked || rbtTeenstreet.Checked || rbtAll.Checked)
+            if (rbtConference.Checked || rbtAll.Checked)
             {
                 // get all the conferences
                 DataTable TmpTable = TDataCache.TMPersonnel.GetCacheableUnitsTable(
@@ -198,23 +219,70 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
         private void SetTableFilter()
         {
             String RowFilter = "";
+            String EventName = "";
 
             if (chkCurrentFutureOnly.Checked)
             {
                 RowFilter = PPartnerLocationTable.GetDateGoodUntilDBName() + " >= #" + DateTime.Today.ToString("yyyy-MM-dd") + "#";
             }
 
-            if (rbtTeenstreet.Checked)
+            if (txtEventName.Text.Length > 0)
             {
+                // in case there is a filter set for the event name
+
                 if (RowFilter.Length > 0)
                 {
                     RowFilter = RowFilter + " AND ";
                 }
 
-                RowFilter = RowFilter + PUnitTable.GetOutreachCodeDBName() + " LIKE 'TS%'";
+                EventName = txtEventName.Text.Replace('*', '%') + "%";
+                RowFilter = RowFilter + PPartnerTable.GetPartnerShortNameDBName() + " LIKE '" + EventName + "'";
             }
 
             FEventTable.DefaultView.RowFilter = RowFilter;
+        }
+    }
+
+    /// <summary>
+    /// Manages the opening of a new/showing of an existing Instance of the Event Find Screen.
+    /// </summary>
+    public static class TEventFindScreenManager
+    {
+        /// <summary>
+        /// Opens a Modal instance of the Event Find screen.
+        /// </summary>
+        /// <param name="AEventNamePattern">Mathcing pattern for the event name</param>
+        /// <param name="AEventKey">Partner key of the found event</param>
+        /// <param name="AEventName">Partner ShortName name of the found event</param>
+        /// <param name="AOutreachCode">Matching patterns for the outreach code</param>
+        /// <param name="AParentForm"></param>
+        /// <returns>True if an event was found and accepted by the user,
+        /// otherwise false.</returns>
+        public static bool OpenModalForm(String AEventNamePattern,
+            out Int64 AEventKey,
+            out String AEventName,
+            out String AOutreachCode,
+            Form AParentForm)
+        {
+            DialogResult dlgResult;
+
+            AEventKey = -1;
+            AEventName = String.Empty;
+            AOutreachCode = String.Empty;
+
+            TFrmSelectEvent SelectEvent = new TFrmSelectEvent(AParentForm);
+
+            dlgResult = SelectEvent.ShowDialog();
+
+            if (dlgResult == DialogResult.OK)
+            {
+                AEventKey = SelectEvent.FSelectedPartnerKey;
+                AEventName = SelectEvent.FSelectedUnitName;
+                AOutreachCode = SelectEvent.FSelectedOutreachCode;
+                return true;
+            }
+
+            return false;
         }
     }
 }

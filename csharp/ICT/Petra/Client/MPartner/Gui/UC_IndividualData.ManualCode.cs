@@ -154,6 +154,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// returns number of application records existing for current person record
+        /// (this is really only needed if application tab has not been activated yet)
+        /// </summary>
+        /// <returns>int</returns>
+        public int CountApplications()
+        {
+            return FMainDS.MiscellaneousData[0].ItemsCountApplications;
+        }
+
+        /// <summary>
         /// Performs data validation.
         /// </summary>
         /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of

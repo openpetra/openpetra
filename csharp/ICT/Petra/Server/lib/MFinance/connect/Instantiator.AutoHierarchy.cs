@@ -307,8 +307,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             return null; // make sure that the TMFinance object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'AP' subnamespace contains further subnamespaces.</summary>
         public IAPNamespace AP
         {
@@ -700,8 +698,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
         {
             return null; // make sure that the TAPNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'APUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IAPUIConnectorsNamespace UIConnectors
@@ -1145,8 +1141,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
             return null; // make sure that the TARNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'ARWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IARWebConnectorsNamespace WebConnectors
         {
@@ -1320,8 +1314,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
         {
             return null; // make sure that the TBudgetNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'BudgetUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IBudgetUIConnectorsNamespace UIConnectors
@@ -1944,8 +1936,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportWebConnectorsNamespace WebConnectors
         {
@@ -2179,8 +2169,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
         {
             return null; // make sure that the TGiftNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'GiftUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IGiftUIConnectorsNamespace UIConnectors
@@ -2714,8 +2702,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
             return null; // make sure that the TGLNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'GLUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IGLUIConnectorsNamespace UIConnectors
         {
@@ -3230,8 +3216,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
             return null; // make sure that the TICHNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'ICHWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IICHWebConnectorsNamespace WebConnectors
         {
@@ -3422,8 +3406,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
             return null; // make sure that the TPeriodEndNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'PeriodEndUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPeriodEndUIConnectorsNamespace UIConnectors
         {
@@ -3596,8 +3578,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
         {
             return null; // make sure that the TReportingNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'ReportingUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IReportingUIConnectorsNamespace UIConnectors
@@ -3804,8 +3784,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
         {
             return null; // make sure that the TSetupNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'SetupUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ISetupUIConnectorsNamespace UIConnectors

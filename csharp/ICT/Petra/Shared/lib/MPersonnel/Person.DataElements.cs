@@ -36,40 +36,40 @@ namespace Ict.Petra.Shared.MPersonnel.Person
         /// </summary>
         idiSummary,
 
-        /// <summary>TODO</summary>
+        /// <summary>Personal Data</summary>
         idiPersonalData,
 
-        /// <summary>TODO</summary>
+        /// <summary>Emergency Data</summary>
         idiEmergencyData,
 
-        /// <summary>TODO</summary>
+        /// <summary>Passport Details</summary>
         idiPassportDetails,
 
-        /// <summary>TODO</summary>
+        /// <summary>Personal Documents</summary>
         idiPersonalDocuments,
 
         /// <summary>Special Needs</summary>
         idiSpecialNeeds,
 
-        /// <summary>TODO</summary>
+        /// <summary>Local Personnel Data</summary>
         idiLocalPersonnelData,
 
-        /// <summary>TODO</summary>
+        /// <summary>Professional Areas</summary>
         idiProfessionalAreas,
 
         /// <summary>Personal Languages</summary>
         idiPersonalLanguages,
 
-        /// <summary>TODO</summary>
+        /// <summary>Abilities</summary>
         idiPersonalAbilities,
 
-        /// <summary>TODO</summary>
+        /// <summary>Previous Experience</summary>
         idiPreviousExperiences,
 
-        /// <summary>TODO</summary>
+        /// <summary>Commitments</summary>
         idiCommitmentPeriods,
 
-        /// <summary>TODO</summary>
+        /// <summary>Job Assignments</summary>
         idiJobAssignments,
 
         /// <summary>Progress Reports (Person Evaluations)</summary>
@@ -77,5 +77,8 @@ namespace Ict.Petra.Shared.MPersonnel.Person
 
         /// <summary>Person Skills</summary>
         idiPersonSkills,
+
+        /// <summary>Applications</summary>
+        idiApplications
     }
 }

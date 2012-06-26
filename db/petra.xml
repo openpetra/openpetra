@@ -14721,8 +14721,7 @@
                 label="Leadership Rating"
                 columnlabel="Leadership Rating"
                 help="Indicates the Leadership Rating."
-                notnull="yes"
-                initial=""/>
+                initial="-1"/>
     <tablefield name="pm_confirmed_option_code_c"
                 type="varchar"
                 descr="Indicates the outreach code of the confirmed option."
@@ -15053,8 +15052,7 @@
                 format="9999999999"
                 label="Field Charged"
                 columnlabel="Field Charged"
-                help="This field idenifies the field to be charged for the costs."
-                notnull="yes"/>
+                help="This field idenifies the field to be charged for the costs."/>
     <tablefield name="pm_st_congress_language_c"
                 type="varchar"
                 charlength="10"
@@ -18665,9 +18663,6 @@
     <primarykey name="pm_staff_data_pk"
                 descr=""
                 thisFields="p_site_key_n, pm_key_n"/>
-    <uniquekey name="pm_commitment_data_uk"
-               descr=""
-               thisFields="p_partner_key_n, pm_start_of_commitment_d, pm_end_of_commitment_d"/>
     <foreignkey name="pm_staff_data_fk1"
                 descr=""
                 thisFields="p_partner_key_n"

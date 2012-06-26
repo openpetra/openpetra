@@ -44,6 +44,8 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MPersonnel.Gui;
@@ -639,6 +641,7 @@ namespace Ict.Petra.Client.App.PetraClient
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenConferenceFindScreen = @TConferenceFindScreenManager.OpenModalForm;
+            TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
 
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;

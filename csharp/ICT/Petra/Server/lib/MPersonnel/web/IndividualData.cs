@@ -187,6 +187,50 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                     PmPersonalDataAccess.LoadByPrimaryKey(IndividualDataDS, APartnerKey, AReadTransaction);
                     break;
 
+                case TIndividualDataItemEnum.idiApplications:
+                    PmGeneralApplicationAccess.LoadViaPPersonPartnerKey(IndividualDataDS, APartnerKey, AReadTransaction);
+                    PmShortTermApplicationAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
+                    PmYearProgramApplicationAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
+
+                    IndividualDataTDSPmGeneralApplicationRow GenAppRow;
+                    TPartnerClass PartnerClass;
+                    TStdPartnerStatusCode PartnerStatus;
+                    String EventOrFieldName;
+
+                    //TODO: now go through all short and long term apps and set the
+                    // two fields in general app for EventOrFieldName and ApplicationForEventOrField
+                    foreach (PmShortTermApplicationRow ShortTermRow in IndividualDataDS.PmShortTermApplication.Rows)
+                    {
+                        GenAppRow = (IndividualDataTDSPmGeneralApplicationRow)IndividualDataDS.PmGeneralApplication.Rows.Find
+                                        (new object[] { ShortTermRow.PartnerKey,
+                                                        ShortTermRow.ApplicationKey, ShortTermRow.RegistrationOffice });
+                        GenAppRow.ApplicationForEventOrField = Catalog.GetString("Event");
+
+                        if (!ShortTermRow.IsStConfirmedOptionNull())
+                        {
+                            Ict.Petra.Server.MCommon.MCommonMain.RetrievePartnerShortName
+                                (ShortTermRow.StConfirmedOption, out EventOrFieldName, out PartnerClass, out PartnerStatus);
+                            GenAppRow.EventOrFieldName = EventOrFieldName;
+                        }
+                    }
+
+                    foreach (PmYearProgramApplicationRow LongTermRow in IndividualDataDS.PmYearProgramApplication.Rows)
+                    {
+                        GenAppRow = (IndividualDataTDSPmGeneralApplicationRow)IndividualDataDS.PmGeneralApplication.Rows.Find
+                                        (new object[] { LongTermRow.PartnerKey,
+                                                        LongTermRow.ApplicationKey, LongTermRow.RegistrationOffice });
+                        GenAppRow.ApplicationForEventOrField = Catalog.GetString("Field");
+
+                        if (!GenAppRow.IsGenAppPossSrvUnitKeyNull())
+                        {
+                            Ict.Petra.Server.MCommon.MCommonMain.RetrievePartnerShortName
+                                (GenAppRow.GenAppPossSrvUnitKey, out EventOrFieldName, out PartnerClass, out PartnerStatus);
+                            GenAppRow.EventOrFieldName = EventOrFieldName;
+                        }
+                    }
+
+                    break;
+
                     // TODO: work on all cases/load data for all Individual Data items
             }
 
@@ -607,6 +651,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             AMiscellaneousDataDR.ItemsCountJobAssignments = PmJobAssignmentAccess.CountViaPPartner(PartnerKey, AReadTransaction);
             AMiscellaneousDataDR.ItemsCountProgressReports = PmPersonEvaluationAccess.CountViaPPerson(PartnerKey, AReadTransaction);
             AMiscellaneousDataDR.ItemsCountPersonSkills = PmPersonSkillAccess.CountViaPPerson(PartnerKey, AReadTransaction);
+            AMiscellaneousDataDR.ItemsCountApplications = PmGeneralApplicationAccess.CountViaPPersonPartnerKey(PartnerKey, AReadTransaction);
         }
 
         /// <summary>
@@ -641,6 +686,9 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             PmPastExperienceTable PmPastExperienceTableSubmit;
             PmDocumentTable PmDocumentTableSubmit;
             PmJobAssignmentTable PmJobAssignmentTableSubmit;
+            PmGeneralApplicationTable PmGeneralApplicationTableSubmit;
+            PmShortTermApplicationTable PmShortTermApplicationTableSubmit;
+            PmYearProgramApplicationTable PmYearProgramApplicationTableSubmit;
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1009,6 +1057,90 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                         // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
                         APartnerEditInspectDS.Tables[PmJobAssignmentTable.GetTableName()].Merge(AInspectDS.PmJobAssignment);
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+                }
+
+                // Applications: General Record
+                if (AInspectDS.Tables.Contains(PmGeneralApplicationTable.GetTableName())
+                    && (AInspectDS.PmGeneralApplication.Rows.Count > 0))
+                {
+                    PmGeneralApplicationTableSubmit = AInspectDS.PmGeneralApplication;
+
+                    if (PmGeneralApplicationAccess.SubmitChanges(PmGeneralApplicationTableSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
+                        APartnerEditInspectDS.Tables[PmGeneralApplicationTable.GetTableName()].Merge(AInspectDS.PmGeneralApplication);
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+                }
+
+                // Applications: Short Term Record
+                if (AInspectDS.Tables.Contains(PmShortTermApplicationTable.GetTableName())
+                    && (AInspectDS.PmShortTermApplication.Rows.Count > 0))
+                {
+                    PmShortTermApplicationTableSubmit = AInspectDS.PmShortTermApplication;
+
+                    if (PmShortTermApplicationAccess.SubmitChanges(PmShortTermApplicationTableSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
+                        APartnerEditInspectDS.Tables[PmShortTermApplicationTable.GetTableName()].Merge(AInspectDS.PmShortTermApplication);
+                    }
+                    else
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+#if DEBUGMODE
+                        if (TLogging.DL >= 9)
+                        {
+                            Console.WriteLine(Messages.BuildMessageFromVerificationResult(
+                                    "TIndividualDataWebConnector.SubmitChangesServerSide VerificationResult: ", AVerificationResult));
+                        }
+#endif
+                    }
+                }
+
+                // Applications: Long Term Record
+                if (AInspectDS.Tables.Contains(PmYearProgramApplicationTable.GetTableName())
+                    && (AInspectDS.PmYearProgramApplication.Rows.Count > 0))
+                {
+                    PmYearProgramApplicationTableSubmit = AInspectDS.PmYearProgramApplication;
+
+                    if (PmYearProgramApplicationAccess.SubmitChanges(PmYearProgramApplicationTableSubmit, ASubmitChangesTransaction,
+                            out SingleVerificationResultCollection))
+                    {
+                        SubmissionResult = TSubmitChangesResult.scrOK;
+
+                        // Need to merge this Table back into APartnerEditInspectDS so the updated s_modification_id_t is returned correctly to the Partner Edit screen!
+                        APartnerEditInspectDS.Tables[PmYearProgramApplicationTable.GetTableName()].Merge(AInspectDS.PmYearProgramApplication);
                     }
                     else
                     {
