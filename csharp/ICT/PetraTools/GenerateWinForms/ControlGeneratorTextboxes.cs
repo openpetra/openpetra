@@ -302,7 +302,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         FDefaultWidth = 80;
                     }
-                    
+
                     FHasReadOnlyProperty = true;
 
                     return true;
@@ -310,7 +310,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 else if (TYml2Xml.GetAttribute(curNode, "Type") == "Event")
                 {
                     FButtonLabelType = "Event";
-                    
+
                     if (!(TYml2Xml.HasAttribute(curNode,
                               "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
                     {
@@ -320,7 +320,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         FDefaultWidth = 80;
                     }
-                    
+
                     FHasReadOnlyProperty = true;
 
                     return true;

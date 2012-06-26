@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucApplications))
             {
-                 TUC_ApplicationData UCApplicationData =
+                TUC_ApplicationData UCApplicationData =
                     (TUC_ApplicationData)FTabSetup[TDynamicLoadableUserControls.dlucApplications];
 
                 if (!UCApplicationData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
@@ -193,7 +193,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoIndividualData.GetDataFromControls();
             }
-            
+
             if (FUcoApplications != null)
             {
                 FUcoApplications.GetDataFromControls();
@@ -226,13 +226,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoIndividualData.PartnerEditUIConnector = FPartnerEditUIConnector;
                 FUcoIndividualData.InitialiseUserControl();
-				CalculateTabHeaderCounters(this);
+                CalculateTabHeaderCounters(this);
             }
             else if (AUserControl == FUcoApplications)
             {
-				FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
-				FUcoApplications.InitialiseUserControl();
-				CalculateTabHeaderCounters(FUcoApplications);
+                FUcoApplications.PartnerEditUIConnector = FPartnerEditUIConnector;
+                FUcoApplications.InitialiseUserControl();
+                CalculateTabHeaderCounters(FUcoApplications);
             }
         }
 
@@ -269,22 +269,22 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CalculateTabHeaderCounters(System.Object ASender)
         {
-        	if ((ASender is TUC_PartnerEdit_PersonnelTabSet) || (ASender is TUC_Applications) || (ASender is TUC_ApplicationData))
+            if ((ASender is TUC_PartnerEdit_PersonnelTabSet) || (ASender is TUC_Applications) || (ASender is TUC_ApplicationData))
             {
-	        	if (FUcoApplications != null)
-	        	{
-		        	tpgApplications.Text = Catalog.GetString("Applications") + " (" + FUcoApplications.CountApplications().ToString() + ")";
-	        	}
-	        	else if (FUcoIndividualData != null)
-	        	{
-			        // This is really only needed if application tab has not been activated yet. The number
-			        // of applications still needs to be displayed and will already be available in Individual Data Tab.
-		        	tpgApplications.Text = Catalog.GetString("Applications") + " (" + FUcoIndividualData.CountApplications().ToString() + ")";
-	        	}
-	        	else
-	        	{
-		        	tpgApplications.Text = Catalog.GetString("Applications");
-	        	}
+                if (FUcoApplications != null)
+                {
+                    tpgApplications.Text = Catalog.GetString("Applications") + " (" + FUcoApplications.CountApplications().ToString() + ")";
+                }
+                else if (FUcoIndividualData != null)
+                {
+                    // This is really only needed if application tab has not been activated yet. The number
+                    // of applications still needs to be displayed and will already be available in Individual Data Tab.
+                    tpgApplications.Text = Catalog.GetString("Applications") + " (" + FUcoIndividualData.CountApplications().ToString() + ")";
+                }
+                else
+                {
+                    tpgApplications.Text = Catalog.GetString("Applications");
+                }
             }
         }
 

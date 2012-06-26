@@ -773,24 +773,24 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             // following validation only relevant for field applications
             if (!AEventApplication)
             {
-	            // Field Application: 'Field' must be a Partner of Class 'UNIT' and must not be 0
-	            ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenAppPossSrvUnitKeyId];
-	
-	            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-	            {
-	                VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
-	                    ARow.GenAppPossSrvUnitKey, false, THelper.NiceValueDescription(
-	                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
-	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-	
-	                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
-	                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
-	                // ResultText!
-	                AVerificationResultCollection.Remove(ValidationColumn);
-	                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
-	            }
+                // Field Application: 'Field' must be a Partner of Class 'UNIT' and must not be 0
+                ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenAppPossSrvUnitKeyId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                        ARow.GenAppPossSrvUnitKey, false, THelper.NiceValueDescription(
+                            ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                    // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                    // ResultText!
+                    AVerificationResultCollection.Remove(ValidationColumn);
+                    AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                }
             }
-            
+
             // 'Accepted by receiving field date' must not be a future date
             ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenAppRecvgFldAcceptId];
 
@@ -810,7 +810,6 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
         }
 
         /// <summary>
@@ -846,7 +845,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
-            
+
             // 'Charged Field' must be a Partner of Class 'UNIT'
             ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnStFieldChargedId];
 
@@ -863,7 +862,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
-            
+
             // 'Departure Date' must be later than 'Arrival Date'
             ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnDepartureId];
 
@@ -883,7 +882,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TNumericalChecks.IsInRange(ARow.ArrivalHour, 0, 24,
-            	    Catalog.GetString("Arrival Hour"),
+                    Catalog.GetString("Arrival Hour"),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
@@ -896,7 +895,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TNumericalChecks.IsInRange(ARow.ArrivalMinute, 0, 59,
-            	    Catalog.GetString("Arrival Minute"),
+                    Catalog.GetString("Arrival Minute"),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
@@ -909,7 +908,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TNumericalChecks.IsInRange(ARow.DepartureHour, 0, 24,
-            	    Catalog.GetString("Departure Hour"),
+                    Catalog.GetString("Departure Hour"),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
@@ -922,16 +921,16 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TNumericalChecks.IsInRange(ARow.DepartureMinute, 0, 59,
-            	    Catalog.GetString("Departure Minute"),
+                    Catalog.GetString("Departure Minute"),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
+
             //TODO: if arrival   hour == 24 then arrival   minute must be 0
             //TODO: if departure hour == 24 then departure minute must be 0
-            
+
             //TODO: make sure that no other application already exists for this event and this person
         }
 

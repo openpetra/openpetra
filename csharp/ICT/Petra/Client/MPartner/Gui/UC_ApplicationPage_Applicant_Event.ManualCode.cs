@@ -76,7 +76,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             GetDataFromControls(ARow);
         }
 
-
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)
@@ -121,13 +120,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, true, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
-            TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this, FMainDS.PmShortTermApplication[0], ref VerificationResultCollection,
+            TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this,
+                FMainDS.PmShortTermApplication[0],
+                ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
 
         private void EnableDisableReceivingFieldAcceptanceDate(Object sender, EventArgs e)
         {
-        	dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
+            dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
 
             if (!chkAcceptedByReceivingField.Checked)
             {
@@ -138,7 +139,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 dtpFieldAcceptance.Date = DateTime.Now.Date;
             }
         }
-        
+
         #endregion
     }
 }

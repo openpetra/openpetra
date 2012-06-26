@@ -74,7 +74,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             GetDataFromControls(ARow);
         }
 
-
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)
@@ -119,14 +118,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, false, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
-            TSharedPersonnelValidation_Personnel.ValidateFieldApplicationManual(this, FMainDS.PmYearProgramApplication[0], ref VerificationResultCollection,
+            TSharedPersonnelValidation_Personnel.ValidateFieldApplicationManual(this,
+                FMainDS.PmYearProgramApplication[0],
+                ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
 
-        
         private void EnableDisableReceivingFieldAcceptanceDate(Object sender, EventArgs e)
         {
-        	dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
+            dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
 
             if (!chkAcceptedByReceivingField.Checked)
             {
@@ -137,17 +137,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 dtpFieldAcceptance.Date = DateTime.Now.Date;
             }
         }
-        
+
         private void ApplicationCurrencyChanged(Object sender, EventArgs e)
         {
-        	String Currency;
-        	
-        	Currency = cmbApplicationCurrency.GetSelectedString();
-        	
-        	txtJoiningCharge.CurrencySymbol = Currency;
-        	txtAgreedSupport.CurrencySymbol = Currency;
+            String Currency;
+
+            Currency = cmbApplicationCurrency.GetSelectedString();
+
+            txtJoiningCharge.CurrencySymbol = Currency;
+            txtAgreedSupport.CurrencySymbol = Currency;
         }
-	
+
         #endregion
     }
 }

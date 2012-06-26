@@ -43,13 +43,13 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TUC_ApplicationPage_Event
     {
         private TDelegateCheckEventApplicationDuplicate FDelegateCheckEventApplicationDuplicate = null;
-        
-	    /// <summary>event to signalize change in event applied for</summary>
-	    public event TDelegatePartnerChanged ApplicationEventChanged;
-	    
-	    /// <summary>delegate to check for event duplicates for this person</summary>
-	    public delegate bool TDelegateCheckEventApplicationDuplicate(int AApplicationKey, Int64 ARegistrationOfficeKey, Int64 AEventKey);
-	            
+
+        /// <summary>event to signalize change in event applied for</summary>
+        public event TDelegatePartnerChanged ApplicationEventChanged;
+
+        /// <summary>delegate to check for event duplicates for this person</summary>
+        public delegate bool TDelegateCheckEventApplicationDuplicate(int AApplicationKey, Int64 ARegistrationOfficeKey, Int64 AEventKey);
+
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -93,7 +93,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             GetDataFromControls(ARow);
         }
-
 
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
@@ -142,37 +141,39 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, true, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
-            TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this, FMainDS.PmShortTermApplication[0], ref VerificationResultCollection,
+            TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this,
+                FMainDS.PmShortTermApplication[0],
+                ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
             if (FDelegateCheckEventApplicationDuplicate != null)
             {
-	            // Same 'Event' must only exist for one application per person
-	            ValidationColumn = FMainDS.PmShortTermApplication[0].Table.Columns[PmShortTermApplicationTable.ColumnStConfirmedOptionId];
-	
-	            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-	            {
-	            	if (FDelegateCheckEventApplicationDuplicate(ARow.ApplicationKey, ARow.RegistrationOffice,
-	            	                                            FMainDS.PmShortTermApplication[0].StConfirmedOption))
-	            	{
-	                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
-	                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_APPLICATION_DUPLICATE_EVENT,
-	                                new string[] { FMainDS.PmShortTermApplication[0].StConfirmedOption.ToString() })),
-	                        ValidationColumn, ValidationControlsData.ValidationControl);
-	                }
-	
-	                // Handle addition to/removal from TVerificationResultCollection
-	                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
-	            }
+                // Same 'Event' must only exist for one application per person
+                ValidationColumn = FMainDS.PmShortTermApplication[0].Table.Columns[PmShortTermApplicationTable.ColumnStConfirmedOptionId];
+
+                if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    if (FDelegateCheckEventApplicationDuplicate(ARow.ApplicationKey, ARow.RegistrationOffice,
+                            FMainDS.PmShortTermApplication[0].StConfirmedOption))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_APPLICATION_DUPLICATE_EVENT,
+                                    new string[] { FMainDS.PmShortTermApplication[0].StConfirmedOption.ToString() })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                }
             }
         }
 
         private void ProcessApplicationEventChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)
         {
-        	// trigger event so other controls can react to it
-        	this.ApplicationEventChanged(APartnerKey, APartnerShortName, AValidSelection);
+            // trigger event so other controls can react to it
+            this.ApplicationEventChanged(APartnerKey, APartnerShortName, AValidSelection);
         }
-        
+
         #endregion
     }
 }

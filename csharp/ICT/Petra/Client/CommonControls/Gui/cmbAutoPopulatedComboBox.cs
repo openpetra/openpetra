@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             ArrivalDeparturePointList,
-            
+
             /// <summary>todoComment</summary>
             AccommodationCodeList,
 
@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             SubscriptionStatus,
-            
+
             /// <summary>todoComment</summary>
             TransportTypeList,
 
@@ -408,7 +408,7 @@ namespace Ict.Petra.Client.CommonControls
                     PtArrivalPointTable.GetDescriptionDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.AccommodationCodeList:
 
                     InitialiseUserControl(
@@ -473,7 +473,7 @@ namespace Ict.Petra.Client.CommonControls
                     null
                     );
                     break;
-                    
+
                 case TListTableEnum.BusinessCodeList:
 
                     InitialiseUserControl(
@@ -597,7 +597,7 @@ namespace Ict.Petra.Client.CommonControls
                     null
                     );
                     break;
-                    
+
                 case TListTableEnum.FoundationOwnerList:
 
                     InitialiseUserControl(
@@ -905,7 +905,7 @@ namespace Ict.Petra.Client.CommonControls
                     PtTravelTypeTable.GetDescriptionDBName(),
                     null);
                     break;
-                    
+
                 case TListTableEnum.RelationList:
 
                     InitialiseUserControl(
@@ -1177,7 +1177,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 80;
                     this.ColumnWidthCol2 = 300;
                     break;
-                    
+
                 case TListTableEnum.BusinessCodeList:
                     this.ColumnWidthCol2 = 150;
                     cmbCombobox.MaxDropDownItems = 9;
@@ -1192,7 +1192,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 120;
                     this.ColumnWidthCol2 = 300;
                     break;
-                    
+
                 case TListTableEnum.CountryList:
                     this.ColumnWidthCol1 = 50;
                     this.ColumnWidthCol2 = 200;
@@ -1224,12 +1224,12 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 150;
                     this.ColumnWidthCol2 = 300;
                     break;
-                    
+
                 case TListTableEnum.EventRoleList:
                     this.ColumnWidthCol1 = 120;
                     this.ColumnWidthCol2 = 250;
                     break;
-                    
+
                 case TListTableEnum.DocumentTypeCategoryList:
                     this.ColumnWidthCol2 = 200;
                     break;
@@ -1238,7 +1238,7 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 150;
                     this.ColumnWidthCol2 = 300;
                     break;
-                    
+
                 case TListTableEnum.FoundationOwnerList:
                     this.ColumnWidthCol1 = 120;
                     break;
@@ -1361,7 +1361,7 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.SubscriptionStatus:
                     this.ColumnWidthCol1 = 110;
                     break;
-                    
+
                 case TListTableEnum.TransportTypeList:
                     this.ColumnWidthCol1 = 80;
                     this.ColumnWidthCol2 = 130;

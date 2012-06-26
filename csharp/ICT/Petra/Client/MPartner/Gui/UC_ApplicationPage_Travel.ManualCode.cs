@@ -75,7 +75,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             GetDataFromControls(ARow);
         }
 
-
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)
@@ -107,11 +106,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
-        	// hour and minute text fields can only contain two digits maximum
-        	txtArrivalTimeHour.MaxLength = 2;
-        	txtArrivalTimeMinute.MaxLength = 2;
-        	txtDepartureTimeHour.MaxLength = 2;
-        	txtDepartureTimeMinute.MaxLength = 2;
+            // hour and minute text fields can only contain two digits maximum
+            txtArrivalTimeHour.MaxLength = 2;
+            txtArrivalTimeMinute.MaxLength = 2;
+            txtDepartureTimeHour.MaxLength = 2;
+            txtDepartureTimeMinute.MaxLength = 2;
         }
 
         private void GetDataFromControlsManual(PmGeneralApplicationRow ARow)
@@ -125,7 +124,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, true, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
-            TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this, FMainDS.PmShortTermApplication[0], ref VerificationResultCollection,
+            TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this,
+                FMainDS.PmShortTermApplication[0],
+                ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
 

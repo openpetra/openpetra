@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>int</returns>
         public int CountApplications()
         {
-           	return FMainDS.MiscellaneousData[0].ItemsCountApplications;
+            return FMainDS.MiscellaneousData[0].ItemsCountApplications;
         }
 
         /// <summary>

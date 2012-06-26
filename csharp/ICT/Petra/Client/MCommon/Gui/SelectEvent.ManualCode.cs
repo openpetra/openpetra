@@ -99,7 +99,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             this.Cursor = Cursors.Default;
         }
-        
+
         private void grdEventDoubleClick(System.Object sender, EventArgs e)
         {
             AcceptSelection(sender, e);
@@ -238,11 +238,11 @@ namespace Ict.Petra.Client.MCommon.Gui
                 EventName = txtEventName.Text.Replace('*', '%') + "%";
                 RowFilter = RowFilter + PPartnerTable.GetPartnerShortNameDBName() + " LIKE '" + EventName + "'";
             }
-            
+
             FEventTable.DefaultView.RowFilter = RowFilter;
         }
     }
-    
+
     /// <summary>
     /// Manages the opening of a new/showing of an existing Instance of the Event Find Screen.
     /// </summary>
@@ -278,12 +278,11 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 AEventKey = SelectEvent.FSelectedPartnerKey;
                 AEventName = SelectEvent.FSelectedUnitName;
-				AOutreachCode = SelectEvent.FSelectedOutreachCode;
+                AOutreachCode = SelectEvent.FSelectedOutreachCode;
                 return true;
             }
 
             return false;
         }
     }
-    
 }

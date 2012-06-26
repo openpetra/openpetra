@@ -987,7 +987,7 @@ namespace Ict.Common.Verification
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="ANumberDescription" /></returns>
         public static TVerificationResult IsInRange(Int64? AValue, Int64? ALowerLimit, Int64? AUpperLimit,
-            string ANumberDescription, object AResultContext = null, 
+            string ANumberDescription, object AResultContext = null,
             System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
@@ -1000,8 +1000,8 @@ namespace Ict.Common.Verification
             string NumberDescription = THelper.NiceValueDescription(ANumberDescription);
 
             // Check
-            if (   AValue < ALowerLimit
-                || AValue > AUpperLimit)
+            if ((AValue < ALowerLimit)
+                || (AValue > AUpperLimit))
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
@@ -1016,8 +1016,7 @@ namespace Ict.Common.Verification
 
             return ReturnValue;
         }
-        
+
         #endregion
-        
     }
 }

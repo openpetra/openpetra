@@ -893,7 +893,6 @@ namespace Ict.Petra.Client.CommonControls
                         /* TLogging.Log('End Conference or Event setup'); */
                         #endregion
                         break;
-
                 }
 
                 // End of "case this.FListTable of"
@@ -1530,7 +1529,7 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
                                         LabelStringOut = mResultStringLbl;
-                                        
+
                                         if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
                                         {
                                             bool ValidResult = true;

@@ -46,14 +46,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         private ApplicationTDS FApplicationDS;
         private int CurrentTabIndex = 0;
 
-	    /// <summary>Application Field changed</summary>
-	    public delegate void TDelegateApplicationFieldChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice, Int64 AFieldKey, String AFieldName);
-	    
-	    /// <summary>event to signalize change in field applied for</summary>
-	    public event TDelegateApplicationFieldChanged ApplicationFieldChanged;
+        /// <summary>Application Field changed</summary>
+        public delegate void TDelegateApplicationFieldChanged(Int64 APartnerKey,
+            int AApplicationKey,
+            Int64 ARegistrationOffice,
+            Int64 AFieldKey,
+            String AFieldName);
 
-	    #region Properties
-        
+        /// <summary>event to signalize change in field applied for</summary>
+        public event TDelegateApplicationFieldChanged ApplicationFieldChanged;
+
+        #region Properties
+
         /// dataset for the whole screen
         public IndividualDataTDS MainDS
         {
@@ -69,7 +73,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
-        
+
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -89,18 +93,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             FApplicationDS.InitVars();
 
             ucoField.PetraUtilsObject = FPetraUtilsObject;
-			ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
-			
+            ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
+
             ucoField.MainDS = FApplicationDS;
             ucoApplicant.MainDS = FApplicationDS;
 
             // enable control to react to modified event or field key in details part
-			ucoField.ApplicationFieldChanged += new TDelegatePartnerChanged(ProcessApplicationFieldChanged);
-			
-			// handle tab changing in case validation fails
+            ucoField.ApplicationFieldChanged += new TDelegatePartnerChanged(ProcessApplicationFieldChanged);
+
+            // handle tab changing in case validation fails
             tabApplicationField.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
         }
-        
+
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -129,7 +133,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             GetDataFromControls(ARow, AFieldAppRow);
         }
-        
+
         /// <summary>
         /// Performs data validation.
         /// </summary>
@@ -151,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-        
+
         #endregion
 
         #region Private Methods
@@ -194,44 +198,44 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowData(PmGeneralApplicationRow AGeneralAppRow, PmYearProgramApplicationRow AFieldAppRow)
         {
-        	// clear dataset and create a copy of the row to be displayed so Dataset contains only one set of records
+            // clear dataset and create a copy of the row to be displayed so Dataset contains only one set of records
             FApplicationDS.PmYearProgramApplication.Rows.Clear();
             FApplicationDS.PmGeneralApplication.Rows.Clear();
-            
+
             PmGeneralApplicationRow GeneralAppRowCopy = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.NewRow();
             PmYearProgramApplicationRow FieldAppRowCopy = (PmYearProgramApplicationRow)FApplicationDS.PmYearProgramApplication.NewRow();
-            
+
             DataUtilities.CopyAllColumnValues(AGeneralAppRow, GeneralAppRowCopy);
             DataUtilities.CopyAllColumnValues(AFieldAppRow, FieldAppRowCopy);
-            
+
             FApplicationDS.PmGeneralApplication.Rows.Add(GeneralAppRowCopy);
             FApplicationDS.PmYearProgramApplication.Rows.Add(FieldAppRowCopy);
-            
+
             ucoField.ShowDetails(GeneralAppRowCopy);
             ucoApplicant.ShowDetails(GeneralAppRowCopy);
-        }        
+        }
 
- 	    private void GetDataFromControls(PmGeneralApplicationRow ARow, PmYearProgramApplicationRow AFieldAppRow)
+        private void GetDataFromControls(PmGeneralApplicationRow ARow, PmYearProgramApplicationRow AFieldAppRow)
         {
- 	    	ucoField.GetDetails(FApplicationDS.PmGeneralApplication[0]);
- 	    	ucoApplicant.GetDetails(FApplicationDS.PmGeneralApplication[0]);
- 	    	
+            ucoField.GetDetails(FApplicationDS.PmGeneralApplication[0]);
+            ucoApplicant.GetDetails(FApplicationDS.PmGeneralApplication[0]);
+
             DataUtilities.CopyAllColumnValues(FApplicationDS.PmGeneralApplication[0], ARow);
             DataUtilities.CopyAllColumnValues(FApplicationDS.PmYearProgramApplication[0], AFieldAppRow);
- 	    }
-        
+        }
+
         private void ProcessApplicationFieldChanged(Int64 AFieldKey, String AFieldName, bool AValidSelection)
         {
-        	PmGeneralApplicationRow Row;
-        	
-        	Row = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.Rows[0];
-        	
-        	// trigger event so parent controls can react
-        	this.ApplicationFieldChanged(Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, AFieldKey, AFieldName);
+            PmGeneralApplicationRow Row;
+
+            Row = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.Rows[0];
+
+            // trigger event so parent controls can react
+            this.ApplicationFieldChanged(Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, AFieldKey, AFieldName);
         }
 
         private int standardTabIndex = 0;
-        
+
         private void TUC_Application_Field_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
@@ -248,30 +252,32 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (CurrentTabIndex == 0)
             {
                 FCurrentUserControl = ucoField;
+
                 if (!ucoField.ValidateAllData(true, FCurrentUserControl))
                 {
-	                e.Cancel = true;
-	
-	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                    e.Cancel = true;
+
+                    FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
                 }
             }
             else
             {
                 FCurrentUserControl = ucoApplicant;
+
                 if (!ucoApplicant.ValidateAllData(true, FCurrentUserControl))
                 {
-	                e.Cancel = true;
-	
-	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                    e.Cancel = true;
+
+                    FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
                 }
             }
 
             if (!e.Cancel)
             {
-            	CurrentTabIndex = tabApplicationField.SelectedIndex;
+                CurrentTabIndex = tabApplicationField.SelectedIndex;
             }
         }
-        
+
         #endregion
     }
 }

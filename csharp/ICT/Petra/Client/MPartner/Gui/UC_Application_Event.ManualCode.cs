@@ -46,14 +46,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         private ApplicationTDS FApplicationDS;
         private int CurrentTabIndex = 0;
 
-	    /// <summary>Application Event changed</summary>
-	    public delegate void TDelegateApplicationEventChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice, Int64 AEventKey, String AEventName);
+        /// <summary>Application Event changed</summary>
+        public delegate void TDelegateApplicationEventChanged(Int64 APartnerKey,
+            int AApplicationKey,
+            Int64 ARegistrationOffice,
+            Int64 AEventKey,
+            String AEventName);
 
-	    /// <summary>event to signalize change in event applied for</summary>
-	    public event TDelegateApplicationEventChanged ApplicationEventChanged;
+        /// <summary>event to signalize change in event applied for</summary>
+        public event TDelegateApplicationEventChanged ApplicationEventChanged;
 
-	    #region Properties
-        
+        #region Properties
+
         /// dataset for the whole screen
         public IndividualDataTDS MainDS
         {
@@ -69,7 +73,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
-        
+
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -87,25 +91,25 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FApplicationDS = new ApplicationTDS();
             FApplicationDS.InitVars();
-            
-			ucoEvent.PetraUtilsObject = FPetraUtilsObject;
-			ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
-			ucoTravel.PetraUtilsObject = FPetraUtilsObject;
+
+            ucoEvent.PetraUtilsObject = FPetraUtilsObject;
+            ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
+            ucoTravel.PetraUtilsObject = FPetraUtilsObject;
 
             ucoEvent.MainDS = FApplicationDS;
             ucoApplicant.MainDS = FApplicationDS;
             ucoTravel.MainDS = FApplicationDS;
-			
-			// enable control to react to modified event or field key in details part
-			ucoEvent.ApplicationEventChanged += new TDelegatePartnerChanged(ProcessApplicationEventChanged);
 
-			// handle tab changing in case validation fails
+            // enable control to react to modified event or field key in details part
+            ucoEvent.ApplicationEventChanged += new TDelegatePartnerChanged(ProcessApplicationEventChanged);
+
+            // handle tab changing in case validation fails
             tabApplicationEvent.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-            
+
             // initialize delegate method on event page so it can be called from there for validation purposes
             ucoEvent.InitialiseDelegateCheckEventApplicationDuplicate(CheckEventApplicationDuplicate);
         }
-        
+
         /// <summary>
         /// Display data in control based on data from Rows
         /// </summary>
@@ -125,7 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             GetDataFromControls(ARow, AEventAppRow);
         }
-        
+
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -141,26 +145,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AApplicationKey"></param>
         /// <param name="ARegistrationOfficeKey"></param>
         /// <param name="AEventKey"></param>
-		public bool CheckEventApplicationDuplicate(int AApplicationKey, Int64 ARegistrationOfficeKey, 
-                                                   Int64 AEventKey)
+        public bool CheckEventApplicationDuplicate(int AApplicationKey, Int64 ARegistrationOfficeKey,
+            Int64 AEventKey)
         {
-			PmShortTermApplicationRow EventApplicationRow;
-			
-			foreach (DataRow ApplicationRow in FMainDS.PmShortTermApplication.Rows)
-			{
-				EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
-				if (   (   EventApplicationRow.ApplicationKey != AApplicationKey
-				        || EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey)
-				    && !EventApplicationRow.IsStConfirmedOptionNull()
-				    && EventApplicationRow.StConfirmedOption == AEventKey)
-				{
-					return true;
-				}
-			}
-			
-			return false;
+            PmShortTermApplicationRow EventApplicationRow;
+
+            foreach (DataRow ApplicationRow in FMainDS.PmShortTermApplication.Rows)
+            {
+                EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
+
+                if (((EventApplicationRow.ApplicationKey != AApplicationKey)
+                     || (EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey))
+                    && !EventApplicationRow.IsStConfirmedOptionNull()
+                    && (EventApplicationRow.StConfirmedOption == AEventKey))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
-        
+
         #endregion
 
         #region Private Methods
@@ -185,7 +190,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 RecalculateScreenParts(this, e);
             }
         }
-        
+
         private void InitializeManualCode()
         {
         }
@@ -230,45 +235,44 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowData(PmGeneralApplicationRow AGeneralAppRow, PmShortTermApplicationRow AEventAppRow)
         {
-        	// clear dataset and create a copy of the row to be displayed so Dataset contains only one set of records
+            // clear dataset and create a copy of the row to be displayed so Dataset contains only one set of records
             FApplicationDS.PmShortTermApplication.Rows.Clear();
             FApplicationDS.PmGeneralApplication.Rows.Clear();
-            
+
             PmGeneralApplicationRow GeneralAppRowCopy = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.NewRow();
             PmShortTermApplicationRow EventAppRowCopy = (PmShortTermApplicationRow)FApplicationDS.PmShortTermApplication.NewRow();
-            
+
             DataUtilities.CopyAllColumnValues(AGeneralAppRow, GeneralAppRowCopy);
             DataUtilities.CopyAllColumnValues(AEventAppRow, EventAppRowCopy);
-            
+
             FApplicationDS.PmGeneralApplication.Rows.Add(GeneralAppRowCopy);
             FApplicationDS.PmShortTermApplication.Rows.Add(EventAppRowCopy);
-            
+
             ucoEvent.ShowDetails(GeneralAppRowCopy);
             ucoApplicant.ShowDetails(GeneralAppRowCopy);
             ucoTravel.ShowDetails(GeneralAppRowCopy);
-        }        
-        
- 	    private void GetDataFromControls(PmGeneralApplicationRow ARow, PmShortTermApplicationRow AEventAppRow)
+        }
+
+        private void GetDataFromControls(PmGeneralApplicationRow ARow, PmShortTermApplicationRow AEventAppRow)
         {
- 	    	ucoEvent.GetDetails(FApplicationDS.PmGeneralApplication[0]);
- 	    	ucoApplicant.GetDetails(FApplicationDS.PmGeneralApplication[0]);
- 	    	ucoTravel.GetDetails(FApplicationDS.PmGeneralApplication[0]);
- 	    	
+            ucoEvent.GetDetails(FApplicationDS.PmGeneralApplication[0]);
+            ucoApplicant.GetDetails(FApplicationDS.PmGeneralApplication[0]);
+            ucoTravel.GetDetails(FApplicationDS.PmGeneralApplication[0]);
+
             DataUtilities.CopyAllColumnValues(FApplicationDS.PmGeneralApplication[0], ARow);
             DataUtilities.CopyAllColumnValues(FApplicationDS.PmShortTermApplication[0], AEventAppRow);
- 	    }
- 	    
+        }
+
         private void ProcessApplicationEventChanged(Int64 AEventKey, String AEventName, bool AValidSelection)
         {
-        	PmGeneralApplicationRow Row;
-        	
-        	Row = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.Rows[0];
-        	
-        	// trigger event so parent controls can react
-        	this.ApplicationEventChanged(Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, AEventKey, AEventName);
+            PmGeneralApplicationRow Row;
+
+            Row = (PmGeneralApplicationRow)FApplicationDS.PmGeneralApplication.Rows[0];
+
+            // trigger event so parent controls can react
+            this.ApplicationEventChanged(Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, AEventKey, AEventName);
         }
- 	    
-        
+
         private void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
@@ -276,40 +280,43 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (CurrentTabIndex == 0)
             {
                 FCurrentUserControl = ucoEvent;
+
                 if (!ucoEvent.ValidateAllData(true, FCurrentUserControl))
                 {
-	                e.Cancel = true;
-	
-	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                    e.Cancel = true;
+
+                    FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
                 }
             }
             else if (CurrentTabIndex == 1)
             {
                 FCurrentUserControl = ucoApplicant;
+
                 if (!ucoApplicant.ValidateAllData(true, FCurrentUserControl))
                 {
-	                e.Cancel = true;
-	
-	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                    e.Cancel = true;
+
+                    FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
                 }
             }
             else
             {
                 FCurrentUserControl = ucoTravel;
+
                 if (!ucoTravel.ValidateAllData(true, FCurrentUserControl))
                 {
-	                e.Cancel = true;
-	
-	                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                    e.Cancel = true;
+
+                    FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
                 }
             }
-            
+
             if (!e.Cancel)
             {
-            	CurrentTabIndex = tabApplicationEvent.SelectedIndex;
+                CurrentTabIndex = tabApplicationEvent.SelectedIndex;
             }
         }
-        
-       #endregion
+
+        #endregion
     }
 }

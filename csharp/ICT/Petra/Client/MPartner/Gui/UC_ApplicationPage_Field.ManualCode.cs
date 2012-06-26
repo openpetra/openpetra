@@ -41,9 +41,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         // <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         //private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-	    /// <summary>event to signalize change in field applied for</summary>
-	    public event TDelegatePartnerChanged ApplicationFieldChanged;
-        
+        /// <summary>event to signalize change in field applied for</summary>
+        public event TDelegatePartnerChanged ApplicationFieldChanged;
+
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -77,7 +77,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             GetDataFromControls(ARow);
         }
-
 
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
@@ -123,16 +122,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, false, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
-            TSharedPersonnelValidation_Personnel.ValidateFieldApplicationManual(this, FMainDS.PmYearProgramApplication[0], ref VerificationResultCollection,
+            TSharedPersonnelValidation_Personnel.ValidateFieldApplicationManual(this,
+                FMainDS.PmYearProgramApplication[0],
+                ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
 
         private void ProcessApplicationFieldChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)
         {
-        	// trigger event so other controls can react to it
-        	this.ApplicationFieldChanged(APartnerKey, APartnerShortName, AValidSelection);
+            // trigger event so other controls can react to it
+            this.ApplicationFieldChanged(APartnerKey, APartnerShortName, AValidSelection);
         }
-        
+
         #endregion
     }
 }

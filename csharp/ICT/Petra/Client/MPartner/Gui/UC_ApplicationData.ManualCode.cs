@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
         #endregion
-        
+
         #region Properties
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -128,10 +128,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         public bool ValidateAllData(bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
-            
+
             ReturnValue = ucoApplications.ValidateAllData(AProcessAnyDataValidationErrors, true, AValidateSpecificControl);
-            
-            return ReturnValue; 
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPartnerEditTDS.Tables.Add(new PmYearProgramApplicationTable());
             }
-            
+
             FPartnerEditTDS.Tables[PmShortTermApplicationTable.GetTableName()].Rows.Clear();
             FPartnerEditTDS.Tables[PmShortTermApplicationTable.GetTableName()].Merge(FMainDS.PmShortTermApplication);
             FPartnerEditTDS.Tables[PmYearProgramApplicationTable.GetTableName()].Rows.Clear();
@@ -203,7 +203,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Call AcceptChanges on IndividualDataTDS so that we don't have any changed data anymore (this is done to PartnerEditTDS, too, after this Method returns)!
             FMainDS.AcceptChanges();
-
         }
 
         /// <summary>
@@ -212,7 +211,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>int</returns>
         public int CountApplications()
         {
-        	return ucoApplications.CountApplications();
+            return ucoApplications.CountApplications();
         }
 
         /// <summary>
@@ -232,7 +231,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void DoRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
-        	// trigger event so outer controls can react
+            // trigger event so outer controls can react
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(sender, e);
