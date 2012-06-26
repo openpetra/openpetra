@@ -197,7 +197,7 @@ namespace {#NAMESPACE}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, true);
 
         if(ReturnValue)
         {
@@ -370,13 +370,22 @@ namespace {#NAMESPACE}
 
                         ReturnValue = true;
                         FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+
+                        if((VerificationResult != null)
+                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
+                        {
+                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                                this.GetType(), null);
+                        }
+
                         break;
 
                     case TSubmitChangesResult.scrError:
                         this.Cursor = Cursors.Default;
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));                        
+                        TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                            this.GetType(), null);
 
                         FPetraUtilsObject.SubmitChangesContinue = false;
 

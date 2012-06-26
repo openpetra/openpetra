@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -660,6 +660,20 @@ namespace Ict.Common.Printing
                     {
                         AWidthAvailable = ToInch(Styles[StyleName], eResolution.eHorizontal);
                     }
+                    else if (StyleName.ToLower() == "transform")
+                    {
+                        // see also http://www.w3schools.com/cssref/css3_pr_transform.asp
+                        string transformValue = Styles[StyleName].Trim().ToLower();
+
+                        if (transformValue.StartsWith("rotate(") && transformValue.EndsWith("deg)"))
+                        {
+                            FPrinter.Rotate(Convert.ToInt32(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length)));
+                        }
+                        else
+                        {
+                            TLogging.Log("TPrinterHtml: unsupported transform style. we only support rotation at the moment");
+                        }
+                    }
                 }
             }
 
@@ -691,6 +705,9 @@ namespace Ict.Common.Printing
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
                 AWidthAvailable = OrigWidthAvailable;
+
+                FPrinter.SaveState();
+
                 bool HasPositionInfo = SetPositionFromStyle(curNode, ref AWidthAvailable);
 
                 if (HasPositionInfo)
@@ -1004,6 +1021,8 @@ namespace Ict.Common.Printing
                     FPrinter.CurrentYPos = 0;
                 }
 
+                FPrinter.RestoreState();
+
                 // todo: h1, etc headings???
                 // todo: code, fixed width font (for currency amounts?) ???
                 // todo: don't print to paper if class="preprinted"; but is printed for PDF
@@ -1012,7 +1031,7 @@ namespace Ict.Common.Printing
                 // todo: header div style with tray information; config file with local tray names???
             }
 
-            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos())
+            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos() && (FRowsLeftOver == null))
             {
                 throw new Exception("page too small, at " + curNode.Name);
             }
@@ -1038,11 +1057,34 @@ namespace Ict.Common.Printing
             FPrinter.CurrentXPos = AXPos;
 
             int border = 0;
+            string outsideborders = "none";
+            string insidelines = "none";
             int height = -1;
 
+            // http://www.htmlcodetutorial.com/tables/index_famsupp_189.html
+            // and http://www.htmlcodetutorial.com/tables/index_famsupp_147.html
             if (TXMLParser.HasAttribute(tableNode, "border"))
             {
                 border = Convert.ToInt32(TXMLParser.GetAttribute(tableNode, "border"));
+
+                if (border != 0)
+                {
+                    outsideborders = "box";
+                    insidelines = "all";
+                }
+            }
+
+            if (TXMLParser.HasAttribute(tableNode, "rules"))
+            {
+                // rules can be all, rows, cols
+                insidelines = TXMLParser.GetAttribute(tableNode, "rules").ToLower();
+                outsideborders = "box";
+            }
+
+            if (TXMLParser.HasAttribute(tableNode, "frame"))
+            {
+                // frame can be box, or hsides, or vsides, or none
+                outsideborders = TXMLParser.GetAttribute(tableNode, "frame").ToLower();
             }
 
             if (TXMLParser.HasAttribute(tableNode, "width"))
@@ -1126,6 +1168,8 @@ namespace Ict.Common.Printing
                     curNode = curNode.FirstChild;
                 }
 
+                bool firstRow = true;
+
                 while (curNode != null && curNode.Name == "tr")
                 {
                     TTableRowGfx preparedRow = new TTableRowGfx();
@@ -1133,10 +1177,57 @@ namespace Ict.Common.Printing
                     XmlNode row = curNode;
                     XmlNode cell = curNode.FirstChild;
 
+                    bool lastRow = (curNode.NextSibling == null) || (curNode.NextSibling.Name != "tr");
+
+                    bool firstColumn = true;
+
                     while (cell != null && (cell.Name == "td" || cell.Name == "th"))
                     {
                         TTableCellGfx preparedCell = new TTableCellGfx();
                         preparedCell.borderWidth = border;
+                        preparedCell.borderBitField = 0;
+
+                        bool lastColumn = (cell.NextSibling == null) || (cell.NextSibling.Name != "td" && cell.NextSibling.Name != "th");
+
+                        if (border > 0)
+                        {
+                            if (firstRow && ((outsideborders == "box") || (outsideborders == "hsides")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.TOP;
+                            }
+                            else if (!firstRow && ((insidelines == "all") || (insidelines == "rows")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.TOP;
+                            }
+
+                            if (lastRow && ((outsideborders == "box") || (outsideborders == "hsides")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.BOTTOM;
+                            }
+                            else if (!lastRow && ((insidelines == "all") || (insidelines == "rows")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.BOTTOM;
+                            }
+
+                            if (firstColumn && ((outsideborders == "box") || (outsideborders == "vsides")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.LEFT;
+                            }
+                            else if (!firstColumn && ((insidelines == "all") || (insidelines == "cols")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.LEFT;
+                            }
+
+                            if (lastColumn && ((outsideborders == "box") || (outsideborders == "vsides")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.RIGHT;
+                            }
+                            else if (!lastColumn && ((insidelines == "all") || (insidelines == "cols")))
+                            {
+                                preparedCell.borderBitField |= TTableCellGfx.RIGHT;
+                            }
+                        }
+
                         preparedCell.content = cell.FirstChild;
 
                         if (TXMLParser.HasAttribute(cell, "colspan"))
@@ -1175,6 +1266,7 @@ namespace Ict.Common.Printing
                         }
 
                         cell = cell.NextSibling;
+                        firstColumn = false;
                     }
 
                     // make sure the percentages are right;
@@ -1222,6 +1314,7 @@ namespace Ict.Common.Printing
 
                     preparedRows.Add(preparedRow);
                     curNode = row.NextSibling;
+                    firstRow = false;
                 }
             }
 

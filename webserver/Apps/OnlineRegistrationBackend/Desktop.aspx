@@ -64,6 +64,13 @@
             Ext.getCmp('MedicalPanel').setActiveTab(panelId);
         }
 
+        function SetDateFormat(format)
+        {
+            Ext.getCmp('DateOfArrival').format = format;
+            Ext.getCmp('DateOfDeparture').format = format;
+            Ext.getCmp('GenAppDate').format = format;
+            Ext.getCmp('DateOfBirth').format = format;
+        }
 </script>        
 </head>
 <body>
@@ -762,6 +769,19 @@
                                 </table>
                               </Content>
                             </ext:Panel>
+                            <ext:Panel ID="TabManualRegistration" runat="server" Title="Manual Registration" AutoScroll="true">
+                              <Content>
+                                <table>
+                                <tr>
+                                  <td><ext:Button ID="btnManualRegistration" runat="server" Text="Manual Registration">
+                                      <Listeners>
+                                          <Click Handler="#{winManualRegistration}.show();" />
+                                      </Listeners>
+                                  </ext:Button></td>
+                                </tr>
+                                </table>
+                              </Content>
+                            </ext:Panel>
                             <ext:Panel ID="TabTopFinance" runat="server" Title="Finance" AutoScroll="true">
                               <Content>
                                 <table>
@@ -782,7 +802,7 @@
                             </ext:Panel>
                             <ext:Panel ID="TabBoundaries" runat="server" Title="Boundaries" AutoScroll="true">
                               <Items>
-                                <ext:DateField ID="dtpRebukesReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MMM-yyyy" width="230"/>
+                                <ext:DateField ID="dtpRebukesReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MM-yyyy" width="230"/>
                                 <ext:Button ID="btnRebukesReport" runat="server" Text="Print Rebukes Report">
                                     <DirectEvents>
                                         <Click OnEvent="PrintRebukesReport"/>
@@ -907,11 +927,6 @@
                                     <DirectEvents>
                                         <Click OnEvent="FixArrivalDepartureDates" />
                                     </DirectEvents>
-                                </ext:Button></td>
-                                <td><ext:Button ID="btnManualRegistration" runat="server" Text="Manual Registration">
-                                    <Listeners>
-                                        <Click Handler="#{winManualRegistration}.show();" />
-                                    </Listeners>
                                 </ext:Button></td>
                                 </tr></table>
                                 </Content>
@@ -1041,8 +1056,8 @@
                                                 <ext:ListItem Text="Unknown" Value="Unknown" />
                                             </Items>                        
                                         </ext:ComboBox>
-                                        <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="dd-MMM-yyyy"/>
-                                        <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="dd-MMM-yyyy" />
+                                        <ext:DateField ID="DateOfBirth" runat="server" FieldLabel="Date of Birth" DataIndex="DateOfBirth" Format="dd-MM-yyyy"/>
+                                        <ext:DateField ID="GenAppDate" runat="server" FieldLabel="Date of Application" DataIndex="GenAppDate" Format="dd-MM-yyyy" />
                                         <ext:ComboBox 
                                             ID="GenApplicationStatus"
                                             runat="server" 
@@ -1116,8 +1131,8 @@
                                             Width="300"
                                             FieldLabel="Comment By Registration Office"
                                             />
-                                        <ext:DateField ID="DateOfArrival" runat="server" FieldLabel="Date of Arrival" DataIndex="DateOfArrival" Format="dd-MMM-yyyy"/>
-                                        <ext:DateField ID="DateOfDeparture" runat="server" FieldLabel="Date of Departure" DataIndex="DateOfDeparture" Format="dd-MMM-yyyy"/>
+                                        <ext:DateField ID="DateOfArrival" runat="server" FieldLabel="Date of Arrival" DataIndex="DateOfArrival" Format="dd-MM-yyyy"/>
+                                        <ext:DateField ID="DateOfDeparture" runat="server" FieldLabel="Date of Departure" DataIndex="DateOfDeparture" Format="dd-MM-yyyy"/>
                                       </Items>
                                     </ext:Container>
                                   </Center>

@@ -41,6 +41,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
@@ -138,6 +139,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
             AModuleNode.AppendChild(tableNode);
 
+            if (table.Rows.Count == 0)
+            {
+                return;
+            }
+
             // for SQLite the table is not sorted by primary key. Therefore do it manually
             DataView v = table.DefaultView;
             DataTable t = (DataTable)AAsm.CreateInstance(ATableType.Namespace + "." + ATableType.Name);
@@ -232,11 +238,19 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         {
             List <string>tables = TTableList.GetDBNames();
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Importing database"),
+                tables.Count + 3);
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
                 tables.Reverse();
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("deleting current data"),
+                    0);
 
                 foreach (string table in tables)
                 {
@@ -249,6 +263,10 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 tables.Reverse();
 
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("loading initial tables"),
+                    1);
+
                 // one transaction to import the user table and user permissions. otherwise logging in will not be possible if other import fails?
                 bool success = true;
                 success = success && LoadTable("s_user", ymlParser, Transaction);
@@ -256,6 +274,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 success = success && LoadTable("s_user_module_access_permission", ymlParser, Transaction);
                 success = success && LoadTable("s_system_defaults", ymlParser, Transaction);
                 success = success && LoadTable("s_system_status", ymlParser, Transaction);
+
+                // make sure we have the correct database version
+                TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
+                        "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                        serverExeInfo.ToString()), Transaction, false);
 
                 if (!success)
                 {
@@ -272,10 +296,28 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
+                int tableCounter = 2;
+
                 foreach (string table in tables)
                 {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        String.Format(Catalog.GetString("loading table {0}"), table),
+                        tableCounter);
+
+                    tableCounter++;
+
+                    if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        return false;
+                    }
+
                     LoadTable(table, ymlParser, Transaction);
                 }
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("loading sequences"),
+                    tables.Count + 5 + 3);
 
                 // set sequences appropriately, not lagging behind the imported data
                 foreach (string seq in TTableList.GetDBSequenceNames())
@@ -283,16 +325,16 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                     LoadSequence(seq, ymlParser, Transaction);
                 }
 
-                // make sure we have the correct database version
-                TFileVersionInfo serverExeInfo = new TFileVersionInfo(TSrvSetting.ApplicationVersion);
-                DBAccess.GDBAccessObj.ExecuteNonQuery(String.Format(
-                        "UPDATE PUB_s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        serverExeInfo.ToString()), Transaction, false);
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("finish import"),
+                    tables.Count + 5 + 4);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
 
                 // reset all cached tables
                 TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
             catch (Exception e)
             {
@@ -338,7 +380,6 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 return false;
             }
 
-            TLogging.Log("processing table " + ATableName, TLoggingType.ToStatusBar | TLoggingType.ToConsole);
             DataTable table = DBAccess.GDBAccessObj.SelectDT("Select * from " + ATableName, ATableName, ATransaction);
             List <OdbcParameter>Parameters = new List <OdbcParameter>();
 
@@ -507,6 +548,31 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
         {
             return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
+        }
+    }
+}
+
+namespace Ict.Petra.Server.MSysMan.ImportExport
+{
+    /// <summary>
+    /// this manager is called from the server admin console
+    /// </summary>
+    public class TImportExportManager : IImportExportManager
+    {
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        public string BackupDatabaseToYmlGZ()
+        {
+            return TImportExportWebConnector.ExportAllTables();
+        }
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        public bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        {
+            return TImportExportWebConnector.ResetDatabase(AYmlGzData);
         }
     }
 }

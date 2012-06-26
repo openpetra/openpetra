@@ -411,7 +411,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
                         ValidateMotivationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                         ValidateMotivationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                        if (AVerificationResult.Count == 0)
+                        if (!AVerificationResult.HasCriticalErrors)
                         {
                             if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
@@ -528,7 +528,7 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
         Validate{#ENUMNAME}(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
         Validate{#ENUMNAME}Manual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-        if (AVerificationResult.Count == 0)
+        if (!AVerificationResult.HasCriticalErrors)
         {
             if ({#DATATABLENAME}Access.SubmitChanges(({#DATATABLENAME}Table)ASubmitTable, SubmitChangesTransaction,
                 out SingleVerificationResultCollection))

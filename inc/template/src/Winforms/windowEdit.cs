@@ -34,6 +34,9 @@ namespace {#NAMESPACE}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
     private {#DATASETTYPE} FMainDS;
+{#IFDEF SHOWDETAILS}
+    private int FCurrentRow;
+{#ENDIF SHOWDETAILS}
 
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
@@ -56,6 +59,7 @@ namespace {#NAMESPACE}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
       
+{#IFDEF DETAILTABLE}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
@@ -65,6 +69,7 @@ namespace {#NAMESPACE}
       {
           ShowDetails(null);
       }
+{#ENDIF DETAILTABLE}
       {#INITACTIONSTATE}
 {#IFDEF DATAVALIDATION}
 
@@ -80,6 +85,7 @@ namespace {#NAMESPACE}
 
     }
 
+{#IFDEF DETAILTABLE}
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     /// we create the table locally, no dataset
     public bool CreateNew{#DETAILTABLE}()
@@ -125,12 +131,8 @@ namespace {#NAMESPACE}
                 break;
             }
         }
-        grdDetails.Selection.ResetSelection(false);
-        grdDetails.Selection.SelectRow(RowNumberGrid, true);
-        // scroll to the row
-        grdDetails.ShowCell(new SourceGrid.Position(RowNumberGrid, 0), true);
 
-        FocusedRowChanged(this, new SourceGrid.RowEventArgs(RowNumberGrid));
+        grdDetails.SelectRowInGrid(RowNumberGrid);
     }
 
     /// return the selected row
@@ -145,6 +147,7 @@ namespace {#NAMESPACE}
 
         return null;
     }
+{#ENDIF DETAILTABLE}
 
 {#IFDEF PRIMARYKEYCONTROLSREADONLY}
     private void SetPrimaryKeyReadOnly(bool AReadOnly)
@@ -202,10 +205,21 @@ namespace {#NAMESPACE}
 {#ENDIF SAVEDETAILS}
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        // display the details of the currently selected row
-        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-        ShowDetails(FPreviouslySelectedDetailRow);
-        pnlDetails.Enabled = true;
+        if(e.Row != FCurrentRow)
+        {
+            // Transfer data from Controls into the DataTable
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            }
+
+            // Display the details of the currently selected Row
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+            pnlDetails.Enabled = true;
+            
+            FCurrentRow = e.Row;
+        }
     }
 {#ENDIF SHOWDETAILS}
 {#IFDEF UNDODATA}
@@ -257,7 +271,7 @@ namespace {#NAMESPACE}
             if (AProcessAnyDataValidationErrors)
             {
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType());
+                    this.GetType(), null, true);
             }
         }
         else
@@ -316,6 +330,7 @@ namespace {#NAMESPACE}
         SaveChanges();
     }
 
+{#IFDEF DETAILTABLE OR MASTERTABLE}
     /// <summary>
     /// save the changes on the screen
     /// </summary>
@@ -428,6 +443,14 @@ namespace {#NAMESPACE}
 
                         ReturnValue = true;
                         FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+
+                        if((VerificationResult != null)
+                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
+                        {
+                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                                this.GetType(), null);
+                        }
+
                         break;
 
                     case TSubmitChangesResult.scrError:
@@ -435,8 +458,8 @@ namespace {#NAMESPACE}
                         this.Cursor = Cursors.Default;
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult), 
-                            Catalog.GetString("Data Cannot Be Saved"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
+                            this.GetType(), null);
 
                         FPetraUtilsObject.SubmitChangesContinue = false;
                         ReturnValue = false;
@@ -477,6 +500,7 @@ namespace {#NAMESPACE}
 
         return ReturnValue;
     }
+{#ENDIF DETAILTABLE OR MASTERTABLE}
 #endregion
 
 #region Action Handling

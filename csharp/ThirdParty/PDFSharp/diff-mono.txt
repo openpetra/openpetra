@@ -1,6 +1,6 @@
-diff -r -N -u PDFsharp/code/BuildAll-PdfSharp.sln PDFsharp.Mono/code/BuildAll-PdfSharp.sln
---- PDFsharp/code/BuildAll-PdfSharp.sln	2009-08-10 13:29:42.000000000 +0200
-+++ PDFsharp.Mono/code/BuildAll-PdfSharp.sln	2011-01-24 18:14:51.986470100 +0100
+diff -Naur PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/BuildAll-PdfSharp.sln PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/BuildAll-PdfSharp.sln
+--- PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/BuildAll-PdfSharp.sln	2009-08-10 13:29:42.000000000 +0200
++++ PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/BuildAll-PdfSharp.sln	2012-02-14 17:27:37.597219800 +0100
 @@ -1,6 +1,7 @@
  ﻿
  Microsoft Visual Studio Solution File, Format Version 10.00
@@ -26,9 +26,9 @@ diff -r -N -u PDFsharp/code/BuildAll-PdfSharp.sln PDFsharp.Mono/code/BuildAll-Pd
  	EndGlobalSection
  	GlobalSection(SolutionProperties) = preSolution
  		HideSolutionNode = FALSE
-diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs PDFsharp.Mono/code/PdfSharp/PdfSharp/ProductVersionInfo.cs
---- PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs	2009-11-25 13:21:44.000000000 +0100
-+++ PDFsharp.Mono/code/PdfSharp/PdfSharp/ProductVersionInfo.cs	2011-01-25 14:32:56.157585600 +0100
+diff -Naur PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs
+--- PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs	2009-11-25 13:21:44.000000000 +0100
++++ PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs	2012-02-14 17:27:37.602220300 +0100
 @@ -109,7 +109,7 @@
      /// <summary>
      /// The build number of the product.
@@ -38,9 +38,9 @@ diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp/ProductVersionInfo.cs PDFsharp.Mon
  
      /// <summary>
      /// The patch number of the product.
-diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.csproj PDFsharp.Mono/code/PdfSharp/PdfSharp.csproj
---- PDFsharp/code/PdfSharp/PdfSharp.csproj	2009-11-24 14:39:50.000000000 +0100
-+++ PDFsharp.Mono/code/PdfSharp/PdfSharp.csproj	2011-01-25 14:20:58.387366900 +0100
+diff -Naur PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp.csproj PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp.csproj
+--- PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp.csproj	2009-11-24 14:39:50.000000000 +0100
++++ PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp.csproj	2012-02-14 17:27:37.610221100 +0100
 @@ -25,7 +25,7 @@
      </FileUpgradeFlags>
      <UpgradeBackupLocation>
@@ -99,9 +99,9 @@ diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.csproj PDFsharp.Mono/code/PdfSharp
    </PropertyGroup>
    <ItemGroup>
      <Reference Include="System">
-diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs PDFsharp.Mono/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs
---- PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs	2009-11-09 15:24:48.000000000 +0100
-+++ PDFsharp.Mono/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs	2011-01-25 14:39:33.269502100 +0100
+diff -Naur PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs
+--- PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs	2009-11-09 15:24:48.000000000 +0100
++++ PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs	2012-02-14 17:27:37.621222200 +0100
 @@ -251,10 +251,11 @@
  
  #if GDI
@@ -117,14 +117,14 @@ diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.Drawing/XGraphics.cs PDFsharp.Mono
  #endif
  #if WPF && !SILVERLIGHT
        this.dv = new DrawingVisual();
-diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs PDFsharp.Mono/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs
---- PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs	2011-01-25 16:06:11.921994100 +0100
-+++ PDFsharp.Mono/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs	2011-01-25 16:27:33.547773700 +0100
+diff -Naur PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs
+--- PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs	2012-02-14 17:21:35.967060400 +0100
++++ PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs	2012-02-14 17:27:37.648224900 +0100
 @@ -126,6 +126,32 @@
        //    //////}
        //  }
        //}
-+    
++      
 +      // Console.WriteLine("looking for " + gdiFont.Name);
 +      foreach (string fontFile in NativeMethods._FontFiles)
 +      {
@@ -149,13 +149,13 @@ diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.Fonts.OpenType/FontData.cs PDFshar
 +          //System.Console.WriteLine(exc.ToString());
 +        }
 +      }
-+
++      
        if (this.data == null)
        {
          int error;
-diff -r -N -u PDFsharp/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs PDFsharp.Mono/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs
---- PDFsharp/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs	2009-05-21 00:48:48.000000000 +0200
-+++ PDFsharp.Mono/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs	2011-01-25 14:43:09.192759000 +0100
+diff -Naur PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs
+--- PDFSharp-MigraDocFoundation-1_31.orig/PDFsharp/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs	2009-05-21 00:48:48.000000000 +0200
++++ PDFSharp-MigraDocFoundation-1_31.patched/PDFsharp/code/PdfSharp/PdfSharp.Internal/NativeMethods.cs	2012-02-14 17:27:37.654225500 +0100
 @@ -28,6 +28,8 @@
  #endregion
  

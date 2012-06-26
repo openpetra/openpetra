@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
                             ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
 
-                            if (AVerificationResult.Count == 0)
+                            if (!AVerificationResult.HasCriticalErrors)
                             {
                                 DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
                                     out AVerificationResult);

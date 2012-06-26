@@ -307,8 +307,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             return null; // make sure that the TMFinance object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'AP' subnamespace contains further subnamespaces.</summary>
         public IAPNamespace AP
         {
@@ -700,8 +698,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
         {
             return null; // make sure that the TAPNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'APUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IAPUIConnectorsNamespace UIConnectors
@@ -1145,8 +1141,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
             return null; // make sure that the TARNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'ARWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IARWebConnectorsNamespace WebConnectors
         {
@@ -1320,8 +1314,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
         {
             return null; // make sure that the TBudgetNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'BudgetUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IBudgetUIConnectorsNamespace UIConnectors
@@ -1944,8 +1936,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportWebConnectorsNamespace WebConnectors
         {
@@ -2179,8 +2169,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
         {
             return null; // make sure that the TGiftNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'GiftUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IGiftUIConnectorsNamespace UIConnectors
@@ -2484,7 +2472,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public RecurringGiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber)
+        public GiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "CreateARecurringGiftBatch", ";INT;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateARecurringGiftBatch(ALedgerNumber);
@@ -2518,7 +2506,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public RecurringGiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber)
+        public GiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadARecurringGiftBatch", ";INT;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadARecurringGiftBatch(ALedgerNumber);
@@ -2533,19 +2521,19 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
+        public GiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
+                                                      Int32 ABatchNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadRecurringTransactions", ";INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
+        }
+
+        /// generated method from connector
         public GiftBatchTDS LoadDonorRecipientHistory(Hashtable requestParams,
                                                       out TVerificationResultCollection AMessages)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadDonorRecipientHistory", ";HASHTABLE;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadDonorRecipientHistory(requestParams, out AMessages);
-        }
-
-        /// generated method from connector
-        public RecurringGiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
-                                                               Int32 ABatchNumber)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadRecurringTransactions", ";INT;INT;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
         }
 
         /// generated method from connector
@@ -2557,10 +2545,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public TSubmitChangesResult SaveRecurringGiftBatchTDS(ref RecurringGiftBatchTDS AInspectDS,
+        public TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
                                                               out TVerificationResultCollection AVerificationResult)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SaveRecurringGiftBatchTDS", ";RECURRINGGIFTBATCHTDS;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SaveRecurringGiftBatchTDS", ";GIFTBATCHTDS;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveRecurringGiftBatchTDS(ref AInspectDS, out AVerificationResult);
         }
 
@@ -2582,6 +2570,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "PostGiftBatch", ";INT;INT;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatch(ALedgerNumber, ABatchNumber, out AVerifications);
+        }
+
+        /// generated method from connector
+        public System.Boolean PostGiftBatches(Int32 ALedgerNumber,
+                                              List<Int32>ABatchNumbers,
+                                              out TVerificationResultCollection AVerifications)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "PostGiftBatches", ";INT;INT?;TVERIFICATIONRESULTCOLLECTION;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.PostGiftBatches(ALedgerNumber, ABatchNumbers, out AVerifications);
         }
 
         /// generated method from connector
@@ -2610,26 +2607,26 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
         }
 
         /// generated method from connector
-        public System.String IdentifyPartnerCostCentre(Int32 ledgerNumber,
-                                                       Int64 fieldNumber)
+        public System.String IdentifyPartnerCostCentre(Int32 ALedgerNumber,
+                                                       Int64 AFieldNumber)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "IdentifyPartnerCostCentre", ";INT;LONG;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.IdentifyPartnerCostCentre(ledgerNumber, fieldNumber);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "IdentifyPartnerCostCentre", ";INT;LONG;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.IdentifyPartnerCostCentre(ALedgerNumber, AFieldNumber);
         }
 
         /// generated method from connector
-        public Ict.Petra.Shared.MPartner.Partner.Data.PUnitTable LoadKeyMinistry(Int64 partnerKey,
-                                                                                 out Int64 fieldNumber)
+        public Int64 GetRecipientLedgerNumber(Int64 partnerKey)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "GetRecipientLedgerNumber", ";LONG;");
+            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
+        }
+
+        /// generated method from connector
+        public PUnitTable LoadKeyMinistry(Int64 partnerKey,
+                                          out Int64 fieldNumber)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "LoadKeyMinistry", ";LONG;LONG;");
             return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.LoadKeyMinistry(partnerKey, out fieldNumber);
-        }
-
-        /// generated method from connector
-        public Int64 SearchRecipientLedgerKey(Int64 partnerKey)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector), "SearchRecipientLedgerKey", ";LONG;");
-            return Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SearchRecipientLedgerKey(partnerKey);
         }
     }
 }
@@ -2704,8 +2701,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
         {
             return null; // make sure that the TGLNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'GLUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IGLUIConnectorsNamespace UIConnectors
@@ -3221,8 +3216,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
             return null; // make sure that the TICHNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'ICHWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IICHWebConnectorsNamespace WebConnectors
         {
@@ -3413,8 +3406,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
             return null; // make sure that the TPeriodEndNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'PeriodEndUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPeriodEndUIConnectorsNamespace UIConnectors
         {
@@ -3587,8 +3578,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
         {
             return null; // make sure that the TReportingNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'ReportingUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IReportingUIConnectorsNamespace UIConnectors
@@ -3795,8 +3784,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
         {
             return null; // make sure that the TSetupNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'SetupUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ISetupUIConnectorsNamespace UIConnectors

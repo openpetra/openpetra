@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MConference.Cacheable
                                 ValidateConferenceOptionTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateConferenceOptionTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PcConferenceOptionTypeAccess.SubmitChanges((PcConferenceOptionTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))

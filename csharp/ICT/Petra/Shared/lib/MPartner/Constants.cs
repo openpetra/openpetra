@@ -49,6 +49,12 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Publication Valid</summary>
         public const String PUBLICATION_VALID_TEXT_COLUMNNAME = "PublicationValidText";
 
+        /// <summary>Banking Type</summary>
+        public const Int16 BANKINGTYPE_BANKACCOUNT = 0;
+
+        /// <summary>Banking Details Usage Type</summary>
+        public const String BANKINGUSAGETYPE_MAIN = "MAIN";
+
         /// <summary>Subscription Statuses</summary>
         public const String SUBSCRIPTIONS_STATUS_PERMANENT = "PERMANENT";
 

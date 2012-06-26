@@ -391,7 +391,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateCommitmentStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateCommitmentStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PmCommitmentStatusAccess.SubmitChanges((PmCommitmentStatusTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -408,7 +408,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateDocumentTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateDocumentTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PmDocumentTypeAccess.SubmitChanges((PmDocumentTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -425,7 +425,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateDocumentTypeCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateDocumentTypeCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PmDocumentCategoryAccess.SubmitChanges((PmDocumentCategoryTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -442,7 +442,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateAbilityAreaList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateAbilityAreaListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtAbilityAreaAccess.SubmitChanges((PtAbilityAreaTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -459,7 +459,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateAbilityLevelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateAbilityLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtAbilityLevelAccess.SubmitChanges((PtAbilityLevelTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -476,7 +476,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateApplicantStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateApplicantStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtApplicantStatusAccess.SubmitChanges((PtApplicantStatusTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -493,7 +493,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateApplicationTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateApplicationTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -510,7 +510,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateArrivalDeparturePointList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateArrivalDeparturePointListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtArrivalPointAccess.SubmitChanges((PtArrivalPointTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -527,7 +527,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateEventRoleList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateEventRoleListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtCongressCodeAccess.SubmitChanges((PtCongressCodeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -544,7 +544,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateContactList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateContactListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtContactAccess.SubmitChanges((PtContactTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -561,7 +561,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateDriverStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateDriverStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtDriverStatusAccess.SubmitChanges((PtDriverStatusTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -578,7 +578,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateLanguageLevelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateLanguageLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtLanguageLevelAccess.SubmitChanges((PtLanguageLevelTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -595,7 +595,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateLeadershipRatingList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateLeadershipRatingListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtLeadershipRatingAccess.SubmitChanges((PtLeadershipRatingTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -612,7 +612,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidatePartyTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidatePartyTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtPartyTypeAccess.SubmitChanges((PtPartyTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -629,7 +629,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidatePassportTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidatePassportTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtPassportTypeAccess.SubmitChanges((PtPassportTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -646,7 +646,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateTransportTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateTransportTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtTravelTypeAccess.SubmitChanges((PtTravelTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -663,7 +663,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateQualificationAreaList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateQualificationAreaListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtQualificationAreaAccess.SubmitChanges((PtQualificationAreaTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -680,7 +680,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateQualificationLevelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateQualificationLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtQualificationLevelAccess.SubmitChanges((PtQualificationLevelTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -697,7 +697,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateSkillCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateSkillCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtSkillCategoryAccess.SubmitChanges((PtSkillCategoryTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -714,7 +714,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateSkillLevelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateSkillLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtSkillLevelAccess.SubmitChanges((PtSkillLevelTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -731,7 +731,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateValuableItemList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateValuableItemListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtValuableItemAccess.SubmitChanges((PtValuableItemTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -748,7 +748,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateVisionAreaList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateVisionAreaListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtVisionAreaAccess.SubmitChanges((PtVisionAreaTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -765,7 +765,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateVisionLevelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateVisionLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtVisionLevelAccess.SubmitChanges((PtVisionLevelTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
@@ -782,7 +782,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 ValidateOutreachPreferenceLevelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                                 ValidateOutreachPreferenceLevelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                                if (AVerificationResult.Count == 0)
+                                if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtOutreachPreferenceLevelAccess.SubmitChanges((PtOutreachPreferenceLevelTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))

@@ -89,6 +89,9 @@ namespace Ict.Testing.SampleDataConstructor
                 if ((operation == "importPartners") || (operation == "all"))
                 {
                     TLogging.Log("(2) Import partners");
+                    SampleDataBankPartners.GenerateBanks(
+                        Path.Combine(datadirectory, "banks.csv"));
+
                     SampleDataDonors.GenerateFamilyPartners(
                         Path.Combine(datadirectory, "people.csv"));
 
@@ -141,11 +144,26 @@ namespace Ict.Testing.SampleDataConstructor
                     for (int periodCounter = 1; periodCounter < 6; periodCounter++)
                     {
                         TLogging.Log("posting gift batches of period " + periodCounter.ToString());
-                        SampleDataGiftBatches.PostBatches(0, periodCounter);
+
+                        if (!SampleDataGiftBatches.PostBatches(0, periodCounter))
+                        {
+                            throw new Exception("failed to post gift batch");
+                        }
                     }
 
                     TLogging.Log("posting gift batches of period 6");
-                    SampleDataGiftBatches.PostBatches(0, 6, 1);
+
+                    if (!SampleDataGiftBatches.PostBatches(0, 6, 1))
+                    {
+                        throw new Exception("failed to post gift batch");
+                    }
+                }
+
+                operation = TAppSettingsManager.GetValue("operation", "exportGifts");
+
+                if ((operation == "exportGifts") || (operation == "all"))
+                {
+                    SampleDataBankImportFiles.ExportGiftBatches(datadirectory);
                 }
 
                 TLogging.Log("(8) Posting and paying invoices");
@@ -170,6 +188,7 @@ namespace Ict.Testing.SampleDataConstructor
             {
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);
+                Environment.Exit(-1);
             }
         }
     }

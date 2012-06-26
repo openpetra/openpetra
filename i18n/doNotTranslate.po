@@ -60,6 +60,7 @@ msgid ""
 "(pnlPartnerNotes) i"
 msgstr "do not translate"
 
+msgid ""
 "The UserControl is added dynamically at runtime to this Panel (pnlContacts) "
 "in Pr"
 msgstr "do not translate"
@@ -193,4 +194,10 @@ msgid "Info 3 Text"
 msgstr "do not translate"
 
 msgid "NEWCODE"
+msgstr "do not translate"
+
+msgid "Text Output"
+msgstr "do not translate"
+
+msgid "eg. \"TEN,01\",\"TEN,02\""
 msgstr "do not translate"

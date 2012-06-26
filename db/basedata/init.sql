@@ -25,8 +25,10 @@ COPY a_budget_type FROM '{#ABSOLUTEBASEDATAPATH}/a_budget_type.csv' WITH DELIMIT
 COPY a_frequency FROM '{#ABSOLUTEBASEDATAPATH}/a_frequency.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_business FROM '{#ABSOLUTEBASEDATAPATH}/p_business.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_banking_type FROM '{#ABSOLUTEBASEDATAPATH}/p_banking_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_banking_details_usage_type FROM '{#ABSOLUTEBASEDATAPATH}/p_banking_details_usage_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_reason_subscription_cancelled FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscription_cancelled.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_reason_subscription_given FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscription_given.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pt_leadership_rating FROM '{#ABSOLUTEBASEDATAPATH}/pt_leadership_rating.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_application_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_application_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_applicant_status FROM '{#ABSOLUTEBASEDATAPATH}/pt_applicant_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_congress_code FROM '{#ABSOLUTEBASEDATAPATH}/pt_congress_code.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
@@ -41,7 +43,7 @@ COPY pt_assignment_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_assignment_type.csv' WI
 COPY pt_position FROM '{#ABSOLUTEBASEDATAPATH}/pt_position.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 INSERT INTO s_system_status(s_user_id_c,s_system_login_status_l) VALUES('SYSADMIN', true);
-INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c) VALUES(0, 'INVALID PARTNER');
+INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c, p_status_code_c) VALUES(0, 'INVALID PARTNER', 'INACTIVE');
 INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('LocalisedCountyLabel', 'LocalisedCountyLabel', 'County/St&ate');
 
 -- setup initial user permissions

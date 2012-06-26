@@ -153,6 +153,9 @@ namespace Ict.Testing.SampleDataConstructor
             string sqlGetFieldPartnerKeys = "SELECT p_partner_key_n, p_unit_name_c FROM PUB_p_unit WHERE u_unit_type_code_c = 'F'";
             DataTable FieldKeys = DBAccess.GDBAccessObj.SelectDT(sqlGetFieldPartnerKeys, "keys", null);
 
+            Int32 NumberOfPartnerKeysReserved = 100;
+            Int64 NextPartnerKey = TNewPartnerKey.ReservePartnerKeys(-1, ref NumberOfPartnerKeysReserved);
+
             while (RecordNode != null)
             {
                 int FieldID =
@@ -160,13 +163,16 @@ namespace Ict.Testing.SampleDataConstructor
                 long FieldPartnerKey = Convert.ToInt64(FieldKeys.Rows[FieldID].ItemArray[0]);
 
                 PUnitRow UnitRow = PartnerDS.PUnit.NewRowTyped();
-                long UnitPartnerKey = TNewPartnerKey.GetNewPartnerKey(-1);
 
-                if (!TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey,
-                        UnitPartnerKey, ref UnitPartnerKey))
+                if (NumberOfPartnerKeysReserved == 0)
                 {
-                    throw new Exception("create key ministry: problems getting a new partner key");
+                    NumberOfPartnerKeysReserved = 100;
+                    NextPartnerKey = TNewPartnerKey.ReservePartnerKeys(-1, ref NumberOfPartnerKeysReserved);
                 }
+
+                long UnitPartnerKey = NextPartnerKey;
+                NextPartnerKey++;
+                NumberOfPartnerKeysReserved--;
 
                 UnitRow.PartnerKey = UnitPartnerKey;
                 UnitRow.UnitName = FieldKeys.Rows[FieldID].ItemArray[1].ToString() + " - " + TXMLParser.GetAttribute(RecordNode, "KeyMinName");

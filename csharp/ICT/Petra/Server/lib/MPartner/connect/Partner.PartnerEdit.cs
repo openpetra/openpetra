@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
     ///          are also UIConnectors are feasible.
     ///
     /// </summary>
-    public class TPartnerEditUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsPartnerEdit
+    public partial class TPartnerEditUIConnector : TConfigurableMBRObject, IPartnerUIConnectorsPartnerEdit
     {
         private const String DATASETNAME = "PartnerEditScreen";
 
@@ -630,6 +630,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                       || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))))
                                 {
                                     throw new ESecurityScreenAccessDeniedException(
+                                        ///some users won't have access to edit partners that are foundations. Foundations are a special type of organisation. They usually are important donors, and they should not be approached by any user in the
+                                        ///office, but only by the person that has been assigned to do that job
                                         Catalog.GetString(
                                             "You do not have access to Partners of Partner Class 'ORGANISATION' that are 'Foundations'!"));
                                 }
@@ -2014,8 +2016,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     else
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
                     }
+
+                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
 
                     if (SubmissionResult != TSubmitChangesResult.scrError)
                     {
@@ -2031,7 +2034,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         else
                         {
                             SubmissionResult = SubmitChangesAddressResult;
-                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
 
                             if (SubmitChangesAddressResult == TSubmitChangesResult.scrInfoNeeded)
                             {
@@ -2095,6 +2097,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 }
                             }
                         }
+
+                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
                     }
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -2396,6 +2400,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PartnerEditTDSFamilyMembersTable FamilyMembersTableSubmit;
 
             AVerificationResult = null;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
 #if DEBUGMODE
             if (TLogging.DL >= 7)
@@ -2416,11 +2421,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     SpecialPreSubmitProcessingPartner(AInspectDS.PPartner);
 
-                    // Business Rule: if the Partner's StatusCode changes, give the user the
-                    // option to promote the change to all Family Members (if the Partner is
-                    // a FAMILY and has Family Members).
                     if (AInspectDS.PPartner.Rows.Count > 0)
                     {
+                        ValidatePPartner(ValidationControlsDict, ref AVerificationResult, AInspectDS.PPartner);
+                        ValidatePPartnerManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PPartner);
+
+                        if (AVerificationResult.HasCriticalErrors)
+                        {
+                            AllSubmissionsOK = false;
+                        }
+
+                        // Business Rule: if the Partner's StatusCode changes, give the user the
+                        // option to promote the change to all Family Members (if the Partner is
+                        // a FAMILY and has Family Members).
                         if (AInspectDS.PPartner.Rows[0].HasVersion(DataRowVersion.Original)
                             && (AInspectDS.PPartner.Rows != AInspectDS.PPartner.Rows[0][PPartnerTable.GetStatusCodeDBName(), DataRowVersion.Current]))
                         {
@@ -2482,6 +2495,23 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         {
                             AllSubmissionsOK = false;
                             AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                        }
+                    }
+                }
+
+                if (FPartnerClass == TPartnerClass.BANK)
+                {
+                    if (AInspectDS.Tables.Contains(PBankTable.GetTableName()))
+                    {
+                        if (AInspectDS.PBank.Rows.Count > 0)
+                        {
+                            ValidatePBank(ValidationControlsDict, ref AVerificationResult, AInspectDS.PBank);
+                            ValidatePBankManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PBank);
+
+                            if (AVerificationResult.HasCriticalErrors)
+                            {
+                                AllSubmissionsOK = false;
+                            }
                         }
                     }
                 }
@@ -2555,6 +2585,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 #endif
                 AllSubmissionsOK = false;
+            }
+
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
 
             return AllSubmissionsOK;
@@ -3199,5 +3236,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         }
 
         #endregion
+
+        #region Data Validation
+
+        static partial void ValidatePPartner(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePPartnerManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePBank(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePBankManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+        #endregion Data Validation
     }
 }

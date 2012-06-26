@@ -2,7 +2,7 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
-    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.RecurringGiftBatchTDS
+    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     DetailTable: ARecurringGiftBatch
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: edit

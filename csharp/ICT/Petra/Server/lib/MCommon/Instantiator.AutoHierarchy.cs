@@ -230,8 +230,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             return null; // make sure that the TMCommon object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
         public ICacheableNamespace Cacheable
         {
@@ -771,6 +769,23 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
         public override object InitializeLifetimeService()
         {
             return null; // make sure that the TWebConnectorsNamespace object exists until this AppDomain is unloaded!
+        }
+
+        /// generated method from connector
+        public System.Boolean GetCurrentState(out System.String ACaption,
+                                              out System.String AStatusMessage,
+                                              out System.Int32 APercentageDone,
+                                              out System.Boolean AJobFinished)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector), "GetCurrentState", ";STRING;STRING;INT;BOOL;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector.GetCurrentState(out ACaption, out AStatusMessage, out APercentageDone, out AJobFinished);
+        }
+
+        /// generated method from connector
+        public System.Boolean CancelJob()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector), "CancelJob", ";");
+            return Ict.Petra.Server.MCommon.WebConnectors.TProgressTrackerWebConnector.CancelJob();
         }
 
         /// generated method from connector

@@ -219,6 +219,9 @@ cardFinish: function() {
 
     Ext.MessageBox.wait(this.{#SENDINGDATAMESSAGE}, this.{#SENDINGDATATITLE});
 
+    // Extend timeout for all Ext.Ajax.requests to 180 seconds. Default is 30 seconds. 
+    Ext.Ajax.timeout = 180000;
+
     Ext.Ajax.request({
         url: '/server.asmx/{#REQUESTURL}',
         params:{
@@ -256,10 +259,10 @@ cardFinish: function() {
 {#ENDIFN REQUESTSUCCESSMESSAGE}
             }
         },
-        failure: function () {
+        failure: function (response, opts) {
             Ext.Msg.show({
                 title: {#FORMNAME}.{#REQUESTFAILURETITLE},
-                msg: {#FORMNAME}.{#REQUESTFAILUREMESSAGE},
+                msg: {#FORMNAME}.{#REQUESTFAILUREMESSAGE} + " Statuscode: " + response.status,
                 modal: true,
                 icon: Ext.Msg.ERROR,
                 buttons: Ext.Msg.OK

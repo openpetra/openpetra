@@ -298,7 +298,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if (AInspectDS.ATransaction != null)
             {
-                GLBatchTDS TestAccountsAndCostCentres = new GLBatchTDS();
+                GLPostingTDS TestAccountsAndCostCentres = new GLPostingTDS();
 
                 foreach (ATransactionRow transaction in AInspectDS.ATransaction.Rows)
                 {
@@ -433,8 +433,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static List <TVariant>TestPostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
-            GLBatchTDS MainDS;
-            bool success = TGLPosting.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS);
+            GLPostingTDS MainDS;
+            int BatchPeriod = -1;
+            bool success = TGLPosting.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, ref BatchPeriod);
 
             List <TVariant>Result = new List <TVariant>();
 
@@ -449,7 +450,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 foreach (AGeneralLedgerMasterPeriodRow glmpRow in MainDS.AGeneralLedgerMasterPeriod.Rows)
                 {
-                    if ((glmpRow.PeriodNumber == MainDS.ABatch[0].BatchPeriod) && (glmpRow.RowState != DataRowState.Unchanged))
+                    if ((glmpRow.PeriodNumber == BatchPeriod) && (glmpRow.RowState != DataRowState.Unchanged))
                     {
                         AGeneralLedgerMasterRow masterRow =
                             (AGeneralLedgerMasterRow)MainDS.AGeneralLedgerMaster.Rows.Find(glmpRow.GlmSequence);
