@@ -283,12 +283,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
-                        case TCacheablePersonTablesEnum.ValuableItemList:
-                        {
-                            DataTable TmpTable = PtValuableItemAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheablePersonTablesEnum.VisionAreaList:
                         {
                             DataTable TmpTable = PtVisionAreaAccess.LoadAll(ReadTransaction);
@@ -725,23 +719,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             }
 
                             break;
-                        case TCacheablePersonTablesEnum.ValuableItemList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                ValidateValuableItemList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateValuableItemListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-
-                                if (!AVerificationResult.HasCriticalErrors)
-                                {
-                                    if (PtValuableItemAccess.SubmitChanges((PtValuableItemTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
                         case TCacheablePersonTablesEnum.VisionAreaList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
@@ -922,10 +899,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
         partial void ValidateSkillLevelList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateSkillLevelListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateValuableItemList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateValuableItemListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateVisionAreaList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);

@@ -164,11 +164,6 @@ namespace Ict.Petra.Shared
         SkillLevelList,
 
         /// <summary>
-        /// Contains the item(s) of value a person may possess which need to be accounted for various purposes, e.g. customs, or insurance
-        /// </summary>
-        ValuableItemList,
-
-        /// <summary>
         /// Contains the areas a person may have vision for, e.g. children's work or a particular country
         /// </summary>
         VisionAreaList,

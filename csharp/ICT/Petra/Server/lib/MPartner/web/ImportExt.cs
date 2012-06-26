@@ -703,8 +703,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FIgnoreApplication = true;
             }
 
-            ShortTermApplicationRow.Option1Code = ReadString();
-            ShortTermApplicationRow.Option2Code = ReadString();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            ReadString(); // field removed: ShortTermApplicationRow.Option1Code
+	            ReadString(); // field removed: ShortTermApplicationRow.Option2Code
+            }
             ShortTermApplicationRow.FromCongTravelInfo = ReadString();
 
             ShortTermApplicationRow.Arrival = ReadNullableDate();
@@ -717,12 +720,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.StApplicationHoldReason = ReadString();
             ShortTermApplicationRow.StApplicationOnHold = ReadBoolean();
             ShortTermApplicationRow.StBasicDeleteFlag = ReadBoolean();
-            ShortTermApplicationRow.StBookingFeeReceived = ReadBoolean();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	             ReadBoolean(); // field removed: ShortTermApplicationRow.StBookingFeeReceived
+            }
             ShortTermApplicationRow.StOutreachOnlyFlag = ReadBoolean();
             ShortTermApplicationRow.StOutreachSpecialCost = ReadInt32();
             ShortTermApplicationRow.StCngrssSpecialCost = ReadInt32();
 
-            ShortTermApplicationRow.StComment = ReadString();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	             ReadString(); // field removed: ShortTermApplicationRow.StComment
+            }
 
             Int64 Option = ReadInt64();
 
@@ -738,7 +747,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             ShortTermApplicationRow.StCongressCode = CheckCongressCode(ReadString(), ATransaction);
             ShortTermApplicationRow.StCongressLanguage = ReadString();
-            ShortTermApplicationRow.StCountryPref = CheckCountryCode(ReadString(), ATransaction);
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            ReadString(); // field removed: ShortTermApplicationRow.StCountryPref
+            }
 
             Int64? StCurrentField = ReadNullableInt64();
 
@@ -760,55 +772,31 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* ShortTermApplicationRow.StLeadershipRating = */
-                ReadString();                                                         // field removed
+                ReadString(); // field removed: ShortTermApplicationRow.StLeadershipRating
 
-//                Int64? StOption1 = ReadNullableInt64();
-//                Int64? StOption2 = ReadNullableInt64();
-                ReadNullableInt64();
-                ReadNullableInt64();
-
-                /*          // Fields removed.
-                 *
-                 *          if (!FIgnoreApplication && StOption1.HasValue && (StOption1.Value != 0))
-                 *          {
-                 *              ShortTermApplicationRow.StOption1 = StOption1.Value;
-                 *              AddUnitOption(ShortTermApplicationRow.StOption1);
-                 *          }
-                 *
-                 *
-                 *          if (!FIgnoreApplication && StOption2.HasValue && (StOption2.Value != 0))
-                 *          {
-                 *              ShortTermApplicationRow.StOption2 = StOption2.Value;
-                 *              AddUnitOption(ShortTermApplicationRow.StOption2);
-                 *          }
-                 */
-
-                /* ShortTermApplicationRow.StPartyContact =  */ ReadInt64();      // field removed
-
-                /* ShortTermApplicationRow.StPartyTogether = */ ReadString();      // field removed
+                ReadNullableInt64(); // field removed: StOption1
+                ReadNullableInt64(); // field removed: StOption2
+                ReadInt64(); // field removed: ShortTermApplicationRow.StPartyContact 
+                ReadString(); // field removed: ShortTermApplicationRow.StPartyTogether
             }
 
             ShortTermApplicationRow.StPreCongressCode = CheckCongressCode(ReadString(), ATransaction);
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* ShortTermApplicationRow.StProgramFeeReceived = */
-                ReadBoolean();                                                           // field removed
-
-                /* ShortTermApplicationRow.StRecruitEfforts = */ ReadString();      // field removed
-
-                /* ShortTermApplicationRow.StScholarshipAmount = */ ReadDecimal();      // field removed
-
-                /* ShortTermApplicationRow.StScholarshipApprovedBy = */ ReadString();      // field removed
-
-                /* ShortTermApplicationRow.StScholarshipPeriod = */ ReadString();      // field removed
-
-                /* ShortTermApplicationRow.StScholarshipReviewDate = */ ReadNullableDate();      // field removed
+                ReadBoolean(); // field removed: ShortTermApplicationRow.StProgramFeeReceived
+                ReadString(); // field removed: ShortTermApplicationRow.StRecruitEfforts
+                ReadDecimal(); // field removed: ShortTermApplicationRow.StScholarshipAmount
+                ReadString(); // field removed: ShortTermApplicationRow.StScholarshipApprovedBy
+                ReadString(); // field removed: ShortTermApplicationRow.StScholarshipPeriod
+                ReadNullableDate(); // field removed: ShortTermApplicationRow.StScholarshipReviewDate 
             }
 
             ShortTermApplicationRow.StSpecialApplicant = ReadString();
-            ShortTermApplicationRow.StActivityPref = ReadString();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            ReadString(); // field removed: ShortTermApplicationRow.StActivityPref
+            }
             ShortTermApplicationRow.ToCongTravelInfo = ReadString();
             ShortTermApplicationRow.ArrivalPointCode = ReadString();
 
@@ -816,7 +804,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.TravelTypeFromCongCode = ReadString();
             ShortTermApplicationRow.TravelTypeToCongCode = ReadString();
 
-            ShortTermApplicationRow.ContactNumber = ReadString();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            ReadString(); // field removed: ShortTermApplicationRow.ContactNumber
+            }
             ShortTermApplicationRow.ArrivalDetailsStatus = ReadString();
             ShortTermApplicationRow.ArrivalTransportNeeded = ReadBoolean();
 
@@ -838,12 +829,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* ShortTermApplicationRow.ArrivalExp = */
-                ReadNullableDate();                                                 // field removed
-
-                /* ShortTermApplicationRow.ArrivalExpHour = */ ReadInt32();         // field removed
-
-                /* ShortTermApplicationRow.ArrivalExpMinute = */ ReadInt32();       // field removed
+                ReadNullableDate(); // field removed: ShortTermApplicationRow.ArrivalExp
+                ReadInt32(); // field removed: ShortTermApplicationRow.ArrivalExpHour
+                ReadInt32(); // field removed: ShortTermApplicationRow.ArrivalExpMinute
             }
 
             ShortTermApplicationRow.ArrivalComments = ReadString();
@@ -854,28 +842,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* ShortTermApplicationRow.DepartureExp = */
-                ReadNullableDate();                                                   // field removed
-
-                /* ShortTermApplicationRow.DepartureExpHour = */ ReadInt32();         // field removed
-
-                /* ShortTermApplicationRow.DepartureExpMinute = */ ReadInt32();       // field removed
+                ReadNullableDate(); // field removed: ShortTermApplicationRow.DepartureExp
+                ReadInt32(); // field removed: ShortTermApplicationRow.DepartureExpHour
+                ReadInt32(); // field removed: ShortTermApplicationRow.DepartureExpMinute
             }
 
             ShortTermApplicationRow.DepartureComments = ReadString();
-
-/*
- *          // StPartyContact has been removed.
- *          if (!PPartnerAccess.Exists(ShortTermApplicationRow.StPartyContact, ATransaction))
- *          {
- *              FMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}='{1}'", PPartnerTable.GetPartnerKeyDBName(), ShortTermApplicationRow.StPartyContact);
- *              if (FMainDS.PPartner.DefaultView.Count == 0) // Check if I have just added this
- *              {
- *                  AddVerificationResult(String.Format("Ignoring unknown StPartyContact {0}\nNULL set in Short Term Application", ShortTermApplicationRow.StPartyContact));
- *                  ShortTermApplicationRow.SetStPartyContactNull();
- *              }
- *          }
- */
 
             /*
              *  I don't think that this should be done - In "old Petra" we could have 0 in StFieldCharged,
@@ -917,8 +889,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* YearProgramApplicationRow.YpAppFeeReceived = */
-                ReadBoolean();                                                        // Field removed
+                ReadBoolean(); // Field removed: YearProgramApplicationRow.YpAppFeeReceived
             }
 
             YearProgramApplicationRow.YpBasicDeleteFlag = ReadBoolean();
@@ -932,18 +903,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* YearProgramApplicationRow.YpScholarshipAthrizedBy = */
-                ReadString();                                                               // Field removed
-
-                /* YearProgramApplicationRow.YpScholarshipBeginDate = */ ReadNullableDate();     // Field removed
-
-                /* YearProgramApplicationRow.YpScholarshipEndDate = */ ReadNullableDate();                 // Field removed
-
-                /* YearProgramApplicationRow.YpScholarship = */ ReadDecimal();     // Field removed
-
-                /* YearProgramApplicationRow.YpScholarshipPeriod = */ ReadString();     // Field removed
-
-                /* YearProgramApplicationRow.YpScholarshipReviewDate = */ ReadNullableDate();     // Field removed
+                ReadString(); // Field removed: YearProgramApplicationRow.YpScholarshipAthrizedBy
+                ReadNullableDate(); // Field removed: YearProgramApplicationRow.YpScholarshipBeginDate
+                ReadNullableDate(); // Field removed: YearProgramApplicationRow.YpScholarshipEndDate
+                ReadDecimal(); // Field removed: YearProgramApplicationRow.YpScholarship
+                ReadString(); // Field removed: YearProgramApplicationRow.YpScholarshipPeriod
+                ReadNullableDate(); // Field removed: YearProgramApplicationRow.YpScholarshipReviewDate
             }
 
             YearProgramApplicationRow.YpSupportPeriod = ReadString();
@@ -960,39 +925,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ReadApplicationForm(PmGeneralApplicationRow AGeneralApplicationRow, TDBTransaction ATransaction)
         {
-            PmApplicationFormsRow ApplicationFormRow = FMainDS.PmApplicationForms.NewRowTyped();
+        	// only needed in case of file form version < 3.0.0
+            ReadString(); // field removed: ApplicationFormRow.FormName
 
-            ApplicationFormRow.PartnerKey = FPartnerKey;
-            ApplicationFormRow.ApplicationKey = AGeneralApplicationRow.ApplicationKey;
-            ApplicationFormRow.RegistrationOffice = AGeneralApplicationRow.RegistrationOffice;
+            ReadBoolean(); // field removed: ApplicationFormRow.FormDeleteFlag
+            ReadBoolean(); // field removed: ApplicationFormRow.FormEdited
+            ReadNullableDate(); // field removed: ApplicationFormRow.FormReceivedDate
+            ReadBoolean(); // field removed: ApplicationFormRow.FormReceived
+            ReadNullableDate(); // field removed: ApplicationFormRow.FormSentDate
+            ReadBoolean(); // field removed: ApplicationFormRow.FormSent
 
-            ApplicationFormRow.FormName = ReadString();
-
-            ApplicationFormRow.FormDeleteFlag = ReadBoolean();
-            ApplicationFormRow.FormEdited = ReadBoolean();
-            ApplicationFormRow.FormReceivedDate = ReadNullableDate();
-            ApplicationFormRow.FormReceived = ReadBoolean();
-            ApplicationFormRow.FormSentDate = ReadNullableDate();
-            ApplicationFormRow.FormSent = ReadBoolean();
-
-            ApplicationFormRow.ReferencePartnerKey = ReadInt64();
-            ApplicationFormRow.Comment = ReadString();
-
-            if (!FIgnoreApplication)
-            {
-                // ignore application forms with an unknown type
-                if (PtAppFormTypesAccess.Exists(ApplicationFormRow.FormName.Replace("'", "''"), ATransaction))
-                {
-                    PmApplicationFormsAccess.AddOrModifyRecord(ApplicationFormRow.PartnerKey,
-                        ApplicationFormRow.ApplicationKey,
-                        ApplicationFormRow.RegistrationOffice,
-                        ApplicationFormRow.FormName,
-                        FMainDS.PmApplicationForms,
-                        ApplicationFormRow,
-                        FDoNotOverwrite,
-                        ATransaction);
-                }
-            }
+            ReadInt64(); // field removed: ApplicationFormRow.ReferencePartnerKey
+            ReadString(); // field removed: ApplicationFormRow.Comment
         }
 
         private void ImportApplication(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
@@ -1047,7 +991,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             GeneralApplicationRow.GenCancelledApp = ReadBoolean();
             GeneralApplicationRow.GenContact1 = ReadString();
             GeneralApplicationRow.GenContact2 = ReadString();
-            GeneralApplicationRow.GenYearProgram = ReadString();
+            if (APetraVersion.FileMajorPart < 3)
+            {
+	            ReadString(); // field removed: GeneralApplicationRow.GenYearProgram
+            }
             GeneralApplicationRow.ApplicationKey = ReadInt32();
             GeneralApplicationRow.RegistrationOffice = ReadInt64();
 
@@ -1084,6 +1031,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             string KeyWord = ReadString();
 
+            // needs to be kept in to support versions < 3.0.0
             while (KeyWord == "APPL-FORM")
             {
                 ReadApplicationForm(GeneralApplicationRow, ATransaction);
@@ -1180,12 +1128,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* PersonLanguageRow.WillingToTranslate = */
-                ReadBoolean();                                                  // field removed.
-
-                /* PersonLanguageRow.TranslateInto = */ ReadBoolean();     // field removed.
-
-                /* PersonLanguageRow.TranslateOutOf = */ ReadBoolean();     // field removed.
+                ReadBoolean(); // field removed: PersonLanguageRow.WillingToTranslate
+                ReadBoolean(); // field removed: PersonLanguageRow.TranslateInto
+                ReadBoolean(); // field removed: PersonLanguageRow.TranslateOutOf
             }
 
             PersonLanguageRow.YearsOfExperience = ReadInt32();
@@ -1310,22 +1255,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* PersonalDataRow.DriverStatus = */
-                ReadString();                                          // Field removed
-
-                /*
-                 *          // when I had DriverStatus, it must be a value in PtDriverStatus table.
-                 *          if (!PtDriverStatusAccess.Exists(PersonalDataRow.DriverStatus, ATransaction))
-                 *          {
-                 *              PersonalDataRow.DriverStatus = "U"; // If someone entered some weird unknown code, I'll use this "unknown" value.
-                 *          }
-                 */
-
-                /* PersonalDataRow.GenDriverLicense = */ ReadBoolean();     // Field removed
-
-                /* PersonalDataRow.DrivingLicenseNumber = */ ReadString();     // Field removed
-
-                /* PersonalDataRow.InternalDriverLicense = */ ReadBoolean();     // Field removed
+                ReadString(); // Field removed: PersonalDataRow.DriverStatus
+                ReadBoolean(); // Field removed: PersonalDataRow.GenDriverLicense
+                ReadString(); // Field removed: PersonalDataRow.DrivingLicenseNumber
+                ReadBoolean(); // Field removed: PersonalDataRow.InternalDriverLicense
+                
+            	if (   (   APetraVersion.FileMinorPart == 2
+            	        && APetraVersion.FileBuildPart >= 20)
+            	    || (   APetraVersion.FileMinorPart == 3
+            	        && APetraVersion.FileBuildPart >= 6))
+                {
+                	// blood type added with release 2.2.20 and 2.3.6
+                	PersonalDataRow.BloodType = ReadString();
+                }
             }
             else
             {
@@ -1337,6 +1279,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 PersonalDataRow.BelieverSinceComment = ReadString();
+               	PersonalDataRow.BloodType = ReadString();
             }
 
             if (!FIgnorePartner)
@@ -1406,8 +1349,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-                /* SpecialNeedRow.ContactHomeOffice = */
-                ReadBoolean();                                               // Field removed
+                ReadBoolean(); // Field removed: SpecialNeedRow.ContactHomeOffice
             }
 
             SpecialNeedRow.VegetarianFlag = ReadBoolean();

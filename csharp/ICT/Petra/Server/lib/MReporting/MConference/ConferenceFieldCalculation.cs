@@ -1069,26 +1069,6 @@ namespace Ict.Petra.Server.MReporting.MConference
             {
                 OutreachOption = AShortTermerRow.StConfirmedOption;
             }
-            else
-            {
-                // If the confirmed option has not given us a valid outreach length then use option 1
-                FAttendeeDays = GetConferenceLengthFromConferenceCode(AShortTermerRow.Option1Code);
-
-                if (FAttendeeDays > 0)
-                {
-                    OutreachOption = AShortTermerRow.StOption1;
-                }
-                else
-                {
-                    // If the option 1 has not given us a valid outreach length then use option 2
-                    FAttendeeDays = GetConferenceLengthFromConferenceCode(AShortTermerRow.Option2Code);
-
-                    if (FAttendeeDays > 0)
-                    {
-                        OutreachOption = AShortTermerRow.StOption2;
-                    }
-                }
-            }
 
             if (FAttendeeDays == 0)
             {
