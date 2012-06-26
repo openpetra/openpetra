@@ -1292,7 +1292,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 generalapplications.DefaultView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName();
 
                 string sqlLoadPartnerLocations =
-                    "SELECT pl.* FROM PUB_p_partner_location pl, PUB_p_person pp WHERE pp.p_family_key_n = pl.p_partner_key_n AND pp.p_partner_key_n IN ("
+                    "SELECT DISTINCT pl.* FROM PUB_p_partner_location pl, PUB_p_person pp WHERE pp.p_family_key_n = pl.p_partner_key_n AND pp.p_partner_key_n IN ("
                     +
                     partnerkeys + ")";
                 PPartnerLocationTable partnerLocations = new PPartnerLocationTable();
