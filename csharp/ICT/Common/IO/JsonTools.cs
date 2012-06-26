@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,6 +47,9 @@ namespace Ict.Common.IO
                 return String.Empty;
             }
 
+            string RequiredCulture = CultureInfo.CurrentCulture.Name;
+            AJsonData = RemoveContainerControls(AJsonData, ref RequiredCulture);
+
             string Result = "<table cellspacing=\"2\">";
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
 
@@ -75,18 +78,29 @@ namespace Ict.Common.IO
                 return;
             }
 
-            JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
-
-            foreach (string key in list.Names)
+            try
             {
-                if (AOverwrite || !TXMLParser.HasAttribute(ANode, key))
-                {
-                    XmlAttribute attr = ADoc.CreateAttribute(StringHelper.UpperCamelCase(key));
-                    string text = list[key].ToString().Replace("<br/>", "_");
-                    attr.Value = text;
+                string RequiredCulture = CultureInfo.CurrentCulture.Name;
+                AJsonData = RemoveContainerControls(AJsonData, ref RequiredCulture);
 
-                    ANode.Attributes.Append(attr);
+                JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
+
+                foreach (string key in list.Names)
+                {
+                    if (AOverwrite || !TXMLParser.HasAttribute(ANode, key))
+                    {
+                        XmlAttribute attr = ADoc.CreateAttribute(StringHelper.UpperCamelCase(key));
+                        string text = list[key].ToString().Replace("<br/>", "_");
+                        attr.Value = text;
+
+                        ANode.Attributes.Append(attr);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem parsing: " + AJsonData);
+                throw e;
             }
         }
 
@@ -172,11 +186,22 @@ namespace Ict.Common.IO
                 return String.Empty;
             }
 
-            JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+            AJSONFormData = AJSONFormData.Replace("\\\\\"", "&quot;");
+            AJSONFormData = AJSONFormData.Replace("\"\"\"", "\"\"");
 
-            string result = "{" + parseJSonValues(root, ref ARequiredCulture) + "}";
+            try
+            {
+                JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
 
-            return result;
+                string result = "{" + parseJSonValues(root, ref ARequiredCulture) + "}";
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("problem parsing: " + AJSONFormData);
+                throw e;
+            }
         }
 
         /// <summary>
@@ -231,7 +256,7 @@ namespace Ict.Common.IO
 
             // set the current culture, so that the dates can be parsed correctly
             string RequiredCulture = CultureInfo.CurrentCulture.Name;
-            RemoveContainerControls(AJSONFormData, ref RequiredCulture);
+            AJSONFormData = RemoveContainerControls(AJSONFormData, ref RequiredCulture);
             CultureInfo OrigCulture = Catalog.SetCulture(RequiredCulture);
 
             try

@@ -524,6 +524,19 @@ namespace Ict.Petra.WebServer.MConference
             this.StoreRegistrationOffice.DataBind();
         }
 
+        /// to avoid the error on the ext.js client: Status Text: BADRESPONSE: Parse Error
+        private object ReplaceQuotes(object value)
+        {
+            if (value.GetType() == typeof(string))
+            {
+                return value.ToString().Replace("&quot;", "\\\"");
+            }
+            else
+            {
+                return value;
+            }
+        }
+
         protected void RowSelect(object sender, DirectEventArgs e)
         {
             try
@@ -571,8 +584,8 @@ namespace Ict.Petra.WebServer.MConference
                 var dictionary = new Dictionary <string, object>();
                 dictionary.Add("PartnerKey", row.PartnerKey);
                 dictionary.Add("PersonKey", row.IsPersonKeyNull() ? "" : row.PersonKey.ToString());
-                dictionary.Add("FirstName", row.FirstName);
-                dictionary.Add("FamilyName", row.FamilyName);
+                dictionary.Add("FirstName", ReplaceQuotes(row.FirstName));
+                dictionary.Add("FamilyName", ReplaceQuotes(row.FamilyName));
                 dictionary.Add("Gender", row.Gender);
                 dictionary.Add("DateOfBirth", row.DateOfBirth);
                 dictionary.Add("DateOfArrival", row.DateOfArrival);
@@ -580,7 +593,7 @@ namespace Ict.Petra.WebServer.MConference
                 dictionary.Add("GenAppDate", row.GenAppDate);
                 dictionary.Add("GenApplicationStatus", row.GenApplicationStatus);
                 dictionary.Add("StCongressCode", row.StCongressCode);
-                dictionary.Add("Comment", row.Comment);
+                dictionary.Add("Comment", ReplaceQuotes(row.Comment));
                 dictionary.Add("StFgLeader", row.StFgLeader);
                 dictionary.Add("StFgCode", row.StFgCode);
                 dictionary.Add("StFieldCharged", row.StFieldCharged);
@@ -597,7 +610,7 @@ namespace Ict.Petra.WebServer.MConference
                     if (!dictionary.ContainsKey(key)
                         && FieldsOnFirstTab.Contains(key))
                     {
-                        dictionary.Add(key, rawDataObject[key]);
+                        dictionary.Add(key, ReplaceQuotes(rawDataObject[key]));
                     }
                 }
 
@@ -618,7 +631,7 @@ namespace Ict.Petra.WebServer.MConference
                             && !key.EndsWith("_Value")
                             && !key.EndsWith("_ActiveTab"))
                         {
-                            dictionary.Add(key, rawDataObject[key]);
+                            dictionary.Add(key, ReplaceQuotes(rawDataObject[key]));
 
                             if (rawDataObject[key].ToString().Length > 40)
                             {

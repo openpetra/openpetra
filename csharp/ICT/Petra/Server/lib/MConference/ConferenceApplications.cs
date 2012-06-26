@@ -647,8 +647,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     ARegistrationOfficeKey,
                     Transaction);
 
-                // to avoid the error on the ext.js client: Status Text: BADRESPONSE: Parse Error
-                Result = application[0].RawApplicationData.Replace("&quot;", "\\\"");
+                Result = application[0].RawApplicationData;
             }
             finally
             {
