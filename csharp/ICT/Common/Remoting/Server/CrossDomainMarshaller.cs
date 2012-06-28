@@ -58,7 +58,7 @@ namespace Ict.Common.Remoting.Server
         {
             FAvailableServicesPerClient.Add(AClientID + AServiceID, AService);
 
-            if (TLogging.Log > 1)
+            if (TLogging.DebugLevel > 1)
             {
                 TLogging.Log("CrossDomainMarshaller.AddService " + AClientID + " " + AServiceID + " " + FAvailableServicesPerClient.Count.ToString());
             }
