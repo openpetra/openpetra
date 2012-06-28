@@ -150,11 +150,11 @@ namespace Ict.Common.Remoting.Client
         /// Retrieves a Remoting Proxy object for the Server-side TPollClientTasks object
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the Remoting Sponsor object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the Remoting Sponsor object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemotePollClientTasks(string RemotingURL, out IPollClientTasksInterface ARemote)
+        /// <param name="ClientID"></param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the Remoting Sponsor object</param>
+        public void GetRemotePollClientTasks(string CrossDomainURL, string RemotingURL, string ClientID, out IPollClientTasksInterface ARemote)
         {
             string strTCP;
             string strServer;
@@ -170,14 +170,15 @@ namespace Ict.Common.Remoting.Client
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + FServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 
                 if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                 {
                     TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
                 }
 
-                ARemote = (IPollClientTasksInterface)RemotingServices.Connect(typeof(IPollClientTasksInterface), strTCP);
+                ARemote =
+                    (IPollClientTasksInterface) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IPollClientTasksInterface)).GetTransparentProxy();
 
                 if (ARemote == null)
                 {

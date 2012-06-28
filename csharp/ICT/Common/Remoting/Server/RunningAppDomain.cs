@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,9 +68,6 @@ namespace Ict.Common.Remoting.Server
 
         /// <summary> todoComment </summary>
         public String FAppDomainRemotedObjectURL;
-
-        /// <summary> todoComment </summary>
-        public Int32 FAppDomainRemotingPort;
 
         /// <summary> todoComment </summary>
         public IClientAppDomainConnection FClientAppDomainConnection;
@@ -171,20 +168,6 @@ namespace Ict.Common.Remoting.Server
             }
         }
 
-        /// <summary>.NET Remoting Port on which the Server will remote objects for the Client</summary>
-        public Int32 AppDomainRemotingPort
-        {
-            get
-            {
-                return FAppDomainRemotingPort;
-            }
-
-            set
-            {
-                FAppDomainRemotingPort = value;
-            }
-        }
-
         /// <summary>Connection object to the Client's AppDomain</summary>
         public IClientAppDomainConnection ClientAppDomainConnection
         {
@@ -280,18 +263,15 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         /// <param name="AAppDomainRemotedObjectURL">.NET Remoting URL of a Test object (for
         /// testing purposes only)</param>
-        /// <param name="AAppDomainRemotingPort"></param>
         /// <param name="AClientAppDomainConnection">Object that allows a connection to the
         /// Client's AppDomain without causing a load of the Assemblies that are
         /// loaded in the Client's AppDomain into the Default AppDomain.
         /// </param>
         /// <returns>void</returns>
         public void PassInClientRemotingInfo(String AAppDomainRemotedObjectURL,
-            Int32 AAppDomainRemotingPort,
             IClientAppDomainConnection AClientAppDomainConnection)
         {
             FAppDomainRemotedObjectURL = AAppDomainRemotedObjectURL;
-            FAppDomainRemotingPort = AAppDomainRemotingPort;
             FClientAppDomainConnection = AClientAppDomainConnection;
         }
     }

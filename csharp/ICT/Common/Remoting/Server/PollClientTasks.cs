@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,15 +31,8 @@ namespace Ict.Common.Remoting.Server
     /**
      * The TPollClientTasks Class contains a Method that returns a DataTable that
      * contains ClientTasks for the currently connected Client.
-     *
-     * @comment The TPollClientTasks Class is remoted as a 'SingleCall' Object. That
-     * means that each time the Client calls the PollClientTasks function, a
-     * new(!) Object is created!!!
-     * This approach was chosen because it is the one that fails most gracefully
-     * in case the connection between PetraClient and PetraServer is broken.
-     *
      */
-    public class TPollClientTasks : MarshalByRefObject, IPollClientTasksInterface
+    public class TPollClientTasks : TConfigurableMBRObject, IPollClientTasksInterface
     {
         /// <summary>Holds a reference to the ClientTasksManager</summary>
         public static TClientTasksManager UClientTasksManager;

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,10 +37,13 @@ namespace Ict.Testing.IctCommonRemoting.Client
     {
         static void Main(string[] args)
         {
+            new TLogging("../../log/TestRemotingClient.log");
+
             try
             {
-                new TLogging("TestRemotingClient.log");
-                new TAppSettingsManager(false);
+                new TAppSettingsManager("../../etc/TestClient.config");
+
+                TLogging.DebugLevel = Convert.ToInt32(TAppSettingsManager.GetValue("Client.DebugLevel", "0"));
 
                 // initialize the client
                 TConnectionManagementBase.ConnectorType = typeof(TConnector);
@@ -62,7 +65,7 @@ namespace Ict.Testing.IctCommonRemoting.Client
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TLogging.Log(e.ToString());
                 Console.ReadLine();
             }
         }

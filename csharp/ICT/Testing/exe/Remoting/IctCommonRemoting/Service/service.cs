@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,7 +38,7 @@ namespace Tests.IctCommonRemoting.Service
     /// <summary>
     /// the test service
     /// </summary>
-    public class TMyService : MarshalByRefObject, IMyService
+    public class TMyService : TConfigurableMBRObject, IMyService
     {
         /// <summary>
         /// print hello world
@@ -83,8 +83,8 @@ namespace Tests.IctCommonRemoting.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMyService object</summary>
-        private ObjRef FRemotedObject;
+
+        private ICrossDomainService FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMyServiceNamespaceLoader()
@@ -112,7 +112,6 @@ namespace Tests.IctCommonRemoting.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMyService RemotedObject;
             DateTime RemotingTime;
             String RemoteAtURI;
             String RandomString;
@@ -138,20 +137,20 @@ namespace Tests.IctCommonRemoting.Instantiator
             }
 
             RemotingTime = DateTime.Now;
-            RemotedObject = new TMyService();
+            FRemotedObject = new TMyService();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                           (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMyService));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMyService.URI: " + FRemotedObject.URI);
-            }
-#endif
+            FRemotingURL = RemoteAtURI;
 
             return FRemotingURL;
+        }
+
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public ICrossDomainService GetRemotedObject()
+        {
+            return FRemotedObject;
         }
     }
 }

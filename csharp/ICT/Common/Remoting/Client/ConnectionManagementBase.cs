@@ -62,7 +62,6 @@ namespace Ict.Common.Remoting.Client
 
         private String FClientName;
         private Int32 FClientID;
-        private Int16 FRemotingPort;
         private TExecutingOSEnum FServerOS;
         private String FRemotingURL_PollClientTasks;
         private IPollClientTasksInterface FRemotePollClientTasks;
@@ -78,6 +77,11 @@ namespace Ict.Common.Remoting.Client
         /// the urls of the services
         /// </summary>
         protected Hashtable FRemotingURLs;
+
+        /// <summary>
+        /// we will always contact the server on this URL
+        /// </summary>
+        protected string FCrossDomainURL;
 
         /// <summary>todoComment</summary>
         public String ClientName
@@ -236,9 +240,8 @@ namespace Ict.Common.Remoting.Client
             //
             // acquire .NET Remoting Proxy objects for remoted Server objects
             //
-            FConnector.ServerIPPort = FRemotingPort;
 
-            FConnector.GetRemotePollClientTasks(FRemotingURL_PollClientTasks, out FRemotePollClientTasks);
+            FConnector.GetRemotePollClientTasks(FCrossDomainURL, FRemotingURL_PollClientTasks, ClientID.ToString(), out FRemotePollClientTasks);
 
             //
             // start the KeepAlive Thread (which needs to run as long as the Client is running)
@@ -293,7 +296,7 @@ namespace Ict.Common.Remoting.Client
                     DetermineClientServerConnectionType(),
                     out FClientName,
                     out FClientID,
-                    out FRemotingPort,
+                    out FCrossDomainURL,
                     out FRemotingURLs,
                     out FServerOS,
                     out AProcessID,

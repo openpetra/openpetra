@@ -69,6 +69,8 @@ namespace Tests.IctCommonRemoting.Client
                         typeof(IClientManagerInterface),
                         String.Format("tcp://localhost:{0}/Clientmanager", 9000));
 
+                    this.ServerIPPort = 9000;
+
                     FRemotingConfigurationSetup = true;
                 }
 
@@ -99,11 +101,13 @@ namespace Tests.IctCommonRemoting.Client
         /// Petra Common Module.
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the MyService namespace object</param>
+        /// <param name="ClientID"></param>
         /// <param name="ARemote">.NET Remoting Proxy object for the MyService namespace object
         /// </param>
         /// <returns>void</returns>
-        public void GetRemoteMyServiceObject(string RemotingURL, out IMyService ARemote)
+        public void GetRemoteMyServiceObject(string CrossDomainURL, string RemotingURL, string ClientID, out IMyService ARemote)
         {
             string strTCP;
             string strServer;
@@ -116,11 +120,11 @@ namespace Tests.IctCommonRemoting.Client
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 #if DEBUGMODE
                 TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
 #endif
-                ARemote = (IMyService)RemotingServices.Connect(typeof(IMyService), strTCP);
+                ARemote = (IMyService) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IMyService)).GetTransparentProxy();
 
                 if (ARemote == null)
                 {
