@@ -97,7 +97,6 @@ namespace Ict.Testing.NUnitPetraServer
 
             // do the same as in Ict.Petra.Server.App.Main.TRemoteLoader.LoadDomainManagerAssembly
             FDomain = new TClientDomainManager("0",
-                "-1",
                 TClientServerConnectionType.csctLocal,
                 DomainManager.UClientManagerCallForwarderRef,
                 new TSystemDefaultsCache(),

@@ -115,11 +115,14 @@ namespace Ict.Common.Remoting.Client
 
                 if (TAppSettingsManager.HasValue("Remote.Port"))
                 {
+                    this.FServerIPPort = Convert.ToInt16(TAppSettingsManager.GetValue("Remote.Port"));
+                    this.FServerIPAddr = TAppSettingsManager.GetValue("Remote.Host");
+
                     ARemote = (IClientManagerInterface)
                               Activator.GetObject(typeof(Ict.Common.Remoting.Shared.IClientManagerInterface),
                         String.Format("tcp://{0}:{1}/Clientmanager",
-                            TAppSettingsManager.GetValue("Remote.Host"),
-                            TAppSettingsManager.GetValue("Remote.Port")));
+                            this.ServerIPAddr,
+                            this.ServerIPPort));
                 }
                 else
                 {

@@ -41,21 +41,17 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
 {
     /// <summary>URL at which the remoted object can be reached</summary>
     private String FRemotingURL;
-    /// <summary>holds reference to the TM{#MODULE} object</summary>
-    private ObjRef FRemotedObject;
+    /// <summary>the remoted object</summary>
+    private TM{#MODULE} FRemotedObject;
 
     /// <summary>Constructor</summary>
     public TM{#MODULE}NamespaceLoader()
     {
-#if DEBUGMODE
         if (TLogging.DL >= 9)
         {
             Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
         }
-
-#endif
     }
-
 
     /// <summary>
     /// Creates and dynamically exposes an instance of the remoteable TM{#MODULE}
@@ -72,7 +68,6 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
     /// <returns>The URL at which the remoted object can be reached.</returns>
     public String GetRemotingURL()
     {
-        TM{#MODULE} RemotedObject;
         DateTime RemotingTime;
         String RemoteAtURI;
         String RandomString;
@@ -80,13 +75,10 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
         Byte rndbytespos;
         Byte[] rndbytes = new Byte[5];
 
-#if DEBUGMODE
         if (TLogging.DL >= 9)
         {
             Console.WriteLine("TM{#MODULE}NamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
         }
-
-#endif
 
         RandomString = "";
         rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
@@ -97,26 +89,22 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
             RandomString = RandomString + rndbytes[rndbytespos].ToString();
         }
 
-
         RemotingTime = DateTime.Now;
-        RemotedObject = new TM{#MODULE}();
+        FRemotedObject = new TM{#MODULE}();
         RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                       (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-        FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IM{#MODULE}Namespace));
-        FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-        if (TLogging.DL >= 9)
-        {
-            Console.WriteLine("TM{#MODULE}.URI: " + FRemotedObject.URI);
-        }
-
-#endif
+        FRemotingURL = RemoteAtURI;
 
         return FRemotingURL;
     }
 
-
+    /// <summary>
+    /// get the object to be remoted
+    /// </summary>
+    public TM{#MODULE} GetRemotedObject()
+    {
+        return FRemotedObject;
+    }
 }
 
 {##REMOTABLECLASS}
@@ -126,7 +114,7 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
 /// </summary>
 {#ENDIF HIGHESTLEVEL}
 /// <summary>auto generated class </summary>
-public class {#LOCALCLASSNAME} : MarshalByRefObject, I{#NAMESPACE}Namespace
+public class {#LOCALCLASSNAME} : TConfigurableMBRObject, I{#NAMESPACE}Namespace
 {
 #if DEBUGMODE
     private DateTime FStartTime;

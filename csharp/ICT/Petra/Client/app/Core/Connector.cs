@@ -54,11 +54,11 @@ namespace Ict.Petra.Client.App.Core
         /// Petra Common Module.
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the MCommon namespace object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the MCommon namespace object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemoteMCommonObject(string RemotingURL, out IMCommonNamespace ARemote)
+        /// <param name="ClientID"></param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the MCommon namespace object</param>
+        public void GetRemoteMCommonObject(string CrossDomainURL, string RemotingURL, string ClientID, out IMCommonNamespace ARemote)
         {
             string strTCP;
             string strServer = null;
@@ -73,14 +73,14 @@ namespace Ict.Petra.Client.App.Core
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 
                 if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                 {
                     TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
                 }
 
-                ARemote = (IMCommonNamespace)RemotingServices.Connect(typeof(IMCommonNamespace), strTCP);
+                ARemote = (IMCommonNamespace) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IMCommonNamespace)).GetTransparentProxy();
 
                 if (ARemote == null)
                 {
@@ -108,11 +108,11 @@ namespace Ict.Petra.Client.App.Core
         /// Petra Conference Module.
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the MConference namespace object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the MConference namespace object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemoteMConferenceObject(string RemotingURL, out IMConferenceNamespace ARemote)
+        /// <param name="ClientID"></param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the MConference namespace object</param>
+        public void GetRemoteMConferenceObject(string CrossDomainURL, string RemotingURL, string ClientID, out IMConferenceNamespace ARemote)
         {
             string strTCP;
             string strServer = null;
@@ -127,14 +127,14 @@ namespace Ict.Petra.Client.App.Core
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 
                 if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                 {
                     TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
                 }
 
-                ARemote = (IMConferenceNamespace)RemotingServices.Connect(typeof(IMConferenceNamespace), strTCP);
+                ARemote = (IMConferenceNamespace) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IMConferenceNamespace)).GetTransparentProxy();
 
                 if (ARemote == null)
                 {
@@ -162,11 +162,11 @@ namespace Ict.Petra.Client.App.Core
         /// Petra Partner Module.
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the MPartner namespace object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the MPartner namespace object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemoteMPartnerObject(string RemotingURL, out IMPartnerNamespace ARemote)
+        /// <param name="ClientID"></param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the MPartner namespace object</param>
+        public void GetRemoteMPartnerObject(string CrossDomainURL, string RemotingURL, string ClientID, out IMPartnerNamespace ARemote)
         {
             string strTCP;
             string strServer = null;
@@ -181,14 +181,14 @@ namespace Ict.Petra.Client.App.Core
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 
                 if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                 {
                     TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
                 }
 
-                ARemote = (IMPartnerNamespace)RemotingServices.Connect(typeof(IMPartnerNamespace), strTCP);
+                ARemote = (IMPartnerNamespace) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IMPartnerNamespace)).GetTransparentProxy();
 
                 if (ARemote == null)
                 {
@@ -216,11 +216,11 @@ namespace Ict.Petra.Client.App.Core
         /// Petra Personnel Module.
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the MPersonnel namespace object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the MPersonnel namespace object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemoteMPersonnelObject(string RemotingURL, out IMPersonnelNamespace ARemote)
+        /// <param name="ClientID"></param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the MPersonnel namespace object</param>
+        public void GetRemoteMPersonnelObject(string CrossDomainURL, string RemotingURL, string ClientID, out IMPersonnelNamespace ARemote)
         {
             string strTCP;
             string strServer = null;
@@ -235,14 +235,14 @@ namespace Ict.Petra.Client.App.Core
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 
                 if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                 {
                     TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
                 }
 
-                ARemote = (IMPersonnelNamespace)RemotingServices.Connect(typeof(IMPersonnelNamespace), strTCP);
+                ARemote = (IMPersonnelNamespace) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IMPersonnelNamespace)).GetTransparentProxy();
 
                 if (ARemote == null)
                 {
@@ -270,11 +270,11 @@ namespace Ict.Petra.Client.App.Core
         /// Petra Finance Module.
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the MFinance namespace object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the MFinance namespace object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemoteMFinanceObject(string RemotingURL, out IMFinanceNamespace ARemote)
+        /// <param name="ClientID"></param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the MFinance namespace object</param>
+        public void GetRemoteMFinanceObject(string CrossDomainURL, string RemotingURL, string ClientID, out IMFinanceNamespace ARemote)
         {
             ARemote = null;
             string strTCP;
@@ -290,14 +290,14 @@ namespace Ict.Petra.Client.App.Core
                 try
                 {
                     strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
-                    strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                    strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 
                     if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                     {
                         TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
                     }
 
-                    ARemote = (IMFinanceNamespace)RemotingServices.Connect(typeof(IMFinanceNamespace), strTCP);
+                    ARemote = (IMFinanceNamespace) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IMFinanceNamespace)).GetTransparentProxy();
 
                     if (ARemote == null)
                     {
@@ -326,11 +326,11 @@ namespace Ict.Petra.Client.App.Core
         /// Petra Reporting Module.
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the MReporting namespace object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the MReporting namespace object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemoteMReportingObject(string RemotingURL, out IMReportingNamespace ARemote)
+        /// <param name="ClientID"></param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the MReporting namespace object</param>
+        public void GetRemoteMReportingObject(string CrossDomainURL, string RemotingURL, string ClientID, out IMReportingNamespace ARemote)
         {
             ARemote = null;
             string strTCP;
@@ -346,14 +346,14 @@ namespace Ict.Petra.Client.App.Core
                 try
                 {
                     strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
-                    strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                    strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 
                     if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                     {
                         TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
                     }
 
-                    ARemote = (IMReportingNamespace)RemotingServices.Connect(typeof(IMReportingNamespace), strTCP);
+                    ARemote = (IMReportingNamespace) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IMReportingNamespace)).GetTransparentProxy();
 
                     if (ARemote == null)
                     {
@@ -382,11 +382,11 @@ namespace Ict.Petra.Client.App.Core
         /// Petra System Manager Module.
         ///
         /// </summary>
+        /// <param name="CrossDomainURL"></param>
         /// <param name="RemotingURL">The Server-assigned URL for the MSysMan namespace object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the MSysMan namespace object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemoteMSysManObject(string RemotingURL, out IMSysManNamespace ARemote)
+        /// <param name="ClientID"></param>
+        /// <param name="ARemote">.NET Remoting Proxy object for the MSysMan namespace object</param>
+        public void GetRemoteMSysManObject(string CrossDomainURL, string RemotingURL, string ClientID, out IMSysManNamespace ARemote)
         {
             string strTCP;
             string strServer = null;
@@ -401,14 +401,14 @@ namespace Ict.Petra.Client.App.Core
             try
             {
                 strServer = DetermineServerIPAddress() + ':' + ServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
+                strTCP = (("tcp://" + strServer) + '/' + CrossDomainURL);
 
                 if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                 {
                     TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
                 }
 
-                ARemote = (IMSysManNamespace)RemotingServices.Connect(typeof(IMSysManNamespace), strTCP);
+                ARemote = (IMSysManNamespace) new CustomProxy(strTCP, RemotingURL, ClientID, typeof(IMSysManNamespace)).GetTransparentProxy();
 
                 if (ARemote == null)
                 {

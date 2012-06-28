@@ -81,19 +81,16 @@ namespace Ict.Petra.Server.MCommon.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMCommon object</summary>
-        private ObjRef FRemotedObject;
+        /// <summary>the remoted object</summary>
+        private TMCommon FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMCommonNamespaceLoader()
         {
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
         }
 
         /// <summary>
@@ -111,7 +108,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMCommon RemotedObject;
             DateTime RemotingTime;
             String RemoteAtURI;
             String RandomString;
@@ -119,13 +115,10 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             Byte rndbytespos;
             Byte[] rndbytes = new Byte[5];
 
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMCommonNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
 
             RandomString = "";
             rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
@@ -137,30 +130,28 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             }
 
             RemotingTime = DateTime.Now;
-            RemotedObject = new TMCommon();
+            FRemotedObject = new TMCommon();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                           (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMCommonNamespace));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMCommon.URI: " + FRemotedObject.URI);
-            }
-
-#endif
+            FRemotingURL = RemoteAtURI;
 
             return FRemotingURL;
         }
 
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public TMCommon GetRemotedObject()
+        {
+            return FRemotedObject;
+        }
     }
 
     /// <summary>
     /// REMOTEABLE CLASS. MCommon Namespace (highest level).
     /// </summary>
     /// <summary>auto generated class </summary>
-    public class TMCommon : MarshalByRefObject, IMCommonNamespace
+    public class TMCommon : TConfigurableMBRObject, IMCommonNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -353,7 +344,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator
 namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TCacheableNamespace : MarshalByRefObject, ICacheableNamespace
+    public class TCacheableNamespace : TConfigurableMBRObject, ICacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -512,7 +503,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
 namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TUIConnectorsNamespace : MarshalByRefObject, IUIConnectorsNamespace
+    public class TUIConnectorsNamespace : TConfigurableMBRObject, IUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -707,7 +698,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
 namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TWebConnectorsNamespace : MarshalByRefObject, IWebConnectorsNamespace
+    public class TWebConnectorsNamespace : TConfigurableMBRObject, IWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -802,7 +793,7 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
 namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
 {
     /// <summary>auto generated class </summary>
-    public class TDataReaderNamespace : MarshalByRefObject, IDataReaderNamespace
+    public class TDataReaderNamespace : TConfigurableMBRObject, IDataReaderNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;

@@ -64,19 +64,16 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMHospitality object</summary>
-        private ObjRef FRemotedObject;
+        /// <summary>the remoted object</summary>
+        private TMHospitality FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMHospitalityNamespaceLoader()
         {
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
         }
 
         /// <summary>
@@ -94,7 +91,6 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMHospitality RemotedObject;
             DateTime RemotingTime;
             String RemoteAtURI;
             String RandomString;
@@ -102,13 +98,10 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
             Byte rndbytespos;
             Byte[] rndbytes = new Byte[5];
 
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMHospitalityNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
 
             RandomString = "";
             rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
@@ -120,30 +113,28 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
             }
 
             RemotingTime = DateTime.Now;
-            RemotedObject = new TMHospitality();
+            FRemotedObject = new TMHospitality();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                           (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMHospitalityNamespace));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMHospitality.URI: " + FRemotedObject.URI);
-            }
-
-#endif
+            FRemotingURL = RemoteAtURI;
 
             return FRemotingURL;
         }
 
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public TMHospitality GetRemotedObject()
+        {
+            return FRemotedObject;
+        }
     }
 
     /// <summary>
     /// REMOTEABLE CLASS. MHospitality Namespace (highest level).
     /// </summary>
     /// <summary>auto generated class </summary>
-    public class TMHospitality : MarshalByRefObject, IMHospitalityNamespace
+    public class TMHospitality : TConfigurableMBRObject, IMHospitalityNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -246,7 +237,7 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
 namespace Ict.Petra.Server.MHospitality.Instantiator.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TUIConnectorsNamespace : MarshalByRefObject, IUIConnectorsNamespace
+    public class TUIConnectorsNamespace : TConfigurableMBRObject, IUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;

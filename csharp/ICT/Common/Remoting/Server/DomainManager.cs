@@ -352,7 +352,6 @@ namespace Ict.Common.Remoting.Server
                     // ignore System.Runtime.Remoting.RemotingException : 'LeaseTime' can only be set once within an AppDomain.
                     // this happens in the Server NUnit test, when running several tests, therefore reconnecting with the same AppDomain.
                 }
-
             }
             catch (Exception e)
             {

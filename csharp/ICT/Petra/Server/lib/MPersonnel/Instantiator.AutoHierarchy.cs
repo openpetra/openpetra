@@ -120,19 +120,16 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMPersonnel object</summary>
-        private ObjRef FRemotedObject;
+        /// <summary>the remoted object</summary>
+        private TMPersonnel FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMPersonnelNamespaceLoader()
         {
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
         }
 
         /// <summary>
@@ -150,7 +147,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMPersonnel RemotedObject;
             DateTime RemotingTime;
             String RemoteAtURI;
             String RandomString;
@@ -158,13 +154,10 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             Byte rndbytespos;
             Byte[] rndbytes = new Byte[5];
 
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMPersonnelNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
 
             RandomString = "";
             rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
@@ -176,30 +169,28 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             }
 
             RemotingTime = DateTime.Now;
-            RemotedObject = new TMPersonnel();
+            FRemotedObject = new TMPersonnel();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                           (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMPersonnelNamespace));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMPersonnel.URI: " + FRemotedObject.URI);
-            }
-
-#endif
+            FRemotingURL = RemoteAtURI;
 
             return FRemotingURL;
         }
 
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public TMPersonnel GetRemotedObject()
+        {
+            return FRemotedObject;
+        }
     }
 
     /// <summary>
     /// REMOTEABLE CLASS. MPersonnel Namespace (highest level).
     /// </summary>
     /// <summary>auto generated class </summary>
-    public class TMPersonnel : MarshalByRefObject, IMPersonnelNamespace
+    public class TMPersonnel : TConfigurableMBRObject, IMPersonnelNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -392,7 +383,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
 namespace Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TWebConnectorsNamespace : MarshalByRefObject, IWebConnectorsNamespace
+    public class TWebConnectorsNamespace : TConfigurableMBRObject, IWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -494,7 +485,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
 {
     /// <summary>auto generated class </summary>
-    public class TPersonNamespace : MarshalByRefObject, IPersonNamespace
+    public class TPersonNamespace : TConfigurableMBRObject, IPersonNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -627,7 +618,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
 {
     /// <summary>auto generated class </summary>
-    public class TPersonDataElementsNamespace : MarshalByRefObject, IPersonDataElementsNamespace
+    public class TPersonDataElementsNamespace : TConfigurableMBRObject, IPersonDataElementsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -820,7 +811,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications
 {
     /// <summary>auto generated class </summary>
-    public class TPersonDataElementsApplicationsNamespace : MarshalByRefObject, IPersonDataElementsApplicationsNamespace
+    public class TPersonDataElementsApplicationsNamespace : TConfigurableMBRObject, IPersonDataElementsApplicationsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -953,7 +944,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TPersonDataElementsApplicationsCacheableNamespace : MarshalByRefObject, IPersonDataElementsApplicationsCacheableNamespace
+    public class TPersonDataElementsApplicationsCacheableNamespace : TConfigurableMBRObject, IPersonDataElementsApplicationsCacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1032,7 +1023,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPersonDataElementsApplicationsUIConnectorsNamespace : MarshalByRefObject, IPersonDataElementsApplicationsUIConnectorsNamespace
+    public class TPersonDataElementsApplicationsUIConnectorsNamespace : TConfigurableMBRObject, IPersonDataElementsApplicationsUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1140,7 +1131,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TPersonDataElementsCacheableNamespace : MarshalByRefObject, IPersonDataElementsCacheableNamespace
+    public class TPersonDataElementsCacheableNamespace : TConfigurableMBRObject, IPersonDataElementsCacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1281,7 +1272,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPersonDataElementsUIConnectorsNamespace : MarshalByRefObject, IPersonDataElementsUIConnectorsNamespace
+    public class TPersonDataElementsUIConnectorsNamespace : TConfigurableMBRObject, IPersonDataElementsUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1384,7 +1375,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPersonDataElementsWebConnectorsNamespace : MarshalByRefObject, IPersonDataElementsWebConnectorsNamespace
+    public class TPersonDataElementsWebConnectorsNamespace : TConfigurableMBRObject, IPersonDataElementsWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1471,7 +1462,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.WebConnec
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
 {
     /// <summary>auto generated class </summary>
-    public class TPersonShepherdsNamespace : MarshalByRefObject, IPersonShepherdsNamespace
+    public class TPersonShepherdsNamespace : TConfigurableMBRObject, IPersonShepherdsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1574,7 +1565,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPersonShepherdsUIConnectorsNamespace : MarshalByRefObject, IPersonShepherdsUIConnectorsNamespace
+    public class TPersonShepherdsUIConnectorsNamespace : TConfigurableMBRObject, IPersonShepherdsUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1646,7 +1637,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds.UIConnectors
 namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
 {
     /// <summary>auto generated class </summary>
-    public class TTableMaintenanceNamespace : MarshalByRefObject, ITableMaintenanceNamespace
+    public class TTableMaintenanceNamespace : TConfigurableMBRObject, ITableMaintenanceNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1749,7 +1740,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
 namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TTableMaintenanceUIConnectorsNamespace : MarshalByRefObject, ITableMaintenanceUIConnectorsNamespace
+    public class TTableMaintenanceUIConnectorsNamespace : TConfigurableMBRObject, ITableMaintenanceUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1821,7 +1812,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance.UIConnectors
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
 {
     /// <summary>auto generated class </summary>
-    public class TUnitsNamespace : MarshalByRefObject, IUnitsNamespace
+    public class TUnitsNamespace : TConfigurableMBRObject, IUnitsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1924,7 +1915,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
 {
     /// <summary>auto generated class </summary>
-    public class TUnitsDataElementsNamespace : MarshalByRefObject, IUnitsDataElementsNamespace
+    public class TUnitsDataElementsNamespace : TConfigurableMBRObject, IUnitsDataElementsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2057,7 +2048,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TUnitsDataElementsCacheableNamespace : MarshalByRefObject, IUnitsDataElementsCacheableNamespace
+    public class TUnitsDataElementsCacheableNamespace : TConfigurableMBRObject, IUnitsDataElementsCacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2196,7 +2187,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TUnitsDataElementsUIConnectorsNamespace : MarshalByRefObject, IUnitsDataElementsUIConnectorsNamespace
+    public class TUnitsDataElementsUIConnectorsNamespace : TConfigurableMBRObject, IUnitsDataElementsUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;

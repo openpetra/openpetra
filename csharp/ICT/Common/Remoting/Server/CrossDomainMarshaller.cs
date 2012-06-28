@@ -74,7 +74,10 @@ namespace Ict.Common.Remoting.Server
                 return FAvailableServicesPerClient[clientID + AServiceID];
             }
 
-            throw new Exception("cannot find service " + AServiceID + " for client " + clientID);
+            string message = "cannot find service " + AServiceID + " for client " + clientID + "; there are " +
+                             FAvailableServicesPerClient.Count.ToString() + " registered services at the moment";
+            TLogging.Log(message);
+            throw new Exception(message);
         }
 
         /// <summary>

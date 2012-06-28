@@ -145,19 +145,16 @@ namespace Ict.Petra.Server.MPartner.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMPartner object</summary>
-        private ObjRef FRemotedObject;
+        /// <summary>the remoted object</summary>
+        private TMPartner FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMPartnerNamespaceLoader()
         {
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
         }
 
         /// <summary>
@@ -175,7 +172,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMPartner RemotedObject;
             DateTime RemotingTime;
             String RemoteAtURI;
             String RandomString;
@@ -183,13 +179,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             Byte rndbytespos;
             Byte[] rndbytes = new Byte[5];
 
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMPartnerNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
 
             RandomString = "";
             rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
@@ -201,30 +194,28 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             }
 
             RemotingTime = DateTime.Now;
-            RemotedObject = new TMPartner();
+            FRemotedObject = new TMPartner();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                           (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMPartnerNamespace));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMPartner.URI: " + FRemotedObject.URI);
-            }
-
-#endif
+            FRemotingURL = RemoteAtURI;
 
             return FRemotingURL;
         }
 
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public TMPartner GetRemotedObject()
+        {
+            return FRemotedObject;
+        }
     }
 
     /// <summary>
     /// REMOTEABLE CLASS. MPartner Namespace (highest level).
     /// </summary>
     /// <summary>auto generated class </summary>
-    public class TMPartner : MarshalByRefObject, IMPartnerNamespace
+    public class TMPartner : TConfigurableMBRObject, IMPartnerNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -507,7 +498,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator
 namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
 {
     /// <summary>auto generated class </summary>
-    public class TExtractsNamespace : MarshalByRefObject, IExtractsNamespace
+    public class TExtractsNamespace : TConfigurableMBRObject, IExtractsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -640,7 +631,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
 namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TExtractsUIConnectorsNamespace : MarshalByRefObject, IExtractsUIConnectorsNamespace
+    public class TExtractsUIConnectorsNamespace : TConfigurableMBRObject, IExtractsUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -723,7 +714,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TExtractsWebConnectorsNamespace : MarshalByRefObject, IExtractsWebConnectorsNamespace
+    public class TExtractsWebConnectorsNamespace : TConfigurableMBRObject, IExtractsWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -795,7 +786,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.WebConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
 {
     /// <summary>auto generated class </summary>
-    public class TImportExportNamespace : MarshalByRefObject, IImportExportNamespace
+    public class TImportExportNamespace : TConfigurableMBRObject, IImportExportNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -928,7 +919,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TImportExportUIConnectorsNamespace : MarshalByRefObject, IImportExportUIConnectorsNamespace
+    public class TImportExportUIConnectorsNamespace : TConfigurableMBRObject, IImportExportUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1000,7 +991,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TImportExportWebConnectorsNamespace : MarshalByRefObject, IImportExportWebConnectorsNamespace
+    public class TImportExportWebConnectorsNamespace : TConfigurableMBRObject, IImportExportWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1152,7 +1143,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
 {
     /// <summary>auto generated class </summary>
-    public class TMailingNamespace : MarshalByRefObject, IMailingNamespace
+    public class TMailingNamespace : TConfigurableMBRObject, IMailingNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1315,7 +1306,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TMailingCacheableNamespace : MarshalByRefObject, IMailingCacheableNamespace
+    public class TMailingCacheableNamespace : TConfigurableMBRObject, IMailingCacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1474,7 +1465,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TMailingUIConnectorsNamespace : MarshalByRefObject, IMailingUIConnectorsNamespace
+    public class TMailingUIConnectorsNamespace : TConfigurableMBRObject, IMailingUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1546,7 +1537,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TMailingWebConnectorsNamespace : MarshalByRefObject, IMailingWebConnectorsNamespace
+    public class TMailingWebConnectorsNamespace : TConfigurableMBRObject, IMailingWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1650,7 +1641,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerNamespace : MarshalByRefObject, IPartnerNamespace
+    public class TPartnerNamespace : TConfigurableMBRObject, IPartnerNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1873,7 +1864,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerCacheableNamespace : MarshalByRefObject, IPartnerCacheableNamespace
+    public class TPartnerCacheableNamespace : TConfigurableMBRObject, IPartnerCacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2032,7 +2023,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerDataElementsNamespace : MarshalByRefObject, IPartnerDataElementsNamespace
+    public class TPartnerDataElementsNamespace : TConfigurableMBRObject, IPartnerDataElementsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2135,7 +2126,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerDataElementsUIConnectorsNamespace : MarshalByRefObject, IPartnerDataElementsUIConnectorsNamespace
+    public class TPartnerDataElementsUIConnectorsNamespace : TConfigurableMBRObject, IPartnerDataElementsUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2238,7 +2229,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerServerLookupsNamespace : MarshalByRefObject, IPartnerServerLookupsNamespace
+    public class TPartnerServerLookupsNamespace : TConfigurableMBRObject, IPartnerServerLookupsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2467,7 +2458,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerUIConnectorsNamespace : MarshalByRefObject, IPartnerUIConnectorsNamespace
+    public class TPartnerUIConnectorsNamespace : TConfigurableMBRObject, IPartnerUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2670,7 +2661,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerWebConnectorsNamespace : MarshalByRefObject, IPartnerWebConnectorsNamespace
+    public class TPartnerWebConnectorsNamespace : TConfigurableMBRObject, IPartnerWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2938,7 +2929,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerMergeNamespace : MarshalByRefObject, IPartnerMergeNamespace
+    public class TPartnerMergeNamespace : TConfigurableMBRObject, IPartnerMergeNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3041,7 +3032,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
 namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPartnerMergeUIConnectorsNamespace : MarshalByRefObject, IPartnerMergeUIConnectorsNamespace
+    public class TPartnerMergeUIConnectorsNamespace : TConfigurableMBRObject, IPartnerMergeUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3113,7 +3104,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge.UIConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
 {
     /// <summary>auto generated class </summary>
-    public class TSubscriptionsNamespace : MarshalByRefObject, ISubscriptionsNamespace
+    public class TSubscriptionsNamespace : TConfigurableMBRObject, ISubscriptionsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3246,7 +3237,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TSubscriptionsCacheableNamespace : MarshalByRefObject, ISubscriptionsCacheableNamespace
+    public class TSubscriptionsCacheableNamespace : TConfigurableMBRObject, ISubscriptionsCacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3405,7 +3396,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TSubscriptionsUIConnectorsNamespace : MarshalByRefObject, ISubscriptionsUIConnectorsNamespace
+    public class TSubscriptionsUIConnectorsNamespace : TConfigurableMBRObject, ISubscriptionsUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3477,7 +3468,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.UIConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
 {
     /// <summary>auto generated class </summary>
-    public class TTableMaintenanceNamespace : MarshalByRefObject, ITableMaintenanceNamespace
+    public class TTableMaintenanceNamespace : TConfigurableMBRObject, ITableMaintenanceNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3610,7 +3601,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
 namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TTableMaintenanceUIConnectorsNamespace : MarshalByRefObject, ITableMaintenanceUIConnectorsNamespace
+    public class TTableMaintenanceUIConnectorsNamespace : TConfigurableMBRObject, ITableMaintenanceUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3682,7 +3673,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.UIConnectors
 namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TTableMaintenanceWebConnectorsNamespace : MarshalByRefObject, ITableMaintenanceWebConnectorsNamespace
+    public class TTableMaintenanceWebConnectorsNamespace : TConfigurableMBRObject, ITableMaintenanceWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;

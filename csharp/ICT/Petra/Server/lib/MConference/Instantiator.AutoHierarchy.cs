@@ -74,19 +74,16 @@ namespace Ict.Petra.Server.MConference.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMConference object</summary>
-        private ObjRef FRemotedObject;
+        /// <summary>the remoted object</summary>
+        private TMConference FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMConferenceNamespaceLoader()
         {
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
         }
 
         /// <summary>
@@ -104,7 +101,6 @@ namespace Ict.Petra.Server.MConference.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMConference RemotedObject;
             DateTime RemotingTime;
             String RemoteAtURI;
             String RandomString;
@@ -112,13 +108,10 @@ namespace Ict.Petra.Server.MConference.Instantiator
             Byte rndbytespos;
             Byte[] rndbytes = new Byte[5];
 
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMConferenceNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
 
             RandomString = "";
             rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
@@ -130,30 +123,28 @@ namespace Ict.Petra.Server.MConference.Instantiator
             }
 
             RemotingTime = DateTime.Now;
-            RemotedObject = new TMConference();
+            FRemotedObject = new TMConference();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                           (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMConferenceNamespace));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMConference.URI: " + FRemotedObject.URI);
-            }
-
-#endif
+            FRemotingURL = RemoteAtURI;
 
             return FRemotingURL;
         }
 
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public TMConference GetRemotedObject()
+        {
+            return FRemotedObject;
+        }
     }
 
     /// <summary>
     /// REMOTEABLE CLASS. MConference Namespace (highest level).
     /// </summary>
     /// <summary>auto generated class </summary>
-    public class TMConference : MarshalByRefObject, IMConferenceNamespace
+    public class TMConference : TConfigurableMBRObject, IMConferenceNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -286,7 +277,7 @@ namespace Ict.Petra.Server.MConference.Instantiator
 namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TCacheableNamespace : MarshalByRefObject, ICacheableNamespace
+    public class TCacheableNamespace : TConfigurableMBRObject, ICacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -453,7 +444,7 @@ namespace Ict.Petra.Server.MConference.Instantiator.Cacheable
 namespace Ict.Petra.Server.MConference.Instantiator.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TWebConnectorsNamespace : MarshalByRefObject, IWebConnectorsNamespace
+    public class TWebConnectorsNamespace : TConfigurableMBRObject, IWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;

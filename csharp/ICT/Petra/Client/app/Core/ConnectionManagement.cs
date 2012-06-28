@@ -95,13 +95,16 @@ namespace Ict.Petra.Client.App.Core
 
             Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
 
-            ((TConnector)FConnector).GetRemoteMConferenceObject(FRemotingURL_MConference, out FRemoteConferenceObjects);
-            ((TConnector)FConnector).GetRemoteMPersonnelObject(FRemotingURL_MPersonnel, out FRemotePersonnelObjects);
-            ((TConnector)FConnector).GetRemoteMCommonObject(FRemotingURL_MCommon, out FRemoteCommonObjects);
-            ((TConnector)FConnector).GetRemoteMPartnerObject(FRemotingURL_MPartner, out FRemotePartnerObjects);
-            ((TConnector)FConnector).GetRemoteMFinanceObject(FRemotingURL_MFinance, out FRemoteFinanceObjects);
-            ((TConnector)FConnector).GetRemoteMReportingObject(FRemotingURL_MReporting, out FRemoteReportingObjects);
-            ((TConnector)FConnector).GetRemoteMSysManObject(FRemotingURL_MSysMan, out FRemoteSysManObjects);
+            ((TConnector)FConnector).GetRemoteMConferenceObject(FCrossDomainURL, FRemotingURL_MConference,
+                ClientID.ToString(), out FRemoteConferenceObjects);
+            ((TConnector)FConnector).GetRemoteMPersonnelObject(FCrossDomainURL, FRemotingURL_MPersonnel,
+                ClientID.ToString(), out FRemotePersonnelObjects);
+            ((TConnector)FConnector).GetRemoteMCommonObject(FCrossDomainURL, FRemotingURL_MCommon, ClientID.ToString(), out FRemoteCommonObjects);
+            ((TConnector)FConnector).GetRemoteMPartnerObject(FCrossDomainURL, FRemotingURL_MPartner, ClientID.ToString(), out FRemotePartnerObjects);
+            ((TConnector)FConnector).GetRemoteMFinanceObject(FCrossDomainURL, FRemotingURL_MFinance, ClientID.ToString(), out FRemoteFinanceObjects);
+            ((TConnector)FConnector).GetRemoteMReportingObject(FCrossDomainURL, FRemotingURL_MReporting,
+                ClientID.ToString(), out FRemoteReportingObjects);
+            ((TConnector)FConnector).GetRemoteMSysManObject(FCrossDomainURL, FRemotingURL_MSysMan, ClientID.ToString(), out FRemoteSysManObjects);
 
             //
             // initialise object that holds references to all our remote object .NET Remoting Proxies

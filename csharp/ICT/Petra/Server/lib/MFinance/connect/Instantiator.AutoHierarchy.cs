@@ -151,19 +151,16 @@ namespace Ict.Petra.Server.MFinance.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMFinance object</summary>
-        private ObjRef FRemotedObject;
+        /// <summary>the remoted object</summary>
+        private TMFinance FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMFinanceNamespaceLoader()
         {
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
         }
 
         /// <summary>
@@ -181,7 +178,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMFinance RemotedObject;
             DateTime RemotingTime;
             String RemoteAtURI;
             String RandomString;
@@ -189,13 +185,10 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             Byte rndbytespos;
             Byte[] rndbytes = new Byte[5];
 
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMFinanceNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
 
             RandomString = "";
             rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
@@ -207,30 +200,28 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             }
 
             RemotingTime = DateTime.Now;
-            RemotedObject = new TMFinance();
+            FRemotedObject = new TMFinance();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                           (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMFinanceNamespace));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMFinance.URI: " + FRemotedObject.URI);
-            }
-
-#endif
+            FRemotingURL = RemoteAtURI;
 
             return FRemotingURL;
         }
 
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public TMFinance GetRemotedObject()
+        {
+            return FRemotedObject;
+        }
     }
 
     /// <summary>
     /// REMOTEABLE CLASS. MFinance Namespace (highest level).
     /// </summary>
     /// <summary>auto generated class </summary>
-    public class TMFinance : MarshalByRefObject, IMFinanceNamespace
+    public class TMFinance : TConfigurableMBRObject, IMFinanceNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -633,7 +624,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
 namespace Ict.Petra.Server.MFinance.Instantiator.AP
 {
     /// <summary>auto generated class </summary>
-    public class TAPNamespace : MarshalByRefObject, IAPNamespace
+    public class TAPNamespace : TConfigurableMBRObject, IAPNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -766,7 +757,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
 namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TAPUIConnectorsNamespace : MarshalByRefObject, IAPUIConnectorsNamespace
+    public class TAPUIConnectorsNamespace : TConfigurableMBRObject, IAPUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -880,7 +871,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TAPWebConnectorsNamespace : MarshalByRefObject, IAPWebConnectorsNamespace
+    public class TAPWebConnectorsNamespace : TConfigurableMBRObject, IAPWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1078,7 +1069,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.AR
 {
     /// <summary>auto generated class </summary>
-    public class TARNamespace : MarshalByRefObject, IARNamespace
+    public class TARNamespace : TConfigurableMBRObject, IARNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1181,7 +1172,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
 namespace Ict.Petra.Server.MFinance.Instantiator.AR.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TARWebConnectorsNamespace : MarshalByRefObject, IARWebConnectorsNamespace
+    public class TARWebConnectorsNamespace : TConfigurableMBRObject, IARWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1253,7 +1244,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR.WebConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.Budget
 {
     /// <summary>auto generated class </summary>
-    public class TBudgetNamespace : MarshalByRefObject, IBudgetNamespace
+    public class TBudgetNamespace : TConfigurableMBRObject, IBudgetNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1386,7 +1377,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
 namespace Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TBudgetUIConnectorsNamespace : MarshalByRefObject, IBudgetUIConnectorsNamespace
+    public class TBudgetUIConnectorsNamespace : TConfigurableMBRObject, IBudgetUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1458,7 +1449,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TBudgetWebConnectorsNamespace : MarshalByRefObject, IBudgetWebConnectorsNamespace
+    public class TBudgetWebConnectorsNamespace : TConfigurableMBRObject, IBudgetWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1634,7 +1625,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TCacheableNamespace : MarshalByRefObject, ICacheableNamespace
+    public class TCacheableNamespace : TConfigurableMBRObject, ICacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1877,7 +1868,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
 namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
 {
     /// <summary>auto generated class </summary>
-    public class TImportExportNamespace : MarshalByRefObject, IImportExportNamespace
+    public class TImportExportNamespace : TConfigurableMBRObject, IImportExportNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1980,7 +1971,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
 namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TImportExportWebConnectorsNamespace : MarshalByRefObject, IImportExportWebConnectorsNamespace
+    public class TImportExportWebConnectorsNamespace : TConfigurableMBRObject, IImportExportWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2112,7 +2103,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.Gift
 {
     /// <summary>auto generated class </summary>
-    public class TGiftNamespace : MarshalByRefObject, IGiftNamespace
+    public class TGiftNamespace : TConfigurableMBRObject, IGiftNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2245,7 +2236,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
 namespace Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TGiftUIConnectorsNamespace : MarshalByRefObject, IGiftUIConnectorsNamespace
+    public class TGiftUIConnectorsNamespace : TConfigurableMBRObject, IGiftUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2317,7 +2308,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TGiftWebConnectorsNamespace : MarshalByRefObject, IGiftWebConnectorsNamespace
+    public class TGiftWebConnectorsNamespace : TConfigurableMBRObject, IGiftWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2637,7 +2628,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.GL
 {
     /// <summary>auto generated class </summary>
-    public class TGLNamespace : MarshalByRefObject, IGLNamespace
+    public class TGLNamespace : TConfigurableMBRObject, IGLNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2770,7 +2761,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
 namespace Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TGLUIConnectorsNamespace : MarshalByRefObject, IGLUIConnectorsNamespace
+    public class TGLUIConnectorsNamespace : TConfigurableMBRObject, IGLUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2842,7 +2833,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TGLWebConnectorsNamespace : MarshalByRefObject, IGLWebConnectorsNamespace
+    public class TGLWebConnectorsNamespace : TConfigurableMBRObject, IGLWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3154,7 +3145,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.ICH
 {
     /// <summary>auto generated class </summary>
-    public class TICHNamespace : MarshalByRefObject, IICHNamespace
+    public class TICHNamespace : TConfigurableMBRObject, IICHNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3257,7 +3248,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
 namespace Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TICHWebConnectorsNamespace : MarshalByRefObject, IICHWebConnectorsNamespace
+    public class TICHWebConnectorsNamespace : TConfigurableMBRObject, IICHWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3346,7 +3337,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
 {
     /// <summary>auto generated class </summary>
-    public class TPeriodEndNamespace : MarshalByRefObject, IPeriodEndNamespace
+    public class TPeriodEndNamespace : TConfigurableMBRObject, IPeriodEndNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3449,7 +3440,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
 namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPeriodEndUIConnectorsNamespace : MarshalByRefObject, IPeriodEndUIConnectorsNamespace
+    public class TPeriodEndUIConnectorsNamespace : TConfigurableMBRObject, IPeriodEndUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3521,7 +3512,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
 {
     /// <summary>auto generated class </summary>
-    public class TReportingNamespace : MarshalByRefObject, IReportingNamespace
+    public class TReportingNamespace : TConfigurableMBRObject, IReportingNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3624,7 +3615,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
 namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TReportingUIConnectorsNamespace : MarshalByRefObject, IReportingUIConnectorsNamespace
+    public class TReportingUIConnectorsNamespace : TConfigurableMBRObject, IReportingUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3728,7 +3719,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.Setup
 {
     /// <summary>auto generated class </summary>
-    public class TSetupNamespace : MarshalByRefObject, ISetupNamespace
+    public class TSetupNamespace : TConfigurableMBRObject, ISetupNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3861,7 +3852,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
 namespace Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TSetupUIConnectorsNamespace : MarshalByRefObject, ISetupUIConnectorsNamespace
+    public class TSetupUIConnectorsNamespace : TConfigurableMBRObject, ISetupUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -3933,7 +3924,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors
 namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TSetupWebConnectorsNamespace : MarshalByRefObject, ISetupWebConnectorsNamespace
+    public class TSetupWebConnectorsNamespace : TConfigurableMBRObject, ISetupWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;

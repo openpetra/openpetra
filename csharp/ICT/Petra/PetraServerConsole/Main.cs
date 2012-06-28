@@ -58,6 +58,7 @@ public class TServer
     }
 
     private TServerManager TheServerManager;
+    private TCrossDomainMarshaller TheCrossDomainMarshaller;
 
     /// <summary>
     /// Starts the Petra Server.
@@ -110,6 +111,9 @@ public class TServer
             {
                 throw;
             }
+
+            TheCrossDomainMarshaller = new TCrossDomainMarshaller();
+            RemotingServices.Marshal(TheCrossDomainMarshaller, TClientManager.CROSSDOMAINURL);
 
             //
             // Remote the remoteable objects

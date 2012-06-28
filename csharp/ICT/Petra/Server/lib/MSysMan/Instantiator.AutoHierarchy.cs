@@ -122,19 +122,16 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMSysMan object</summary>
-        private ObjRef FRemotedObject;
+        /// <summary>the remoted object</summary>
+        private TMSysMan FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMSysManNamespaceLoader()
         {
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
         }
 
         /// <summary>
@@ -152,7 +149,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMSysMan RemotedObject;
             DateTime RemotingTime;
             String RemoteAtURI;
             String RandomString;
@@ -160,13 +156,10 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             Byte rndbytespos;
             Byte[] rndbytes = new Byte[5];
 
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMSysManNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-
-#endif
 
             RandomString = "";
             rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
@@ -178,30 +171,28 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             }
 
             RemotingTime = DateTime.Now;
-            RemotedObject = new TMSysMan();
+            FRemotedObject = new TMSysMan();
             RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
                           (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMSysManNamespace));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMSysMan.URI: " + FRemotedObject.URI);
-            }
-
-#endif
+            FRemotingURL = RemoteAtURI;
 
             return FRemotingURL;
         }
 
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public TMSysMan GetRemotedObject()
+        {
+            return FRemotedObject;
+        }
     }
 
     /// <summary>
     /// REMOTEABLE CLASS. MSysMan Namespace (highest level).
     /// </summary>
     /// <summary>auto generated class </summary>
-    public class TMSysMan : MarshalByRefObject, IMSysManNamespace
+    public class TMSysMan : TConfigurableMBRObject, IMSysManNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -484,7 +475,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
 namespace Ict.Petra.Server.MSysMan.Instantiator.Application
 {
     /// <summary>auto generated class </summary>
-    public class TApplicationNamespace : MarshalByRefObject, IApplicationNamespace
+    public class TApplicationNamespace : TConfigurableMBRObject, IApplicationNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -617,7 +608,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
 namespace Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TApplicationUIConnectorsNamespace : MarshalByRefObject, IApplicationUIConnectorsNamespace
+    public class TApplicationUIConnectorsNamespace : TConfigurableMBRObject, IApplicationUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -689,7 +680,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors
 namespace Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups
 {
     /// <summary>auto generated class </summary>
-    public class TApplicationServerLookupsNamespace : MarshalByRefObject, IApplicationServerLookupsNamespace
+    public class TApplicationServerLookupsNamespace : TConfigurableMBRObject, IApplicationServerLookupsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -776,7 +767,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups
 namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
 {
     /// <summary>auto generated class </summary>
-    public class TMaintenanceNamespace : MarshalByRefObject, IMaintenanceNamespace
+    public class TMaintenanceNamespace : TConfigurableMBRObject, IMaintenanceNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -969,7 +960,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
 namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
 {
     /// <summary>auto generated class </summary>
-    public class TMaintenanceSystemDefaultsNamespace : MarshalByRefObject, IMaintenanceSystemDefaultsNamespace
+    public class TMaintenanceSystemDefaultsNamespace : TConfigurableMBRObject, IMaintenanceSystemDefaultsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1070,7 +1061,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
 namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TMaintenanceUIConnectorsNamespace : MarshalByRefObject, IMaintenanceUIConnectorsNamespace
+    public class TMaintenanceUIConnectorsNamespace : TConfigurableMBRObject, IMaintenanceUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1142,7 +1133,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UIConnectors
 namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults
 {
     /// <summary>auto generated class </summary>
-    public class TMaintenanceUserDefaultsNamespace : MarshalByRefObject, IMaintenanceUserDefaultsNamespace
+    public class TMaintenanceUserDefaultsNamespace : TConfigurableMBRObject, IMaintenanceUserDefaultsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1241,7 +1232,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults
 namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TMaintenanceWebConnectorsNamespace : MarshalByRefObject, IMaintenanceWebConnectorsNamespace
+    public class TMaintenanceWebConnectorsNamespace : TConfigurableMBRObject, IMaintenanceWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1394,7 +1385,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
 namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance
 {
     /// <summary>auto generated class </summary>
-    public class TTableMaintenanceNamespace : MarshalByRefObject, ITableMaintenanceNamespace
+    public class TTableMaintenanceNamespace : TConfigurableMBRObject, ITableMaintenanceNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1497,7 +1488,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance
 namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TTableMaintenanceUIConnectorsNamespace : MarshalByRefObject, ITableMaintenanceUIConnectorsNamespace
+    public class TTableMaintenanceUIConnectorsNamespace : TConfigurableMBRObject, ITableMaintenanceUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1605,7 +1596,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
 namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport
 {
     /// <summary>auto generated class </summary>
-    public class TImportExportNamespace : MarshalByRefObject, IImportExportNamespace
+    public class TImportExportNamespace : TConfigurableMBRObject, IImportExportNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1708,7 +1699,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport
 namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TImportExportWebConnectorsNamespace : MarshalByRefObject, IImportExportWebConnectorsNamespace
+    public class TImportExportWebConnectorsNamespace : TConfigurableMBRObject, IImportExportWebConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1801,7 +1792,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
 namespace Ict.Petra.Server.MSysMan.Instantiator.PrintManagement
 {
     /// <summary>auto generated class </summary>
-    public class TPrintManagementNamespace : MarshalByRefObject, IPrintManagementNamespace
+    public class TPrintManagementNamespace : TConfigurableMBRObject, IPrintManagementNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1904,7 +1895,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.PrintManagement
 namespace Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TPrintManagementUIConnectorsNamespace : MarshalByRefObject, IPrintManagementUIConnectorsNamespace
+    public class TPrintManagementUIConnectorsNamespace : TConfigurableMBRObject, IPrintManagementUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -1976,7 +1967,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors
 namespace Ict.Petra.Server.MSysMan.Instantiator.Security
 {
     /// <summary>auto generated class </summary>
-    public class TSecurityNamespace : MarshalByRefObject, ISecurityNamespace
+    public class TSecurityNamespace : TConfigurableMBRObject, ISecurityNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2109,7 +2100,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security
 namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors
 {
     /// <summary>auto generated class </summary>
-    public class TSecurityUIConnectorsNamespace : MarshalByRefObject, ISecurityUIConnectorsNamespace
+    public class TSecurityUIConnectorsNamespace : TConfigurableMBRObject, ISecurityUIConnectorsNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2181,7 +2172,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors
 namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager
 {
     /// <summary>auto generated class </summary>
-    public class TSecurityUserManagerNamespace : MarshalByRefObject, ISecurityUserManagerNamespace
+    public class TSecurityUserManagerNamespace : TConfigurableMBRObject, ISecurityUserManagerNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
@@ -2268,7 +2259,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager
 namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
 {
     /// <summary>auto generated class </summary>
-    public class TCacheableNamespace : MarshalByRefObject, ICacheableNamespace
+    public class TCacheableNamespace : TConfigurableMBRObject, ICacheableNamespace
     {
 #if DEBUGMODE
         private DateTime FStartTime;
