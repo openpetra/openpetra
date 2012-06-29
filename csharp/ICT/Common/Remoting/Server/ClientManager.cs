@@ -540,6 +540,14 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>
+        /// add a service that is offered by the appdomain, for single port remoting
+        /// </summary>
+        public void AddCrossDomainService(string ClientID, string ObjectURI, ICrossDomainService ObjectToRemote)
+        {
+            TCrossDomainMarshaller.AddService(ClientID, ObjectURI, ObjectToRemote);
+        }
+
+        /// <summary>
         /// Called by TClientManager to queue a ClientTask for a certain Client.
         ///
         /// @comment The position in source code of this overload (*after* the first

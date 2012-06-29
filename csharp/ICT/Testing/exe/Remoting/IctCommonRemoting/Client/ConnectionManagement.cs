@@ -65,8 +65,7 @@ namespace Tests.IctCommonRemoting.Client
 
             ConnectToServer(AUserName, APassword, out AProcessID, out AWelcomeMessage, out ASystemEnabled, out AError, out LocalUserInfo);
 
-            ((TConnector)FConnector).GetRemoteMyServiceObject(FCrossDomainURL, FRemotingURL_MyService,
-                ClientID.ToString(), out FRemoteMyServiceObject);
+            FRemoteMyServiceObject = (IMyService)FConnector.GetRemoteObject(FRemotingURL_MyService, typeof(IMyService));
 
             //
             // initialise object that holds references to all our remote object .NET Remoting Proxies

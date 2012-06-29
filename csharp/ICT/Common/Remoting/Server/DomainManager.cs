@@ -428,9 +428,9 @@ namespace Ict.Common.Remoting.Server
         {
             // Console.WriteLine('TClientDomainManager.InitAppDomain in AppDomain: ' + Thread.GetDomain().FriendlyName);
 
-            new TAppSettingsManager(false);
-
             new TSrvSetting(ASettings);
+            new TAppSettingsManager(TSrvSetting.ConfigurationFile);
+
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
         }
 
@@ -497,28 +497,6 @@ namespace Ict.Common.Remoting.Server
         /// </returns>
         public String GetPollClientTasksURL()
         {
-            String ReturnValue;
-            DateTime RemotingTime;
-            String RemoteAtURI;
-
-            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-            Byte[] RandomRemotingBytes = new Byte[4];
-            Byte rndbytespos;
-            String RandomRemotingString;
-            RandomRemotingString = "";
-
-            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rnd.GetBytes(RandomRemotingBytes);
-
-            for (rndbytespos = 0; rndbytespos <= 3; rndbytespos += 1)
-            {
-                RandomRemotingString = RandomRemotingString + RandomRemotingBytes[rndbytespos].ToString();
-            }
-
-            RemotingTime = DateTime.Now;
-            RemoteAtURI = FUserID + '_' + (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                          (RemotingTime.Second).ToString() + '_' + RandomRemotingString.ToString();
-
             // Set Parameters for TPollClientTasks Class
             new TPollClientTasksParameters(FClientTasksManager);
 
@@ -527,19 +505,19 @@ namespace Ict.Common.Remoting.Server
             // Start ClientStillAliveCheck Thread
             new ClientStillAliveCheck.TClientStillAliveCheck(FClientServerConnectionType, new TDelegateTearDownAppDomain(
                     TearDownAppDomain), FRandomAppDomainTearDownToken);
-#if DEBUGMODE
+
             if (TLogging.DL >= 5)
             {
                 Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: created TClientStillAliveCheck.");
             }
-#endif
-            ReturnValue = RemoteAtURI;
-#if DEBUGMODE
+
+            string ReturnValue = TConfigurableMBRObject.BuildRandomURI("PollClientTasks");
+
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: RemoteAtURI: " + RemoteAtURI);
+                Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: remote at: " + ReturnValue);
             }
-#endif
+
             return ReturnValue;
         }
 

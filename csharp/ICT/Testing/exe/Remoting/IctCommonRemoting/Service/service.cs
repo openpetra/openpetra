@@ -27,9 +27,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Runtime.Remoting;
-using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Tests.IctCommonRemoting.Service;
 using Tests.IctCommonRemoting.Interface;
 
@@ -69,6 +70,74 @@ namespace Tests.IctCommonRemoting.Service
 
             outDate = date;
             return date;
+        }
+
+        /// <summary>
+        /// test
+        /// </summary>
+        public IMySubNamespace SubNamespace
+        {
+            get
+            {
+                // need to calculate the URI for this object and pass it
+                // register the remote url at the CrossDomainMarshaller
+                string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMySubNamespace");
+                TMySubNamespaceObject ObjectToRemote = new TMySubNamespaceObject();
+
+                // we need to add the service in the main domain
+                DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                    DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+                return new TMySubNamespace(ObjectURI);
+            }
+        }
+    }
+
+    /// <summary>
+    /// this object is needed because we need another remoted object for sub namespaces
+    /// </summary>
+    public class TMySubNamespaceObject : TConfigurableMBRObject, IMySubNamespaceObject
+    {
+        /// print hello sub world
+        public string HelloSubWorld(string msg)
+        {
+            TLogging.Log(msg);
+            return "HelloSubWorld from the server!!!";
+        }
+    }
+
+    /// <summary>
+    /// serializable, which means that this object is executed on the client side
+    /// </summary>
+    [Serializable]
+    public class TMySubNamespace : IMySubNamespace
+    {
+        private IMySubNamespaceObject RemoteObject = null;
+        private string FObjectURI;
+
+        /// <summary>
+        /// constructor. get remote object
+        /// </summary>
+        public TMySubNamespace(string AObjectURI)
+        {
+            FObjectURI = AObjectURI;
+            TLogging.Log(" in appdomain " + Thread.GetDomain().FriendlyName);
+        }
+
+        private void InitRemoteObject()
+        {
+            TLogging.Log("InitRemoteObject in appdomain " + Thread.GetDomain().FriendlyName);
+            RemoteObject = (IMySubNamespaceObject)TConnectorBase.TheConnector.GetRemoteObject(FObjectURI, typeof(IMySubNamespaceObject));
+        }
+
+        /// print hello sub world
+        public string HelloSubWorld(string msg)
+        {
+            if (RemoteObject == null)
+            {
+                InitRemoteObject();
+            }
+
+            return RemoteObject.HelloSubWorld(msg);
         }
     }
 }
@@ -112,35 +181,13 @@ namespace Tests.IctCommonRemoting.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            DateTime RemotingTime;
-            String RemoteAtURI;
-            String RandomString;
-
-            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-            Byte rndbytespos;
-            Byte[] rndbytes = new Byte[5];
-
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyServiceNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-#endif
 
-            RandomString = "";
-            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rnd.GetBytes(rndbytes);
-
-            for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
-            {
-                RandomString = RandomString + rndbytes[rndbytespos].ToString();
-            }
-
-            RemotingTime = DateTime.Now;
             FRemotedObject = new TMyService();
-            RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                          (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotingURL = RemoteAtURI;
+            FRemotingURL = BuildRandomURI("TMyService");
 
             return FRemotingURL;
         }

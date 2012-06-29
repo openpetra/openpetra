@@ -41,7 +41,7 @@ namespace Ict.Testing.IctCommonRemoting.Client
 
             try
             {
-                new TAppSettingsManager("../../etc/TestClient.config");
+                new TAppSettingsManager("../../etc/Client.config");
 
                 TLogging.DebugLevel = Convert.ToInt32(TAppSettingsManager.GetValue("Client.DebugLevel", "0"));
 
@@ -51,12 +51,18 @@ namespace Ict.Testing.IctCommonRemoting.Client
 
                 TClientInfo.InitializeUnit();
 
+                Catalog.Init("en-GB", "en-GB");
+
                 string error;
                 ConnectToTestServer("DEMO", "DEMO", out error);
 
                 while (true)
                 {
                     TLogging.Log(TRemote.MyService.HelloWorld("Hello World"));
+                    IMySubNamespace test = TRemote.MyService.SubNamespace;
+                    TLogging.Log("before call function");
+                    TLogging.Log(test.GetType().ToString());
+                    TLogging.Log(test.HelloSubWorld("Hello SubWorld"));
 
                     Console.WriteLine("Press ENTER to say Hello World again... ");
                     Console.WriteLine("Press CTRL-C to exit ...");

@@ -26,6 +26,7 @@ using System.Security.Principal;
 using System.Collections;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using System.Reflection;
 using System.Runtime.Remoting;
 using System.Threading;

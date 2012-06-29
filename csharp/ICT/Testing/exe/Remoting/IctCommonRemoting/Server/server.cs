@@ -48,7 +48,7 @@ namespace Ict.Testing.IctCommonRemoting.Server
         {
             try
             {
-                new TAppSettingsManager("../../etc/TestServer.config");
+                new TAppSettingsManager("../../etc/Server.config");
 
                 TheServerManager = new TServerManager();
 
@@ -108,7 +108,7 @@ namespace Ict.Testing.IctCommonRemoting.Server
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
 
                 Hashtable ChannelProperties = new Hashtable();
-                ChannelProperties.Add("port", "9000");
+                ChannelProperties.Add("port", TSrvSetting.IPBasePort);
 
                 TcpChannel Channel = new TcpChannel(ChannelProperties, null, TCPSink);
                 ChannelServices.RegisterChannel(Channel, false);

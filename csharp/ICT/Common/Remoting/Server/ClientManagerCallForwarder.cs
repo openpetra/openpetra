@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -165,6 +165,14 @@ namespace Ict.Common.Remoting.Server
 
             // Need to call the correct overloaded version of DisconnectClient to let AReason have an effect!
             FClientManagerRef.DisconnectClient(AClientID, AReason, out CantDisconnectReason);
+        }
+
+        /// <summary>
+        /// add a service that is offered by the appdomain, for single port remoting
+        /// </summary>
+        public void AddCrossDomainService(string ClientID, string ObjectURI, ICrossDomainService ObjectToRemote)
+        {
+            FClientManagerRef.AddCrossDomainService(ClientID, ObjectURI, ObjectToRemote);
         }
 
         /// <summary>

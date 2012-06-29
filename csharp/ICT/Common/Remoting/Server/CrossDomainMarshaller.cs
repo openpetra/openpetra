@@ -32,6 +32,7 @@ using System.Runtime.Remoting.Contexts;
 using System.Runtime.Remoting.Activation;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Channels;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Common.Remoting.Server
 {

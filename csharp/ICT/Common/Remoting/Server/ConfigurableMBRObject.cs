@@ -23,6 +23,7 @@
 //
 using System;
 using System.Configuration;
+using System.Security.Cryptography;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Lifetime;
 using System.Runtime.Remoting.Proxies;
@@ -31,20 +32,10 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Common.Remoting.Server
 {
-    /// <summary>
-    /// this services is available across domains
-    /// </summary>
-    public interface ICrossDomainService
-    {
-        /// <summary>
-        /// marshal a message across domains
-        /// </summary>
-        IMessage Marshal(IMessage msg);
-    }
-
     /// <summary>
     /// Allows remotable objects that are derived from it (instead of MarshalByRefObject) to make their lifetime configurable via the application's config file.
     /// see also the book 'Advanced .NET Remoting' (Chapter 7, page 193)
@@ -136,6 +127,28 @@ namespace Ict.Common.Remoting.Server
 
                 return tmp;
             }
+        }
+
+        /// <summary>
+        /// build random URI for a service
+        /// </summary>
+        public static string BuildRandomURI(string Prefix)
+        {
+            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
+            Byte rndbytespos;
+            Byte[] rndbytes = new Byte[5];
+            String RandomString = string.Empty;
+            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
+            rnd.GetBytes(rndbytes);
+
+            for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
+            {
+                RandomString = RandomString + rndbytes[rndbytespos].ToString();
+            }
+
+            DateTime RemotingTime = DateTime.Now;
+            return (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
+                   (RemotingTime.Second).ToString() + '_' + Prefix + '_' + RandomString.ToString();
         }
     }
 }
