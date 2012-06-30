@@ -44,6 +44,7 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -67,15 +68,6 @@ namespace Ict.Petra.Server.MReporting.Instantiator
         /// <summary>the remoted object</summary>
         private TMReporting FRemotedObject;
 
-        /// <summary>Constructor</summary>
-        public TMReportingNamespaceLoader()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
-            }
-        }
-
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMReporting
         /// class to make it callable remotely from the Client.
@@ -91,32 +83,13 @@ namespace Ict.Petra.Server.MReporting.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            DateTime RemotingTime;
-            String RemoteAtURI;
-            String RandomString;
-            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-            Byte rndbytespos;
-            Byte[] rndbytes = new Byte[5];
-
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMReportingNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
 
-            RandomString = "";
-            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rnd.GetBytes(rndbytes);
-
-            for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
-            {
-                RandomString = RandomString + rndbytes[rndbytespos].ToString();
-            }
-
-            RemotingTime = DateTime.Now;
             FRemotedObject = new TMReporting();
-            RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                          (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotingURL = RemoteAtURI;
+            FRemotingURL = TConfigurableMBRObject.BuildRandomURI("TMReportingNamespaceLoader");
 
             return FRemotingURL;
         }
@@ -136,64 +109,12 @@ namespace Ict.Petra.Server.MReporting.Instantiator
     /// <summary>auto generated class </summary>
     public class TMReporting : TConfigurableMBRObject, IMReportingNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TLogicConnectorsNamespace FLogicConnectorsSubNamespace;
+        private TLogicConnectorsNamespaceRemote FLogicConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMReporting()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TMReporting()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -201,7 +122,35 @@ namespace Ict.Petra.Server.MReporting.Instantiator
             return null; // make sure that the TMReporting object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TLogicConnectorsNamespaceRemote: ILogicConnectorsNamespace
+        {
+            private ILogicConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TLogicConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ILogicConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ILogicConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public IReportGeneratorLogicConnector ReportGenerator()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ReportGenerator();
+            }
+        }
 
         /// <summary>The 'LogicConnectors' subnamespace contains further subnamespaces.</summary>
         public ILogicConnectorsNamespace LogicConnectors
@@ -221,10 +170,15 @@ namespace Ict.Petra.Server.MReporting.Instantiator
                 // accessing TLogicConnectorsNamespace the first time? > instantiate the object
                 if (FLogicConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TLogicConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MReporting.Instantiator.LogicConnectors') should be automatically contructable.
-                    FLogicConnectorsSubNamespace = new TLogicConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TLogicConnectorsNamespace");
+                    TLogicConnectorsNamespace ObjectToRemote = new TLogicConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FLogicConnectorsSubNamespace = new TLogicConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FLogicConnectorsSubNamespace;
@@ -236,66 +190,17 @@ namespace Ict.Petra.Server.MReporting.Instantiator
 
 namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. LogicConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TLogicConnectorsNamespace : TConfigurableMBRObject, ILogicConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TLogicConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TLogicConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()

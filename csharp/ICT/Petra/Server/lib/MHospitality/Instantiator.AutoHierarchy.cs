@@ -44,6 +44,7 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -67,15 +68,6 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
         /// <summary>the remoted object</summary>
         private TMHospitality FRemotedObject;
 
-        /// <summary>Constructor</summary>
-        public TMHospitalityNamespaceLoader()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
-            }
-        }
-
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMHospitality
         /// class to make it callable remotely from the Client.
@@ -91,32 +83,13 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            DateTime RemotingTime;
-            String RemoteAtURI;
-            String RandomString;
-            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-            Byte rndbytespos;
-            Byte[] rndbytes = new Byte[5];
-
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMHospitalityNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
 
-            RandomString = "";
-            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rnd.GetBytes(rndbytes);
-
-            for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
-            {
-                RandomString = RandomString + rndbytes[rndbytespos].ToString();
-            }
-
-            RemotingTime = DateTime.Now;
             FRemotedObject = new TMHospitality();
-            RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                          (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotingURL = RemoteAtURI;
+            FRemotingURL = TConfigurableMBRObject.BuildRandomURI("TMHospitalityNamespaceLoader");
 
             return FRemotingURL;
         }
@@ -136,64 +109,12 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
     /// <summary>auto generated class </summary>
     public class TMHospitality : TConfigurableMBRObject, IMHospitalityNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TUIConnectorsNamespace FUIConnectorsSubNamespace;
+        private TUIConnectorsNamespaceRemote FUIConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMHospitality()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TMHospitality()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -201,7 +122,25 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
             return null; // make sure that the TMHospitality object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TUIConnectorsNamespaceRemote: IUIConnectorsNamespace
+        {
+            private IUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IUIConnectorsNamespace));
+            }
+
+        }
 
         /// <summary>The 'UIConnectors' subnamespace contains further subnamespaces.</summary>
         public IUIConnectorsNamespace UIConnectors
@@ -221,10 +160,15 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MHospitality.Instantiator.UIConnectors') should be automatically contructable.
-                    FUIConnectorsSubNamespace = new TUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TUIConnectorsNamespace");
+                    TUIConnectorsNamespace ObjectToRemote = new TUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FUIConnectorsSubNamespace = new TUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FUIConnectorsSubNamespace;
@@ -236,66 +180,17 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
 
 namespace Ict.Petra.Server.MHospitality.Instantiator.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. UIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TUIConnectorsNamespace : TConfigurableMBRObject, IUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()

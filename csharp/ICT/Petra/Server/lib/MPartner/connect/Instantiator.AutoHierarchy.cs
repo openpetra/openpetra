@@ -44,6 +44,7 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -148,15 +149,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator
         /// <summary>the remoted object</summary>
         private TMPartner FRemotedObject;
 
-        /// <summary>Constructor</summary>
-        public TMPartnerNamespaceLoader()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
-            }
-        }
-
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMPartner
         /// class to make it callable remotely from the Client.
@@ -172,32 +164,13 @@ namespace Ict.Petra.Server.MPartner.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            DateTime RemotingTime;
-            String RemoteAtURI;
-            String RandomString;
-            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-            Byte rndbytespos;
-            Byte[] rndbytes = new Byte[5];
-
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMPartnerNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
 
-            RandomString = "";
-            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rnd.GetBytes(rndbytes);
-
-            for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
-            {
-                RandomString = RandomString + rndbytes[rndbytespos].ToString();
-            }
-
-            RemotingTime = DateTime.Now;
             FRemotedObject = new TMPartner();
-            RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                          (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotingURL = RemoteAtURI;
+            FRemotingURL = TConfigurableMBRObject.BuildRandomURI("TMPartnerNamespaceLoader");
 
             return FRemotingURL;
         }
@@ -217,70 +190,18 @@ namespace Ict.Petra.Server.MPartner.Instantiator
     /// <summary>auto generated class </summary>
     public class TMPartner : TConfigurableMBRObject, IMPartnerNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TExtractsNamespace FExtractsSubNamespace;
-        private TImportExportNamespace FImportExportSubNamespace;
-        private TMailingNamespace FMailingSubNamespace;
-        private TPartnerNamespace FPartnerSubNamespace;
-        private TPartnerMergeNamespace FPartnerMergeSubNamespace;
-        private TSubscriptionsNamespace FSubscriptionsSubNamespace;
-        private TTableMaintenanceNamespace FTableMaintenanceSubNamespace;
+        private TExtractsNamespaceRemote FExtractsSubNamespace;
+        private TImportExportNamespaceRemote FImportExportSubNamespace;
+        private TMailingNamespaceRemote FMailingSubNamespace;
+        private TPartnerNamespaceRemote FPartnerSubNamespace;
+        private TPartnerMergeNamespaceRemote FPartnerMergeSubNamespace;
+        private TSubscriptionsNamespaceRemote FSubscriptionsSubNamespace;
+        private TTableMaintenanceNamespaceRemote FTableMaintenanceSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMPartner()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TMPartner()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -288,7 +209,35 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             return null; // make sure that the TMPartner object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TExtractsNamespaceRemote: IExtractsNamespace
+        {
+            private IExtractsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TExtractsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IExtractsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IExtractsNamespace));
+            }
+
+            /// property forwarder
+            public IExtractsUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
+            /// property forwarder
+            public IExtractsWebConnectorsNamespace WebConnectors
+            {
+                get { return RemoteObject.WebConnectors; }
+            }
+        }
 
         /// <summary>The 'Extracts' subnamespace contains further subnamespaces.</summary>
         public IExtractsNamespace Extracts
@@ -308,15 +257,49 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                 // accessing TExtractsNamespace the first time? > instantiate the object
                 if (FExtractsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TExtractsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPartner.Instantiator.Extracts') should be automatically contructable.
-                    FExtractsSubNamespace = new TExtractsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TExtractsNamespace");
+                    TExtractsNamespace ObjectToRemote = new TExtractsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FExtractsSubNamespace = new TExtractsNamespaceRemote(ObjectURI);
                 }
 
                 return FExtractsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TImportExportNamespaceRemote: IImportExportNamespace
+        {
+            private IImportExportNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TImportExportNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IImportExportNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IImportExportNamespace));
+            }
+
+            /// property forwarder
+            public IImportExportUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
+            /// property forwarder
+            public IImportExportWebConnectorsNamespace WebConnectors
+            {
+                get { return RemoteObject.WebConnectors; }
+            }
         }
 
         /// <summary>The 'ImportExport' subnamespace contains further subnamespaces.</summary>
@@ -337,15 +320,54 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                 // accessing TImportExportNamespace the first time? > instantiate the object
                 if (FImportExportSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TImportExportNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPartner.Instantiator.ImportExport') should be automatically contructable.
-                    FImportExportSubNamespace = new TImportExportNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TImportExportNamespace");
+                    TImportExportNamespace ObjectToRemote = new TImportExportNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FImportExportSubNamespace = new TImportExportNamespaceRemote(ObjectURI);
                 }
 
                 return FImportExportSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TMailingNamespaceRemote: IMailingNamespace
+        {
+            private IMailingNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TMailingNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IMailingNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMailingNamespace));
+            }
+
+            /// property forwarder
+            public IMailingCacheableNamespace Cacheable
+            {
+                get { return RemoteObject.Cacheable; }
+            }
+            /// property forwarder
+            public IMailingUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
+            /// property forwarder
+            public IMailingWebConnectorsNamespace WebConnectors
+            {
+                get { return RemoteObject.WebConnectors; }
+            }
         }
 
         /// <summary>The 'Mailing' subnamespace contains further subnamespaces.</summary>
@@ -366,15 +388,64 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                 // accessing TMailingNamespace the first time? > instantiate the object
                 if (FMailingSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TMailingNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPartner.Instantiator.Mailing') should be automatically contructable.
-                    FMailingSubNamespace = new TMailingNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMailingNamespace");
+                    TMailingNamespace ObjectToRemote = new TMailingNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FMailingSubNamespace = new TMailingNamespaceRemote(ObjectURI);
                 }
 
                 return FMailingSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerNamespaceRemote: IPartnerNamespace
+        {
+            private IPartnerNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerNamespace));
+            }
+
+            /// property forwarder
+            public IPartnerCacheableNamespace Cacheable
+            {
+                get { return RemoteObject.Cacheable; }
+            }
+            /// property forwarder
+            public IPartnerDataElementsNamespace DataElements
+            {
+                get { return RemoteObject.DataElements; }
+            }
+            /// property forwarder
+            public IPartnerServerLookupsNamespace ServerLookups
+            {
+                get { return RemoteObject.ServerLookups; }
+            }
+            /// property forwarder
+            public IPartnerUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
+            /// property forwarder
+            public IPartnerWebConnectorsNamespace WebConnectors
+            {
+                get { return RemoteObject.WebConnectors; }
+            }
         }
 
         /// <summary>The 'Partner' subnamespace contains further subnamespaces.</summary>
@@ -395,15 +466,44 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                 // accessing TPartnerNamespace the first time? > instantiate the object
                 if (FPartnerSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPartner.Instantiator.Partner') should be automatically contructable.
-                    FPartnerSubNamespace = new TPartnerNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerNamespace");
+                    TPartnerNamespace ObjectToRemote = new TPartnerNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerSubNamespace = new TPartnerNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerMergeNamespaceRemote: IPartnerMergeNamespace
+        {
+            private IPartnerMergeNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerMergeNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerMergeNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerMergeNamespace));
+            }
+
+            /// property forwarder
+            public IPartnerMergeUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
         }
 
         /// <summary>The 'PartnerMerge' subnamespace contains further subnamespaces.</summary>
@@ -424,15 +524,49 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                 // accessing TPartnerMergeNamespace the first time? > instantiate the object
                 if (FPartnerMergeSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerMergeNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPartner.Instantiator.PartnerMerge') should be automatically contructable.
-                    FPartnerMergeSubNamespace = new TPartnerMergeNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerMergeNamespace");
+                    TPartnerMergeNamespace ObjectToRemote = new TPartnerMergeNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerMergeSubNamespace = new TPartnerMergeNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerMergeSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TSubscriptionsNamespaceRemote: ISubscriptionsNamespace
+        {
+            private ISubscriptionsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TSubscriptionsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ISubscriptionsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISubscriptionsNamespace));
+            }
+
+            /// property forwarder
+            public ISubscriptionsCacheableNamespace Cacheable
+            {
+                get { return RemoteObject.Cacheable; }
+            }
+            /// property forwarder
+            public ISubscriptionsUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
         }
 
         /// <summary>The 'Subscriptions' subnamespace contains further subnamespaces.</summary>
@@ -453,15 +587,49 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                 // accessing TSubscriptionsNamespace the first time? > instantiate the object
                 if (FSubscriptionsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TSubscriptionsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPartner.Instantiator.Subscriptions') should be automatically contructable.
-                    FSubscriptionsSubNamespace = new TSubscriptionsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSubscriptionsNamespace");
+                    TSubscriptionsNamespace ObjectToRemote = new TSubscriptionsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FSubscriptionsSubNamespace = new TSubscriptionsNamespaceRemote(ObjectURI);
                 }
 
                 return FSubscriptionsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TTableMaintenanceNamespaceRemote: ITableMaintenanceNamespace
+        {
+            private ITableMaintenanceNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TTableMaintenanceNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ITableMaintenanceNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ITableMaintenanceNamespace));
+            }
+
+            /// property forwarder
+            public ITableMaintenanceUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
+            /// property forwarder
+            public ITableMaintenanceWebConnectorsNamespace WebConnectors
+            {
+                get { return RemoteObject.WebConnectors; }
+            }
         }
 
         /// <summary>The 'TableMaintenance' subnamespace contains further subnamespaces.</summary>
@@ -482,10 +650,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator
                 // accessing TTableMaintenanceNamespace the first time? > instantiate the object
                 if (FTableMaintenanceSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TTableMaintenanceNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPartner.Instantiator.TableMaintenance') should be automatically contructable.
-                    FTableMaintenanceSubNamespace = new TTableMaintenanceNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TTableMaintenanceNamespace");
+                    TTableMaintenanceNamespace ObjectToRemote = new TTableMaintenanceNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FTableMaintenanceSubNamespace = new TTableMaintenanceNamespaceRemote(ObjectURI);
                 }
 
                 return FTableMaintenanceSubNamespace;
@@ -497,68 +670,19 @@ namespace Ict.Petra.Server.MPartner.Instantiator
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. Extracts Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TExtractsNamespace : TConfigurableMBRObject, IExtractsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TExtractsUIConnectorsNamespace FExtractsUIConnectorsSubNamespace;
-        private TExtractsWebConnectorsNamespace FExtractsWebConnectorsSubNamespace;
+        private TExtractsUIConnectorsNamespaceRemote FExtractsUIConnectorsSubNamespace;
+        private TExtractsWebConnectorsNamespaceRemote FExtractsWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TExtractsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TExtractsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -566,7 +690,45 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
             return null; // make sure that the TExtractsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TExtractsUIConnectorsNamespaceRemote: IExtractsUIConnectorsNamespace
+        {
+            private IExtractsUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TExtractsUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IExtractsUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IExtractsUIConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public IPartnerUIConnectorsExtractsAddSubscriptions ExtractsAddSubscriptions(System.Int32 AExtractID)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ExtractsAddSubscriptions(AExtractID);
+            }
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerNewExtract PartnerNewExtract()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerNewExtract();
+            }
+        }
 
         /// <summary>The 'ExtractsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IExtractsUIConnectorsNamespace UIConnectors
@@ -586,13 +748,37 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FExtractsUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TExtractsUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Extracts.Instantiator.UIConnectors') should be automatically contructable.
-                    FExtractsUIConnectorsSubNamespace = new TExtractsUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TExtractsUIConnectorsNamespace");
+                    TExtractsUIConnectorsNamespace ObjectToRemote = new TExtractsUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FExtractsUIConnectorsSubNamespace = new TExtractsUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FExtractsUIConnectorsSubNamespace;
+            }
+
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TExtractsWebConnectorsNamespaceRemote: IExtractsWebConnectorsNamespace
+        {
+            private IExtractsWebConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TExtractsWebConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IExtractsWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IExtractsWebConnectorsNamespace));
             }
 
         }
@@ -615,10 +801,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
                 // accessing TWebConnectorsNamespace the first time? > instantiate the object
                 if (FExtractsWebConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TExtractsWebConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Extracts.Instantiator.WebConnectors') should be automatically contructable.
-                    FExtractsWebConnectorsSubNamespace = new TExtractsWebConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TExtractsWebConnectorsNamespace");
+                    TExtractsWebConnectorsNamespace ObjectToRemote = new TExtractsWebConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FExtractsWebConnectorsSubNamespace = new TExtractsWebConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FExtractsWebConnectorsSubNamespace;
@@ -630,66 +821,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. ExtractsUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TExtractsUIConnectorsNamespace : TConfigurableMBRObject, IExtractsUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TExtractsUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TExtractsUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -713,66 +855,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.UIConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.WebConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. ExtractsWebConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TExtractsWebConnectorsNamespace : TConfigurableMBRObject, IExtractsWebConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TExtractsWebConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TExtractsWebConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -785,68 +878,19 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts.WebConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. ImportExport Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TImportExportNamespace : TConfigurableMBRObject, IImportExportNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TImportExportUIConnectorsNamespace FImportExportUIConnectorsSubNamespace;
-        private TImportExportWebConnectorsNamespace FImportExportWebConnectorsSubNamespace;
+        private TImportExportUIConnectorsNamespaceRemote FImportExportUIConnectorsSubNamespace;
+        private TImportExportWebConnectorsNamespaceRemote FImportExportWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TImportExportNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TImportExportNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -854,7 +898,25 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TImportExportUIConnectorsNamespaceRemote: IImportExportUIConnectorsNamespace
+        {
+            private IImportExportUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TImportExportUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IImportExportUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IImportExportUIConnectorsNamespace));
+            }
+
+        }
 
         /// <summary>The 'ImportExportUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportUIConnectorsNamespace UIConnectors
@@ -874,15 +936,150 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FImportExportUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TImportExportUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.ImportExport.Instantiator.UIConnectors') should be automatically contructable.
-                    FImportExportUIConnectorsSubNamespace = new TImportExportUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TImportExportUIConnectorsNamespace");
+                    TImportExportUIConnectorsNamespace ObjectToRemote = new TImportExportUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FImportExportUIConnectorsSubNamespace = new TImportExportUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FImportExportUIConnectorsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TImportExportWebConnectorsNamespaceRemote: IImportExportWebConnectorsNamespace
+        {
+            private IImportExportWebConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TImportExportWebConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IImportExportWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IImportExportWebConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public PartnerImportExportTDS ImportPartnersFromYml(System.String AXmlPartnerData,
+                                                                out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ImportPartnersFromYml(AXmlPartnerData,out AVerificationResult);
+            }
+            /// generated method from interface
+            public PartnerImportExportTDS ImportFromCSVFile(System.String AXmlPartnerData,
+                                                            out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ImportFromCSVFile(AXmlPartnerData,out AVerificationResult);
+            }
+            /// generated method from interface
+            public PartnerImportExportTDS ImportFromPartnerExtract(System.String[] ATextFileLines,
+                                                                   out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ImportFromPartnerExtract(ATextFileLines,out AVerificationResult);
+            }
+            /// generated method from interface
+            public Boolean CommitChanges(PartnerImportExportTDS MainDS,
+                                         out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.CommitChanges(MainDS,out AVerificationResult);
+            }
+            /// generated method from interface
+            public System.String ExportPartners()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ExportPartners();
+            }
+            /// generated method from interface
+            public System.String GetExtFileHeader()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetExtFileHeader();
+            }
+            /// generated method from interface
+            public System.String GetExtFileFooter()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetExtFileFooter();
+            }
+            /// generated method from interface
+            public System.String ExportPartnerExt(Int64 APartnerKey,
+                                                  Int32 ASiteKey,
+                                                  Int32 ALocationKey,
+                                                  Boolean ANoFamily,
+                                                  StringCollection ASpecificBuildingInfo)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ExportPartnerExt(APartnerKey,ASiteKey,ALocationKey,ANoFamily,ASpecificBuildingInfo);
+            }
+            /// generated method from interface
+            public String ExportAllPartnersExt()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ExportAllPartnersExt();
+            }
+            /// generated method from interface
+            public Boolean ImportDataExt(System.String[] ALinesToImport,
+                                         System.String ALimitToOption,
+                                         System.Boolean ADoNotOverwrite,
+                                         out TVerificationResultCollection AResultList)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ImportDataExt(ALinesToImport,ALimitToOption,ADoNotOverwrite,out AResultList);
+            }
         }
 
         /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
@@ -903,10 +1100,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
                 // accessing TWebConnectorsNamespace the first time? > instantiate the object
                 if (FImportExportWebConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TImportExportWebConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.ImportExport.Instantiator.WebConnectors') should be automatically contructable.
-                    FImportExportWebConnectorsSubNamespace = new TImportExportWebConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TImportExportWebConnectorsNamespace");
+                    TImportExportWebConnectorsNamespace ObjectToRemote = new TImportExportWebConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FImportExportWebConnectorsSubNamespace = new TImportExportWebConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FImportExportWebConnectorsSubNamespace;
@@ -918,66 +1120,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
 
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. ImportExportUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TImportExportUIConnectorsNamespace : TConfigurableMBRObject, IImportExportUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TImportExportUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TImportExportUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -990,66 +1143,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.UIConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. ImportExportWebConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TImportExportWebConnectorsNamespace : TConfigurableMBRObject, IImportExportWebConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TImportExportWebConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TImportExportWebConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1142,69 +1246,20 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport.WebConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. Mailing Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TMailingNamespace : TConfigurableMBRObject, IMailingNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TMailingCacheableNamespace FMailingCacheableSubNamespace;
-        private TMailingUIConnectorsNamespace FMailingUIConnectorsSubNamespace;
-        private TMailingWebConnectorsNamespace FMailingWebConnectorsSubNamespace;
+        private TMailingCacheableNamespaceRemote FMailingCacheableSubNamespace;
+        private TMailingUIConnectorsNamespaceRemote FMailingUIConnectorsSubNamespace;
+        private TMailingWebConnectorsNamespaceRemote FMailingWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMailingNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TMailingNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1212,7 +1267,70 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
             return null; // make sure that the TMailingNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TMailingCacheableNamespaceRemote: IMailingCacheableNamespace
+        {
+            private IMailingCacheableNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TMailingCacheableNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IMailingCacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMailingCacheableNamespace));
+            }
+
+            /// generated method from interface
+            public System.Data.DataTable GetCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+                                                           System.String AHashCode,
+                                                           out System.Type AType)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,out AType);
+            }
+            /// generated method from interface
+            public void RefreshCacheableTable(TCacheableMailingTablesEnum ACacheableTable)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.RefreshCacheableTable(ACacheableTable);
+            }
+            /// generated method from interface
+            public void RefreshCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+                                              out System.Data.DataTable ADataTable)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.RefreshCacheableTable(ACacheableTable,out ADataTable);
+            }
+            /// generated method from interface
+            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableMailingTablesEnum ACacheableTable,
+                                                                          ref TTypedDataTable ASubmitTable,
+                                                                          out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,out AVerificationResult);
+            }
+        }
 
         /// <summary>The 'MailingCacheable' subnamespace contains further subnamespaces.</summary>
         public IMailingCacheableNamespace Cacheable
@@ -1232,13 +1350,37 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
                 // accessing TCacheableNamespace the first time? > instantiate the object
                 if (FMailingCacheableSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TMailingCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Mailing.Instantiator.Cacheable') should be automatically contructable.
-                    FMailingCacheableSubNamespace = new TMailingCacheableNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMailingCacheableNamespace");
+                    TMailingCacheableNamespace ObjectToRemote = new TMailingCacheableNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FMailingCacheableSubNamespace = new TMailingCacheableNamespaceRemote(ObjectURI);
                 }
 
                 return FMailingCacheableSubNamespace;
+            }
+
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TMailingUIConnectorsNamespaceRemote: IMailingUIConnectorsNamespace
+        {
+            private IMailingUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TMailingUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IMailingUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMailingUIConnectorsNamespace));
             }
 
         }
@@ -1261,15 +1403,81 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FMailingUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TMailingUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Mailing.Instantiator.UIConnectors') should be automatically contructable.
-                    FMailingUIConnectorsSubNamespace = new TMailingUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMailingUIConnectorsNamespace");
+                    TMailingUIConnectorsNamespace ObjectToRemote = new TMailingUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FMailingUIConnectorsSubNamespace = new TMailingUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FMailingUIConnectorsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TMailingWebConnectorsNamespaceRemote: IMailingWebConnectorsNamespace
+        {
+            private IMailingWebConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TMailingWebConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IMailingWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMailingWebConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public System.Boolean GetBestAddress(Int64 APartnerKey,
+                                                 out PLocationTable AAddress,
+                                                 out PPartnerLocationTable APartnerLocation,
+                                                 out System.String ACountryNameLocal,
+                                                 out System.String AEmailAddress)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetBestAddress(APartnerKey,out AAddress,out APartnerLocation,out ACountryNameLocal,out AEmailAddress);
+            }
+            /// generated method from interface
+            public BestAddressTDSLocationTable AddPostalAddress(ref DataTable APartnerTable,
+                                                                DataColumn APartnerKeyColumn,
+                                                                System.Boolean AIgnoreForeignAddresses)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.AddPostalAddress(ref APartnerTable,APartnerKeyColumn,AIgnoreForeignAddresses);
+            }
+            /// generated method from interface
+            public System.Boolean CreateExtractFromBestAddressTable(String AExtractName,
+                                                                    String AExtractDescription,
+                                                                    out Int32 ANewExtractId,
+                                                                    out Boolean AExtractAlreadyExists,
+                                                                    out TVerificationResultCollection AVerificationResults,
+                                                                    BestAddressTDSLocationTable ABestAddressTable,
+                                                                    System.Boolean AIncludeNonValidAddresses)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.CreateExtractFromBestAddressTable(AExtractName,AExtractDescription,out ANewExtractId,out AExtractAlreadyExists,out AVerificationResults,ABestAddressTable,AIncludeNonValidAddresses);
+            }
         }
 
         /// <summary>The 'MailingWebConnectors' subnamespace contains further subnamespaces.</summary>
@@ -1290,10 +1498,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
                 // accessing TWebConnectorsNamespace the first time? > instantiate the object
                 if (FMailingWebConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TMailingWebConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Mailing.Instantiator.WebConnectors') should be automatically contructable.
-                    FMailingWebConnectorsSubNamespace = new TMailingWebConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMailingWebConnectorsNamespace");
+                    TMailingWebConnectorsNamespace ObjectToRemote = new TMailingWebConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FMailingWebConnectorsSubNamespace = new TMailingWebConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FMailingWebConnectorsSubNamespace;
@@ -1305,12 +1518,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. MailingCacheable Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TMailingCacheableNamespace : TConfigurableMBRObject, IMailingCacheableNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         #region ManualCode
 
@@ -1320,59 +1533,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
         /// <summary>Constructor</summary>
         public TMailingCacheableNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
             #region ManualCode
             FCachePopulator = new Ict.Petra.Server.MPartner.Mailing.Cacheable.TPartnerCacheable();
             #endregion ManualCode
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TMailingCacheableNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1464,66 +1628,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.Cacheable
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. MailingUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TMailingUIConnectorsNamespace : TConfigurableMBRObject, IMailingUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TMailingUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TMailingUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1536,66 +1651,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.UIConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. MailingWebConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TMailingWebConnectorsNamespace : TConfigurableMBRObject, IMailingWebConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TMailingWebConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TMailingWebConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1640,71 +1706,22 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing.WebConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. Partner Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerNamespace : TConfigurableMBRObject, IPartnerNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TPartnerCacheableNamespace FPartnerCacheableSubNamespace;
-        private TPartnerDataElementsNamespace FPartnerDataElementsSubNamespace;
-        private TPartnerServerLookupsNamespace FPartnerServerLookupsSubNamespace;
-        private TPartnerUIConnectorsNamespace FPartnerUIConnectorsSubNamespace;
-        private TPartnerWebConnectorsNamespace FPartnerWebConnectorsSubNamespace;
+        private TPartnerCacheableNamespaceRemote FPartnerCacheableSubNamespace;
+        private TPartnerDataElementsNamespaceRemote FPartnerDataElementsSubNamespace;
+        private TPartnerServerLookupsNamespaceRemote FPartnerServerLookupsSubNamespace;
+        private TPartnerUIConnectorsNamespaceRemote FPartnerUIConnectorsSubNamespace;
+        private TPartnerWebConnectorsNamespaceRemote FPartnerWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPartnerNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1712,7 +1729,70 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
             return null; // make sure that the TPartnerNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerCacheableNamespaceRemote: IPartnerCacheableNamespace
+        {
+            private IPartnerCacheableNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerCacheableNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerCacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerCacheableNamespace));
+            }
+
+            /// generated method from interface
+            public System.Data.DataTable GetCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
+                                                           System.String AHashCode,
+                                                           out System.Type AType)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,out AType);
+            }
+            /// generated method from interface
+            public void RefreshCacheableTable(TCacheablePartnerTablesEnum ACacheableTable)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.RefreshCacheableTable(ACacheableTable);
+            }
+            /// generated method from interface
+            public void RefreshCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
+                                              out System.Data.DataTable ADataTable)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.RefreshCacheableTable(ACacheableTable,out ADataTable);
+            }
+            /// generated method from interface
+            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheablePartnerTablesEnum ACacheableTable,
+                                                                          ref TTypedDataTable ASubmitTable,
+                                                                          out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,out AVerificationResult);
+            }
+        }
 
         /// <summary>The 'PartnerCacheable' subnamespace contains further subnamespaces.</summary>
         public IPartnerCacheableNamespace Cacheable
@@ -1732,15 +1812,44 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 // accessing TCacheableNamespace the first time? > instantiate the object
                 if (FPartnerCacheableSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.Cacheable') should be automatically contructable.
-                    FPartnerCacheableSubNamespace = new TPartnerCacheableNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerCacheableNamespace");
+                    TPartnerCacheableNamespace ObjectToRemote = new TPartnerCacheableNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerCacheableSubNamespace = new TPartnerCacheableNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerCacheableSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerDataElementsNamespaceRemote: IPartnerDataElementsNamespace
+        {
+            private IPartnerDataElementsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerDataElementsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerDataElementsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerDataElementsNamespace));
+            }
+
+            /// property forwarder
+            public IPartnerDataElementsUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
         }
 
         /// <summary>The 'PartnerDataElements' subnamespace contains further subnamespaces.</summary>
@@ -1761,15 +1870,201 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 // accessing TDataElementsNamespace the first time? > instantiate the object
                 if (FPartnerDataElementsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerDataElementsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.DataElements') should be automatically contructable.
-                    FPartnerDataElementsSubNamespace = new TPartnerDataElementsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerDataElementsNamespace");
+                    TPartnerDataElementsNamespace ObjectToRemote = new TPartnerDataElementsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerDataElementsSubNamespace = new TPartnerDataElementsNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerDataElementsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerServerLookupsNamespaceRemote: IPartnerServerLookupsNamespace
+        {
+            private IPartnerServerLookupsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerServerLookupsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerServerLookupsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerServerLookupsNamespace));
+            }
+
+            /// generated method from interface
+            public Boolean GetPartnerShortName(Int64 APartnerKey,
+                                               out String APartnerShortName,
+                                               out TPartnerClass APartnerClass,
+                                               Boolean AMergedPartners)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetPartnerShortName(APartnerKey,out APartnerShortName,out APartnerClass,AMergedPartners);
+            }
+            /// generated method from interface
+            public Boolean GetPartnerShortName(Int64 APartnerKey,
+                                               out String APartnerShortName,
+                                               out TPartnerClass APartnerClass)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetPartnerShortName(APartnerKey,out APartnerShortName,out APartnerClass);
+            }
+            /// generated method from interface
+            public Boolean VerifyPartner(Int64 APartnerKey,
+                                         TPartnerClass[] AValidPartnerClasses,
+                                         out System.Boolean APartnerExists,
+                                         out String APartnerShortName,
+                                         out TPartnerClass APartnerClass,
+                                         out Boolean AIsMergedPartner)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.VerifyPartner(APartnerKey,AValidPartnerClasses,out APartnerExists,out APartnerShortName,out APartnerClass,out AIsMergedPartner);
+            }
+            /// generated method from interface
+            public Boolean VerifyPartner(Int64 APartnerKey,
+                                         out String APartnerShortName,
+                                         out TPartnerClass APartnerClass,
+                                         out Boolean AIsMergedPartner,
+                                         out Boolean AUserCanAccessPartner)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.VerifyPartner(APartnerKey,out APartnerShortName,out APartnerClass,out AIsMergedPartner,out AUserCanAccessPartner);
+            }
+            /// generated method from interface
+            public Boolean VerifyPartner(Int64 APartnerKey)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.VerifyPartner(APartnerKey);
+            }
+            /// generated method from interface
+            public Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
+                                                   TLocationPK ALocationKey,
+                                                   out Boolean AAddressNeitherCurrentNorMailing)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.VerifyPartnerAtLocation(APartnerKey,ALocationKey,out AAddressNeitherCurrentNorMailing);
+            }
+            /// generated method from interface
+            public Boolean MergedPartnerDetails(Int64 AMergedPartnerPartnerKey,
+                                                out String AMergedPartnerPartnerShortName,
+                                                out TPartnerClass AMergedPartnerPartnerClass,
+                                                out Int64 AMergedIntoPartnerKey,
+                                                out String AMergedIntoPartnerShortName,
+                                                out TPartnerClass AMergedIntoPartnerClass,
+                                                out String AMergedBy,
+                                                out DateTime AMergeDate)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.MergedPartnerDetails(AMergedPartnerPartnerKey,out AMergedPartnerPartnerShortName,out AMergedPartnerPartnerClass,out AMergedIntoPartnerKey,out AMergedIntoPartnerShortName,out AMergedIntoPartnerClass,out AMergedBy,out AMergeDate);
+            }
+            /// generated method from interface
+            public Boolean PartnerInfo(Int64 APartnerKey,
+                                       TPartnerInfoScopeEnum APartnerInfoScope,
+                                       out PartnerInfoTDS APartnerInfoDS)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerInfo(APartnerKey,APartnerInfoScope,out APartnerInfoDS);
+            }
+            /// generated method from interface
+            public Boolean PartnerInfo(Int64 APartnerKey,
+                                       TLocationPK ALocationKey,
+                                       TPartnerInfoScopeEnum APartnerInfoScope,
+                                       out PartnerInfoTDS APartnerInfoDS)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerInfo(APartnerKey,ALocationKey,APartnerInfoScope,out APartnerInfoDS);
+            }
+            /// generated method from interface
+            public Boolean GetExtractDescription(String AExtractName,
+                                                 out String AExtractDescription)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetExtractDescription(AExtractName,out AExtractDescription);
+            }
+            /// generated method from interface
+            public Boolean GetPartnerFoundationStatus(Int64 APartnerKey,
+                                                      out Boolean AIsFoundation)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetPartnerFoundationStatus(APartnerKey,out AIsFoundation);
+            }
+            /// generated method from interface
+            public Boolean GetRecentlyUsedPartners(System.Int32 AMaxPartnersCount,
+                                                   ArrayList APartnerClasses,
+                                                   out Dictionary<System.Int64, System.String>ARecentlyUsedPartners)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetRecentlyUsedPartners(AMaxPartnersCount,APartnerClasses,out ARecentlyUsedPartners);
+            }
+            /// generated method from interface
+            public Int64 GetFamilyKeyForPerson(Int64 APersonKey)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetFamilyKeyForPerson(APersonKey);
+            }
         }
 
         /// <summary>The 'PartnerServerLookups' subnamespace contains further subnamespaces.</summary>
@@ -1790,15 +2085,131 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 // accessing TServerLookupsNamespace the first time? > instantiate the object
                 if (FPartnerServerLookupsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerServerLookupsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.ServerLookups') should be automatically contructable.
-                    FPartnerServerLookupsSubNamespace = new TPartnerServerLookupsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerServerLookupsNamespace");
+                    TPartnerServerLookupsNamespace ObjectToRemote = new TPartnerServerLookupsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerServerLookupsSubNamespace = new TPartnerServerLookupsNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerServerLookupsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerUIConnectorsNamespaceRemote: IPartnerUIConnectorsNamespace
+        {
+            private IPartnerUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerUIConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerEdit(APartnerKey);
+            }
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerEdit PartnerEdit(System.Int64 APartnerKey,
+                                                               ref PartnerEditTDS ADataSet,
+                                                               Boolean ADelayedDataLoading,
+                                                               TPartnerEditTabPageEnum ATabPage)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerEdit(APartnerKey,ref ADataSet,ADelayedDataLoading,ATabPage);
+            }
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerEdit PartnerEdit(Int64 APartnerKey,
+                                                               Int64 ASiteKey,
+                                                               Int32 ALocationKey)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerEdit(APartnerKey,ASiteKey,ALocationKey);
+            }
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerEdit PartnerEdit(Int64 APartnerKey,
+                                                               Int64 ASiteKey,
+                                                               Int32 ALocationKey,
+                                                               ref PartnerEditTDS ADataSet,
+                                                               Boolean ADelayedDataLoading,
+                                                               TPartnerEditTabPageEnum ATabPage)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerEdit(APartnerKey,ASiteKey,ALocationKey,ref ADataSet,ADelayedDataLoading,ATabPage);
+            }
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerEdit PartnerEdit()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerEdit();
+            }
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerEdit PartnerEdit(ref PartnerEditTDS ADataSet,
+                                                               Boolean ADelayedDataLoading,
+                                                               TPartnerEditTabPageEnum ATabPage)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerEdit(ref ADataSet,ADelayedDataLoading,ATabPage);
+            }
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerFind PartnerFind()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerFind();
+            }
+            /// generated method from interface
+            public IPartnerUIConnectorsPartnerLocationFind PartnerLocationFind(DataTable ACriteriaData)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PartnerLocationFind(ACriteriaData);
+            }
         }
 
         /// <summary>The 'PartnerUIConnectors' subnamespace contains further subnamespaces.</summary>
@@ -1819,15 +2230,305 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FPartnerUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.UIConnectors') should be automatically contructable.
-                    FPartnerUIConnectorsSubNamespace = new TPartnerUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerUIConnectorsNamespace");
+                    TPartnerUIConnectorsNamespace ObjectToRemote = new TPartnerUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerUIConnectorsSubNamespace = new TPartnerUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerUIConnectorsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerWebConnectorsNamespaceRemote: IPartnerWebConnectorsNamespace
+        {
+            private IPartnerWebConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerWebConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerWebConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public System.Boolean AddContact(List<Int64>APartnerKeys,
+                                             DateTime AContactDate,
+                                             System.String AMethodOfContact,
+                                             System.String AComment,
+                                             System.String AModuleID,
+                                             System.String AMailingCode,
+                                             out TVerificationResultCollection AVerificationResults)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.AddContact(APartnerKeys,AContactDate,AMethodOfContact,AComment,AModuleID,AMailingCode,out AVerificationResults);
+            }
+            /// generated method from interface
+            public PPartnerContactTable FindContacts(System.String AContactor,
+                                                     System.Nullable<DateTime>AContactDate,
+                                                     System.String ACommentContains,
+                                                     System.String AMethodOfContact,
+                                                     System.String AModuleID,
+                                                     System.String AMailingCode)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.FindContacts(AContactor,AContactDate,ACommentContains,AMethodOfContact,AModuleID,AMailingCode);
+            }
+            /// generated method from interface
+            public System.Boolean DeleteContacts(PPartnerContactTable APartnerContacts,
+                                                 out TVerificationResultCollection AVerificationResults)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.DeleteContacts(APartnerContacts,out AVerificationResults);
+            }
+            /// generated method from interface
+            public MExtractMasterTable GetAllExtractHeaders()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetAllExtractHeaders();
+            }
+            /// generated method from interface
+            public MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                            Boolean AAllUsers,
+                                                            String AUserCreated,
+                                                            String AUserModified)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetAllExtractHeaders(AExtractNameFilter,AAllUsers,AUserCreated,AUserModified);
+            }
+            /// generated method from interface
+            public Boolean ExtractExists(String AExtractName)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ExtractExists(AExtractName);
+            }
+            /// generated method from interface
+            public Boolean CreateEmptyExtract(ref System.Int32 AExtractId,
+                                              String AExtractName,
+                                              String AExtractDescription)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.CreateEmptyExtract(ref AExtractId,AExtractName,AExtractDescription);
+            }
+            /// generated method from interface
+            public Boolean PurgeExtracts(System.Int32 ANumberOfDays,
+                                         Boolean AAllUsers,
+                                         String AUserName)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.PurgeExtracts(ANumberOfDays,AAllUsers,AUserName);
+            }
+            /// generated method from interface
+            public ExtractTDSMExtractTable GetExtractRowsWithPartnerData(System.Int32 AExtractId)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetExtractRowsWithPartnerData(AExtractId);
+            }
+            /// generated method from interface
+            public TSubmitChangesResult SaveExtractMaster(ref MExtractMasterTable AExtractMasterTable,
+                                                          out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SaveExtractMaster(ref AExtractMasterTable,out AVerificationResult);
+            }
+            /// generated method from interface
+            public TSubmitChangesResult SaveExtract(System.Int32 AExtractId,
+                                                    ref MExtractTable AExtractTable,
+                                                    out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SaveExtract(AExtractId,ref AExtractTable,out AVerificationResult);
+            }
+            /// generated method from interface
+            public System.Boolean AddRecentlyUsedPartner(Int64 APartnerKey,
+                                                         TPartnerClass APartnerClass,
+                                                         Boolean ANewPartner,
+                                                         TLastPartnerUse ALastPartnerUse)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.AddRecentlyUsedPartner(APartnerKey,APartnerClass,ANewPartner,ALastPartnerUse);
+            }
+            /// generated method from interface
+            public TLocationPK DetermineBestAddress(Int64 APartnerKey)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.DetermineBestAddress(APartnerKey);
+            }
+            /// generated method from interface
+            public System.Boolean ChangeFamily(Int64 APersonKey,
+                                               Int64 AOldFamilyKey,
+                                               Int64 ANewFamilyKey,
+                                               out String AProblemMessage,
+                                               out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ChangeFamily(APersonKey,AOldFamilyKey,ANewFamilyKey,out AProblemMessage,out AVerificationResult);
+            }
+            /// generated method from interface
+            public Int64 GetBankBySortCode(System.String ABranchCode)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetBankBySortCode(ABranchCode);
+            }
+            /// generated method from interface
+            public PUnitTable GetConferenceUnits(System.String AConferenceName)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetConferenceUnits(AConferenceName);
+            }
+            /// generated method from interface
+            public PUnitTable GetOutreachUnits(System.String AOutreachName)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetOutreachUnits(AOutreachName);
+            }
+            /// generated method from interface
+            public PUnitTable GetActiveFieldUnits(System.String AFieldName)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetActiveFieldUnits(AFieldName);
+            }
+            /// generated method from interface
+            public PUnitTable GetLedgerUnits(System.String ALedgerName)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetLedgerUnits(ALedgerName);
+            }
+            /// generated method from interface
+            public Int64 NewPartnerKey(Int64 AFieldPartnerKey)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.NewPartnerKey(AFieldPartnerKey);
+            }
+            /// generated method from interface
+            public PartnerEditTDS GetPartnerDetails(Int64 APartnerKey,
+                                                    System.Boolean AWithAddressDetails,
+                                                    System.Boolean AWithSubscriptions,
+                                                    System.Boolean AWithRelationships)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetPartnerDetails(APartnerKey,AWithAddressDetails,AWithSubscriptions,AWithRelationships);
+            }
+            /// generated method from interface
+            public System.Boolean SavePartner(PartnerEditTDS AMainDS,
+                                              out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SavePartner(AMainDS,out AVerificationResult);
+            }
+            /// generated method from interface
+            public PartnerFindTDS FindPartners(System.String AFirstName,
+                                               System.String AFamilyNameOrOrganisation,
+                                               System.String ACity,
+                                               StringCollection APartnerClasses)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.FindPartners(AFirstName,AFamilyNameOrOrganisation,ACity,APartnerClasses);
+            }
         }
 
         /// <summary>The 'PartnerWebConnectors' subnamespace contains further subnamespaces.</summary>
@@ -1848,10 +2549,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 // accessing TWebConnectorsNamespace the first time? > instantiate the object
                 if (FPartnerWebConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerWebConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Partner.Instantiator.WebConnectors') should be automatically contructable.
-                    FPartnerWebConnectorsSubNamespace = new TPartnerWebConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerWebConnectorsNamespace");
+                    TPartnerWebConnectorsNamespace ObjectToRemote = new TPartnerWebConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerWebConnectorsSubNamespace = new TPartnerWebConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerWebConnectorsSubNamespace;
@@ -1863,74 +2569,25 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PartnerCacheable Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerCacheableNamespace : TConfigurableMBRObject, IPartnerCacheableNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
         private Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable FCachePopulator;
         #endregion ManualCode
+
         /// <summary>Constructor</summary>
         public TPartnerCacheableNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
             #region ManualCode
             FCachePopulator = new Ict.Petra.Server.MPartner.Partner.Cacheable.TPartnerCacheable();
             #endregion ManualCode
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerCacheableNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -2022,67 +2679,18 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.Cacheable
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PartnerDataElements Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerDataElementsNamespace : TConfigurableMBRObject, IPartnerDataElementsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TPartnerDataElementsUIConnectorsNamespace FPartnerDataElementsUIConnectorsSubNamespace;
+        private TPartnerDataElementsUIConnectorsNamespaceRemote FPartnerDataElementsUIConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPartnerDataElementsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerDataElementsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -2090,7 +2698,37 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
             return null; // make sure that the TPartnerDataElementsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerDataElementsUIConnectorsNamespaceRemote: IPartnerDataElementsUIConnectorsNamespace
+        {
+            private IPartnerDataElementsUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerDataElementsUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerDataElementsUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerDataElementsUIConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
+                                                                                                                                               Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                               out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.OfficeSpecificDataLabels(APartnerKey,AOfficeSpecificDataLabelUse,out AOfficeSpecificDataLabelsDataSet);
+            }
+        }
 
         /// <summary>The 'PartnerDataElementsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerDataElementsUIConnectorsNamespace UIConnectors
@@ -2110,10 +2748,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FPartnerDataElementsUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerDataElementsUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PartnerDataElements.Instantiator.UIConnectors') should be automatically contructable.
-                    FPartnerDataElementsUIConnectorsSubNamespace = new TPartnerDataElementsUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerDataElementsUIConnectorsNamespace");
+                    TPartnerDataElementsUIConnectorsNamespace ObjectToRemote = new TPartnerDataElementsUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerDataElementsUIConnectorsSubNamespace = new TPartnerDataElementsUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerDataElementsUIConnectorsSubNamespace;
@@ -2125,66 +2768,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PartnerDataElementsUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerDataElementsUIConnectorsNamespace : TConfigurableMBRObject, IPartnerDataElementsUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPartnerDataElementsUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerDataElementsUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -2197,30 +2791,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
                                                                                                                                            Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
                                                                                                                                            out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Creating TOfficeSpecificDataLabelsUIConnector...");
-            }
-
-#endif
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData...");
-            }
-
-#endif
             AOfficeSpecificDataLabelsDataSet = ReturnValue.GetData();
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData finished.");
-            }
-
-#endif
             return ReturnValue;
         }
     }
@@ -2228,66 +2801,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PartnerServerLookups Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerServerLookupsNamespace : TConfigurableMBRObject, IPartnerServerLookupsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPartnerServerLookupsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerServerLookupsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -2457,66 +2981,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.ServerLookups
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PartnerUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerUIConnectorsNamespace : TConfigurableMBRObject, IPartnerUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPartnerUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -2536,30 +3011,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
                                                            Boolean ADelayedDataLoading,
                                                            TPartnerEditTabPageEnum ATabPage)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Creating TPartnerEditUIConnector...");
-            }
-
-#endif
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector(APartnerKey);
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TPartnerEditUIConnector.GetData...");
-            }
-
-#endif
             ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TPartnerEditUIConnector.GetData finished.");
-            }
-
-#endif
             return ReturnValue;
         }
 
@@ -2579,30 +3033,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
                                                            Boolean ADelayedDataLoading,
                                                            TPartnerEditTabPageEnum ATabPage)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Creating TPartnerEditUIConnector...");
-            }
-
-#endif
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector(APartnerKey, ASiteKey, ALocationKey);
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TPartnerEditUIConnector.GetData...");
-            }
-
-#endif
             ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TPartnerEditUIConnector.GetData finished.");
-            }
-
-#endif
             return ReturnValue;
         }
 
@@ -2617,30 +3050,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
                                                            Boolean ADelayedDataLoading,
                                                            TPartnerEditTabPageEnum ATabPage)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Creating TPartnerEditUIConnector...");
-            }
-
-#endif
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector();
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TPartnerEditUIConnector.GetData...");
-            }
-
-#endif
             ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TPartnerEditUIConnector.GetData finished.");
-            }
-
-#endif
             return ReturnValue;
         }
 
@@ -2660,66 +3072,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PartnerWebConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerWebConnectorsNamespace : TConfigurableMBRObject, IPartnerWebConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPartnerWebConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerWebConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -2928,67 +3291,18 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PartnerMerge Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerMergeNamespace : TConfigurableMBRObject, IPartnerMergeNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TPartnerMergeUIConnectorsNamespace FPartnerMergeUIConnectorsSubNamespace;
+        private TPartnerMergeUIConnectorsNamespaceRemote FPartnerMergeUIConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPartnerMergeNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerMergeNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -2996,7 +3310,25 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
             return null; // make sure that the TPartnerMergeNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPartnerMergeUIConnectorsNamespaceRemote: IPartnerMergeUIConnectorsNamespace
+        {
+            private IPartnerMergeUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPartnerMergeUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPartnerMergeUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPartnerMergeUIConnectorsNamespace));
+            }
+
+        }
 
         /// <summary>The 'PartnerMergeUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerMergeUIConnectorsNamespace UIConnectors
@@ -3016,10 +3348,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FPartnerMergeUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPartnerMergeUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PartnerMerge.Instantiator.UIConnectors') should be automatically contructable.
-                    FPartnerMergeUIConnectorsSubNamespace = new TPartnerMergeUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPartnerMergeUIConnectorsNamespace");
+                    TPartnerMergeUIConnectorsNamespace ObjectToRemote = new TPartnerMergeUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPartnerMergeUIConnectorsSubNamespace = new TPartnerMergeUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FPartnerMergeUIConnectorsSubNamespace;
@@ -3031,66 +3368,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
 
 namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PartnerMergeUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPartnerMergeUIConnectorsNamespace : TConfigurableMBRObject, IPartnerMergeUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPartnerMergeUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPartnerMergeUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -3103,68 +3391,19 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge.UIConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. Subscriptions Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TSubscriptionsNamespace : TConfigurableMBRObject, ISubscriptionsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TSubscriptionsCacheableNamespace FSubscriptionsCacheableSubNamespace;
-        private TSubscriptionsUIConnectorsNamespace FSubscriptionsUIConnectorsSubNamespace;
+        private TSubscriptionsCacheableNamespaceRemote FSubscriptionsCacheableSubNamespace;
+        private TSubscriptionsUIConnectorsNamespaceRemote FSubscriptionsUIConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TSubscriptionsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TSubscriptionsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -3172,7 +3411,70 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
             return null; // make sure that the TSubscriptionsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TSubscriptionsCacheableNamespaceRemote: ISubscriptionsCacheableNamespace
+        {
+            private ISubscriptionsCacheableNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TSubscriptionsCacheableNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ISubscriptionsCacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISubscriptionsCacheableNamespace));
+            }
+
+            /// generated method from interface
+            public System.Data.DataTable GetCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
+                                                           System.String AHashCode,
+                                                           out System.Type AType)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,out AType);
+            }
+            /// generated method from interface
+            public void RefreshCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.RefreshCacheableTable(ACacheableTable);
+            }
+            /// generated method from interface
+            public void RefreshCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
+                                              out System.Data.DataTable ADataTable)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.RefreshCacheableTable(ACacheableTable,out ADataTable);
+            }
+            /// generated method from interface
+            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableSubscriptionsTablesEnum ACacheableTable,
+                                                                          ref TTypedDataTable ASubmitTable,
+                                                                          out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,out AVerificationResult);
+            }
+        }
 
         /// <summary>The 'SubscriptionsCacheable' subnamespace contains further subnamespaces.</summary>
         public ISubscriptionsCacheableNamespace Cacheable
@@ -3192,13 +3494,37 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
                 // accessing TCacheableNamespace the first time? > instantiate the object
                 if (FSubscriptionsCacheableSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TSubscriptionsCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Subscriptions.Instantiator.Cacheable') should be automatically contructable.
-                    FSubscriptionsCacheableSubNamespace = new TSubscriptionsCacheableNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSubscriptionsCacheableNamespace");
+                    TSubscriptionsCacheableNamespace ObjectToRemote = new TSubscriptionsCacheableNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FSubscriptionsCacheableSubNamespace = new TSubscriptionsCacheableNamespaceRemote(ObjectURI);
                 }
 
                 return FSubscriptionsCacheableSubNamespace;
+            }
+
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TSubscriptionsUIConnectorsNamespaceRemote: ISubscriptionsUIConnectorsNamespace
+        {
+            private ISubscriptionsUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TSubscriptionsUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ISubscriptionsUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISubscriptionsUIConnectorsNamespace));
             }
 
         }
@@ -3221,10 +3547,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FSubscriptionsUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TSubscriptionsUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Subscriptions.Instantiator.UIConnectors') should be automatically contructable.
-                    FSubscriptionsUIConnectorsSubNamespace = new TSubscriptionsUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSubscriptionsUIConnectorsNamespace");
+                    TSubscriptionsUIConnectorsNamespace ObjectToRemote = new TSubscriptionsUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FSubscriptionsUIConnectorsSubNamespace = new TSubscriptionsUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FSubscriptionsUIConnectorsSubNamespace;
@@ -3236,12 +3567,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. SubscriptionsCacheable Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TSubscriptionsCacheableNamespace : TConfigurableMBRObject, ISubscriptionsCacheableNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         #region ManualCode
 
@@ -3251,59 +3582,10 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
         /// <summary>Constructor</summary>
         public TSubscriptionsCacheableNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
             #region ManualCode
             FCachePopulator = new Ict.Petra.Server.MPartner.Subscriptions.Cacheable.TPartnerCacheable();
             #endregion ManualCode
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TSubscriptionsCacheableNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -3395,66 +3677,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.Cacheable
 
 namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. SubscriptionsUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TSubscriptionsUIConnectorsNamespace : TConfigurableMBRObject, ISubscriptionsUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TSubscriptionsUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TSubscriptionsUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -3467,68 +3700,19 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions.UIConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. TableMaintenance Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceNamespace : TConfigurableMBRObject, ITableMaintenanceNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TTableMaintenanceUIConnectorsNamespace FTableMaintenanceUIConnectorsSubNamespace;
-        private TTableMaintenanceWebConnectorsNamespace FTableMaintenanceWebConnectorsSubNamespace;
+        private TTableMaintenanceUIConnectorsNamespaceRemote FTableMaintenanceUIConnectorsSubNamespace;
+        private TTableMaintenanceWebConnectorsNamespaceRemote FTableMaintenanceWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TTableMaintenanceNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TTableMaintenanceNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -3536,7 +3720,25 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TTableMaintenanceUIConnectorsNamespaceRemote: ITableMaintenanceUIConnectorsNamespace
+        {
+            private ITableMaintenanceUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TTableMaintenanceUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ITableMaintenanceUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ITableMaintenanceUIConnectorsNamespace));
+            }
+
+        }
 
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors
@@ -3556,15 +3758,60 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FTableMaintenanceUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TTableMaintenanceUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.TableMaintenance.Instantiator.UIConnectors') should be automatically contructable.
-                    FTableMaintenanceUIConnectorsSubNamespace = new TTableMaintenanceUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TTableMaintenanceUIConnectorsNamespace");
+                    TTableMaintenanceUIConnectorsNamespace ObjectToRemote = new TTableMaintenanceUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FTableMaintenanceUIConnectorsSubNamespace = new TTableMaintenanceUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FTableMaintenanceUIConnectorsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TTableMaintenanceWebConnectorsNamespaceRemote: ITableMaintenanceWebConnectorsNamespace
+        {
+            private ITableMaintenanceWebConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TTableMaintenanceWebConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ITableMaintenanceWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ITableMaintenanceWebConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public PartnerSetupTDS LoadPartnerTypes()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.LoadPartnerTypes();
+            }
+            /// generated method from interface
+            public TSubmitChangesResult SavePartnerMaintenanceTables(ref PartnerSetupTDS AInspectDS,
+                                                                     out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SavePartnerMaintenanceTables(ref AInspectDS,out AVerificationResult);
+            }
         }
 
         /// <summary>The 'TableMaintenanceWebConnectors' subnamespace contains further subnamespaces.</summary>
@@ -3585,10 +3832,15 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
                 // accessing TWebConnectorsNamespace the first time? > instantiate the object
                 if (FTableMaintenanceWebConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TTableMaintenanceWebConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.TableMaintenance.Instantiator.WebConnectors') should be automatically contructable.
-                    FTableMaintenanceWebConnectorsSubNamespace = new TTableMaintenanceWebConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TTableMaintenanceWebConnectorsNamespace");
+                    TTableMaintenanceWebConnectorsNamespace ObjectToRemote = new TTableMaintenanceWebConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FTableMaintenanceWebConnectorsSubNamespace = new TTableMaintenanceWebConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FTableMaintenanceWebConnectorsSubNamespace;
@@ -3600,66 +3852,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
 
 namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. TableMaintenanceUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceUIConnectorsNamespace : TConfigurableMBRObject, ITableMaintenanceUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TTableMaintenanceUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TTableMaintenanceUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -3672,66 +3875,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.UIConnectors
 
 namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance.WebConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. TableMaintenanceWebConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceWebConnectorsNamespace : TConfigurableMBRObject, ITableMaintenanceWebConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TTableMaintenanceWebConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TTableMaintenanceWebConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()

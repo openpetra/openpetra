@@ -44,6 +44,7 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -123,15 +124,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
         /// <summary>the remoted object</summary>
         private TMPersonnel FRemotedObject;
 
-        /// <summary>Constructor</summary>
-        public TMPersonnelNamespaceLoader()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
-            }
-        }
-
         /// <summary>
         /// Creates and dynamically exposes an instance of the remoteable TMPersonnel
         /// class to make it callable remotely from the Client.
@@ -147,32 +139,13 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            DateTime RemotingTime;
-            String RemoteAtURI;
-            String RandomString;
-            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-            Byte rndbytespos;
-            Byte[] rndbytes = new Byte[5];
-
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMPersonnelNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
 
-            RandomString = "";
-            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rnd.GetBytes(rndbytes);
-
-            for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
-            {
-                RandomString = RandomString + rndbytes[rndbytespos].ToString();
-            }
-
-            RemotingTime = DateTime.Now;
             FRemotedObject = new TMPersonnel();
-            RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                          (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotingURL = RemoteAtURI;
+            FRemotingURL = TConfigurableMBRObject.BuildRandomURI("TMPersonnelNamespaceLoader");
 
             return FRemotingURL;
         }
@@ -192,67 +165,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
     /// <summary>auto generated class </summary>
     public class TMPersonnel : TConfigurableMBRObject, IMPersonnelNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TWebConnectorsNamespace FWebConnectorsSubNamespace;
-        private TPersonNamespace FPersonSubNamespace;
-        private TTableMaintenanceNamespace FTableMaintenanceSubNamespace;
-        private TUnitsNamespace FUnitsSubNamespace;
+        private TWebConnectorsNamespaceRemote FWebConnectorsSubNamespace;
+        private TPersonNamespaceRemote FPersonSubNamespace;
+        private TTableMaintenanceNamespaceRemote FTableMaintenanceSubNamespace;
+        private TUnitsNamespaceRemote FUnitsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TMPersonnel()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TMPersonnel()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -260,7 +181,68 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             return null; // make sure that the TMPersonnel object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TWebConnectorsNamespaceRemote: IWebConnectorsNamespace
+        {
+            private IWebConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TWebConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IWebConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public TSubmitChangesResult SavePersonnelTDS(ref PersonnelTDS AInspectDS,
+                                                         out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SavePersonnelTDS(ref AInspectDS,out AVerificationResult);
+            }
+            /// generated method from interface
+            public PersonnelTDS LoadPersonellStaffData(Int64 APartnerKey)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.LoadPersonellStaffData(APartnerKey);
+            }
+            /// generated method from interface
+            public System.Boolean HasCurrentCommitmentRecord(Int64 APartnerKey)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.HasCurrentCommitmentRecord(APartnerKey);
+            }
+            /// generated method from interface
+            public System.Int32 GetOrCreateUmJobKey(Int64 AUnitKey,
+                                                    System.String APositionName,
+                                                    System.String APositionScope)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetOrCreateUmJobKey(AUnitKey,APositionName,APositionScope);
+            }
+        }
 
         /// <summary>The 'WebConnectors' subnamespace contains further subnamespaces.</summary>
         public IWebConnectorsNamespace WebConnectors
@@ -280,15 +262,49 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
                 // accessing TWebConnectorsNamespace the first time? > instantiate the object
                 if (FWebConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TWebConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors') should be automatically contructable.
-                    FWebConnectorsSubNamespace = new TWebConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TWebConnectorsNamespace");
+                    TWebConnectorsNamespace ObjectToRemote = new TWebConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FWebConnectorsSubNamespace = new TWebConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FWebConnectorsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonNamespaceRemote: IPersonNamespace
+        {
+            private IPersonNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonNamespace));
+            }
+
+            /// property forwarder
+            public IPersonDataElementsNamespace DataElements
+            {
+                get { return RemoteObject.DataElements; }
+            }
+            /// property forwarder
+            public IPersonShepherdsNamespace Shepherds
+            {
+                get { return RemoteObject.Shepherds; }
+            }
         }
 
         /// <summary>The 'Person' subnamespace contains further subnamespaces.</summary>
@@ -309,15 +325,44 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
                 // accessing TPersonNamespace the first time? > instantiate the object
                 if (FPersonSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPersonnel.Instantiator.Person') should be automatically contructable.
-                    FPersonSubNamespace = new TPersonNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonNamespace");
+                    TPersonNamespace ObjectToRemote = new TPersonNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonSubNamespace = new TPersonNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TTableMaintenanceNamespaceRemote: ITableMaintenanceNamespace
+        {
+            private ITableMaintenanceNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TTableMaintenanceNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ITableMaintenanceNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ITableMaintenanceNamespace));
+            }
+
+            /// property forwarder
+            public ITableMaintenanceUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
         }
 
         /// <summary>The 'TableMaintenance' subnamespace contains further subnamespaces.</summary>
@@ -338,15 +383,44 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
                 // accessing TTableMaintenanceNamespace the first time? > instantiate the object
                 if (FTableMaintenanceSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TTableMaintenanceNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance') should be automatically contructable.
-                    FTableMaintenanceSubNamespace = new TTableMaintenanceNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TTableMaintenanceNamespace");
+                    TTableMaintenanceNamespace ObjectToRemote = new TTableMaintenanceNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FTableMaintenanceSubNamespace = new TTableMaintenanceNamespaceRemote(ObjectURI);
                 }
 
                 return FTableMaintenanceSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TUnitsNamespaceRemote: IUnitsNamespace
+        {
+            private IUnitsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TUnitsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IUnitsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IUnitsNamespace));
+            }
+
+            /// property forwarder
+            public IUnitsDataElementsNamespace DataElements
+            {
+                get { return RemoteObject.DataElements; }
+            }
         }
 
         /// <summary>The 'Units' subnamespace contains further subnamespaces.</summary>
@@ -367,10 +441,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
                 // accessing TUnitsNamespace the first time? > instantiate the object
                 if (FUnitsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUnitsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.MPersonnel.Instantiator.Units') should be automatically contructable.
-                    FUnitsSubNamespace = new TUnitsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TUnitsNamespace");
+                    TUnitsNamespace ObjectToRemote = new TUnitsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FUnitsSubNamespace = new TUnitsNamespaceRemote(ObjectURI);
                 }
 
                 return FUnitsSubNamespace;
@@ -382,66 +461,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. WebConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TWebConnectorsNamespace : TConfigurableMBRObject, IWebConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TWebConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TWebConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -484,68 +514,19 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. Person Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonNamespace : TConfigurableMBRObject, IPersonNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TPersonDataElementsNamespace FPersonDataElementsSubNamespace;
-        private TPersonShepherdsNamespace FPersonShepherdsSubNamespace;
+        private TPersonDataElementsNamespaceRemote FPersonDataElementsSubNamespace;
+        private TPersonShepherdsNamespaceRemote FPersonShepherdsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPersonNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -553,7 +534,45 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
             return null; // make sure that the TPersonNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonDataElementsNamespaceRemote: IPersonDataElementsNamespace
+        {
+            private IPersonDataElementsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonDataElementsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonDataElementsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonDataElementsNamespace));
+            }
+
+            /// property forwarder
+            public IPersonDataElementsApplicationsNamespace Applications
+            {
+                get { return RemoteObject.Applications; }
+            }
+            /// property forwarder
+            public IPersonDataElementsCacheableNamespace Cacheable
+            {
+                get { return RemoteObject.Cacheable; }
+            }
+            /// property forwarder
+            public IPersonDataElementsUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
+            /// property forwarder
+            public IPersonDataElementsWebConnectorsNamespace WebConnectors
+            {
+                get { return RemoteObject.WebConnectors; }
+            }
+        }
 
         /// <summary>The 'PersonDataElements' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsNamespace DataElements
@@ -573,15 +592,44 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
                 // accessing TDataElementsNamespace the first time? > instantiate the object
                 if (FPersonDataElementsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonDataElementsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Person.Instantiator.DataElements') should be automatically contructable.
-                    FPersonDataElementsSubNamespace = new TPersonDataElementsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonDataElementsNamespace");
+                    TPersonDataElementsNamespace ObjectToRemote = new TPersonDataElementsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonDataElementsSubNamespace = new TPersonDataElementsNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonDataElementsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonShepherdsNamespaceRemote: IPersonShepherdsNamespace
+        {
+            private IPersonShepherdsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonShepherdsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonShepherdsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonShepherdsNamespace));
+            }
+
+            /// property forwarder
+            public IPersonShepherdsUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
         }
 
         /// <summary>The 'PersonShepherds' subnamespace contains further subnamespaces.</summary>
@@ -602,10 +650,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
                 // accessing TShepherdsNamespace the first time? > instantiate the object
                 if (FPersonShepherdsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonShepherdsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Person.Instantiator.Shepherds') should be automatically contructable.
-                    FPersonShepherdsSubNamespace = new TPersonShepherdsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonShepherdsNamespace");
+                    TPersonShepherdsNamespace ObjectToRemote = new TPersonShepherdsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonShepherdsSubNamespace = new TPersonShepherdsNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonShepherdsSubNamespace;
@@ -617,70 +670,21 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonDataElements Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsNamespace : TConfigurableMBRObject, IPersonDataElementsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TPersonDataElementsApplicationsNamespace FPersonDataElementsApplicationsSubNamespace;
-        private TPersonDataElementsCacheableNamespace FPersonDataElementsCacheableSubNamespace;
-        private TPersonDataElementsUIConnectorsNamespace FPersonDataElementsUIConnectorsSubNamespace;
-        private TPersonDataElementsWebConnectorsNamespace FPersonDataElementsWebConnectorsSubNamespace;
+        private TPersonDataElementsApplicationsNamespaceRemote FPersonDataElementsApplicationsSubNamespace;
+        private TPersonDataElementsCacheableNamespaceRemote FPersonDataElementsCacheableSubNamespace;
+        private TPersonDataElementsUIConnectorsNamespaceRemote FPersonDataElementsUIConnectorsSubNamespace;
+        private TPersonDataElementsWebConnectorsNamespaceRemote FPersonDataElementsWebConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPersonDataElementsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonDataElementsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -688,7 +692,35 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
             return null; // make sure that the TPersonDataElementsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonDataElementsApplicationsNamespaceRemote: IPersonDataElementsApplicationsNamespace
+        {
+            private IPersonDataElementsApplicationsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonDataElementsApplicationsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonDataElementsApplicationsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonDataElementsApplicationsNamespace));
+            }
+
+            /// property forwarder
+            public IPersonDataElementsApplicationsCacheableNamespace Cacheable
+            {
+                get { return RemoteObject.Cacheable; }
+            }
+            /// property forwarder
+            public IPersonDataElementsApplicationsUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
+        }
 
         /// <summary>The 'PersonDataElementsApplications' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsApplicationsNamespace Applications
@@ -708,15 +740,63 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
                 // accessing TApplicationsNamespace the first time? > instantiate the object
                 if (FPersonDataElementsApplicationsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonDataElementsApplicationsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElements.Instantiator.Applications') should be automatically contructable.
-                    FPersonDataElementsApplicationsSubNamespace = new TPersonDataElementsApplicationsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonDataElementsApplicationsNamespace");
+                    TPersonDataElementsApplicationsNamespace ObjectToRemote = new TPersonDataElementsApplicationsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonDataElementsApplicationsSubNamespace = new TPersonDataElementsApplicationsNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonDataElementsApplicationsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonDataElementsCacheableNamespaceRemote: IPersonDataElementsCacheableNamespace
+        {
+            private IPersonDataElementsCacheableNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonDataElementsCacheableNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonDataElementsCacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonDataElementsCacheableNamespace));
+            }
+
+            /// generated method from interface
+            public System.Data.DataTable GetCacheableTable(TCacheablePersonTablesEnum ACacheableTable,
+                                                           System.String AHashCode,
+                                                           out System.Type AType)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,out AType);
+            }
+            /// generated method from interface
+            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheablePersonTablesEnum ACacheableTable,
+                                                                          ref TTypedDataTable ASubmitTable,
+                                                                          out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,out AVerificationResult);
+            }
         }
 
         /// <summary>The 'PersonDataElementsCacheable' subnamespace contains further subnamespaces.</summary>
@@ -737,15 +817,51 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
                 // accessing TCacheableNamespace the first time? > instantiate the object
                 if (FPersonDataElementsCacheableSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonDataElementsCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElements.Instantiator.Cacheable') should be automatically contructable.
-                    FPersonDataElementsCacheableSubNamespace = new TPersonDataElementsCacheableNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonDataElementsCacheableNamespace");
+                    TPersonDataElementsCacheableNamespace ObjectToRemote = new TPersonDataElementsCacheableNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonDataElementsCacheableSubNamespace = new TPersonDataElementsCacheableNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonDataElementsCacheableSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonDataElementsUIConnectorsNamespaceRemote: IPersonDataElementsUIConnectorsNamespace
+        {
+            private IPersonDataElementsUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonDataElementsUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonDataElementsUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonDataElementsUIConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
+                                                                                                                                               Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                               out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.OfficeSpecificDataLabels(APartnerKey,AOfficeSpecificDataLabelUse,out AOfficeSpecificDataLabelsDataSet);
+            }
         }
 
         /// <summary>The 'PersonDataElementsUIConnectors' subnamespace contains further subnamespaces.</summary>
@@ -766,15 +882,61 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FPersonDataElementsUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonDataElementsUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElements.Instantiator.UIConnectors') should be automatically contructable.
-                    FPersonDataElementsUIConnectorsSubNamespace = new TPersonDataElementsUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonDataElementsUIConnectorsNamespace");
+                    TPersonDataElementsUIConnectorsNamespace ObjectToRemote = new TPersonDataElementsUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonDataElementsUIConnectorsSubNamespace = new TPersonDataElementsUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonDataElementsUIConnectorsSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonDataElementsWebConnectorsNamespaceRemote: IPersonDataElementsWebConnectorsNamespace
+        {
+            private IPersonDataElementsWebConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonDataElementsWebConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonDataElementsWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonDataElementsWebConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public IndividualDataTDS GetData(Int64 APartnerKey,
+                                             TIndividualDataItemEnum AIndivDataItem)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetData(APartnerKey,AIndivDataItem);
+            }
+            /// generated method from interface
+            public System.Boolean GetSummaryData(Int64 APartnerKey,
+                                                 ref IndividualDataTDS AIndividualDataDS)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetSummaryData(APartnerKey,ref AIndividualDataDS);
+            }
         }
 
         /// <summary>The 'PersonDataElementsWebConnectors' subnamespace contains further subnamespaces.</summary>
@@ -795,10 +957,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
                 // accessing TWebConnectorsNamespace the first time? > instantiate the object
                 if (FPersonDataElementsWebConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonDataElementsWebConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElements.Instantiator.WebConnectors') should be automatically contructable.
-                    FPersonDataElementsWebConnectorsSubNamespace = new TPersonDataElementsWebConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonDataElementsWebConnectorsNamespace");
+                    TPersonDataElementsWebConnectorsNamespace ObjectToRemote = new TPersonDataElementsWebConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonDataElementsWebConnectorsSubNamespace = new TPersonDataElementsWebConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonDataElementsWebConnectorsSubNamespace;
@@ -810,68 +977,19 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonDataElementsApplications Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsApplicationsNamespace : TConfigurableMBRObject, IPersonDataElementsApplicationsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TPersonDataElementsApplicationsCacheableNamespace FPersonDataElementsApplicationsCacheableSubNamespace;
-        private TPersonDataElementsApplicationsUIConnectorsNamespace FPersonDataElementsApplicationsUIConnectorsSubNamespace;
+        private TPersonDataElementsApplicationsCacheableNamespaceRemote FPersonDataElementsApplicationsCacheableSubNamespace;
+        private TPersonDataElementsApplicationsUIConnectorsNamespaceRemote FPersonDataElementsApplicationsUIConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPersonDataElementsApplicationsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonDataElementsApplicationsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -879,7 +997,35 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
             return null; // make sure that the TPersonDataElementsApplicationsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonDataElementsApplicationsCacheableNamespaceRemote: IPersonDataElementsApplicationsCacheableNamespace
+        {
+            private IPersonDataElementsApplicationsCacheableNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonDataElementsApplicationsCacheableNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonDataElementsApplicationsCacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonDataElementsApplicationsCacheableNamespace));
+            }
+
+            /// generated method from interface
+            public System.Data.DataTable GetCacheableTable(TCacheablePersonTablesEnum ACacheableTable)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetCacheableTable(ACacheableTable);
+            }
+        }
 
         /// <summary>The 'PersonDataElementsApplicationsCacheable' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsApplicationsCacheableNamespace Cacheable
@@ -899,15 +1045,53 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
                 // accessing TCacheableNamespace the first time? > instantiate the object
                 if (FPersonDataElementsApplicationsCacheableSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonDataElementsApplicationsCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElementsApplications.Instantiator.Cacheable') should be automatically contructable.
-                    FPersonDataElementsApplicationsCacheableSubNamespace = new TPersonDataElementsApplicationsCacheableNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonDataElementsApplicationsCacheableNamespace");
+                    TPersonDataElementsApplicationsCacheableNamespace ObjectToRemote = new TPersonDataElementsApplicationsCacheableNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonDataElementsApplicationsCacheableSubNamespace = new TPersonDataElementsApplicationsCacheableNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonDataElementsApplicationsCacheableSubNamespace;
             }
 
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonDataElementsApplicationsUIConnectorsNamespaceRemote: IPersonDataElementsApplicationsUIConnectorsNamespace
+        {
+            private IPersonDataElementsApplicationsUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonDataElementsApplicationsUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonDataElementsApplicationsUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonDataElementsApplicationsUIConnectorsNamespace));
+            }
+
+            /// generated method from interface
+            public Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(System.Int64 APartnerKey,
+                                                                                                                                               System.Int32 AApplicationKey,
+                                                                                                                                               System.Int64 ARegistrationOffice,
+                                                                                                                                               Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
+                                                                                                                                               out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.OfficeSpecificDataLabels(APartnerKey,AApplicationKey,ARegistrationOffice,AOfficeSpecificDataLabelUse,out AOfficeSpecificDataLabelsDataSet);
+            }
         }
 
         /// <summary>The 'PersonDataElementsApplicationsUIConnectors' subnamespace contains further subnamespaces.</summary>
@@ -928,10 +1112,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FPersonDataElementsApplicationsUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonDataElementsApplicationsUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PersonDataElementsApplications.Instantiator.UIConnectors') should be automatically contructable.
-                    FPersonDataElementsApplicationsUIConnectorsSubNamespace = new TPersonDataElementsApplicationsUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonDataElementsApplicationsUIConnectorsNamespace");
+                    TPersonDataElementsApplicationsUIConnectorsNamespace ObjectToRemote = new TPersonDataElementsApplicationsUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonDataElementsApplicationsUIConnectorsSubNamespace = new TPersonDataElementsApplicationsUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonDataElementsApplicationsUIConnectorsSubNamespace;
@@ -943,66 +1132,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.Cacheable
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonDataElementsApplicationsCacheable Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsApplicationsCacheableNamespace : TConfigurableMBRObject, IPersonDataElementsApplicationsCacheableNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPersonDataElementsApplicationsCacheableNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonDataElementsApplicationsCacheableNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1022,66 +1162,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applications.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonDataElementsApplicationsUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsApplicationsUIConnectorsNamespace : TConfigurableMBRObject, IPersonDataElementsApplicationsUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPersonDataElementsApplicationsUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonDataElementsApplicationsUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1096,33 +1187,12 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
                                                                                                                                            Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
                                                                                                                                            out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Creating TOfficeSpecificDataLabelsUIConnector...");
-            }
-
-#endif
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey,
                AApplicationKey,
                ARegistrationOffice,
                AOfficeSpecificDataLabelUse);
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData...");
-            }
-
-#endif
             AOfficeSpecificDataLabelsDataSet = ReturnValue.GetData();
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData finished.");
-            }
-
-#endif
             return ReturnValue;
         }
     }
@@ -1130,12 +1200,12 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonDataElementsCacheable Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsCacheableNamespace : TConfigurableMBRObject, IPersonDataElementsCacheableNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         #region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
@@ -1144,59 +1214,10 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
         /// <summary>Constructor</summary>
         public TPersonDataElementsCacheableNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
             #region ManualCode
             FCachePopulator = new Ict.Petra.Server.MPersonnel.Person.Cacheable.TPersonnelCacheable();
             #endregion ManualCode
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonDataElementsCacheableNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1271,66 +1292,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Cacheable
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonDataElementsUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsUIConnectorsNamespace : TConfigurableMBRObject, IPersonDataElementsUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPersonDataElementsUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonDataElementsUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1343,30 +1315,9 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
                                                                                                                                            Ict.Petra.Shared.MCommon.TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
                                                                                                                                            out Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS AOfficeSpecificDataLabelsDataSet)
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Creating TOfficeSpecificDataLabelsUIConnector...");
-            }
-
-#endif
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
 
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData...");
-            }
-
-#endif
             AOfficeSpecificDataLabelsDataSet = ReturnValue.GetData();
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Calling TOfficeSpecificDataLabelsUIConnector.GetData finished.");
-            }
-
-#endif
             return ReturnValue;
         }
     }
@@ -1374,66 +1325,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.WebConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonDataElementsWebConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonDataElementsWebConnectorsNamespace : TConfigurableMBRObject, IPersonDataElementsWebConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPersonDataElementsWebConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonDataElementsWebConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1461,67 +1363,18 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.WebConnec
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonShepherds Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonShepherdsNamespace : TConfigurableMBRObject, IPersonShepherdsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TPersonShepherdsUIConnectorsNamespace FPersonShepherdsUIConnectorsSubNamespace;
+        private TPersonShepherdsUIConnectorsNamespaceRemote FPersonShepherdsUIConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TPersonShepherdsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonShepherdsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1529,7 +1382,25 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
             return null; // make sure that the TPersonShepherdsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TPersonShepherdsUIConnectorsNamespaceRemote: IPersonShepherdsUIConnectorsNamespace
+        {
+            private IPersonShepherdsUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TPersonShepherdsUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IPersonShepherdsUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPersonShepherdsUIConnectorsNamespace));
+            }
+
+        }
 
         /// <summary>The 'PersonShepherdsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPersonShepherdsUIConnectorsNamespace UIConnectors
@@ -1549,10 +1420,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FPersonShepherdsUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TPersonShepherdsUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.PersonShepherds.Instantiator.UIConnectors') should be automatically contructable.
-                    FPersonShepherdsUIConnectorsSubNamespace = new TPersonShepherdsUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPersonShepherdsUIConnectorsNamespace");
+                    TPersonShepherdsUIConnectorsNamespace ObjectToRemote = new TPersonShepherdsUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FPersonShepherdsUIConnectorsSubNamespace = new TPersonShepherdsUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FPersonShepherdsUIConnectorsSubNamespace;
@@ -1564,66 +1440,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. PersonShepherdsUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TPersonShepherdsUIConnectorsNamespace : TConfigurableMBRObject, IPersonShepherdsUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TPersonShepherdsUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TPersonShepherdsUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1636,67 +1463,18 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds.UIConnectors
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. TableMaintenance Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceNamespace : TConfigurableMBRObject, ITableMaintenanceNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TTableMaintenanceUIConnectorsNamespace FTableMaintenanceUIConnectorsSubNamespace;
+        private TTableMaintenanceUIConnectorsNamespaceRemote FTableMaintenanceUIConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TTableMaintenanceNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TTableMaintenanceNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1704,7 +1482,25 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TTableMaintenanceUIConnectorsNamespaceRemote: ITableMaintenanceUIConnectorsNamespace
+        {
+            private ITableMaintenanceUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TTableMaintenanceUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (ITableMaintenanceUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ITableMaintenanceUIConnectorsNamespace));
+            }
+
+        }
 
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors
@@ -1724,10 +1520,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FTableMaintenanceUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TTableMaintenanceUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.TableMaintenance.Instantiator.UIConnectors') should be automatically contructable.
-                    FTableMaintenanceUIConnectorsSubNamespace = new TTableMaintenanceUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TTableMaintenanceUIConnectorsNamespace");
+                    TTableMaintenanceUIConnectorsNamespace ObjectToRemote = new TTableMaintenanceUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FTableMaintenanceUIConnectorsSubNamespace = new TTableMaintenanceUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FTableMaintenanceUIConnectorsSubNamespace;
@@ -1739,66 +1540,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. TableMaintenanceUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceUIConnectorsNamespace : TConfigurableMBRObject, ITableMaintenanceUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TTableMaintenanceUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TTableMaintenanceUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1811,67 +1563,18 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance.UIConnectors
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. Units Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TUnitsNamespace : TConfigurableMBRObject, IUnitsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TUnitsDataElementsNamespace FUnitsDataElementsSubNamespace;
+        private TUnitsDataElementsNamespaceRemote FUnitsDataElementsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TUnitsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TUnitsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1879,7 +1582,35 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
             return null; // make sure that the TUnitsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TUnitsDataElementsNamespaceRemote: IUnitsDataElementsNamespace
+        {
+            private IUnitsDataElementsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TUnitsDataElementsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IUnitsDataElementsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IUnitsDataElementsNamespace));
+            }
+
+            /// property forwarder
+            public IUnitsDataElementsCacheableNamespace Cacheable
+            {
+                get { return RemoteObject.Cacheable; }
+            }
+            /// property forwarder
+            public IUnitsDataElementsUIConnectorsNamespace UIConnectors
+            {
+                get { return RemoteObject.UIConnectors; }
+            }
+        }
 
         /// <summary>The 'UnitsDataElements' subnamespace contains further subnamespaces.</summary>
         public IUnitsDataElementsNamespace DataElements
@@ -1899,10 +1630,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
                 // accessing TDataElementsNamespace the first time? > instantiate the object
                 if (FUnitsDataElementsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUnitsDataElementsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.Units.Instantiator.DataElements') should be automatically contructable.
-                    FUnitsDataElementsSubNamespace = new TUnitsDataElementsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TUnitsDataElementsNamespace");
+                    TUnitsDataElementsNamespace ObjectToRemote = new TUnitsDataElementsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FUnitsDataElementsSubNamespace = new TUnitsDataElementsNamespaceRemote(ObjectURI);
                 }
 
                 return FUnitsDataElementsSubNamespace;
@@ -1914,68 +1650,19 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. UnitsDataElements Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TUnitsDataElementsNamespace : TConfigurableMBRObject, IUnitsDataElementsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
-        private TUnitsDataElementsCacheableNamespace FUnitsDataElementsCacheableSubNamespace;
-        private TUnitsDataElementsUIConnectorsNamespace FUnitsDataElementsUIConnectorsSubNamespace;
+        private TUnitsDataElementsCacheableNamespaceRemote FUnitsDataElementsCacheableSubNamespace;
+        private TUnitsDataElementsUIConnectorsNamespaceRemote FUnitsDataElementsUIConnectorsSubNamespace;
 
         /// <summary>Constructor</summary>
         public TUnitsDataElementsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TUnitsDataElementsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -1983,7 +1670,49 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
             return null; // make sure that the TUnitsDataElementsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TUnitsDataElementsCacheableNamespaceRemote: IUnitsDataElementsCacheableNamespace
+        {
+            private IUnitsDataElementsCacheableNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TUnitsDataElementsCacheableNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IUnitsDataElementsCacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IUnitsDataElementsCacheableNamespace));
+            }
+
+            /// generated method from interface
+            public System.Data.DataTable GetCacheableTable(TCacheableUnitTablesEnum ACacheableTable,
+                                                           System.String AHashCode,
+                                                           out System.Type AType)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,out AType);
+            }
+            /// generated method from interface
+            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableUnitTablesEnum ACacheableTable,
+                                                                          ref TTypedDataTable ASubmitTable,
+                                                                          out TVerificationResultCollection AVerificationResult)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,out AVerificationResult);
+            }
+        }
 
         /// <summary>The 'UnitsDataElementsCacheable' subnamespace contains further subnamespaces.</summary>
         public IUnitsDataElementsCacheableNamespace Cacheable
@@ -2003,13 +1732,37 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
                 // accessing TCacheableNamespace the first time? > instantiate the object
                 if (FUnitsDataElementsCacheableSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUnitsDataElementsCacheableNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.UnitsDataElements.Instantiator.Cacheable') should be automatically contructable.
-                    FUnitsDataElementsCacheableSubNamespace = new TUnitsDataElementsCacheableNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TUnitsDataElementsCacheableNamespace");
+                    TUnitsDataElementsCacheableNamespace ObjectToRemote = new TUnitsDataElementsCacheableNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FUnitsDataElementsCacheableSubNamespace = new TUnitsDataElementsCacheableNamespaceRemote(ObjectURI);
                 }
 
                 return FUnitsDataElementsCacheableSubNamespace;
+            }
+
+        }
+        /// <summary>serializable, which means that this object is executed on the client side</summary>
+        [Serializable]
+        public class TUnitsDataElementsUIConnectorsNamespaceRemote: IUnitsDataElementsUIConnectorsNamespace
+        {
+            private IUnitsDataElementsUIConnectorsNamespace RemoteObject = null;
+            private string FObjectURI;
+
+            /// <summary>constructor. get remote object</summary>
+            public TUnitsDataElementsUIConnectorsNamespaceRemote(string AObjectURI)
+            {
+                FObjectURI = AObjectURI;
+            }
+
+            private void InitRemoteObject()
+            {
+                RemoteObject = (IUnitsDataElementsUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IUnitsDataElementsUIConnectorsNamespace));
             }
 
         }
@@ -2032,10 +1785,15 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
                 // accessing TUIConnectorsNamespace the first time? > instantiate the object
                 if (FUnitsDataElementsUIConnectorsSubNamespace == null)
                 {
-                    // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-                    //      * for the Generator: the name of this Type ('TUnitsDataElementsUIConnectorsNamespace') needs to come out of the XML definition,
-                    //      * The Namespace where it resides in ('Ict.Petra.Server.UnitsDataElements.Instantiator.UIConnectors') should be automatically contructable.
-                    FUnitsDataElementsUIConnectorsSubNamespace = new TUnitsDataElementsUIConnectorsNamespace();
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TUnitsDataElementsUIConnectorsNamespace");
+                    TUnitsDataElementsUIConnectorsNamespace ObjectToRemote = new TUnitsDataElementsUIConnectorsNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FUnitsDataElementsUIConnectorsSubNamespace = new TUnitsDataElementsUIConnectorsNamespaceRemote(ObjectURI);
                 }
 
                 return FUnitsDataElementsUIConnectorsSubNamespace;
@@ -2047,12 +1805,12 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. UnitsDataElementsCacheable Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TUnitsDataElementsCacheableNamespace : TConfigurableMBRObject, IUnitsDataElementsCacheableNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         #region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
@@ -2061,59 +1819,10 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
         /// <summary>Constructor</summary>
         public TUnitsDataElementsCacheableNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
             #region ManualCode
             FCachePopulator = new Ict.Petra.Server.MPersonnel.Unit.Cacheable.TPersonnelCacheable();
             #endregion ManualCode
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TUnitsDataElementsCacheableNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
@@ -2186,66 +1895,17 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.Cacheable
 
 namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements.UIConnectors
 {
+    /// <summary>
+    /// REMOTEABLE CLASS. UnitsDataElementsUIConnectors Namespace (highest level).
+    /// </summary>
     /// <summary>auto generated class </summary>
     public class TUnitsDataElementsUIConnectorsNamespace : TConfigurableMBRObject, IUnitsDataElementsUIConnectorsNamespace
     {
-#if DEBUGMODE
-        private DateTime FStartTime;
-#endif
 
         /// <summary>Constructor</summary>
         public TUnitsDataElementsUIConnectorsNamespace()
         {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-
-            FStartTime = DateTime.Now;
-#endif
         }
-
-        // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-        /// <summary>Destructor</summary>
-        ~TUnitsDataElementsUIConnectorsNamespace()
-        {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            const Int32 MAX_ITERATIONS = 100000;
-            System.Int32 LoopCounter;
-            object MyObject;
-            object MyObject2;
-#endif
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-            MyObject = new object();
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-            }
-
-            for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-            {
-                MyObject2 = new object();
-                GC.KeepAlive(MyObject);
-            }
-
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-            }
-
-#endif
-        }
-
-#endif
 
         /// NOTE AutoGeneration: This function is all-important!!!
         public override object InitializeLifetimeService()
