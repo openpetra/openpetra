@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,7 +35,6 @@ namespace Ict.Common.Remoting.Client
     /// </summary>
     public class TClientSettings
     {
-        private static String UConfigurationFile = "";
         private static String UPathTemp = "";
         private static String UPathLog = "";
         private static Int16 UDebugLevel = 0;
@@ -70,15 +69,6 @@ namespace Ict.Common.Remoting.Client
         /// DebugLevel for writing an xml file of reporting parameters and results to the log directory
         /// </summary>
         public static Int16 DEBUGLEVEL_REPORTINGDATA = 4;
-
-        /// <summary>Name of .NET Configuration File, if specified via command line options</summary>
-        public static String ConfigurationFile
-        {
-            get
-            {
-                return UConfigurationFile;
-            }
-        }
 
         /// <summary>Temp Path</summary>
         public static String PathTemp
@@ -400,8 +390,6 @@ namespace Ict.Common.Remoting.Client
         /// <returns>void</returns>
         public TClientSettings() : base()
         {
-            UConfigurationFile = TAppSettingsManager.ConfigFileName;
-
             //
             // Parse settings from the Application Configuration File
             //
