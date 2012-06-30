@@ -48,12 +48,12 @@ namespace Ict.Common.Remoting.Client
         /// <summary>
         /// set to typeof(TConnector)
         /// </summary>
-        public static Type ConnectorType = typeof(TConnectorBase);
+        public static Type ConnectorType = typeof(TConnector);
 
         /// <summary>
         /// keeps the connection to the server
         /// </summary>
-        protected TConnectorBase FConnector;
+        protected TConnector FConnector;
 
         /// <summary>
         /// the client manager
@@ -144,7 +144,7 @@ namespace Ict.Common.Remoting.Client
 
             if (FConnector == null)
             {
-                FConnector = (TConnectorBase)Activator.CreateInstance(ConnectorType);
+                FConnector = (TConnector)Activator.CreateInstance(ConnectorType);
             }
 
             try

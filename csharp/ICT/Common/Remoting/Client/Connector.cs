@@ -38,12 +38,12 @@ namespace Ict.Common.Remoting.Client
     /// the Server-side .NET Remoting Sponsor and several other remoted objects from
     /// the PetraServer.
     /// </summary>
-    public class TConnectorBase
+    public class TConnector
     {
         /// <summary>
         /// the single instance for this client
         /// </summary>
-        public static TConnectorBase TheConnector = null;
+        public static TConnector TheConnector = null;
 
         private String FServerIPAddr = string.Empty;
         private String FServerPort = string.Empty;

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,16 +95,16 @@ namespace Ict.Petra.Client.App.Core
 
             Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
 
-            ((TConnector)FConnector).GetRemoteMConferenceObject(FCrossDomainURL, FRemotingURL_MConference,
+            ((TConnector)FConnector).GetRemoteMConferenceObject(FCrossDomainURI, FRemotingURL_MConference,
                 ClientID.ToString(), out FRemoteConferenceObjects);
-            ((TConnector)FConnector).GetRemoteMPersonnelObject(FCrossDomainURL, FRemotingURL_MPersonnel,
+            ((TConnector)FConnector).GetRemoteMPersonnelObject(FCrossDomainURI, FRemotingURL_MPersonnel,
                 ClientID.ToString(), out FRemotePersonnelObjects);
-            ((TConnector)FConnector).GetRemoteMCommonObject(FCrossDomainURL, FRemotingURL_MCommon, ClientID.ToString(), out FRemoteCommonObjects);
-            ((TConnector)FConnector).GetRemoteMPartnerObject(FCrossDomainURL, FRemotingURL_MPartner, ClientID.ToString(), out FRemotePartnerObjects);
-            ((TConnector)FConnector).GetRemoteMFinanceObject(FCrossDomainURL, FRemotingURL_MFinance, ClientID.ToString(), out FRemoteFinanceObjects);
-            ((TConnector)FConnector).GetRemoteMReportingObject(FCrossDomainURL, FRemotingURL_MReporting,
+            ((TConnector)FConnector).GetRemoteMCommonObject(FCrossDomainURI, FRemotingURL_MCommon, ClientID.ToString(), out FRemoteCommonObjects);
+            ((TConnector)FConnector).GetRemoteMPartnerObject(FCrossDomainURI, FRemotingURL_MPartner, ClientID.ToString(), out FRemotePartnerObjects);
+            ((TConnector)FConnector).GetRemoteMFinanceObject(FCrossDomainURI, FRemotingURL_MFinance, ClientID.ToString(), out FRemoteFinanceObjects);
+            ((TConnector)FConnector).GetRemoteMReportingObject(FCrossDomainURI, FRemotingURL_MReporting,
                 ClientID.ToString(), out FRemoteReportingObjects);
-            ((TConnector)FConnector).GetRemoteMSysManObject(FCrossDomainURL, FRemotingURL_MSysMan, ClientID.ToString(), out FRemoteSysManObjects);
+            ((TConnector)FConnector).GetRemoteMSysManObject(FCrossDomainURI, FRemotingURL_MSysMan, ClientID.ToString(), out FRemoteSysManObjects);
 
             //
             // initialise object that holds references to all our remote object .NET Remoting Proxies
