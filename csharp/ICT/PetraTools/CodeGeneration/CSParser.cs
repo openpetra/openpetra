@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -204,7 +204,7 @@ namespace Ict.Tools.CodeGeneration
 
             foreach (NamespaceDeclaration nnode in namespaces)
             {
-                if ((ANamespace.Length == 0) || (nnode.Name == ANamespace))
+                if ((ANamespace.Length == 0) || (nnode.Name.StartsWith(ANamespace)))
                 {
                     foreach (object child in nnode.Children)
                     {
@@ -219,16 +219,16 @@ namespace Ict.Tools.CodeGeneration
 
                                 if (td.Type == AClassType)
                                 {
-                                    ANamespace = nnode.Name;
-
                                     if (td.Name == ATypeName)
                                     {
+                                        ANamespace = nnode.Name;
                                         return td;
                                     }
 
                                     // if the AInterfaceName contains the namespace
                                     if (ATypeName == nnode.Name + "." + td.Name)
                                     {
+                                        ANamespace = nnode.Name;
                                         return td;
                                     }
                                 }

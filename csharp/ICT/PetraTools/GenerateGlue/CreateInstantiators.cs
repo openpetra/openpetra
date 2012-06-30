@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -292,6 +292,109 @@ class CreateInstantiators : AutoGenerationWriter
         return interfacesSnippet;
     }
 
+    private void ImplementInterfaceForwarding(ProcessTemplate ATemplate, ProcessTemplate targetSnippet, String AFullNamespace, String AInterfaceName)
+    {
+        // e.g. FullNamespace: Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
+        // e.g. InterfaceNamespace: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
+        string InterfaceNamespace = AFullNamespace.Replace("Server.", "Shared.Interfaces.").Replace(".Instantiator", "").Replace("Instantiator", "");
+
+        targetSnippet.AddToCodelet("CALLFORWARDINGMETHODS", string.Empty);
+
+        // try to implement the methods defined in the interface
+        TypeDeclaration t = CSParser.FindInterface(CSFiles, InterfaceNamespace, AInterfaceName);
+
+        if (t == null)
+        {
+            //eg. Ict.Petra.Shared.Interfaces.MFinance.AP.IUIConnectorsNamespace becomes Ict.Petra.Shared.Interfaces.MFinance.AP.IAPUIConnectorsNamespace
+            //eg. Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements UIConnector becomes IPartnerDataElementsUIConnector
+            string interfacename =
+                "I" + InterfaceNamespace.Substring(
+                    InterfaceNamespace.IndexOf(".", "Ict.Petra.Shared.Interfaces.".Length)).Replace(".", string.Empty) +
+                AInterfaceName.Substring(1);
+            t = CSParser.FindInterface(CSFiles, InterfaceNamespace, interfacename);
+        }
+
+        if (t == null)
+        {
+            TLogging.Log("cannot find interface " + InterfaceNamespace + "." + AInterfaceName);
+            return;
+        }
+
+        foreach (MethodDeclaration m in CSParser.GetMethods(t))
+        {
+            string MethodName = m.Name;
+
+            if (MethodName.Equals("InitializeLifetimeService")
+                || MethodName.Equals("GetLifetimeService")
+                || MethodName.Equals("CreateObjRef")
+                || MethodName.Equals("GetType")
+                || MethodName.Equals("ToString")
+                || MethodName.Equals("Equals")
+                || MethodName.Equals("GetHashCode"))
+            {
+                continue;
+            }
+
+            String returnType = CreateInterfaces.TypeToString(m.TypeReference, "");
+
+            int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
+            String formattedMethodHead = "public " + returnType + " " + MethodName + "(";
+
+            string formattedMethodCall = string.Empty;
+
+            if (returnType != "void")
+            {
+                formattedMethodCall += "return ";
+            }
+
+            formattedMethodCall += "RemoteObject." + MethodName + "(";
+
+            bool firstParameter = true;
+
+            foreach (ParameterDeclarationExpression p in m.Parameters)
+            {
+                if (!firstParameter)
+                {
+                    formattedMethodCall += ",";
+                }
+
+                if ((ParameterModifiers.Ref & p.ParamModifier) > 0)
+                {
+                    formattedMethodCall += "ref ";
+                }
+                else if ((ParameterModifiers.Out & p.ParamModifier) > 0)
+                {
+                    formattedMethodCall += "out ";
+                }
+
+                formattedMethodCall += p.ParameterName;
+
+                AddParameter(ref formattedMethodHead, ref firstParameter, align, p.ParameterName, p.ParamModifier,
+                    CreateInterfaces.TypeToString(p.TypeReference, ""));
+            }
+
+            formattedMethodHead += ")";
+            formattedMethodCall += ");";
+
+            ProcessTemplate methodSnippet = ATemplate.GetSnippet("CALLFORWARDINGMETHOD");
+            methodSnippet.SetCodelet("METHODHEAD", formattedMethodHead);
+            methodSnippet.SetCodelet("METHODCALL", formattedMethodCall);
+
+            targetSnippet.InsertSnippet("CALLFORWARDINGMETHODS", methodSnippet);
+        }
+
+        foreach (PropertyDeclaration p in CSParser.GetProperties(t))
+        {
+            string propertyForwarder = "/// property forwarder" + Environment.NewLine;
+            propertyForwarder += "public " + p.TypeReference.ToString() + " " + p.Name + Environment.NewLine;
+            propertyForwarder += "{" + Environment.NewLine;
+            propertyForwarder += "    get { return RemoteObject." + p.Name + "; }" + Environment.NewLine;
+            propertyForwarder += "}" + Environment.NewLine;
+
+            targetSnippet.AddToCodelet("CALLFORWARDINGMETHODS", propertyForwarder);
+        }
+    }
+
     ProcessTemplate ImplementStaticCallConnector(ProcessTemplate ATemplate, string AFullNamespace)
     {
         // e.g. FullNamespace: Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
@@ -406,10 +509,7 @@ class CreateInstantiators : AutoGenerationWriter
     {
         ProcessTemplate remotableClassSnippet = ATemplate.GetSnippet("REMOTABLECLASS");
 
-        if (HighestLevel)
-        {
-            remotableClassSnippet.SetCodelet("HIGHESTLEVEL", "true");
-        }
+        remotableClassSnippet.SetCodelet("HIGHESTLEVEL", "true");
 
         remotableClassSnippet.SetCodelet("NAMESPACE", Namespace);
 
@@ -426,16 +526,19 @@ class CreateInstantiators : AutoGenerationWriter
 
         foreach (TNamespace sn in children)
         {
+            ProcessTemplate snippetDefinition = ATemplate.GetSnippet("SUBNAMESPACEDEFINITION");
+
             if (HighestLevel)
             {
-                remotableClassSnippet.AddToCodelet("SUBNAMESPACEDEFINITIONS",
-                    "private T" + sn.Name + "Namespace F" + sn.Name + "SubNamespace;" + Environment.NewLine);
+                snippetDefinition.SetCodelet("NAMESPACENAME", sn.Name);
             }
             else
             {
-                remotableClassSnippet.AddToCodelet("SUBNAMESPACEDEFINITIONS",
-                    "private T" + Namespace + sn.Name + "Namespace F" + Namespace + sn.Name + "SubNamespace;" + Environment.NewLine);
+                snippetDefinition.SetCodelet("NAMESPACENAME", Namespace + sn.Name);
             }
+
+            remotableClassSnippet.InsertSnippet("SUBNAMESPACEDEFINITIONS",
+                snippetDefinition);
         }
 
         if (children.Count == 0)
@@ -449,10 +552,6 @@ class CreateInstantiators : AutoGenerationWriter
                 remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS",
                     ImplementInterface(ATemplate, FullNamespace, "I" + Namespace + "Namespace"));
             }
-        }
-        else
-        {
-            remotableClassSnippet.SetCodelet("SUBMODULENAMESPACES", "true");
         }
 
         foreach (TNamespace sn in children)
@@ -471,6 +570,9 @@ class CreateInstantiators : AutoGenerationWriter
             }
 
             subNamespaceSnippet.SetCodelet("NAMESPACE", Namespace);
+
+            // for all methods of the subnamespace, insert a forwarding method
+            ImplementInterfaceForwarding(ATemplate, subNamespaceSnippet, FullNamespace, "I" + sn.Name + "Namespace");
 
             remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS", subNamespaceSnippet);
         }

@@ -18,6 +18,7 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -44,15 +45,6 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
     /// <summary>the remoted object</summary>
     private TM{#MODULE} FRemotedObject;
 
-    /// <summary>Constructor</summary>
-    public TM{#MODULE}NamespaceLoader()
-    {
-        if (TLogging.DL >= 9)
-        {
-            Console.WriteLine(this.GetType().FullName + " created in application domain: " + Thread.GetDomain().FriendlyName);
-        }
-    }
-
     /// <summary>
     /// Creates and dynamically exposes an instance of the remoteable TM{#MODULE}
     /// class to make it callable remotely from the Client.
@@ -68,32 +60,13 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
     /// <returns>The URL at which the remoted object can be reached.</returns>
     public String GetRemotingURL()
     {
-        DateTime RemotingTime;
-        String RemoteAtURI;
-        String RandomString;
-        System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-        Byte rndbytespos;
-        Byte[] rndbytes = new Byte[5];
-
         if (TLogging.DL >= 9)
         {
             Console.WriteLine("TM{#MODULE}NamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
         }
 
-        RandomString = "";
-        rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-        rnd.GetBytes(rndbytes);
-
-        for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
-        {
-            RandomString = RandomString + rndbytes[rndbytespos].ToString();
-        }
-
-        RemotingTime = DateTime.Now;
         FRemotedObject = new TM{#MODULE}();
-        RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                      (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-        FRemotingURL = RemoteAtURI;
+        FRemotingURL = TConfigurableMBRObject.BuildRandomURI("TM{#MODULE}NamespaceLoader");
 
         return FRemotingURL;
     }
@@ -112,86 +85,57 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
 /// <summary>
 /// REMOTEABLE CLASS. {#NAMESPACE} Namespace (highest level).
 /// </summary>
-{#ENDIF HIGHESTLEVEL}
 /// <summary>auto generated class </summary>
 public class {#LOCALCLASSNAME} : TConfigurableMBRObject, I{#NAMESPACE}Namespace
+{#ENDIF HIGHESTLEVEL}
+{#IFNDEF HIGHESTLEVEL}
+/// <summary>auto generated class </summary>
+[Serializable]
+public class {#LOCALCLASSNAME} : I{#NAMESPACE}Namespace
+{#ENDIFN HIGHESTLEVEL}
 {
-#if DEBUGMODE
-    private DateTime FStartTime;
-#endif
     {#SUBNAMESPACEDEFINITIONS}
-
 
     /// <summary>Constructor</summary>
     public {#LOCALCLASSNAME}()
     {
-#if DEBUGMODE
-        if (TLogging.DL >= 9)
-        {
-            Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-        }
-
-        FStartTime = DateTime.Now;
-#endif
     }
 
-
-    // NOTE AutoGeneration: This destructor is only needed for debugging...
-#if DEBUGMODE
-    /// <summary>Destructor</summary>
-    ~{#LOCALCLASSNAME}()
-    {
-#if DEBUGMODELONGRUNNINGFINALIZERS
-        const Int32 MAX_ITERATIONS = 100000;
-        System.Int32 LoopCounter;
-        object MyObject;
-        object MyObject2;
-#endif
-        if (TLogging.DL >= 9)
-        {
-            Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                            DateTime.Now.Ticks -
-                                                                                            FStartTime.Ticks)).ToString() + " seconds.");
-        }
-
-#if DEBUGMODELONGRUNNINGFINALIZERS
-        MyObject = new object();
-        if (TLogging.DL >= 9)
-        {
-            Console.WriteLine(this.GetType().FullName + ": Now performing some longer-running stuff...");
-        }
-
-        for (LoopCounter = 0; LoopCounter <= MAX_ITERATIONS; LoopCounter += 1)
-        {
-            MyObject2 = new object();
-            GC.KeepAlive(MyObject);
-        }
-
-        if (TLogging.DL >= 9)
-        {
-            Console.WriteLine(this.GetType().FullName + ": FINALIZER has run.");
-        }
-
-#endif
-    }
-
-#endif
-
-
-
+{#IFDEF HIGHESTLEVEL}
     /// NOTE AutoGeneration: This function is all-important!!!
     public override object InitializeLifetimeService()
     {
         return null; // make sure that the {#LOCALCLASSNAME} object exists until this AppDomain is unloaded!
     }
+{#ENDIF HIGHESTLEVEL}
 
-{#IFDEF SUBMODULENAMESPACES}
-    // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-{#ENDIF SUBMODULENAMESPACES}
     {#SUBNAMESPACESREMOTABLECLASS}
 }
 
+{##SUBNAMESPACEDEFINITION}
+private T{#NAMESPACENAME}NamespaceRemote F{#NAMESPACENAME}SubNamespace;
+
 {##SUBNAMESPACE}
+/// <summary>serializable, which means that this object is executed on the client side</summary>
+[Serializable]
+public class T{#NAMESPACENAME}NamespaceRemote: I{#NAMESPACENAME}Namespace
+{
+    private I{#NAMESPACENAME}Namespace RemoteObject = null;
+    private string FObjectURI;
+
+    /// <summary>constructor. get remote object</summary>
+    public T{#NAMESPACENAME}NamespaceRemote(string AObjectURI)
+    {
+        FObjectURI = AObjectURI;
+    }
+
+    private void InitRemoteObject()
+    {
+        RemoteObject = (I{#NAMESPACENAME}Namespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(I{#NAMESPACENAME}Namespace));
+    }
+    
+    {#CALLFORWARDINGMETHODS}
+}
 
 /// <summary>The '{#NAMESPACENAME}' subnamespace contains further subnamespaces.</summary>
 public I{#NAMESPACENAME}Namespace {#OBJECTNAME}
@@ -211,12 +155,16 @@ public I{#NAMESPACENAME}Namespace {#OBJECTNAME}
         // accessing T{#OBJECTNAME}Namespace the first time? > instantiate the object
         if (F{#NAMESPACENAME}SubNamespace == null)
         {
-            // NOTE AutoGeneration: * the returned Type will need to be manually coded in ManualEndpoints.cs of this Project!
-            //      * for the Generator: the name of this Type ('T{#NAMESPACENAME}Namespace') needs to come out of the XML definition,
-            //      * The Namespace where it resides in ('Ict.Petra.Server.{#NAMESPACE}.Instantiator.{#OBJECTNAME}') should be automatically contructable.
-            F{#NAMESPACENAME}SubNamespace = new T{#NAMESPACENAME}Namespace();
-        }
+            // need to calculate the URI for this object and pass it to the new namespace object
+            string ObjectURI = TConfigurableMBRObject.BuildRandomURI("T{#NAMESPACENAME}Namespace");
+            T{#NAMESPACENAME}Namespace ObjectToRemote = new T{#NAMESPACENAME}Namespace();
 
+            // we need to add the service in the main domain
+            DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+            
+            F{#NAMESPACENAME}SubNamespace = new T{#NAMESPACENAME}NamespaceRemote(ObjectURI);
+        }
 
         return F{#NAMESPACENAME}SubNamespace;
     }
@@ -230,6 +178,19 @@ namespace {#NAMESPACENAME}
 }
 
 {#SUBNAMESPACES1}
+
+{##CALLFORWARDINGMETHOD}
+/// generated method from interface
+{#METHODHEAD}
+{
+    if (RemoteObject == null)
+    {
+        InitRemoteObject();
+    }
+
+    {#METHODCALL}
+}
+
 
 {##INTERFACEMETHODS}
 {#METHOD}
@@ -255,27 +216,6 @@ namespace {#NAMESPACENAME}
 TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPACE}), "{#METHODNAME}", "{#PARAMETERTYPES}"{#LEDGERNUMBER});
 
 {##CALLPROCEDUREWITHGETDATA}
-#if DEBUGMODE
-if (TLogging.DL >= 9)
-{
-    Console.WriteLine(this.GetType().FullName + ": Creating T{#CONNECTORTYPE}...");
-}
-
-#endif
 {#CALLPROCEDUREINTERNAL}
-#if DEBUGMODE
-if (TLogging.DL >= 9)
-{
-    Console.WriteLine(this.GetType().FullName + ": Calling T{#CONNECTORTYPE}.GetData...");
-}
-
-#endif
 {#GETDATA}
-#if DEBUGMODE
-if (TLogging.DL >= 9)
-{
-    Console.WriteLine(this.GetType().FullName + ": Calling T{#CONNECTORTYPE}.GetData finished.");
-}
-
-#endif
 return ReturnValue;
