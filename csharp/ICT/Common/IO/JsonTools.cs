@@ -23,7 +23,9 @@
 //
 using System;
 using System.Xml;
+using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using Jayrock.Json;
 using Jayrock.Json.Conversion;
@@ -199,8 +201,93 @@ namespace Ict.Common.IO
             }
             catch (Exception e)
             {
-                TLogging.Log("problem parsing: " + AJSONFormData);
-                throw e;
+                // we have some json strings which do include unescaped quotes, which causes confusion
+
+                string copy = AJSONFormData;
+
+                // simple fix for flat list. advantage over the replace method: only quote colon quote are searched, quote comma quote is handled correctly inside a value
+                if (!AJSONFormData.Substring(1).Contains("{"))
+                {
+                    // find the names first, by looking for quote colon quote. the values must not contain those 3 characters in that order!!!
+                    int posColon = AJSONFormData.IndexOf("\":\"");
+
+                    List <string>names = new List <string>();
+
+                    while (posColon != -1)
+                    {
+                        string before = AJSONFormData.Substring(0, posColon);
+                        int posBeginName = before.LastIndexOf("\"");
+                        string name = before.Substring(posBeginName + 1);
+                        names.Add(name);
+                        posColon = AJSONFormData.IndexOf("\":\"", posColon + 1);
+                    }
+
+                    SortedList <string, string>values = new SortedList <string, string>();
+
+                    names.Reverse();
+                    int posNextName = AJSONFormData.Length - 1;
+
+                    foreach (string name in names)
+                    {
+                        int indexOfName = AJSONFormData.IndexOf(",\"" + name + "\":\"");
+
+                        if (indexOfName == -1)
+                        {
+                            // first value
+                            indexOfName = AJSONFormData.IndexOf("{\"" + name + "\":\"");
+                        }
+
+                        int indexOfValue = indexOfName + name.Length + 5;
+                        string value = AJSONFormData.Substring(indexOfValue, posNextName - indexOfValue - 1);
+                        values.Add(name, value);
+                        posNextName = indexOfName;
+                    }
+
+                    names.Reverse();
+                    StringBuilder s = new StringBuilder("{");
+
+                    foreach (string name in names)
+                    {
+                        s.Append("\"");
+                        s.Append(name);
+                        s.Append("\":\"");
+                        s.Append(values[name].Replace("\"", "&quot;"));
+                        s.Append("\",");
+                    }
+
+                    s.Remove(s.Length - 1, 1);
+                    s.Append("}");
+                    copy = s.ToString();
+                }
+                else
+                {
+                    // fix also more complex strings, with several {} lists
+                    // disadvantage over first method: more string combinations are disallowed in the values, eg. ","
+                    copy = copy.Replace("{\"", "{'");
+                    copy = copy.Replace("\":\"", "':'");
+                    copy = copy.Replace("\":{", "':{");
+                    copy = copy.Replace("\",\"", "','");
+                    copy = copy.Replace("\"},\"", "'},'");
+                    copy = copy.Replace("\"}", "'}");
+
+                    copy = copy.Replace("\"", "&quot;");
+                }
+
+                // try again
+                try
+                {
+                    JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(copy);
+
+                    string result = "{" + parseJSonValues(root, ref ARequiredCulture) + "}";
+
+                    return result;
+                }
+                catch (Exception)
+                {
+                    TLogging.Log("problem parsing: " + AJSONFormData);
+                    TLogging.Log(e.ToString());
+                    throw e;
+                }
             }
         }
 
