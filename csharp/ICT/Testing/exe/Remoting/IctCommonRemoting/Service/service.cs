@@ -41,6 +41,8 @@ namespace Tests.IctCommonRemoting.Service
     /// </summary>
     public class TMyService : TConfigurableMBRObject, IMyService
     {
+        private TMySubNamespaceRemote FSubNamespace = null;
+
         /// <summary>
         /// print hello world
         /// </summary>
@@ -79,15 +81,20 @@ namespace Tests.IctCommonRemoting.Service
         {
             get
             {
-                // need to calculate the URI for this object and pass it
-                // register the remote url at the CrossDomainMarshaller
-                string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMySubNamespace");
-                TMySubNamespaceObject ObjectToRemote = new TMySubNamespaceObject();
+                if (FSubNamespace == null)
+                {
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMySubNamespace");
+                    TMySubNamespace ObjectToRemote = new TMySubNamespace();
 
-                // we need to add the service in the main domain
-                DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                    DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-                return new TMySubNamespace(ObjectURI);
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FSubNamespace = new TMySubNamespaceRemote(ObjectURI);
+                }
+
+                return FSubNamespace;
             }
         }
     }
@@ -95,7 +102,7 @@ namespace Tests.IctCommonRemoting.Service
     /// <summary>
     /// this object is needed because we need another remoted object for sub namespaces
     /// </summary>
-    public class TMySubNamespaceObject : TConfigurableMBRObject, IMySubNamespaceObject
+    public class TMySubNamespace : TConfigurableMBRObject, IMySubNamespace
     {
         /// print hello sub world
         public string HelloSubWorld(string msg)
@@ -109,15 +116,15 @@ namespace Tests.IctCommonRemoting.Service
     /// serializable, which means that this object is executed on the client side
     /// </summary>
     [Serializable]
-    public class TMySubNamespace : IMySubNamespace
+    public class TMySubNamespaceRemote : IMySubNamespace
     {
-        private IMySubNamespaceObject RemoteObject = null;
+        private IMySubNamespace RemoteObject = null;
         private string FObjectURI;
 
         /// <summary>
         /// constructor. get remote object
         /// </summary>
-        public TMySubNamespace(string AObjectURI)
+        public TMySubNamespaceRemote(string AObjectURI)
         {
             FObjectURI = AObjectURI;
             TLogging.Log(" in appdomain " + Thread.GetDomain().FriendlyName);
@@ -126,7 +133,7 @@ namespace Tests.IctCommonRemoting.Service
         private void InitRemoteObject()
         {
             TLogging.Log("InitRemoteObject in appdomain " + Thread.GetDomain().FriendlyName);
-            RemoteObject = (IMySubNamespaceObject)TConnectorBase.TheConnector.GetRemoteObject(FObjectURI, typeof(IMySubNamespaceObject));
+            RemoteObject = (IMySubNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMySubNamespace));
         }
 
         /// print hello sub world

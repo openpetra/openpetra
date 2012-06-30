@@ -56,15 +56,6 @@ namespace Tests.IctCommonRemoting.Interface
     /// <summary>
     /// sub namespace
     /// </summary>
-    public interface IMySubNamespaceObject : IInterface
-    {
-        /// print hello sub world
-        string HelloSubWorld(string msg);
-    }
-
-    /// <summary>
-    /// sub namespace
-    /// </summary>
     public interface IMySubNamespace : IInterface
     {
         /// print hello sub world
