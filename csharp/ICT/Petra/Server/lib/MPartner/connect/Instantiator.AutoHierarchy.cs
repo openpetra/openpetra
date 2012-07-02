@@ -230,12 +230,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             /// property forwarder
             public IExtractsUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IExtractsWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -293,12 +293,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             /// property forwarder
             public IImportExportUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IImportExportWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -356,17 +356,17 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             /// property forwarder
             public IMailingCacheableNamespace Cacheable
             {
-                get { return RemoteObject.Cacheable; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.Cacheable; }
             }
             /// property forwarder
             public IMailingUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IMailingWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -424,27 +424,27 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             /// property forwarder
             public IPartnerCacheableNamespace Cacheable
             {
-                get { return RemoteObject.Cacheable; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.Cacheable; }
             }
             /// property forwarder
             public IPartnerDataElementsNamespace DataElements
             {
-                get { return RemoteObject.DataElements; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.DataElements; }
             }
             /// property forwarder
             public IPartnerServerLookupsNamespace ServerLookups
             {
-                get { return RemoteObject.ServerLookups; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.ServerLookups; }
             }
             /// property forwarder
             public IPartnerUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IPartnerWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -502,7 +502,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             /// property forwarder
             public IPartnerMergeUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -560,12 +560,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             /// property forwarder
             public ISubscriptionsCacheableNamespace Cacheable
             {
-                get { return RemoteObject.Cacheable; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.Cacheable; }
             }
             /// property forwarder
             public ISubscriptionsUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -623,12 +623,12 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             /// property forwarder
             public ITableMaintenanceUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public ITableMaintenanceWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -1848,7 +1848,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
             /// property forwarder
             public IPartnerDataElementsUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 

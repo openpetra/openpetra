@@ -207,12 +207,12 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             /// property forwarder
             public IApplicationUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IApplicationServerLookupsNamespace ServerLookups
             {
-                get { return RemoteObject.ServerLookups; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.ServerLookups; }
             }
         }
 
@@ -270,22 +270,22 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             /// property forwarder
             public IMaintenanceSystemDefaultsNamespace SystemDefaults
             {
-                get { return RemoteObject.SystemDefaults; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.SystemDefaults; }
             }
             /// property forwarder
             public IMaintenanceUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IMaintenanceUserDefaultsNamespace UserDefaults
             {
-                get { return RemoteObject.UserDefaults; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UserDefaults; }
             }
             /// property forwarder
             public IMaintenanceWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -343,7 +343,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             /// property forwarder
             public ITableMaintenanceUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -401,7 +401,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             /// property forwarder
             public IImportExportWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -459,7 +459,7 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             /// property forwarder
             public IPrintManagementUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -517,12 +517,12 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             /// property forwarder
             public ISecurityUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public ISecurityUserManagerNamespace UserManager
             {
-                get { return RemoteObject.UserManager; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UserManager; }
             }
         }
 

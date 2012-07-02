@@ -240,12 +240,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IAPUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IAPWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -303,7 +303,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IARWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -361,12 +361,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IBudgetUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IBudgetWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -571,7 +571,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IImportExportWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -629,12 +629,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IGiftUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IGiftWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -692,12 +692,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IGLUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IGLWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -755,7 +755,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IICHWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -813,7 +813,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IPeriodEndUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -871,7 +871,7 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public IReportingUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -929,12 +929,12 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             /// property forwarder
             public ISetupUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public ISetupWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 

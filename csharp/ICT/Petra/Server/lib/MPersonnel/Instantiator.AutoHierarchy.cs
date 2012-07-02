@@ -298,12 +298,12 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             /// property forwarder
             public IPersonDataElementsNamespace DataElements
             {
-                get { return RemoteObject.DataElements; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.DataElements; }
             }
             /// property forwarder
             public IPersonShepherdsNamespace Shepherds
             {
-                get { return RemoteObject.Shepherds; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.Shepherds; }
             }
         }
 
@@ -361,7 +361,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             /// property forwarder
             public ITableMaintenanceUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -419,7 +419,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             /// property forwarder
             public IUnitsDataElementsNamespace DataElements
             {
-                get { return RemoteObject.DataElements; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.DataElements; }
             }
         }
 
@@ -555,22 +555,22 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
             /// property forwarder
             public IPersonDataElementsApplicationsNamespace Applications
             {
-                get { return RemoteObject.Applications; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.Applications; }
             }
             /// property forwarder
             public IPersonDataElementsCacheableNamespace Cacheable
             {
-                get { return RemoteObject.Cacheable; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.Cacheable; }
             }
             /// property forwarder
             public IPersonDataElementsUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
             /// property forwarder
             public IPersonDataElementsWebConnectorsNamespace WebConnectors
             {
-                get { return RemoteObject.WebConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
             }
         }
 
@@ -628,7 +628,7 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
             /// property forwarder
             public IPersonShepherdsUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -713,12 +713,12 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
             /// property forwarder
             public IPersonDataElementsApplicationsCacheableNamespace Cacheable
             {
-                get { return RemoteObject.Cacheable; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.Cacheable; }
             }
             /// property forwarder
             public IPersonDataElementsApplicationsUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 
@@ -1603,12 +1603,12 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
             /// property forwarder
             public IUnitsDataElementsCacheableNamespace Cacheable
             {
-                get { return RemoteObject.Cacheable; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.Cacheable; }
             }
             /// property forwarder
             public IUnitsDataElementsUIConnectorsNamespace UIConnectors
             {
-                get { return RemoteObject.UIConnectors; }
+                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
             }
         }
 

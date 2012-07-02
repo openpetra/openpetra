@@ -388,7 +388,7 @@ class CreateInstantiators : AutoGenerationWriter
             string propertyForwarder = "/// property forwarder" + Environment.NewLine;
             propertyForwarder += "public " + p.TypeReference.ToString() + " " + p.Name + Environment.NewLine;
             propertyForwarder += "{" + Environment.NewLine;
-            propertyForwarder += "    get { return RemoteObject." + p.Name + "; }" + Environment.NewLine;
+            propertyForwarder += "    get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject." + p.Name + "; }" + Environment.NewLine;
             propertyForwarder += "}" + Environment.NewLine;
 
             targetSnippet.AddToCodelet("CALLFORWARDINGMETHODS", propertyForwarder);
