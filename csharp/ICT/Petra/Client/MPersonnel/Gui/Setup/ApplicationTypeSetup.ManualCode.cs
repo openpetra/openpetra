@@ -40,6 +40,29 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
     public partial class TFrmApplicationTypeSetup
     {
+        private void InitializeManualCode()
+        {
+            // the column for "Application for" must show a different text than in the db field
+            String Event = Catalog.GetString("Event");
+            String Field = Catalog.GetString("Field");
+
+            DataColumn TableColumn = new DataColumn();
+
+            TableColumn.DataType = System.Type.GetType("System.String");
+            TableColumn.ColumnName = "ApplicationFor";
+            TableColumn.Expression = "IIF(" + PtApplicationTypeTable.GetAppFormTypeDBName() +
+                                     "='LONG FORM','" + Field + "','" + Event + "')";
+            FMainDS.PtApplicationType.Columns.Add(TableColumn);
+
+            grdDetails.Columns.Clear();
+            grdDetails.AddTextColumn("Application Type", FMainDS.PtApplicationType.ColumnAppTypeName);
+            grdDetails.AddTextColumn("Description", FMainDS.PtApplicationType.ColumnAppTypeDescr);
+            grdDetails.AddTextColumn("Application for", FMainDS.PtApplicationType.Columns["ApplicationFor"]);
+            grdDetails.AddCheckBoxColumn("Unassignable?", FMainDS.PtApplicationType.ColumnUnassignableFlag);
+            grdDetails.AddDateColumn("Unassignable Date", FMainDS.PtApplicationType.ColumnUnassignableDate);
+            grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PtApplicationType.ColumnDeletableFlag);
+        }
+
         private void RunOnceOnActivationManual()
         {
             chkDetailDeletableFlag.Enabled = false;
@@ -70,7 +93,31 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         private void GetDetailDataFromControlsManual(PtApplicationTypeRow ARow)
         {
-            ARow.AppTypeDescr = "";
+            if (rbtField.Checked)
+            {
+                ARow.AppFormType = "LONG FORM";
+            }
+            else
+            {
+                ARow.AppFormType = "SHORT FORM";
+            }
+        }
+
+        private void ShowDetailsManual(PtApplicationTypeRow ARow)
+        {
+            if (ARow.AppFormType == "SHORT FORM")
+            {
+                rbtEvent.Checked = true;
+                rbtField.Checked = false;
+            }
+            else if (ARow.AppFormType == "LONG FORM")
+            {
+                rbtEvent.Checked = false;
+                rbtField.Checked = true;
+            }
+
+            // once record is saved then application form type cannot be changed any more
+            rgrDetailAppFormType.Enabled = (ARow.RowState == DataRowState.Added);
         }
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)

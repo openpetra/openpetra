@@ -396,6 +396,7 @@ namespace Ict.Common.Remoting.Client
             UPathLog = GetPathLog();
 
             UDebugLevel = TAppSettingsManager.GetInt16("Client.DebugLevel", 0);
+            TLogging.DebugLevel = UDebugLevel;
 
             UBehaviourSeveralClients = "OnlyOneWithQuestion";
 

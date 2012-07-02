@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -157,6 +157,62 @@ public class TAdminConsole
         }
     }
 
+    private static void ExportDatabase(IServerAdminInterface TRemote)
+    {
+        Console.Write("     Please enter filename of yml.gz file: ");
+        string backupFile = Path.GetFullPath(Console.ReadLine());
+
+        if (!backupFile.EndsWith(".yml.gz"))
+        {
+            Console.WriteLine("filename has to end with .yml.gz. Please try again");
+            return;
+        }
+
+        string YmlGZData = TRemote.BackupDatabaseToYmlGZ();
+
+        FileStream fs = new FileStream(backupFile, FileMode.Create);
+        byte[] buffer = Convert.FromBase64String(YmlGZData);
+        fs.Write(buffer, 0, buffer.Length);
+        fs.Close();
+        TLogging.Log("backup has been written to " + backupFile);
+    }
+
+    private static void RestoreDatabase(IServerAdminInterface TRemote)
+    {
+        Console.WriteLine(Environment.NewLine + "-> DELETING YOUR DATABASE <-");
+        Console.Write("     Enter YES to import the new database (anything else to leave command): ");
+
+        if (Console.ReadLine() == "YES")
+        {
+            Console.Write("     Please enter filename of yml.gz file: ");
+            string restoreFile = Path.GetFullPath(Console.ReadLine());
+
+            if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
+            {
+                Console.WriteLine("invalid filename, please try again");
+            }
+
+            FileStream fs = new FileStream(restoreFile, FileMode.Open);
+            byte[] buffer = new byte[fs.Length];
+            fs.Read(buffer, 0, buffer.Length);
+            fs.Close();
+            string YmlGZData = Convert.ToBase64String(buffer);
+
+            if (TRemote.RestoreDatabaseFromYmlGZ(YmlGZData))
+            {
+                TLogging.Log("backup has been restored from " + restoreFile);
+            }
+            else
+            {
+                TLogging.Log("there have been problems with the restore");
+            }
+        }
+        else
+        {
+            Console.WriteLine("     Reset of database cancelled!");
+        }
+    }
+
     /// <summary>
     /// shows the menu and processes the selections of the administrator
     /// </summary>
@@ -206,10 +262,15 @@ public class TAdminConsole
                         Console.WriteLine("     d: disconnect a certain Client");
                         Console.WriteLine("     q: queue a Client Task for a certain Client");
                         Console.WriteLine("     s: Server Status");
-#if DEBUGMODE
-                        Console.WriteLine("     y: show Server memory");
-                        Console.WriteLine("     g: perform Server garbage collection (for debugging purposes only!)");
-#endif
+
+                        if (TLogging.DebugLevel > 0)
+                        {
+                            Console.WriteLine("     y: show Server memory");
+                            Console.WriteLine("     g: perform Server garbage collection (for debugging purposes only!)");
+                        }
+
+                        Console.WriteLine("     e: export the database to yml.gz");
+                        Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
                         Console.WriteLine("     u: unconditional Server shutdown (forces disconnection of all Clients!)");
                         Console.WriteLine("     x: exit PETRAServerADMIN");
                         Console.Write(ServerAdminPrompt);
@@ -248,6 +309,27 @@ public class TAdminConsole
                         // queue a Client Task for a certain Client
                         break;
 
+                    case 'e':
+                    case 'E':
+                        Console.WriteLine(Environment.NewLine + "-> Export the database to yml.gz file <-");
+
+                        ExportDatabase(TRemote);
+
+                        Console.Write(ServerAdminPrompt);
+
+                        // queue a Client Task for a certain Client
+                        break;
+
+                    case 'i':
+                    case 'I':
+                        Console.WriteLine(Environment.NewLine + "-> Restore the database from yml.gz file <-");
+
+                        RestoreDatabase(TRemote);
+
+                        Console.Write(ServerAdminPrompt);
+
+                        // queue a Client Task for a certain Client
+                        break;
 
                     case 's':
                     case 'S':

@@ -178,6 +178,9 @@
 	<attribute name="City" script="address.city.name" />
 	<attribute name="Province" script="address.city.state.name" />
 	<attribute name="CountryCode" script="address.city.state.country.isoCode" />
+    
+    <attribute name="bankaccount_bank" type="int" min="1" max="10000"/>
+    <attribute name="bankaccount_account" type="int" min="1000000" max="99000000" unique="true"/>
 </generate>
 
 <generate type="Donations" count="${donations_count}" 

@@ -23,9 +23,11 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 using System.IO;
 using System.Xml;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Text;
 using GNU.Gettext;
 using Ict.Common;
@@ -71,23 +73,34 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 Catalog.GetString("Saving to database"),
                 0);
 
-            TSubmitChangesResult SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
 
-            AFirstStatementKey = -1;
-
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
+            try
             {
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("starting to train"),
-                    1);
+                SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
 
-                AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
+                AFirstStatementKey = -1;
 
-                // search for already posted gift batches, and do the matching for these imported statements
-                TBankImportMatching.Train(AStatementAndTransactionsDS);
+                if (SubmissionResult == TSubmitChangesResult.scrOK)
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("starting to train"),
+                        1);
+
+                    AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
+
+                    // search for already posted gift batches, and do the matching for these imported statements
+                    TBankImportMatching.Train(AStatementAndTransactionsDS);
+                }
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.ToString());
+                TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
+                throw ex;
+            }
 
             return SubmissionResult;
         }
@@ -167,19 +180,27 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             {
                 AEpStatementAccess.LoadByPrimaryKey(ResultDataset, AStatementKey, Transaction);
 
-                ACostCentreAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
-
-                // TODO load Motivation Groups as well
-                AMotivationDetailAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
-
-                AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
-
                 if (ResultDataset.AEpStatement[0].BankAccountCode.Length == 0)
                 {
                     throw new Exception("Loading Bank Statement: Bank Account must not be empty");
                 }
 
+                ACostCentreAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
+
+                AMotivationDetailAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
+
+                AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
+
+                AEpMatchAccess.LoadViaALedger(ResultDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
                 string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
+
+                DataView EpMatchView = new DataView(ResultDataset.AEpMatch,
+                    string.Empty,
+                    AEpMatchTable.GetMatchTextDBName(),
+                    DataViewRowState.CurrentRows);
 
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
@@ -190,41 +211,28 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         row.MatchText = TBankImportMatching.CalculateMatchText(BankAccountCode, row);
                     }
 
-                    AEpMatchTable tempTable = new AEpMatchTable();
-                    AEpMatchRow tempRow = tempTable.NewRowTyped(false);
-                    tempRow.MatchText = row.MatchText;
+                    DataRowView[] matches = EpMatchView.FindRows(row.MatchText);
 
-                    // TODO: do not load from the database so often, and only write once
-                    tempTable = AEpMatchAccess.LoadUsingTemplate(tempRow, Transaction);
-
-                    if (tempTable.Count > 0)
+                    if (matches.Length > 0)
                     {
                         // update the recent date
-                        bool update = false;
-
-                        foreach (AEpMatchRow tempRow2 in tempTable.Rows)
+                        foreach (DataRowView rv in matches)
                         {
-                            if (tempRow2.RecentMatch < row.DateEffective)
+                            AEpMatchRow r = (AEpMatchRow)rv.Row;
+
+                            if (r.RecentMatch < row.DateEffective)
                             {
-                                tempRow2.RecentMatch = row.DateEffective;
-                                update = true;
+                                r.RecentMatch = row.DateEffective;
                             }
+
+                            row.EpMatchKey = r.EpMatchKey;
+                            row.MatchAction = r.Action;
                         }
-
-                        if (update)
-                        {
-                            AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
-                        }
-
-                        row.EpMatchKey = tempTable[0].EpMatchKey;
-                        row.MatchAction = tempTable[0].Action;
-
-                        ResultDataset.AEpMatch.Merge(tempTable);
                     }
                     else
                     {
                         // create new match
-                        tempRow = tempTable.NewRowTyped(true);
+                        AEpMatchRow tempRow = ResultDataset.AEpMatch.NewRowTyped(true);
                         tempRow.EpMatchKey = (ResultDataset.AEpMatch.Count + 1) * -1;
                         tempRow.Detail = 0;
                         tempRow.MatchText = row.MatchText;
@@ -252,17 +260,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             }
                         }
 
-                        tempTable.Rows.Add(tempRow);
-                        AEpMatchAccess.SubmitChanges(tempTable, Transaction, out VerificationResult);
-                        row.EpMatchKey = tempTable[0].EpMatchKey;
-                        row.MatchAction = tempTable[0].Action;
-                        ResultDataset.AEpMatch.Merge(tempTable);
+                        ResultDataset.AEpMatch.Rows.Add(tempRow);
+
+                        row.EpMatchKey = tempRow.EpMatchKey;
+                        row.MatchAction = tempRow.Action;
                     }
                 }
 
-                AEpTransactionAccess.SubmitChanges(ResultDataset.AEpTransaction, Transaction, out VerificationResult);
-
-                DBAccess.GDBAccessObj.CommitTransaction();
+                BankImportTDSAccess.SubmitChanges(ResultDataset, out VerificationResult);
             }
             catch (Exception e)
             {
@@ -272,17 +277,36 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 throw e;
             }
 
+            // drop all matches that do not occur on this statement
+            ResultDataset.AEpMatch.Clear();
+
+            // reloading is faster than deleting all matches that are not needed
+            string sqlLoadMatchesOfStatement =
+                "SELECT m.* FROM PUB_a_ep_match m, PUB_a_ep_transaction t WHERE t.a_statement_key_i = ? AND m.a_match_text_c = t.a_match_text_c";
+
+            OdbcParameter param = new OdbcParameter("statementkey", OdbcType.Int);
+            param.Value = AStatementKey;
+
+            DBAccess.GDBAccessObj.SelectDT(ResultDataset.AEpMatch,
+                sqlLoadMatchesOfStatement,
+                null,
+                new OdbcParameter[] { param }, -1, -1);
+
             // update the custom field for cost centre name for each match
             foreach (BankImportTDSAEpMatchRow row in ResultDataset.AEpMatch.Rows)
             {
-                ResultDataset.ACostCentre.DefaultView.RowFilter = String.Format("{0}='{1}'",
-                    ACostCentreTable.GetCostCentreCodeDBName(), row.CostCentreCode);
+                ACostCentreRow ccRow = (ACostCentreRow)ResultDataset.ACostCentre.Rows.Find(new object[] { row.LedgerNumber, row.CostCentreCode });
 
-                if (ResultDataset.ACostCentre.DefaultView.Count == 1)
+                if (ccRow != null)
                 {
-                    row.CostCentreName = ((ACostCentreRow)ResultDataset.ACostCentre.DefaultView[0].Row).CostCentreName;
+                    row.CostCentreName = ccRow.CostCentreName;
                 }
             }
+
+            // remove all rows that we do not need on the client side
+            ResultDataset.AGiftDetail.Clear();
+            ResultDataset.AMotivationDetail.Clear();
+            ResultDataset.ACostCentre.Clear();
 
             ResultDataset.AcceptChanges();
 
@@ -340,6 +364,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 return -1;
             }
+
+            ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
 
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {

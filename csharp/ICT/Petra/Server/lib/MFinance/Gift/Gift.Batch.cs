@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -119,7 +119,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <param name="LedgerTable"></param>
         /// <param name="ALedgerNumber"></param>
         /// <returns>the new gift batch row</returns>
-        public static ARecurringGiftBatchRow CreateANewRecurringGiftBatchRow(ref RecurringGiftBatchTDS MainDS,
+        public static ARecurringGiftBatchRow CreateANewRecurringGiftBatchRow(ref GiftBatchTDS MainDS,
             ref TDBTransaction Transaction,
             ref ALedgerTable LedgerTable,
             Int32 ALedgerNumber)
@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.LedgerNumber = ALedgerNumber;
             LedgerTable[0].LastRecGiftBatchNumber++;
             NewRow.BatchNumber = LedgerTable[0].LastRecGiftBatchNumber;
-            NewRow.BatchDescription = "PLEASE ENTER A DESCRIPTION";
+            NewRow.BatchDescription = Catalog.GetString("Please enter recurring batch description");
 
             // TODO: bank account as a parameter, set on the gift matching screen, etc
             NewRow.BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(

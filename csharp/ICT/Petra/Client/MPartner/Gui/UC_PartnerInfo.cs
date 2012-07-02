@@ -367,8 +367,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblParentUnit.Text = Catalog.GetString("Parent Unit:");
             this.lblField.Text = Catalog.GetString("Field:");
             this.lblPartnerUpdated.Text = Catalog.GetString("Partner Updated:");
-            this.lblLanguages.Text = Catalog.GetString("guages):");
-            this.label4.Text = Catalog.GetString("Speaks (Lan-");
+            this.lblLanguages.Text = Catalog.GetString("Speaks (Languages):");
             this.lblLastContact.Text = Catalog.GetString("Last Contact:");
             this.tbpPersonFamily.Text = Catalog.GetString("Person / Family");
             this.lblFamily.Text = Catalog.GetString("Family:");

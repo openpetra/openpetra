@@ -230,7 +230,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             string username = GetSelectedDetailRow().UserId;
 
-            // TODO: enter new password twice to be sure it is correct
+            // only request the password once, since this is the sysadmin changing it.
+            // see http://bazaar.launchpad.net/~openpetracore/openpetraorg/trunkhosted/view/head:/csharp/ICT/Petra/Client/MSysMan/Gui/SysManMain.cs
+            // for the change password dialog for the normal user
             PetraInputBox input = new PetraInputBox(
                 Catalog.GetString("Change the password"),
                 String.Format(Catalog.GetString("Please enter the new password for user {0}:"), username),

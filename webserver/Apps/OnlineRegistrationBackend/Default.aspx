@@ -20,7 +20,7 @@
             // Do some Authentication...
             Session ["UserName"] = this.txtUsername.Text;
             TOpenPetraOrg myServer = new TOpenPetraOrg();
-            string message = myServer.Login(this.txtUsername.Text, this.txtPassword.Text);
+            myServer.Login(this.txtUsername.Text, this.txtPassword.Text);
 
             if (myServer.IsUserLoggedIn())
             {
@@ -82,5 +82,15 @@
             </Buttons>
         </ext:Window>
     </form>
+    <ext:KeyMap runat="server" Target="={#{Window1}.getBody()}">
+        <ext:KeyBinding>
+            <Keys>
+                <ext:Key Code="ENTER" />
+            </Keys>
+            <Listeners>
+                <Event Handler="e.stopEvent();#{Button1}.fireEvent('click');" />
+            </Listeners>
+        </ext:KeyBinding>
+     </ext:KeyMap>
 </body>
 </html>

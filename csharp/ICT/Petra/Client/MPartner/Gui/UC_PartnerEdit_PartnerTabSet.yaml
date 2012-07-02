@@ -11,7 +11,7 @@ RootNode:
             Dock: Fill
 
         tabPartners:
-            DragTabPageEnabled: true
+            DragTabPageEnabled: false
             ShowToolTips: true
             LoadPagesDynamically: true
             IgnoreFirstTabPageSelectionChange: true

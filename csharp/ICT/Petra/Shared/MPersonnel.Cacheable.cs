@@ -35,15 +35,6 @@ namespace Ict.Petra.Shared
     public enum TCacheableUnitTablesEnum
     {
         /// <summary>
-        /// List of all outreaches
-        /// </summary>
-        OutreachList,
-
-        /// <summary>
-        /// List of all conferences
-        /// </summary>
-        ConferenceList,
-        /// <summary>
         /// Contains the different position which exist within our organisation, e.g. Field Leader, Book Keeper, Computer support
         /// </summary>
         PositionList,
@@ -56,7 +47,16 @@ namespace Ict.Petra.Shared
         /// <summary>
         /// Describes the reason a person left a particular position
         /// </summary>
-        LeavingCodeList
+        LeavingCodeList,
+        /// <summary>
+        /// List of all outreaches
+        /// </summary>
+        OutreachList,
+
+        /// <summary>
+        /// List of all conferences
+        /// </summary>
+        ConferenceList
     };
     /// <summary>
     /// Enums holding the possible cacheable tables for the Petra Personnel Module, specifically Person submodule
@@ -92,6 +92,11 @@ namespace Ict.Petra.Shared
         /// Contains the different codes that indicate where an applicant is in the application continuum
         /// </summary>
         ApplicantStatusList,
+
+        /// <summary>
+        /// Contains the different codes that indicate the type of application
+        /// </summary>
+        ApplicationTypeList,
 
         /// <summary>
         /// Contains the codes used to indicate where the conferee is arriving or departing
@@ -176,6 +181,15 @@ namespace Ict.Petra.Shared
         /// <summary>
         /// Describes the importance of the country and target choices
         /// </summary>
-        OutreachPreferenceLevelList
+        OutreachPreferenceLevelList,
+        /// <summary>
+        /// Contains application types for event (short term) applications
+        /// </summary>
+        EventApplicationTypeList,
+
+        /// <summary>
+        /// Contains application types for field (long term) applications
+        /// </summary>
+        FieldApplicationTypeList
     };
 }

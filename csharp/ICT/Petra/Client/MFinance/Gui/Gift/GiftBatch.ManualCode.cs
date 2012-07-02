@@ -98,7 +98,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             tabGiftBatch.SelectedIndex = standardTabIndex;
-            TabSelectionChanged(null, null);
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
         }
 

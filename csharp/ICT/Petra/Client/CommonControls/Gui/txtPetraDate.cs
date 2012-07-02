@@ -298,26 +298,6 @@ namespace Ict.Petra.Client.CommonControls
             LeavingOnFailedValidationOK = true;
         }
 
-        /// <summary>
-        /// Default of maximalDateValue is the system Constant DateTime.MaxValue
-        /// Here you can override ...
-        /// </summary>
-        /// <param name="maximalValue">The new maximal value ...</param>
-        public void SetMaximalDate(DateTime maximalValue)
-        {
-            maximalDateValue = maximalValue;
-        }
-
-        /// <summary>
-        /// Default of minimalDateValue is the system Constant DateTime.MinValue
-        /// Here you can override ...
-        /// </summary>
-        /// <param name="minimalValue">The new minimal value ...</param>
-        public void SetMinimalDate(DateTime minimalValue)
-        {
-            minimalDateValue = minimalValue;
-        }
-
         void TtxtPetraDate_DoubleClick(object sender, EventArgs e)
         {
             DialogResult ReplaceExistingDate;

@@ -44,6 +44,22 @@ namespace Ict.Common.Remoting.Server
     }
 
     /// <summary>
+    /// for saving and loading the database
+    /// </summary>
+    public interface IImportExportManager
+    {
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        string BackupDatabaseToYmlGZ();
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        bool RestoreDatabaseFromYmlGZ(string AYmlGzData);
+    }
+
+    /// <summary>
     /// an interface for logging to the database
     /// </summary>
     public interface IErrorLog

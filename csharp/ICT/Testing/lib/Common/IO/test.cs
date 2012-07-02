@@ -204,5 +204,186 @@ namespace Ict.Common.IO.Testing
 
             Assert.AreEqual(testText, PackTools.UnzipString(compressed)[0], "compressing a string");
         }
+
+        /// test the template engine
+        [Test]
+        public void TestTemplateEngine()
+        {
+            ProcessTemplate template = new ProcessTemplate();
+
+            template.FTemplateCode = "my test" + Environment.NewLine +
+                                     "{#IFDEF TEST1}" + Environment.NewLine +
+                                     "test1" + Environment.NewLine +
+                                     "{#ENDIF TEST1}" + Environment.NewLine;
+
+            template.SetCodelet("TEST1", "test");
+
+            Assert.AreEqual("my test" + Environment.NewLine + "test1" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST1");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "my test" + Environment.NewLine +
+                                     "{#IFNDEF TEST2}" + Environment.NewLine +
+                                     "test2" + Environment.NewLine +
+                                     "{#ENDIFN TEST2}" + Environment.NewLine;
+
+            template.SetCodelet("TEST2", "test");
+
+            Assert.AreEqual("my test" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST2");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "my test" + Environment.NewLine +
+                                     "{#IFNDEF TEST3}" + Environment.NewLine +
+                                     "test3" + Environment.NewLine +
+                                     "{#ENDIFN TEST3}" + Environment.NewLine +
+                                     "hallo" + Environment.NewLine;
+
+            Assert.AreEqual("my test" + Environment.NewLine +
+                "test3" + Environment.NewLine +
+                "hallo" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST3");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "my test" + Environment.NewLine +
+                                     "{#IFDEF TEST1}" + Environment.NewLine +
+                                     "test1" + Environment.NewLine +
+                                     "{#ENDIF TEST1}" + Environment.NewLine +
+                                     "{#IFNDEF TEST2}" + Environment.NewLine +
+                                     "test2" + Environment.NewLine +
+                                     "{#ENDIFN TEST2}" + Environment.NewLine +
+                                     "{#IFNDEF TEST3}" + Environment.NewLine +
+                                     "test3" + Environment.NewLine +
+                                     "{#ENDIFN TEST3}" + Environment.NewLine +
+                                     "{#IFDEF TEST4}" + Environment.NewLine +
+                                     "test4" + Environment.NewLine +
+                                     "{#ENDIF TEST4}" + Environment.NewLine +
+                                     "hallo" + Environment.NewLine;
+
+            template.SetCodelet("TEST1", "test");
+            template.SetCodelet("TEST3", "test");
+
+            Assert.AreEqual("my test" + Environment.NewLine +
+                "test1" + Environment.NewLine +
+                "test2" + Environment.NewLine +
+                "hallo" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST4");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "my test" + Environment.NewLine +
+                                     "{#IFDEF TEST5 OR TEST1}" + Environment.NewLine +
+                                     "test5" + Environment.NewLine +
+                                     "{#ENDIF TEST5 OR TEST1}" + Environment.NewLine;
+
+            template.SetCodelet("TEST5", "test");
+
+            Assert.AreEqual("my test" + Environment.NewLine + "test5" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST5");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "my test" + Environment.NewLine +
+                                     "{#IFDEF TEST5 AND TEST6}" + Environment.NewLine +
+                                     "test6" + Environment.NewLine +
+                                     "{#ENDIF TEST5 AND TEST6}" + Environment.NewLine;
+
+            template.SetCodelet("TEST6", "test");
+
+            Assert.AreEqual("my test" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST6");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "my test" + Environment.NewLine +
+                                     "{#IFDEF TEST6 AND TEST7}" + Environment.NewLine +
+                                     "test7" + Environment.NewLine +
+                                     "{#ENDIF TEST6 AND TEST7}" + Environment.NewLine;
+
+            template.SetCodelet("TEST6", "test");
+            template.SetCodelet("TEST7", "test");
+
+            Assert.AreEqual("my test" + Environment.NewLine + "test7" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST7");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "{#IFDEF TEST8}" + Environment.NewLine +
+                                     "test8" + Environment.NewLine +
+                                     "{#ENDIF TEST8}" + Environment.NewLine +
+                                     "test8" + Environment.NewLine +
+                                     "{#IFDEF TEST8}" + Environment.NewLine +
+                                     "test8" + Environment.NewLine +
+                                     "{#ENDIF TEST8}" + Environment.NewLine;
+
+
+            template.SetCodelet("TEST8", "test");
+
+            Assert.AreEqual("test8" + Environment.NewLine + "test8" + Environment.NewLine + "test8" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST8");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "{#IFNDEF TEST9}" + Environment.NewLine +
+                                     "test8" + Environment.NewLine +
+                                     "{#ENDIFN TEST9}" + Environment.NewLine +
+                                     "test9" + Environment.NewLine +
+                                     "{#IFNDEF TEST9}" + Environment.NewLine +
+                                     "test8" + Environment.NewLine +
+                                     "{#ENDIFN TEST9}" + Environment.NewLine;
+
+
+            template.SetCodelet("TEST9", "test");
+
+            Assert.AreEqual("test9" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST9");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "{#IFNDEF TEST10}" + Environment.NewLine +
+                                     "test8" + Environment.NewLine +
+                                     "{#ENDIFN TEST10}" + Environment.NewLine +
+                                     "test9" + Environment.NewLine +
+                                     "{#IFDEF TEST10}" + Environment.NewLine +
+                                     "test10" + Environment.NewLine +
+                                     "{#ENDIF TEST10}" + Environment.NewLine;
+
+
+            template.SetCodelet("TEST10", "test");
+
+            Assert.AreEqual("test9" + Environment.NewLine + "test10" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST10");
+
+            template = new ProcessTemplate();
+            template.FTemplateCode = "{#IFDEF TEST10}" + Environment.NewLine +
+                                     "{#IFDEF TEST11}" + Environment.NewLine +
+                                     "{#IFDEF TEST11}" + Environment.NewLine +
+                                     "test11" + Environment.NewLine +
+                                     "{#ENDIF TEST11}" + Environment.NewLine +
+                                     "{#ENDIF TEST11}" + Environment.NewLine +
+                                     "{#IFNDEF TEST11}" + Environment.NewLine +
+                                     "test10" + Environment.NewLine +
+                                     "{#ENDIFN TEST11}" + Environment.NewLine +
+                                     "{#ENDIF TEST10}" + Environment.NewLine +
+                                     "{#IFNDEF TEST10}" + Environment.NewLine +
+                                     "{#IFNDEF TEST11}" + Environment.NewLine +
+                                     "{#IFDEF TEST11}" + Environment.NewLine +
+                                     "test13" + Environment.NewLine +
+                                     "{#ENDIF TEST11}" + Environment.NewLine +
+                                     "{#ENDIFN TEST11}" + Environment.NewLine +
+                                     "{#ENDIFN TEST10}" + Environment.NewLine +
+                                     "test1" + Environment.NewLine;
+
+            template.SetCodelet("TEST11", "test_11");
+            template.SetCodelet("TEST10", "test_10");
+
+            Assert.AreEqual("test11" + Environment.NewLine + "test1" + Environment.NewLine,
+                template.FinishWriting(true),
+                "TEST11");
+        }
     }
 }

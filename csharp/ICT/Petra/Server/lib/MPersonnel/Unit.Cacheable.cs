@@ -164,18 +164,6 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 
                     switch(ACacheableTable)
                     {
-                        case TCacheableUnitTablesEnum.OutreachList:
-                        {
-                            DataTable TmpTable = GetOutreachListTable(ReadTransaction, TableName);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
-                        case TCacheableUnitTablesEnum.ConferenceList:
-                        {
-                            DataTable TmpTable = GetConferenceListTable(ReadTransaction, TableName);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheableUnitTablesEnum.PositionList:
                         {
                             DataTable TmpTable = PtPositionAccess.LoadAll(ReadTransaction);
@@ -191,6 +179,18 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                         case TCacheableUnitTablesEnum.LeavingCodeList:
                         {
                             DataTable TmpTable = PtLeavingCodeAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableUnitTablesEnum.OutreachList:
+                        {
+                            DataTable TmpTable = GetOutreachListTable(ReadTransaction, TableName);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheableUnitTablesEnum.ConferenceList:
+                        {
+                            DataTable TmpTable = GetConferenceListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -379,8 +379,11 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
         private DataTable GetOutreachListTable(TDBTransaction AReadTransaction, string ATableName)
         {
 #region ManualCode
-            // Used eg. in Select Event Dialog
-            return DBAccess.GDBAccessObj.SelectDT(
+			DataTable Table;
+			DataColumn[] Key = new DataColumn[1];
+			
+            // Used eg. Select Event Dialog
+            Table = DBAccess.GDBAccessObj.SelectDT(
                 "SELECT DISTINCT " +
                 PPartnerTable.GetPartnerShortNameDBName() +
                 ", " + PPartnerTable.GetPartnerClassDBName() +
@@ -409,16 +412,27 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                 PPartnerLocationTable.GetTableDBName() + "." + PPartnerLocationTable.GetLocationKeyDBName() + " AND " +
                 PCountryTable.GetTableDBName() + "." + PCountryTable.GetCountryCodeDBName() + " = " +
                 PLocationTable.GetTableDBName() + "." + PLocationTable.GetCountryCodeDBName() + " AND " +
-                PUnitTable.GetOutreachCodeDBName() + " <> '' ",
+                PUnitTable.GetOutreachCodeDBName() + " <> '' AND (" +
+                PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONF%' AND " +
+                PUnitTable.GetUnitTypeCodeDBName() + " NOT LIKE '%CONG%')"
+                ,
                 ATableName, AReadTransaction);
+            
+            Key[0] = Table.Columns[PPartnerTable.GetPartnerKeyDBName()];
+            Table.PrimaryKey = Key;
+            
+            return Table;
 #endregion ManualCode        
         }
 
         private DataTable GetConferenceListTable(TDBTransaction AReadTransaction, string ATableName)
         {
 #region ManualCode
+			DataTable Table;
+			DataColumn[] Key = new DataColumn[1];
+			
             // Used eg. Select Event Dialog
-            return DBAccess.GDBAccessObj.SelectDT(
+            Table = DBAccess.GDBAccessObj.SelectDT(
                 "SELECT DISTINCT " +
                 PPartnerTable.GetPartnerShortNameDBName() +
                 ", " + PPartnerTable.GetPartnerClassDBName() +
@@ -451,11 +465,15 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 
                 PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE' AND " +
                 PPartnerTable.GetPartnerClassDBName() + " = 'UNIT' AND (" +
-                PUnitTable.GetUnitTypeCodeDBName() + " = 'TS-CONG' OR " +
-                PUnitTable.GetUnitTypeCodeDBName() + " = 'GA-CONF' OR " +
-                PUnitTable.GetUnitTypeCodeDBName() + " = 'GC-CONG' )"
+                PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONF%' OR " +
+                PUnitTable.GetUnitTypeCodeDBName() + " LIKE '%CONG%')"
                 ,
                 ATableName, AReadTransaction);
+            
+            Key[0] = Table.Columns[PPartnerTable.GetPartnerKeyDBName()];
+            Table.PrimaryKey = Key;
+            
+            return Table;
 #endregion ManualCode        
         }
     }

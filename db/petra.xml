@@ -3781,6 +3781,12 @@
                 thisFields="p_type_c"
                 otherTable="p_banking_details_usage_type"
                 otherFields="p_type_c"/>
+    <!-- this foreign key is needed so that the p_banking_details_key_i is set when saving the dataset -->
+    <foreignkey name="p_banking_details_usage_fk3"
+                descr=""
+                thisFields="p_banking_details_key_i"
+                otherTable="p_banking_details"
+                otherFields="p_banking_details_key_i"/>
     <!-- Explicit Indexes on table p_banking_details_usage  -->
   </table>
   <table name="p_partner_tax_deductible_pct"
@@ -10899,6 +10905,12 @@
                 thisFields="a_recipient_ledger_number_n"
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
+    <!-- this foreign key is needed for code generation, LoadViaARecurringGiftBatch -->
+    <foreignkey name="a_recurring_gift_detail_fk6"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_recurring_gift_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
     <!-- Explicit Indexes on table a_recurring_gift_detail  -->
   </table>
   <table name="a_gift_batch"
@@ -11478,6 +11490,12 @@
                 thisFields="a_ledger_number_i, a_cost_centre_code_c"
                 otherTable="a_cost_centre"
                 otherFields="a_ledger_number_i, a_cost_centre_code_c"/>
+    <!-- this foreign key is needed for code generation, LoadViaAGiftBatch -->
+    <foreignkey name="a__gift_detail_fk7"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_gift_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
     <!-- Explicit Indexes on table a_gift_detail  -->
     <index name="a_recipient_ledger_number_i"
            descr="Ordered by recipient ledger number for report production."
@@ -14703,8 +14721,7 @@
                 label="Leadership Rating"
                 columnlabel="Leadership Rating"
                 help="Indicates the Leadership Rating."
-                notnull="yes"
-                initial=""/>
+                initial="-1"/>
     <tablefield name="pm_confirmed_option_code_c"
                 type="varchar"
                 descr="Indicates the outreach code of the confirmed option."
@@ -15035,8 +15052,7 @@
                 format="9999999999"
                 label="Field Charged"
                 columnlabel="Field Charged"
-                help="This field idenifies the field to be charged for the costs."
-                notnull="yes"/>
+                help="This field idenifies the field to be charged for the costs."/>
     <tablefield name="pm_st_congress_language_c"
                 type="varchar"
                 charlength="10"
@@ -18647,9 +18663,6 @@
     <primarykey name="pm_staff_data_pk"
                 descr=""
                 thisFields="p_site_key_n, pm_key_n"/>
-    <uniquekey name="pm_commitment_data_uk"
-               descr=""
-               thisFields="p_partner_key_n, pm_start_of_commitment_d, pm_end_of_commitment_d"/>
     <foreignkey name="pm_staff_data_fk1"
                 descr=""
                 thisFields="p_partner_key_n"

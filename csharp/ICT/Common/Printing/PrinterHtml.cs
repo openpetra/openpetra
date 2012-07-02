@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -660,6 +660,20 @@ namespace Ict.Common.Printing
                     {
                         AWidthAvailable = ToInch(Styles[StyleName], eResolution.eHorizontal);
                     }
+                    else if (StyleName.ToLower() == "transform")
+                    {
+                        // see also http://www.w3schools.com/cssref/css3_pr_transform.asp
+                        string transformValue = Styles[StyleName].Trim().ToLower();
+
+                        if (transformValue.StartsWith("rotate(") && transformValue.EndsWith("deg)"))
+                        {
+                            FPrinter.Rotate(Convert.ToInt32(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length)));
+                        }
+                        else
+                        {
+                            TLogging.Log("TPrinterHtml: unsupported transform style. we only support rotation at the moment");
+                        }
+                    }
                 }
             }
 
@@ -691,6 +705,9 @@ namespace Ict.Common.Printing
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
                 AWidthAvailable = OrigWidthAvailable;
+
+                FPrinter.SaveState();
+
                 bool HasPositionInfo = SetPositionFromStyle(curNode, ref AWidthAvailable);
 
                 if (HasPositionInfo)
@@ -1004,6 +1021,8 @@ namespace Ict.Common.Printing
                     FPrinter.CurrentYPos = 0;
                 }
 
+                FPrinter.RestoreState();
+
                 // todo: h1, etc headings???
                 // todo: code, fixed width font (for currency amounts?) ???
                 // todo: don't print to paper if class="preprinted"; but is printed for PDF
@@ -1012,7 +1031,7 @@ namespace Ict.Common.Printing
                 // todo: header div style with tray information; config file with local tray names???
             }
 
-            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos())
+            if ((origNode == curNode) && (curNode != null) && FPrinter.ValidYPos() && (FRowsLeftOver == null))
             {
                 throw new Exception("page too small, at " + curNode.Name);
             }

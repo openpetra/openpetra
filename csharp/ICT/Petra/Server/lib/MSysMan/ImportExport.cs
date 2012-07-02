@@ -41,6 +41,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
 namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
@@ -137,6 +138,11 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             XmlElement tableNode = AModuleNode.OwnerDocument.CreateElement(ATableType.Name);
 
             AModuleNode.AppendChild(tableNode);
+
+            if (table.Rows.Count == 0)
+            {
+                return;
+            }
 
             // for SQLite the table is not sorted by primary key. Therefore do it manually
             DataView v = table.DefaultView;
@@ -542,6 +548,31 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
         {
             return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
+        }
+    }
+}
+
+namespace Ict.Petra.Server.MSysMan.ImportExport
+{
+    /// <summary>
+    /// this manager is called from the server admin console
+    /// </summary>
+    public class TImportExportManager : IImportExportManager
+    {
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        public string BackupDatabaseToYmlGZ()
+        {
+            return TImportExportWebConnector.ExportAllTables();
+        }
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        public bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        {
+            return TImportExportWebConnector.ResetDatabase(AYmlGzData);
         }
     }
 }

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christophert
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -173,6 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 //btnDelete.Enabled = false;
                 FPreviouslySelectedDetailRow = null;
+                pnlDetails.Enabled = false;
                 ClearControls();
             }
         }
@@ -181,6 +182,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             txtDetailBatchDescription.Clear();
             txtDetailHashTotal.NumberValueDecimal = 0;
+            cmbDetailBankCostCentre.SelectedIndex = -1;
+            cmbDetailBankAccountCode.SelectedIndex = -1;
             cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
 

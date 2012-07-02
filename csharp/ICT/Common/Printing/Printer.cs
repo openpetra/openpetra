@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -428,6 +428,27 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
+        /// save the state before a rotation etc
+        /// </summary>
+        public virtual void SaveState()
+        {
+        }
+
+        /// <summary>
+        /// restore the state after a rotation etc
+        /// </summary>
+        public virtual void RestoreState()
+        {
+        }
+
+        /// <summary>
+        /// rotate the following output by some degrees
+        /// </summary>
+        public virtual void Rotate(Int32 ADegrees)
+        {
+        }
+
+        /// <summary>
         /// Line Feed; increases the current y position by the height of the given font
         /// </summary>
         /// <returns>the new current line
@@ -821,38 +842,48 @@ namespace Ict.Common.Printing
 
                     if (cell.borderWidth > 0)
                     {
+                        float horizontalDiff = Cm(0.1f);
+
                         if (cell.borderBitField == (TTableCellGfx.BOTTOM | TTableCellGfx.TOP | TTableCellGfx.LEFT | TTableCellGfx.RIGHT))
                         {
-                            DrawRectangle(cell.borderWidth, currentXPos, CurrentYPos, cell.contentWidth, row.contentHeight);
+                            DrawRectangle(cell.borderWidth, currentXPos, CurrentYPos - horizontalDiff, cell.contentWidth, row.contentHeight);
                         }
                         else
                         {
                             if ((cell.borderBitField & TTableCellGfx.TOP) != 0)
                             {
-                                DrawLine(cell.borderWidth, currentXPos, CurrentYPos, currentXPos + cell.contentWidth, CurrentYPos);
+                                DrawLine(cell.borderWidth,
+                                    currentXPos,
+                                    CurrentYPos - horizontalDiff,
+                                    currentXPos + cell.contentWidth,
+                                    CurrentYPos - horizontalDiff);
                             }
 
                             if ((cell.borderBitField & TTableCellGfx.BOTTOM) != 0)
                             {
                                 DrawLine(cell.borderWidth,
                                     currentXPos,
-                                    CurrentYPos + row.contentHeight,
+                                    CurrentYPos + row.contentHeight - horizontalDiff,
                                     currentXPos + cell.contentWidth,
-                                    CurrentYPos + row.contentHeight);
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
                             }
 
                             if ((cell.borderBitField & TTableCellGfx.LEFT) != 0)
                             {
-                                DrawLine(cell.borderWidth, currentXPos, CurrentYPos, currentXPos, CurrentYPos + row.contentHeight);
+                                DrawLine(cell.borderWidth,
+                                    currentXPos,
+                                    CurrentYPos - 2,
+                                    currentXPos,
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
                             }
 
                             if ((cell.borderBitField & TTableCellGfx.RIGHT) != 0)
                             {
                                 DrawLine(cell.borderWidth,
                                     currentXPos + cell.contentWidth,
-                                    CurrentYPos,
+                                    CurrentYPos - horizontalDiff,
                                     currentXPos + cell.contentWidth,
-                                    CurrentYPos + row.contentHeight);
+                                    CurrentYPos + row.contentHeight - horizontalDiff);
                             }
                         }
                     }

@@ -327,6 +327,12 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
+                            // mark dependent lists for needing to be refreshed since there was a change in base list
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheablePersonTablesEnum.EventApplicationTypeList.ToString());
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheablePersonTablesEnum.FieldApplicationTypeList.ToString());
+
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         else
