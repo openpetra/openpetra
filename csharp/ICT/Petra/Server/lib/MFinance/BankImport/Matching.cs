@@ -292,8 +292,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             AEpStatementRow ACurrentStatement,
             Int32 ASelectedGiftBatch, bool APostedBatch)
         {
-            TLogging.Log("before MatchTransactionsToGiftBatch");
-
             while (MatchTransactionsToGiftBatch(AMainDS,
                        ASelectedGiftBatch, APostedBatch))
             {
@@ -381,6 +379,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             bool APostedBatch)
         {
             bool newMatchFound = false;
+
+            if (TLogging.DebugLevel > 0)
+            {
+                TLogging.Log("begin MatchTransactionsToGiftBatch");
+            }
 
             DataView GiftDetailWithAmountView = new DataView(AMainDS.AGiftDetail,
                 string.Empty,
@@ -517,10 +520,13 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 }
             }
 
-            TLogging.Log("before if post batch");
-
             if (APostedBatch)
             {
+                if (TLogging.DebugLevel > 0)
+                {
+                    TLogging.Log("before extra treatment of posted batch");
+                }
+
                 // do another loop, now looking even harder for matching gifts; match donor name, and recipient name with transaction description
                 // by now the list of unassigned gifts from the old gift batch should be quite small
                 for (Int32 TransactionsCounter = 0; TransactionsCounter < AMainDS.AEpTransaction.Rows.Count; TransactionsCounter++)
@@ -562,6 +568,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                         }
                     }
                 }
+            }
+
+            if (TLogging.DebugLevel > 0)
+            {
+                TLogging.Log("end MatchTransactionsToGiftBatch");
             }
 
             return newMatchFound;
@@ -614,7 +625,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             BankImportTDS AMatchDS,
             DataView AMatchView,
             DataRowView[] AGiftDetails,
-            string AMatchText)
+            string AMatchText,
+            List <AEpMatchRow>AMatchesToAddLater)
         {
             AEpMatchRow newMatch = null;
 
@@ -630,9 +642,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                     newMatch = AMatchDS.AEpMatch.NewRowTyped();
 
                     // matchkey will be set properly on save, by sequence
-                    newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + 1);
+                    newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + AMatchesToAddLater.Count + 1);
                     newMatch.MatchText = AMatchText;
-                    AMatchDS.AEpMatch.Rows.Add(newMatch);
+                    AMatchesToAddLater.Add(newMatch);
                 }
                 else
                 {
@@ -697,6 +709,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                         Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED
                     });
 
+            List <AEpMatchRow>MatchesToAddLater = new List <AEpMatchRow>();
+
             foreach (DataRowView rv in matchedTransactions)
             {
                 BankImportTDSAEpTransactionRow tr = (BankImportTDSAEpTransactionRow)rv.Row;
@@ -714,7 +728,15 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                         });
 
                 // add new (or modified) matches
-                tr.EpMatchKey = CreateNewMatches(AMatchDS, MatchesByTextAndDetail, FilteredGiftDetails, MatchText);
+                tr.EpMatchKey = CreateNewMatches(AMatchDS, MatchesByTextAndDetail, FilteredGiftDetails, MatchText, MatchesToAddLater);
+            }
+
+            // for speed reasons, add the new rows after clearing the sort on the view
+            MatchesByTextAndDetail.Sort = string.Empty;
+
+            foreach (AEpMatchRow m in MatchesToAddLater)
+            {
+                AMatchDS.AEpMatch.Rows.Add(m);
             }
 
             AMatchDS.PBankingDetails.Clear();
@@ -723,7 +745,18 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
             TVerificationResultCollection Verification;
             AMatchDS.ThrowAwayAfterSubmitChanges = true;
+
+            if (TLogging.DebugLevel > 0)
+            {
+                TLogging.Log("before submitchanges");
+            }
+
             BankImportTDSAccess.SubmitChanges(AMatchDS, out Verification);
+
+            if (TLogging.DebugLevel > 0)
+            {
+                TLogging.Log("after submitchanges");
+            }
         }
     }
 }

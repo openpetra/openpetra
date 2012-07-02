@@ -310,6 +310,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     }
                 }
 
+                ResultDataset.AEpMatch.ThrowAwayAfterSubmitChanges = true;
                 BankImportTDSAccess.SubmitChanges(ResultDataset, out VerificationResult);
             }
             catch (Exception e)
