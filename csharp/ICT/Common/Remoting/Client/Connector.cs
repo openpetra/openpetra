@@ -89,7 +89,7 @@ namespace Ict.Common.Remoting.Client
                 {
                     FRemotingConfigurationSetup = true;
 
-                    if (TAppSettingsManager.HasValue("Remote.Port"))
+                    if (TAppSettingsManager.HasValue("Server.Port"))
                     {
                         IChannel[] regChannels = ChannelServices.RegisteredChannels;
 
@@ -174,14 +174,14 @@ namespace Ict.Common.Remoting.Client
 
             string strServerIPAddr = string.Empty;
 
-            if (TAppSettingsManager.HasValue("Remote.Host"))
+            if (TAppSettingsManager.HasValue("Server.Host"))
             {
-                FServerIPAddr = TAppSettingsManager.GetValue("Remote.Host");
+                FServerIPAddr = TAppSettingsManager.GetValue("Server.Host");
             }
 
-            if (TAppSettingsManager.HasValue("Remote.Port"))
+            if (TAppSettingsManager.HasValue("Server.Port"))
             {
-                FServerPort = TAppSettingsManager.GetValue("Remote.Port");
+                FServerPort = TAppSettingsManager.GetValue("Server.Port");
             }
 
             if (FServerIPAddr == "")

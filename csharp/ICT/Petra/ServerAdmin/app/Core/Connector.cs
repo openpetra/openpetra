@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +42,9 @@ namespace Ict.Petra.ServerAdmin.App.Core
     /// </summary>
     public class TConnector
     {
+        private String FServerIPAddr = string.Empty;
+        private String FServerPort = string.Empty;
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -52,7 +55,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
             iRemote = null;
             try
             {
-                if (TAppSettingsManager.HasValue("Server.IPBasePort"))
+                if (TAppSettingsManager.HasValue("Server.Port"))
                 {
                     IClientChannelSinkProvider TCPSink = new BinaryClientFormatterSinkProvider();
 
@@ -71,14 +74,18 @@ namespace Ict.Petra.ServerAdmin.App.Core
 
                     RemotingConfiguration.RegisterWellKnownClientType(
                         typeof(IServerAdminInterface),
-                        String.Format("tcp://localhost:{0}/Servermanager", TAppSettingsManager.GetValue("Server.IPBasePort")));
+                        String.Format("tcp://localhost:{0}/Servermanager", TAppSettingsManager.GetValue("Server.Port")));
                 }
                 else
                 {
                     RemotingConfiguration.Configure(ConfigFile, false);
                 }
 
-                iRemote = (IServerAdminInterface)(TRemotingHelper.GetObject(typeof(IServerAdminInterface)));
+                DetermineServerIPAddress();
+
+                iRemote = (IServerAdminInterface)
+                          Activator.GetObject(typeof(IServerAdminInterface),
+                    String.Format("tcp://{0}:{1}/Servermanager", FServerIPAddr, FServerPort));
 
                 if ((iRemote != null) && (TLogging.DebugLevel > 0))
                 {
@@ -89,6 +96,49 @@ namespace Ict.Petra.ServerAdmin.App.Core
             {
                 TLogging.Log(("Error in GetServerConnection(), Possible reasons :-" + exp.ToString()));
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Determines the PetraServer's IP Address and port by parsing the .NET (Remoting) Configuration file.
+        /// </summary>
+        protected void DetermineServerIPAddress()
+        {
+            const String SERVERMANAGERENTRY = "Ict.Common.Remoting.Shared.IServerAdminInterface";
+
+            if (TAppSettingsManager.HasValue("Server.Host"))
+            {
+                FServerIPAddr = TAppSettingsManager.GetValue("Server.Host");
+            }
+
+            if (TAppSettingsManager.HasValue("Server.Port"))
+            {
+                FServerPort = TAppSettingsManager.GetValue("Server.Port");
+            }
+
+            if (FServerIPAddr == "")
+            {
+                // find entry for ClientManagerInterface in the RegisteredWellKnownClientTypes
+                // and extract the Server IP address from it
+                foreach (WellKnownClientTypeEntry entr in RemotingConfiguration.GetRegisteredWellKnownClientTypes())
+                {
+                    if (entr.ObjectType.ToString() == SERVERMANAGERENTRY)
+                    {
+                        int indexServerIPAddrStart = entr.ObjectUrl.IndexOf("//") + 2;
+                        FServerIPAddr =
+                            entr.ObjectUrl.Substring(indexServerIPAddrStart, entr.ObjectUrl.IndexOf(':',
+                                    indexServerIPAddrStart) - indexServerIPAddrStart);
+                        int indexPortStart = entr.ObjectUrl.IndexOf(':', indexServerIPAddrStart) + 1;
+                        FServerPort = entr.ObjectUrl.Substring(indexPortStart, entr.ObjectUrl.IndexOf('/', indexPortStart) - indexPortStart);
+                    }
+                }
+            }
+
+            if (FServerIPAddr.Length == 0)
+            {
+                throw new ServerIPAddressNotFoundInConfigurationFileException(
+                    "The IP Address of the PetraServer could " + "not be extracted from the .NET (Remoting) Configuration File (used '" +
+                    SERVERMANAGERENTRY + "' entry " + "to look for the IP Address)!");
             }
         }
     }
