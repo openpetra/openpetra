@@ -6,8 +6,8 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.BankImportTDS
     FormType: edit
     Template: windowEdit
-    WindowWidth: 810
-    WindowHeight: 623
+    WindowWidth: 890
+    WindowHeight: 723
     Actions:
         actSave:
             Label: Save Matches

@@ -169,9 +169,13 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                     }
                 }
 
-                if ((SelectedGiftBatch == -1)
-                    || ((MainDS.AEpTransaction.Rows.Count > 2)
-                        && (MatchedGiftBatches[SelectedGiftBatch].CounterMatchedGifts < MainDS.AEpTransaction.Rows.Count / 2)))
+                if (SelectedGiftBatch == -1)
+                {
+                    // no matches at all
+                    continue;
+                }
+                else if ((MainDS.AEpTransaction.Rows.Count > 2)
+                         && (MatchedGiftBatches[SelectedGiftBatch].CounterMatchedGifts < MainDS.AEpTransaction.Rows.Count / 2))
                 {
                     TLogging.Log(
                         "cannot find enough gifts that look the same, for statement " + stmt.Filename + ". CountMatches: " +

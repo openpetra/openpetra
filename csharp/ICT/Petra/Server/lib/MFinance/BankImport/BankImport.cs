@@ -163,6 +163,23 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             return !VerificationResult.HasCriticalErrors;
         }
 
+        private static bool FindDonorByAccountNumber(AEpMatchRow AMatchRow,
+            DataView APartnerByBankAccount,
+            string ABankSortCode,
+            string AAccountNumber)
+        {
+            DataRowView[] rows = APartnerByBankAccount.FindRows(new object[] { ABankSortCode, AAccountNumber });
+
+            if (rows.Length == 1)
+            {
+                AMatchRow.DonorShortName = rows[0].Row["ShortName"].ToString();
+                AMatchRow.DonorKey = Convert.ToInt64(rows[0].Row["PartnerKey"]);
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// returns the transactions of the bank statement, and the matches if they exist;
         /// tries to find matches too
@@ -192,6 +209,23 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 AEpTransactionAccess.LoadViaAEpStatement(ResultDataset, AStatementKey, Transaction);
 
                 AEpMatchAccess.LoadViaALedger(ResultDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
+
+                // load all bankingdetails and partner shortnames related to this statement
+                string sqlLoadPartnerByBankAccount =
+                    "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, " +
+                    "p.p_partner_short_name_c AS ShortName, " +
+                    "t.p_branch_code_c AS BranchCode, " +
+                    "t.a_bank_account_number_c AS BankAccountNumber " +
+                    "FROM PUB_a_ep_transaction t, PUB_p_banking_details bd, PUB_p_bank b, PUB_p_partner_banking_details pbd, PUB_p_partner p " +
+                    "WHERE t.a_statement_key_i = " + AStatementKey.ToString() + " " +
+                    "AND bd.p_bank_account_number_c = t.a_bank_account_number_c " +
+                    "AND b.p_partner_key_n = bd.p_bank_key_n " +
+                    "AND b.p_branch_code_c = t.p_branch_code_c " +
+                    "AND pbd.p_banking_details_key_i = bd.p_banking_details_key_i " +
+                    "AND p.p_partner_key_n = pbd.p_partner_key_n";
+
+                DataTable PartnerByBankAccount = DBAccess.GDBAccessObj.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
+                PartnerByBankAccount.DefaultView.Sort = "BranchCode, BankAccountNumber";
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -227,6 +261,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                             row.EpMatchKey = r.EpMatchKey;
                             row.MatchAction = r.Action;
+
+                            if (r.IsDonorKeyNull() || (r.DonorKey <= 0))
+                            {
+                                FindDonorByAccountNumber(r, PartnerByBankAccount.DefaultView, row.BranchCode, row.BankAccountNumber);
+                            }
                         }
                     }
                     else
@@ -240,6 +279,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         tempRow.GiftTransactionAmount = row.TransactionAmount;
                         tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
 
+                        FindDonorByAccountNumber(tempRow, PartnerByBankAccount.DefaultView, row.BranchCode, row.BankAccountNumber);
+
+#if disabled
                         // fuzzy search for the partner. only return if unique result
                         string sql =
                             "SELECT p_partner_key_n, p_partner_short_name_c FROM p_partner WHERE p_partner_short_name_c LIKE '{0}%' OR p_partner_short_name_c LIKE '{1}%'";
@@ -259,6 +301,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                                 tempRow.DonorKey = Convert.ToInt64(partner.Rows[0][0]);
                             }
                         }
+#endif
 
                         ResultDataset.AEpMatch.Rows.Add(tempRow);
 
