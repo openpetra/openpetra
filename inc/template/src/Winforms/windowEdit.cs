@@ -59,6 +59,7 @@ namespace {#NAMESPACE}
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
       
+{#IFDEF DETAILTABLE}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
@@ -68,6 +69,7 @@ namespace {#NAMESPACE}
       {
           ShowDetails(null);
       }
+{#ENDIF DETAILTABLE}
       {#INITACTIONSTATE}
 {#IFDEF DATAVALIDATION}
 
@@ -83,6 +85,7 @@ namespace {#NAMESPACE}
 
     }
 
+{#IFDEF DETAILTABLE}
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     /// we create the table locally, no dataset
     public bool CreateNew{#DETAILTABLE}()
@@ -144,6 +147,7 @@ namespace {#NAMESPACE}
 
         return null;
     }
+{#ENDIF DETAILTABLE}
 
 {#IFDEF PRIMARYKEYCONTROLSREADONLY}
     private void SetPrimaryKeyReadOnly(bool AReadOnly)
@@ -326,6 +330,7 @@ namespace {#NAMESPACE}
         SaveChanges();
     }
 
+{#IFDEF DETAILTABLE OR MASTERTABLE}
     /// <summary>
     /// save the changes on the screen
     /// </summary>
@@ -495,6 +500,7 @@ namespace {#NAMESPACE}
 
         return ReturnValue;
     }
+{#ENDIF DETAILTABLE OR MASTERTABLE}
 #endregion
 
 #region Action Handling

@@ -11,7 +11,7 @@ RootNode:
             Dock: Fill
 
         tabPersonnel:
-            DragTabPageEnabled: true
+            DragTabPageEnabled: false
             ShowToolTips: true
             LoadPagesDynamically: true
             IgnoreFirstTabPageSelectionChange: true
@@ -25,4 +25,4 @@ RootNode:
         tpgApplications: {LoadPageDynamically=true}
             Label: Applications ({0})
             Image: personel_toolbar.ico
-            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_Applications
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_ApplicationData

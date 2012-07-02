@@ -193,8 +193,8 @@ namespace Ict.Common.IO
         public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet)
         {
             ASnippet.ReplaceCodelets();
-            ASnippet.FTemplateCode = ASnippet.RemoveUndefinedIFDEFs(ASnippet.FTemplateCode);
-            ASnippet.FTemplateCode = ASnippet.ActivateUndefinedIFNDEFs(ASnippet.FTemplateCode);
+            ASnippet.FTemplateCode = ASnippet.ProcessIFDEFs(ASnippet.FTemplateCode);
+            ASnippet.FTemplateCode = ASnippet.ProcessIFNDEFs(ASnippet.FTemplateCode);
 
             if (FCodelets.ContainsKey(ACodeletName)
                 && !((string)FCodelets[ACodeletName]).EndsWith(Environment.NewLine)
@@ -216,8 +216,8 @@ namespace Ict.Common.IO
         public void InsertSnippet(string ACodeletName, ProcessTemplate ASnippet, string ASeparator)
         {
             ASnippet.ReplaceCodelets();
-            ASnippet.FTemplateCode = ASnippet.RemoveUndefinedIFDEFs(ASnippet.FTemplateCode);
-            ASnippet.FTemplateCode = ASnippet.ActivateUndefinedIFNDEFs(ASnippet.FTemplateCode);
+            ASnippet.FTemplateCode = ASnippet.ProcessIFDEFs(ASnippet.FTemplateCode);
+            ASnippet.FTemplateCode = ASnippet.ProcessIFNDEFs(ASnippet.FTemplateCode);
 
             if (FCodelets.ContainsKey(ACodeletName)
                 && (((string)FCodelets[ACodeletName]).Length > 0))
@@ -251,6 +251,7 @@ namespace Ict.Common.IO
         /// check if all placeholders have been replaced in the template; ignore IFDEF
         public Boolean CheckTemplateCompletion(string s)
         {
+            string Backup = s;
             int posPlaceholder = s.IndexOf("{#");
             string remainingTemplatePlaceholders = "";
 
@@ -267,47 +268,30 @@ namespace Ict.Common.IO
 
             if (remainingTemplatePlaceholders.Length > 0)
             {
-                StreamWriter FWriter;
-                FWriter = File.CreateText(FDestinationFile + ".error");
-                FWriter.Write(FTemplateCode);
-                FWriter.Close();
+                if (FDestinationFile.Length > 0)
+                {
+                    StreamWriter FWriter;
+                    FWriter = File.CreateText(FDestinationFile + ".error");
+                    FWriter.Write(Backup);
+                    FWriter.Close();
 
-                throw new Exception("The template has not completely been filled in. " +
-                    Environment.NewLine + "You are missing: " + Environment.NewLine +
-                    remainingTemplatePlaceholders + Environment.NewLine +
-                    "Check file " + FDestinationFile + ".error");
+                    throw new Exception("The template has not completely been filled in. " +
+                        Environment.NewLine + "You are missing: " + Environment.NewLine +
+                        remainingTemplatePlaceholders + Environment.NewLine +
+                        "Check file " + FDestinationFile + ".error");
+                }
+                else
+                {
+                    TLogging.Log("Failure in this code: ");
+                    TLogging.Log(Backup);
+
+                    throw new Exception("The template has not completely been filled in. " +
+                        Environment.NewLine + "You are missing: " + Environment.NewLine +
+                        remainingTemplatePlaceholders);
+                }
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// remove all ifdefs that are not defined
-        /// </summary>
-        public string RemoveUndefinedIFDEFs(string s)
-        {
-            int posPlaceholder = s.IndexOf("{#IFDEF ");
-
-            while (posPlaceholder > -1)
-            {
-                string name = s.Substring(posPlaceholder + 8, s.IndexOf("}", posPlaceholder) - posPlaceholder - 8);
-                int posPlaceholderAfter = s.IndexOf("{#ENDIF " + name + "}");
-
-                if (posPlaceholderAfter == -1)
-                {
-                    throw new Exception("The template has a bug. " +
-                        Environment.NewLine + "We are missing the ENDIF for: " + name);
-                }
-
-                string before = s.Substring(0, posPlaceholder);
-                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter) + Environment.NewLine.Length);
-
-                s = before + after;
-
-                posPlaceholder = s.IndexOf("{#IFDEF ");
-            }
-
-            return s;
         }
 
         /// <summary>
@@ -315,26 +299,32 @@ namespace Ict.Common.IO
         /// </summary>
         public string RemoveDefinedIFNDEF(string s, string APlaceHolderName)
         {
-            int posPlaceholder = s.IndexOf("{#IFNDEF " + APlaceHolderName + "}");
+            int posPlaceholder = s.IndexOf("{#IFNDEF ");
 
             while (posPlaceholder > -1)
             {
-                int posPlaceholderAfter = s.IndexOf("{#ENDIFN " + APlaceHolderName + "}");
+                string name = s.Substring(posPlaceholder + 9, s.IndexOf("}", posPlaceholder) - posPlaceholder - 9);
+                int posPlaceholderAfter = s.IndexOf("{#ENDIFN " + name + "}", posPlaceholder);
 
                 if (posPlaceholderAfter == -1)
                 {
                     Console.WriteLine("problem in area: " + Environment.NewLine +
                         s.Substring(posPlaceholder - 200, 500));
                     throw new Exception("The template has a bug. " +
-                        Environment.NewLine + "We are missing the ENDIFN for: " + APlaceHolderName);
+                        Environment.NewLine + "We are missing the ENDIFN for: " + name);
                 }
 
                 string before = s.Substring(0, posPlaceholder);
-                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter) + Environment.NewLine.Length);
+                string between = s.Substring(posPlaceholder + 9 + name.Length + 1, posPlaceholderAfter - (posPlaceholder + 9 + name.Length + 1));
+                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
 
-                s = before + after;
+                s = before +
+                    "{#IFNDEF " + name.Replace(APlaceHolderName, "TRUE") + "}" +
+                    between +
+                    "{#ENDIFN " + name.Replace(APlaceHolderName, "TRUE") + "}" +
+                    after;
 
-                posPlaceholder = s.IndexOf("{#IFNDEF " + APlaceHolderName + "}");
+                posPlaceholder = s.IndexOf("{#IFNDEF ", posPlaceholder + 1);
             }
 
             return s;
@@ -345,15 +335,116 @@ namespace Ict.Common.IO
         /// </summary>
         public string ActivateDefinedIFDEF(string s, string APlaceholder)
         {
-            s = s.Replace("{#IFDEF " + APlaceholder + "}" + Environment.NewLine, "");
-            s = s.Replace("{#ENDIF " + APlaceholder + "}" + Environment.NewLine, "");
+            // get all ifdefs, and replace the APlaceHolder with TRUE
+            int posPlaceholder = s.IndexOf("{#IFDEF ");
+
+            while (posPlaceholder > -1)
+            {
+                string name = s.Substring(posPlaceholder + 8, s.IndexOf("}", posPlaceholder) - posPlaceholder - 8);
+
+                int posPlaceholderAfter = s.IndexOf("{#ENDIF " + name + "}", posPlaceholder);
+
+                if (posPlaceholderAfter == -1)
+                {
+                    throw new Exception("The template has a bug. " +
+                        Environment.NewLine + "We are missing the ENDIF for: " + name);
+                }
+
+                string before = s.Substring(0, posPlaceholder);
+                string between = s.Substring(posPlaceholder + 8 + name.Length + 1, posPlaceholderAfter - (posPlaceholder + 8 + name.Length + 1));
+                string after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter));
+
+                s = before +
+                    "{#IFDEF " + name.Replace(APlaceholder, "TRUE") + "}" +
+                    between +
+                    "{#ENDIF " + name.Replace(APlaceholder, "TRUE") + "}" +
+                    after;
+
+                posPlaceholder = s.IndexOf("{#IFDEF ", posPlaceholder + 1);
+            }
+
+            return s;
+        }
+
+        /// <summary>
+        /// remove all ifdefs that are not defined, or activate them
+        /// </summary>
+        public string ProcessIFDEFs(string s)
+        {
+            int posPlaceholder = s.IndexOf("{#IFDEF ");
+
+            while (posPlaceholder > -1)
+            {
+                string name = s.Substring(posPlaceholder + 8, s.IndexOf("}", posPlaceholder) - posPlaceholder - 8);
+
+                // find the matching closing ENDIF
+                int posPlaceholderAfter = s.IndexOf("{#ENDIF " + name + "}", posPlaceholder);
+                int posInBetween = posPlaceholder;
+                int countInBetween = 0;
+
+                while ((posInBetween = s.IndexOf("{#IFDEF " + name + "}", posInBetween + 1)) < posPlaceholderAfter && posInBetween >= 0)
+                {
+                    countInBetween++;
+                }
+
+                while (countInBetween > 0)
+                {
+                    posPlaceholderAfter = s.IndexOf("{#ENDIF " + name + "}", posPlaceholderAfter + 1);
+                    countInBetween--;
+                }
+
+                if (posPlaceholderAfter == -1)
+                {
+                    throw new Exception("The template has a bug. " +
+                        Environment.NewLine + "We are missing the ENDIF for: " + name);
+                }
+
+                string before = string.Empty;
+
+                if (posPlaceholder > 0)
+                {
+                    before = s.Substring(0, posPlaceholder - Environment.NewLine.Length);
+                }
+
+                int firstCharAfterIfDef = posPlaceholder + 8 + name.Length + 1 + Environment.NewLine.Length;
+                string between = string.Empty;
+
+                if (posPlaceholderAfter - firstCharAfterIfDef - Environment.NewLine.Length > 0)
+                {
+                    between = s.Substring(firstCharAfterIfDef, posPlaceholderAfter - firstCharAfterIfDef - Environment.NewLine.Length);
+                }
+
+                string after = string.Empty;
+
+                if (s.IndexOf(Environment.NewLine, posPlaceholderAfter) != -1)
+                {
+                    after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter) + Environment.NewLine.Length);
+                }
+
+                if (before.Length > 0)
+                {
+                    before += Environment.NewLine;
+                }
+
+                if ((name == "TRUE") || (name == "TRUE AND TRUE") || name.StartsWith("TRUE OR") || name.EndsWith("OR TRUE"))
+                {
+                    s = before + between + Environment.NewLine + after;
+                }
+                else
+                {
+                    s = before + after;
+                }
+
+                posPlaceholder = s.IndexOf("{#IFDEF ");
+            }
+
             return s;
         }
 
         /// <summary>
         /// activate all ifndefs that are not defined
         /// </summary>
-        private string ActivateUndefinedIFNDEFs(string s)
+        private string ProcessIFNDEFs(string s)
         {
             int posPlaceholder = s.IndexOf("{#IFNDEF ");
 
@@ -361,8 +452,63 @@ namespace Ict.Common.IO
             {
                 string name = s.Substring(posPlaceholder + 9, s.IndexOf("}", posPlaceholder) - posPlaceholder - 9);
 
-                s = s.Replace("{#IFNDEF " + name + "}" + Environment.NewLine, "");
-                s = s.Replace("{#ENDIFN " + name + "}" + Environment.NewLine, "");
+                // find the matching closing ENDIFN
+                int posPlaceholderAfter = s.IndexOf("{#ENDIFN " + name + "}", posPlaceholder);
+                int posInBetween = posPlaceholder;
+                int countInBetween = 0;
+
+                while ((posInBetween = s.IndexOf("{#IFNDEF " + name + "}", posInBetween + 1)) < posPlaceholderAfter && posInBetween >= 0)
+                {
+                    countInBetween++;
+                }
+
+                while (countInBetween > 0)
+                {
+                    posPlaceholderAfter = s.IndexOf("{#ENDIFN " + name + "}", posPlaceholderAfter + 1);
+                    countInBetween--;
+                }
+
+                if (posPlaceholderAfter == -1)
+                {
+                    throw new Exception("The template has a bug. " +
+                        Environment.NewLine + "We are missing the ENDIFN for: " + name);
+                }
+
+                string before = string.Empty;
+
+                if (posPlaceholder > 0)
+                {
+                    before = s.Substring(0, posPlaceholder - Environment.NewLine.Length);
+                }
+
+                int firstCharAfterIfnDef = posPlaceholder + 9 + name.Length + 1 + Environment.NewLine.Length;
+                string between = string.Empty;
+
+                if (posPlaceholderAfter - firstCharAfterIfnDef - Environment.NewLine.Length > 0)
+                {
+                    between = s.Substring(firstCharAfterIfnDef, posPlaceholderAfter - firstCharAfterIfnDef - Environment.NewLine.Length);
+                }
+
+                string after = string.Empty;
+
+                if (s.IndexOf(Environment.NewLine, posPlaceholderAfter) != -1)
+                {
+                    after = s.Substring(s.IndexOf(Environment.NewLine, posPlaceholderAfter) + Environment.NewLine.Length);
+                }
+
+                if (before.Length > 0)
+                {
+                    before += Environment.NewLine;
+                }
+
+                if (!((name == "TRUE") || (name == "TRUE AND TRUE") || name.StartsWith("TRUE OR") || name.EndsWith("OR TRUE")))
+                {
+                    s = before + between + Environment.NewLine + after;
+                }
+                else
+                {
+                    s = before + after;
+                }
 
                 posPlaceholder = s.IndexOf("{#IFNDEF ");
             }
@@ -757,8 +903,8 @@ namespace Ict.Common.IO
         public Boolean FinishWriting(string AXAMLFilename, string ADestFileExtension, Boolean ACheckTemplateCompletion)
         {
             ReplaceCodelets();
-            FTemplateCode = RemoveUndefinedIFDEFs(FTemplateCode);
-            FTemplateCode = ActivateUndefinedIFNDEFs(FTemplateCode);
+            FTemplateCode = ProcessIFDEFs(FTemplateCode);
+            FTemplateCode = ProcessIFNDEFs(FTemplateCode);
             FTemplateCode = BeautifyCode(FTemplateCode);
 
             // just one line break at the end
@@ -788,8 +934,8 @@ namespace Ict.Common.IO
         public string FinishWriting(Boolean ACheckTemplateCompletion)
         {
             ReplaceCodelets();
-            FTemplateCode = RemoveUndefinedIFDEFs(FTemplateCode);
-            FTemplateCode = ActivateUndefinedIFNDEFs(FTemplateCode);
+            FTemplateCode = ProcessIFDEFs(FTemplateCode);
+            FTemplateCode = ProcessIFNDEFs(FTemplateCode);
             FTemplateCode = BeautifyCode(FTemplateCode);
 
             // just one line break at the end

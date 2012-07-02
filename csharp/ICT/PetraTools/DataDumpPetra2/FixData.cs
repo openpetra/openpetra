@@ -182,7 +182,7 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                     else
                     {
-                        // TODO: check for year format, or force all the same in the dump program dmy?
+                        // fulldump23.p does write all dates in format dmy
                         // 15/04/2010 => 2010-04-15
                         AValue = string.Format("{0}-{1}-{2}", AValue.Substring(6, 4), AValue.Substring(3, 2), AValue.Substring(0, 2));
                     }
@@ -608,6 +608,38 @@ namespace Ict.Tools.DataDumpPetra2
 
                         Revisions.Add(LedgerNumber + "_" + YearNumber);
                     }
+                }
+            }
+
+            if (ATableName == "s_system_defaults")
+            {
+                // load the file a_system_parameter.d.gz so that we can access s_system_parameter, s_site_key_n
+                TTable systemParameterTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("s_system_parameter");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "s_system_parameter.d.gz",
+                    systemParameterTableOld.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(systemParameterTableOld);
+
+                while (true)
+                {
+                    string[] OldRow = Parser.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+
+                    // needs to be added to s_system_defaults name=SiteKey
+                    string SiteKey = GetValue(ColumnNames, OldRow, "s_site_key_n");
+
+                    SetValue(AColumnNames, ref ANewRow, "s_default_code_c", "SiteKey");
+                    SetValue(AColumnNames, ref ANewRow, "s_default_description_c", "there has to be one site key for the database");
+                    SetValue(AColumnNames, ref ANewRow, "s_default_value_c", SiteKey);
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    RowCounter++;
                 }
             }
 
