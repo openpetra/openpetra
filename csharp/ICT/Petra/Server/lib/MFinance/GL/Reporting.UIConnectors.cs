@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;

@@ -95,16 +95,13 @@ namespace Ict.Petra.Client.App.Core
 
             Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
 
-            ((TConnector)FConnector).GetRemoteMConferenceObject(FCrossDomainURI, FRemotingURL_MConference,
-                ClientID.ToString(), out FRemoteConferenceObjects);
-            ((TConnector)FConnector).GetRemoteMPersonnelObject(FCrossDomainURI, FRemotingURL_MPersonnel,
-                ClientID.ToString(), out FRemotePersonnelObjects);
-            ((TConnector)FConnector).GetRemoteMCommonObject(FCrossDomainURI, FRemotingURL_MCommon, ClientID.ToString(), out FRemoteCommonObjects);
-            ((TConnector)FConnector).GetRemoteMPartnerObject(FCrossDomainURI, FRemotingURL_MPartner, ClientID.ToString(), out FRemotePartnerObjects);
-            ((TConnector)FConnector).GetRemoteMFinanceObject(FCrossDomainURI, FRemotingURL_MFinance, ClientID.ToString(), out FRemoteFinanceObjects);
-            ((TConnector)FConnector).GetRemoteMReportingObject(FCrossDomainURI, FRemotingURL_MReporting,
-                ClientID.ToString(), out FRemoteReportingObjects);
-            ((TConnector)FConnector).GetRemoteMSysManObject(FCrossDomainURI, FRemotingURL_MSysMan, ClientID.ToString(), out FRemoteSysManObjects);
+            FRemoteConferenceObjects = (IMConferenceNamespace)FConnector.GetRemoteObject(FRemotingURL_MConference, typeof(IMConferenceNamespace));
+            FRemotePersonnelObjects = (IMPersonnelNamespace)FConnector.GetRemoteObject(FRemotingURL_MPersonnel, typeof(IMPersonnelNamespace));
+            FRemoteCommonObjects = (IMCommonNamespace)FConnector.GetRemoteObject(FRemotingURL_MCommon, typeof(IMCommonNamespace));
+            FRemotePartnerObjects = (IMPartnerNamespace)FConnector.GetRemoteObject(FRemotingURL_MPartner, typeof(IMPartnerNamespace));
+            FRemoteFinanceObjects = (IMFinanceNamespace)FConnector.GetRemoteObject(FRemotingURL_MFinance, typeof(IMFinanceNamespace));
+            FRemoteReportingObjects = (IMReportingNamespace)FConnector.GetRemoteObject(FRemotingURL_MReporting, typeof(IMReportingNamespace));
+            FRemoteSysManObjects = (IMSysManNamespace)FConnector.GetRemoteObject(FRemotingURL_MSysMan, typeof(IMSysManNamespace));
 
             //
             // initialise object that holds references to all our remote object .NET Remoting Proxies
