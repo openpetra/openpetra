@@ -18,6 +18,6 @@ RootNode:
 
         cmbLanguage: {Width=204}
         cmbCulture: {Width=204}
-        lblLanguageNotFound: {Text="Language not found?", ColSpan=2}
-        lblLanguageNotFound2: {Text="If your language is not available or the translation needs improving, please consider helping. See", ColSpan=2}
-        llbLaunchpadLink: {Label=Launchpad Translation Platform, Action=actLaunchpadLinkClicked, ColSpan=2, Width=200}        
+        lblLanguageNotFound: {Text="Language not found?"}
+        lblLanguageNotFound2: {Text="If your language is not available or the translation needs improving, please consider helping. See"}
+        llbLaunchpadLink: {Label=Launchpad Translation Platform, Action=actLaunchpadLinkClicked, Width=200}        

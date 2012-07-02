@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             cmbLanguage.SetSelectedString(LanguageCode);
 
             //this.lblLanguageNotFound.Text = Catalog.GetString(
-                "Language not found?\nIf your language is not available or the translation need improving, please consider helping. See");
+            //    "Language not found?\nIf your language is not available or the translation need improving, please consider helping. See");
             //this.lblLanguageNotFound.Size = new System.Drawing.Size(360, 40);
 
             //this.llbLaunchpadLink.Size = new System.Drawing.Size(360, 28);
