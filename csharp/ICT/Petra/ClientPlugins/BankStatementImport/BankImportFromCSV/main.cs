@@ -154,6 +154,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
                 AEpTransactionRow row = MainDS.AEpTransaction.NewRowTyped();
                 row.StatementKey = stmt.StatementKey;
                 row.Order = rowCount;
+                row.NumberOnPaperStatement = row.Order;
 
                 foreach (XmlNode ColumnNode in ColumnsNode.ChildNodes)
                 {
