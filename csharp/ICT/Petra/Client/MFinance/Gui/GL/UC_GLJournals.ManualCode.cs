@@ -64,13 +64,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FPreviouslySelectedDetailRow = null;
 
-            DataView view = new DataView(FMainDS.AJournal);
+            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+                AJournalTable.GetBatchNumberDBName(),
+                FBatchNumber);
 
             // only load from server if there are no journals loaded yet for this batch
             // otherwise we would overwrite journals that have already been modified
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ',');
-
-            if (view.Find(new object[] { FLedgerNumber, FBatchNumber }) == -1)
+            if (FMainDS.AJournal.DefaultView.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber));
             }
