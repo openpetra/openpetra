@@ -1531,6 +1531,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private void ImportUnitJobVision()
         {
             // Jobs are not being imported into the database anymore from 2.1.0 onwards.
+            // Table um_job_vision dropped in OpenPetra as no longer needed
             ReadString();
             ReadString();
             ReadInt32();
@@ -1569,6 +1570,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ImportUnitVision(TDBTransaction ATransaction)
         {
+            // Table um_unit_vision dropped in OpenPetra as no longer needed
+        	
             /* VisionAreaName */
             ReadString();
 

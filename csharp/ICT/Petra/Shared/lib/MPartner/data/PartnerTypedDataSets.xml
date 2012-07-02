@@ -458,13 +458,11 @@
     <Table sqltable="um_unit_structure"/>
     <Table sqltable="um_unit_ability"/>
     <Table sqltable="um_unit_language"/>
-    <Table sqltable="um_unit_vision"/>
     <Table sqltable="um_unit_cost"/>
     <Table sqltable="um_job"/>
     <Table sqltable="um_job_requirement"/>
     <Table sqltable="um_job_language"/>
     <Table sqltable="um_job_qualification"/>
-    <Table sqltable="um_job_vision"/>
     <Table sqltable="pc_building"/>
     <Table sqltable="pc_room"/>
   </DataSet>

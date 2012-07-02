@@ -170,8 +170,6 @@ namespace Ict.Petra.Shared
             list.Add("p_data_label");
             list.Add("p_data_label_use");
             list.Add("p_data_label_lookup");
-            list.Add("pt_vision_area");
-            list.Add("pt_vision_level");
             list.Add("pm_commitment_status");
             list.Add("pt_position");
             list.Add("pt_assignment_type");
@@ -247,7 +245,6 @@ namespace Ict.Petra.Shared
             list.Add("pm_personal_data");
             list.Add("p_data_label_value_partner");
             list.Add("p_data_label_value_application");
-            list.Add("pm_interview");
             list.Add("pm_person_evaluation");
             list.Add("pm_person_absence");
             list.Add("pm_special_need");
@@ -257,11 +254,9 @@ namespace Ict.Petra.Shared
             list.Add("um_job_requirement");
             list.Add("um_job_language");
             list.Add("um_job_qualification");
-            list.Add("um_job_vision");
             list.Add("pm_job_assignment");
             list.Add("um_unit_ability");
             list.Add("um_unit_language");
-            list.Add("um_unit_vision");
             list.Add("um_unit_cost");
             list.Add("um_unit_evaluation");
             list.Add("pc_conference");

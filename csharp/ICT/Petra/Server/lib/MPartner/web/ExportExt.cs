@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -638,6 +638,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
  *              WriteLine();
  *          }
  *
+ *          // table dropped in OpenPetra
  *          foreach (UmUnitVisionRow UnitVisionRow in AMainDS.UmUnitVision.Rows)
  *          {
  *              Write("U-VISION");
@@ -763,6 +764,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
  *                      }
  *                  }
  *
+ *                  // table dropped in OpenPetra
  *                  foreach (UmJobVisionRow JobVisionRow in AMainDS.UmJobVision.Rows)
  *                  {
  *                      if ((JobVisionRow.UnitKey == JobRow.UnitKey)
