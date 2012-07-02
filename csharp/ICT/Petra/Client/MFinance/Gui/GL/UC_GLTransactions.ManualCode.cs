@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,14 +63,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             FPreviouslySelectedDetailRow = null;
 
-            DataView view = new DataView(FMainDS.ATransaction);
-            view.RowStateFilter = DataViewRowState.CurrentRows | DataViewRowState.Deleted;
-
             // only load from server if there are no transactions loaded yet for this journal
             // otherwise we would overwrite transactions that have already been modified
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(AJournalTable.TableId), ',');
+            FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                ATransactionTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                FJournalNumber);
 
-            if (view.Find(new object[] { FLedgerNumber, FBatchNumber, FJournalNumber }) == -1)
+            if (FMainDS.ATransaction.DefaultView.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
             }
