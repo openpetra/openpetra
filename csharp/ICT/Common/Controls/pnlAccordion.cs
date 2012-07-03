@@ -46,13 +46,39 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// this is the content panel which will host the task lists
+        /// This is the content panel which will host the task lists
         /// </summary>
         private TDashboard FDashboard;
 
+        
+        /// <summary>
+        /// This is the currently displayed Task List
+        /// </summary>
+		private TLstTasks FCurrentTaskList = null;
+		
+		private int FMaxTaskWidth;
+		        
         static System.Drawing.Bitmap UpArrow = null;
         static System.Drawing.Bitmap DownArrow = null;
 
+		/// <summary>
+		/// Maximum Task Width
+		/// </summary>        
+        public int MaxTaskWidth
+        {
+            get
+            {
+                return FMaxTaskWidth;
+            }
+            
+            set
+            {
+                FMaxTaskWidth = value;
+                
+                FCurrentTaskList.MaxTaskWidth = FMaxTaskWidth;
+            }
+        }
+        
         /// create an accordion with several items for the given folder, with all sub menus
         public TPnlAccordion(XmlNode AFolderNode, TDashboard ADashboard, string APanelName)
         {
@@ -189,20 +215,20 @@ namespace Ict.Common.Controls
         private void LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
             Object tag = ((Control)sender).Tag;
-            TLstTasks lstTasks = null;
 
             if (tag.GetType() == typeof(TLstTasks))
             {
-                lstTasks = (TLstTasks)tag;
+                FCurrentTaskList = (TLstTasks)tag;
+                FCurrentTaskList.MaxTaskWidth =  FMaxTaskWidth;
             }
             else
             {
-                lstTasks = new TLstTasks((XmlNode)tag);
-                lstTasks.Statusbar = FStatusbar;
-                ((Control)sender).Tag = lstTasks;
+                FCurrentTaskList = new TLstTasks((XmlNode)tag, FMaxTaskWidth);
+// TODO         lstTasks.Statusbar = FStatusbar;
+                ((Control)sender).Tag = FCurrentTaskList;
             }
 
-            FDashboard.ReplaceTaskList(lstTasks);
+            FDashboard.ReplaceTaskList(FCurrentTaskList);
         }
 
         private TExtStatusBarHelp FStatusbar = null;

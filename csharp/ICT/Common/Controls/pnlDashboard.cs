@@ -32,11 +32,53 @@ namespace Ict.Common.Controls
     /// </summary>
     public class TDashboard : System.Windows.Forms.Panel
     {
+    	private int FMaxTaskWidth;
+    	private TaskAppearance FTaskAppearance = TaskAppearance.staLargeTile;
+
+   		/// <summary>
+		/// Maximum Task Width
+		/// </summary>        
+        public int MaxTaskWidth
+        {
+            get
+            {
+                return FMaxTaskWidth;
+            }
+            
+            set
+            {
+                FMaxTaskWidth = value;
+                
+                ((TLstTasks)this.Controls[0]).MaxTaskWidth = FMaxTaskWidth;
+            }
+        }
+    	
+        /// <summary>
+        /// Appearance of the Task (Large Tile, ListEntry).
+        /// </summary>
+        public TaskAppearance TaskAppearance
+        {
+            get
+            {
+                return FTaskAppearance;
+            }
+            
+            set
+            {
+                FTaskAppearance = value;
+                
+                ((TLstTasks)this.Controls[0]).TaskAppearance = FTaskAppearance;                
+            }
+        }
+    	        
         /// <summary>
         /// default constructor
         /// </summary>
         public TDashboard()
         {
+        	this.Padding = new System.Windows.Forms.Padding(5,3,5,3);
+        	this.AutoScroll = true;
+        	this.BackColor = System.Drawing.Color.White;            
         }
 
         /// <summary>

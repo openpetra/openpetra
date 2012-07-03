@@ -43,7 +43,10 @@ namespace Ict.Petra.Client.App.PetraClient
 {
     public partial class TFrmMainWindowNew
     {
-        private void InitializeManualCode()
+		private const string VIEWTASKS_TILES = "Tiles";
+		private const string VIEWTASKS_LIST = "List";
+		
+		private void InitializeManualCode()
         {
             LoadNavigationUI();
 
@@ -222,6 +225,17 @@ namespace Ict.Petra.Client.App.PetraClient
             lstFolders.Dashboard = this.dsbContent;
             lstFolders.Statusbar = this.stbMain;
             lstFolders.SelectFirstAvailableFolder();
+            
+			SetTaskTileSize(TUserDefaults.GetInt16Default(TUserDefaults.MAINMENU_VIEWOPTIONS_TILESIZE, 2));	
+
+			if (TUserDefaults.GetStringDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_TILES) == VIEWTASKS_TILES) 
+			{
+				ViewTasksAsTiles(this, null);
+			}			
+			else
+			{
+				ViewTasksAsList(this, null);
+			}            
         }
 
         private void ExitManualCode()
@@ -249,6 +263,75 @@ namespace Ict.Petra.Client.App.PetraClient
             this.Hide();
             TFrmMainWindow.MainForm.Show();
         }
+        
+		private void ViewTasksAsTiles(object sender, EventArgs e)
+		{
+			dsbContent.TaskAppearance = TaskAppearance.staLargeTile;
+			
+			mniViewTasksTiles.Checked = true;
+			mniViewTasksList.Checked = false;
+			mniViewTileSize.Enabled = true;
+			
+			TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_TILES);
+		}
+
+		private void ViewTasksAsList(object sender, EventArgs e)
+		{
+			dsbContent.TaskAppearance = TaskAppearance.staListEntry;
+			
+			mniViewTasksList.Checked = true;
+			mniViewTasksTiles.Checked = false;
+			mniViewTileSize.Enabled = false;
+			
+			TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_LIST);
+		}
+
+
+		private void ViewTileSizeChange(object sender, EventArgs e)
+		{
+			if (sender == mniViewTileSizeLarge) 
+			{
+				SetTaskTileSize(1);
+			} 
+			else if (sender == mniViewTileSizeMedium) 
+			{
+				SetTaskTileSize(2);
+			} 
+			else
+			{
+				SetTaskTileSize(3);
+			}
+		}
+
+		private void SetTaskTileSize(int ATaskTileSize)
+		{
+			if (ATaskTileSize == 1) 
+			{
+				dsbContent.MaxTaskWidth = 320;
+				
+				mniViewTileSizeLarge.Checked = true;
+				mniViewTileSizeMedium.Checked = false;
+				mniViewTileSizeSmall.Checked = false;
+			} 
+			else if (ATaskTileSize == 2) 
+			{
+				dsbContent.MaxTaskWidth = 280;
+				
+				mniViewTileSizeMedium.Checked = true;
+				mniViewTileSizeLarge.Checked = false;
+				mniViewTileSizeSmall.Checked = false;
+			} 
+			else 
+			{
+				dsbContent.MaxTaskWidth = 250;
+				
+				mniViewTileSizeSmall.Checked = true;
+				mniViewTileSizeLarge.Checked = false;
+				mniViewTileSizeMedium.Checked = false;
+			}
+			
+			TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_TILESIZE, ATaskTileSize);
+		}
 
         private bool CanCloseManual()
         {

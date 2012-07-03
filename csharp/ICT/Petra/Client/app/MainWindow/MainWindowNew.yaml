@@ -4,6 +4,8 @@ RootNode:
     FormType: navigation
     Namespace: Ict.Petra.Client.App.PetraClient
     Icon: petraico-big.ico
+    WindowWidth: 800
+    WindowHeight: 600
     Events:
         Activated: {class=System.EventHandler,method=FPetraUtilsObject.TFrmPetra_Activated}
         Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
@@ -12,6 +14,9 @@ RootNode:
         Closed: {class=System.EventHandler,method=TFrmPetra_Closed}
     Actions:
         actMenuSwitch: {Label=Classic Navigation, ActionClick=SwitchToClassicNavigation}
+        actViewTasksTiles: {ActionClick=ViewTasksAsTiles}
+        actViewTasksList: {ActionClick=ViewTasksAsList}
+        actViewTileSizeChange: {ActionClick=ViewTileSizeChange}
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
     Controls:
         pnlContent:
@@ -27,8 +32,17 @@ RootNode:
             Label: &File
             Order: AlwaysFirst
             mniClose: {Order=AlwaysLast}
-        #mniView:
+        mniView:
             #mniMenuSwitch:
+            #mniSeparator: {Label=-}
+            mniViewTasks: {Label=Tasks}
+                mniViewTasksTiles: {Label=Tiles}
+                mniViewTasksList: {Label=List}
+                mniSeparator: {Label=-}
+                mniViewTileSize: {Label="Tile Size"}
+                    mniViewTileSizeLarge: {Label=Large, Action=actViewTileSizeChange}
+                    mniViewTileSizeMedium: {Label=Medium, Action=actViewTileSizeChange}
+                    mniViewTileSizeSmall: {Label=Small, Action=actViewTileSizeChange}
         mniHelp: 
             Label: &Help
             Order: AlwaysLast

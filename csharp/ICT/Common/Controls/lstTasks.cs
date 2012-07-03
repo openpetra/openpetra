@@ -1,8 +1,8 @@
-//
+﻿//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christiank
 //
 // Copyright 2004-2012 by OM International
 //
@@ -22,31 +22,113 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.IO;
-using System.Xml;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Reflection;
 using System.Collections.Generic;
-using GNU.Gettext;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
+using System.Xml;
+
+using Ict.Common;
 using Ict.Common.IO;
 
 namespace Ict.Common.Controls
 {
-    /// <summary>
-    /// this class fills a ListView with tasks,
-    /// and executes the tasks using reflection
-    /// </summary>
-    public class TLstTasks : System.Windows.Forms.ListView
-    {
+	/// <summary>
+	/// Displays Tasks within Task Groups in the OpenPetra Main Menu.
+	/// </summary>
+	public partial class TLstTasks : UserControl
+	{
         private static string FUserId;
         private static CheckAccessPermissionDelegate FHasAccessPermission;
-
+        private Dictionary<string, TUcoTaskGroup> FGroups = new Dictionary<string, TUcoTaskGroup>();
+        private TUcoSingleTask FSelectedTask = null;
+		private TaskAppearance FTaskAppearance;
+		private int FMaxTaskWidth;
+		
+        static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
+        static private Form FLastOpenedScreen = null;
+        
         /// <summary>
         /// this function checks if the user has access to the navigation node
         /// </summary>
         public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+		
+        /// <summary>
+        /// Groups that are to be shown in the Task List.
+        /// </summary>
+        public Dictionary<string, TUcoTaskGroup> Groups
+        {
+        	get
+        	{
+        		return FGroups;
+        	}        	
+        }
+        
+        /// <summary>
+        /// Appearance of the Task (Large Tile, ListEntry).
+        /// </summary>
+        public TaskAppearance TaskAppearance
+        {
+            get
+            {
+                return FTaskAppearance;
+            }
+            
+            set
+            {
+                FTaskAppearance = value;
+                
+                foreach (var Group in Groups) 
+                {
+                	Group.Value.TaskAppearance = FTaskAppearance;	
+                }
+            }
+        }
+        
+		/// <summary>
+		/// Maximum Task Width.
+		/// </summary>
+        public int MaxTaskWidth
+        {
+            get
+            {
+                return FMaxTaskWidth;
+            }
+            
+            set
+            {
+                FMaxTaskWidth = value;
+                
+                foreach (var Group in Groups) 
+                {
+                	Group.Value.MaxTaskWidth = value;                	                	
+                }                
+            }
+        }
 
+        /// <summary>
+        /// The object of the last opened screen - useful for testing.
+        /// </summary>
+        static public Form LastOpenedScreen
+        {
+            get
+            {
+                return FLastOpenedScreen;
+            }
+        }
+       
+        /// <summary>
+        /// Fired when a Task is clicked by the user.
+        /// </summary>
+        public event EventHandler TaskClicked;
+        
+        /// <summary>
+        /// Fired when a Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
+        /// </summary>
+        public event EventHandler TaskSelected;
+        
         /// <summary>
         /// initialise the permissions callback function for the current user
         /// </summary>
@@ -59,36 +141,37 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// default constructor
+        /// Constructor.
         /// </summary>
-        public TLstTasks()
-        {
-        }
+		public TLstTasks()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+		}
+		
 
         /// <summary>
         /// constructor that generates several groups of tasks from an xml document
         /// </summary>
         /// <param name="ATaskGroups"></param>
-        public TLstTasks(XmlNode ATaskGroups)
+        /// <param name="AMaxTaskWidth"></param>
+        public TLstTasks(XmlNode ATaskGroups, int AMaxTaskWidth)
         {
             this.Dock = DockStyle.Fill;
             this.Name = "lstTasks" + ATaskGroups.Name;
-            this.View = System.Windows.Forms.View.Details;
-            this.FullRowSelect = true;
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(TaskListMouseUp);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(TaskListMouseDown);
-
-            ColumnHeader columnHeader = new System.Windows.Forms.ColumnHeader();
-            columnHeader.Text = Catalog.GetString("Task");
-            columnHeader.Width = 200;
-            this.Columns.Add(columnHeader);
-            columnHeader = new System.Windows.Forms.ColumnHeader();
-            columnHeader.Text = Catalog.GetString("Description");
-            columnHeader.Width = 300;
-            this.Columns.Add(columnHeader);
+            this.AutoScroll = true;            
+            this.Resize += new EventHandler(ListResize);
 
             XmlNode TaskGroupNode = ATaskGroups.FirstChild;
 
+            FMaxTaskWidth = AMaxTaskWidth;
+            
             while (TaskGroupNode != null)
             {
                 if (TaskGroupNode.Name == "SearchBoxes")
@@ -97,32 +180,33 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    System.Windows.Forms.ListViewGroup listViewGroup = new System.Windows.Forms.ListViewGroup(
-                        TLstFolderNavigation.GetLabel(TaskGroupNode),
-                        System.Windows.Forms.HorizontalAlignment.Left);
-                    listViewGroup.Name = TaskGroupNode.Name;
-                    this.Groups.Add(listViewGroup);
+                	TUcoTaskGroup TaskGroup = new TUcoTaskGroup();
+                	TaskGroup.GroupTitle = GetLabel(TaskGroupNode);
+					TaskGroup.AutoSize = true;
+					TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 
+                	TaskGroup.Name = TaskGroupNode.Name;
+            		
+                    Groups.Add(TaskGroup.Name, TaskGroup);
+                    
                     if (TaskGroupNode.FirstChild == null)
                     {
                         // duplicate group node into task; otherwise you would not notice the error in the yml file?
-                        ListViewItem task = new ListViewItem(
-                            new string[] {
-                                TLstFolderNavigation.GetLabel(TaskGroupNode),
-                                TYml2Xml.HasAttribute(TaskGroupNode,
-                                    "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description")) : ""
-                            }
-                            );
-                        task.Name = TaskGroupNode.Name;
-                        task.Group = listViewGroup;
-                        task.Tag = TaskGroupNode;
-
+                        TUcoSingleTask SingleTask = new TUcoSingleTask();
+                        SingleTask.TaskTitle = GetLabel(TaskGroupNode);
+                        SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskGroupNode,
+                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description")) : "";
+                        SingleTask.Name = TaskGroupNode.Name;
+                        SingleTask.TaskGroup = TaskGroup;
+                        SingleTask.MaxTaskWidth = FMaxTaskWidth;
+                        SingleTask.Tag = TaskGroupNode;
+                        
                         if (!FHasAccessPermission(TaskGroupNode, FUserId))
                         {
-                            task.ForeColor = Color.Gray;
+                            SingleTask.Enabled = false;
                         }
 
-                        this.Items.Add(task);
+                        TaskGroup.Add(SingleTask.Name, SingleTask);
                     }
                     else
                     {
@@ -130,56 +214,113 @@ namespace Ict.Common.Controls
 
                         while (TaskNode != null)
                         {
-                            ListViewItem task = new ListViewItem(
-                                new string[] {
-                                    TLstFolderNavigation.GetLabel(TaskNode),
-                                    TYml2Xml.HasAttribute(TaskNode, "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode,
-                                            "Description")) : ""
-                                }
-                                );
-                            task.Name = TaskNode.Name;
-                            task.Group = listViewGroup;
-                            task.Tag = TaskNode;
+	                        TUcoSingleTask SingleTask = new TUcoSingleTask();
+	                        SingleTask.TaskTitle = GetLabel(TaskNode);
+	                        SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
+	                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
+                            SingleTask.Name = TaskNode.Name;
+                            SingleTask.TaskGroup = TaskGroup;
+                            SingleTask.MaxTaskWidth = FMaxTaskWidth;
+                            SingleTask.Tag = TaskNode;
 
                             if (!FHasAccessPermission(TaskNode, FUserId))
                             {
-                                task.ForeColor = Color.Gray;
+                                SingleTask.Enabled = false;
                             }
 
-                            this.Items.Add(task);
+                            TaskGroup.Add(SingleTask.Name, SingleTask);
                             TaskNode = TaskNode.NextSibling;
-                        }
+                        }                    	
                     }
-                }
+                    
+                    // Add TaskGroup to this UserControls' Controls
+	                TaskGroup.Dock = DockStyle.Top;
+	                TaskGroup.Margin = new Padding(3);
+	                TaskGroup.AutoSize = true;
+	                TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+	                
+	                TaskGroup.TaskClicked += new EventHandler(SingleTask_ExecuteTask);
+	                TaskGroup.TaskSelected += new EventHandler(SingleTask_TaskSelected);
 
+	                this.Controls.Add(TaskGroup);
+                }
+                
                 TaskGroupNode = TaskGroupNode.NextSibling;
             }
         }
-
-        private ListViewItem FSelectedTaskItem = null;
-
-        private void TaskListMouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+            
+        /// <summary>
+        /// IMPORTED FROM TLstFolderNavigation - GET RID OF IT AGAIN!!!
+        /// 
+        /// this will get the proper label for any navigation node;
+        /// this is public and static so that the TPnlAccordion can access it too.
+        /// </summary>
+        /// <param name="ANode"></param>
+        /// <returns></returns>
+        public static string GetLabel(XmlNode ANode)
         {
-            ListView lst = (ListView)sender;
-            ListViewHitTestInfo info = lst.HitTest(e.Location);
-
-            FSelectedTaskItem = info.Item;
+            return Catalog.GetString(TYml2Xml.HasAttribute(ANode, "Label") ? TYml2Xml.GetAttribute(ANode,
+                    "Label") : StringHelper.ReverseUpperCamelCase(ANode.Name));
         }
 
-        static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
-        static private Form FLastOpenedScreen = null;
-
-        /// <summary>
-        /// the object of the last opened screen.
-        /// useful for testing
-        /// </summary>
-        static public Form LastOpenedScreen
+        void ListResize(object sender, EventArgs e)
         {
-            get
+			foreach (var Group in Groups) 
+			{
+				Group.Value.MaximumSize = new System.Drawing.Size(this.Width, 0);
+			}
+        }
+        
+        void SingleTask_ExecuteTask(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+
+            Control parentForm = Parent;
+
+            while (parentForm != null && !(parentForm is Form))
             {
-                return FLastOpenedScreen;
+                parentForm = parentForm.Parent;
+            }
+
+            string message = ExecuteAction((XmlNode)((TUcoSingleTask)sender).Tag, (Form)parentForm);
+//            WriteToStatusBar(message);
+
+            Cursor = Cursors.Default;
+        }
+        
+        void SingleTask_TaskSelected(object sender, EventArgs e)
+        {
+            FSelectedTask = ((TUcoSingleTask)sender);
+
+            foreach(Control TaskGroups in this.Controls)
+            {
+                foreach(Control TaskGroup in TaskGroups.Controls)
+                {
+                    foreach(TUcoSingleTask Task in TaskGroup.Controls)
+                    {
+                        if (Task != sender) 
+                        {                        	
+                            Task.DeselectTask();        
+                        }
+                    }
+                }                
             }
         }
+        
+        void FireTaskClicked()
+        {
+            if (TaskClicked != null) {
+                TaskClicked(this, null);
+            }
+        }        
+
+        void FireTaskSelected(object sender, EventArgs e)
+        {
+            if (TaskSelected != null) {
+                TaskSelected(sender, null);
+            }
+        }
+        
 
         /// <summary>
         /// execute action from the navigation tree
@@ -370,56 +511,6 @@ namespace Ict.Common.Controls
             }
 
             return "";
-        }
-
-        private void TaskListMouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            ListView lst = (ListView)sender;
-
-            Cursor = Cursors.WaitCursor;
-
-            ListViewHitTestInfo info = lst.HitTest(e.Location);
-
-            if ((info.Item != null) && (info.Item == FSelectedTaskItem))
-            {
-                Control parentForm = Parent;
-
-                while (parentForm != null && !(parentForm is Form))
-                {
-                    parentForm = parentForm.Parent;
-                }
-
-                string message = ExecuteAction((XmlNode)info.Item.Tag, (Form)parentForm);
-                WriteToStatusBar(message);
-            }
-
-            Cursor = Cursors.Default;
-        }
-
-        private TExtStatusBarHelp FStatusbar = null;
-
-        /// <summary>
-        /// set the statusbar so that error messages can be displayed
-        /// </summary>
-        public TExtStatusBarHelp Statusbar
-        {
-            set
-            {
-                FStatusbar = value;
-            }
-        }
-
-        private void WriteToStatusBar(string s)
-        {
-            if (FStatusbar != null)
-            {
-                FStatusbar.ShowMessage(s);
-            }
-            else
-            {
-                // TODO: does this work? which is the current statusbar?
-                TLogging.Log(s, TLoggingType.ToStatusBar);
-            }
-        }
-    }
+        }        
+	}
 }
