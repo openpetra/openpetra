@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete the record for {0} {1}).\n\nDo you really want to delete it?"),
+                            "You have choosen to delete the record for {0} {1}.\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.ApplicationForEventOrField,
                         FPreviouslySelectedDetailRow.EventOrFieldName),
                     Catalog.GetString("Confirm Delete"),
@@ -276,6 +276,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SelectRowInGrid(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
 
                 DoRecalculateScreenParts();
 
