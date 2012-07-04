@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank (original, different implementation by timotheusp)
 //
 // Copyright 2004-2012 by OM International
 //
@@ -46,6 +46,7 @@ namespace Ict.Common.Controls
         private TUcoSingleTask FSelectedTask = null;
 		private TaskAppearance FTaskAppearance;
 		private int FMaxTaskWidth;
+        private TExtStatusBarHelp FStatusbar = null;
 		
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
         static private Form FLastOpenedScreen = null;
@@ -118,6 +119,17 @@ namespace Ict.Common.Controls
                 return FLastOpenedScreen;
             }
         }
+        
+        /// <summary>
+        /// Sets the Status Bar Text so that error messages can be displayed.
+        /// </summary>
+        public TExtStatusBarHelp Statusbar
+        {
+            set
+            {
+                FStatusbar = value;
+            }
+        }       
        
         /// <summary>
         /// Fired when a Task is clicked by the user.
@@ -130,7 +142,7 @@ namespace Ict.Common.Controls
         public event EventHandler TaskSelected;
         
         /// <summary>
-        /// initialise the permissions callback function for the current user
+        /// Initialise the permissions callback function for the current user.
         /// </summary>
         /// <param name="AUserId"></param>
         /// <param name="AHasAccessPermission"></param>
@@ -149,15 +161,11 @@ namespace Ict.Common.Controls
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			
-			//
-			// TODO: Add constructor code after the InitializeComponent() call.
-			//
 		}
 		
 
         /// <summary>
-        /// constructor that generates several groups of tasks from an xml document
+        /// Constructor. Generates several Groups of Tasks from an xml document.
         /// </summary>
         /// <param name="ATaskGroups"></param>
         /// <param name="AMaxTaskWidth"></param>
@@ -181,7 +189,7 @@ namespace Ict.Common.Controls
                 else
                 {
                 	TUcoTaskGroup TaskGroup = new TUcoTaskGroup();
-                	TaskGroup.GroupTitle = GetLabel(TaskGroupNode);
+                	TaskGroup.GroupTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
 					TaskGroup.AutoSize = true;
 					TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 
@@ -193,7 +201,7 @@ namespace Ict.Common.Controls
                     {
                         // duplicate group node into task; otherwise you would not notice the error in the yml file?
                         TUcoSingleTask SingleTask = new TUcoSingleTask();
-                        SingleTask.TaskTitle = GetLabel(TaskGroupNode);
+                        SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
                         SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskGroupNode,
                                 "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description")) : "";
                         SingleTask.Name = TaskGroupNode.Name;
@@ -215,7 +223,7 @@ namespace Ict.Common.Controls
                         while (TaskNode != null)
                         {
 	                        TUcoSingleTask SingleTask = new TUcoSingleTask();
-	                        SingleTask.TaskTitle = GetLabel(TaskNode);
+	                        SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskNode);
 	                        SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
 	                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
                             SingleTask.Name = TaskNode.Name;
@@ -249,20 +257,6 @@ namespace Ict.Common.Controls
             }
         }
             
-        /// <summary>
-        /// IMPORTED FROM TLstFolderNavigation - GET RID OF IT AGAIN!!!
-        /// 
-        /// this will get the proper label for any navigation node;
-        /// this is public and static so that the TPnlAccordion can access it too.
-        /// </summary>
-        /// <param name="ANode"></param>
-        /// <returns></returns>
-        public static string GetLabel(XmlNode ANode)
-        {
-            return Catalog.GetString(TYml2Xml.HasAttribute(ANode, "Label") ? TYml2Xml.GetAttribute(ANode,
-                    "Label") : StringHelper.ReverseUpperCamelCase(ANode.Name));
-        }
-
         void ListResize(object sender, EventArgs e)
         {
 			foreach (var Group in Groups) 
@@ -283,7 +277,7 @@ namespace Ict.Common.Controls
             }
 
             string message = ExecuteAction((XmlNode)((TUcoSingleTask)sender).Tag, (Form)parentForm);
-//            WriteToStatusBar(message);
+            WriteToStatusBar(message);
 
             Cursor = Cursors.Default;
         }
@@ -323,9 +317,9 @@ namespace Ict.Common.Controls
         
 
         /// <summary>
-        /// execute action from the navigation tree
+        /// Execute action from the navigation tree.
         /// </summary>
-        /// <returns>the error or status message</returns>
+        /// <returns>The error or status message.</returns>
         public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
             if (!FHasAccessPermission(node, FUserId))
@@ -511,6 +505,19 @@ namespace Ict.Common.Controls
             }
 
             return "";
+        }        
+
+        private void WriteToStatusBar(string s)
+        {
+            if (FStatusbar != null)
+            {
+                FStatusbar.ShowMessage(s);
+            }
+            else
+            {
+                // TODO: does this work? which is the current statusbar?
+                TLogging.Log(s, TLoggingType.ToStatusBar);
+            }
         }        
 	}
 }

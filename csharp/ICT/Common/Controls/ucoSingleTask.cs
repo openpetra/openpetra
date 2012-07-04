@@ -27,6 +27,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Owf.Controls;
+
 namespace Ict.Common.Controls
 {
     /// <summary>
@@ -42,7 +44,7 @@ namespace Ict.Common.Controls
     }
     
     /// <summary>
-    /// Single Task of many in a Task List.
+    /// Represents an individual Task (of many) in a Task List.
     /// </summary>
     public partial class TUcoSingleTask : UserControl
     {
@@ -102,7 +104,7 @@ namespace Ict.Common.Controls
         }
         
         /// <summary>
-        /// Description of the Task. (Shown under the TaskTitle LinkLabel in staLargeTile appearance).
+        /// Description of the Task. (Shown under the TaskTitle LinkLabel - but only when the Control is in staLargeTile appearance).
         /// </summary>
         public string TaskDescription
         {
@@ -153,7 +155,7 @@ namespace Ict.Common.Controls
         }
         
 		/// <summary>
-		/// Maximum Task Width
+		/// Maximum Task Width.
 		/// </summary>        
         public int MaxTaskWidth
         {
@@ -164,15 +166,10 @@ namespace Ict.Common.Controls
             
             set
             {
-//            	if ((FMaxTaskWidth == 0) 
-//            	    || (FMaxTaskWidth > value))
-//            	{
-            		Width = value;
-            		
-            		UpdateLayout();
-//            	}
-            	
                 FMaxTaskWidth = value;
+                
+                Width = value;
+        		UpdateLayout();
             }
         }
         

@@ -48,7 +48,7 @@ namespace Ict.Common.Controls
 		private string FCaption = "";
 
     	/// <summary>
-    	/// Draws a line with a left-aligned (optional) text (=caption).
+    	/// Constructor.
     	/// </summary>
     	public TLneCaption()
 		{
@@ -73,7 +73,7 @@ namespace Ict.Common.Controls
 		#endregion
 
 		/// <summary>
-		/// Caption (optional)
+		/// Caption (optional).
 		/// </summary>
 		public string Caption
 		{
@@ -90,7 +90,7 @@ namespace Ict.Common.Controls
 		}
 
 		/// <summary> 
-		/// Cleanup of resources
+		/// Cleanup of resources.
 		/// </summary>
 		protected override void Dispose(bool disposing)
 		{

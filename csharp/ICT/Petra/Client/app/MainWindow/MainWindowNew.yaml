@@ -16,7 +16,7 @@ RootNode:
         actMenuSwitch: {Label=Classic Navigation, ActionClick=SwitchToClassicNavigation}
         actViewTasksTiles: {ActionClick=ViewTasksAsTiles}
         actViewTasksList: {ActionClick=ViewTasksAsList}
-        actViewTileSizeChange: {ActionClick=ViewTileSizeChange}
+        actViewTaskSizeChange: {ActionClick=ViewTaskSizeChange}
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
     Controls:
         pnlContent:
@@ -39,10 +39,10 @@ RootNode:
                 mniViewTasksTiles: {Label=Tiles}
                 mniViewTasksList: {Label=List}
                 mniSeparator: {Label=-}
-                mniViewTileSize: {Label="Tile Size"}
-                    mniViewTileSizeLarge: {Label=Large, Action=actViewTileSizeChange}
-                    mniViewTileSizeMedium: {Label=Medium, Action=actViewTileSizeChange}
-                    mniViewTileSizeSmall: {Label=Small, Action=actViewTileSizeChange}
+                mniViewTaskSize: {Label="Task Size"}
+                    mniViewTaskSizeLarge: {Label=Large, Action=actViewTaskSizeChange}
+                    mniViewTaskSizeMedium: {Label=Medium, Action=actViewTaskSizeChange}
+                    mniViewTaskSizeSmall: {Label=Small, Action=actViewTaskSizeChange}
         mniHelp: 
             Label: &Help
             Order: AlwaysLast

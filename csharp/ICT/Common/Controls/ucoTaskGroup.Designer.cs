@@ -62,7 +62,6 @@ namespace Ict.Common.Controls
 			this.nlnGroupTitle.Dock = System.Windows.Forms.DockStyle.Top;
 			this.nlnGroupTitle.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.nlnGroupTitle.ForeColor = System.Drawing.Color.DarkBlue;
-//			this.nlnGroupTitle.LineColour = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(224)))), ((int)(((byte)(251)))));
 			this.nlnGroupTitle.Location = new System.Drawing.Point(0, 0);
 			this.nlnGroupTitle.Name = "nlnGroupTitle";
 			this.nlnGroupTitle.Size = new System.Drawing.Size(805, 22);

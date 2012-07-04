@@ -270,7 +270,6 @@ namespace Ict.Petra.Client.App.PetraClient
 			
 			mniViewTasksTiles.Checked = true;
 			mniViewTasksList.Checked = false;
-			mniViewTileSize.Enabled = true;
 			
 			TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_TILES);
 		}
@@ -281,19 +280,18 @@ namespace Ict.Petra.Client.App.PetraClient
 			
 			mniViewTasksList.Checked = true;
 			mniViewTasksTiles.Checked = false;
-			mniViewTileSize.Enabled = false;
 			
 			TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_LIST);
 		}
 
 
-		private void ViewTileSizeChange(object sender, EventArgs e)
+		private void ViewTaskSizeChange(object sender, EventArgs e)
 		{
-			if (sender == mniViewTileSizeLarge) 
+			if (sender == mniViewTaskSizeLarge) 
 			{
 				SetTaskTileSize(1);
 			} 
-			else if (sender == mniViewTileSizeMedium) 
+			else if (sender == mniViewTaskSizeMedium) 
 			{
 				SetTaskTileSize(2);
 			} 
@@ -307,27 +305,27 @@ namespace Ict.Petra.Client.App.PetraClient
 		{
 			if (ATaskTileSize == 1) 
 			{
-				dsbContent.MaxTaskWidth = 320;
+				dsbContent.MaxTaskWidth = 340;
 				
-				mniViewTileSizeLarge.Checked = true;
-				mniViewTileSizeMedium.Checked = false;
-				mniViewTileSizeSmall.Checked = false;
+				mniViewTaskSizeLarge.Checked = true;
+				mniViewTaskSizeMedium.Checked = false;
+				mniViewTaskSizeSmall.Checked = false;
 			} 
 			else if (ATaskTileSize == 2) 
 			{
 				dsbContent.MaxTaskWidth = 280;
 				
-				mniViewTileSizeMedium.Checked = true;
-				mniViewTileSizeLarge.Checked = false;
-				mniViewTileSizeSmall.Checked = false;
+				mniViewTaskSizeMedium.Checked = true;
+				mniViewTaskSizeLarge.Checked = false;
+				mniViewTaskSizeSmall.Checked = false;
 			} 
 			else 
 			{
-				dsbContent.MaxTaskWidth = 250;
+				dsbContent.MaxTaskWidth = 210;
 				
-				mniViewTileSizeSmall.Checked = true;
-				mniViewTileSizeLarge.Checked = false;
-				mniViewTileSizeMedium.Checked = false;
+				mniViewTaskSizeSmall.Checked = true;
+				mniViewTaskSizeLarge.Checked = false;
+				mniViewTaskSizeMedium.Checked = false;
 			}
 			
 			TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_TILESIZE, ATaskTileSize);

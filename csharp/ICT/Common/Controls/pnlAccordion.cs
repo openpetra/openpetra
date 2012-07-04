@@ -224,7 +224,7 @@ namespace Ict.Common.Controls
             else
             {
                 FCurrentTaskList = new TLstTasks((XmlNode)tag, FMaxTaskWidth);
-// TODO         lstTasks.Statusbar = FStatusbar;
+                FCurrentTaskList.Statusbar = FStatusbar;
                 ((Control)sender).Tag = FCurrentTaskList;
             }
 
