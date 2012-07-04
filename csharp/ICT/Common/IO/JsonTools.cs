@@ -119,6 +119,9 @@ namespace Ict.Common.IO
                 return ATemplate;
             }
 
+            string RequiredCulture = CultureInfo.CurrentCulture.Name;
+            AJsonData = RemoveContainerControls(AJsonData, ref RequiredCulture);
+
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
 
             foreach (JsonMember entry in list)
