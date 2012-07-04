@@ -70,6 +70,7 @@ RootNode:
             DataField: PmPersonSkill.DescriptionLanguage
             List: LanguageCodeList
             Width: 200
+            ColSpan: 2
         txtDescriptInLocalLanguage: {Label=Description in local language, DataField=PmPersonSkill.DescriptionLocal, Width=380, ColSpan=2}
         txtYearsOfExperience: {DataField=PmPersonSkill.YearsOfExperience, Width=25, Format=Integer}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonSkill.YearsOfExperienceAsOf}
