@@ -13,6 +13,7 @@ RootNode:
     Actions:
         actMenuSwitch: {Label=Classic Navigation, ActionClick=SwitchToClassicNavigation}
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
+        actHelpImproveTranslations: {ActionClick=HelpImproveTranslations}
     Controls:
         pnlContent:
             Controls: [dsbContent, lstFolders]
@@ -36,6 +37,8 @@ RootNode:
             mniSeparator: {Label=-}
             mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport}
             mniSeparator: {Label=-}
+            mniHelpImproveTranslation: {Label=&Help Improve Translations, Action=actHelpImproveTranslations}    
+            mniSeparator: {Label=-}            
             mniHelpAboutPetra: {Label=&About Petra, ActionId=eAHelpbout}
             mniHelpDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}    
     Toolbar:
