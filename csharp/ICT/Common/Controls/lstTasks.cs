@@ -171,7 +171,8 @@ namespace Ict.Common.Controls
         /// <param name="AMaxTaskWidth"></param>
         public TLstTasks(XmlNode ATaskGroups, int AMaxTaskWidth)
         {
-            this.Dock = DockStyle.Fill;
+            this.SuspendLayout();
+            
             this.Name = "lstTasks" + ATaskGroups.Name;
             this.AutoScroll = true;            
             this.Resize += new EventHandler(ListResize);
@@ -255,6 +256,16 @@ namespace Ict.Common.Controls
                 
                 TaskGroupNode = TaskGroupNode.NextSibling;
             }
+            
+            // Inverse the Z-Order of the the Task Groups so that the Task Groups are shown in correct order, 
+            // and not in reverse order.
+            // (This is needed because we 'stack them up' with 'TaskGroup.Dock = DockStyle.Top')
+            for (int ControlCounter = 0; ControlCounter < Controls.Count; ControlCounter++) 
+            {
+                Controls[ControlCounter].SendToBack();
+            }
+            
+            this.ResumeLayout();
         }
             
         void ListResize(object sender, EventArgs e)
