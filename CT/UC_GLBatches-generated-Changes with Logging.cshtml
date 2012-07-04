@@ -1,0 +1,730 @@
+// auto generated with nant generateWinforms from UC_GLBatches.yaml and template controlMaintainTable
+//
+// DO NOT edit manually, DO NOT edit with the designer
+//
+//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       auto generated
+//
+// Copyright 2004-2012 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+using System;
+using System.Drawing;
+using System.Collections;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Reflection;
+using System.Data;
+using System.Resources;
+using System.Collections.Specialized;
+
+using Ict.Common;
+using Ict.Common.Controls;
+using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
+using GNU.Gettext;
+using SourceGrid;
+
+using Ict.Petra.Shared.MFinance.Account.Data;
+
+namespace Ict.Petra.Client.MFinance.Gui.GL
+{
+
+  /// auto generated user control
+  public partial class TUC_GLBatches: System.Windows.Forms.UserControl, Ict.Petra.Client.CommonForms.IFrmPetra
+  {
+    private TFrmPetraEditUtils FPetraUtilsObject;
+
+    private Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS FMainDS;
+    private int FCurrentRow;
+
+    /// constructor
+    public TUC_GLBatches() : base()
+    {
+      //
+      // Required for Windows Form Designer support
+      //
+      InitializeComponent();
+      #region CATALOGI18N
+
+      // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+      this.rbtPosting.Text = Catalog.GetString("Posting");
+      this.rbtEditing.Text = Catalog.GetString("Editing");
+      this.rbtAll.Text = Catalog.GetString("All");
+      this.rgrShowBatches.Text = Catalog.GetString("Show batches available for");
+      this.lblYearFilter.Text = Catalog.GetString("Year Filter:");
+      this.lblPeriodFilter.Text = Catalog.GetString("Period Filter:");
+      this.btnNew.Text = Catalog.GetString("&Add");
+      this.btnCancel.Text = Catalog.GetString("&Cancel");
+      this.btnTestPostBatch.Text = Catalog.GetString("&Test Batch");
+      this.btnPostBatch.Text = Catalog.GetString("&Post Batch");
+      this.lblValidDateRange.Text = Catalog.GetString("Valid Date Range:");
+      this.lblDetailBatchDescription.Text = Catalog.GetString("Batch Description:");
+      this.lblDetailBatchControlTotal.Text = Catalog.GetString("Batch Hash Total:");
+      this.lblDetailDateEffective.Text = Catalog.GetString("Effective Date:");
+      this.tbbTestPostBatch.Text = Catalog.GetString("&Test Batch");
+      this.tbbPostBatch.Text = Catalog.GetString("&Post Batch");
+      this.tbbImportFromSpreadSheet.Text = Catalog.GetString("Import From Spread Sheet");
+      this.tbbImportBatches.Text = Catalog.GetString("&Import Batches");
+      this.tbbExportBatches.Text = Catalog.GetString("&Export Batches");
+      this.mniPostBatch.Text = Catalog.GetString("&Post Batch");
+      this.mniTestPostBatch.Text = Catalog.GetString("&Test Batch");
+      this.mniImportFromSpreadSheet.Text = Catalog.GetString("Import From Spread Sheet");
+      this.mniImportBatches.Text = Catalog.GetString("&Import Batches");
+      this.mniExportBatches.Text = Catalog.GetString("&Export Batches");
+      this.mniBatch.Text = Catalog.GetString("&Batch");
+      #endregion
+
+      this.txtDetailBatchDescription.Font = TAppSettingsManager.GetDefaultBoldFont();
+    }
+
+    /// helper object for the whole screen
+    public TFrmPetraEditUtils PetraUtilsObject
+    {
+        set
+        {
+            FPetraUtilsObject = value;
+        }
+    }
+
+    /// dataset for the whole screen
+    public Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS MainDS
+    {
+        set
+        {
+            FMainDS = value;
+        }
+    }
+
+    /// needs to be called after FMainDS and FPetraUtilsObject have been set
+    public void InitUserControl()
+    {
+        FPetraUtilsObject.SetStatusBarText(txtDetailBatchDescription, Catalog.GetString("Enter a description for this general ledger batch."));
+        FPetraUtilsObject.SetStatusBarText(txtDetailBatchControlTotal, Catalog.GetString("(Optional) Enter the total amount of the batch (hash total)."));
+        FPetraUtilsObject.SetStatusBarText(dtpDetailDateEffective, Catalog.GetString("Enter the date for which this batch is to take effect."));
+        grdDetails.Columns.Clear();
+        grdDetails.AddTextColumn("Batch Number", FMainDS.ABatch.ColumnBatchNumber);
+        grdDetails.AddTextColumn("Batch status", FMainDS.ABatch.ColumnBatchStatus);
+        grdDetails.AddDateColumn("Effective Date", FMainDS.ABatch.ColumnDateEffective);
+        grdDetails.AddCurrencyColumn("Batch Debit Total", FMainDS.ABatch.ColumnBatchDebitTotal);
+        grdDetails.AddCurrencyColumn("Batch Credit Total", FMainDS.ABatch.ColumnBatchCreditTotal);
+        grdDetails.AddCurrencyColumn("Batch Control Total", FMainDS.ABatch.ColumnBatchControlTotal);
+        grdDetails.AddTextColumn("Batch Description", FMainDS.ABatch.ColumnBatchDescription);
+        FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+
+        if((FMainDS != null)
+          && (FMainDS.ABatch != null))
+        {
+            DataView myDataView = FMainDS.ABatch.DefaultView;
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+            BuildValidationControlsDict();
+
+            ShowData();
+        }
+    }
+
+    void rbtPostingCheckedChanged(object sender, System.EventArgs e)
+    {
+    }
+
+    void rbtEditingCheckedChanged(object sender, System.EventArgs e)
+    {
+    }
+
+    void rbtAllCheckedChanged(object sender, System.EventArgs e)
+    {
+    }
+
+    /// automatically generated, create a new record of ABatch and display on the edit screen
+    public bool CreateNewABatch()
+    {
+        if(ValidateAllData(true, true))
+        {
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
+
+            FPetraUtilsObject.SetChangedFlag();
+
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+            grdDetails.Refresh();
+            SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
+    {
+        Int32 RowNumberGrid = -1;
+        for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
+        {
+            bool found = true;
+            foreach (DataColumn myColumn in FMainDS.ABatch.PrimaryKey)
+            {
+                string value1 = FMainDS.ABatch.Rows[ARowNumberInTable][myColumn].ToString();
+                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
+                if (value1 != value2)
+                {
+                    found = false;
+                }
+            }
+            if (found)
+            {
+                RowNumberGrid = Counter + 1;
+                break;
+            }
+        }
+
+        grdDetails.SelectRowInGrid(RowNumberGrid);
+    }
+
+    /// return the selected row
+    public ABatchRow GetSelectedDetailRow()
+    {
+        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (SelectedGridRow.Length >= 1)
+        {
+            return (ABatchRow)SelectedGridRow[0].Row;
+        }
+
+        return null;
+    }
+
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
+    {
+    }
+    private bool pnlDetailsProtected = false;
+    /// <summary>
+    /// protect the pnlDetail (only for this tab)
+    /// </summary>
+    public bool PnlDetailsProtected
+    {
+        get { return pnlDetailsProtected; }
+        set { pnlDetailsProtected = value; }
+    }
+
+    private void ShowData()
+    {
+        FPetraUtilsObject.DisableDataChangedEvent();
+        ShowDataManual();
+        pnlDetails.Enabled = false;
+        if (FMainDS.ABatch != null)
+        {
+            DataView myDataView = FMainDS.ABatch.DefaultView;
+            myDataView.Sort = "a_batch_number_i DESC";
+            myDataView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            if (myDataView.Count > 0)
+            {
+                grdDetails.Selection.ResetSelection(false);
+                grdDetails.Selection.SelectRow(1, true);
+                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
+            }
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
+    }
+    private void UndoData(DataRow ARow, Control AControl)
+    {
+        if(AControl.Name == "txtDetailBatchDescription")
+        {
+        txtDetailBatchDescription.Text = ARow[FMainDS.ABatch.Columns[(short)FMainDS.ABatch.GetType().GetField("ColumnBatchDescriptionId", BindingFlags.Public | BindingFlags.Static).GetValue(FMainDS.ABatch.GetType())], DataRowVersion.Original].ToString();
+        }
+        if(AControl.Name == "txtDetailBatchControlTotal")
+        {
+        txtDetailBatchControlTotal.NumberValueDecimal = Convert.ToDecimal(ARow[FMainDS.ABatch.Columns[(short)FMainDS.ABatch.GetType().GetField("ColumnBatchControlTotalId", BindingFlags.Public | BindingFlags.Static).GetValue(FMainDS.ABatch.GetType())], DataRowVersion.Original]);
+        }
+        if(AControl.Name == "dtpDetailDateEffective")
+        {
+        dtpDetailDateEffective.Date = (DateTime)ARow[FMainDS.ABatch.Columns[(short)FMainDS.ABatch.GetType().GetField("ColumnDateEffectiveId", BindingFlags.Public | BindingFlags.Static).GetValue(FMainDS.ABatch.GetType())], DataRowVersion.Original];
+        }
+    }
+    private void ShowDetails(ABatchRow ARow)
+    {
+        FPetraUtilsObject.DisableDataChangedEvent();
+        grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+            ShowDetailsManual(ARow);
+        }
+        else
+        {
+            FPreviouslySelectedDetailRow = ARow;
+            txtDetailBatchDescription.Text = ARow.BatchDescription;
+            if (ARow.IsBatchControlTotalNull())
+            {
+                txtDetailBatchControlTotal.NumberValueDecimal = null;
+            }
+            else
+            {
+                txtDetailBatchControlTotal.NumberValueDecimal = Convert.ToDecimal(ARow.BatchControlTotal);
+            }
+
+            dtpDetailDateEffective.Date = ARow.DateEffective;
+            ShowDetailsManual(ARow);
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
+        }
+        FPetraUtilsObject.EnableDataChangedEvent();
+        grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+    }
+
+    private ABatchRow FPreviouslySelectedDetailRow = null;
+
+    //Count the number of times FocusRowLeaving is called
+    //  to stop repeating events
+    bool firstFocusEventHasRun = false;
+    bool isRepeatLeaveEvent = false;
+    int gridRowsCount = 0;
+    int numGridRows	 = 0;
+    int gridRowsCountHasChanged = 0;
+    bool isNewEvent = false;
+
+    private void FocusPreparation(bool AIsLeaveEvent)
+    {
+    	Console.WriteLine("-------------------------------------------------");
+    	Console.WriteLine(string.Format("FocusPreparation-Enter:   e.Row:{0}|Current:{1}|numGridRows:{2}|gridRowsCount:{3}|FirstRun:{4}|Repeat:{5}|Changed:{6}|",
+    	                                "N/A",
+    	                                FCurrentRow,
+    	                                numGridRows,
+    	                                gridRowsCount,
+    	                                firstFocusEventHasRun,
+    	                                isRepeatLeaveEvent,
+    	                                gridRowsCountHasChanged));
+
+    	if (isRepeatLeaveEvent)
+    	{
+    		Console.WriteLine("FocusPreparation-Exit: Is Repeat Leave Event");
+	    	Console.WriteLine("-------------------------------------------------");
+    		return;
+    	}
+    	
+    	numGridRows = grdDetails.Rows.Count;
+
+		//first run only
+    	if (!firstFocusEventHasRun)
+    	{
+    		firstFocusEventHasRun = true;
+    		gridRowsCount = numGridRows;
+    	}
+    	
+    	//Specify if it ia row change, add or delete
+    	if (gridRowsCount == numGridRows)
+    	{
+    		gridRowsCountHasChanged = 0;
+    	}
+    	else if (gridRowsCount > numGridRows)
+        {
+        	gridRowsCount = numGridRows;
+        	gridRowsCountHasChanged = -1;
+        }
+    	else if (gridRowsCount < numGridRows)
+    	{
+        	gridRowsCount = numGridRows;
+        	gridRowsCountHasChanged = 1;
+    	}
+    	
+    	Console.WriteLine(string.Format("FocusPreparation-Exit:   e.Row:{0}|CurrentRow:{1}|numGridRows:{2}|gridRowsCount:{3}|FirstRun:{4}|Repeat:{5}|Changed:{6}|",
+								"N/A",
+			    	            FCurrentRow,
+                                numGridRows,
+                                gridRowsCount,
+                                firstFocusEventHasRun,
+                                isRepeatLeaveEvent,
+                                gridRowsCountHasChanged));
+    	Console.WriteLine("-------------------------------------------------");
+
+    }
+    
+    private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+    {
+    	if (isNewEvent == false)
+    	{
+    		isNewEvent = true;
+	    	Console.WriteLine("---------------NEW EVENT-------------------------");
+    	}
+    	else
+    	{
+    		Console.WriteLine("-------------------------------------------------");
+    	}
+    	
+    	Console.WriteLine(string.Format("FocusRowLeaving-Enter:   e.row:{0}|Current:{1}|numGridRows:{2}|gridRowsCount:{3}|FirstRun:{4}|Repeat:{5}|Changed:{6}|",
+    	                                e.Row,
+    	                                FCurrentRow,
+    	                                numGridRows,
+    	                                gridRowsCount,
+    	                                firstFocusEventHasRun,
+    	                                isRepeatLeaveEvent,
+    	                                gridRowsCountHasChanged));
+    	FocusPreparation(true);
+
+    	if (!isRepeatLeaveEvent)
+        {
+	    	isRepeatLeaveEvent = true;
+	    	
+            if (gridRowsCountHasChanged == -1 || numGridRows == 2)  //do not run  validation is cancelling current row OR only 1 row present so no rowleaving event possible
+            {
+            	e.Cancel = true;
+            }
+            
+    		//Console.WriteLine(string.Format("FocusRowLeaving: rows:{0}",numGridRows));
+	    	Console.WriteLine(string.Format("FocusRowLeaving-Inner:   e.row:{0}|Current:{1}|numGridRows:{2}|gridRowsCount:{3}|FirstRun:{4}|Repeat:{5}|Changed:{6}|",
+	    	                                e.Row,
+	    	                                FCurrentRow,
+	    	                                numGridRows,
+	    	                                gridRowsCount,
+	    	                                firstFocusEventHasRun,
+	    	                                isRepeatLeaveEvent,
+	    	                                gridRowsCountHasChanged));
+    		
+            if (!ValidateAllData(true, true))
+            {
+                e.Cancel = true;
+            }
+        }
+        else
+        {
+            // This event gets called twice and no need to run code twice
+	    	isRepeatLeaveEvent = false;
+            e.Cancel = true;
+        }
+    }
+
+    private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+    {
+    	if (isNewEvent == false)
+    	{
+	    	Console.WriteLine("---------------NEW EVENT-------------------------");
+    	}
+    	else
+    	{
+    		Console.WriteLine("-------------------------------------------------");
+    	}
+    	
+    	Console.WriteLine(string.Format("FocusedRowChanged-Enter:   e.row:{0}|Current:{1}|numGridRows:{2}|gridRowsCount:{3}|FirstRun:{4}|Repeat:{5}|Changed:{6}|",
+    	                                e.Row,
+    	                                FCurrentRow,
+    	                                numGridRows,
+    	                                gridRowsCount,
+    	                                firstFocusEventHasRun,
+    	                                isRepeatLeaveEvent,
+    	                                gridRowsCountHasChanged));
+
+    	isRepeatLeaveEvent = false;
+
+    	if (!isNewEvent)
+    	{
+    		//Only call this if LostFocus has not already been called
+    		FocusPreparation(false);
+    	}
+    	
+        if(e.Row != FCurrentRow || gridRowsCountHasChanged != 0)
+        {
+	    	gridRowsCountHasChanged = 0;
+	    	
+	    	if (numGridRows > 1) //i.e. not last row cancelled
+	    	{
+//		    	Console.WriteLine(string.Format("FocusRowChanged: rows:{0}",numGridRows));
+		    	Console.WriteLine(string.Format("FocusedRowChanged-Inner:   e.row:{0}|Current:{1}|numGridRows:{2}|gridRowsCount:{3}|FirstRun:{4}|Repeat:{5}|Changed:{6}|",
+		                                e.Row,
+		                                FCurrentRow,
+		                                numGridRows,
+		                                gridRowsCount,
+		                                firstFocusEventHasRun,
+		                                isRepeatLeaveEvent,
+		                                gridRowsCountHasChanged));
+		    	
+	            // Transfer data from Controls into the DataTable
+	            if (FPreviouslySelectedDetailRow != null)
+	            {
+	                GetDetailsFromControls(FPreviouslySelectedDetailRow);
+	            }
+	
+	            // Display the details of the currently selected Row
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
+	            pnlDetails.Enabled = true;
+	    	}
+
+            FCurrentRow = e.Row;
+            
+            //Event tidy-up
+            isNewEvent = false;
+            gridRowsCountHasChanged = 0;
+
+        }
+        
+    	Console.WriteLine(string.Format("FocusedRowChanged-Exit:   e.row:{0}|Current:{1}|numGridRows:{2}|gridRowsCount:{3}|FirstRun:{4}|Repeat:{5}|Changed:{6}|",
+                                e.Row,
+                                FCurrentRow,
+                                numGridRows,
+                                gridRowsCount,
+                                firstFocusEventHasRun,
+                                isRepeatLeaveEvent,
+                                gridRowsCountHasChanged));
+    	Console.WriteLine("-------------------------------------------------");
+
+    }
+
+    
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow);
+    }
+
+    private void GetDetailsFromControls(ABatchRow ARow)
+    {
+        if (ARow != null && !pnlDetailsProtected)
+        {
+            ARow.BeginEdit();
+            ARow.BatchDescription = txtDetailBatchDescription.Text;
+            if (txtDetailBatchControlTotal.NumberValueDecimal == null)
+            {
+                ARow.SetBatchControlTotalNull();
+            }
+            else
+            {
+                ARow.BatchControlTotal = Convert.ToDecimal(txtDetailBatchControlTotal.NumberValueDecimal);
+            }
+
+            ARow.DateEffective = (dtpDetailDateEffective.Date.HasValue?dtpDetailDateEffective.Date.Value:DateTime.MinValue);
+            ARow.EndEdit();
+        }
+    }
+
+    /// <summary>
+    /// Performs data validation.
+    /// </summary>
+    /// <remarks>May be called by the Form that hosts this UserControl to invoke the data validation of
+    /// the UserControl.</remarks>
+    /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
+    /// to another record, otherwise set it to false.</param>
+    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+    /// user, otherwise set it to false.</param>
+    /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a
+    /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
+    /// <para>
+    /// This is useful for restricting Data Validation error checking to the current TabPage of a TabControl in order
+    /// to only display Data Validation errors that pertain to the current TabPage. To do this, pass in a TabControl in
+    /// this Argument.
+    /// </para>
+    /// </param>
+    /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+    {
+        bool ReturnValue = false;
+        Control ControlToValidate;
+        ABatchRow CurrentRow;
+
+        CurrentRow = GetSelectedDetailRow();
+
+        if (CurrentRow != null)
+        {
+            if (AValidateSpecificControl != null)
+            {
+                ControlToValidate = AValidateSpecificControl;
+            }
+            else
+            {
+                ControlToValidate = this.ActiveControl;
+            }
+
+            GetDetailsFromControls(CurrentRow);
+
+            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+            ValidateDataDetailsManual(CurrentRow);
+
+            if (AProcessAnyDataValidationErrors)
+            {
+                // Only process the Data Validations here if ControlToValidate is not null.
+                // It can be null if this.ActiveControl yields null - this would happen if no Control
+                // on this UserControl has got the Focus.
+                if(ControlToValidate.FindUserControlOrForm(true) == this)
+                {
+                    ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                        this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+                }
+                else
+                {
+                    ReturnValue = true;
+                }
+            }
+        }
+        else
+        {
+            ReturnValue = true;
+        }
+
+        if(ReturnValue)
+        {
+            // Remove a possibly shown Validation ToolTip as the data validation succeeded
+            FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        }
+
+        return ReturnValue;
+    }
+
+#region Implement interface functions
+    /// auto generated
+    public void RunOnceOnActivation()
+    {
+    }
+
+    /// <summary>
+    /// Adds event handlers for the appropiate onChange event to call a central procedure
+    /// </summary>
+    public void HookupAllControls()
+    {
+    }
+
+    /// auto generated
+    public void HookupAllInContainer(Control container)
+    {
+        FPetraUtilsObject.HookupAllInContainer(container);
+    }
+
+    /// auto generated
+    public bool CanClose()
+    {
+        return FPetraUtilsObject.CanClose();
+    }
+
+    /// auto generated
+    public TFrmPetraUtils GetPetraUtilsObject()
+    {
+        return (TFrmPetraUtils)FPetraUtilsObject;
+    }
+#endregion
+
+#region Action Handling
+
+    /// auto generated
+    public void ActionEnabledEvent(object sender, ActionEventArgs e)
+    {
+        if (e.ActionName == "actNew")
+        {
+            btnNew.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actCancel")
+        {
+            btnCancel.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actTestPostBatch")
+        {
+            btnTestPostBatch.Enabled = e.Enabled;
+            tbbTestPostBatch.Enabled = e.Enabled;
+            mniTestPostBatch.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actPostBatch")
+        {
+            btnPostBatch.Enabled = e.Enabled;
+            tbbPostBatch.Enabled = e.Enabled;
+            mniPostBatch.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actImportFromSpreadSheet")
+        {
+            tbbImportFromSpreadSheet.Enabled = e.Enabled;
+            mniImportFromSpreadSheet.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actImportBatches")
+        {
+            tbbImportBatches.Enabled = e.Enabled;
+            mniImportBatches.Enabled = e.Enabled;
+        }
+        if (e.ActionName == "actExportBatches")
+        {
+            tbbExportBatches.Enabled = e.Enabled;
+            mniExportBatches.Enabled = e.Enabled;
+        }
+    }
+
+#endregion
+
+#region Data Validation
+
+    private void ControlValidatedHandler(object sender, EventArgs e)
+    {
+        TScreenVerificationResult SingleVerificationResult;
+
+        ValidateAllData(true, false, (Control)sender);
+
+        FPetraUtilsObject.ValidationToolTip.RemoveAll();
+
+        if (FPetraUtilsObject.VerificationResultCollection.Count > 0)
+        {
+            for (int Counter = 0; Counter < FPetraUtilsObject.VerificationResultCollection.Count; Counter++)
+            {
+                SingleVerificationResult = (TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[Counter];
+
+                if (SingleVerificationResult.ResultControl == sender)
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested)
+                    {
+                        SingleVerificationResult.ResultControl.Focus();
+                        FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = false;
+                    }
+
+                    if(SingleVerificationResult.ControlValueUndoRequested)
+                    {
+                        UndoData(SingleVerificationResult.ResultColumn.Table.Rows[0], SingleVerificationResult.ResultControl);
+                        SingleVerificationResult.OverrideResultText(SingleVerificationResult.ResultText + Environment.NewLine + Environment.NewLine +
+                            Catalog.GetString("--> The value you entered has been changed back to what it was before! <--"));
+                    }
+
+                    if (!SingleVerificationResult.SuppressValidationToolTip)
+                    {
+                        FPetraUtilsObject.ValidationToolTipSeverity = SingleVerificationResult.ResultSeverity;
+
+                        if (SingleVerificationResult.ResultTextCaption != String.Empty)
+                        {
+                            FPetraUtilsObject.ValidationToolTip.ToolTipTitle += ":  " + SingleVerificationResult.ResultTextCaption;
+                        }
+
+                        FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender,
+                            ((Control)sender).Width / 2, ((Control)sender).Height);
+                    }
+                }
+            }
+        }
+    }
+
+    private void BuildValidationControlsDict()
+    {
+        FPetraUtilsObject.ValidationControlsDict.Add(FMainDS.ABatch.Columns[ABatchTable.ColumnDateEffectiveId],
+            new TValidationControlsData(dtpDetailDateEffective, Catalog.GetString("Effective Date")));
+    }
+
+#endregion
+  }
+}

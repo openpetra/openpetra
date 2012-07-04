@@ -1333,10 +1333,41 @@ namespace Ict.Common.Controls
             return rowIndex;
         }
 
-        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        /// select a row in the grid, and invoke the event for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid)
         {
             SelectRowInGrid(ARowNumberInGrid, false);
+        }
+
+        /// select a row in the grid, and optionally invoke the event for FocusedRowChanged
+        public void SelectRowInGrid(Int32 ARowNumberInGrid, int AInvokeEvent)
+        {
+            switch (AInvokeEvent)
+            {
+            	case 1:  //Invoke FocusedRowChanged event
+	            	SelectRowInGrid(ARowNumberInGrid, false);	
+            		break;
+            	default: //No event invoked
+	            	int NumRows = this.Rows.Count;
+	
+		            if (NumRows == 1)
+		            {
+		                return;
+		            }
+		            else if ((ARowNumberInGrid < 1) || (ARowNumberInGrid >= NumRows))
+		            {
+		                return;
+		            }
+		
+		            //Select and show specified row
+		            this.Selection.FocusStyle = FocusStyle.None;
+		            this.Selection.SelectRow(ARowNumberInGrid, true);
+		            this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+		            this.Selection.FocusStyle = FocusStyle.Default;
+            		
+            		break;
+            }
+            
         }
 
         /// select a row in the grid, and invoke the even for FocusedRowChanged
