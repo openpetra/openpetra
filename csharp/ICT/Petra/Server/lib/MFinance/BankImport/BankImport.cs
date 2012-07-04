@@ -236,6 +236,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     AEpMatchTable.GetMatchTextDBName(),
                     DataViewRowState.CurrentRows);
 
+                SortedList <string, AEpMatchRow>MatchesToAddLater = new SortedList <string, AEpMatchRow>();
+
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
                 {
@@ -268,7 +270,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             }
                         }
                     }
-                    else
+                    else if (!MatchesToAddLater.ContainsKey(row.MatchText))
                     {
                         // create new match
                         AEpMatchRow tempRow = ResultDataset.AEpMatch.NewRowTyped(true);
@@ -303,11 +305,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         }
 #endif
 
-                        ResultDataset.AEpMatch.Rows.Add(tempRow);
+                        MatchesToAddLater.Add(tempRow.MatchText, tempRow);
 
                         row.EpMatchKey = tempRow.EpMatchKey;
                         row.MatchAction = tempRow.Action;
                     }
+                }
+
+                // for speed reasons, add the new rows after clearing the sort on the view
+                EpMatchView.Sort = string.Empty;
+
+                foreach (AEpMatchRow m in MatchesToAddLater.Values)
+                {
+                    ResultDataset.AEpMatch.Rows.Add(m);
                 }
 
                 ResultDataset.AEpMatch.ThrowAwayAfterSubmitChanges = true;
@@ -326,7 +336,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             // reloading is faster than deleting all matches that are not needed
             string sqlLoadMatchesOfStatement =
-                "SELECT m.* FROM PUB_a_ep_match m, PUB_a_ep_transaction t WHERE t.a_statement_key_i = ? AND m.a_match_text_c = t.a_match_text_c";
+                "SELECT DISTINCT m.* FROM PUB_a_ep_match m, PUB_a_ep_transaction t WHERE t.a_statement_key_i = ? AND m.a_match_text_c = t.a_match_text_c";
 
             OdbcParameter param = new OdbcParameter("statementkey", OdbcType.Int);
             param.Value = AStatementKey;

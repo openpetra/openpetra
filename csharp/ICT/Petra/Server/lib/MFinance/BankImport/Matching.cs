@@ -626,7 +626,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             DataView AMatchView,
             DataRowView[] AGiftDetails,
             string AMatchText,
-            List <AEpMatchRow>AMatchesToAddLater)
+            SortedList <string, AEpMatchRow>AMatchesToAddLater)
         {
             AEpMatchRow newMatch = null;
 
@@ -639,12 +639,22 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
                 if (FilteredMatches.Length == 0)
                 {
-                    newMatch = AMatchDS.AEpMatch.NewRowTyped();
+                    // we might have added such a match for the current statement
+                    string key = AMatchText + giftRow.DetailNumber.ToString();
 
-                    // matchkey will be set properly on save, by sequence
-                    newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + AMatchesToAddLater.Count + 1);
-                    newMatch.MatchText = AMatchText;
-                    AMatchesToAddLater.Add(newMatch);
+                    if (AMatchesToAddLater.ContainsKey(key))
+                    {
+                        newMatch = AMatchesToAddLater[key];
+                    }
+                    else
+                    {
+                        newMatch = AMatchDS.AEpMatch.NewRowTyped();
+
+                        // matchkey will be set properly on save, by sequence
+                        newMatch.EpMatchKey = -1 * (AMatchDS.AEpMatch.Count + AMatchesToAddLater.Count + 1);
+                        newMatch.MatchText = AMatchText;
+                        AMatchesToAddLater.Add(key, newMatch);
+                    }
                 }
                 else
                 {
@@ -709,7 +719,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                         Ict.Petra.Shared.MFinance.MFinanceConstants.BANK_STMT_STATUS_MATCHED
                     });
 
-            List <AEpMatchRow>MatchesToAddLater = new List <AEpMatchRow>();
+            SortedList <string, AEpMatchRow>MatchesToAddLater = new SortedList <string, AEpMatchRow>();
 
             foreach (DataRowView rv in matchedTransactions)
             {
@@ -734,7 +744,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             // for speed reasons, add the new rows after clearing the sort on the view
             MatchesByTextAndDetail.Sort = string.Empty;
 
-            foreach (AEpMatchRow m in MatchesToAddLater)
+            foreach (AEpMatchRow m in MatchesToAddLater.Values)
             {
                 AMatchDS.AEpMatch.Rows.Add(m);
             }
