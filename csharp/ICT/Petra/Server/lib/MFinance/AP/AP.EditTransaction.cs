@@ -467,10 +467,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
         }
 
+        /* Method is not used. (Compiles OK, but no-one seems to want it!)
+         * 
         /// <summary>
-        /// Find AP Documents
-        /// TODO: date
+        /// 
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ASupplierKey"></param>
+        /// <param name="ADocumentStatus"></param>
+        /// <param name="IsCreditNoteNotInvoice"></param>
+        /// <param name="AHideAgedTransactions"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber, Int64 ASupplierKey,
             string ADocumentStatus,
@@ -495,6 +502,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             return MainDS;
         }
+*/
 
         private static bool DocumentBalanceOK(AccountsPayableTDS AMainDS, int AApDocumentId, TDBTransaction ATransaction)
         {
@@ -1750,6 +1758,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             return MainDs;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APaymentNumber"></param>
+        /// <returns>true if a matching payment reversal can be found</returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool WasThisPaymentReversed(Int32 ALedgerNumber, Int32 APaymentNumber)
+        {
+            // TODO: Look for a matching reverse payment
+            return false;
         }
 
         /// <summary>

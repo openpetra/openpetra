@@ -41,6 +41,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Common;
+using System.Net.Mail;
 
 namespace Ict.Petra.Server.MCommon.WebConnectors
 {
@@ -517,8 +518,8 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
 
                 Int64 PersonKey = Convert.ToInt64(Row["person_key"]);
 
-                sw.WriteLine(String.Format("{0:D10},\"{1}\",\"{2}\",\"{3}\",FALSE",
-                    PersonKey, Role, StartDate, EndDate));
+                sw.WriteLine(String.Format("{0:D10},\"{1}\",{2:D10},\"{3}\",\"{4}\",FALSE",
+                    PersonKey, Role, Convert.ToInt64(Row["field_key"]), StartDate, EndDate));
 
                 // Produce a unique row in my temporary list for person.csv and email.csv.
                 if (!PersonnelList.ContainsKey(PersonKey))
@@ -653,6 +654,22 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 MemoryStream ZippedStream = TFileHelper.Streams.Compression.DeflateFilesIntoMemoryStream(FZipFileNames.ToArray(), false, APswd);
                 TFileHelper.Streams.FileHandling.SaveStreamToFile(ZippedStream, FExportFilePath + "data.zip");
                 FExportTrace += "Files compressed to data.zip.";
+
+                TSmtpSender SendMail = new TSmtpSender();
+                String SenderAddress = "petra.ict@om.org";
+                String DestinationAddress = TAppSettingsManager.GetValue("IntranetServerEmail");
+
+                MailMessage msg = new MailMessage(SenderAddress,
+                    DestinationAddress,
+                    "Data from OpenPetra",
+                    "Here is the latest data from my field.");
+
+                msg.Attachments.Add(new Attachment(FExportFilePath + "data.zip"));
+
+                if (SendMail.SendMessage(ref msg))
+                {
+                    FExportTrace += ("\r\nEmail sent to " + msg.To[0].Address);
+                }
             }
             finally
             {
