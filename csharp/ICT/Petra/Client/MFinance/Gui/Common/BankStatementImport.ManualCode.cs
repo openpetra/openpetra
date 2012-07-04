@@ -840,6 +840,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             Decimal Sum = 0.0m;
 
+            DataView MatchesByMatchText = new DataView(AMatches,
+                string.Empty,
+                AEpMatchTable.GetMatchTextDBName(),
+                DataViewRowState.CurrentRows);
+
             foreach (DataRowView rv in AEpTransactions)
             {
                 row = (BankImportTDSAEpTransactionRow)rv.Row;
@@ -849,16 +854,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 rowToPrint = rowToPrint.Replace("#NAME", row.AccountName);
                 rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.Description);
 
-                AEpMatchRow match = (AEpMatchRow)AMatches.Rows.Find(row.EpMatchKey);
-
                 string RecipientDescription = string.Empty;
 
-                if (!match.IsRecipientKeyNull() && (match.RecipientKey > 0))
-                {
-                    RecipientDescription += match.RecipientKey.ToString() + " ";
-                }
+                DataRowView[] matches = MatchesByMatchText.FindRows(row.MatchText);
 
-                RecipientDescription += match.RecipientShortName;
+                AEpMatchRow match = null;
+
+                foreach (DataRowView rvMatch in matches)
+                {
+                    match = (AEpMatchRow)rvMatch.Row;
+
+                    if (RecipientDescription.Length > 0)
+                    {
+                        RecipientDescription += "<br/>";
+                    }
+
+                    if (!match.IsRecipientKeyNull() && (match.RecipientKey > 0))
+                    {
+                        RecipientDescription += match.RecipientKey.ToString() + " ";
+                    }
+
+                    RecipientDescription += match.RecipientShortName;
+                }
 
                 if (RecipientDescription.Trim().Length > 0)
                 {
