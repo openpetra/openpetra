@@ -553,11 +553,11 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// rotate the following output by some degrees
+        /// rotate the following output by some degrees, at the given position
         /// </summary>
-        public override void Rotate(Int32 ADegrees)
+        public override void RotateAtTransform(double ADegrees, double XPos, double YPos)
         {
-            FXGraphics.RotateTransform(ADegrees);
+            FXGraphics.RotateAtTransform(ADegrees, new XPoint(XPos, YPos));
         }
 
         /// <summary>
