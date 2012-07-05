@@ -576,19 +576,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // Need to deal with Time column which is not shown on screen
             // If the user has changed the date there is a finite chance that the date/time combination will now not be unique.
-            if (ARow.FromCurrencyCode != prevFromCurrency || 
-                ARow.ToCurrencyCode != prevTocurrency || 
-                ARow.DateEffectiveFrom.ToShortTimeString() != prevDateTime.ToShortDateString())
+            if ((ARow.FromCurrencyCode != prevFromCurrency)
+                || (ARow.ToCurrencyCode != prevTocurrency)
+                || (ARow.DateEffectiveFrom.ToShortTimeString() != prevDateTime.ToShortDateString()))
             {
                 // The user has changed something so we need to make sure that the primary key will still be unique
                 int timeEffective = ARow.TimeEffectiveFrom;
+
                 while (FMainDS.ADailyExchangeRate.Rows.Find(new object[] {
-                           ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                           ARow.DateEffectiveFrom.ToString(), timeEffective.ToString()
-                       }) != null)
+                               ARow.FromCurrencyCode, ARow.ToCurrencyCode,
+                               ARow.DateEffectiveFrom.ToString(), timeEffective.ToString()
+                           }) != null)
                 {
                     timeEffective++;
                 }
+
                 ARow.TimeEffectiveFrom = timeEffective;
             }
         }
@@ -623,11 +625,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
             // Now go through all the grid rows (view) checking all the added rows.  Keep a list of inverses
-            List<tInverseItem> lstInverses = new List<tInverseItem>();
+            List <tInverseItem>lstInverses = new List <tInverseItem>();
             DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+
             for (int i = 0; i < gridView.Count; i++)
             {
                 ADailyExchangeRateRow ARow = (ADailyExchangeRateRow)gridView[i].Row;
+
                 if (ARow.RowState == DataRowState.Added)
                 {
                     tInverseItem item = new tInverseItem();
@@ -638,17 +642,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     lstInverses.Add(item);
                 }
             }
-            if (lstInverses.Count == 0) return;
+
+            if (lstInverses.Count == 0)
+            {
+                return;
+            }
 
             // Now go through our list and check if any items need adding to the data Table
             // The user may already have put an inverse currency in by hand
             DateTimeFormatInfo dateTimeFormat =
                 new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
             DataView dv = new DataView(FMainDS.ADailyExchangeRate);
+
             for (int i = 0; i < lstInverses.Count; i++)
             {
                 tInverseItem item = lstInverses[i];
-                
+
                 // Does the item exist already?
                 dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}='{5}' AND {6}={7}",
                     ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
@@ -666,17 +675,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     int timeEffective = (dtNow.Hour * 60 + dtNow.Minute) * 60 + dtNow.Second;
 
                     ADailyExchangeRateRow NewRow = FMainDS.ADailyExchangeRate.NewRowTyped();
-                    NewRow.FromCurrencyCode = item.FromCurrencyCode; ;
+                    NewRow.FromCurrencyCode = item.FromCurrencyCode;;
                     NewRow.ToCurrencyCode = item.ToCurrencyCode;
                     NewRow.DateEffectiveFrom = DateTime.Parse(item.DateEffective.ToLongDateString());
                     NewRow.RateOfExchange = item.RateOfExchange;
+
                     while (FMainDS.ADailyExchangeRate.Rows.Find(new object[] {
-                           NewRow.FromCurrencyCode, NewRow.ToCurrencyCode,
-                           NewRow.DateEffectiveFrom.ToString(), timeEffective.ToString()
-                       }) != null)
+                                   NewRow.FromCurrencyCode, NewRow.ToCurrencyCode,
+                                   NewRow.DateEffectiveFrom.ToString(), timeEffective.ToString()
+                               }) != null)
                     {
                         timeEffective++;
                     }
+
                     NewRow.TimeEffectiveFrom = timeEffective;
 
                     FMainDS.ADailyExchangeRate.Rows.Add(NewRow);
