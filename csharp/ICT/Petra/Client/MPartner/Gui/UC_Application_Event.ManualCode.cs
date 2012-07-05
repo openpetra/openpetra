@@ -240,13 +240,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             return ReturnValue;
         }
 
-//        private void ValidateDataDetailsManual(PmGeneralApplicationRow ARow)
-//        {
-//            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-//
-//            //TODO
-//        }
-
         private void ShowData(PmGeneralApplicationRow AGeneralAppRow, PmShortTermApplicationRow AEventAppRow)
         {
             // clear dataset and create a copy of the row to be displayed so Dataset contains only one set of records
