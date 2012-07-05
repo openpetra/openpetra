@@ -91,17 +91,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FApplicationDS = new ApplicationTDS();
             FApplicationDS.InitVars();
-            
+
             // the following lines are just dummy code to remove compiler warnings as those members are never used
             if (FTabSetup == null)
             {
-            	FTabSetup = null;
+                FTabSetup = null;
             }
+
             if (FTabPageEvent == null)
             {
-            	FTabPageEvent = null;
+                FTabPageEvent = null;
             }
-            
+
             ucoEvent.PetraUtilsObject = FPetraUtilsObject;
             ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
             ucoTravel.PetraUtilsObject = FPetraUtilsObject;

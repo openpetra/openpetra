@@ -174,6 +174,28 @@ namespace Ict.Common.Testing
             Assert.AreEqual(new DateTime(2003, 12, 31), d2, "end date");
         }
 
+        /// <summary>
+        /// test the parsing of a date, needed eg. for gl batch import
+        /// </summary>
+        [Test]
+        public void TestDateParsing()
+        {
+            // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=840
+
+            string DateFormatString = "dd/MM/yyyy";
+            CultureInfo CultureInfoDate = new CultureInfo("en-GB");
+
+            CultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormatString;
+            string sDate = "31/01/2012";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), DateFormatString);
+
+            DateFormatString = "MM/dd/yyyy";
+            CultureInfoDate = new CultureInfo("en-GB");
+            CultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormatString;
+            sDate = "01/31/2012";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), DateFormatString);
+        }
+
         /// test formatting currency values
         [Test]
         public void TestStringHelperFormatCurrency()
