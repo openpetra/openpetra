@@ -617,7 +617,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static String ExportToFile(Boolean AExportDonationData, Boolean AExportFieldData, Boolean AExportPersonData,
-            String APswd, Int32 ADaySpan, String AOptionalMetadata)
+            String APswd, Int32 ADaySpan, String AOptionalMetadata, String ReplyToEmail)
         {
             try
             {
@@ -656,7 +656,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 FExportTrace += "Files compressed to data.zip.";
 
                 TSmtpSender SendMail = new TSmtpSender();
-                String SenderAddress = "petra.ict@om.org";
+                String SenderAddress = ReplyToEmail;
                 String DestinationAddress = TAppSettingsManager.GetValue("IntranetServerEmail");
 
                 MailMessage msg = new MailMessage(SenderAddress,

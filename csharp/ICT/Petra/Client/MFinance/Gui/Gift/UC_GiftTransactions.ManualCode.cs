@@ -940,56 +940,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
-            giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
-            giftRow.DateEntered = dtpDateEntered.Date.Value;
-//
-            //            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
-            //            {
-            //                if (giftDetail.BatchNumber.Equals(FBatchNumber)
-            //                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
-            //                {
-            //                    giftDetail.DateEntered = giftRow.DateEntered;
-            //                    giftDetail.DonorKey = giftRow.DonorKey;
-            //                    // this does not work
-            //                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
-            //                }
-            //            }
+            if (giftRow != null)
+            {
+                giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
+                giftRow.DateEntered = dtpDateEntered.Date.Value;
+                //
+                //            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
+                //            {
+                //                if (giftDetail.BatchNumber.Equals(FBatchNumber)
+                //                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
+                //                {
+                //                    giftDetail.DateEntered = giftRow.DateEntered;
+                //                    giftDetail.DonorKey = giftRow.DonorKey;
+                //                    // this does not work
+                //                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
+                //                }
+                //            }
 
-            //  join by hand
-            if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
-            {
-                giftRow.SetMethodOfGivingCodeNull();
-            }
-            else
-            {
-                giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
-            }
+                //  join by hand
+                if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
+                {
+                    giftRow.SetMethodOfGivingCodeNull();
+                }
+                else
+                {
+                    giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
+                }
 
-            if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
-            {
-                giftRow.SetMethodOfPaymentCodeNull();
-            }
-            else
-            {
-                giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
-            }
+                if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
+                {
+                    giftRow.SetMethodOfPaymentCodeNull();
+                }
+                else
+                {
+                    giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
+                }
 
-            if (txtDetailReference.Text.Length == 0)
-            {
-                giftRow.SetReferenceNull();
-            }
-            else
-            {
-                giftRow.Reference = txtDetailReference.Text;
-            }
+                if (txtDetailReference.Text.Length == 0)
+                {
+                    giftRow.SetReferenceNull();
+                }
+                else
+                {
+                    giftRow.Reference = txtDetailReference.Text;
+                }
 
-            if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
-            {
-                giftRow.SetReceiptLetterCodeNull();
-            }
-            else
-            {
-                giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+                if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
+                {
+                    giftRow.SetReceiptLetterCodeNull();
+                }
+                else
+                {
+                    giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+                }
             }
         }
 

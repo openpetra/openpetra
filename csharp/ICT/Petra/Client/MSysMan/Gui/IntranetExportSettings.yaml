@@ -9,11 +9,12 @@
 
     Controls:
         pnlDialogContent:
-            Controls: [txtDonationDays, txtOptionalMetadata, grpPassword]
+            Controls: [txtDonationDays, txtOptionalMetadata, txtReplyToEmail, grpPassword]
 
         txtDonationDays:
             Format: Integer
         txtOptionalMetadata:
+        txtReplyToEmail:
         grpPassword:
             Controls: [txtOldPassword, txtNewPassword, txtConfirmPassword]
         txtOldPassword:

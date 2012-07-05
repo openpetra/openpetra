@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             TUserDefaults.SetDefault("IntranetExportField", ExportFieldData);
             TUserDefaults.SetDefault("IntranetExportPerson", ExportPersonData);
             String ServerStr = TRemote.MCommon.WebConnectors.ExportToFile(ExportDonationData, ExportFieldData, ExportPersonData,
-                FSettingsPage.Password, FSettingsPage.DonationDays, FSettingsPage.OptionalMetadata);
+                FSettingsPage.Password, FSettingsPage.DonationDays, FSettingsPage.OptionalMetadata, FSettingsPage.ReplyToEmail);
             MessageBox.Show(ServerStr, this.Text);
             Close();
         }

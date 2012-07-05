@@ -40,6 +40,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
     {
         private string FPswd;
         private string FExtra;
+        private string FReplyToEmail;
         private int FGiftDays;
 
         /// <summary>
@@ -75,6 +76,15 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
         }
 
+        public string ReplyToEmail
+        {
+            get
+            {
+                return FReplyToEmail;
+            }
+        }
+
+
         private void InitializeManualCode()
         {
             string MySettings = TSystemDefaults.GetSystemDefault("IntranetExportSettings", "pswd,45,");
@@ -85,12 +95,14 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 FGiftDays = Convert.ToInt32(Setting[1]);
                 FExtra = Setting[2];
             }
+            FReplyToEmail = TUserDefaults.GetStringDefault("ReplyToEmail");
         }
 
         private void RunOnceOnActivationManual()
         {
             txtDonationDays.NumberValueInt = FGiftDays;
             txtOptionalMetadata.Text = FExtra;
+            txtReplyToEmail.Text = FReplyToEmail;
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)
@@ -102,6 +114,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
             FExtra = txtOptionalMetadata.Text;
 
             Boolean OkToClose = true;
+
+            if (txtReplyToEmail.Text != "")
+            {
+                FReplyToEmail = txtReplyToEmail.Text;
+                TUserDefaults.SetDefault("ReplyToEmail", FReplyToEmail);
+            }
 
             if (txtOldPassword.Text != "")
             {

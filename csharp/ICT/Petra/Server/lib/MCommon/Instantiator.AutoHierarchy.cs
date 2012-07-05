@@ -777,10 +777,11 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
                                    Boolean AExportPersonData,
                                    String APswd,
                                    Int32 ADaySpan,
-                                   String AOptionalMetadata)
+                                   String AOptionalMetadata,
+                                   String ReplyToEmail)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector), "ExportToFile", ";BOOL;BOOL;BOOL;STRING;INT;STRING;");
-            return Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector.ExportToFile(AExportDonationData, AExportFieldData, AExportPersonData, APswd, ADaySpan, AOptionalMetadata);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector), "ExportToFile", ";BOOL;BOOL;BOOL;STRING;INT;STRING;STRING;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector.ExportToFile(AExportDonationData, AExportFieldData, AExportPersonData, APswd, ADaySpan, AOptionalMetadata, ReplyToEmail);
         }
 
         /// generated method from connector
