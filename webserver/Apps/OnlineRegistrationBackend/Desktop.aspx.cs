@@ -1071,7 +1071,7 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + ".pdf";
+                OutputName = (this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text).Replace(" ", "_") + ".pdf";
             }
             catch (Exception)
             {
@@ -1132,7 +1132,7 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = "FinanceReport_" + this.FilterRegistrationOffice.SelectedItem.Text + ".pdf";
+                OutputName = "FinanceReport_" + this.FilterRegistrationOffice.SelectedItem.Text.Replace(" ", "_") + ".pdf";
             }
             catch (Exception)
             {
@@ -1177,7 +1177,7 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = "RebukesReport_" + this.FilterRegistrationOffice.SelectedItem.Text + "_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
+                OutputName = "RebukesReport_" + (this.FilterRegistrationOffice.SelectedItem.Text + "_" + PrintDate.ToString("yyyy-MM-dd")).Replace(".", "_").Replace(" ", "_") + ".pdf";
             }
             catch (Exception)
             {
@@ -1221,7 +1221,7 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + "_Labels.pdf";
+                OutputName = this.FilterRegistrationOffice.SelectedItem.Text.Replace(" ", "_") + "_" + this.FilterRole.SelectedItem.Text + "_Labels.pdf";
             }
             catch (Exception)
             {
@@ -1266,7 +1266,7 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + "_arrivals.pdf";
+                OutputName = this.FilterRegistrationOffice.SelectedItem.Text.Replace(" ", "_") + "_" + this.FilterRole.SelectedItem.Text + "_arrivals.pdf";
             }
             catch (Exception)
             {
