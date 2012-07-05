@@ -47,7 +47,7 @@ namespace Tests.MConference.OnlineBackend
     {
         static Int64 EventPartnerKey;
         static string EventCode;
-        
+
         /// <summary>
         /// open database connection or prepare other things for this test
         /// </summary>
@@ -55,10 +55,9 @@ namespace Tests.MConference.OnlineBackend
         public void Init()
         {
             TPetraServerConnector.Connect("../../etc/TestServer.config");
-                       
+
             EventPartnerKey = TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey", 1110198);
             EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode", "SC001CNGRSS08");
-
         }
 
         /// <summary>
@@ -93,7 +92,7 @@ namespace Tests.MConference.OnlineBackend
                 "",
                 false,
                 false);
-            
+
             TLogging.Log("TestPrintBadges: check pdf file " + PDFPath);
         }
     }
