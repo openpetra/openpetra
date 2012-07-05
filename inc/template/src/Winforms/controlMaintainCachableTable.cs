@@ -478,6 +478,7 @@ namespace {#NAMESPACE}
                     FMainDS.{#DETAILTABLE}.AcceptChanges();
 
                     // Merge back with data from the Server (eg. for getting Sequence values)
+                    SubmitDT.AcceptChanges();
                     FMainDS.{#DETAILTABLE}.Merge(SubmitDT, false);
 
                     // need to accept the new modification ID

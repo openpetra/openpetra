@@ -40,6 +40,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using System.Collections.Generic;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -64,6 +65,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ADailyExchangeRateTable.GetToCurrencyCodeDBName() + ", " +
             ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " DESC, " +
             ADailyExchangeRateTable.GetTimeEffectiveFromDBName() + " DESC";
+
+        private string prevFromCurrency = String.Empty;
+        private string prevTocurrency = String.Empty;
+        private DateTime prevDateTime = DateTime.MinValue;
+
+        struct tInverseItem
+        {
+            public string FromCurrencyCode;
+            public string ToCurrencyCode;
+            public DateTime DateEffective;
+            public decimal RateOfExchange;
+        }
 
         /// <summary>
         /// Public property that is not really used in release builds, but might be useful
@@ -110,6 +123,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             this.btnInvertExchangeRate.Click +=
                 new System.EventHandler(this.InvertExchangeRate);
+
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
 
             // Set a non-standard sort order (newest record first)
             DataView theView = FMainDS.ADailyExchangeRate.DefaultView;
@@ -270,9 +285,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnCancel.Visible = true;
             int pos1 = btnNew.Top;
             int pos2 = btnClose.Top;
+            int spacing = pos2 - pos1;
             btnClose.Top = pos1;
             btnCancel.Top = pos2;
-            btnNew.Top = btnCancel.Top + 2 * btnCancel.Height;
+            btnNew.Top = btnCancel.Top + spacing + (btnNew.Height / 2);
 
             // Import not allowed when MODAL
             mniImport.Enabled = false;
@@ -495,6 +511,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="ARow"></param>
         private void ShowDetailsManual(ADailyExchangeRateRow ARow)
         {
+            // We remember these three so we can tell if the user has changed them
+            if (ARow == null)
+            {
+                prevFromCurrency = String.Empty;
+                prevTocurrency = String.Empty;
+                prevDateTime = DateTime.MinValue;
+            }
+            else
+            {
+                prevFromCurrency = ARow.FromCurrencyCode;
+                prevTocurrency = ARow.ToCurrencyCode;
+                prevDateTime = ARow.DateEffectiveFrom;
+            }
+
             // Sadly this may get called twice, if the currencies are different, but if they were the same we need to be sure to call it once at least
             SetEnabledStates();
         }
@@ -544,7 +574,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDetailDataFromControlsManual(ADailyExchangeRateRow ARow)
         {
-            //TExchangeRateCache.ResetCache();
+            // Need to deal with Time column which is not shown on screen
+            // If the user has changed the date there is a finite chance that the date/time combination will now not be unique.
+            if (ARow.FromCurrencyCode != prevFromCurrency || 
+                ARow.ToCurrencyCode != prevTocurrency || 
+                ARow.DateEffectiveFrom.ToShortTimeString() != prevDateTime.ToShortDateString())
+            {
+                // The user has changed something so we need to make sure that the primary key will still be unique
+                int timeEffective = ARow.TimeEffectiveFrom;
+                while (FMainDS.ADailyExchangeRate.Rows.Find(new object[] {
+                           ARow.FromCurrencyCode, ARow.ToCurrencyCode,
+                           ARow.DateEffectiveFrom.ToString(), timeEffective.ToString()
+                       }) != null)
+                {
+                    timeEffective++;
+                }
+                ARow.TimeEffectiveFrom = timeEffective;
+            }
         }
 
         private void Import(System.Object sender, EventArgs e)
@@ -569,6 +615,78 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //TRemote.MCommon.DataReader.GetData(AJournalTable.GetTableDBName(), null, out TypedTable);
             //t.Merge(TypedTable);
             return false;
+        }
+
+        void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            // The user has clicked Save.  We need to consider if we need to make any Inverse currency additions...
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+
+            // Now go through all the grid rows (view) checking all the added rows.  Keep a list of inverses
+            List<tInverseItem> lstInverses = new List<tInverseItem>();
+            DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+            for (int i = 0; i < gridView.Count; i++)
+            {
+                ADailyExchangeRateRow ARow = (ADailyExchangeRateRow)gridView[i].Row;
+                if (ARow.RowState == DataRowState.Added)
+                {
+                    tInverseItem item = new tInverseItem();
+                    item.FromCurrencyCode = ARow.ToCurrencyCode;
+                    item.ToCurrencyCode = ARow.FromCurrencyCode;
+                    item.RateOfExchange = 1 / ARow.RateOfExchange;
+                    item.DateEffective = ARow.DateEffectiveFrom;
+                    lstInverses.Add(item);
+                }
+            }
+            if (lstInverses.Count == 0) return;
+
+            // Now go through our list and check if any items need adding to the data Table
+            // The user may already have put an inverse currency in by hand
+            DateTimeFormatInfo dateTimeFormat =
+                new System.Globalization.CultureInfo(String.Empty, false).DateTimeFormat;
+            DataView dv = new DataView(FMainDS.ADailyExchangeRate);
+            for (int i = 0; i < lstInverses.Count; i++)
+            {
+                tInverseItem item = lstInverses[i];
+                
+                // Does the item exist already?
+                dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}='{5}' AND {6}={7}",
+                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
+                    item.FromCurrencyCode,
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
+                    item.ToCurrencyCode,
+                    ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
+                    item.DateEffective.ToString("d", dateTimeFormat),
+                    ADailyExchangeRateTable.GetRateOfExchangeDBName(),
+                    item.RateOfExchange);
+
+                if (dv.Count == 0)
+                {
+                    DateTime dtNow = DateTime.Now;
+                    int timeEffective = (dtNow.Hour * 60 + dtNow.Minute) * 60 + dtNow.Second;
+
+                    ADailyExchangeRateRow NewRow = FMainDS.ADailyExchangeRate.NewRowTyped();
+                    NewRow.FromCurrencyCode = item.FromCurrencyCode; ;
+                    NewRow.ToCurrencyCode = item.ToCurrencyCode;
+                    NewRow.DateEffectiveFrom = DateTime.Parse(item.DateEffective.ToLongDateString());
+                    NewRow.RateOfExchange = item.RateOfExchange;
+                    while (FMainDS.ADailyExchangeRate.Rows.Find(new object[] {
+                           NewRow.FromCurrencyCode, NewRow.ToCurrencyCode,
+                           NewRow.DateEffectiveFrom.ToString(), timeEffective.ToString()
+                       }) != null)
+                    {
+                        timeEffective++;
+                    }
+                    NewRow.TimeEffectiveFrom = timeEffective;
+
+                    FMainDS.ADailyExchangeRate.Rows.Add(NewRow);
+                }
+            }
+
+            // Now make sure to select the row that was currently selected when we started the Save operation
+            FCurrentRow = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1;
+            grdDetails.SelectRowInGrid(FCurrentRow);
+            ShowDetails(FPreviouslySelectedDetailRow);      // just in case the row did not change
         }
     }
 }

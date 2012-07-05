@@ -395,7 +395,6 @@ namespace {#NAMESPACE}
         
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
-//TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
 
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
@@ -474,6 +473,7 @@ namespace {#NAMESPACE}
                         FMainDS.{#DETAILTABLE}.AcceptChanges();
 
                         // Merge back with data from the Server (eg. for getting Sequence values)
+                        SubmitDT.AcceptChanges();
                         FMainDS.{#DETAILTABLE}.Merge(SubmitDT, false);
 
                         // need to accept the new modification ID
