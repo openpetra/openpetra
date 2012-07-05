@@ -160,13 +160,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_APPLICATION_DUPLICATE_EVENT,
                                     new string[] { FMainDS.PmShortTermApplication[0].StConfirmedOption.ToString() })),
                             ValidationColumn, ValidationControlsData.ValidationControl);
-                		
-	                    // Handle addition to/removal from TVerificationResultCollection.
-	                    // Only add/remove verification result if duplicate found as same field has already been
-	                    // handled in TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual
-	                    VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
-                    }
 
+                        // Handle addition to/removal from TVerificationResultCollection.
+                        // Only add/remove verification result if duplicate found as same field has already been
+                        // handled in TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
                 }
             }
         }

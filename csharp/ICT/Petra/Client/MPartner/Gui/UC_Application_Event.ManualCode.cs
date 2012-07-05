@@ -163,18 +163,18 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             foreach (DataRow ApplicationRow in FMainDS.PmShortTermApplication.Rows)
             {
-            	if (ApplicationRow.RowState != DataRowState.Deleted)
-            	{
-		            EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
-		
-		            if (((EventApplicationRow.ApplicationKey != AApplicationKey)
-		                 || (EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey))
-		                && !EventApplicationRow.IsStConfirmedOptionNull()
-		                && (EventApplicationRow.StConfirmedOption == AEventKey))
-		            {
-		                return true;
-		            }
-            	}
+                if (ApplicationRow.RowState != DataRowState.Deleted)
+                {
+                    EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
+
+                    if (((EventApplicationRow.ApplicationKey != AApplicationKey)
+                         || (EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey))
+                        && !EventApplicationRow.IsStConfirmedOptionNull()
+                        && (EventApplicationRow.StConfirmedOption == AEventKey))
+                    {
+                        return true;
+                    }
+                }
             }
 
             return false;

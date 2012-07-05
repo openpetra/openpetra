@@ -705,9 +705,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-	            ReadString(); // field removed: ShortTermApplicationRow.Option1Code
-	            ReadString(); // field removed: ShortTermApplicationRow.Option2Code
+                ReadString();     // field removed: ShortTermApplicationRow.Option1Code
+                ReadString();     // field removed: ShortTermApplicationRow.Option2Code
             }
+
             ShortTermApplicationRow.FromCongTravelInfo = ReadString();
 
             ShortTermApplicationRow.Arrival = ReadNullableDate();
@@ -720,17 +721,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ShortTermApplicationRow.StApplicationHoldReason = ReadString();
             ShortTermApplicationRow.StApplicationOnHold = ReadBoolean();
             ShortTermApplicationRow.StBasicDeleteFlag = ReadBoolean();
+
             if (APetraVersion.FileMajorPart < 3)
             {
-	             ReadBoolean(); // field removed: ShortTermApplicationRow.StBookingFeeReceived
+                ReadBoolean();      // field removed: ShortTermApplicationRow.StBookingFeeReceived
             }
+
             ShortTermApplicationRow.StOutreachOnlyFlag = ReadBoolean();
             ShortTermApplicationRow.StOutreachSpecialCost = ReadInt32();
             ShortTermApplicationRow.StCngrssSpecialCost = ReadInt32();
 
             if (APetraVersion.FileMajorPart < 3)
             {
-	             ReadString(); // field removed: ShortTermApplicationRow.StComment
+                ReadString();      // field removed: ShortTermApplicationRow.StComment
             }
 
             Int64 Option = ReadInt64();
@@ -747,9 +750,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             ShortTermApplicationRow.StCongressCode = CheckCongressCode(ReadString(), ATransaction);
             ShortTermApplicationRow.StCongressLanguage = ReadString();
+
             if (APetraVersion.FileMajorPart < 3)
             {
-	            ReadString(); // field removed: ShortTermApplicationRow.StCountryPref
+                ReadString();     // field removed: ShortTermApplicationRow.StCountryPref
             }
 
             Int64? StCurrentField = ReadNullableInt64();
@@ -776,7 +780,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 ReadNullableInt64(); // field removed: StOption1
                 ReadNullableInt64(); // field removed: StOption2
-                ReadInt64(); // field removed: ShortTermApplicationRow.StPartyContact 
+                ReadInt64(); // field removed: ShortTermApplicationRow.StPartyContact
                 ReadString(); // field removed: ShortTermApplicationRow.StPartyTogether
             }
 
@@ -789,14 +793,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ReadDecimal(); // field removed: ShortTermApplicationRow.StScholarshipAmount
                 ReadString(); // field removed: ShortTermApplicationRow.StScholarshipApprovedBy
                 ReadString(); // field removed: ShortTermApplicationRow.StScholarshipPeriod
-                ReadNullableDate(); // field removed: ShortTermApplicationRow.StScholarshipReviewDate 
+                ReadNullableDate(); // field removed: ShortTermApplicationRow.StScholarshipReviewDate
             }
 
             ShortTermApplicationRow.StSpecialApplicant = ReadString();
+
             if (APetraVersion.FileMajorPart < 3)
             {
-	            ReadString(); // field removed: ShortTermApplicationRow.StActivityPref
+                ReadString();     // field removed: ShortTermApplicationRow.StActivityPref
             }
+
             ShortTermApplicationRow.ToCongTravelInfo = ReadString();
             ShortTermApplicationRow.ArrivalPointCode = ReadString();
 
@@ -806,8 +812,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (APetraVersion.FileMajorPart < 3)
             {
-	            ReadString(); // field removed: ShortTermApplicationRow.ContactNumber
+                ReadString();     // field removed: ShortTermApplicationRow.ContactNumber
             }
+
             ShortTermApplicationRow.ArrivalDetailsStatus = ReadString();
             ShortTermApplicationRow.ArrivalTransportNeeded = ReadBoolean();
 
@@ -925,7 +932,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ReadApplicationForm(PmGeneralApplicationRow AGeneralApplicationRow, TDBTransaction ATransaction)
         {
-        	// only needed in case of file form version < 3.0.0
+            // only needed in case of file form version < 3.0.0
             ReadString(); // field removed: ApplicationFormRow.FormName
 
             ReadBoolean(); // field removed: ApplicationFormRow.FormDeleteFlag
@@ -991,10 +998,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             GeneralApplicationRow.GenCancelledApp = ReadBoolean();
             GeneralApplicationRow.GenContact1 = ReadString();
             GeneralApplicationRow.GenContact2 = ReadString();
+
             if (APetraVersion.FileMajorPart < 3)
             {
-	            ReadString(); // field removed: GeneralApplicationRow.GenYearProgram
+                ReadString();     // field removed: GeneralApplicationRow.GenYearProgram
             }
+
             GeneralApplicationRow.ApplicationKey = ReadInt32();
             GeneralApplicationRow.RegistrationOffice = ReadInt64();
 
@@ -1259,14 +1268,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ReadBoolean(); // Field removed: PersonalDataRow.GenDriverLicense
                 ReadString(); // Field removed: PersonalDataRow.DrivingLicenseNumber
                 ReadBoolean(); // Field removed: PersonalDataRow.InternalDriverLicense
-                
-            	if (   (   APetraVersion.FileMinorPart == 2
-            	        && APetraVersion.FileBuildPart >= 20)
-            	    || (   APetraVersion.FileMinorPart == 3
-            	        && APetraVersion.FileBuildPart >= 6))
+
+                if (((APetraVersion.FileMinorPart == 2)
+                     && (APetraVersion.FileBuildPart >= 20))
+                    || ((APetraVersion.FileMinorPart == 3)
+                        && (APetraVersion.FileBuildPart >= 6)))
                 {
-                	// blood type added with release 2.2.20 and 2.3.6
-                	PersonalDataRow.BloodType = ReadString();
+                    // blood type added with release 2.2.20 and 2.3.6
+                    PersonalDataRow.BloodType = ReadString();
                 }
             }
             else
@@ -1279,7 +1288,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 PersonalDataRow.BelieverSinceComment = ReadString();
-               	PersonalDataRow.BloodType = ReadString();
+                PersonalDataRow.BloodType = ReadString();
             }
 
             if (!FIgnorePartner)
@@ -1571,7 +1580,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private void ImportUnitVision(TDBTransaction ATransaction)
         {
             // Table um_unit_vision dropped in OpenPetra as no longer needed
-        	
+
             /* VisionAreaName */
             ReadString();
 

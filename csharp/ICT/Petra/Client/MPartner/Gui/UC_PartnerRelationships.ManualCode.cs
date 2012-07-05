@@ -349,7 +349,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.SelectRowInGrid(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
-                
+
                 // Fire OnRecalculateScreenParts event: reset counter in tab header
                 RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
                 RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;

@@ -597,7 +597,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPreviouslySelectedDetailRow = null;
                     grdDetails.SelectRowInGrid(rowIndex, true);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                	ShowDetails(FPreviouslySelectedDetailRow);
+                    ShowDetails(FPreviouslySelectedDetailRow);
                 }
             }
             // delete single selected record from extract
@@ -629,13 +629,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     }
 
                     FPetraUtilsObject.SetChangedFlag();
-                    
+
                     // temporarily reset selected row to avoid interference with validation
                     FPreviouslySelectedDetailRow = null;
                     grdDetails.SelectRowInGrid(rowIndex, true);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                     ShowDetails(FPreviouslySelectedDetailRow);
-
                 }
             }
 

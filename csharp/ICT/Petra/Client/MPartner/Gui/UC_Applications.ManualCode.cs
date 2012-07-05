@@ -145,8 +145,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRowShortTermApp(System.Object sender, EventArgs e)
         {
-   	        // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
-	        FPetraUtilsObject.VerificationResultCollection.Clear();
+            // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
             if (ValidateAllData(true, true))
             {
@@ -194,10 +194,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRowLongTermApp(System.Object sender, EventArgs e)
         {
-   	        // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
-	        FPetraUtilsObject.VerificationResultCollection.Clear();
+            // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
-	        if (ValidateAllData(true, true))
+            if (ValidateAllData(true, true))
             {
                 // we create the table locally, no dataset
                 IndividualDataTDSPmGeneralApplicationRow NewRowGeneralApp = FMainDS.PmGeneralApplication.NewRowTyped(true);
@@ -276,7 +276,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SelectRowInGrid(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-	            ShowDetails(FPreviouslySelectedDetailRow);
+                ShowDetails(FPreviouslySelectedDetailRow);
 
                 DoRecalculateScreenParts();
 
@@ -511,9 +511,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (grdDetails.Focused)
             {
-	   	        // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
-		        FPetraUtilsObject.VerificationResultCollection.Clear();
-		        
+                // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+                FPetraUtilsObject.VerificationResultCollection.Clear();
+
                 if (!ValidateAllData(true, true))
                 {
                     e.Cancel = true;
@@ -619,7 +619,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         || (OuterControl == this.Parent.Parent))
                     {
                         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                              this.GetType());
+                            this.GetType());
                     }
                     else
                     {

@@ -463,7 +463,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.SelectRowInGrid(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
-                
+
                 // reset counter in tab header
                 RecalculateTabHeaderCounter();
 
