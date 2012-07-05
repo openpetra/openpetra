@@ -52,7 +52,15 @@ namespace Ict.Tools.DataDumpPetra2
 
             foreach (TTableField field in oldTable.grpTableField)
             {
-                sw.Write("        " + field.strName + " ");
+                if (field.strName == "s_modification_id_c")
+                {
+                    // improve readability, safe space
+                    sw.Write(" ? ");
+                }
+                else
+                {
+                    sw.Write(" " + field.strName + " ");
+                }
             }
 
             sw.WriteLine(".");
@@ -100,8 +108,7 @@ namespace Ict.Tools.DataDumpPetra2
                 return;
             }
 
-            string OutputFile =
-                TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "fulldump23.p";
+            string OutputFile = "fulldump23.p";
 
             System.Console.WriteLine("Writing file to {0}...", OutputFile);
             StreamWriter progressWriter = new StreamWriter(OutputFile);
@@ -125,7 +132,7 @@ namespace Ict.Tools.DataDumpPetra2
             DumpSequences(ref progressWriter);
             progressWriter.WriteLine();
             progressWriter.Close();
-            System.Console.WriteLine("Success: file written: {0}", OutputFile);
+            System.Console.WriteLine("Success: file written: {0}", Path.GetFullPath(OutputFile));
         }
     }
 }

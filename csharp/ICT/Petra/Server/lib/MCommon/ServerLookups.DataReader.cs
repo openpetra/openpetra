@@ -150,10 +150,6 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = PMailingAccess.LoadAll(ReadTransaction);
                 }
-                else if (ATablename == PtAppFormTypesTable.GetTableDBName())
-                {
-                    tempTable = PtAppFormTypesAccess.LoadAll(ReadTransaction);
-                }
                 else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                 {
                     tempTable = PmDocumentTypeAccess.LoadAll(ReadTransaction);
@@ -327,6 +323,12 @@ namespace Ict.Petra.Server.MCommon.DataReader
                         if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
+                            // mark dependent lists for needing to be refreshed since there was a change in base list
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheablePersonTablesEnum.EventApplicationTypeList.ToString());
+                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                                TCacheablePersonTablesEnum.FieldApplicationTypeList.ToString());
+
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         else
@@ -337,18 +339,6 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == PMailingTable.GetTableDBName())
                     {
                         if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
-                    }
-                    else if (ATablename == PtAppFormTypesTable.GetTableDBName())
-                    {
-                        if (PtAppFormTypesAccess.SubmitChanges((PtAppFormTypesTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;

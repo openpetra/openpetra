@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,6 +108,17 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             // set local settings for client
             Catalog.Init(LanguageCode, CultureCode);
+        }
+
+        /// <summary>
+        /// Event is fired when the Launchpad Translation Platform LinkLabel is 'clicked'.
+        /// </summary>
+        /// <param name="ASender">The Launchpad Translation Platform LinkLabel.</param>
+        /// <param name="e">Not evaluated.</param>
+        /// <returns>void</returns>
+        private void LaunchpadLinkClicked(object ASender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://translations.launchpad.net/openpetraorg/trunk/+pots/template1");
         }
     }
 }

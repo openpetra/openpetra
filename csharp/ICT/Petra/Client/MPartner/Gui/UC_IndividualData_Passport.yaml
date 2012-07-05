@@ -21,8 +21,8 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
-        btnNew: {Action=actNew}
-        btnDelete: {Action=actDelete}
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             TableName: PmPassportDetails
@@ -57,6 +57,7 @@ RootNode:
         btnPassportNameHelp: {NoLabel=true}
             Action: actPassportNameHelp
             Help: Passport Name explained
+            Width: 50
         txtPlaceOfBirth:{Label=Place of Birth, DataField=PmPassportDetails.PlaceOfBirth, Width=200}
         dtpDateOfBirth: {Label=Date of Birth, DataField=PmPassportDetails.PassportDob, Enabled=false}
         cmbPassportNationality: {Label=Passport Nationality, DataField=PmPassportDetails.PassportNationalityCode, List=PassportNationalityCodeList, Width=300}

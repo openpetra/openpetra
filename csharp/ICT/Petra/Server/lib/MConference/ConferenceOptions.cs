@@ -994,7 +994,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             {
                 PmShortTermApplicationTable ShortTermTable;
 
-                ShortTermTable = PmShortTermApplicationAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
+                ShortTermTable = PmShortTermApplicationAccess.LoadViaPPerson(APartnerKey, ReadTransaction);
 
                 foreach (PmShortTermApplicationRow Row in ShortTermTable.Rows)
                 {

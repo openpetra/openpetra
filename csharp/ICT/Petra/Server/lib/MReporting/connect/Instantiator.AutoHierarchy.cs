@@ -210,8 +210,6 @@ namespace Ict.Petra.Server.MReporting.Instantiator
             return null; // make sure that the TMReporting object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'LogicConnectors' subnamespace contains further subnamespaces.</summary>
         public ILogicConnectorsNamespace LogicConnectors
         {
