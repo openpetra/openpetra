@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -145,11 +145,17 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
 
                 TVerificationResultCollection VerificationResult;
+
+                int shorttermApplicationsCount = MainDS.PmShortTermApplication.Count;
+                int attendeeCount = MainDS.PcAttendee.Count;
+
+                MainDS.ThrowAwayAfterSubmitChanges = true;
+
                 ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
                 TLogging.Log(String.Format(
                         "RefreshAttendees: finished. OutreachPrefix: {0}, {1} Shortterm Applications, {2} Attendees",
-                        OutreachPrefix, MainDS.PmShortTermApplication.Count, MainDS.PcAttendee.Count));
+                        OutreachPrefix, shorttermApplicationsCount, attendeeCount));
             }
         }
 
