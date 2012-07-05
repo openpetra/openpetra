@@ -151,6 +151,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SelectRowInGrid(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+                
                 DoRecalculateScreenParts();
 
                 if (grdDetails.Rows.Count <= 1)

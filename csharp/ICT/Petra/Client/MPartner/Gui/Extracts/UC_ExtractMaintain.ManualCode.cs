@@ -105,6 +105,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
             }
             else
             {
@@ -587,10 +589,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    int rowIndex = CurrentRowIndex();
+                    int rowIndex = grdDetails.SelectedRowIndex();
                     FPreviouslySelectedDetailRow.Delete();
                     FPetraUtilsObject.SetChangedFlag();
-                    SelectByIndex(rowIndex);
+
+                    // temporarily reset selected row to avoid interference with validation
+                    FPreviouslySelectedDetailRow = null;
+                    grdDetails.SelectRowInGrid(rowIndex, true);
+                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                	ShowDetails(FPreviouslySelectedDetailRow);
                 }
             }
             // delete single selected record from extract
@@ -602,7 +609,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
                     DataRowView RowView;
-                    int rowIndex = CurrentRowIndex();
+                    int rowIndex = grdDetails.SelectedRowIndex();
 
                     // build a collection of objects to be deleted before actually deleting them (as otherwise
                     // indexes may not be valid any longer)
@@ -622,7 +629,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     }
 
                     FPetraUtilsObject.SetChangedFlag();
-                    SelectByIndex(rowIndex);
+                    
+                    // temporarily reset selected row to avoid interference with validation
+                    FPreviouslySelectedDetailRow = null;
+                    grdDetails.SelectRowInGrid(rowIndex, true);
+                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    ShowDetails(FPreviouslySelectedDetailRow);
+
                 }
             }
 
@@ -632,47 +645,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 btnEdit.Enabled = false;
                 btnDelete.Enabled = false;
                 pnlDetails.Visible = false;
-            }
-        }
-
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-
-                // scroll to row
-                grdDetails.ShowCell(new SourceGrid.Position(rowIndex, 0), true);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -702,8 +674,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // reset grid selection as it is multiselect so the one record can be selected
             grdDetails.Selection.ResetSelection(true);
 
-            // select row with given index
-            SelectByIndex(Index);
+            // temporarily reset selected row to avoid interference with validation
+            FPreviouslySelectedDetailRow = null;
+            grdDetails.SelectRowInGrid(Index, true);
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
         }
 
         /// <summary>

@@ -275,6 +275,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPreviouslySelectedDetailRow = null;
                     grdDetails.SelectRowInGrid(rowIndex, true);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	                ShowDetails(FPreviouslySelectedDetailRow);
                 }
             }
             // delete single selected record from extract
@@ -311,6 +312,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPreviouslySelectedDetailRow = null;
                     grdDetails.SelectRowInGrid(rowIndex, true);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	                ShowDetails(FPreviouslySelectedDetailRow);
                 }
             }
 
@@ -342,6 +344,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             // data can have changed completely, so easiest for now is to select first row
             grdDetails.SelectRowInGrid(1, true);
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
 
             // enable/disable buttons
             UpdateButtonStatus();
