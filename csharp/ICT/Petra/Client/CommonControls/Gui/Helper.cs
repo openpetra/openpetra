@@ -24,7 +24,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Ict.Petra.Client.CommonControls.Gui
+namespace Ict.Petra.Client.CommonControls
 {
     /// <summary>
     /// Contains Extension Methods that add functionality to Controls.

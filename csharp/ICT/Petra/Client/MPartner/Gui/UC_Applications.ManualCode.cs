@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -34,7 +34,6 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Client.CommonControls;
-using Ict.Petra.Client.CommonControls.Gui;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
