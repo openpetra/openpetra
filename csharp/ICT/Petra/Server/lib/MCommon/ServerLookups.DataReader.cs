@@ -150,10 +150,6 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 {
                     tempTable = PMailingAccess.LoadAll(ReadTransaction);
                 }
-                else if (ATablename == PtAppFormTypesTable.GetTableDBName())
-                {
-                    tempTable = PtAppFormTypesAccess.LoadAll(ReadTransaction);
-                }
                 else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                 {
                     tempTable = PmDocumentTypeAccess.LoadAll(ReadTransaction);
@@ -343,18 +339,6 @@ namespace Ict.Petra.Server.MCommon.DataReader
                     else if (ATablename == PMailingTable.GetTableDBName())
                     {
                         if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
-                    }
-                    else if (ATablename == PtAppFormTypesTable.GetTableDBName())
-                    {
-                        if (PtAppFormTypesAccess.SubmitChanges((PtAppFormTypesTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;

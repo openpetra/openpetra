@@ -306,12 +306,8 @@ OpenPetra:
                         QualificationLevel: {Label=Setup Qualification Levels, Description=Maintain Qualification Levels, ActionOpenScreen=TFrmQualificationLevelSetup}
                         SkillCategory: {Label=Setup Skill Categories, Description=Maintain Skill Categories, ActionOpenScreen=TFrmSkillCategorySetup}
                         SkillLevel: {Label=Setup Skill Levels, Description=Maintain Skill Levels, ActionOpenScreen=TFrmSkillLevelSetup} 						
-                        ValuableItem: {Label=Setup Valuable Items, Description=Maintain Valuable Items, ActionOpenScreen=TFrmValuableItemSetup}
-                        VisionArea: {Label=Setup Vision Areas, Description=Maintain Vision Areas, ActionOpenScreen=TFrmVisionAreaSetup} 
-                        VisionLevel: {Label=Setup Vision Levels, Description=Maintain Vision Levels, ActionOpenScreen=TFrmVisionLevelSetup}
                     Application-related:
                         ApplicantStatus: {Label=Setup Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
-                        ApplicationForm: {Label=Setup Application Forms, Description=Maintain Application Forms, ActionOpenScreen=TFrmApplicationFormSetup}
                         ApplicationType: {Label=Setup Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
                         ArrivalDeparturePoint: {Label=Setup Arrival and Departure Points, Description=Maintain Arrival and Departure Points, ActionOpenScreen=TFrmArrivalDeparturePointSetup}
                         Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}

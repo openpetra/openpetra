@@ -1355,8 +1355,7 @@ namespace Ict.Common.Controls
                 }
             }
 
-            this.Selection.ResetSelection(false);
-            this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighed (overcome buggy behaviour of SourceGrid)
+            this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighted (overcome buggy behaviour of SourceGrid)
             this.Selection.SelectRow(ARowNumberInGrid, true);
 
             // scroll to the row

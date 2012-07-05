@@ -34,6 +34,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonControls.Gui;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
@@ -144,6 +145,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRowShortTermApp(System.Object sender, EventArgs e)
         {
+            // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
             if (ValidateAllData(true, true))
             {
                 // we create the table locally, no dataset
@@ -157,7 +161,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 NewRowGeneralApp.ApplicationForEventOrField = Catalog.GetString("Event");
 
                 //TODO temp, needs to be changed
-                NewRowGeneralApp.AppTypeName = "TEENSTREET";
+                NewRowGeneralApp.AppTypeName = "CONFERENCE";
                 NewRowGeneralApp.OldLink = "0";
                 NewRowGeneralApp.GenApplicantType = "Participant";
 
@@ -179,8 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.Refresh();
                 SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
 
-                pnlApplicationField.Visible = false;
-                pnlApplicationEvent.Visible = true;
+                ShowDetails(NewRowGeneralApp);
             }
         }
 
@@ -191,6 +194,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRowLongTermApp(System.Object sender, EventArgs e)
         {
+            // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
             if (ValidateAllData(true, true))
             {
                 // we create the table locally, no dataset
@@ -225,8 +231,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grdDetails.Refresh();
                 SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
 
-                pnlApplicationField.Visible = true;
-                pnlApplicationEvent.Visible = false;
+                ShowDetails(NewRowGeneralApp);
             }
         }
 
@@ -246,7 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete the record for {0} {1}).\n\nDo you really want to delete it?"),
+                            "You have choosen to delete the record for {0} {1}.\n\nDo you really want to delete it?"),
                         FPreviouslySelectedDetailRow.ApplicationForEventOrField,
                         FPreviouslySelectedDetailRow.EventOrFieldName),
                     Catalog.GetString("Confirm Delete"),
@@ -271,6 +276,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SelectRowInGrid(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
 
                 DoRecalculateScreenParts();
 
@@ -505,6 +511,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (grdDetails.Focused)
             {
+                // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+                FPetraUtilsObject.VerificationResultCollection.Clear();
+
                 if (!ValidateAllData(true, true))
                 {
                     e.Cancel = true;
@@ -572,7 +581,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             IndividualDataTDSPmGeneralApplicationRow CurrentRow;
             object OuterControl;
 
-            CurrentRow = GetSelectedDetailRow();
+            CurrentRow = FPreviouslySelectedDetailRow;
+            //CurrentRow = GetSelectedDetailRow();
 
             if (CurrentRow != null)
             {
@@ -609,7 +619,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         || (OuterControl == this.Parent.Parent))
                     {
                         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+                            this.GetType());
                     }
                     else
                     {

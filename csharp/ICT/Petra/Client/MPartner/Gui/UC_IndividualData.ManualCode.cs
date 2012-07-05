@@ -1122,7 +1122,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (ASender == llbOverview)
             {
-                ucoSummaryData.Parent.BringToFront();
+                ucoSummaryData.BringToFront();
                 llbOverview.BackColor = PanelHelperBackGround;
             }
             else if (ASender == llbSpecialNeeds)
