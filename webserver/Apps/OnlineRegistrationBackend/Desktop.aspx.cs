@@ -930,7 +930,7 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
                     this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
-                    this.Response.AddHeader("Content-Disposition", "attachment; filename=Badge_" + row.FirstName + "_" + row.FamilyName + ".pdf");
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=Badge_" + (row.FirstName + "_" + row.FamilyName).Replace(".", "_") + ".pdf");
                     this.Response.WriteFile(PDFPath);
                     this.Response.Flush();
                     File.Delete(PDFPath);
