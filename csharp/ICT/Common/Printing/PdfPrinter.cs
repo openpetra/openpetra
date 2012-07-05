@@ -141,7 +141,8 @@ namespace Ict.Common.Printing
             {
                 // TODO it seems negative values have no effect?
                 Font gFont = GetFont(AFont);
-                ReturnValue = new XFont(gFont.FontFamily, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, null);
+                XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
+                ReturnValue = new XFont(gFont.FontFamily, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, options);
             }
 
             return ReturnValue;
