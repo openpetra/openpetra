@@ -116,18 +116,6 @@ public class TOpenPetraOrg : WebService
             }
         }
 
-        // create a database connection for each user
-        if (Ict.Common.DB.DBAccess.GDBAccessObj == null)
-        {
-            // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
-            TheServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
-
-            // disconnect normal users after 3 hours of inactivity
-            TheServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
-
-            TheServerManager.EstablishDBConnection();
-        }
-
         return true;
     }
 
@@ -172,6 +160,17 @@ public class TOpenPetraOrg : WebService
 
     private TDataBase GetDatabaseFromSession()
     {
+        if (Session["DBAccessObj"] == null)
+        {
+            // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
+            TheServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
+
+            // disconnect normal users after 3 hours of inactivity
+            TheServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
+
+            TheServerManager.EstablishDBConnection();
+        }
+
         return (TDataBase)Session["DBAccessObj"];
     }
 
