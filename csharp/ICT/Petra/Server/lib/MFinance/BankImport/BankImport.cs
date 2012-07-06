@@ -274,7 +274,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     {
                         // create new match
                         AEpMatchRow tempRow = ResultDataset.AEpMatch.NewRowTyped(true);
-                        tempRow.EpMatchKey = (ResultDataset.AEpMatch.Count + 1) * -1;
+                        tempRow.EpMatchKey = (ResultDataset.AEpMatch.Count + MatchesToAddLater.Count + 1) * -1;
                         tempRow.Detail = 0;
                         tempRow.MatchText = row.MatchText;
                         tempRow.LedgerNumber = ALedgerNumber;
