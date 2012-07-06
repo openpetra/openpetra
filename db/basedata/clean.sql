@@ -203,7 +203,6 @@ DELETE FROM pt_passport_type;
 DELETE FROM pm_document_type;
 DELETE FROM pm_document_category;
 DELETE FROM pt_travel_type;
-DELETE FROM pt_party_type;
 DELETE FROM pt_congress_code;
 DELETE FROM pt_outreach_preference_level;
 DELETE FROM pt_arrival_point;

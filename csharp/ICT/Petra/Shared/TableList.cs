@@ -151,7 +151,6 @@ namespace Ict.Petra.Shared
             list.Add("pt_arrival_point");
             list.Add("pt_outreach_preference_level");
             list.Add("pt_congress_code");
-            list.Add("pt_party_type");
             list.Add("pt_travel_type");
             list.Add("pm_document_category");
             list.Add("pm_document_type");

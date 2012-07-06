@@ -14471,61 +14471,6 @@
                 thisFields="pt_code_c"/>
     <!-- Explicit Indexes on table pt_congress_code  -->
   </table>
-  <table name="pt_party_type"
-         descr="This table contains the codes indicating whether groups should be together and for how long. "
-         area="Petra Data"
-         label="Party Type"
-         dumpname="pt_pa_ty"
-         group="personnel">
-    <tablefield name="pt_code_c"
-                type="varchar"
-                descr="This code indicates the instructions for handling groups."
-                format="X(16)"
-                label="Party Type Code"
-                columnlabel="Party Type Code"
-                help="This code indicates the instructions for handling groups."
-                notnull="yes">
-      <trigger type="assign"
-               procname="pe1270a.p"
-               overrideble="no"
-               usecrc="yes"/>
-    </tablefield>
-    <tablefield name="pt_description_c"
-                type="varchar"
-                descr="This describes the party types codes.."
-                format="X(40)"
-                label="Description"
-                columnlabel="Description"
-                help="This describes the party types codes."/>
-    <tablefield name="pt_unassignable_flag_l"
-                type="bit"
-                descr="Indicates if this code can still be assigned?"
-                format="Yes/No"
-                label="Unassignable?"
-                columnlabel="Unassignable?"
-                help="Indicates if this code can still be assigned?"
-                initial="no"/>
-    <tablefield name="pt_unassignable_date_d"
-                type="date"
-                descr="Date from which this code was made unassignable."
-                format="99/99/9999"
-                label="Date"
-                columnlabel="Date"
-                help="Date from which this code was made unassignable."/>
-    <tablefield name="pt_deletable_flag_l"
-                type="bit"
-                descr="Indicates if a record can be deleted."
-                format="Yes/No"
-                label="Deletable"
-                columnlabel="Deletable"
-                help="Indicates if a record can be deleted."
-                initial="yes"/>
-    <!-- Constraints on table pt_party_type -->
-    <primarykey name="pt_party_type_pk"
-                descr=""
-                thisFields="pt_code_c"/>
-    <!-- Explicit Indexes on table pt_party_type  -->
-  </table>
   <table name="pt_travel_type"
          descr="This table contains the codes that indicate the mode of travel being used. "
          area="Petra Data"

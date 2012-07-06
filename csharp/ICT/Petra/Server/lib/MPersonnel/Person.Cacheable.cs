@@ -241,12 +241,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
-                        case TCacheablePersonTablesEnum.PartyTypeList:
-                        {
-                            DataTable TmpTable = PtPartyTypeAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheablePersonTablesEnum.PassportTypeList:
                         {
                             DataTable TmpTable = PtPassportTypeAccess.LoadAll(ReadTransaction);
@@ -588,23 +582,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             }
 
                             break;
-                        case TCacheablePersonTablesEnum.PartyTypeList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                ValidatePartyTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidatePartyTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-
-                                if (!AVerificationResult.HasCriticalErrors)
-                                {
-                                    if (PtPartyTypeAccess.SubmitChanges((PtPartyTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
                         case TCacheablePersonTablesEnum.PassportTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
@@ -825,10 +802,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
         partial void ValidateLeadershipRatingList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLeadershipRatingListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePartyTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePartyTypeListManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidatePassportTypeList(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);

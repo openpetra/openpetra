@@ -142,12 +142,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 return true;
             }
 
-            if (StringHelper.IsSame(f, "GetPartyType"))
-            {
-                value = new TVariant(GetPartyType(ops[1].ToString()));
-                return true;
-            }
-
             if (StringHelper.IsSame(f, "GetPartnerContact"))
             {
                 value = new TVariant(GetPartnerContact(ops[1].ToInt64()));
@@ -1053,24 +1047,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             }
 
             return PartnerContact;
-        }
-
-        private String GetPartyType(String ATypeKey)
-        {
-            PtPartyTypeTable PartyTable;
-            String PartyType = "";
-
-            if (ATypeKey != "")
-            {
-                PartyTable = PtPartyTypeAccess.LoadByPrimaryKey(ATypeKey, situation.GetDatabaseConnection().Transaction);
-
-                if (PartyTable.Rows.Count > 0)
-                {
-                    PartyType = ATypeKey + " " + ((PtPartyTypeRow)PartyTable.Rows[0]).Description;
-                }
-            }
-
-            return PartyType;
         }
 
         /// <summary>
