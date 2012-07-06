@@ -460,7 +460,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // temporarily reset selected row to avoid interference with validation
                 FPreviouslySelectedDetailRow = null;
+                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
                 grdDetails.SelectRowInGrid(rowIndex, true);
+                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
 
