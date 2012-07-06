@@ -96,7 +96,7 @@ if (!ARow.Is{#COLUMNNAME}Null())
     ValidationColumn = ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id];
 
     if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-{
+    {
         {#COLUMNSPECIFICCHECK}
 
         // Handle addition to/removal from TVerificationResultCollection
@@ -117,6 +117,11 @@ VerificationResult = TStringChecks.StringLengthLesserOrEqual(ARow.{#COLUMNNAME},
 {##CHECKNUMBERRANGE}
 VerificationResult = TNumericalChecks.IsNumberPrecisionNotExceeded(ARow.{#COLUMNNAME}, {#NUMBEROFDECIMALDIGITS}, {#NUMBEROFFRACTIONALDIGITS},
     ValidationControlsData.ValidationControlLabel,
+    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+{##CHECKEMPTYDATE}
+VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.{#COLUMNNAME},
+    ValidationControlsData.ValidationControlLabel, true,
     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
 {##CHECKGENERALNOTNULL}

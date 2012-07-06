@@ -70,7 +70,13 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     {
                         ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKEMPTYSTRING");
                         validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
-                        validateColumnTemplate.SetCodelet("COLUMNLENGTH", col.iLength.ToString());
+
+                        columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
+                    }
+                    else if (col.GetDotNetType().Contains("DateTime"))
+                    {
+                        ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKEMPTYDATE");
+                        validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
                     }
