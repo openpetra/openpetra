@@ -92,7 +92,7 @@ public class TOpenPetraOrg : WebService
 
     /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
     /// it will be called automatically by Login</summary>
-    [WebMethod]
+    [WebMethod(EnableSession = true)]
     public bool InitServer()
     {
         if (TheServerManager == null)
@@ -160,33 +160,41 @@ public class TOpenPetraOrg : WebService
 
     private TDataBase GetDatabaseFromSession()
     {
-        if (Session["DBAccessObj"] == null)
+        if (HttpContext.Current.Session["DBAccessObj"] == null)
         {
-            // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
-            TheServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
+            if (TheServerManager == null)
+            {
+                TLogging.Log("GetDatabaseFromSession : TheServerManager is null");
+                InitServer();
+            }
+            else
+            {
+                // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
+                TheServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
 
-            // disconnect normal users after 3 hours of inactivity
-            TheServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
+                // disconnect normal users after 3 hours of inactivity
+                TheServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
 
-            TheServerManager.EstablishDBConnection();
+                TheServerManager.EstablishDBConnection();
+            }
         }
 
-        return (TDataBase)Session["DBAccessObj"];
+        return (TDataBase)HttpContext.Current.Session["DBAccessObj"];
     }
 
     private void SetDatabaseForSession(TDataBase database)
     {
-        Session["DBAccessObj"] = database;
+        HttpContext.Current.Session["DBAccessObj"] = database;
     }
 
     private TPetraPrincipal GetUserInfoFromSession()
     {
-        return (TPetraPrincipal)Session["UserInfo"];
+        return (TPetraPrincipal)HttpContext.Current.Session["UserInfo"];
     }
 
     private void SetUserInfoForSession(TPetraPrincipal userinfo)
     {
-        Session["UserInfo"] = userinfo;
+        HttpContext.Current.Session["UserInfo"] = userinfo;
     }
 
     /// <summary>check if the user has logged in successfully</summary>

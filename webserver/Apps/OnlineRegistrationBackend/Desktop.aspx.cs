@@ -124,6 +124,11 @@ namespace Ict.Petra.WebServer.MConference
                 return;
             }
 
+            if (TLogging.DebugLevel > 1)
+            {
+                TLogging.Log("desktop constructor userid " + UserInfo.GUserInfo.UserID);
+            }
+
             EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode");
             EventPartnerKey = TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey");
 
