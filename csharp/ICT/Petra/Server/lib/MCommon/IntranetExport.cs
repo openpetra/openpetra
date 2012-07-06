@@ -64,8 +64,12 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             public String LastName;
             public String Email;
             public String Class;
+            public Boolean Anonymous;
+            public string Telephone;
+            public String Address;
         }
 
+        private static SortedList<Int64, PartnerDetails> DonorList = new SortedList<Int64, PartnerDetails>();
         private static SortedList<Int64, PartnerDetails> RecipientList = new SortedList<Int64, PartnerDetails>();
 
         private class PersonRec
@@ -122,6 +126,79 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             {
                 FGetLocationRowDelegate = value;
             }
+        }
+
+        private static String PutDate(object DateField)
+        {
+            String ret = "";
+            if (DateField.GetType() != typeof(System.DBNull))
+            {
+                DateTime DateOrNull = (DateTime)DateField;
+                if (DateOrNull.Year > 1) // When a DateTime is not initialised, it's 01/01/0001
+                {
+                    ret = DateOrNull.ToString(ExportDateFormat);
+                }
+            }
+
+            return ret;
+        }
+
+        private static PartnerDetails GetDonor(Int64 APartnerKey)
+        {
+            if (DonorList.ContainsKey(APartnerKey))
+            {
+                return DonorList[APartnerKey];
+            }
+
+            PartnerDetails Ret = new PartnerDetails();
+            PPartnerTable PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, FTransaction);
+            if (PartnerTbl.Rows.Count > 0)
+            {
+                PPartnerRow PartnerRow = PartnerTbl[0];
+
+                Ret.LastName = PartnerRow.PartnerShortName;
+                Ret.Anonymous = PartnerRow.AnonymousDonor;
+
+                if (PartnerRow.PartnerClass == "PERSON")
+                {
+                    PPersonTable PersonTbl = PPersonAccess.LoadByPrimaryKey(APartnerKey, FTransaction);
+                    if (PersonTbl.Rows.Count > 0)
+                    {
+                        PPersonRow PersonRow = PersonTbl[0];
+                        Ret.FirstName = PersonRow.FirstName;
+                        Ret.LastName = PersonRow.FamilyName;
+                        Ret.Class = "PERSON";
+                    }
+                }
+
+                if (PartnerRow.PartnerClass == "FAMILY")
+                {
+                    PFamilyTable FamilyTbl = PFamilyAccess.LoadByPrimaryKey(APartnerKey, FTransaction);
+                    if (FamilyTbl.Rows.Count > 0)
+                    {
+                        PFamilyRow FamilyRow = FamilyTbl[0];
+                        Ret.FirstName = FamilyRow.FirstName;
+                        Ret.LastName = FamilyRow.FamilyName;
+                        Ret.Class = "FAMILY";
+                    }
+                }
+
+                PPartnerLocationRow PartnerLocationRow;
+                TLocationPK LocationKey = GetLocationRowDelegate(APartnerKey, out PartnerLocationRow);
+                if (LocationKey.LocationKey != -1)
+                {
+                    Ret.Email = PartnerLocationRow.EmailAddress;
+                    Ret.Telephone = PartnerLocationRow.TelephoneNumber;
+                    PLocationTable LocationTbl = PLocationAccess.LoadByPrimaryKey(PartnerLocationRow.SiteKey, PartnerLocationRow.LocationKey, FTransaction);
+                    if (LocationTbl.Rows.Count > 0)
+                    {
+                        PLocationRow LocationRow = LocationTbl[0];
+                        Ret.Address = Calculations.DetermineLocationString(LocationRow, Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                    }
+                }
+            }
+            DonorList.Add(APartnerKey, Ret);
+            return Ret;
         }
 
         private static PartnerDetails GetRecipient(Int64 APartnerKey)
@@ -302,6 +379,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                         RecipientFund = RecipientKey;
                     }
 
+                    GetDonor (Convert.ToInt32(Row["DonorKey"])); // This adds the Donor to my list if it's not already present.
                     GetRecipient(RecipientKey); // This adds the recipient to my list if it's not already present.
 
                     decimal GIFFee;
@@ -322,7 +400,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                         Row["BaseCurrency"],        //  8
                         Row["IntlAmount"],          //  9
                         Row["IntlCurrency"],        // 10
-                        Convert.ToDateTime(Row["EffectiveDate"]).ToString(ExportDateFormat),       // 11
+                        PutDate(Row["EffectiveDate"]),// 11
                         Batch.LedgerNumber,         // 12
                         Row["BatchNumber"],         // 13
                         Row["TransactionNumber"],   // 14
@@ -340,6 +418,12 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 }
             }
 
+            foreach (Int64 PartnerKey in DonorList.Keys)
+            {
+                PartnerDetails Row = DonorList[PartnerKey];
+                sw1.WriteLine(String.Format("\"{0}\",\"{1}\",{2:D10},\"{3}\",\"{4}\",{5},{6},{7}", 
+                    Row.FirstName, Row.LastName, PartnerKey, Row.Email, Row.Address, Row.Telephone, Row.Anonymous?"true":"false", Row.Class));
+            }
             sw1.Close();
             sw2.Close();
 
@@ -477,8 +561,8 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
 
                 "FROM PUB_pm_staff_data LEFT JOIN PUB_p_person ON PUB_pm_staff_data.p_partner_key_n = PUB_p_person.p_partner_key_n " +
                 "LEFT JOIN PUB_p_partner_location ON (PUB_pm_staff_data.p_partner_key_n = PUB_p_partner_location.p_partner_key_n) " +
-                "WHERE (PUB_p_partner_location.p_date_good_until_d = NULL OR PUB_p_partner_location.p_date_good_until_d > NOW()) " +
-                "AND PUB_pm_staff_data.pm_end_of_commitment_d = NULL OR PUB_pm_staff_data.pm_end_of_commitment_d > NOW();"; 
+                "WHERE (PUB_p_partner_location.p_date_good_until_d IS NULL OR PUB_p_partner_location.p_date_good_until_d > NOW()) " +
+                "AND PUB_pm_staff_data.pm_end_of_commitment_d IS NULL OR PUB_pm_staff_data.pm_end_of_commitment_d > NOW();"; 
 
             DataSet StaffPersonDS = DBAccess.GDBAccessObj.Select(SqlQuery, "StaffPersonTbl", FTransaction);
 
@@ -502,24 +586,10 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 }
 
                 // person_key,role,field_key,start_date,end_date,assistant
-
-                String StartDate = "";
-                String EndDate = "";
-
-                if (Row["start_date"] != null)
-                {
-                    StartDate = ((DateTime)Row["start_date"]).ToString(ExportDateFormat);
-                }
-
-                if (Row["end_date"] != null)
-                {
-                    EndDate = ((DateTime)Row["end_date"]).ToString(ExportDateFormat);
-                }
-
                 Int64 PersonKey = Convert.ToInt64(Row["person_key"]);
 
                 sw.WriteLine(String.Format("{0:D10},\"{1}\",{2:D10},\"{3}\",\"{4}\",FALSE",
-                    PersonKey, Role, Convert.ToInt64(Row["field_key"]), StartDate, EndDate));
+                    PersonKey, Role, Convert.ToInt64(Row["field_key"]), PutDate(Row["start_date"]), PutDate(Row["end_date"])));
 
                 // Produce a unique row in my temporary list for person.csv and email.csv.
                 if (!PersonnelList.ContainsKey(PersonKey))
@@ -535,7 +605,10 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                     PersonRow.PreferredName=Row["cPreferredName"].ToString();
                     PersonRow.FamilyKey    = Convert.ToInt64(Row["dFamilyKey"]);
                     PersonRow.HomeOffice   = Convert.ToInt64(Row["dHomeOffice"]);
-                    PersonRow.DateOfBirth  = (DateTime)Row["dtBirthDate"];
+                    if (Row["dtBirthDate"].GetType() != typeof (System.DBNull))
+                    {
+                        PersonRow.DateOfBirth  = (DateTime)Row["dtBirthDate"];
+                    }
                     PersonRow.EmailAddress = Row["cEmailAddress"].ToString();
                     PersonRow.LocationType = Row["cLocationType"].ToString();
 
@@ -551,15 +624,10 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             foreach(Int64 PersonKey in PersonnelList.Keys)
             {
                 PersonRec PersonRow = PersonnelList[PersonKey];
-                String DateOfBirth = "";
-                if (PersonRow.DateOfBirth != null)
-                {
-                    DateOfBirth = PersonRow.DateOfBirth.ToString(ExportDateFormat);
-                }
                 sw.WriteLine(String.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",{8:D10},{9:D10},{10:D10},\"{11}\"",
                     PersonRow.Title, PersonRow.FirstName, PersonRow.MiddleName, PersonRow.LastName,
                     PersonRow.Academic, PersonRow.Decorations, PersonRow.Gender, PersonRow.PreferredName, 
-                    PersonKey, PersonRow.FamilyKey, PersonRow.HomeOffice, DateOfBirth
+                    PersonKey, PersonRow.FamilyKey, PersonRow.HomeOffice, PutDate(PersonRow.DateOfBirth)
                     ));
             }
             sw.Close();
@@ -614,6 +682,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// <param name="APswd"></param>
         /// <param name="ADaySpan"></param>
         /// <param name="AOptionalMetadata"></param>
+        /// <param name="ReplyToEmail"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static String ExportToFile(Boolean AExportDonationData, Boolean AExportFieldData, Boolean AExportPersonData,
@@ -674,6 +743,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+                DonorList.Clear();
                 RecipientList.Clear();  // These lists are static so they'll stick around for ever,
                 FZipFileNames.Clear();   // but I don't need to keep the data which is taking up memory.
             }

@@ -458,8 +458,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedGridRow.Length >= 1)
             {
                 Object Cell = SelectedGridRow[0]["p_partner_key_n"];
-
-                if (Cell.GetType() == typeof(Decimal))
+//              System.Type CellType = Cell.GetType();
+                if (Cell.GetType() == typeof(Int64))
                 {
                     SupplierKey = Convert.ToInt64(Cell);
                 }

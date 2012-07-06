@@ -1632,12 +1632,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if ((familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(partnerKey)) != null)
             {
-                return familyRow.FieldKey;
+                if (familyRow.IsFieldKeyNull())
+                {
+                    return 0;
+                }
+                else
+                {
+                    return familyRow.FieldKey;
+                }
             }
 
             if ((personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(partnerKey)) != null)
             {
-                return personRow.FieldKey;
+                if (personRow.IsFieldKeyNull())
+                {
+                    return 0;
+                }
+                else
+                {
+                    return personRow.FieldKey;
+                }
             }
 
             if (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)
