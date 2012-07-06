@@ -162,7 +162,11 @@ namespace Ict.Tools.DevelopersAssistant
             /// <summary>
             /// Reset the database content
             /// </summary>
-            resetDatabase
+            resetDatabase,
+            /// <summary>
+            /// Patch the current database
+            /// </summary>
+            patchDatabase
         }
         private TaskItem _taskItem = TaskItem.None;
 
@@ -264,7 +268,7 @@ namespace Ict.Tools.DevelopersAssistant
         public static TaskItem LastDatabaseItem {
             get
             {
-                return TaskItem.resetDatabase;
+                return TaskItem.patchDatabase;
             }
         }
 
@@ -384,6 +388,10 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     _taskItem = TaskItem.resetDatabase;
                 }
+                else if (TaskName.IndexOf("patch", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.patchDatabase;
+                }
             }
         }
 
@@ -440,6 +448,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.previewWinform: return "Creating a preview of a Windows form ...";
 
                     case TaskItem.initConfigFiles: return "Initialising configuration files.  Please be patient ...";
+
+                    case TaskItem.patchDatabase: return "Patching (updating) your existing database.  Please be patient ...";
 
                     case TaskItem.quickClean: return "Performing Quick clean ...";
 
@@ -529,6 +539,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.initConfigFiles: return "Starting initConfigFiles";
 
+                    case TaskItem.patchDatabase: return "Starting patchDatabase";
+
                     case TaskItem.quickClean: return "Starting quickClean";
 
                     case TaskItem.quickCompile: return "Starting quickCompile of OpenPetra.sln";
@@ -592,6 +604,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.previewWinform: return "Preview a Windows form";
 
                     case TaskItem.initConfigFiles: return "Initialise the configuration files";
+
+                    case TaskItem.patchDatabase: return "Patch (update) the existing database";
 
                     case TaskItem.minimalGenerateSolution: return "Generate the solution with minimal compile";
 
@@ -658,6 +672,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.previewWinform: return "Preview a Windows form";
 
                     case TaskItem.initConfigFiles: return "Initialise the configuration files";
+
+                    case TaskItem.patchDatabase: return "Patch the existing database";
 
                     case TaskItem.minimalGenerateSolution: return "Generate the solution with minimal compile";
 

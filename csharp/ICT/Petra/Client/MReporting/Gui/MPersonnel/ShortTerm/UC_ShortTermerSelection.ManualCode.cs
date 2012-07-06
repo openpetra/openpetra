@@ -34,7 +34,6 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Client;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 

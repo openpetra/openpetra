@@ -163,14 +163,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             foreach (DataRow ApplicationRow in FMainDS.PmShortTermApplication.Rows)
             {
-                EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
-
-                if (((EventApplicationRow.ApplicationKey != AApplicationKey)
-                     || (EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey))
-                    && !EventApplicationRow.IsStConfirmedOptionNull()
-                    && (EventApplicationRow.StConfirmedOption == AEventKey))
+                if (ApplicationRow.RowState != DataRowState.Deleted)
                 {
-                    return true;
+                    EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
+
+                    if (((EventApplicationRow.ApplicationKey != AApplicationKey)
+                         || (EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey))
+                        && !EventApplicationRow.IsStConfirmedOptionNull()
+                        && (EventApplicationRow.StConfirmedOption == AEventKey))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -236,13 +239,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-
-//        private void ValidateDataDetailsManual(PmGeneralApplicationRow ARow)
-//        {
-//            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-//
-//            //TODO
-//        }
 
         private void ShowData(PmGeneralApplicationRow AGeneralAppRow, PmShortTermApplicationRow AEventAppRow)
         {
