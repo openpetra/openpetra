@@ -243,13 +243,7 @@ namespace {#NAMESPACE}
         {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
-        // Only process the Data Validations here if ControlToValidate is not null.
-        // It can be null if this.ActiveControl yields null - this would happen if no Control
-        // on this UserControl has got the Focus.
-        if (ControlToValidate != null) 
-        {
-            if(ControlToValidate.FindUserControlOrForm(true) == this)
-            {
+
 {#IFDEF SHOWDETAILS}
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
                     this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
@@ -258,12 +252,6 @@ namespace {#NAMESPACE}
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
                     this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
 {#ENDIFN SHOWDETAILS}
-            }
-            else
-            {
-                ReturnValue = true;
-            }
-        }
 {#IFDEF SHOWDETAILS}            
         }
         else

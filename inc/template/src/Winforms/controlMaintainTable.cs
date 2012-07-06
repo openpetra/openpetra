@@ -341,7 +341,6 @@ namespace {#NAMESPACE}
         if (CurrentRow != null)
         {
 {#ENDIF SHOWDETAILS}
-{#IFNDEF SHOWDETAILS}
         if (AValidateSpecificControl != null) 
         {
             ControlToValidate = AValidateSpecificControl;
@@ -349,8 +348,9 @@ namespace {#NAMESPACE}
         else
         {
             ControlToValidate = this.ActiveControl;
-        }	
+        }
 
+{#IFNDEF SHOWDETAILS}
 {#IFDEF MASTERTABLE}
         GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
         ValidateData(FMainDS.{#MASTERTABLE}[0]);
