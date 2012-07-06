@@ -845,6 +845,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 AEpMatchTable.GetMatchTextDBName(),
                 DataViewRowState.CurrentRows);
 
+            string thinLine = "<font size=\"-3\">-------------------------------------------------------------------------<br/></font>";
+
             foreach (DataRowView rv in AEpTransactions)
             {
                 row = (BankImportTDSAEpTransactionRow)rv.Row;
@@ -879,7 +881,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
                 if (RecipientDescription.Trim().Length > 0)
                 {
-                    rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", "<br/>" + RecipientDescription);
+                    rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", "<br/>" + thinLine + RecipientDescription);
                 }
                 else
                 {
@@ -888,7 +890,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
                 if (!match.IsDonorKeyNull() && (match.DonorKey > 0))
                 {
-                    string DonorDescription = "<br/>" + match.DonorKey.ToString() + " " + match.DonorShortName;
+                    string DonorDescription = "<br/>" + thinLine + match.DonorKey.ToString() + " " + match.DonorShortName;
 
                     rowToPrint = rowToPrint.Replace("#DONORDESCRIPTION", DonorDescription);
                 }
