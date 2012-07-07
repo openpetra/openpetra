@@ -163,7 +163,7 @@ public class TDropUnwantedStrings
                             if (line.StartsWith("#:"))
                             {
                                 sw.WriteLine(
-                                    currentLine + " (first of several occurrences - the whole list can be found in i8n\template.pot.withallsources)");
+                                    currentLine + " (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)");
                             }
                             else
                             {
