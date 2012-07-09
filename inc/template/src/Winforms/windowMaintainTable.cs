@@ -117,8 +117,7 @@ namespace {#NAMESPACE}
 
     }
 
-    
-	private bool newRecordUnsavedInFocus = false;
+    private bool newRecordUnsavedInFocus = false;
 	
 	/// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     /// we create the table locally, no dataset
@@ -139,24 +138,33 @@ namespace {#NAMESPACE}
 			SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
             InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
-            //Must be set after the FocusRowChnaged event is called as it sets this flag to false
+            //Must be set after the FocusRowChanged event is called as it sets this flag to false
             newRecordUnsavedInFocus = true;
 
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             ShowDetails(FPreviouslySelectedDetailRow);
 			
-            grdDetails.SelectNextControl(grdDetails,true,true,false,true);
-			SendKeys.Send("{TAB}");
-            
-            foreach (Control txt in pnlDetails.Controls)
+            Control[] pnl = this.Controls.Find("pnlDetails", true);
+            if (pnl.Length > 0)
             {
-            	if (txt is TextBox && txt.Name.Contains("Descr"))
-            	{
-            		txt.Text = "PLEASE ENTER DESCR";
-            		break;
-            	}
-            }
+	            //Look for Key & Description fields
+	            bool keyFieldFound = false;
+	            foreach (Control detailsCtrl in pnl[0].Controls)
+	            {
+	                if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+	                {
+	                    keyFieldFound = true;
+	                    detailsCtrl.Focus();
+	                }
 	
+	                if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
+	                {
+	                    detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+	                    break;
+	                }
+	            }
+            }
+
             return true;
         }
         else

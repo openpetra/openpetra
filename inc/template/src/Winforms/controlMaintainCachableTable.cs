@@ -112,6 +112,8 @@ namespace {#NAMESPACE}
     
     {#EVENTHANDLERSIMPLEMENTATION}
 
+	private bool newRecordUnsavedInFocus = false;
+	
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     public bool CreateNew{#DETAILTABLE}()
     {
@@ -130,18 +132,39 @@ namespace {#NAMESPACE}
 
             FPetraUtilsObject.SetChangedFlag();
 
+			grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
-            grdDetails.Refresh();
-            SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
-            int currentGridRow = grdDetails.Selection.ActivePosition.Row;
-            if (currentGridRow == previousGridRow)
-            {
-                // The grid must be sorted so the new row is displayed where the old one was.  We will not have received a RowChanged event.
-                // We need to enforce showing the new details.
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
 
+            SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+
+            //Must be set after the FocusRowChanged event is called as it sets this flag to false
+            newRecordUnsavedInFocus = true;
+
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+			
+            Control[] pnl = this.Controls.Find("pnlDetails", true);
+            if (pnl.Length > 0)
+            {
+	            //Look for Key & Description fields
+	            bool keyFieldFound = false;
+	            foreach (Control detailsCtrl in pnl[0].Controls)
+	            {
+	                if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+	                {
+	                    keyFieldFound = true;
+	                    detailsCtrl.Focus();
+	                }
+	
+	                if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
+	                {
+	                    detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+	                    break;
+	                }
+	            }
+            }
+	
             return true;
         }
         else
@@ -172,7 +195,7 @@ namespace {#NAMESPACE}
             }
         }
 
-        grdDetails.SelectRowInGrid(RowNumberGrid);
+        grdDetails.SelectRowInGrid(RowNumberGrid, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
     }
 
     /// return the selected row
@@ -309,42 +332,156 @@ namespace {#NAMESPACE}
     }
 
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
+
+    private bool firstFocusEventHasRun = false;
+    private bool isRepeatLeaveEvent = false;
+    private int gridRowsCount = 0;
+    private int numGridRows	 = 0;
+    private int gridRowsCountHasChanged = 0;
+    private bool newFocusEventStarted = false;
+
+    private void FocusPreparation(bool AIsLeaveEvent)
+    {
+    	if (isRepeatLeaveEvent)
+    	{
+    		return;
+    	}
+    	
+    	numGridRows = grdDetails.Rows.Count;
+
+		//first run only
+    	if (!firstFocusEventHasRun)
+    	{
+    		firstFocusEventHasRun = true;
+    		gridRowsCount = numGridRows;
+    	}
+    	
+    	//Specify if it is a row change, add or delete
+    	if (gridRowsCount == numGridRows)
+    	{
+    		gridRowsCountHasChanged = 0;
+    	}
+    	else if (gridRowsCount > numGridRows)
+        {
+        	gridRowsCount = numGridRows;
+        	gridRowsCountHasChanged = -1;
+        }
+    	else if (gridRowsCount < numGridRows)
+    	{
+        	gridRowsCount = numGridRows;
+        	gridRowsCountHasChanged = 1;
+    	}
+    	
+    }
+    
+    private void InvokeFocusedRowChanged(int AGridRowNumber)
+    {
+		SourceGrid.RowEventArgs rowArgs  = new SourceGrid.RowEventArgs(AGridRowNumber);
+		FocusedRowChanged(grdDetails, rowArgs);
+    }
+	
 {#IFDEF SAVEDETAILS}
 
     private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
     {        
-        if (grdDetails.Focused)
+		//Ignore this event if currently sorting
+    	if (grdDetails.Sorting)
+    	{
+    		newFocusEventStarted = false;
+    		return;
+    	}    	
+    	
+    	if (newFocusEventStarted == false)
+    	{
+    		newFocusEventStarted = true;
+    	}
+
+    	FocusPreparation(true);
+
+    	if (!isRepeatLeaveEvent)
         {
+	    	isRepeatLeaveEvent = true;
+	    	
+            if (gridRowsCountHasChanged == -1 || numGridRows == 2)  //do not run validation if cancelling current row
+																	// OR only 1 row present so no rowleaving event possible
+            {
+            	e.Cancel = true;
+            }
+            
+            Console.WriteLine("FocusRowLeaving");
+            
             if (!ValidateAllData(true, true))
             {
-                e.Cancel = true;                
+                e.Cancel = true;
             }
         }
         else
         {
-            // This is needed because of a strange quirk in the Grid: if the user clicks with the Mouse to a different Row
-            // (not when using the keyboard!), then the Method 'FocusRowLeaving' gets called twice, the second time 
-            // grdDetails.Focused is false. We need to Cancel in this case, otherwise the user can leave the Row with a 
-            // mouse click on another Row although it contains invalid data!!!
+            // Reset flag
+	    	isRepeatLeaveEvent = false;
             e.Cancel = true;
-        }        
+        }
     }
 {#ENDIF SAVEDETAILS}
 
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        if(e.Row != FCurrentRow && !grdDetails.Sorting)
+        newRecordUnsavedInFocus = false;
+    	
+        isRepeatLeaveEvent = false;
+
+        if (!grdDetails.Sorting)
         {
-            // Transfer data from Controls into the DataTable
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
-            
-            // Display the details of the currently selected Row
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            ShowDetails(FPreviouslySelectedDetailRow);
-            pnlDetails.Enabled = true;
+	    	//Sometimes, FocusedRowChanged get called without FocusRowLeaving
+	    	//  so need to handle that
+	    	if (!newFocusEventStarted)
+	    	{
+	    		//This implies start of a new event chain without a previous FocusRowLeaving
+	    		FocusPreparation(false);
+	    	}
+	    	
+	        //Only allow, row change, add or delete, not repeat events from grid changing focus
+	    	if(e.Row != FCurrentRow && gridRowsCountHasChanged == 0)
+	        {
+	    		// Transfer data from Controls into the DataTable
+	            if (FPreviouslySelectedDetailRow != null)
+	            {
+	                GetDetailsFromControls(FPreviouslySelectedDetailRow);
+	            }
+	
+	            // Display the details of the currently selected Row
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
+	            pnlDetails.Enabled = true;
+	    	}
+	    	else if (gridRowsCountHasChanged == 1) //Addition
+	    	{
+	    		
+	    	}
+	    	else if (gridRowsCountHasChanged == -1) //Deletion
+	    	{
+	    		if (numGridRows > 1) //Implies at least one record still left
+	    		{
+	    			// Select and display the details of the currently selected Row without causing an event
+	    			grdDetails.SelectRowInGrid(e.Row, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+		            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+		            ShowDetails(FPreviouslySelectedDetailRow);
+		            pnlDetails.Enabled = true;
+	    		}
+	    		else	
+	    		{
+	                FPreviouslySelectedDetailRow = null;
+		            pnlDetails.Enabled = false;
+	    		}
+	    	}
         }
-        FCurrentRow = e.Row;
-    }
+        
+    	FCurrentRow = e.Row;
+	    
+	    //Event chain tidy-up
+		gridRowsCountHasChanged = 0;
+	    newFocusEventStarted = false;
+	}
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDETAILS}
@@ -513,6 +650,13 @@ namespace {#NAMESPACE}
                     this.Cursor = Cursors.Default;
                     break;
             }
+
+			//The sorting will be affected when a new row is saved, so need to reselect row
+			if (newRecordUnsavedInFocus)
+			{
+				SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+				InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+			}
         }
 
         return false;
