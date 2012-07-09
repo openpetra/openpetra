@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -217,7 +217,14 @@ namespace Ict.Common.Printing
 
             if (CurrentRelativeFontSize != 0)
             {
-                ReturnValue = new Font(ReturnValue.FontFamily, ReturnValue.SizeInPoints + CurrentRelativeFontSize * 2.0f, ReturnValue.Style);
+                float FontSize = ReturnValue.SizeInPoints + CurrentRelativeFontSize * 2.0f;
+
+                if (FontSize <= 0.0f)
+                {
+                    FontSize = 0.5f;
+                }
+
+                ReturnValue = new Font(ReturnValue.FontFamily, FontSize, ReturnValue.Style);
             }
 
             return ReturnValue;
