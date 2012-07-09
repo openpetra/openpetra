@@ -30,9 +30,9 @@ RootNode:
             Dock: Fill
             Controls: [pnlFilterTop1, pnlFilter, sptTransactionDetails]
             # add to Controls: pnlStatementInfo
-        cmbBankAccount: {List=UserDefinedList, ColSpan=2}
-        txtBankStatement: {ReadOnly=true, Width=300}
-        dtpBankStatementDate: {ReadOnly=true}
+        cmbBankAccount: {ReadOnly=true, List=UserDefinedList, ColSpan=2, SuppressChangeDetection=true}
+        txtBankStatement: {ReadOnly=true, Width=300, SuppressChangeDetection=true}
+        dtpBankStatementDate: {ReadOnly=true, SuppressChangeDetection=true}
         pnlFilterTop1:
             Dock: Top
             Controls: 
@@ -52,9 +52,9 @@ RootNode:
             ControlsOrientation: horizontal
             NoLabel: true
             OnChange: TransactionFilterChanged
-        txtCreditSum: {Format=Currency, ReadOnly=true}
-        txtDebitSum: {Format=Currency, ReadOnly=true}
-        txtTransactionCount: {Label=Number of Transactions, ReadOnly=true}
+        txtCreditSum: {Format=Currency, ReadOnly=true, SuppressChangeDetection=true}
+        txtDebitSum: {Format=Currency, ReadOnly=true, SuppressChangeDetection=true}
+        txtTransactionCount: {Label=Number of Transactions, ReadOnly=true, SuppressChangeDetection=true}
         # pnlStatementInfo:
             # Controls: [txtStartBalance, txtEndBalance, txtSumDebit, txtSumCredit, txtNumberMatchedTransactions]
         sptTransactionDetails:
@@ -108,11 +108,11 @@ RootNode:
         cmbMotivationGroup: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail, Width=200}
         cmbMotivationDetail: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged, Width=200}
         txtRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=2}
-        txtField: {Label=Field, Type=PartnerKey, ReadOnly=true}
+        txtField: {Label=Field, Type=PartnerKey, ReadOnly=true, SuppressChangeDetection=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbMinistry: {Label=Key Ministry, ColSpan=2, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
-        txtGiftAccount: {Label=Account, ReadOnly=true}
-        txtGiftCostCentre: {Label=Cost Centre, ReadOnly=true}
+        txtGiftAccount: {Label=Account, ReadOnly=true, SuppressChangeDetection=true}
+        txtGiftCostCentre: {Label=Cost Centre, ReadOnly=true, SuppressChangeDetection=true}
         pnlGLEdit:
             Dock: Fill
             Visible: false
