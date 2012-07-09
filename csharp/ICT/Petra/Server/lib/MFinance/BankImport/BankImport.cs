@@ -461,16 +461,22 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             AMainDS.AEpTransaction.DefaultView.Sort =
                 AEpTransactionTable.GetNumberOnPaperStatementDBName();
 
+            AMainDS.AEpMatch.DefaultView.Sort =
+                AEpMatchTable.GetActionDBName() + ", " +
+                AEpMatchTable.GetMatchTextDBName();
+
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
-                DataView v = AMainDS.AEpMatch.DefaultView;
-                v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT + "' and " +
-                              AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
 
-                if (v.Count > 0)
+                DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
+                        MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT,
+                        transactionRow.MatchText
+                    });
+
+                if (matches.Length > 0)
                 {
-                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+                    AEpMatchRow match = (AEpMatchRow)matches[0].Row;
 
                     AGiftRow gift = GiftDS.AGift.NewRowTyped();
                     gift.LedgerNumber = giftbatchRow.LedgerNumber;
@@ -481,7 +487,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     GiftDS.AGift.Rows.Add(gift);
                     giftbatchRow.LastGiftNumber++;
 
-                    foreach (DataRowView r in v)
+                    foreach (DataRowView r in matches)
                     {
                         match = (AEpMatchRow)r.Row;
 
@@ -524,6 +530,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
 
             giftbatchRow.HashTotal = HashTotal;
+            giftbatchRow.BatchTotal = HashTotal;
 
             // do not overwrite the parameter, because there might be the hint for a different gift batch date
             TVerificationResultCollection VerificationResultSubmitChanges;
