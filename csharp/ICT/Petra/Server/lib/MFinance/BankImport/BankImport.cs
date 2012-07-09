@@ -458,6 +458,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             decimal HashTotal = 0.0M;
 
+            AMainDS.AEpTransaction.DefaultView.Sort =
+                AEpTransactionTable.GetNumberOnPaperStatementDBName();
+
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
