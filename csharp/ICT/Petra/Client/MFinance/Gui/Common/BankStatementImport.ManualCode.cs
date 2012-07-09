@@ -703,12 +703,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             if (GiftBatchNumber != -1)
             {
+                if (VerificationResult != null)
+                {
+                    MessageBox.Show(
+                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Info: gift batch has been created"));
+                }
+
                 // export to csv
                 TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
                 exportForm.LedgerNumber = FLedgerNumber;
                 exportForm.FirstBatchNumber = GiftBatchNumber;
                 exportForm.LastBatchNumber = GiftBatchNumber;
                 exportForm.IncludeUnpostedBatches = true;
+                exportForm.TransactionsOnly = true;
                 exportForm.OutputFilename = TAppSettingsManager.GetValue("BankImport.GiftBatchExportFilename",
                     TAppSettingsManager.GetValue("OpenPetra.PathTemp") +
                     Path.DirectorySeparatorChar +

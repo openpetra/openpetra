@@ -108,6 +108,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// set whether only transactions should be exported, without the batch information
+        public bool TransactionsOnly
+        {
+            set
+            {
+                chkTransactionsOnly.Checked = value;
+            }
+        }
+
         /// set the output filename
         public string OutputFilename
         {

@@ -406,17 +406,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             // TODO: optional: use the preselected gift batch, AGiftBatchNumber
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
+            DateTime BatchDateEffective = stmt.Date;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
-                    Transaction))
+            if (!TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref BatchDateEffective, out DateEffectiveYearNumber,
+                    out DateEffectivePeriodNumber,
+                    Transaction, true))
             {
+                // just use the latest possible date
                 string msg =
-                    String.Format(Catalog.GetString("Cannot create a gift batch for date {0} since it is not in an open period of the ledger."),
-                        stmt.Date.ToShortDateString());
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return -1;
+                    String.Format(Catalog.GetString("Date {0} is not in an open period of the ledger, using date {1} instead for the gift batch."),
+                        stmt.Date.ToShortDateString(),
+                        BatchDateEffective.ToShortDateString());
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Info));
             }
 
             ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
@@ -449,7 +451,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(
                 ALedgerNumber,
-                stmt.Date,
+                BatchDateEffective,
                 String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
