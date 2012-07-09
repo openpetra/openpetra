@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -122,8 +122,6 @@ namespace Tests.Common.Printing
 
         void TbbPreviewClick(object sender, EventArgs e)
         {
-            webBrowser1.DocumentText = txtHTMLText.Text;
-
             PrintDocument doc = new PrintDocument();
 
             FGfxPrinter = new TGfxPrinter(doc, TGfxPrinter.ePrinterBehaviour.eFormLetter);

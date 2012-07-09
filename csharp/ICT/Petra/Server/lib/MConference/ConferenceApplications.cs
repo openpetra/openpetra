@@ -29,6 +29,7 @@ using System.Data.Odbc;
 using System.Net.Mail;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -646,8 +647,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     ARegistrationOfficeKey,
                     Transaction);
 
-                // to avoid the error on the ext.js client: Status Text: BADRESPONSE: Parse Error
-                Result = application[0].RawApplicationData.Replace("&quot;", "\\\"");
+                Result = application[0].RawApplicationData;
             }
             finally
             {
@@ -1254,23 +1254,66 @@ namespace Ict.Petra.Server.MConference.Applications
                 DateTime ConferenceStartDate = ConferenceTable[0].Start.Value;
                 DateTime ConferenceEndDate = ConferenceTable[0].End.Value;
 
+                // load all data at once
+                StringBuilder sb = new StringBuilder();
+
                 foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
                 {
-                    PmShortTermApplicationRow TemplateRow = AMainDS.PmShortTermApplication.NewRowTyped(false);
+                    sb.Append(row.PartnerKey.ToString());
+                    sb.Append(',');
+                }
 
+                sb.Append("-1");
+                string partnerkeys = sb.ToString();
+
+                string sqlLoadPersons = "SELECT PUB_p_person.* FROM PUB_p_person " +
+                                        "WHERE p_partner_key_n IN (" + partnerkeys + ")";
+                PPersonTable persons = new PPersonTable();
+                DBAccess.GDBAccessObj.SelectDT(persons, sqlLoadPersons, Transaction, new OdbcParameter[0], 0, 0);
+
+                string sqlLoadShortTermApplications = "SELECT PUB_pm_short_term_application.* FROM PUB_pm_short_term_application " +
+                                                      "WHERE p_partner_key_n IN (" +
+                                                      partnerkeys + ") AND pm_confirmed_option_code_c = '" + AEventCode + "'";
+                PmShortTermApplicationTable shorttermapplications = new PmShortTermApplicationTable();
+                DBAccess.GDBAccessObj.SelectDT(shorttermapplications, sqlLoadShortTermApplications, Transaction, new OdbcParameter[0], 0, 0);
+                shorttermapplications.DefaultView.Sort = PmShortTermApplicationTable.GetPartnerKeyDBName();
+
+                string sqlLoadGeneralApplications =
+                    "SELECT PUB_pm_general_application.* FROM PUB_pm_general_application, PUB_pm_short_term_application " +
+                    "WHERE PUB_pm_short_term_application.p_partner_key_n IN (" +
+                    partnerkeys + ") AND pm_confirmed_option_code_c = '" + AEventCode + "' " +
+                    "AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n "
+                    +
+                    "AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i "
+                    +
+                    "AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n ";
+                PmGeneralApplicationTable generalapplications = new PmGeneralApplicationTable();
+                DBAccess.GDBAccessObj.SelectDT(generalapplications, sqlLoadGeneralApplications, Transaction, new OdbcParameter[0], 0, 0);
+                generalapplications.DefaultView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName();
+
+                string sqlLoadPartnerLocations =
+                    "SELECT DISTINCT pl.* FROM PUB_p_partner_location pl, PUB_p_person pp WHERE pp.p_family_key_n = pl.p_partner_key_n AND pp.p_partner_key_n IN ("
+                    +
+                    partnerkeys + ")";
+                PPartnerLocationTable partnerLocations = new PPartnerLocationTable();
+                DBAccess.GDBAccessObj.SelectDT(partnerLocations, sqlLoadPartnerLocations, Transaction, new OdbcParameter[0], 0, 0);
+                partnerLocations.DefaultView.Sort = PPartnerLocationTable.GetPartnerKeyDBName();
+
+                foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
+                {
                     // one person is only registered once for the same event. each registration is a new partner key
-                    TemplateRow.PartnerKey = row.PartnerKey;
-                    TemplateRow.ConfirmedOptionCode = AEventCode;
-                    PmShortTermApplicationRow ShortTermApplicationRow = PmShortTermApplicationAccess.LoadUsingTemplate(TemplateRow, Transaction)[0];
+                    PmShortTermApplicationRow ShortTermApplicationRow =
+                        (PmShortTermApplicationRow)shorttermapplications.DefaultView.FindRows(row.PartnerKey)[0].Row;
 
-                    PPersonRow PersonRow = PPersonAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey, Transaction)[0];
-                    PPartnerLocationRow PartnerLocationRow = PPartnerLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
+                    PPersonRow PersonRow =
+                        (PPersonRow)persons.Rows.Find(ShortTermApplicationRow.PartnerKey);
+
+                    PPartnerLocationRow PartnerLocationRow =
+                        (PPartnerLocationRow)partnerLocations.DefaultView.FindRows(PersonRow.FamilyKey)[0].Row;
 
                     PmGeneralApplicationRow GeneralApplicationRow =
-                        PmGeneralApplicationAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey,
-                            ShortTermApplicationRow.ApplicationKey,
-                            ShortTermApplicationRow.RegistrationOffice,
-                            Transaction)[0];
+                        (PmGeneralApplicationRow)generalapplications.DefaultView.FindRows(row.PartnerKey)[0].Row;
+
 
                     XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
                     myDoc.DocumentElement.AppendChild(newNode);

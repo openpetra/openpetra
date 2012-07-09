@@ -134,6 +134,10 @@ namespace Ict.Petra.Server.App.Core
 
             foreach (TDataBase dbToDisconnect in DBsToDisconnect)
             {
+                TLogging.Log("Disconnecting DB connection of client " +
+                    dbToDisconnect.UserID + " after timeout. Last activity was at: " +
+                    dbToDisconnect.LastDBAction.ToShortTimeString());
+
                 dbToDisconnect.CloseDBConnection();
                 FDBConnections.Remove(dbToDisconnect);
             }

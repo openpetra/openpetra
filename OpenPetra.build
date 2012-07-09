@@ -157,8 +157,14 @@ useful parameters
         buildfile="csharp/csharp.build" />
 </target>
 
+<target name="webserver" depends="nanttasks" description="goes into the directory webserver">
+  <property name="target" value="compile" overwrite="false" />
+  <nant inheritall="false" target="${target}" 
+        buildfile="webserver/webserver.build" />
+</target>
+
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
-        depends="csharp,nanttasks" />
+        depends="csharp,nanttasks,webserver" />
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
         depends="nanttasks,generateNamespaceMap,generateProjectFiles"/>
