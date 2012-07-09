@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -122,7 +122,19 @@ namespace Ict.Common
                 return AEnglishMessage;
             }
 
-            return catalog.GetString(AEnglishMessage);
+            string result = AEnglishMessage;
+
+            try
+            {
+                result = catalog.GetString(AEnglishMessage);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("GetText: Catalog.GetString: problem for getting text for \"" + AEnglishMessage + "\"");
+                TLogging.Log(e.ToString());
+            }
+
+            return result;
         }
 
         /// <summary>
