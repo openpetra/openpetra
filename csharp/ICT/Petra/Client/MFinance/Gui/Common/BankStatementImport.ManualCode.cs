@@ -70,7 +70,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private BankImportTDS FMainDS = new BankImportTDS();
         private DataView FMatchView = null;
         private DataView FTransactionView = null;
 
@@ -98,6 +97,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         {
             CurrentlySelectedMatch = null;
             CurrentStatement = null;
+
+            // merge the cost centres and the motivation details from the cacheable tables
+            FMainDS.ACostCentre.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber));
+            FMainDS.AMotivationDetail.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, FLedgerNumber));
 
             // load the transactions of the selected statement, and the matches
             FMainDS.Merge(
@@ -160,7 +163,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             TFinanceControls.ChangeFilterMotivationDetailList(ref cmbMotivationDetail, cmbMotivationGroup.GetSelectedString());
         }
 
-        private void MotivationDetailChanged(System.Object sender, EventArgs e)
+        private void SetRecipientCostCentreAndField()
         {
             // look for the motivation detail.
             AMotivationDetailRow motivationDetailRow = GetCurrentMotivationDetail(
@@ -171,6 +174,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             {
                 txtGiftAccount.Text = motivationDetailRow.AccountCode;
                 txtGiftCostCentre.Text = motivationDetailRow.CostCentreCode;
+            }
+            else
+            {
+                txtGiftAccount.Text = string.Empty;
+                txtGiftCostCentre.Text = string.Empty;
+            }
+
+            Int64 RecipientKey = Convert.ToInt64(txtRecipientKey.Text);
+            FInKeyMinistryChanging++;
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, RecipientKey);
+            FInKeyMinistryChanging--;
+
+            long FieldNumber = Convert.ToInt64(txtField.Text);
+
+            txtGiftCostCentre.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
+        }
+
+        private void MotivationDetailChanged(System.Object sender, EventArgs e)
+        {
+            SetRecipientCostCentreAndField();
+        }
+
+        Int16 FInKeyMinistryChanging = 0;
+        private void KeyMinistryChanged(object sender, EventArgs e)
+        {
+            if ((FInKeyMinistryChanging > 0) || FPetraUtilsObject.SuppressChangeDetection)
+            {
+                return;
+            }
+
+            FInKeyMinistryChanging++;
+            try
+            {
+                Int64 rcp = cmbMinistry.GetSelectedInt64();
+
+                txtRecipientKey.Text = String.Format("{0:0000000000}", rcp);
+            }
+            finally
+            {
+                FInKeyMinistryChanging--;
             }
         }
 
@@ -402,20 +445,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     cmbMotivationDetail.SetSelectedString(CurrentlySelectedMatch.MotivationDetailCode);
                 }
 
-                AMotivationDetailRow motivationDetailRow = GetCurrentMotivationDetail(
-                    CurrentlySelectedMatch.MotivationGroupCode,
-                    CurrentlySelectedMatch.MotivationDetailCode);
-
-                if (motivationDetailRow != null)
-                {
-                    txtGiftAccount.Text = motivationDetailRow.AccountCode;
-                    txtGiftCostCentre.Text = motivationDetailRow.CostCentreCode;
-                }
-                else
-                {
-                    txtGiftAccount.Text = string.Empty;
-                    txtGiftCostCentre.Text = string.Empty;
-                }
+                SetRecipientCostCentreAndField();
             }
         }
 
@@ -563,18 +593,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
         }
 
-        private void SaveMatches(System.Object sender, EventArgs e)
+        /// <summary>
+        /// save the matches
+        /// </summary>
+        /// <returns></returns>
+        public bool SaveChanges()
         {
             GetValuesFromScreen();
 
             if (TRemote.MFinance.ImportExport.WebConnectors.CommitMatches(FMainDS.GetChangesTyped(true)))
             {
                 FMainDS.AcceptChanges();
+                return true;
             }
             else
             {
                 MessageBox.Show(Catalog.GetString(
                         "The matches could not be stored. Please ask your System Administrator to check the log file on the server."));
+                return false;
             }
         }
 
@@ -583,7 +619,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             GetValuesFromScreen();
 
             // TODO: should we first ask? also when closing the window?
-            SaveMatches(null, null);
+            SaveChanges();
 
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
@@ -618,7 +654,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             GetValuesFromScreen();
 
             // TODO: should we first ask? also when closing the window?
-            SaveMatches(null, null);
+            SaveChanges();
 
             TVerificationResultCollection VerificationResult;
             Int32 GLBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGLBatch(FMainDS,
@@ -656,7 +692,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             GetValuesFromScreen();
 
             // TODO: should we first ask? also when closing the window?
-            SaveMatches(null, null);
+            SaveChanges();
 
             TVerificationResultCollection VerificationResult;
             Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,

@@ -269,8 +269,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
             return null; // make sure that the TMPersonnel object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'WebConnectors' subnamespace contains further subnamespaces.</summary>
         public IWebConnectorsNamespace WebConnectors
         {
@@ -562,8 +560,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person
             return null; // make sure that the TPersonNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'PersonDataElements' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsNamespace DataElements
         {
@@ -696,8 +692,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements
         {
             return null; // make sure that the TPersonDataElementsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'PersonDataElementsApplications' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsApplicationsNamespace Applications
@@ -887,8 +881,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
         {
             return null; // make sure that the TPersonDataElementsApplicationsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'PersonDataElementsApplicationsCacheable' subnamespace contains further subnamespaces.</summary>
         public IPersonDataElementsApplicationsCacheableNamespace Cacheable
@@ -1538,8 +1530,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.Shepherds
             return null; // make sure that the TPersonShepherdsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'PersonShepherdsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPersonShepherdsUIConnectorsNamespace UIConnectors
         {
@@ -1712,8 +1702,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.TableMaintenance
         {
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors
@@ -1888,8 +1876,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units
             return null; // make sure that the TUnitsNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'UnitsDataElements' subnamespace contains further subnamespaces.</summary>
         public IUnitsDataElementsNamespace DataElements
         {
@@ -1991,8 +1977,6 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Units.DataElements
         {
             return null; // make sure that the TUnitsDataElementsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'UnitsDataElementsCacheable' subnamespace contains further subnamespaces.</summary>
         public IUnitsDataElementsCacheableNamespace Cacheable

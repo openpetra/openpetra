@@ -7,10 +7,10 @@ jayrock-0.9.8316\src\Jayrock.Json\Json\Conversion\Converters\DateTimeImporter.cs
 
             try
             {
-                return ReadReturning(reader, XmlConvert.ToDateTime(reader.Text, System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern));
+                return ReadReturning(reader, Convert.ToDateTime(reader.Text));
             }
             catch (FormatException e)
             {
-                throw new JsonException("Error importing JSON String as System.DateTime.", e);
+                throw new JsonException("Error importing JSON String as System.DateTime."  + System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern, e);
             }
         }

@@ -297,8 +297,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             return null; // make sure that the TMPartner object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'Extracts' subnamespace contains further subnamespaces.</summary>
         public IExtractsNamespace Extracts
         {
@@ -574,8 +572,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
         {
             return null; // make sure that the TExtractsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'ExtractsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IExtractsUIConnectorsNamespace UIConnectors
@@ -862,8 +858,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
         {
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'ImportExportUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportUIConnectorsNamespace UIConnectors
@@ -1220,8 +1214,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
         {
             return null; // make sure that the TMailingNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'MailingCacheable' subnamespace contains further subnamespaces.</summary>
         public IMailingCacheableNamespace Cacheable
@@ -1721,8 +1713,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
             return null; // make sure that the TPartnerNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'PartnerCacheable' subnamespace contains further subnamespaces.</summary>
         public IPartnerCacheableNamespace Cacheable
         {
@@ -2098,8 +2088,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
         {
             return null; // make sure that the TPartnerDataElementsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'PartnerDataElementsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerDataElementsUIConnectorsNamespace UIConnectors
@@ -3005,8 +2993,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
             return null; // make sure that the TPartnerMergeNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'PartnerMergeUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerMergeUIConnectorsNamespace UIConnectors
         {
@@ -3180,8 +3166,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
         {
             return null; // make sure that the TSubscriptionsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'SubscriptionsCacheable' subnamespace contains further subnamespaces.</summary>
         public ISubscriptionsCacheableNamespace Cacheable
@@ -3544,8 +3528,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
         {
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors

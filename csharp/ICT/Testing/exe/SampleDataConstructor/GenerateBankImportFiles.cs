@@ -123,23 +123,49 @@ namespace Ict.Testing.SampleDataConstructor
             sw.WriteLine(":60F:C" + ADateEffective.AddDays(-1).ToString("yyMMdd") + "EUR" +
                 ABalance.ToString(CultureInfo.InvariantCulture.NumberFormat).Replace(".", ","));
 
+            DataView GiftView = new DataView(AMainDS.AGiftDetail);
+            GiftView.Sort = AGiftDetailTable.GetBatchNumberDBName() + "," +
+                            AGiftDetailTable.GetGiftTransactionNumberDBName();
+
             DataRowView[] giftDetails = AMainDS.AGiftDetail.DefaultView.FindRows(ABatchNumber);
 
             foreach (DataRowView rv in giftDetails)
             {
                 BankImportTDSAGiftDetailRow giftDetail = (BankImportTDSAGiftDetailRow)rv.Row;
 
-                BankImportTDSPBankingDetailsRow bankingDetails = (BankImportTDSPBankingDetailsRow)
-                                                                 AMainDS.PBankingDetails.DefaultView.FindRows(giftDetail.DonorKey)[0].Row;
+                if (giftDetail.DetailNumber == 1)
+                {
+                    // are there any other gift details for this gift?
+                    string AndOthers = string.Empty;
+                    decimal Amount = giftDetail.GiftTransactionAmount;
 
-                sw.WriteLine(":61:" + ADateEffective.ToString("yyMMdd") + ADateEffective.ToString("MMdd") +
-                    "C" + giftDetail.GiftTransactionAmount.ToString(CultureInfo.InvariantCulture.NumberFormat).Replace(".", ",") + "N" +
-                    "051" + "NONREF");
-                sw.WriteLine(":86:051?00Gutschrift?10999?20" + giftDetail.RecipientKey.ToString() + "?21" + giftDetail.MotivationDetailCode +
-                    "?30" + bankingDetails.BankSortCode + "?31" + bankingDetails.BankAccountNumber +
-                    "?32" + bankingDetails.AccountName);
+                    DataRowView[] otherGifts = GiftView.FindRows(new object[] { ABatchNumber, giftDetail.GiftTransactionNumber });
 
-                ABalance += giftDetail.GiftTransactionAmount;
+                    if (otherGifts.Length > 1)
+                    {
+                        Amount = 0;
+                        AndOthers = " and others";
+
+                        foreach (DataRowView rv2 in otherGifts)
+                        {
+                            BankImportTDSAGiftDetailRow otherGiftDetail = (BankImportTDSAGiftDetailRow)rv2.Row;
+                            Amount += otherGiftDetail.GiftTransactionAmount;
+                        }
+                    }
+
+                    BankImportTDSPBankingDetailsRow bankingDetails = (BankImportTDSPBankingDetailsRow)
+                                                                     AMainDS.PBankingDetails.DefaultView.FindRows(giftDetail.DonorKey)[0].Row;
+
+                    sw.WriteLine(":61:" + ADateEffective.ToString("yyMMdd") + ADateEffective.ToString("MMdd") +
+                        "C" + Amount.ToString(CultureInfo.InvariantCulture.NumberFormat).Replace(".", ",") + "N" +
+                        "051" + "NONREF");
+                    sw.WriteLine(":86:051?00Gutschrift?10999?20" + giftDetail.RecipientKey.ToString() + "?21" + giftDetail.MotivationDetailCode +
+                        AndOthers +
+                        "?30" + bankingDetails.BankSortCode + "?31" + bankingDetails.BankAccountNumber +
+                        "?32" + bankingDetails.AccountName);
+
+                    ABalance += Amount;
+                }
             }
 
             sw.WriteLine(":62F:C" + ADateEffective.ToString("yyMMdd") + "EUR" +

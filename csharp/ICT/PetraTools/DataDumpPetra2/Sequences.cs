@@ -153,7 +153,8 @@ namespace Ict.Tools.DataDumpPetra2
         /// </summary>
         public static long GetNextSequenceValue(string ASequenceName)
         {
-            return ++Sequences[ASequenceName];
+            Sequences[ASequenceName]++;
+            return Sequences[ASequenceName] - 1;
         }
     }
 }

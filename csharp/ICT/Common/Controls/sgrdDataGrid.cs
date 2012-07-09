@@ -1107,23 +1107,20 @@ namespace Ict.Common.Controls
             base.OnSortedRangeRows(e);
 
             FSorting = true;
-            // MessageBox.Show('Length(FRowsSelectedBeforeSort): ' + Convert.ToString(Length(FRowsSelectedBeforeSort)));
+            
             if (FRowsSelectedBeforeSort.Length > 0)
             {
             	if (FKeepRowSelectedAfterSort)
                 {
-                    this.Selection.ResetSelection(false);
-                    this.Selection.Focus(Position.Empty, true);
-                    this.Selection.SelectRow(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, true);
+					this.SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, false);
                 }
 
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
+            	this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
 
-				//SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, TInvokeGridFocusEventEnum.NoFocusEvent);
             }
 
             FSorting = false;
-            // MessageBox.Show('TSgrdDataGrid.OnSortedRangeRows');
+            
         }
 
         /// <summary>
@@ -1446,7 +1443,7 @@ namespace Ict.Common.Controls
             }
 
             this.Selection.ResetSelection(false);
-            this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighed (overcome buggy behaviour of SourceGrid)
+            this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighted (overcome buggy behaviour of SourceGrid)
             this.Selection.SelectRow(ARowNumberInGrid, true);
 
             // scroll to the row

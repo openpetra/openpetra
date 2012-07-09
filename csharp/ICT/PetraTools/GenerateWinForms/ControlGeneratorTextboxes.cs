@@ -124,7 +124,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if ((TXMLParser.GetAttribute(curNode, "Type") == "PartnerKey")
                     || (TXMLParser.GetAttribute(curNode, "Type") == "Extract")
                     || (TXMLParser.GetAttribute(curNode, "Type") == "Occupation")
-                    || (TXMLParser.GetAttribute(curNode, "Type") == "Conference"))
+                    || (TXMLParser.GetAttribute(curNode, "Type") == "Conference")
+                    || (TXMLParser.GetAttribute(curNode, "Type") == "Event"))
                 {
                     return false;
                 }
@@ -291,6 +292,37 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 else if (TYml2Xml.GetAttribute(curNode, "Type") == "Conference")
                 {
                     FButtonLabelType = "Conference";
+
+                    if (!(TYml2Xml.HasAttribute(curNode,
+                              "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
+                    {
+                        FDefaultWidth = 370;
+                    }
+                    else
+                    {
+                        FDefaultWidth = 80;
+                    }
+
+                    FHasReadOnlyProperty = true;
+
+                    return true;
+                }
+                else if (TYml2Xml.GetAttribute(curNode, "Type") == "Event")
+                {
+                    FButtonLabelType = "Event";
+
+                    if (!(TYml2Xml.HasAttribute(curNode,
+                              "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
+                    {
+                        FDefaultWidth = 370;
+                    }
+                    else
+                    {
+                        FDefaultWidth = 80;
+                    }
+
+                    FHasReadOnlyProperty = true;
+
                     return true;
                 }
             }
