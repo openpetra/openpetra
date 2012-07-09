@@ -63,20 +63,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FPreviouslySelectedDetailRow = null;
 
-            DataView view = new DataView(FMainDS.AGiftDetail);
+            FMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetBatchNumberDBName() + "=" + FBatchNumber.ToString();
 
             // only load from server if there are no transactions loaded yet for this batch
             // otherwise we would overwrite transactions that have already been modified
-            view.RowFilter = AGiftDetailTable.GetBatchNumberDBName() + "=" + FBatchNumber.ToString();
-
-            if (view.Count == 0)
+            if (FMainDS.AGiftDetail.DefaultView.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
-
 
             TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, ActiveOnly);
             TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, ActiveOnly);
