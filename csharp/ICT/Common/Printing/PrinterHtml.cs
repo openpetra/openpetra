@@ -667,7 +667,15 @@ namespace Ict.Common.Printing
 
                         if (transformValue.StartsWith("rotate(") && transformValue.EndsWith("deg)"))
                         {
-                            FPrinter.Rotate(Convert.ToInt32(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length)));
+                            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+                            Double DegreeValue =
+                                Convert.ToDouble(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length));
+                            Catalog.SetCulture(OrigCulture);
+
+                            FPrinter.RotateAtTransform(
+                                DegreeValue,
+                                FPrinter.CurrentXPos,
+                                FPrinter.CurrentYPos);
                         }
                         else
                         {

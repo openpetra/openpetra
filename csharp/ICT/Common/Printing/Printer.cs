@@ -442,9 +442,9 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// rotate the following output by some degrees
+        /// rotate the following output by some degrees, at the given position
         /// </summary>
-        public virtual void Rotate(Int32 ADegrees)
+        public virtual void RotateAtTransform(double ADegrees, double XPos, double YPos)
         {
         }
 
