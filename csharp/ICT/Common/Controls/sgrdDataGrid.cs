@@ -1086,6 +1086,7 @@ namespace Ict.Common.Controls
             base.OnSortedRangeRows(e);
 
             FSorting = true;
+
             // MessageBox.Show('Length(FRowsSelectedBeforeSort): ' + Convert.ToString(Length(FRowsSelectedBeforeSort)));
             if (FRowsSelectedBeforeSort.Length > 0)
             {
