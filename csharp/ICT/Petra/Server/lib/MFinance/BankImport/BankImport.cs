@@ -494,6 +494,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.MotivationGroupCode = match.MotivationGroupCode;
                         detail.MotivationDetailCode = match.MotivationDetailCode;
                         detail.GiftCommentOne = transactionRow.Description;
+                        detail.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_BOTH;
                         detail.CostCentreCode = match.CostCentreCode;
                         detail.RecipientKey = match.RecipientKey;
                         detail.RecipientLedgerNumber = match.RecipientLedgerNumber;

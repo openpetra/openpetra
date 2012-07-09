@@ -368,7 +368,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteBoolean(giftDetails.ConfidentialGiftFlag);
             WriteStringQuoted(giftDetails.MotivationGroupCode);
             WriteStringQuoted(giftDetails.MotivationDetailCode);
-            WriteStringQuoted(giftDetails.CostCentreCode);
+
+            if (FExtraColumns)
+            {
+                WriteStringQuoted(giftDetails.CostCentreCode);
+            }
+
             WriteStringQuoted(giftDetails.GiftCommentOne);
             WriteStringQuoted(giftDetails.CommentOneType);
 

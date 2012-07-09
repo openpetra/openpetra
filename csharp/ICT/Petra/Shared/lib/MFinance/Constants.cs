@@ -45,6 +45,9 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Currency select: International</summary>
         public const int CURRENCY_INTERNATIONAL_NUM = 2;
 
+        /// <summary>gift comment type</summary>
+        public const string GIFT_COMMENT_TYPE_BOTH = "Both";
+
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";
 
