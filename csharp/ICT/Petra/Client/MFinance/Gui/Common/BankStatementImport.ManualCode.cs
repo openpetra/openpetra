@@ -703,7 +703,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             if (GiftBatchNumber != -1)
             {
-                if (VerificationResult != null)
+                if ((VerificationResult != null) && (VerificationResult.Count > 0))
                 {
                     MessageBox.Show(
                         VerificationResult.BuildVerificationResultString(),

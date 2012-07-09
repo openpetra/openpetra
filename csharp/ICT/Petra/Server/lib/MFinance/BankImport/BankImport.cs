@@ -495,6 +495,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.MotivationDetailCode = match.MotivationDetailCode;
                         detail.GiftCommentOne = transactionRow.Description;
                         detail.CostCentreCode = match.CostCentreCode;
+                        detail.RecipientKey = match.RecipientKey;
+                        detail.RecipientLedgerNumber = match.RecipientLedgerNumber;
 
                         // check for active cost centre
                         ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, match.CostCentreCode });
@@ -519,8 +521,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             giftbatchRow.HashTotal = HashTotal;
 
+            // do not overwrite the parameter, because there might be the hint for a different gift batch date
+            TVerificationResultCollection VerificationResultSubmitChanges;
+
             TSubmitChangesResult result = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS,
-                out AVerificationResult);
+                out VerificationResultSubmitChanges);
 
             if (result == TSubmitChangesResult.scrOK)
             {
