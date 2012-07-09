@@ -24,7 +24,10 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
+using System.Threading;
 
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
@@ -56,7 +59,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             dtpDateFrom.Date = firstDayMonth.AddMonths(-1);
             dtpDateTo.Date = firstDayMonth.AddDays(-1);
             dtpDateSummary.Date = dtpDateTo.Date;
-            System.Globalization.CultureInfo myCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            CultureInfo myCulture = Thread.CurrentThread.CurrentCulture;
             String regionalDateString = myCulture.DateTimeFormat.ShortDatePattern;
 
             if (!cmbDateFormat.Items.Contains(regionalDateString))
@@ -177,7 +180,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 rbtBaseCurrency.Select();
             }
 
-            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+            CultureInfo myCulture = Thread.CurrentThread.CurrentCulture;
+
+            string defaultImpOptions = myCulture.TextInfo.ListSeparator + "European";
+
+            if (myCulture.EnglishName.EndsWith("-US"))
+            {
+                defaultImpOptions = myCulture.TextInfo.ListSeparator + "American";
+            }
+
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", defaultImpOptions);
 
             if (impOptions.Length > 0)
             {
@@ -189,7 +201,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbNumberFormat.SelectedIndex = impOptions.Substring(1) == "American" ? 0 : 1;
             }
 
-            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Imp Date", "MDY"));
+            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Imp Date",
+                    myCulture.EnglishName.EndsWith("-US") ? "MDY" : "DMY"));
         }
 
         private void SaveUserDefaults()
