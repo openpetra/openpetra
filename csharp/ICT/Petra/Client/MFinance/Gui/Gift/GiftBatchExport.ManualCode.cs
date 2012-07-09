@@ -117,6 +117,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// set whether extra columns should be exported. there are two formats
+        public bool ExtraColumns
+        {
+            set
+            {
+                chkExtraColumns.Checked = value;
+            }
+        }
+
         /// set the output filename
         public string OutputFilename
         {

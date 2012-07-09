@@ -717,6 +717,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 exportForm.LastBatchNumber = GiftBatchNumber;
                 exportForm.IncludeUnpostedBatches = true;
                 exportForm.TransactionsOnly = true;
+                exportForm.ExtraColumns = false;
                 exportForm.OutputFilename = TAppSettingsManager.GetValue("BankImport.GiftBatchExportFilename",
                     TAppSettingsManager.GetValue("OpenPetra.PathTemp") +
                     Path.DirectorySeparatorChar +
