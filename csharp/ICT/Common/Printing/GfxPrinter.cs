@@ -217,7 +217,7 @@ namespace Ict.Common.Printing
 
             if (CurrentRelativeFontSize != 0)
             {
-                float FontSize = ReturnValue.SizeInPoints + CurrentRelativeFontSize * 2.0f;
+                float FontSize = ReturnValue.SizeInPoints + CurrentRelativeFontSize;
 
                 if (FontSize <= 0.0f)
                 {
