@@ -85,9 +85,9 @@ namespace {#NAMESPACE}
 
     }
 
+{#IFDEF DETAILTABLE}
 	private bool newRecordUnsavedInFocus = false;
 	
-{#IFDEF DETAILTABLE}
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     /// we create the table locally, no dataset
     public bool CreateNew{#DETAILTABLE}()

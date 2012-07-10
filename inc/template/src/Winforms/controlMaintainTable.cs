@@ -101,6 +101,8 @@ namespace {#NAMESPACE}
     
     {#EVENTHANDLERSIMPLEMENTATION}
 
+    //private bool newRecordUnsavedInFocus = false;
+
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     public bool CreateNew{#DETAILTABLE}()
     {
@@ -119,16 +121,37 @@ namespace {#NAMESPACE}
 
             FPetraUtilsObject.SetChangedFlag();
 
+			grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
-            grdDetails.Refresh();
+
             SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
-            int currentGridRow = grdDetails.Selection.ActivePosition.Row;
-            if (currentGridRow == previousGridRow)
+            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+
+            //Must be set after the FocusRowChanged event is called as it sets this flag to false
+            //newRecordUnsavedInFocus = true;
+
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+			
+            Control[] pnl = this.Controls.Find("pnlDetails", true);
+            if (pnl.Length > 0)
             {
-                // The grid must be sorted so the new row is displayed where the old one was.  We will not have received a RowChanged event.
-                // We need to enforce showing the new details.
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+	            //Look for Key & Description fields
+	            bool keyFieldFound = false;
+	            foreach (Control detailsCtrl in pnl[0].Controls)
+	            {
+	                if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+	                {
+	                    keyFieldFound = true;
+	                    detailsCtrl.Focus();
+	                }
+	
+	                if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
+	                {
+	                    detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+	                    break;
+	                }
+	            }
             }
 
             return true;
@@ -293,7 +316,6 @@ namespace {#NAMESPACE}
 		SourceGrid.RowEventArgs rowArgs  = new SourceGrid.RowEventArgs(AGridRowNumber);
 		FocusedRowChanged(grdDetails, rowArgs);
     }
-	
 {#IFDEF SAVEDETAILS}
 
     private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
@@ -340,6 +362,8 @@ namespace {#NAMESPACE}
 
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
+        //newRecordUnsavedInFocus = false;
+    	
         isRepeatLeaveEvent = false;
 
         if (!grdDetails.Sorting)
