@@ -101,8 +101,6 @@ namespace {#NAMESPACE}
     
     {#EVENTHANDLERSIMPLEMENTATION}
 
-    //private bool newRecordUnsavedInFocus = false;
-
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     public bool CreateNew{#DETAILTABLE}()
     {
@@ -126,9 +124,6 @@ namespace {#NAMESPACE}
 
             SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
             InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-
-            //Must be set after the FocusRowChanged event is called as it sets this flag to false
-            //newRecordUnsavedInFocus = true;
 
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             ShowDetails(FPreviouslySelectedDetailRow);
@@ -362,8 +357,6 @@ namespace {#NAMESPACE}
 
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        //newRecordUnsavedInFocus = false;
-    	
         isRepeatLeaveEvent = false;
 
         if (!grdDetails.Sorting)
