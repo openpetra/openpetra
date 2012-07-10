@@ -119,7 +119,6 @@ namespace {#NAMESPACE}
     {
         if(ValidateAllData(true, true))
         {
-            int previousGridRow = grdDetails.Selection.ActivePosition.Row;
 {#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
             // we create the table locally, no dataset
             {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);

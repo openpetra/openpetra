@@ -137,7 +137,6 @@ namespace {#NAMESPACE}
     {
         if(ValidateAllData(true, true))
         {
-            int previousGridRow = grdDetails.Selection.ActivePosition.Row;
             {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
             {#INITNEWROWMANUAL}
             FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
