@@ -229,6 +229,28 @@
     <attribute name="ExpenseAccount" type="int" min="1" max="300"/>
 </generate>
 
+<generate type="ConferenceApplication" count="${conference_applications_count}" consumer="new CSVEntityExporter(uri='${dir.data.output}/conferenceApplications.csv')">
+    <variable name="person" generator="PersonGenerator"/>
+
+	<id name="identifier" type="long"  />
+
+    <attribute name="RegistrationCountryCode" type="string" pattern="(deDE|deDE|deDE|deDE|deDE|deDE|enGB|enGB|enGB|enUS|frFR|nbNO)" />
+    
+    <attribute name="age" type="int" min="1" max="40"/>
+    <attribute name="role" type="string" pattern="(CHILD|TEEN|TEEN|TEEN|TEEN|TEEN|TEEN|TEEN|TEEN|TEEN|COACH|COACH|STAFF|SERVE|SERVE|SERVE|SERVE|MM)"/>
+    
+	<attribute name="FirstName" script="person.givenName" />
+	<attribute name="FamilyName" script="person.familyName" />
+	<attribute name="DateOfBirth" script="person.birthDate" />
+	<attribute name="Email" script="person.email" />
+	<attribute name="Gender" script="person.gender" />
+    
+	<variable name="address" generator="AddressGenerator" />
+	<attribute name="Street" script="address.street + ' ' + address.houseNumber" />
+	<attribute name="PostCode" script="address.postalCode" />
+	<attribute name="City" script="address.city.name" />
+</generate>
+
 <echo>\n ### GENERATE COMPLETE ### \n</echo>
 
 </setup>

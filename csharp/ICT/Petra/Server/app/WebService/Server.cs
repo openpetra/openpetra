@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -72,14 +72,29 @@ public class TOpenPetraOrg : WebService
     /// </summary>
     static TServerManager TheServerManager = null;
 
-    /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
-    /// it will be called automatically by Login</summary>
-    [WebMethod]
-    public bool InitServer()
+    /// <summary>
+    /// constructor, which is called for each http request
+    /// </summary>
+    public TOpenPetraOrg() : base()
     {
         // make sure the correct config file is used
         new TAppSettingsManager(AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config");
+        new TSrvSetting();
+        new TLogging(TSrvSetting.ServerLogFile);
+        TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
 
+        DBAccess.SetFunctionForRetrievingCurrentObjectFromWebSession(SetDatabaseForSession,
+            GetDatabaseFromSession);
+
+        UserInfo.SetFunctionForRetrievingCurrentObjectFromWebSession(SetUserInfoForSession,
+            GetUserInfoFromSession);
+    }
+
+    /// <summary>Initialise the server; this can only be called once, after that it will have no effect;
+    /// it will be called automatically by Login</summary>
+    [WebMethod(EnableSession = true)]
+    public bool InitServer()
+    {
         if (TheServerManager == null)
         {
             Catalog.Init();
@@ -101,20 +116,6 @@ public class TOpenPetraOrg : WebService
             }
         }
 
-        // create a database connection for each user
-        if (Ict.Common.DB.DBAccess.GDBAccessObj == null)
-        {
-            // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
-            TheServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
-
-            // disconnect normal users after 3 hours of inactivity
-            TheServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
-
-            TheServerManager.EstablishDBConnection();
-        }
-
-        Session["DBACCESSOBJ"] = DBAccess.GDBAccessObj;
-
         return true;
     }
 
@@ -127,11 +128,9 @@ public class TOpenPetraOrg : WebService
         {
             InitServer();
 
-            // TODO? store user principal in http cache? HttpRuntime.Cache
             TClientManager.PerformLoginChecks(
                 username.ToUpper(), password.Trim(), "WEB", "127.0.0.1", out ProcessID, out ASystemEnabled);
             Session["LoggedIn"] = true;
-            Session["USERINFO"] = UserInfo.GUserInfo;
 
             DBAccess.GDBAccessObj.UserID = username.ToUpper();
 
@@ -159,18 +158,54 @@ public class TOpenPetraOrg : WebService
         return loggedIn;
     }
 
+    private TDataBase GetDatabaseFromSession()
+    {
+        if (HttpContext.Current.Session["DBAccessObj"] == null)
+        {
+            if (TheServerManager == null)
+            {
+                TLogging.Log("GetDatabaseFromSession : TheServerManager is null");
+                InitServer();
+            }
+            else
+            {
+                // disconnect web user after 2 minutes of inactivity. should disconnect itself already earlier
+                TheServerManager.DisconnectTimedoutDatabaseConnections(2 * 60, "ANONYMOUS");
+
+                // disconnect normal users after 3 hours of inactivity
+                TheServerManager.DisconnectTimedoutDatabaseConnections(3 * 60 * 60, "");
+
+                TheServerManager.EstablishDBConnection();
+            }
+        }
+
+        return (TDataBase)HttpContext.Current.Session["DBAccessObj"];
+    }
+
+    private void SetDatabaseForSession(TDataBase database)
+    {
+        HttpContext.Current.Session["DBAccessObj"] = database;
+    }
+
+    private TPetraPrincipal GetUserInfoFromSession()
+    {
+        return (TPetraPrincipal)HttpContext.Current.Session["UserInfo"];
+    }
+
+    private void SetUserInfoForSession(TPetraPrincipal userinfo)
+    {
+        HttpContext.Current.Session["UserInfo"] = userinfo;
+    }
+
     /// <summary>check if the user has logged in successfully</summary>
     [WebMethod(EnableSession = true)]
     public bool IsUserLoggedIn()
     {
         object loggedIn = Session["LoggedIn"];
 
-        DBAccess.GDBAccessObj = (TDataBase)Session["DBACCESSOBJ"];
-        UserInfo.GUserInfo = (TPetraPrincipal)Session["USERINFO"];
-
-        if (null != loggedIn)
+        if ((null != loggedIn) && ((bool)loggedIn == true))
         {
-            return (bool)loggedIn;
+            return true;
         }
 
         return false;
