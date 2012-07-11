@@ -48,6 +48,7 @@ using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MPartner.Gui.Extracts;
 using Ict.Petra.Client.MPersonnel.Gui;
 using Ict.Petra.Client.MFinance.Gui;
 using Ict.Petra.Client.MSysMan.Gui;
@@ -642,6 +643,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenConferenceFindScreen = @TConferenceFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
+            TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
 
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;

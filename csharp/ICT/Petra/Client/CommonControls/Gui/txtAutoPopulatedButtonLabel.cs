@@ -1382,9 +1382,11 @@ namespace Ict.Petra.Client.CommonControls
             String mTextBoxStringNew;
             String mExceptionString;
             String mResultStringTxt;
+            String mResultStringName;
             String mResultStringLbl;
             String mResultStringExtraInformation;
             System.Int64 mResultIntTxt;
+            int mResultShortIntTxt;
 
             // mResultIntLbl:     System.Int64;  mDummyString:      String;
             TLocationPK mResultLocationPK;
@@ -1497,16 +1499,53 @@ namespace Ict.Petra.Client.CommonControls
                         case TListTableEnum.Extract:
                             #region TListTableEnum.Extract
 
-//TODO
-#if TODO
-                            string mExtractName;
-                            mCmdMPartner.OpenExtractFindScreen(this.ParentForm, out mExtractName);
+                            /* If the delegate is defined, the host form will launch a Event Find dialog for us */
+                            if (TCommonScreensForwarding.OpenExtractFindScreen != null)
+                            {
+                                /* delegate IS defined */
+                                /* TLogging.Log('OpenExtractFindDialog is assigned!', [TLoggingType.ToLogfile]); */
+                                try
+                                {
+                                    TCommonScreensForwarding.OpenExtractFindScreen.Invoke(out mResultShortIntTxt,
+                                        out mResultStringName,
+                                        out mResultStringLbl,
+                                        this.ParentForm);
 
-                            // set the label...
-                            TxtAutoPopulated_SetLabel(mExtractName, out LabelStringOut);
-                            TextBoxStringOut = mExtractName;
-#endif
-                            // End TListTableEnum.Extract:
+                                    if (mResultShortIntTxt != -1)
+                                    {
+                                        TextBoxStringOut = mResultStringName;
+                                        LabelStringOut = mResultStringLbl;
+
+                                        if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
+                                        {
+                                            bool ValidResult = true;
+                                            ValueChanged(mResultShortIntTxt, mResultStringName, ValidResult);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        TextBoxStringOut = "";
+                                        LabelStringOut = "";
+                                    }
+                                }
+                                catch (Exception exp)
+                                {
+                                    TextBoxStringOut = "";
+                                    LabelStringOut = "";
+                                    throw new ApplicationException("Exception occured while calling OpenExtractFind Delegate!",
+                                        exp);
+                                }
+                            }
+                            /* end IS assigned */
+                            else
+                            {
+                                /* delegate IS NOT defined */
+                                throw new ApplicationException(
+                                    "DEVELOPER ERROR: OpenExtractFind Delegate must be assigned on this Control to be able to open a Event find dialog!");
+                            }
+
+                            /* End TListTableEnum.Extract: */
+                            
                             #endregion
                             break;
 
