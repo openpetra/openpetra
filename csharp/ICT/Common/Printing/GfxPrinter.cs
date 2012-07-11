@@ -217,7 +217,14 @@ namespace Ict.Common.Printing
 
             if (CurrentRelativeFontSize != 0)
             {
-                ReturnValue = new Font(ReturnValue.FontFamily, ReturnValue.SizeInPoints + CurrentRelativeFontSize * 2.0f, ReturnValue.Style);
+                float FontSize = ReturnValue.SizeInPoints + CurrentRelativeFontSize;
+
+                if (FontSize <= 0.0f)
+                {
+                    FontSize = 0.5f;
+                }
+
+                ReturnValue = new Font(ReturnValue.FontFamily, FontSize, ReturnValue.Style);
             }
 
             return ReturnValue;

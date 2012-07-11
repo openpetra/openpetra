@@ -83,7 +83,6 @@ CachedTables:
                 PtDriverStatus: {Comment=Contains the codes that indicate the level of ability a drive has}
                 PtLanguageLevel: {Comment="Contains the degrees to which a language is spoken, e.g. a little, phrases, fluent"}
                 PtLeadershipRating: {Comment=Contains the codes indicating the leadership potential of someone}
-                PtPartyType: {Comment=Contains the codes indicating whether groups should be together and for how long}
                 PtPassportType: {Comment=Contains the codes that indicate the type of passport a person holds}
                 PtTravelType: {Enum=TransportTypeList, Comment=Contains the codes that indicate the mode of travel being used}
                 PtQualificationArea: {Comment="Contains the areas in which a person may posess a qualification, e.g. computing or accountancy"}

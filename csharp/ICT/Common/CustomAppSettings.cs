@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -372,7 +372,7 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public static System.Int32 GetInt32(String AKey, System.Int16 ADefaultValue)
+        public static System.Int32 GetInt32(String AKey, System.Int32 ADefaultValue)
         {
             System.Int32 ReturnValue;
             ReturnValue = ADefaultValue;
@@ -407,7 +407,7 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public static System.Int64 GetInt64(String AKey, System.Int16 ADefaultValue)
+        public static System.Int64 GetInt64(String AKey, System.Int64 ADefaultValue)
         {
             System.Int64 ReturnValue;
             ReturnValue = ADefaultValue;

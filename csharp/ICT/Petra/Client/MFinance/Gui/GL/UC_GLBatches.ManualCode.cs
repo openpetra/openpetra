@@ -230,7 +230,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             EnableButtonControl(true);
 
             grdDetails.DataSource = null;
-            
+
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
             ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
@@ -248,7 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-            
+
             //FCurrentRow = FMainDS.ABatch.Rows.Count - 1;
 
             txtDetailBatchDescription.Text = "PLEASE ENTER DESCRIPTION";
@@ -340,15 +340,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         EnableButtonControl(false);
                         ClearDetailControls();
-						
+
                         newCurrentRowPos = 0;
                     }
 
                     //Select and call the event that doesn't occur automatically
-					InvokeFocusedRowChanged(newCurrentRowPos);
+                    InvokeFocusedRowChanged(newCurrentRowPos);
                     //!!DO NOT USE THIS: grdDetails.Selection.FocusRow(0);
-                    
-                    
+
+
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
 

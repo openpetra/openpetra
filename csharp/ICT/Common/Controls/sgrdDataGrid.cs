@@ -158,26 +158,26 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-	    /// behaviour for invoking focus events
-	    /// </summary>
-	    public enum TInvokeGridFocusEventEnum
-	    {
-	        /// <summary>
-	        /// no focus events
-	        /// </summary>
-	        NoFocusEvent,
-	
-	        /// <summary>
-	        /// FocusRowLeaving event
-	        /// </summary>
-	        FocusRowLeavingEvent,
-	
-	        /// <summary>
-	        /// FocusedRowChanged event
-	        /// </summary>0295BC0D-ECC1-4E71-8152-D236FEEA6FB5
-	        FocusedRowChangedEvent
-	    };
-	    
+        /// behaviour for invoking focus events
+        /// </summary>
+        public enum TInvokeGridFocusEventEnum
+        {
+            /// <summary>
+            /// no focus events
+            /// </summary>
+            NoFocusEvent,
+
+            /// <summary>
+            /// FocusRowLeaving event
+            /// </summary>
+            FocusRowLeavingEvent,
+
+            /// <summary>
+            /// FocusedRowChanged event
+            /// </summary>0295BC0D-ECC1-4E71-8152-D236FEEA6FB5
+            FocusedRowChangedEvent
+        };
+
         /// <summary>
         /// Read access to the View for the ColumnHeaders of this Grid (used by
         /// sgrdDataGrid.Columns).
@@ -1107,20 +1107,18 @@ namespace Ict.Common.Controls
             base.OnSortedRangeRows(e);
 
             FSorting = true;
-            
+
             if (FRowsSelectedBeforeSort.Length > 0)
             {
-            	if (FKeepRowSelectedAfterSort)
+                if (FKeepRowSelectedAfterSort)
                 {
-					this.SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, false);
+                    this.SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, false);
                 }
 
-            	this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
-
+                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
             }
 
             FSorting = false;
-            
         }
 
         /// <summary>
@@ -1388,42 +1386,40 @@ namespace Ict.Common.Controls
             SelectRowInGrid(ARowNumberInGrid, false);
         }
 
-	    /// select a row in the grid, and optionally invoke the event for FocusedRowChanged
+        /// select a row in the grid, and optionally invoke the event for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid, TInvokeGridFocusEventEnum AInvokeEvent)
         {
             switch (AInvokeEvent)
             {
-            	
-            	case TInvokeGridFocusEventEnum.FocusRowLeavingEvent:  //Invoke FocusRowLeaving event
+                case TInvokeGridFocusEventEnum.FocusRowLeavingEvent:  //Invoke FocusRowLeaving event
 
-            		break;
-            	
-            	case TInvokeGridFocusEventEnum.FocusedRowChangedEvent:  //Invoke FocusedRowChanged event
-	            	SelectRowInGrid(ARowNumberInGrid, false);
-	            	
-            		break;
-            	
-            	default: //TInvokeGridFocusEventEnum.NoFocusEvent
-	            	int NumRows = this.Rows.Count;
-	
-		            if (NumRows == 1)
-		            {
-		                return;
-		            }
-		            else if ((ARowNumberInGrid < 1) || (ARowNumberInGrid >= NumRows))
-		            {
-		                return;
-		            }
-		
-		            //Select and show specified row
-		            this.Selection.FocusStyle = FocusStyle.None;
-		            this.Selection.SelectRow(ARowNumberInGrid, true);
-		            this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
-		            this.Selection.FocusStyle = FocusStyle.Default;
-            		
-            		break;
+                    break;
+
+                case TInvokeGridFocusEventEnum.FocusedRowChangedEvent:  //Invoke FocusedRowChanged event
+                    SelectRowInGrid(ARowNumberInGrid, false);
+
+                    break;
+
+                default: //TInvokeGridFocusEventEnum.NoFocusEvent
+                    int NumRows = this.Rows.Count;
+
+                    if (NumRows == 1)
+                    {
+                        return;
+                    }
+                    else if ((ARowNumberInGrid < 1) || (ARowNumberInGrid >= NumRows))
+                    {
+                        return;
+                    }
+
+                    //Select and show specified row
+                    this.Selection.FocusStyle = FocusStyle.None;
+                    this.Selection.SelectRow(ARowNumberInGrid, true);
+                    this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+                    this.Selection.FocusStyle = FocusStyle.Default;
+
+                    break;
             }
-            
         }
 
         /// select a row in the grid, and invoke the event for FocusedRowChanged

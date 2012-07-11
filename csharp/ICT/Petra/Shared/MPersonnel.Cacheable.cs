@@ -129,11 +129,6 @@ namespace Ict.Petra.Shared
         LeadershipRatingList,
 
         /// <summary>
-        /// Contains the codes indicating whether groups should be together and for how long
-        /// </summary>
-        PartyTypeList,
-
-        /// <summary>
         /// Contains the codes that indicate the type of passport a person holds
         /// </summary>
         PassportTypeList,

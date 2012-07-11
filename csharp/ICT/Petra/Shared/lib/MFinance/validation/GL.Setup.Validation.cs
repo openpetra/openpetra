@@ -71,6 +71,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
+
         /// <summary>
         /// Validates the Daily Exchange Rates screen data.
         /// </summary>

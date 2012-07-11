@@ -444,10 +444,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             FPetraUtilsObject.SetChangedFlag();
 
-			grdDetails.DataSource = null;
+            grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ADailyExchangeRate.DefaultView);
 
-			SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
+            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
             InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
             //Must be set after the FocusRowChanged event is called as it sets this flag to false
@@ -457,10 +457,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ShowDetails(FPreviouslySelectedDetailRow);
 
             Control[] pnl = this.Controls.Find("pnlDetails", true);
+
             if (pnl.Length > 0)
             {
                 //Look for Key & Description fields
                 bool keyFieldFound = false;
+
                 foreach (Control detailsCtrl in pnl[0].Controls)
                 {
                     if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
@@ -469,7 +471,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         detailsCtrl.Focus();
                     }
 
-                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
+                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && (detailsCtrl.Text == string.Empty))
                     {
                         detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
                         break;
