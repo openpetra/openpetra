@@ -2760,7 +2760,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         /// generated method from connector
         public MExtractMasterTable GetAllExtractHeaders()
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders();
         }
 
@@ -2770,8 +2769,21 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                                         String AUserCreated,
                                                         String AUserModified)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";STRING;BOOL;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AAllUsers, AUserCreated, AUserModified);
+        }
+
+        /// generated method from connector
+        public MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                        String AExtractDescFilter,
+                                                        Boolean AAllUsers,
+                                                        String AUserCreated,
+                                                        String AUserModified,
+                                                        System.Nullable<DateTime>ADateCreatedFrom,
+                                                        System.Nullable<DateTime>ADateCreatedTo,
+                                                        System.Nullable<DateTime>ADateModifiedFrom,
+                                                        System.Nullable<DateTime>ADateModifiedTo)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AExtractDescFilter, AAllUsers, AUserCreated, AUserModified, ADateCreatedFrom, ADateCreatedTo, ADateModifiedFrom, ADateModifiedTo);
         }
 
         /// generated method from connector
