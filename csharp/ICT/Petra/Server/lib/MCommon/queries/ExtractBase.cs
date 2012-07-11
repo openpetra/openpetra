@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MCommon.queries
                 Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                List<OdbcParameter> SqlParameterList = new List<OdbcParameter>();
+                List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
                 bool AddressFilterAdded;
 
                 if (FSpecialTreatment)
@@ -78,7 +78,7 @@ namespace Ict.Petra.Server.MCommon.queries
                     // now run the database query
                     TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                     DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
-                                                                           SqlParameterList.ToArray());
+                        SqlParameterList.ToArray());
 
                     if (NewTransaction)
                     {
@@ -136,7 +136,7 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <param name="AOdbcParameterList"></param>
         /// <returns>true if address tables and fields were added</returns>
         protected bool AddAddressFilter(TParameterList AParameters, ref string ASqlStmt,
-            ref List<OdbcParameter> AOdbcParameterList)
+            ref List <OdbcParameter>AOdbcParameterList)
         {
             string WhereClause = "";
             string TableNames = "";
@@ -453,6 +453,6 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="ASqlParameterList"></param>
-        protected abstract void RetrieveParameters (TParameterList AParameters, ref string ASqlStmt, ref List<OdbcParameter> ASqlParameterList);
+        protected abstract void RetrieveParameters (TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASqlParameterList);
     }
 }

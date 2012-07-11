@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List<OdbcParameter> ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
             // now add parameters to sql parameter list
             ASQLParameterList.Add(new OdbcParameter("city", OdbcType.VarChar)

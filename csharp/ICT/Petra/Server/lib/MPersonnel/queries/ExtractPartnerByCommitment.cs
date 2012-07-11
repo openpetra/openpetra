@@ -61,7 +61,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List<OdbcParameter> ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
             // prepare list of commitment statuses
             List <String>param_commitment_status_choices = new List <String>();

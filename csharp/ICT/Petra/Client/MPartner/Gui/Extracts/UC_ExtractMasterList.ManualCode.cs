@@ -340,19 +340,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void RefreshExtractList(String AExtractNameFilter, Boolean AAllUsers,
             String ACreatedByUser, String AModifiedByUser)
         {
-        	// only react here if screen is initialized
-        	if (FPetraUtilsObject != null)
-        	{
-		        this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
-		
-		        // data can have changed completely, so easiest for now is to select first row
-		        grdDetails.SelectRowInGrid(1, true);
-		        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-		        ShowDetails(FPreviouslySelectedDetailRow);
-		
-		        // enable/disable buttons
-	            UpdateButtonStatus();
-        	}
+            // only react here if screen is initialized
+            if (FPetraUtilsObject != null)
+            {
+                this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
+
+                // data can have changed completely, so easiest for now is to select first row
+                grdDetails.SelectRowInGrid(1, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
+
+                // enable/disable buttons
+                UpdateButtonStatus();
+            }
         }
 
         /// <summary>

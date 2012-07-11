@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List<OdbcParameter> ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
             // this is not supposed to be called but needs to be here because of abstract method
         }
@@ -167,7 +167,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             bool AddressFilterAdded;
             string SqlStmtWorkerFieldOriginal = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByField.WorkerField.sql");
             string SqlStmt;
-            List<OdbcParameter> SqlParameterList = new List<OdbcParameter>();
+            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
             string TypeCodeParameter;
 
             // If date range was specified then only look at staff data. Otherwise look for persons and families seperately.
@@ -241,7 +241,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             // now run the database query
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
-                                                                   SqlParameterList.ToArray());
+                SqlParameterList.ToArray());
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
@@ -310,7 +310,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
             partnerkeys.Clear();
             partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
-                                                         SqlParameterList.ToArray());
+                SqlParameterList.ToArray());
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
@@ -350,7 +350,8 @@ namespace Ict.Petra.Server.MPersonnel.queries
             bool ReturnValue = false;
             bool AddressFilterAdded;
             string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractPartnerByField.Commitment.sql");
-            List<OdbcParameter> SqlParameterList = new List<OdbcParameter>();
+
+            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
 
             // need to set initial value here in case method needs to return before value is set
             AExtractId = -1;
@@ -430,7 +431,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             // now run the database query
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
-                                                                   SqlParameterList.ToArray());
+                SqlParameterList.ToArray());
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???

@@ -1545,7 +1545,7 @@ namespace Ict.Petra.Client.CommonControls
                             }
 
                             /* End TListTableEnum.Extract: */
-                            
+
                             #endregion
                             break;
 

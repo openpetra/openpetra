@@ -51,7 +51,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// retrieve all extract master records
         /// </summary>
         /// <returns>returns table filled with all extract headers</returns>
-        //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")] 
+        //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders()
         {
             MExtractMasterTable ExtractMasterDT;
@@ -76,8 +76,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, Boolean AAllUsers,
             String AUserCreated, String AUserModified)
         {
-            return GetAllExtractHeaders (AExtractNameFilter, "", AAllUsers, AUserCreated, AUserModified,
-                                         null, null, null, null);
+            return GetAllExtractHeaders(AExtractNameFilter, "", AAllUsers, AUserCreated, AUserModified,
+                null, null, null, null);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, String AExtractDescFilter,
             Boolean AAllUsers, String AUserCreated, String AUserModified, DateTime? ADateCreatedFrom,
-            DateTime? ADateCreatedTo, DateTime? ADateModifiedFrom, DateTime? ADateModifiedTo)
+            DateTime? ADateCreatedTo, DateTime? ADateModifiedFrom, DateTime ? ADateModifiedTo)
         {
             // if no filter is set then call method to get all extracts
             if ((AExtractNameFilter.Length == 0)
@@ -113,8 +113,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractMasterTable ExtractMasterDT = new MExtractMasterTable();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             string SqlStmt;
-            List<OdbcParameter> SqlParameterList = new List<OdbcParameter>();
-            
+            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
+
             try
             {
                 // prepare extract name filter field
@@ -132,16 +132,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 // Use a direct sql statement rather than db access classes to improve performance as otherwise
                 // we would need an extra query for each row of an extract to retrieve partner name and class
                 SqlStmt = "SELECT * FROM " + MExtractMasterTable.GetTableDBName() +
-                         " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() +
+                          " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() +
                           " LIKE '" + AExtractNameFilter + "'";
 
                 if (AExtractDescFilter.Length > 0)
                 {
                     AExtractDescFilter = AExtractDescFilter.Replace('*', '%');
                     SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractDescDBName() +
-                        " LIKE '" + AExtractDescFilter + "'";
+                               " LIKE '" + AExtractDescFilter + "'";
                 }
-                
+
                 if (AUserCreated.Length > 0)
                 {
                     SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
@@ -160,11 +160,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         {
                             Value = ADateCreatedFrom
                         });
-                    
+
                     SqlStmt += " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateCreatedDBName() +
                                " >= ?";
                 }
-                
+
                 if (ADateCreatedTo.HasValue)
                 {
                     // Add 1 day to date as timestamp is usually set to 00:00:00 and therefore to beginning of day.
@@ -204,8 +204,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                " < ?";
                 }
 
-                DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction, 
-                                               SqlParameterList.ToArray(), -1, -1);
+                DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction,
+                    SqlParameterList.ToArray(), -1, -1);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
@@ -217,7 +217,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ExtractMasterDT;
         }
-        
+
         /// <summary>
         /// check if extract with given name already exists
         /// </summary>

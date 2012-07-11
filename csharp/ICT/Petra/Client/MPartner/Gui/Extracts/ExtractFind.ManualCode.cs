@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private int FExtractId;
         private String FExtractName;
         private String FExtractDescription;
-        
+
         private MExtractMasterTable FExtractMasterTable;
 
         #region Public Methods
@@ -64,12 +64,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             FExtractId = -1;
             FExtractName = "";
             FExtractDescription = "";
-        
-             // now show the actual dialog
+
+            // now show the actual dialog
             this.StartPosition = FormStartPosition.CenterScreen;
 
             FExtractMasterTable = new MExtractMasterTable();
-            
+
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn("Extract Name", FExtractMasterTable.ColumnExtractName);
             grdDetails.AddCheckBoxColumn("Deletable", FExtractMasterTable.ColumnDeletable);
@@ -79,14 +79,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // clear fields for search criteria, preset user field with current user
             ClearSearchCriteria(null, null);
             cmbUserCreated.SetSelectedString(UserInfo.GUserInfo.UserID, -1);
-            
+
             DataView myDataView = FExtractMasterTable.DefaultView;
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            
+
             // disable "Accept" button if no record is selected
             PrepareButtons();
-            
+
             this.ShowDialog();
 
             return true;
@@ -106,10 +106,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             AExtractId = FExtractId;
             AExtractName = FExtractName;
             AExtractDescription = FExtractDescription;
-            
-            return (FExtractId >= 0);
+
+            return FExtractId >= 0;
         }
-        
+
         #endregion
 
         #region Private Methods
@@ -121,57 +121,57 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void RefreshExtractList(System.Object sender, EventArgs e)
         {
-        	bool AllUsers = true;
-        	String CreatedByUser = "";
-        	String ModifiedByUser = "";
-        	DateTime? DateCreatedFrom = null;
-        	DateTime? DateCreatedTo = null;
-        	DateTime? DateModifiedFrom = null;
-        	DateTime? DateModifiedTo = null;
+            bool AllUsers = true;
+            String CreatedByUser = "";
+            String ModifiedByUser = "";
+            DateTime? DateCreatedFrom = null;
+            DateTime? DateCreatedTo = null;
+            DateTime? DateModifiedFrom = null;
+            DateTime? DateModifiedTo = null;
 
-			if (cmbUserCreated.GetSelectedString().Length > 0)
-			{
-				AllUsers = false;
-				CreatedByUser = cmbUserCreated.GetSelectedString();
-			}
+            if (cmbUserCreated.GetSelectedString().Length > 0)
+            {
+                AllUsers = false;
+                CreatedByUser = cmbUserCreated.GetSelectedString();
+            }
 
-			if (cmbUserModified.GetSelectedString().Length > 0)
-			{
-				AllUsers = false;
-				ModifiedByUser = cmbUserModified.GetSelectedString();
-			}
-			
-        	if (dtpCreatedFrom.Text.Length > 0)
-        	{
-        		DateCreatedFrom = dtpCreatedFrom.Date;
-        	}
-        	
-        	if (dtpCreatedTo.Text.Length > 0)
-        	{
-        		DateCreatedTo = dtpCreatedTo.Date;
-        	}
+            if (cmbUserModified.GetSelectedString().Length > 0)
+            {
+                AllUsers = false;
+                ModifiedByUser = cmbUserModified.GetSelectedString();
+            }
 
-        	if (dtpModifiedFrom.Text.Length > 0)
-        	{
-        		DateModifiedFrom = dtpModifiedFrom.Date;
-        	}
-        	
-        	if (dtpModifiedTo.Text.Length > 0)
-        	{
-        		DateModifiedTo = dtpModifiedTo.Date;
-        	}
-        
-        	FExtractMasterTable = TRemote.MPartner.Partner.WebConnectors.GetAllExtractHeaders(txtExtractName.Text,
-                    txtExtractDesc.Text, AllUsers, CreatedByUser, ModifiedByUser, DateCreatedFrom, DateCreatedTo,
-                   DateModifiedFrom, DateModifiedTo);
-        	
-        	if (FExtractMasterTable != null)
-        	{
-	            DataView myDataView = FExtractMasterTable.DefaultView;
-	            myDataView.AllowNew = false;
-	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-        	}
-       		
+            if (dtpCreatedFrom.Text.Length > 0)
+            {
+                DateCreatedFrom = dtpCreatedFrom.Date;
+            }
+
+            if (dtpCreatedTo.Text.Length > 0)
+            {
+                DateCreatedTo = dtpCreatedTo.Date;
+            }
+
+            if (dtpModifiedFrom.Text.Length > 0)
+            {
+                DateModifiedFrom = dtpModifiedFrom.Date;
+            }
+
+            if (dtpModifiedTo.Text.Length > 0)
+            {
+                DateModifiedTo = dtpModifiedTo.Date;
+            }
+
+            FExtractMasterTable = TRemote.MPartner.Partner.WebConnectors.GetAllExtractHeaders(txtExtractName.Text,
+                txtExtractDesc.Text, AllUsers, CreatedByUser, ModifiedByUser, DateCreatedFrom, DateCreatedTo,
+                DateModifiedFrom, DateModifiedTo);
+
+            if (FExtractMasterTable != null)
+            {
+                DataView myDataView = FExtractMasterTable.DefaultView;
+                myDataView.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            }
+
             PrepareButtons();
         }
 
@@ -182,19 +182,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void ClearSearchCriteria(System.Object sender, EventArgs e)
         {
-        	txtExtractName.Text = "";
-        	txtExtractDesc.Text = "";
-        	cmbUserCreated.SetSelectedString("", -1);
-        	dtpCreatedFrom.Text = "";
-        	dtpCreatedTo.Text = "";
-        	cmbUserModified.SetSelectedString("", -1);
-        	dtpModifiedFrom.Text = "";
-        	dtpModifiedTo.Text = "";
-        	
-        	FExtractMasterTable.Clear();
+            txtExtractName.Text = "";
+            txtExtractDesc.Text = "";
+            cmbUserCreated.SetSelectedString("", -1);
+            dtpCreatedFrom.Text = "";
+            dtpCreatedTo.Text = "";
+            cmbUserModified.SetSelectedString("", -1);
+            dtpModifiedFrom.Text = "";
+            dtpModifiedTo.Text = "";
+
+            FExtractMasterTable.Clear();
             DataView myDataView = FExtractMasterTable.DefaultView;
             myDataView.AllowNew = false;
-	        grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
             PrepareButtons();
         }
@@ -207,8 +207,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void AcceptExtract(System.Object sender, EventArgs e)
         {
             MExtractMasterRow SelectedRow = null;
+
             DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
-    
+
             if (SelectedGridRow.Length >= 1)
             {
                 SelectedRow = (MExtractMasterRow)SelectedGridRow[0].Row;
@@ -216,8 +217,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 FExtractName = SelectedRow.ExtractName;
                 FExtractDescription = SelectedRow.ExtractDesc;
             }
-            
-        	Close();
+
+            Close();
         }
 
         /// <summary>
@@ -228,11 +229,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void CloseScreen(System.Object sender, EventArgs e)
         {
             FExtractId = -1;
-        	FExtractName = "";
-        	FExtractDescription = "";
-        	Close();
+            FExtractName = "";
+            FExtractDescription = "";
+            Close();
         }
-        
+
         private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
         {
             this.PrepareButtons();
@@ -252,11 +253,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 btnAccept.Enabled = false;
             }
-       }
-        
+        }
+
         #endregion
     }
-    
+
     /// <summary>
     /// Manages the opening of a new/showing of an existing Instance of the Event Find Screen.
     /// </summary>
@@ -284,12 +285,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             if (SelectExtract.ShowDialog(true))
             {
-            	SelectExtract.GetResult(out AExtractId, out AExtractName, out AExtractDesc);
+                SelectExtract.GetResult(out AExtractId, out AExtractName, out AExtractDesc);
                 return true;
             }
 
             return false;
         }
     }
-    
 }

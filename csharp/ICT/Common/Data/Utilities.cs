@@ -628,6 +628,5 @@ namespace Ict.Common.Data
         {
             return AcceptChangesForUnmodifiedRows(AInspectDT, -1, false);
         }
-        
     }
 }
