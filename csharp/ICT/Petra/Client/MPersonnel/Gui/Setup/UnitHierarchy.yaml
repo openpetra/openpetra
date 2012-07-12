@@ -1,0 +1,39 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Unit Hierarchy
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    FormType: edit
+    Template: window
+    WindowWidth: 400
+    WindowHeight: 550
+    Actions:
+        actAddNewUnit: {Label=Add Account, ActionClick=AddNewUnit}
+    Controls:
+        pnlContent:
+            Controls:
+                Row0: [pnlHelp]
+                Row1: [pnlUnits]
+                Row2: [pnlStatus]
+            Dock: Fill
+        pnlHelp:
+            Controls: [lblHelp]
+            Dock: Top
+            Height:60
+        pnlUnits:
+            Controls: [trvUnits]
+            Dock: Top
+            Height:300
+        pnlStatus:
+            Controls: [txtStatus]
+            Dock: Fill
+        lblHelp:
+            Text:Drag the Units as required to re-arrange the hierarchy of units.
+            Dock: Fill
+        txtStatus:
+            Dock: Fill
+            Multiline:true
+            ScrollBars:Vertical
+            ReadOnly:true
+        trvUnits:
+            Dock: Fill
+            NoLabel: true
