@@ -86,7 +86,7 @@ namespace {#NAMESPACE}
     }
 
 {#IFDEF DETAILTABLE}
-	private bool newRecordUnsavedInFocus = false;
+	private bool FNewRecordUnsavedInFocus = false;
 	
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     /// we create the table locally, no dataset
@@ -107,7 +107,7 @@ namespace {#NAMESPACE}
             InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
             //Must be set after the FocusRowChanged event is called as it sets this flag to false
-            newRecordUnsavedInFocus = true;
+            FNewRecordUnsavedInFocus = true;
 
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             ShowDetails(FPreviouslySelectedDetailRow);
@@ -215,43 +215,43 @@ namespace {#NAMESPACE}
 
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
 	
-    private bool firstFocusEventHasRun = false;
-    private bool isRepeatLeaveEvent = false;
-    private int gridRowsCount = 0;
-    private int numGridRows	 = 0;
-    private int gridRowsCountHasChanged = 0;
-    private bool newFocusEventStarted = false;
+    private bool FInitialFocusEventCompleted = false;
+    private bool FNewFocusEvent = false;
+    private bool FRepeatLeaveEventDetected = false;
+    private int FDetailGridRowsCountPrevious = 0;
+    private int FDetailGridRowsCountCurrent = 0;
+    private int FDetailGridRowsChangedState = 0;
 
     private void FocusPreparation(bool AIsLeaveEvent)
     {
-    	if (isRepeatLeaveEvent)
+    	if (FRepeatLeaveEventDetected)
     	{
     		return;
     	}
     	
-    	numGridRows = grdDetails.Rows.Count;
+    	FDetailGridRowsCountCurrent = grdDetails.Rows.Count;
 
 		//first run only
-    	if (!firstFocusEventHasRun)
+    	if (!FInitialFocusEventCompleted)
     	{
-    		firstFocusEventHasRun = true;
-    		gridRowsCount = numGridRows;
+    		FInitialFocusEventCompleted = true;
+    		FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
     	}
     	
     	//Specify if it is a row change, add or delete
-    	if (gridRowsCount == numGridRows)
+    	if (FDetailGridRowsCountPrevious == FDetailGridRowsCountCurrent)
     	{
-    		gridRowsCountHasChanged = 0;
+    		FDetailGridRowsChangedState = 0;
     	}
-    	else if (gridRowsCount > numGridRows)
+    	else if (FDetailGridRowsCountPrevious > FDetailGridRowsCountCurrent)
         {
-        	gridRowsCount = numGridRows;
-        	gridRowsCountHasChanged = -1;
+        	FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
+        	FDetailGridRowsChangedState = -1;
         }
-    	else if (gridRowsCount < numGridRows)
+    	else if (FDetailGridRowsCountPrevious < FDetailGridRowsCountCurrent)
     	{
-        	gridRowsCount = numGridRows;
-        	gridRowsCountHasChanged = 1;
+        	FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
+        	FDetailGridRowsChangedState = 1;
     	}
     	
     }
@@ -268,22 +268,22 @@ namespace {#NAMESPACE}
 		//Ignore this event if currently sorting
     	if (grdDetails.Sorting)
     	{
-    		newFocusEventStarted = false;
+    		FNewFocusEvent = false;
     		return;
     	}    	
     	
-    	if (newFocusEventStarted == false)
+    	if (FNewFocusEvent == false)
     	{
-    		newFocusEventStarted = true;
+    		FNewFocusEvent = true;
     	}
 
     	FocusPreparation(true);
 
-    	if (!isRepeatLeaveEvent)
+    	if (!FRepeatLeaveEventDetected)
         {
-	    	isRepeatLeaveEvent = true;
+	    	FRepeatLeaveEventDetected = true;
 	    	
-            if (gridRowsCountHasChanged == -1 || numGridRows == 2)  //do not run validation if cancelling current row
+            if (FDetailGridRowsChangedState == -1 || FDetailGridRowsCountCurrent == 2)  //do not run validation if cancelling current row
 																	// OR only 1 row present so no rowleaving event possible
             {
             	e.Cancel = true;
@@ -299,29 +299,29 @@ namespace {#NAMESPACE}
         else
         {
             // Reset flag
-	    	isRepeatLeaveEvent = false;
+	    	FRepeatLeaveEventDetected = false;
             e.Cancel = true;
         }
     }
 {#ENDIF SAVEDETAILS}
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        newRecordUnsavedInFocus = false;
+        FNewRecordUnsavedInFocus = false;
     	
-        isRepeatLeaveEvent = false;
+        FRepeatLeaveEventDetected = false;
 
         if (!grdDetails.Sorting)
         {
 	    	//Sometimes, FocusedRowChanged get called without FocusRowLeaving
 	    	//  so need to handle that
-	    	if (!newFocusEventStarted)
+	    	if (!FNewFocusEvent)
 	    	{
 	    		//This implies start of a new event chain without a previous FocusRowLeaving
 	    		FocusPreparation(false);
 	    	}
 	    	
 	        //Only allow, row change, add or delete, not repeat events from grid changing focus
-	    	if(e.Row != FCurrentRow && gridRowsCountHasChanged == 0)
+	    	if(e.Row != FCurrentRow && FDetailGridRowsChangedState == 0)
 	        {
 	    		// Transfer data from Controls into the DataTable
 	            if (FPreviouslySelectedDetailRow != null)
@@ -334,13 +334,13 @@ namespace {#NAMESPACE}
 	            ShowDetails(FPreviouslySelectedDetailRow);
 	            pnlDetails.Enabled = true;
 	    	}
-	    	else if (gridRowsCountHasChanged == 1) //Addition
+	    	else if (FDetailGridRowsChangedState == 1) //Addition
 	    	{
 	    		
 	    	}
-	    	else if (gridRowsCountHasChanged == -1) //Deletion
+	    	else if (FDetailGridRowsChangedState == -1) //Deletion
 	    	{
-	    		if (numGridRows > 1) //Implies at least one record still left
+	    		if (FDetailGridRowsCountCurrent > 1) //Implies at least one record still left
 	    		{
 	    			// Select and display the details of the currently selected Row without causing an event
 	    			grdDetails.SelectRowInGrid(e.Row, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
@@ -359,8 +359,8 @@ namespace {#NAMESPACE}
     	FCurrentRow = e.Row;
 	    
 	    //Event chain tidy-up
-		gridRowsCountHasChanged = 0;
-	    newFocusEventStarted = false;
+		FDetailGridRowsChangedState = 0;
+	    FNewFocusEvent = false;
 	}
 {#ENDIF SHOWDETAILS}
 {#IFDEF UNDODATA}
@@ -625,7 +625,7 @@ namespace {#NAMESPACE}
                 }
 				
             	//The sorting will be affected when a new row is saved, so need to reselect row
-                if (newRecordUnsavedInFocus)
+                if (FNewRecordUnsavedInFocus)
 	            {
 	            	SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
 					InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
