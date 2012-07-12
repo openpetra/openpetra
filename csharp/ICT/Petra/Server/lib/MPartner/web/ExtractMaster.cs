@@ -267,6 +267,48 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// create an extract of all family members (persons) existing in a base extract
+        /// </summary>
+        /// <param name="ABaseExtractId"></param>
+        /// <param name="AExtractId"></param>
+        /// <param name="AExtractName"></param>
+        /// <param name="AExtractDescription"></param>
+        /// <returns>returns true if extract was created successfully</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean CreateFamilyMembersExtract(int ABaseExtractId, ref int AExtractId, String AExtractName, String AExtractDescription)
+        {
+            Boolean ResultValue = false;
+            //TVerificationResultCollection VerificationResult;
+            //Boolean ExtractExists;
+
+            //ResultValue = Server.MPartner.Extracts.TExtractsHandling.CreateNewExtract(AExtractName, AExtractDescription,
+            //    out AExtractId, out ExtractExists, out VerificationResult);
+
+            return ResultValue;
+        }
+
+        /// <summary>
+        /// create an extract containing all families of persons in a base extract
+        /// </summary>
+        /// <param name="ABaseExtractId"></param>
+        /// <param name="AExtractId"></param>
+        /// <param name="AExtractName"></param>
+        /// <param name="AExtractDescription"></param>
+        /// <returns>returns true if extract was created successfully</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean CreateFamilyExtractForPersons(int ABaseExtractId, ref int AExtractId, String AExtractName, String AExtractDescription)
+        {
+            Boolean ResultValue = false;
+            //TVerificationResultCollection VerificationResult;
+            //Boolean ExtractExists;
+
+            //ResultValue = Server.MPartner.Extracts.TExtractsHandling.CreateNewExtract(AExtractName, AExtractDescription,
+            //    out AExtractId, out ExtractExists, out VerificationResult);
+
+            return ResultValue;
+        }
+
+        /// <summary>
         /// purge (delete) extracts for specific users and older than x days
         /// </summary>
         /// <param name="ANumberOfDays"></param>

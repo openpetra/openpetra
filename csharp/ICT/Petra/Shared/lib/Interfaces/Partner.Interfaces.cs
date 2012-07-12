@@ -722,6 +722,16 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
                                    String AExtractName,
                                    String AExtractDescription);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean CreateFamilyMembersExtract(System.Int32 ABaseExtractId,
+                                           ref System.Int32 AExtractId,
+                                           String AExtractName,
+                                           String AExtractDescription);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean CreateFamilyExtractForPersons(System.Int32 ABaseExtractId,
+                                              ref System.Int32 AExtractId,
+                                              String AExtractName,
+                                              String AExtractDescription);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean PurgeExtracts(System.Int32 ANumberOfDays,
                               Boolean AAllUsers,
                               String AUserName);

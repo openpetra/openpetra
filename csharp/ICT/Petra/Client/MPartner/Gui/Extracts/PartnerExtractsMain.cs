@@ -38,6 +38,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <summary>
         /// open General Extract screen
         /// </summary>
+        /// <param name="AParentForm"></param>
         public static void PartnerByGeneralCriteriaExtract(Form AParentForm)
         {
             TFrmPartnerByGeneralCriteria frm = new TFrmPartnerByGeneralCriteria(AParentForm);
@@ -49,6 +50,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <summary>
         /// open screen to create Publication Extract
         /// </summary>
+        /// <param name="AParentForm"></param>
         public static void PartnerBySubscriptionExtract(Form AParentForm)
         {
             TFrmPartnerBySubscription frm = new TFrmPartnerBySubscription(AParentForm);
@@ -60,6 +62,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <summary>
         /// open screen to create "Partner by City" Extract
         /// </summary>
+        /// <param name="AParentForm"></param>
         public static void PartnerByCityExtract(Form AParentForm)
         {
             TFrmPartnerByCity frm = new TFrmPartnerByCity(AParentForm);
@@ -71,6 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <summary>
         /// open screen to create "Partner by Special Type" Extract
         /// </summary>
+        /// <param name="AParentForm"></param>
         public static void PartnerBySpecialTypeExtract(Form AParentForm)
         {
             TFrmPartnerBySpecialType frm = new TFrmPartnerBySpecialType(AParentForm);
@@ -82,6 +86,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <summary>
         /// prompt user for name of a new manual extract, create it and open screen for it
         /// </summary>
+        /// <param name="AParentForm"></param>
         public static void PartnerNewManualExtract(Form AParentForm)
         {
             TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(AParentForm);
@@ -123,5 +128,145 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 return;
             }
         }
-    }
+
+        /// <summary>
+        /// Guide user through process to create extract which contains all family member records (Persons) 
+        /// of families and persons in a base extract.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void FamilyMembersExtract(Form AParentForm)
+        {
+            TFrmExtractFind ExtractFindDialog = new TFrmExtractFind(AParentForm);
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(AParentForm);
+            int BaseExtractId = 0;
+            string BaseExtractName;
+            string BaseExtractDescription;
+            int ExtractId = 0;
+            string ExtractName;
+            string ExtractDescription;
+
+            // inform user what this extract is about and what will happen
+            MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n"
+                                              + "The new Extract will contain all Family Members (Persons) of the Families"
+                                              + " that exist in the selected Extract."),
+                Catalog.GetString("Generate Family Members Extract"),
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            
+            // let the user select base extract
+            ExtractFindDialog.ShowDialog(true);
+            
+            // get data for selected base extract
+            ExtractFindDialog.GetResult(out BaseExtractId, out BaseExtractName, out BaseExtractDescription);
+            ExtractFindDialog.Dispose();
+            
+            // only continue if a base extract was selected
+            if (BaseExtractId >= 0)
+            {
+                ExtractNameDialog.ShowDialog();
+    
+                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                {
+                    /* Get values from the Dialog */
+                    ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+                    ExtractNameDialog.Dispose();
+                }
+                else
+                {
+                    // dialog was cancelled, do not continue with extract generation
+                    ExtractNameDialog.Dispose();
+                    return;
+                }
+    
+                // create extract with given name and description and store it in db
+                if (TRemote.MPartner.Partner.WebConnectors.CreateFamilyMembersExtract(BaseExtractId,
+                        ref ExtractId, ExtractName, ExtractDescription))
+                {
+                    // now open Screen for new extract so user can see the result
+                    TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
+                    frm.ExtractId = ExtractId;
+                    frm.ExtractName = ExtractName;
+                    frm.Show();
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                        Catalog.GetString("Generate Family Members Extract"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return;
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Guide user through process to create extract which contains all family records of 
+        /// Persons in a base extract.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void FamilyExtractForPersons(Form AParentForm)
+        {
+            TFrmExtractFind ExtractFindDialog = new TFrmExtractFind(AParentForm);
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(AParentForm);
+            int BaseExtractId = 0;
+            string BaseExtractName;
+            string BaseExtractDescription;
+            int ExtractId = 0;
+            string ExtractName;
+            string ExtractDescription;
+
+            // inform user what this extract is about and what will happen
+            MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n"
+                                              + "The new Extract will contain all Families of the Persons"
+                                              + " that exist in the selected Extract."),
+                Catalog.GetString("Generate Family Extract for Persons"),
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            
+            // let the user select base extract
+            ExtractFindDialog.ShowDialog(true);
+            
+            // get data for selected base extract
+            ExtractFindDialog.GetResult(out BaseExtractId, out BaseExtractName, out BaseExtractDescription);
+            ExtractFindDialog.Dispose();
+            
+            // only continue if a base extract was selected
+            if (BaseExtractId >= 0)
+            {
+                ExtractNameDialog.ShowDialog();
+    
+                if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+                {
+                    /* Get values from the Dialog */
+                    ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+                    ExtractNameDialog.Dispose();
+                }
+                else
+                {
+                    // dialog was cancelled, do not continue with extract generation
+                    ExtractNameDialog.Dispose();
+                    return;
+                }
+    
+                // create extract with given name and description and store it in db
+                if (TRemote.MPartner.Partner.WebConnectors.CreateFamilyExtractForPersons(BaseExtractId,
+                        ref ExtractId, ExtractName, ExtractDescription))
+                {
+                    // now open Screen for new extract so user can see the result
+                    TFrmExtractMaintain frm = new TFrmExtractMaintain(AParentForm);
+                    frm.ExtractId = ExtractId;
+                    frm.ExtractName = ExtractName;
+                    frm.Show();
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                        Catalog.GetString("Generate Family Extract for Persons"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return;
+                }
+            }
+        }
+   }
 }
