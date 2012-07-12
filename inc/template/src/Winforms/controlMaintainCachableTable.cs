@@ -36,6 +36,12 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.UserControl, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
+
+    /// <summary>
+    /// Dictionary that contains Controls on whose data Data Validation should be run.
+    /// </summary>
+    private TValidationControlsDict FValidationControlsDict = new TValidationControlsDict();
+    
 {#FILTERVAR}
 {#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
@@ -116,9 +122,9 @@ namespace {#NAMESPACE}
     {#EVENTHANDLERSIMPLEMENTATION}
 
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
-    public bool CreateNew{#DETAILTABLE}()
+    private bool CreateNew{#DETAILTABLE}()
     {
-        if(ValidateAllData(true, true))
+        if(ValidateAllData(true, true, false))
         {
 {#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
             // we create the table locally, no dataset
@@ -228,13 +234,20 @@ namespace {#NAMESPACE}
     /// to another record, otherwise set it to false.</param>
     /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
     /// user, otherwise set it to false.</param>
+    /// <param name="ADontRecordNewDataValidationRun">Set to false if no new DataValidationRun should be recorded. 
+    /// Should be set to true only if called from within this very UserControl to ensure that an external call to the 
+    /// UserControl's ValidateAllData Method doesn't change a recorded DataValidationRun that was set from the 
+    /// Form/UserControl that embeds this UserControl! (Default=true).</param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, bool ADontRecordNewDataValidationRun = true)
     {
         bool ReturnValue = false;
 
-        // Records a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
-        FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+        if (!ADontRecordNewDataValidationRun)
+        {
+            // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+            FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+        }
 
 {#IFDEF SHOWDETAILS}
         {#DETAILTABLETYPE}Row CurrentRow;
@@ -333,7 +346,7 @@ namespace {#NAMESPACE}
     {        
         if (grdDetails.Focused)
         {
-            if (!ValidateAllData(true, true))
+            if (!ValidateAllData(true, true, false))
             {
                 e.Cancel = true;                
             }
@@ -577,7 +590,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(true, false);
+        ValidateAllData(true, false, false);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         
@@ -623,7 +636,7 @@ namespace {#NAMESPACE}
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
         {#MASTERTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
-            FPetraUtilsObject.ValidationControlsDict);
+            FValidationControlsDict);
     }
 {#ENDIF MASTERTABLE}
 {#IFDEF DETAILTABLE}
@@ -632,7 +645,7 @@ namespace {#NAMESPACE}
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
         {#DETAILTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
-            FPetraUtilsObject.ValidationControlsDict);
+            FValidationControlsDict);
     }
 {#ENDIF DETAILTABLE}
 {#IFDEF MASTERTABLE OR DETAILTABLE}

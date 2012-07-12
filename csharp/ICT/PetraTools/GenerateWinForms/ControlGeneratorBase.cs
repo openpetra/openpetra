@@ -1088,6 +1088,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     
                     snippetValidationControlsDictAdd.SetCodelet("TABLENAME", tablename);
                     snippetValidationControlsDictAdd.SetCodelet("COLUMNID", ColumnIDStr);
+                    snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROLSDICTVAR", writer.Template.FTemplateCode.Contains("FValidationControlsDict") ? "FValidationControlsDict" : "FPetraUtilsObject.ValidationControlsDict");
     
                     if (AutomDataValidation) 
                     {

@@ -35,7 +35,12 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.UserControl, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-
+  
+    /// <summary>
+    /// Dictionary that contains Controls on whose data Data Validation should be run.
+    /// </summary>
+    private TValidationControlsDict FValidationControlsDict = new TValidationControlsDict();
+  
     private {#DATASETTYPE} FMainDS;
 {#IFDEF SHOWDETAILS}
     private int FCurrentRow;
@@ -324,15 +329,22 @@ namespace {#NAMESPACE}
     /// this Argument.
     /// </para>
     /// </param>
+    /// <param name="ADontRecordNewDataValidationRun">Set to false if no new DataValidationRun should be recorded. 
+    /// Should be set to true only if called from within this very UserControl to ensure that an external call to the 
+    /// UserControl's ValidateAllData Method doesn't change a recorded DataValidationRun that was set from the 
+    /// Form/UserControl that embeds this UserControl! (Default=true).</param>    
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
+    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null, bool ADontRecordNewDataValidationRun = true)
     {
         bool ReturnValue = false;
         Control ControlToValidate = null;
 
-        // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
-        FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
-
+        if (!ADontRecordNewDataValidationRun)
+        {
+            // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+            FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+        }
+        
 {#IFDEF SHOWDETAILS}
         {#DETAILTABLETYPE}Row CurrentRow;
 
@@ -463,7 +475,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(true, false, (Control)sender);
+        ValidateAllData(true, false, (Control)sender, false);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         
@@ -512,7 +524,7 @@ namespace {#NAMESPACE}
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
         {#MASTERTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
-            FPetraUtilsObject.ValidationControlsDict);
+            FValidationControlsDict);
     }
 {#ENDIF MASTERTABLE}
 {#IFDEF DETAILTABLE}
@@ -521,7 +533,7 @@ namespace {#NAMESPACE}
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
         {#DETAILTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
-            FPetraUtilsObject.ValidationControlsDict);
+            FValidationControlsDict);
     }
 {#ENDIF DETAILTABLE}
 {#IFDEF MASTERTABLE OR DETAILTABLE}
