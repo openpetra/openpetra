@@ -79,7 +79,8 @@ namespace Ict.Petra.Server.MFinance.queries
             Boolean NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
             string SqlStmt = TDataBase.ReadSqlFile("Gift.Queries.ExtractDonorByAmount.sql");
-            TSelfExpandingArrayList SqlParameterList = new TSelfExpandingArrayList();
+
+            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
             bool AddressFilterAdded;
             DataTable partnerkeys = new DataTable();
 
@@ -92,7 +93,7 @@ namespace Ict.Petra.Server.MFinance.queries
             // Now run the database query. This time it is returning gift detail records.
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
             DataTable giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "giftdetails", Transaction,
-                ConvertParameterArrayList(SqlParameterList));
+                SqlParameterList.ToArray());
 
             if (NewTransaction)
             {
@@ -139,7 +140,7 @@ namespace Ict.Petra.Server.MFinance.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref TSelfExpandingArrayList ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
             ASQLParameterList.Add(new OdbcParameter("param_date_from_unset", OdbcType.Bit)
                 {

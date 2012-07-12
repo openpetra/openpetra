@@ -163,6 +163,23 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             return !VerificationResult.HasCriticalErrors;
         }
 
+        private static bool FindDonorByAccountNumber(AEpMatchRow AMatchRow,
+            DataView APartnerByBankAccount,
+            string ABankSortCode,
+            string AAccountNumber)
+        {
+            DataRowView[] rows = APartnerByBankAccount.FindRows(new object[] { ABankSortCode, AAccountNumber });
+
+            if (rows.Length == 1)
+            {
+                AMatchRow.DonorShortName = rows[0].Row["ShortName"].ToString();
+                AMatchRow.DonorKey = Convert.ToInt64(rows[0].Row["PartnerKey"]);
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// returns the transactions of the bank statement, and the matches if they exist;
         /// tries to find matches too
@@ -193,6 +210,23 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 AEpMatchAccess.LoadViaALedger(ResultDataset, ResultDataset.AEpStatement[0].LedgerNumber, Transaction);
 
+                // load all bankingdetails and partner shortnames related to this statement
+                string sqlLoadPartnerByBankAccount =
+                    "SELECT DISTINCT p.p_partner_key_n AS PartnerKey, " +
+                    "p.p_partner_short_name_c AS ShortName, " +
+                    "t.p_branch_code_c AS BranchCode, " +
+                    "t.a_bank_account_number_c AS BankAccountNumber " +
+                    "FROM PUB_a_ep_transaction t, PUB_p_banking_details bd, PUB_p_bank b, PUB_p_partner_banking_details pbd, PUB_p_partner p " +
+                    "WHERE t.a_statement_key_i = " + AStatementKey.ToString() + " " +
+                    "AND bd.p_bank_account_number_c = t.a_bank_account_number_c " +
+                    "AND b.p_partner_key_n = bd.p_bank_key_n " +
+                    "AND b.p_branch_code_c = t.p_branch_code_c " +
+                    "AND pbd.p_banking_details_key_i = bd.p_banking_details_key_i " +
+                    "AND p.p_partner_key_n = pbd.p_partner_key_n";
+
+                DataTable PartnerByBankAccount = DBAccess.GDBAccessObj.SelectDT(sqlLoadPartnerByBankAccount, "partnerByBankAccount", Transaction);
+                PartnerByBankAccount.DefaultView.Sort = "BranchCode, BankAccountNumber";
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
                 string BankAccountCode = ResultDataset.AEpStatement[0].BankAccountCode;
@@ -201,6 +235,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     string.Empty,
                     AEpMatchTable.GetMatchTextDBName(),
                     DataViewRowState.CurrentRows);
+
+                SortedList <string, AEpMatchRow>MatchesToAddLater = new SortedList <string, AEpMatchRow>();
 
                 // load the matches or create new matches
                 foreach (BankImportTDSAEpTransactionRow row in ResultDataset.AEpTransaction.Rows)
@@ -227,19 +263,27 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                             row.EpMatchKey = r.EpMatchKey;
                             row.MatchAction = r.Action;
+
+                            if (r.IsDonorKeyNull() || (r.DonorKey <= 0))
+                            {
+                                FindDonorByAccountNumber(r, PartnerByBankAccount.DefaultView, row.BranchCode, row.BankAccountNumber);
+                            }
                         }
                     }
-                    else
+                    else if (!MatchesToAddLater.ContainsKey(row.MatchText))
                     {
                         // create new match
                         AEpMatchRow tempRow = ResultDataset.AEpMatch.NewRowTyped(true);
-                        tempRow.EpMatchKey = (ResultDataset.AEpMatch.Count + 1) * -1;
+                        tempRow.EpMatchKey = (ResultDataset.AEpMatch.Count + MatchesToAddLater.Count + 1) * -1;
                         tempRow.Detail = 0;
                         tempRow.MatchText = row.MatchText;
                         tempRow.LedgerNumber = ALedgerNumber;
                         tempRow.GiftTransactionAmount = row.TransactionAmount;
                         tempRow.Action = MFinanceConstants.BANK_STMT_STATUS_UNMATCHED;
 
+                        FindDonorByAccountNumber(tempRow, PartnerByBankAccount.DefaultView, row.BranchCode, row.BankAccountNumber);
+
+#if disabled
                         // fuzzy search for the partner. only return if unique result
                         string sql =
                             "SELECT p_partner_key_n, p_partner_short_name_c FROM p_partner WHERE p_partner_short_name_c LIKE '{0}%' OR p_partner_short_name_c LIKE '{1}%'";
@@ -259,14 +303,24 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                                 tempRow.DonorKey = Convert.ToInt64(partner.Rows[0][0]);
                             }
                         }
+#endif
 
-                        ResultDataset.AEpMatch.Rows.Add(tempRow);
+                        MatchesToAddLater.Add(tempRow.MatchText, tempRow);
 
                         row.EpMatchKey = tempRow.EpMatchKey;
                         row.MatchAction = tempRow.Action;
                     }
                 }
 
+                // for speed reasons, add the new rows after clearing the sort on the view
+                EpMatchView.Sort = string.Empty;
+
+                foreach (AEpMatchRow m in MatchesToAddLater.Values)
+                {
+                    ResultDataset.AEpMatch.Rows.Add(m);
+                }
+
+                ResultDataset.AEpMatch.ThrowAwayAfterSubmitChanges = true;
                 BankImportTDSAccess.SubmitChanges(ResultDataset, out VerificationResult);
             }
             catch (Exception e)
@@ -282,7 +336,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             // reloading is faster than deleting all matches that are not needed
             string sqlLoadMatchesOfStatement =
-                "SELECT m.* FROM PUB_a_ep_match m, PUB_a_ep_transaction t WHERE t.a_statement_key_i = ? AND m.a_match_text_c = t.a_match_text_c";
+                "SELECT DISTINCT m.* FROM PUB_a_ep_match m, PUB_a_ep_transaction t WHERE t.a_statement_key_i = ? AND m.a_match_text_c = t.a_match_text_c";
 
             OdbcParameter param = new OdbcParameter("statementkey", OdbcType.Int);
             param.Value = AStatementKey;
@@ -352,17 +406,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             // TODO: optional: use the preselected gift batch, AGiftBatchNumber
 
             Int32 DateEffectivePeriodNumber, DateEffectiveYearNumber;
+            DateTime BatchDateEffective = stmt.Date;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, stmt.Date, out DateEffectivePeriodNumber, out DateEffectiveYearNumber,
-                    Transaction))
+            if (!TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref BatchDateEffective, out DateEffectiveYearNumber,
+                    out DateEffectivePeriodNumber,
+                    Transaction, true))
             {
+                // just use the latest possible date
                 string msg =
-                    String.Format(Catalog.GetString("Cannot create a gift batch for date {0} since it is not in an open period of the ledger."),
-                        stmt.Date.ToShortDateString());
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Critical));
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return -1;
+                    String.Format(Catalog.GetString("Date {0} is not in an open period of the ledger, using date {1} instead for the gift batch."),
+                        stmt.Date.ToShortDateString(),
+                        BatchDateEffective.ToShortDateString());
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Info));
             }
 
             ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
@@ -395,23 +451,32 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(
                 ALedgerNumber,
-                stmt.Date,
+                BatchDateEffective,
                 String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
 
             decimal HashTotal = 0.0M;
 
+            AMainDS.AEpTransaction.DefaultView.Sort =
+                AEpTransactionTable.GetNumberOnPaperStatementDBName();
+
+            AMainDS.AEpMatch.DefaultView.Sort =
+                AEpMatchTable.GetActionDBName() + ", " +
+                AEpMatchTable.GetMatchTextDBName();
+
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
-                DataView v = AMainDS.AEpMatch.DefaultView;
-                v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT + "' and " +
-                              AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
 
-                if (v.Count > 0)
+                DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
+                        MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT,
+                        transactionRow.MatchText
+                    });
+
+                if (matches.Length > 0)
                 {
-                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+                    AEpMatchRow match = (AEpMatchRow)matches[0].Row;
 
                     AGiftRow gift = GiftDS.AGift.NewRowTyped();
                     gift.LedgerNumber = giftbatchRow.LedgerNumber;
@@ -422,7 +487,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     GiftDS.AGift.Rows.Add(gift);
                     giftbatchRow.LastGiftNumber++;
 
-                    foreach (DataRowView r in v)
+                    foreach (DataRowView r in matches)
                     {
                         match = (AEpMatchRow)r.Row;
 
@@ -438,7 +503,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.MotivationGroupCode = match.MotivationGroupCode;
                         detail.MotivationDetailCode = match.MotivationDetailCode;
                         detail.GiftCommentOne = transactionRow.Description;
+                        detail.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_BOTH;
                         detail.CostCentreCode = match.CostCentreCode;
+                        detail.RecipientKey = match.RecipientKey;
+                        detail.RecipientLedgerNumber = match.RecipientLedgerNumber;
 
                         // check for active cost centre
                         ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, match.CostCentreCode });
@@ -462,9 +530,13 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
 
             giftbatchRow.HashTotal = HashTotal;
+            giftbatchRow.BatchTotal = HashTotal;
+
+            // do not overwrite the parameter, because there might be the hint for a different gift batch date
+            TVerificationResultCollection VerificationResultSubmitChanges;
 
             TSubmitChangesResult result = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS,
-                out AVerificationResult);
+                out VerificationResultSubmitChanges);
 
             if (result == TSubmitChangesResult.scrOK)
             {

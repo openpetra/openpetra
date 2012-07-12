@@ -86,7 +86,9 @@ namespace Ict.Petra.WebServer.MConference
             Catalog.Init("en-GB", "en-GB");
             JSONFormData = JSONFormData.Replace("#DATEOFBIRTH", DateTime.ParseExact(values["DateOfBirth"], "dd-MM-yyyy", null).ToShortDateString());
             JSONFormData = JSONFormData.Replace("#DATEOFARRIVAL", DateTime.ParseExact(values["DateOfArrival"], "dd-MM-yyyy", null).ToShortDateString());
-            JSONFormData = JSONFormData.Replace("#DATEOFDEPARTURE", DateTime.ParseExact(values["DateOfDeparture"], "dd-MM-yyyy", null).ToShortDateString());
+            JSONFormData = JSONFormData.Replace("#DATEOFDEPARTURE", DateTime.ParseExact(values["DateOfDeparture"],
+                    "dd-MM-yyyy",
+                    null).ToShortDateString());
 
             foreach (string key in values.Keys)
             {
@@ -99,6 +101,7 @@ namespace Ict.Petra.WebServer.MConference
             {
                 // should not be able to create a PDF since the picture is missing, and not send an email
                 string result = TImportPartnerForm.DataImportFromForm("RegisterPerson", JSONFormData);
+
                 if (result.StartsWith("{\"failure\":true, \"data\":{\"result\":\"We were not able to send the email to"))
                 {
                     X.Msg.Show(new MessageBoxConfig

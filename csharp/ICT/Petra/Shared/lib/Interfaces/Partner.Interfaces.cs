@@ -706,6 +706,16 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
                                                  String AUserCreated,
                                                  String AUserModified);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                 String AExtractDescFilter,
+                                                 Boolean AAllUsers,
+                                                 String AUserCreated,
+                                                 String AUserModified,
+                                                 System.Nullable<DateTime> ADateCreatedFrom,
+                                                 System.Nullable<DateTime> ADateCreatedTo,
+                                                 System.Nullable<DateTime> ADateModifiedFrom,
+                                                 System.Nullable<DateTime> ADateModifiedTo);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean ExtractExists(String AExtractName);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean CreateEmptyExtract(ref System.Int32 AExtractId,
