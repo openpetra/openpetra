@@ -97,6 +97,10 @@ namespace {#NAMESPACE}
       // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
       TEnsureKeepAlive.Register(FUIConnector);
 {#ENDIF UICONNECTORCREATE}
+
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+      BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -201,10 +205,20 @@ namespace {#NAMESPACE}
         // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
         FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
 
-{#IFDEF SHOWDETAILS}
-        {#DETAILTABLETYPE}Row CurrentRow;
+{#IFDEF MASTERTABLE}
+        // Validate MasterTable
+        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
+        ValidateData(FMainDS.{#MASTERTABLE}[0]);
+{#IFDEF VALIDATEDATAMANUAL}
+        ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIF VALIDATEDATAMANUAL}
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+        GetDataFromControls();
+{#ENDIFN MASTERTABLE}
 
-        CurrentRow = GetSelectedDetailRow();
+{#IFDEF SHOWDETAILS}
+        {#DETAILTABLETYPE}Row CurrentRow = GetSelectedDetailRow();
 
         if (CurrentRow != null)
         {
@@ -218,48 +232,63 @@ namespace {#NAMESPACE}
         {
             ControlToValidate = this.ActiveControl;
         }
-{#IFDEF MASTERTABLE}
-        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
-        ValidateData(FMainDS.{#MASTERTABLE}[0]);
-{#ENDIF MASTERTABLE}        
 {#ENDIFN SHOWDETAILS}
 {#IFDEF SHOWDETAILS}
-        GetDetailsFromControls(CurrentRow);
-        ValidateDataDetails(CurrentRow);
-{#ENDIF SHOWDETAILS}
-
+            // Validate DetailTable
+{#IFNDEF MASTERTABLE}
+            GetDetailsFromControls(CurrentRow);
+{#ENDIFN MASTERTABLE}
+            ValidateDataDetails(CurrentRow);
 {#IFDEF VALIDATEDATADETAILSMANUAL}
-{#IFDEF SHOWDETAILS}
             ValidateDataDetailsManual(CurrentRow);
+{#ENDIF VALIDATEDATADETAILSMANUAL}            
 {#ENDIF SHOWDETAILS}
-{#ENDIF VALIDATEDATADETAILSMANUAL}
-{#IFDEF VALIDATEDATAMANUAL}
-{#IFDEF MASTERTABLE}
-            ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
-{#ENDIF MASTERTABLE}
-{#ENDIF VALIDATEDATAMANUAL}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
         // Perform validation in UserControls, too
         {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
-
 {#IFDEF SHOWDETAILS}
+                if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
+                {
+                    // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
+                    // Data Validation Errors/Warnins as something that is record-related.
+                    ARecordChangeVerification = false;
+                }
+
+                // Process Data Validation result(s)
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
                     this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
-{#ENDIF SHOWDETAILS}
-{#IFNDEF SHOWDETAILS}
-                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
-{#ENDIFN SHOWDETAILS}
-{#IFDEF SHOWDETAILS}            
+{#IFDEF MASTERTABLE}
+        }
+        else
+        {
+            if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
+            {
+                // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
+                // Data Validation Errors/Warnins as something that is record-related.
+                ARecordChangeVerification = false;
+            }
+        
+            // Process Data Validation result(s)
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+        }
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
         }
         else
         {
             ReturnValue = true;
         }
+{#ENDIFN MASTERTABLE}
 {#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+        // Process Data Validation result(s)
+        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+{#ENDIFN SHOWDETAILS}
 
         if(ReturnValue)
         {
