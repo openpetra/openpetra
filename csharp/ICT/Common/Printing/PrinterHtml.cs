@@ -667,7 +667,15 @@ namespace Ict.Common.Printing
 
                         if (transformValue.StartsWith("rotate(") && transformValue.EndsWith("deg)"))
                         {
-                            FPrinter.Rotate(Convert.ToInt32(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length)));
+                            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+                            Double DegreeValue =
+                                Convert.ToDouble(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length));
+                            Catalog.SetCulture(OrigCulture);
+
+                            FPrinter.RotateAtTransform(
+                                DegreeValue,
+                                FPrinter.CurrentXPos,
+                                FPrinter.CurrentYPos);
                         }
                         else
                         {
@@ -781,12 +789,12 @@ namespace Ict.Common.Printing
                 else if (curNode.Name == "font")
                 {
                     // TODO change font name and/or size
-                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+                    float previousFontSize = FPrinter.CurrentRelativeFontSize;
                     eFont previousFont = FPrinter.CurrentFont;
 
                     if (TXMLParser.HasAttribute(curNode, "size"))
                     {
-                        FPrinter.CurrentRelativeFontSize += TXMLParser.GetIntAttribute(curNode, "size");
+                        FPrinter.CurrentRelativeFontSize += (float)TXMLParser.GetDecimalAttribute(curNode, "size");
                     }
 
                     if (TXMLParser.HasAttribute(curNode, "face"))
@@ -965,7 +973,7 @@ namespace Ict.Common.Printing
                     // heading
                     eFont previousFont = FPrinter.CurrentFont;
                     FPrinter.CurrentFont = eFont.eHeadingFont;
-                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+                    float previousFontSize = FPrinter.CurrentRelativeFontSize;
 
                     if (curNode.Name[1] == '1')
                     {

@@ -438,21 +438,57 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ADailyExRateRow.TimeEffectiveFrom = ADailyExRateRow.TimeEffectiveFrom + 1;
             }
 
-            int previousGridRow = grdDetails.Selection.ActivePosition.Row;
+            //int previousGridRow = grdDetails.Selection.ActivePosition.Row;
             FMainDS.ADailyExchangeRate.Rows.Add(ADailyExRateRow);
-            grdDetails.Refresh();
+            //grdDetails.Refresh();
 
             FPetraUtilsObject.SetChangedFlag();
-            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
-            int currentGridRow = grdDetails.Selection.ActivePosition.Row;
 
-            if (currentGridRow == previousGridRow)
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ADailyExchangeRate.DefaultView);
+
+            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
+            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+
+            //Must be set after the FocusRowChanged event is called as it sets this flag to false
+            newRecordUnsavedInFocus = true;
+
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+
+            Control[] pnl = this.Controls.Find("pnlDetails", true);
+
+            if (pnl.Length > 0)
             {
-                // The grid must be sorted so the new row is displayed where the old one was.  We will not have received a RowChanged event.
-                // We need to enforce showing the new details.
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+                //Look for Key & Description fields
+                bool keyFieldFound = false;
+
+                foreach (Control detailsCtrl in pnl[0].Controls)
+                {
+                    if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+                    {
+                        keyFieldFound = true;
+                        detailsCtrl.Focus();
+                    }
+
+                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && (detailsCtrl.Text == string.Empty))
+                    {
+                        detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+                        break;
+                    }
+                }
             }
+
+            //            SelectDetailRowByDataTableIndex(FMainDS.ADailyExchangeRate.Rows.Count - 1);
+//            int currentGridRow = grdDetails.Selection.ActivePosition.Row;
+//
+//            if (currentGridRow == previousGridRow)
+//            {
+//                // The grid must be sorted so the new row is displayed where the old one was.  We will not have received a RowChanged event.
+//                // We need to enforce showing the new details.
+//                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+//                ShowDetails(FPreviouslySelectedDetailRow);
+//            }
         }
 
         /// <summary>

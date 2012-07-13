@@ -221,18 +221,24 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                 AMainDS.AEpTransaction.DefaultView.RowFilter = BankImportTDSAEpTransactionTable.GetStatementKeyDBName() + "=" +
                                                                epstmt.StatementKey.ToString();
 
-                Int32 countOrderOnStatement = 1;
+                // starting with the most negative amount, which should be the last in the order on the statement
+                Int32 countOrderOnStatement = AMainDS.AEpTransaction.DefaultView.Count;
+                bool countingNegative = true;
 
                 foreach (DataRowView rv in AMainDS.AEpTransaction.DefaultView)
                 {
                     BankImportTDSAEpTransactionRow row = (BankImportTDSAEpTransactionRow)rv.Row;
 
-                    if (row.TransactionAmount < 0)
+                    if ((row.TransactionAmount > 0) && countingNegative)
                     {
-                        // TODO: sort by absolute amount, ignoring debit/credit?
-                        // row.NumberOnPaperStatement = 1000;
+                        countingNegative = false;
+                        countOrderOnStatement = 1;
+                    }
+
+                    if (countingNegative)
+                    {
                         row.NumberOnPaperStatement = countOrderOnStatement;
-                        countOrderOnStatement++;
+                        countOrderOnStatement--;
                     }
                     else
                     {

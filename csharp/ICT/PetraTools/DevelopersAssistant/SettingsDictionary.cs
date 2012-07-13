@@ -297,6 +297,7 @@ namespace Ict.Tools.DevelopersAssistant
         {
             // Make sure that the folder exists
             string folderName = Path.GetDirectoryName(path);
+
             if (!Directory.Exists(folderName))
             {
                 Directory.CreateDirectory(folderName);

@@ -182,6 +182,19 @@ namespace Ict.Testing.SampleDataConstructor
                     SampleDataAccountsPayable.PostAndPayInvoices(0, 6, 1);
                 }
 
+                TLogging.Log("(9) Creating applications for conference");
+
+                operation = TAppSettingsManager.GetValue("operation", "conferenceApplications");
+
+                if (operation == "conferenceApplications")
+                {
+                    SampleDataConferenceApplicants.GenerateApplications(Path.Combine(datadirectory, "conferenceApplications.csv"));
+                }
+                else
+                {
+                    TLogging.Log("Please explicitely run nant importDemodata -D:operation=conferenceApplications");
+                }
+
                 TLogging.Log("Completed.");
             }
             catch (Exception e)
