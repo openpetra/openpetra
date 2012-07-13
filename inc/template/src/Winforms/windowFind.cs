@@ -76,6 +76,10 @@ namespace {#NAMESPACE}
       // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
       TEnsureKeepAlive.Register(FUIConnector);
 {#ENDIF UICONNECTORCREATE}
+
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+      BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -144,6 +148,8 @@ namespace {#NAMESPACE}
     /// </summary>
     /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
     /// to another record, otherwise set it to false.</param>
+    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+    /// user, otherwise set it to false.</param>
     /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
     /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
     /// <para>
@@ -153,7 +159,7 @@ namespace {#NAMESPACE}
     /// </para>    
     /// </param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, Control AValidateSpecificControl = null)
+    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
     {
         bool ReturnValue = false;
         Control ControlToValidate = null;
@@ -169,7 +175,7 @@ namespace {#NAMESPACE}
         if (CurrentRow != null)
         {
 {#ENDIF SHOWDETAILS}        
-{#IFNDEF SHOWDETAILS}
+
         if (AValidateSpecificControl != null) 
         {
             ControlToValidate = AValidateSpecificControl;
@@ -178,6 +184,8 @@ namespace {#NAMESPACE}
         {
             ControlToValidate = this.ActiveControl;
         }
+
+{#IFNDEF SHOWDETAILS}
 {#IFDEF MASTERTABLE}
         GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
         ValidateData(FMainDS.{#MASTERTABLE}[0]);
@@ -204,26 +212,29 @@ namespace {#NAMESPACE}
         {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
-        // Only process the Data Validations here if ControlToValidate is not null.
-        // It can be null if this.ActiveControl yields null - this would happen if no Control
-        // on this UserControl has got the Focus.
-        if (ControlToValidate != null) 
+        if (AProcessAnyDataValidationErrors)
         {
-            if(ControlToValidate.FindUserControlOrForm(true) == this)
+            // Only process the Data Validations here if ControlToValidate is not null.
+            // It can be null if this.ActiveControl yields null - this would happen if no Control
+            // on this Form has got the Focus.
+            if (ControlToValidate != null) 
             {
+                if(ControlToValidate.FindUserControlOrForm(true) == this)
+                {
 {#IFDEF SHOWDETAILS}
-                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+                    ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                        this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
 {#ENDIF SHOWDETAILS}
 {#IFNDEF SHOWDETAILS}
-                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+                    ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                        this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
 {#ENDIFN SHOWDETAILS}
-            }
-            else
-            {
-                ReturnValue = true;
-            }
+                }
+                else
+                {
+                    ReturnValue = true;
+                }
+            }            
         }
 {#IFDEF SHOWDETAILS}            
         }
@@ -300,7 +311,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(true, (Control)sender);
+        ValidateAllData(true, false, (Control)sender);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         
