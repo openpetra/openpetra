@@ -497,6 +497,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Create Manual Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateFamilyMembersExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.FamilyMembersExtract(FindForm());
+        }
+
+        /// <summary>
+        /// Create Manual Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateFamilyExtractForPersons(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.FamilyExtractForPersons(FindForm());
+        }
+
+        /// <summary>
         /// Create Partner By Conference Extract
         /// </summary>
         /// <param name="sender"></param>

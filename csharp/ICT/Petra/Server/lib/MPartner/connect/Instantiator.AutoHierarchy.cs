@@ -2803,6 +2803,26 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean CreateFamilyMembersExtract(System.Int32 ABaseExtractId,
+                                                  ref System.Int32 AExtractId,
+                                                  String AExtractName,
+                                                  String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateFamilyMembersExtract", ";INT;INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateFamilyMembersExtract(ABaseExtractId, ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
+        public Boolean CreateFamilyExtractForPersons(System.Int32 ABaseExtractId,
+                                                     ref System.Int32 AExtractId,
+                                                     String AExtractName,
+                                                     String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateFamilyExtractForPersons", ";INT;INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateFamilyExtractForPersons(ABaseExtractId, ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
         public Boolean PurgeExtracts(System.Int32 ANumberOfDays,
                                      Boolean AAllUsers,
                                      String AUserName)
