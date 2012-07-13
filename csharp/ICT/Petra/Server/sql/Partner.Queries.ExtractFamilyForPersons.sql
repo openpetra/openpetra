@@ -1,4 +1,4 @@
-SELECT pub_p_partner.p_partner_key_n,
+SELECT DISTINCT pub_p_partner.p_partner_key_n,
        pub_p_partner.p_partner_short_name_c
 FROM pub_m_extract, pub_p_person, pub_p_family, pub_p_partner
 WHERE pub_m_extract.m_extract_id_i = ?
