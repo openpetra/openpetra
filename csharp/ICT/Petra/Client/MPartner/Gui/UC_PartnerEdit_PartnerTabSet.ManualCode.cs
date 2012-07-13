@@ -76,6 +76,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
+        
+        private static readonly string StrFinanceDetailsTabHeader = Catalog.GetString("Finance Details");
 
         private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
@@ -503,6 +505,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     (TUC_PartnerNotes)FTabSetup[TDynamicLoadableUserControls.dlucNotes];
 
                 if (!UCNotes.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFinanceDetails))
+            {
+                TUC_PartnerFinanceDetails UCFinanceDetails =
+                    (TUC_PartnerFinanceDetails)FTabSetup[TDynamicLoadableUserControls.dlucFinanceDetails];
+
+                if (!UCFinanceDetails.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -1046,6 +1059,43 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tpgNotes.ToolTipText = "Notes are entered";
                 }
             }
+            
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerFinanceDetails))
+            {
+                if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
+                {
+                    Calculations.CalculateTabCountsSubscriptions(FMainDS.PSubscription, out CountAll, out CountActive);
+                    tpgSubscriptions.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountActive);
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountSubscriptions;
+                    CountActive = FMainDS.MiscellaneousData[0].ItemsCountSubscriptionsActive;
+                }
+
+                if ((CountAll == 0) || (CountAll > 1))
+                {
+                    DynamicToolTipPart1 = StrFinanceDetailsTabHeader;
+                }
+                else
+                {
+                    DynamicToolTipPart1 = StrSubscriptionsSingular;
+                }
+
+                tpgSubscriptions.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountActive);
+
+                if ((CountActive == 0) || (CountActive > 1))
+                {
+                    tpgSubscriptions.ToolTipText = String.Format(StrTabHeaderCounterTipPlural + "active", CountAll, CountActive, DynamicToolTipPart1);
+                }
+                else
+                {
+                    tpgSubscriptions.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "active",
+                        CountAll,
+                        CountActive,
+                        DynamicToolTipPart1);
+                }
+            }            
         }
 
         /// <summary>
@@ -1244,6 +1294,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                             tabPartners.SelectedTab = tpgAddresses;
                         }
 
+                        break;
+                        
+                    case TPartnerEditTabPageEnum.petpFinanceDetails:
+                        tabPartners.SelectedTab = tpgFinanceDetails;
                         break;
                 }
             }
