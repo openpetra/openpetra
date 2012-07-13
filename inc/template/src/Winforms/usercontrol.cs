@@ -116,7 +116,9 @@ namespace {#NAMESPACE}
         if((FMainDS != null)
           && (FMainDS.{#MASTERTABLE} != null))
         {
-            BuildValidationControlsDict();
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+        BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
 
             if(FMainDS.{#MASTERTABLE}.Count > 0)
             {

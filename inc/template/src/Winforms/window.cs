@@ -190,7 +190,7 @@ namespace {#NAMESPACE}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
         // Only process the Data Validations here if ControlToValidate is not null.
         // It can be null if this.ActiveControl yields null - this would happen if no Control
-        // on this UserControl has got the Focus.
+        // on this Form has got the Focus.
         if (ControlToValidate != null) 
         {
             if(ControlToValidate.FindUserControlOrForm(true) == this)

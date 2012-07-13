@@ -67,6 +67,10 @@ namespace {#NAMESPACE}
       FUIConnector = {#UICONNECTORCREATE}();
       // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
       TEnsureKeepAlive.Register(FUIConnector);
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+
+      BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -235,7 +239,7 @@ namespace {#NAMESPACE}
 
         // Only process the Data Validations here if ControlToValidate is not null.
         // It can be null if this.ActiveControl yields null - this would happen if no Control
-        // on this UserControl has got the Focus.
+        // on this Form has got the Focus.
         if (ControlToValidate != null) 
         {
             if(ControlToValidate.FindUserControlOrForm(true) == this)

@@ -107,7 +107,9 @@ namespace {#NAMESPACE}
           FoundCheckBoxes[0].Enabled = false;
       }
 
+{#IFDEF MASTERTABLE OR DETAILTABLE}
       BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
