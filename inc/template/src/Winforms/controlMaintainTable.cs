@@ -96,7 +96,9 @@ namespace {#NAMESPACE}
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
+{#IFDEF MASTERTABLE OR DETAILTABLE}
             BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
 
             ShowData();
         }
@@ -394,14 +396,23 @@ namespace {#NAMESPACE}
                 // Only process the Data Validations here if ControlToValidate is not null.
                 // It can be null if this.ActiveControl yields null - this would happen if no Control
                 // on this UserControl has got the Focus.
-                if(ControlToValidate.FindUserControlOrForm(true) == this)
+                if (ControlToValidate != null) 
                 {
-                    ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                        this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
-                }
-                else
-                {
-                    ReturnValue = true;
+                    if(ControlToValidate.FindUserControlOrForm(true) == this)
+                    {
+{#IFDEF SHOWDETAILS}
+                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
+{#ENDIFN SHOWDETAILS}
+                    }
+                    else
+                    {
+                        ReturnValue = true;
+                    }
                 }
             }
         }
