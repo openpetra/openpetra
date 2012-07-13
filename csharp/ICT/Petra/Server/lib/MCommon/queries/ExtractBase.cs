@@ -55,10 +55,10 @@ namespace Ict.Petra.Server.MCommon.queries
         protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults)
         {
             int ExtractId;
-         
+
             return CalculateExtractInternal(AParameters, ASqlStmt, AResults, out ExtractId);
         }
-        
+
         /// <summary>
         /// calculate an extract from a report: all partners of a given type (or selection of multiple types)
         /// </summary>
@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MCommon.queries
         protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults, out int AExtractId)
         {
             AExtractId = -1;
-            
+
             // get the partner keys from the database
             try
             {

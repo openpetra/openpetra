@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MFinance.queries
             DataTable partnerkeys = new DataTable();
 
             AExtractId = -1;
-            
+
             // call to derived class to retrieve parameters specific for extract
             RetrieveParameters(AParameters, ref SqlStmt, ref SqlParameterList);
 

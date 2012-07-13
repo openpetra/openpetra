@@ -77,7 +77,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
         protected override bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction, out int AExtractId)
         {
             AExtractId = -1;
-            
+
             if (AParameters.Get("param_sending_receiving").ToString() == "ReceivingField")
             {
                 return ProcessReceivingFields(AParameters, ATransaction, out AExtractId);

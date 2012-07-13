@@ -130,7 +130,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
-        /// Guide user through process to create extract which contains all family member records (Persons) 
+        /// Guide user through process to create extract which contains all family member records (Persons)
         /// of families and persons in a base extract.
         /// </summary>
         /// <param name="AParentForm"></param>
@@ -146,25 +146,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             string ExtractDescription;
 
             // inform user what this extract is about and what will happen
-            MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n"
-                                              + "The new Extract will contain all Family Members (Persons) of the Families"
-                                              + " that exist in the selected Extract."),
+            MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n" +
+                    "The new Extract will contain all Family Members (Persons) of the Families" +
+                    " that exist in the selected Extract."),
                 Catalog.GetString("Generate Family Members Extract"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
-            
+
             // let the user select base extract
             ExtractFindDialog.ShowDialog(true);
-            
+
             // get data for selected base extract
             ExtractFindDialog.GetResult(out BaseExtractId, out BaseExtractName, out BaseExtractDescription);
             ExtractFindDialog.Dispose();
-            
+
             // only continue if a base extract was selected
             if (BaseExtractId >= 0)
             {
                 ExtractNameDialog.ShowDialog();
-    
+
                 if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
                 {
                     /* Get values from the Dialog */
@@ -177,7 +177,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     ExtractNameDialog.Dispose();
                     return;
                 }
-    
+
                 // create extract with given name and description and store it in db
                 if (TRemote.MPartner.Partner.WebConnectors.CreateFamilyMembersExtract(BaseExtractId,
                         ref ExtractId, ExtractName, ExtractDescription))
@@ -198,9 +198,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
-        
+
         /// <summary>
-        /// Guide user through process to create extract which contains all family records of 
+        /// Guide user through process to create extract which contains all family records of
         /// Persons in a base extract.
         /// </summary>
         /// <param name="AParentForm"></param>
@@ -216,25 +216,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             string ExtractDescription;
 
             // inform user what this extract is about and what will happen
-            MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n"
-                                              + "The new Extract will contain all Families of the Persons"
-                                              + " that exist in the selected Extract."),
+            MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n" +
+                    "The new Extract will contain all Families of the Persons" +
+                    " that exist in the selected Extract."),
                 Catalog.GetString("Generate Family Extract for Persons"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
-            
+
             // let the user select base extract
             ExtractFindDialog.ShowDialog(true);
-            
+
             // get data for selected base extract
             ExtractFindDialog.GetResult(out BaseExtractId, out BaseExtractName, out BaseExtractDescription);
             ExtractFindDialog.Dispose();
-            
+
             // only continue if a base extract was selected
             if (BaseExtractId >= 0)
             {
                 ExtractNameDialog.ShowDialog();
-    
+
                 if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
                 {
                     /* Get values from the Dialog */
@@ -247,7 +247,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     ExtractNameDialog.Dispose();
                     return;
                 }
-    
+
                 // create extract with given name and description and store it in db
                 if (TRemote.MPartner.Partner.WebConnectors.CreateFamilyExtractForPersons(BaseExtractId,
                         ref ExtractId, ExtractName, ExtractDescription))
@@ -268,5 +268,5 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
-   }
+    }
 }

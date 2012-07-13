@@ -505,7 +505,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             TPartnerExtractsMain.FamilyMembersExtract(FindForm());
         }
-        
+
         /// <summary>
         /// Create Manual Extract
         /// </summary>

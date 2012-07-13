@@ -180,10 +180,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PmGeneralApplication.DefaultView);
-    
+
                 SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
                 InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-    
+
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
             }
@@ -231,10 +231,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PmGeneralApplication.DefaultView);
-    
+
                 SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
                 InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-    
+
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                 ShowDetails(FPreviouslySelectedDetailRow);
             }

@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ParameterList.Add("param_extract_name", AExtractName);
             ParameterList.Add("param_extract_description", AExtractDescription);
             ResultValue = Ict.Petra.Server.MPartner.queries.QueryFamilyMembersExtract.CalculateExtract
-                (ParameterList, ResultList, out AExtractId);
+                              (ParameterList, ResultList, out AExtractId);
 
             return ResultValue;
         }
@@ -312,7 +312,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             ParameterList.Add("param_extract_name", AExtractName);
             ParameterList.Add("param_extract_description", AExtractDescription);
             ResultValue = Ict.Petra.Server.MPartner.queries.QueryFamilyExtractForPersons.CalculateExtract
-                (ParameterList, ResultList, out AExtractId);
+                              (ParameterList, ResultList, out AExtractId);
 
             return ResultValue;
         }
