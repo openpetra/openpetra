@@ -1010,6 +1010,30 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// Checks if there is an error for any data column of this DataTable already.
+        /// </summary>
+        /// <param name="ADataTable">The <see cref="System.Data.DataTable" /> to check for.</param>
+        /// <returns>true if such an error already is part of the list</returns>
+        public bool Contains(DataTable ADataTable)
+        {
+            TScreenVerificationResult si;
+            Boolean Found = false;
+
+            for (int Counter = 0; Counter <= Count - 1; Counter += 1)
+            {
+                si = (TScreenVerificationResult)(List[Counter]);
+
+                if (si.ResultColumn.Table == ADataTable)
+                {
+                    Found = true;
+                    break;
+                }
+            }
+
+            return Found;
+        }
+        
+        /// <summary>
         /// Adds a <see cref="TVerificationResult" /> for a <see cref="System.Data.DataColumn" />
         /// specified with <paramref name="AResultColumn" />, or removes a
         /// <see cref="TVerificationResult" /> that is stored in the collection for the
@@ -1242,6 +1266,37 @@ namespace Ict.Common.Verification
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Finds all <see cref="TScreenVerificationResult" />s that are stored for any data column of this DataTable already.
+        /// </summary>
+        /// <param name="ADataTable">The <see cref="System.Data.DataTable" /> to check for.</param>
+        /// <returns>An List of <see cref="TScreenVerificationResult" /> that contains all the found
+        /// <see cref="TScreenVerificationResult" />s, or null if no result was found.</returns>
+        public List <TScreenVerificationResult>FindAllBy(DataTable ADataTable)
+        {
+            List <TScreenVerificationResult>ReturnValue = null;
+            TScreenVerificationResult si;
+
+            ReturnValue = null;
+
+            for (int Counter = 0; Counter <= Count - 1; Counter += 1)
+            {
+                si = (TScreenVerificationResult)(List[Counter]);
+
+                if (si.ResultColumn.Table == ADataTable)
+                {
+                    if (ReturnValue == null)
+                    {
+                        ReturnValue = new List <TScreenVerificationResult>();
+                    }
+
+                    ReturnValue.Add(si);
+                }
+            }
+
+            return ReturnValue;
+        }
+        
         /// <summary>
         /// Find a <see cref="TScreenVerificationResult" /> by ResultContext
         /// </summary>
