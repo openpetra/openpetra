@@ -73,15 +73,18 @@ namespace Ict.Petra.Server.MPersonnel.queries
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        protected override bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction)
+        /// <param name="AExtractId"></param>
+        protected override bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction, out int AExtractId)
         {
+            AExtractId = -1;
+            
             if (AParameters.Get("param_sending_receiving").ToString() == "ReceivingField")
             {
-                return ProcessReceivingFields(AParameters, ATransaction);
+                return ProcessReceivingFields(AParameters, ATransaction, out AExtractId);
             }
             else if (AParameters.Get("param_sending_receiving").ToString() == "SendingField")
             {
-                return ProcessSendingFields(AParameters, ATransaction);
+                return ProcessSendingFields(AParameters, ATransaction, out AExtractId);
             }
             else
             {
@@ -106,7 +109,8 @@ namespace Ict.Petra.Server.MPersonnel.queries
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        private bool ProcessSendingFields(TParameterList AParameters, TDBTransaction ATransaction)
+        /// <param name="AExtractId"></param>
+        private bool ProcessSendingFields(TParameterList AParameters, TDBTransaction ATransaction, out int AExtractId)
         {
             /* Approach:
              * Only find persons that have a commitment record.
@@ -114,10 +118,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
              * for which a member matches the specified criteria. */
 
             bool ReturnValue = false;
-            int ExtractId;
 
             // for sending fields only commitments are taken into account
-            ReturnValue = ProcessCommitments(false, AParameters, ATransaction, out ExtractId);
+            ReturnValue = ProcessCommitments(false, AParameters, ATransaction, out AExtractId);
 
             // if result was true then commit transaction, otherwise rollback
             TExtractsHandling.FinishExtractFromListOfPartnerKeys(ReturnValue);
@@ -130,7 +133,8 @@ namespace Ict.Petra.Server.MPersonnel.queries
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        private bool ProcessReceivingFields(TParameterList AParameters, TDBTransaction ATransaction)
+        /// <param name="AExtractId"></param>
+        private bool ProcessReceivingFields(TParameterList AParameters, TDBTransaction ATransaction, out int AExtractId)
         {
             /*Approach:
              * In case of a specified "Period" only find persons
@@ -144,11 +148,10 @@ namespace Ict.Petra.Server.MPersonnel.queries
              * for which a member matches the specified criteria.*/
 
             bool ReturnValue = false;
-            int ExtractId;
             TVerificationResultCollection VerificationResult;
 
             // for receiving fields first look at commitments
-            ReturnValue = ProcessCommitments(true, AParameters, ATransaction, out ExtractId);
+            ReturnValue = ProcessCommitments(true, AParameters, ATransaction, out AExtractId);
 
             if (ReturnValue == false)
             {
@@ -254,7 +257,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             // create an extract with the given name in the parameters
             ReturnValue = TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
-                ExtractId,
+                AExtractId,
                 out VerificationResult,
                 partnerkeys,
                 0,
@@ -300,7 +303,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 "AND NOT EXISTS (SELECT pub_p_family.p_partner_key_n " +
                 " FROM pub_p_family, pub_p_person, pub_m_extract " +
                 " WHERE pub_p_person.p_family_key_n = pub_p_family.p_partner_key_n " +
-                " AND pub_m_extract.m_extract_id_i = " + ExtractId.ToString() +
+                " AND pub_m_extract.m_extract_id_i = " + AExtractId.ToString() +
                 " AND pub_m_extract.p_partner_key_n = pub_p_person.p_partner_key_n)");
 
             // add address filter information to sql statement and parameter list
@@ -323,7 +326,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             // create an extract with the given name in the parameters
             ReturnValue = TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
-                ExtractId,
+                AExtractId,
                 out VerificationResult,
                 partnerkeys,
                 0,

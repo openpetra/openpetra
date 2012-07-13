@@ -73,7 +73,8 @@ namespace Ict.Petra.Server.MFinance.queries
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        protected override bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction)
+        /// <param name="AExtractId"></param>
+        protected override bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction, out int AExtractId)
         {
             Boolean ReturnValue = false;
             Boolean NewTransaction;
@@ -84,6 +85,8 @@ namespace Ict.Petra.Server.MFinance.queries
             bool AddressFilterAdded;
             DataTable partnerkeys = new DataTable();
 
+            AExtractId = -1;
+            
             // call to derived class to retrieve parameters specific for extract
             RetrieveParameters(AParameters, ref SqlStmt, ref SqlParameterList);
 
@@ -118,13 +121,12 @@ namespace Ict.Petra.Server.MFinance.queries
             ProcessGiftDetailRecords(giftdetails, AddressFilterAdded, AParameters, ref partnerkeys);
 
             TVerificationResultCollection VerificationResult;
-            int NewExtractID;
 
             // create an extract with the given name in the parameters
             ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                 AParameters.Get("param_extract_name").ToString(),
                 AParameters.Get("param_extract_description").ToString(),
-                out NewExtractID,
+                out AExtractId,
                 out VerificationResult,
                 partnerkeys,
                 0,

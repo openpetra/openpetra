@@ -34,9 +34,12 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.queries;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MCommon.Data.Cascading;
 
@@ -278,11 +281,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static Boolean CreateFamilyMembersExtract(int ABaseExtractId, ref int AExtractId, String AExtractName, String AExtractDescription)
         {
             Boolean ResultValue = false;
-            //TVerificationResultCollection VerificationResult;
-            //Boolean ExtractExists;
+            TParameterList ParameterList = new TParameterList();
+            TResultList ResultList = new TResultList();
 
-            //ResultValue = Server.MPartner.Extracts.TExtractsHandling.CreateNewExtract(AExtractName, AExtractDescription,
-            //    out AExtractId, out ExtractExists, out VerificationResult);
+            ParameterList.Add("param_base_extract", ABaseExtractId);
+            ParameterList.Add("param_extract_name", AExtractName);
+            ParameterList.Add("param_extract_description", AExtractDescription);
+            ResultValue = Ict.Petra.Server.MPartner.queries.QueryFamilyMembersExtract.CalculateExtract
+                (ParameterList, ResultList, out AExtractId);
 
             return ResultValue;
         }
@@ -299,11 +305,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         public static Boolean CreateFamilyExtractForPersons(int ABaseExtractId, ref int AExtractId, String AExtractName, String AExtractDescription)
         {
             Boolean ResultValue = false;
-            //TVerificationResultCollection VerificationResult;
-            //Boolean ExtractExists;
+            TParameterList ParameterList = new TParameterList();
+            TResultList ResultList = new TResultList();
 
-            //ResultValue = Server.MPartner.Extracts.TExtractsHandling.CreateNewExtract(AExtractName, AExtractDescription,
-            //    out AExtractId, out ExtractExists, out VerificationResult);
+            ParameterList.Add("param_base_extract", ABaseExtractId);
+            ParameterList.Add("param_extract_name", AExtractName);
+            ParameterList.Add("param_extract_description", AExtractDescription);
+            ResultValue = Ict.Petra.Server.MPartner.queries.QueryFamilyExtractForPersons.CalculateExtract
+                (ParameterList, ResultList, out AExtractId);
 
             return ResultValue;
         }
