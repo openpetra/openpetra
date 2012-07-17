@@ -267,7 +267,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             //Check if any rows exist
             if (grdDetails.Rows.Count < 2)
@@ -300,7 +300,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     Catalog.GetString("Please click Save to confirm the deletion."));
             }
 
-            grdDetails.Refresh();
+            //grdDetails.Refresh();
 
             //If some row(s) still exist after deletion
             if (grdDetails.Rows.Count > 1)
@@ -312,7 +312,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 grdDetails.Selection.ResetSelection(false);
-                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                grdDetails.SelectRowInGrid(newCurrentRowPos);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
                 ShowDetails(FPreviouslySelectedDetailRow);
@@ -361,7 +361,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Read current rows position
-            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
             {
@@ -406,7 +406,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     grdDetails.Selection.ResetSelection(false);
-                    TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                    grdDetails.SelectRowInGrid(newCurrentRowPos);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
                     ShowDetails(FPreviouslySelectedDetailRow);
