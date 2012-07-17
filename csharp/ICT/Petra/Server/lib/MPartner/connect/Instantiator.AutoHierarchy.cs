@@ -2857,10 +2857,21 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
 
         /// generated method from connector
         public Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
-                                                Boolean EmailGiftStatement)
+                                                Boolean AEmailGiftStatement)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateEmailGiftStatement", ";INT;BOOL;");
-            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateEmailGiftStatement(AExtractId, EmailGiftStatement);
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateEmailGiftStatement(AExtractId, AEmailGiftStatement);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateReceiptFrequency(System.Int32 AExtractId,
+                                              Boolean AUpdateReceiptLetterFrequency,
+                                              String AReceiptLetterFrequency,
+                                              Boolean AUpdateReceiptEachGift,
+                                              Boolean AReceiptEachGift)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateReceiptFrequency", ";INT;BOOL;STRING;BOOL;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateReceiptFrequency(AExtractId, AUpdateReceiptLetterFrequency, AReceiptLetterFrequency, AUpdateReceiptEachGift, AReceiptEachGift);
         }
 
         /// generated method from connector

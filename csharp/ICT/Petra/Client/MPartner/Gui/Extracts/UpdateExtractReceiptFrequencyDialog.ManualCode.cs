@@ -42,7 +42,7 @@ using Ict.Petra.Client.CommonControls;
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
     /// manual methods for the generated window
-    public partial class TFrmUpdateExtractEmailGiftStatementDialog : System.Windows.Forms.Form
+    public partial class TFrmUpdateExtractReceiptFrequencyDialog : System.Windows.Forms.Form
     {
         /// <summary>
         /// set the initial value for passport name in the dialog
@@ -57,6 +57,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // show this dialog in center of screen
             this.StartPosition = FormStartPosition.CenterScreen;
+            
+            this.OnUpdateReceiptLetterFrequencyChecked(null, null);
+            this.OnReceiptEachGiftChecked(null, null);
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
@@ -79,27 +82,61 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// Called by the instantiator of this Dialog to retrieve the values of Fields
         /// on the screen.
         /// </summary>
-        /// <param name="AEmailGiftStatement"></param>
+        /// <param name="AUpdateReceiptLetterFrequency"></param>
+        /// <param name="AReceiptLetterFrequency"></param>
+        /// <param name="AUpdateReceiptEachGift"></param>
+        /// <param name="AReceiptEachGift"></param>
         /// <returns>Boolean</returns>
-        public Boolean GetReturnedParameters(out Boolean AEmailGiftStatement)
+        public Boolean GetReturnedParameters(out Boolean AUpdateReceiptLetterFrequency, out String AReceiptLetterFrequency,
+            out Boolean AUpdateReceiptEachGift, out Boolean AReceiptEachGift)
         {
             Boolean ReturnValue = true;
 
-            AEmailGiftStatement = chkEmailGiftStatement.Checked;
+            AUpdateReceiptLetterFrequency = chkUpdateReceiptLetterFrequency.Checked;
+            AReceiptLetterFrequency = cmbReceiptLetterFrequency.GetSelectedString();
+            
+            AUpdateReceiptEachGift = chkUpdateReceiptEachGift.Checked;
+            AReceiptEachGift = chkReceiptEachGift.Checked;
 
             return ReturnValue;
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to change the 'email gift statements' flag"
+            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to update Receipt Frequency data"
                                                   + "\r\nfor all partners in the extract?"),
-                                Catalog.GetString("Change 'email gift statements' flag?"), 
+                                Catalog.GetString("Update Receipt Frequency?"), 
                                 MessageBoxButtons.YesNo, 
                                 MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();
+            }
+        }
+
+        private void OnUpdateReceiptLetterFrequencyChecked(Object Sender, EventArgs e)
+        {
+            if (chkUpdateReceiptLetterFrequency.Checked)
+            {
+                cmbReceiptLetterFrequency.Enabled = true;
+            }
+            else
+            {
+                cmbReceiptLetterFrequency.SetSelectedString("", -1);
+                cmbReceiptLetterFrequency.Enabled = false;
+            }
+        }
+
+        private void OnReceiptEachGiftChecked(Object Sender, EventArgs e)
+        {
+            if (chkUpdateReceiptEachGift.Checked)
+            {
+                chkReceiptEachGift.Enabled = true;
+            }
+            else
+            {
+                chkReceiptEachGift.Checked = false;
+                chkReceiptEachGift.Enabled = false;
             }
         }
     }

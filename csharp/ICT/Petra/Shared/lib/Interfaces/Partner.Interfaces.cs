@@ -746,7 +746,13 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
                                          out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
-                                         Boolean EmailGiftStatement);
+                                         Boolean AEmailGiftStatement);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean UpdateReceiptFrequency(System.Int32 AExtractId,
+                                       Boolean AUpdateReceiptLetterFrequency,
+                                       String AReceiptLetterFrequency,
+                                       Boolean AUpdateReceiptEachGift,
+                                       Boolean AReceiptEachGift);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
         System.Boolean AddRecentlyUsedPartner(Int64 APartnerKey,
                                               TPartnerClass APartnerClass,

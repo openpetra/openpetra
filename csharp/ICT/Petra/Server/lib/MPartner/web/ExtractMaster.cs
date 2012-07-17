@@ -625,7 +625,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 EmailGiftStatementValue = "false";
             }
             
-            ExtractTDSMExtractTable ExtractDT = new ExtractTDSMExtractTable();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             string SqlStmt;
 
@@ -645,7 +644,84 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             catch (Exception e)
             {
-                TLogging.Log("Problem during load of an extract: " + e.Message);
+                TLogging.Log("Problem during update of email gift statement for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
+        /// update receipt letter frequency and 'receipt each gift' flag for all partners in given extract
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="AUpdateReceiptLetterFrequency"></param>
+        /// <param name="AReceiptLetterFrequency"></param>
+        /// <param name="AUpdateReceiptEachGift"></param>
+        /// <param name="AReceiptEachGift"></param>
+        /// <returns>true if update was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean UpdateReceiptFrequency(int AExtractId, Boolean AUpdateReceiptLetterFrequency,
+            String AReceiptLetterFrequency, Boolean AUpdateReceiptEachGift, Boolean AReceiptEachGift)
+        {
+            Boolean ResultValue = true;
+            String ReceiptEachGiftValue;
+            String FieldUpdate = "";
+
+            if (   !AUpdateReceiptLetterFrequency
+                && !AUpdateReceiptEachGift)
+            {
+                // nothing to do
+                return ResultValue;
+            }
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt;
+
+            try
+            {
+                if (AUpdateReceiptLetterFrequency)
+                {
+                    FieldUpdate = PPartnerTable.GetReceiptLetterFrequencyDBName() 
+                                        + " = '" + AReceiptLetterFrequency + "'";
+                }
+                
+                if (AUpdateReceiptEachGift)
+                {
+                    if (AReceiptEachGift)
+                    {
+                        ReceiptEachGiftValue = "true";
+                    }
+                    else
+                    {
+                        ReceiptEachGiftValue = "false";
+                    }
+                    
+                    if (FieldUpdate.Length > 0)
+                    {
+                        FieldUpdate = FieldUpdate + ", ";
+                    }
+                    
+                    FieldUpdate = FieldUpdate + PPartnerTable.GetReceiptEachGiftDBName() 
+                                        + " = " + ReceiptEachGiftValue;
+                }
+                
+                // Use a direct sql statement rather than db access classes to improve performance as otherwise
+                // we would need an extra query for each row of an extract to update data
+                SqlStmt = "UPDATE pub_" + PPartnerTable.GetTableDBName() +
+                          " SET " + FieldUpdate +
+                          " WHERE " + PPartnerTable.GetPartnerKeyDBName() + 
+                          " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
+                          " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")";
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during update of receipt frequency for an extract: " + e.Message);
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 ResultValue = false;
             }

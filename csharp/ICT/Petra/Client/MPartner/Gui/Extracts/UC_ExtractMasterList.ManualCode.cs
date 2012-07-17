@@ -376,13 +376,41 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void UpdateReceiptFrequency(System.Object sender, EventArgs e)
         {
+            bool UpdateReceiptLetterFrequency;
+            String ReceiptLetterFrequency;
+            bool UpdateReceiptEachGift;
+            bool ReceiptEachGift;
+            
             if (!WarnIfNotSingleSelection(Catalog.GetString("Update Receipt Frequency"))
                 && (GetSelectedDetailRow() != null))
             {
-                TFrmExtractMaintain frm = new TFrmExtractMaintain(this.FindForm());
-                frm.ExtractId = GetSelectedDetailRow().ExtractId;
-                frm.ExtractName = GetSelectedDetailRow().ExtractName;
-                frm.Show();
+                TFrmUpdateExtractReceiptFrequencyDialog dialog = new TFrmUpdateExtractReceiptFrequencyDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out UpdateReceiptLetterFrequency, out ReceiptLetterFrequency,
+                                                out UpdateReceiptEachGift, out ReceiptEachGift);
+                    
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.UpdateReceiptFrequency
+                                (GetSelectedDetailRow().ExtractId, UpdateReceiptLetterFrequency, 
+                                ReceiptLetterFrequency, UpdateReceiptEachGift, ReceiptEachGift))
+                    {
+                        MessageBox.Show(Catalog.GetString("Receipt Frequency successfully updated for all Partners in Extract ") 
+                                            + GetSelectedDetailRow().ExtractName, 
+                                        Catalog.GetString("Update Receipt Frequency"), 
+                                        MessageBoxButtons.OK, 
+                                        MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while updating Receipt Frequency for Partners in Extract ")
+                                            + GetSelectedDetailRow().ExtractName, 
+                                        Catalog.GetString("Update Receipt Frequency"), 
+                                        MessageBoxButtons.OK, 
+                                        MessageBoxIcon.Error);
+                    }
+                }
             }
         }
 
