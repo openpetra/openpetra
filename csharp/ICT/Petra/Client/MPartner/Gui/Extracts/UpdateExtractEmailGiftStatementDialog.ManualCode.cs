@@ -92,11 +92,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to change the 'email gift statements' flag"
-                                                  + "\r\nfor all partners in the extract?"),
-                                Catalog.GetString("Change 'email gift statements' flag?"), 
-                                MessageBoxButtons.YesNo, 
-                                MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to change the 'email gift statements' flag" +
+                        "\r\nfor all partners in the extract?"),
+                    Catalog.GetString("Change 'email gift statements' flag?"),
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();

@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // show this dialog in center of screen
             this.StartPosition = FormStartPosition.CenterScreen;
-            
+
             this.OnUpdateReceiptLetterFrequencyChecked(null, null);
             this.OnReceiptEachGiftChecked(null, null);
         }
@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             AUpdateReceiptLetterFrequency = chkUpdateReceiptLetterFrequency.Checked;
             AReceiptLetterFrequency = cmbReceiptLetterFrequency.GetSelectedString();
-            
+
             AUpdateReceiptEachGift = chkUpdateReceiptEachGift.Checked;
             AReceiptEachGift = chkReceiptEachGift.Checked;
 
@@ -103,11 +103,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to update Receipt Frequency data"
-                                                  + "\r\nfor all partners in the extract?"),
-                                Catalog.GetString("Update Receipt Frequency?"), 
-                                MessageBoxButtons.YesNo, 
-                                MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to update Receipt Frequency data" +
+                        "\r\nfor all partners in the extract?"),
+                    Catalog.GetString("Update Receipt Frequency?"),
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();

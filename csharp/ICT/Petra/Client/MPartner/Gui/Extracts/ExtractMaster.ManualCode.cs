@@ -642,9 +642,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void UpdateReceiptFrequency(System.Object sender, EventArgs e)
         {
-             ucoExtractMasterList.UpdateReceiptFrequency(sender, e);
+            ucoExtractMasterList.UpdateReceiptFrequency(sender, e);
         }
-        
+
         /// <summary>
         /// Update Email Gift Statement flag for Partners in selected extract
         /// </summary>
@@ -652,7 +652,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
         {
-             ucoExtractMasterList.UpdateEmailGiftStatement(sender, e);
+            ucoExtractMasterList.UpdateEmailGiftStatement(sender, e);
         }
 
         #endregion

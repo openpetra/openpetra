@@ -380,35 +380,36 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             String ReceiptLetterFrequency;
             bool UpdateReceiptEachGift;
             bool ReceiptEachGift;
-            
+
             if (!WarnIfNotSingleSelection(Catalog.GetString("Update Receipt Frequency"))
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractReceiptFrequencyDialog dialog = new TFrmUpdateExtractReceiptFrequencyDialog(this.FindForm());
                 dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     dialog.GetReturnedParameters(out UpdateReceiptLetterFrequency, out ReceiptLetterFrequency,
-                                                out UpdateReceiptEachGift, out ReceiptEachGift);
-                    
+                        out UpdateReceiptEachGift, out ReceiptEachGift);
+
                     // perform update of extract data on server side
                     if (TRemote.MPartner.Partner.WebConnectors.UpdateReceiptFrequency
-                                (GetSelectedDetailRow().ExtractId, UpdateReceiptLetterFrequency, 
-                                ReceiptLetterFrequency, UpdateReceiptEachGift, ReceiptEachGift))
+                            (GetSelectedDetailRow().ExtractId, UpdateReceiptLetterFrequency,
+                            ReceiptLetterFrequency, UpdateReceiptEachGift, ReceiptEachGift))
                     {
-                        MessageBox.Show(Catalog.GetString("Receipt Frequency successfully updated for all Partners in Extract ") 
-                                            + GetSelectedDetailRow().ExtractName, 
-                                        Catalog.GetString("Update Receipt Frequency"), 
-                                        MessageBoxButtons.OK, 
-                                        MessageBoxIcon.Information);
+                        MessageBox.Show(Catalog.GetString("Receipt Frequency successfully updated for all Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Receipt Frequency"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show(Catalog.GetString("Error while updating Receipt Frequency for Partners in Extract ")
-                                            + GetSelectedDetailRow().ExtractName, 
-                                        Catalog.GetString("Update Receipt Frequency"), 
-                                        MessageBoxButtons.OK, 
-                                        MessageBoxIcon.Error);
+                        MessageBox.Show(Catalog.GetString("Error while updating Receipt Frequency for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Receipt Frequency"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
                 }
             }
@@ -422,38 +423,39 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
         {
             bool EmailGiftStatement;
-            
+
             if (!WarnIfNotSingleSelection(Catalog.GetString("Update Email Gift Statement"))
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractEmailGiftStatementDialog dialog = new TFrmUpdateExtractEmailGiftStatementDialog(this.FindForm());
                 dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     dialog.GetReturnedParameters(out EmailGiftStatement);
-                    
+
                     // perform update of extract data on server side
                     if (TRemote.MPartner.Partner.WebConnectors.UpdateEmailGiftStatement
-                                (GetSelectedDetailRow().ExtractId, EmailGiftStatement))
+                            (GetSelectedDetailRow().ExtractId, EmailGiftStatement))
                     {
-                        MessageBox.Show(Catalog.GetString("Email Gift Statement successfully updated for all Partners in Extract ") 
-                                            + GetSelectedDetailRow().ExtractName, 
-                                        Catalog.GetString("Update Email Gift Statement"), 
-                                        MessageBoxButtons.OK, 
-                                        MessageBoxIcon.Information);
+                        MessageBox.Show(Catalog.GetString("Email Gift Statement successfully updated for all Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Email Gift Statement"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show(Catalog.GetString("Error while updating Email Gift Statement for Partners in Extract ")
-                                            + GetSelectedDetailRow().ExtractName, 
-                                        Catalog.GetString("Update Email Gift Statement"), 
-                                        MessageBoxButtons.OK, 
-                                        MessageBoxIcon.Error);
+                        MessageBox.Show(Catalog.GetString("Error while updating Email Gift Statement for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Email Gift Statement"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
                 }
             }
         }
-        
+
         #endregion
 
         #region Private Methods
