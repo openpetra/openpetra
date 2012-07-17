@@ -744,6 +744,9 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         TSubmitChangesResult SaveExtract(System.Int32 AExtractId,
                                          ref MExtractTable AExtractTable,
                                          out TVerificationResultCollection AVerificationResult);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
+                                         Boolean EmailGiftStatement);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TPartnerWebConnector)</summary>
         System.Boolean AddRecentlyUsedPartner(Int64 APartnerKey,
                                               TPartnerClass APartnerClass,

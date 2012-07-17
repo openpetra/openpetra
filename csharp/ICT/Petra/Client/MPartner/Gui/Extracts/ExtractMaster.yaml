@@ -33,6 +33,10 @@ RootNode:
         actCreateDonorByMotivationExtract: {ActionClick=CreateDonorByMotivationExtract}     
         actCreateDonorByAmountExtract: {ActionClick=CreateDonorByAmountExtract}     
         actCreateDonorByMiscellaneousExtract: {ActionClick=CreateDonorByMiscellaneousExtract}     
+        
+        actUpdateReceiptFrequency: {ActionClick=UpdateReceiptFrequency}     
+        actUpdateEmailGiftStatement: {ActionClick=UpdateEmailGiftStatement}     
+        
     Controls:
         pnlContent:
             Controls: [pnlFilter, pnlExtractMasterList]
@@ -103,6 +107,8 @@ RootNode:
             mniPurgeExtracts: {Label=Purge Extracts, Action=actPurgeExtracts}
         mniUpdatePartners:
             Label: &Update Partners
+            mniUpdateReceiptFrequency: {Label=Receipt Frequency, Action=actUpdateReceiptFrequency}
+            mniUpdateEmailGiftStatement: {Label=Email Gift Statement, Action=actUpdateEmailGiftStatement}
 
     Toolbar:
 

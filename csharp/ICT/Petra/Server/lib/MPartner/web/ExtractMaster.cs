@@ -603,5 +603,55 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return SubmissionResult;
         }
+
+        /// <summary>
+        /// update email gift statement flag for all partners in given extract
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="AEmailGiftStatement"></param>
+        /// <returns>true if update was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean UpdateEmailGiftStatement(int AExtractId, Boolean AEmailGiftStatement)
+        {
+            Boolean ResultValue = true;
+            String EmailGiftStatementValue;
+            
+            if (AEmailGiftStatement)
+            {
+                EmailGiftStatementValue = "true";
+            }
+            else
+            {
+                EmailGiftStatementValue = "false";
+            }
+            
+            ExtractTDSMExtractTable ExtractDT = new ExtractTDSMExtractTable();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt;
+
+            try
+            {
+                // Use a direct sql statement rather than db access classes to improve performance as otherwise
+                // we would need an extra query for each row of an extract to update data
+                SqlStmt = "UPDATE pub_" + PPartnerTable.GetTableDBName() +
+                          " SET " + PPartnerTable.GetEmailGiftStatementDBName() + " = " + EmailGiftStatementValue +
+                          " WHERE " + PPartnerTable.GetPartnerKeyDBName() + 
+                          " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
+                          " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")";
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during load of an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+        
     }
 }

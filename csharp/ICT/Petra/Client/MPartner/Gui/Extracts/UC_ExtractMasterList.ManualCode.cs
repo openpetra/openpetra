@@ -369,6 +369,63 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        /// <summary>
+        /// Update Receipt Frequency for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateReceiptFrequency(System.Object sender, EventArgs e)
+        {
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Update Receipt Frequency"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmExtractMaintain frm = new TFrmExtractMaintain(this.FindForm());
+                frm.ExtractId = GetSelectedDetailRow().ExtractId;
+                frm.ExtractName = GetSelectedDetailRow().ExtractName;
+                frm.Show();
+            }
+        }
+
+        /// <summary>
+        /// Update Email Gift Statement flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
+        {
+            bool EmailGiftStatement;
+            
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Update Email Gift Statement"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractEmailGiftStatementDialog dialog = new TFrmUpdateExtractEmailGiftStatementDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out EmailGiftStatement);
+                    
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.UpdateEmailGiftStatement
+                                (GetSelectedDetailRow().ExtractId, EmailGiftStatement))
+                    {
+                        MessageBox.Show(Catalog.GetString("Email Gift Statement successfully updated for all Partners in Extract ") 
+                                            + GetSelectedDetailRow().ExtractName, 
+                                        Catalog.GetString("Update Email Gift Statement"), 
+                                        MessageBoxButtons.OK, 
+                                        MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while updating Email Gift Statement for Partners in Extract ")
+                                            + GetSelectedDetailRow().ExtractName, 
+                                        Catalog.GetString("Update Email Gift Statement"), 
+                                        MessageBoxButtons.OK, 
+                                        MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+        
         #endregion
 
         #region Private Methods

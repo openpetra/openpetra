@@ -2856,6 +2856,14 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
+                                                Boolean EmailGiftStatement)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateEmailGiftStatement", ";INT;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateEmailGiftStatement(AExtractId, EmailGiftStatement);
+        }
+
+        /// generated method from connector
         public System.Boolean AddRecentlyUsedPartner(Int64 APartnerKey,
                                                      TPartnerClass APartnerClass,
                                                      Boolean ANewPartner,
