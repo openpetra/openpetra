@@ -59,6 +59,9 @@ namespace {#NAMESPACE}
 
       {#INITACTIONSTATE}
 
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+      BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -147,6 +150,10 @@ namespace {#NAMESPACE}
     {
         bool ReturnValue = false;
         Control ControlToValidate = null;
+
+        // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+        FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+
 {#IFDEF SHOWDETAILS}
         {#DETAILTABLETYPE}Row CurrentRow;
 
@@ -349,9 +356,12 @@ namespace {#NAMESPACE}
 
     private void BuildValidationControlsDict()
     {
+        if (FMainDS != null)
+        {
 {#IFDEF ADDCONTROLTOVALIDATIONCONTROLSDICT}
-        {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+            {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
 {#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
+        }
     }
 {#ENDIF MASTERTABLE OR DETAILTABLE}    
 
