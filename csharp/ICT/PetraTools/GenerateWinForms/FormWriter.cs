@@ -912,6 +912,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
             FTemplate.AddToCodelet("CANCLOSEMANUAL", "");
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
+            FTemplate.AddToCodelet("PREDELETEMANUAL", "");
+            FTemplate.AddToCodelet("DELETEROWMANUAL", "");
+            FTemplate.AddToCodelet("POSTDELETEMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
@@ -960,6 +963,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("NewRowManual"))
             {
                 FTemplate.AddToCodelet("INITNEWROWMANUAL", "NewRowManual(ref NewRow);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("PreDeleteManual"))
+            {
+                FTemplate.AddToCodelet("PREDELETEMANUAL", "allowDeletion = PreDeleteManual(ref rowToDelete, ref deletionQuestion);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("DeleteRowManual"))
+            {
+                FTemplate.AddToCodelet("DELETEROWMANUAL", "deletionPerformed = DeleteRowManual(ref rowToDelete, ref completionMessage);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("PostDeleteManual"))
+            {
+                FTemplate.AddToCodelet("POSTDELETEMANUAL", "PostDeleteManual(allowDeletion, deletionPerformed, ref rowToDelete);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("StoreManualCode"))

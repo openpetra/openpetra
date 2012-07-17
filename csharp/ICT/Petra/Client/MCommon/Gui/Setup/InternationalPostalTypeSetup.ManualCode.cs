@@ -62,5 +62,30 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
             CreateNewPInternationalPostalType();
         }
+        
+        private void DeleteRecord(Object sender, EventArgs e)
+        {
+        	DeletePInternationalPostalType();
+        }
+        
+        
+        private bool PreDeleteManual(ref PInternationalPostalTypeRow ARowToDelete, ref string ADeletionQuestion)
+        {
+        	return true;
+        }
+
+        private bool DeleteRowManual(ref PInternationalPostalTypeRow ARowToDelete, ref string ACompletionMessage)
+        {
+        	FPreviouslySelectedDetailRow.Delete();
+        	ACompletionMessage = "Deletion has taken place";
+        	return true;
+        }
+
+        private void PostDeleteManual(bool AAllowDeletion, bool ADeletionPerformed, ref PInternationalPostalTypeRow ARowToDelete)
+        {
+        	//Code to execute post delete
+        	MessageBox.Show("Post Delete");
+        }
+
     }
 }

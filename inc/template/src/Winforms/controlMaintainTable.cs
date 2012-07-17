@@ -146,8 +146,10 @@ namespace {#NAMESPACE}
 	                    break;
 	                }
 	            }
-            }
 
+				GetDetailsFromControls(FPreviouslySelectedDetailRow);
+            }
+			
             return true;
         }
         else
@@ -390,19 +392,26 @@ namespace {#NAMESPACE}
 	    	}
 	    	else if (FDetailGridRowsChangedState == -1) //Deletion
 	    	{
-	    		if (FDetailGridRowsCountCurrent > 1) //Implies at least one record still left
-	    		{
-	    			// Select and display the details of the currently selected Row without causing an event
-	    			grdDetails.SelectRowInGrid(e.Row, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-		            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-		            ShowDetails(FPreviouslySelectedDetailRow);
-		            pnlDetails.Enabled = true;
-	    		}
-	    		else	
-	    		{
-	                FPreviouslySelectedDetailRow = null;
-		            pnlDetails.Enabled = false;
-	    		}
+                if (FDetailGridRowsCountCurrent > 1) //Implies at least one record still left
+                {
+                    int nextRowToSelect = e.Row;
+                    //If last row deleted, subtract row index to select by 1
+                    if (nextRowToSelect == FDetailGridRowsCountCurrent)
+                    {
+                    	nextRowToSelect--;
+                    }
+                	// Select and display the details of the currently selected Row without causing an event
+                    grdDetails.SelectRowInGrid(nextRowToSelect, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    ShowDetails(FPreviouslySelectedDetailRow);
+                    pnlDetails.Enabled = true;
+                }
+                else
+                {
+                    e.Row = 0;
+                	FPreviouslySelectedDetailRow = null;
+                    pnlDetails.Enabled = false;
+                }
 	    	}
         }
         
@@ -412,6 +421,57 @@ namespace {#NAMESPACE}
 		FDetailGridRowsChangedState = 0;
 	    FNewFocusEvent = false;
 	}
+
+    private void Delete{#DETAILTABLE}()
+    {
+		bool allowDeletion = true;
+		bool deletionPerformed = false;
+		string deletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+		string completionMessage = string.Empty;
+		
+		if (FPreviouslySelectedDetailRow == null)
+		{
+			return;
+		}
+
+		int rowIndexToDelete = grdDetails.SelectedRowIndex();
+		{#DETAILTABLETYPE}Row rowToDelete = GetSelectedDetailRow();
+		
+		{#PREDELETEMANUAL}
+		
+		if(allowDeletion)
+		{
+        	if ((MessageBox.Show(deletionQuestion,
+					 Catalog.GetString("Confirm Delete"),
+                     MessageBoxButtons.YesNo,
+                     MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+			{
+{#IFDEF DELETEROWMANUAL}
+				{#DELETEROWMANUAL}
+{#ENDIF DELETEROWMANUAL}
+{#IFNDEF DELETEROWMANUAL}				
+				FPreviouslySelectedDetailRow.Delete();
+				deletionPerformed = true;
+{#ENDIFN DELETEROWMANUAL}				
+			
+				FPetraUtilsObject.SetChangedFlag();
+				//Select and call the event that doesn't occur automatically
+				InvokeFocusedRowChanged(rowIndexToDelete);
+			}
+		}
+
+{#IFDEF POSTDELETEMANUAL}
+		{#POSTDELETEMANUAL}
+{#ENDIF POSTDELETEMANUAL}
+{#IFNDEF POSTDELETEMANUAL}
+		if(deletionPerformed && completionMessage.Length > 0)
+		{
+			MessageBox.Show(completionMessage,
+							 Catalog.GetString("Deletion Completed"));
+		}
+{#ENDIFN POSTDELETEMANUAL}
+
+    }
 {#ENDIF SHOWDETAILS}
     
 {#IFDEF SAVEDETAILS}
