@@ -1081,19 +1081,28 @@ namespace Ict.Common.Verification
                 }
                 else
                 {
+                    // A TVerificationResult for the same AResultColumn was found: inspect it.
                     foreach (TScreenVerificationResult SingleEntry in si)
                     {
                         if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult, false,
                                                                                 ATreatUserControlAndFormContextsAsIdentical))
                         {
+                            // The existing TVerificationResult is identical to AVerificationResult: 
+                            // update the existing TVerificationResult's DataValidationRunID to the current one as it will need to be 
+                            // treated in further processing as if it was found in this run.
+                            SingleEntry.DataValidationRunID = CurrentDataValidationRunID;
+                            
                             IdenticalVResultFound = true;
+                            
                             break;
                         }
                     }
 
                     if (!IdenticalVResultFound)
                     {
-                        // If CurrentDataValidationRunID was set on this instance, set it on any AVerificationResult we add so it can be associated with a "run" of the Data Validation.
+                        // The existing TVerificationResult is NOT identical to AVerificationResult: 
+                        // if CurrentDataValidationRunID was set on this instance of TVerificationResultColleciont, set it on any 
+                        // AVerificationResult we add so it can be associated with a 'run' of the Data Validation.
                         if (CurrentDataValidationRunID != new System.Guid()) 
                         {
                             AVerificationResult.DataValidationRunID = CurrentDataValidationRunID;
