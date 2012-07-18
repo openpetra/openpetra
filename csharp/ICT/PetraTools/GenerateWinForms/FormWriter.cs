@@ -977,7 +977,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("PostDeleteManual"))
             {
-                FTemplate.AddToCodelet("POSTDELETEMANUAL", "PostDeleteManual(allowDeletion, deletionPerformed, ref rowToDelete);" + Environment.NewLine);
+                FTemplate.AddToCodelet("POSTDELETEMANUAL", "PostDeleteManual(ref rowToDelete, allowDeletion, deletionPerformed, completionMessage);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("StoreManualCode"))

@@ -450,7 +450,7 @@ namespace {#NAMESPACE}
 				{#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
 {#IFNDEF DELETEROWMANUAL}				
-				FPreviouslySelectedDetailRow.Delete();
+				rowToDelete.Delete();
 				deletionPerformed = true;
 {#ENDIFN DELETEROWMANUAL}				
 			
