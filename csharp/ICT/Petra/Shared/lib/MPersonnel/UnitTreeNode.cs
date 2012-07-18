@@ -44,5 +44,9 @@ namespace Ict.Petra.Shared.MPersonnel
         public Int64 ParentUnitKey;
         /// <summary>From PUnit.Name</summary>
         public String Description;
+        /// <summary>From PUnit.TypeCode=>Description</summary>
+        public string TypeCode;
+        /// <summary>From PUnitType Attribute LIKE "%sticky%"</summary>
+        public Boolean UnitIsSticky;
     }
 }

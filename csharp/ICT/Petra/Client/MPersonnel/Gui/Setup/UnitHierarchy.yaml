@@ -13,19 +13,30 @@ RootNode:
             Controls:
                 Row0: [pnlHelp]
                 Row1: [pnlUnits]
-                Row2: [pnlStatus]
+                Row2: [pnlDetails]
+                Row3: [pnlStatus]
             Dock: Fill
         pnlHelp:
             Controls: [lblHelp]
             Dock: Top
-            Height:60
+            Height:50
         pnlUnits:
             Controls: [trvUnits]
             Dock: Top
-            Height:300
+            Height:350
+        pnlDetails:
+            Dock: Top
+            ControlsOrientation: horizontal
+            Controls: [txtChild, txtParent, btnMove]
+        txtChild:
+            Width:100
+        txtParent:
+            Width:100
+        btnMove:
+            ActionClick: ReassignParent
         pnlStatus:
-            Controls: [txtStatus]
             Dock: Fill
+            Controls: [txtStatus]
         lblHelp:
             Text:Drag the Units as required to re-arrange the hierarchy of units.
             Dock: Fill

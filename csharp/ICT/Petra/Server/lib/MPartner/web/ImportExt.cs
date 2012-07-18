@@ -1768,7 +1768,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <param name="ALimitToOption">if this is not an empty string, only the applications for this conference will be imported, historic applications will be ignored</param>
         /// <param name="ADoNotOverwrite">do not modify records that already exist in the database</param>
         /// <param name="AResultList">verification results. can contain critical errors and messages for the user</param>
-        /// <returns>the data to be stored by the caller</returns>
+        /// <returns>nothing - an empty TDS</returns>
         public PartnerImportExportTDS ImportAllData(string[] ALinesToImport,
             string ALimitToOption,
             bool ADoNotOverwrite,

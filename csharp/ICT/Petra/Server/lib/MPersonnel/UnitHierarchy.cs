@@ -62,14 +62,19 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
                 PUnitTable UnitTbl = PUnitAccess.LoadAll(Transaction);
+                UUnitTypeTable UnitTypeTbl = UUnitTypeAccess.LoadAll(Transaction);
+                UnitTypeTbl.DefaultView.Sort = UUnitTypeTable.GetUnitTypeCodeDBName();
+
                 UmUnitStructureTable HierarchyTbl = UmUnitStructureAccess.LoadAll(Transaction);
                 HierarchyTbl.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
+
                 UnitTbl.DefaultView.Sort = PUnitTable.GetPartnerKeyDBName();
                 UnitHierarchyNode RootNode = new UnitHierarchyNode();
 
                 RootNode.MyUnitKey = THE_ORGANISATION;
                 RootNode.ParentUnitKey = THE_ORGANISATION;
                 RootNode.Description = "The Organisation";
+                RootNode.TypeCode = "Root";
 
                 Int32 RootUnitIdx = UnitTbl.DefaultView.Find(THE_ORGANISATION);
 
@@ -84,9 +89,15 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                 {
                     PUnitRow UnitRow = (PUnitRow)rv.Row;
                     UnitHierarchyNode Node = new UnitHierarchyNode();
-                    Node.Description = UnitRow.UnitName;
+                    Node.Description = UnitRow.UnitName + " " + UnitRow.Description;
+                    if (Node.Description == "")
+                    {
+                        Node.Description = "[" + UnitRow.PartnerKey.ToString("D10") + "]";
+                    }
                     Node.MyUnitKey = UnitRow.PartnerKey;
 
+                    //
+                    // Retrieve parent..
                     Int32 HierarchyTblIdx = HierarchyTbl.DefaultView.Find(Node.MyUnitKey);
                     if (HierarchyTblIdx >= 0)
                     {
@@ -95,6 +106,18 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     else
                     {
                         Node.ParentUnitKey = THE_ORGANISATION;
+                    }
+
+                    //
+                    // Retrieve TypeCode..
+                    Int32 TypeTblIndex = UnitTypeTbl.DefaultView.Find(UnitRow.UnitTypeCode);
+                    if (TypeTblIndex >= 0)
+                    {
+                        Node.TypeCode = ((UUnitTypeRow)UnitTypeTbl.DefaultView[TypeTblIndex].Row).UnitTypeName;
+                    }
+                    else
+                    {
+                        Node.TypeCode = "Type: " + UnitRow.UnitTypeCode;
                     }
                     Ret.Add(Node);
                 }
@@ -132,6 +155,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                 DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
 
                 TVerificationResultCollection Results;
+                NewTable.ThrowAwayAfterSubmitChanges = true;  // I'm not interested in this table after this Submit:
                 CommitOK = UmUnitStructureAccess.SubmitChanges(NewTable, Transaction, out Results);
             }
             finally

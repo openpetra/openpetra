@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanp
+//       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,12 +28,14 @@ using System.Collections.Generic;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 using System.Collections;
 using System.Drawing;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -41,7 +43,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
     {
         private TreeNode FDragNode = null;
         private TreeNode FDragTarget = null;
+        private TreeNode FSelectedNode = null;
         private String FStatus = "";
+        private TreeNode FChildNodeReference;
+        private TreeNode FParentNodeReference;
 
         private UnitHierarchyNode FindNodeWithThisParent(Int64 ParentKey, ArrayList UnitNodes)
         {
@@ -75,6 +80,24 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
         }
 
+        private TreeNode FindChild(TreeNode AParentNode, Int64 AUnitKey)
+        {
+            foreach (TreeNode Node in AParentNode.Nodes)
+            {
+                if (((UnitHierarchyNode)Node.Tag).MyUnitKey == AUnitKey)
+                {
+                    return Node;
+                }
+
+                TreeNode ChildResult = FindChild(Node, AUnitKey);
+                if (ChildResult != null)
+                {
+                    return ChildResult;
+                }
+            }
+            return null;
+        }
+
         private void AddChildren(TreeNode ParentNode, ArrayList UnitNodes)
         {
             while (true)
@@ -89,6 +112,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 // Add the node to the specifed parent:
                 TreeNode ChildNode = new TreeNode(Child.Description);
                 ChildNode.Tag = Child;
+                ChildNode.ToolTipText = Child.TypeCode;
+
                 InsertAlphabetically(ParentNode, ChildNode);
                 ChildNode.Expand();
 
@@ -129,63 +154,165 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             return IsDescendantOf(ADestinationNode.Parent, ADragNode);
         }
 
+        private void ShowNodeSelected(TreeNode ASelThis)
+        {
+            if (FSelectedNode != null)
+            {
+                FSelectedNode.BackColor = Color.White;
+
+            }
+            if (ASelThis != null)
+            {
+                ASelThis.BackColor = Color.Turquoise;
+            }
+            FSelectedNode = ASelThis;
+        }
+
+        private void SelectNode(TreeNode ASelThis)
+        {
+
+            ShowNodeSelected(ASelThis);
+            if (ASelThis != null)
+            {
+                txtChild.Text = ((UnitHierarchyNode)ASelThis.Tag).MyUnitKey.ToString("D10");
+                txtParent.Text = ((UnitHierarchyNode)ASelThis.Tag).ParentUnitKey.ToString("D10");
+                btnMove.Enabled = false;
+            }
+        }
+
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
             Point pt = trvUnits.PointToClient(new Point(e.X, e.Y));
-            TreeNode NewDragTarget = trvUnits.GetNodeAt(pt);
-            if (NewDragTarget != FDragTarget)
-            {
-                if (FDragTarget != null)
-                {
-                    FDragTarget.BackColor = Color.White;
-                }
-                FDragTarget = NewDragTarget;
-            }
+            FDragTarget = trvUnits.GetNodeAt(pt);
 
-            if ((FDragTarget == null) || (FDragTarget == FDragNode) || (IsDescendantOf(FDragTarget, FDragNode)))
+            if (FDragTarget == null)
+                return;
+
+            ScrollIntoView(FDragTarget);
+            if ((FDragTarget == FDragNode) || (IsDescendantOf(FDragTarget, FDragNode)))
             {
                 e.Effect = DragDropEffects.None;
+                FDragTarget = null;
             }
             else
             {
-                e.Effect = DragDropEffects.Move;
-                FDragTarget.BackColor = Color.Turquoise;
+                e.Effect = DragDropEffects.Move | DragDropEffects.Scroll;
+                ShowNodeSelected(FDragTarget);
+            }
+        }
+
+        private void ScrollIntoView(TreeNode ATarget)
+        {
+            TreeNode HigherNode = ATarget.PrevVisibleNode;
+            if (HigherNode != null)
+            {
+                if (!HigherNode.IsVisible)
+                {
+                    HigherNode.EnsureVisible();
+                }
+            }
+
+            TreeNode LowerNode = ATarget.NextVisibleNode;
+            if (LowerNode != null)
+            {
+                if (!LowerNode.IsVisible)
+                {
+                    LowerNode.EnsureVisible();
+                }
+            }
+        }
+
+        private void DoReassignment(TreeNode Child, TreeNode NewParent)
+        {
+            if ((Child != null) && (NewParent != null))
+            {
+                String PrevParent = Child.Parent.Text;
+                TreeNode NewNode = (TreeNode)Child.Clone();
+                ((UnitHierarchyNode)NewNode.Tag).ParentUnitKey = ((UnitHierarchyNode)NewParent.Tag).MyUnitKey;
+                InsertAlphabetically(NewParent, NewNode);
+                NewNode.Expand();
+                NewParent.Expand();
+                NewParent.BackColor = Color.White;
+
+                FStatus += String.Format(Catalog.GetString("{0} was moved from {1} to {2}.\r\n"),
+                    Child.Text, PrevParent, NewParent.Text);
+                txtStatus.Text = FStatus;
+
+                //Remove Original Node
+                Child.Remove();
+                FPetraUtilsObject.SetChangedFlag();
             }
         }
 
         private void treeView_DragDrop(object sender, DragEventArgs e)
         {
-            if (FDragNode != null)
-            {
-                Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
-                if (FDragTarget != null)
-                {
-                    String PrevParent = FDragNode.Parent.Text;
-                    TreeNode NewNode = (TreeNode) FDragNode.Clone();
-                    ((UnitHierarchyNode)NewNode.Tag).ParentUnitKey = ((UnitHierarchyNode)FDragTarget.Tag).MyUnitKey;
-                    InsertAlphabetically(FDragTarget, NewNode);
-                    NewNode.Expand();
-                    FDragTarget.Expand();
-                    FDragTarget.BackColor = Color.White;
-
-                    FStatus += String.Format(Catalog.GetString("{0} was moved from {1} to {2}.\r\n"), 
-                        FDragNode.Text, PrevParent, FDragTarget.Text);
-                    txtStatus.Text = FStatus;
-
-                    //Remove Original Node
-                    FDragNode.Remove();
-                    FDragNode = null;
-                    FPetraUtilsObject.SetChangedFlag();
-                }
-            }
+            DoReassignment(FDragNode, FDragTarget);
+            FDragNode = null;
         }
+
+        private void UnitsClick(object sender, EventArgs e)
+        {
+
+            Point pt = new Point(((MouseEventArgs)e).X, ((MouseEventArgs)e).Y);
+            TreeNode ClickTarget = trvUnits.GetNodeAt(pt);
+            SelectNode(ClickTarget);
+        }
+
+        private void EvaluateParentChange(object sender, EventArgs e)
+        {
+            bool ICanReassign = false;
+            Int64 ChildKey;
+            Int64 ParentKey;
+            try
+            {
+                ChildKey = Convert.ToInt64(txtChild.Text);
+                ParentKey = Convert.ToInt64(txtParent.Text);
+                FChildNodeReference = FindChild(trvUnits.Nodes[0], ChildKey);
+                FParentNodeReference = FindChild(trvUnits.Nodes[0], ParentKey);
+                if ((FChildNodeReference != null) && (FParentNodeReference != null))
+                {
+                    if (!IsDescendantOf(FParentNodeReference, FChildNodeReference))
+                        ICanReassign = true;
+                }
+
+            }
+            catch (Exception ignored)
+            {
+            }
+            btnMove.Enabled = ICanReassign;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AUnitKey"></param>
+        /// <returns>true if this unit can be shown</returns>
+        public bool ShowThisUnit (Int64 AUnitKey)
+        {
+            TreeNode SelectedNode = FindChild(trvUnits.Nodes[0], AUnitKey);
+            if (SelectedNode != null)
+            {
+                trvUnits.CollapseAll();
+                SelectedNode.Expand();
+                SelectedNode.EnsureVisible();
+                ShowNodeSelected(SelectedNode);
+            }
+
+            return (SelectedNode != null);
+        }
+
         
         private void RunOnceOnActivationManual()
         {
             trvUnits.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
             trvUnits.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
             trvUnits.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
+            trvUnits.Click += new EventHandler(UnitsClick);
             trvUnits.AllowDrop = true;
+            trvUnits.ShowNodeToolTips = true;
+
+            txtChild.TextChanged += new EventHandler(EvaluateParentChange);
+            txtParent.TextChanged += new EventHandler(EvaluateParentChange);
 
             ArrayList UnitNodes = TRemote.MPersonnel.WebConnectors.GetUnitHeirarchy();
             //
@@ -195,9 +322,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             UnitHierarchyNode RootData = (UnitHierarchyNode)UnitNodes[0];
             TreeNode RootNode = new TreeNode(RootData.Description);
             RootNode.Tag = RootData;
+            RootNode.ToolTipText = RootData.TypeCode;
             UnitNodes.RemoveAt(0);
             int ParentNodeIndex = trvUnits.Nodes.Add(RootNode);
             AddChildren(RootNode, UnitNodes);
+            Int64 MySiteKey = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
+            ShowThisUnit(MySiteKey);
         }
 
         private void GetAllChildren(TreeNode Parent, ref ArrayList UnitNodes)
@@ -229,6 +359,16 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 FPetraUtilsObject.HasChanges = false;
             }
             return SavedOk;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ReassignParent(object sender, EventArgs e)
+        {
+            DoReassignment(FChildNodeReference, FParentNodeReference);
         }
 
         /// <summary>
