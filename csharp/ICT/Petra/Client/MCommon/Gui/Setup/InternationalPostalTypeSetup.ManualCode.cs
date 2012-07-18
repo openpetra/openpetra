@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ref PInternationalPostalTypeRow ARowToDelete, ref string ACompletionMessage)
+        private bool DeleteRowManual(ref PInternationalPostalTypeRow ARowToDelete, out string ACompletionMessage)
         {
         	bool deletionSuccessful = false;
         	
@@ -102,6 +102,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         	}
         	catch (Exception ex)
         	{
+        		ACompletionMessage = ex.Message;
         		MessageBox.Show(ex.Message,
         		                "Deletion Error",
         		                MessageBoxButtons.OK,

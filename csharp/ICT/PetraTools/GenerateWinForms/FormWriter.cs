@@ -972,7 +972,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.ManualFileExistsAndContains("DeleteRowManual"))
             {
-                FTemplate.AddToCodelet("DELETEROWMANUAL", "deletionPerformed = DeleteRowManual(ref rowToDelete, ref completionMessage);" + Environment.NewLine);
+                FTemplate.AddToCodelet("DELETEROWMANUAL", "deletionPerformed = DeleteRowManual(ref rowToDelete, out completionMessage);" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("PostDeleteManual"))
