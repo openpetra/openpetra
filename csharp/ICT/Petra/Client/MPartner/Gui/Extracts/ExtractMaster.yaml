@@ -22,6 +22,8 @@ RootNode:
         actCreatePartnerByCityExtract: {ActionClick=CreatePartnerByCityExtract}     
         actCreatePartnerBySubscriptionExtract: {ActionClick=CreatePartnerBySubscriptionExtract}     
         actCreatePartnerBySpecialTypeExtract: {ActionClick=CreatePartnerBySpecialTypeExtract}     
+        actCreateFamilyMembersExtract: {ActionClick=CreateFamilyMembersExtract}     
+        actCreateFamilyExtractForPersons: {ActionClick=CreateFamilyExtractForPersons}     
         actCreatePartnerByConferenceExtract: {ActionClick=CreatePartnerByConferenceExtract}     
         actCreatePartnerByOutreachExtract: {ActionClick=CreatePartnerByOutreachExtract}     
         actCreatePartnerByCommitmentExtract: {ActionClick=CreatePartnerByCommitmentExtract}     
@@ -31,6 +33,10 @@ RootNode:
         actCreateDonorByMotivationExtract: {ActionClick=CreateDonorByMotivationExtract}     
         actCreateDonorByAmountExtract: {ActionClick=CreateDonorByAmountExtract}     
         actCreateDonorByMiscellaneousExtract: {ActionClick=CreateDonorByMiscellaneousExtract}     
+        
+        actUpdateReceiptFrequency: {ActionClick=UpdateReceiptFrequency}     
+        actUpdateEmailGiftStatement: {ActionClick=UpdateEmailGiftStatement}     
+        
     Controls:
         pnlContent:
             Controls: [pnlFilter, pnlExtractMasterList]
@@ -78,6 +84,9 @@ RootNode:
             mniCreatePartnerBySubscriptionExtract: {Label=Partner by Subscription, Action=actCreatePartnerBySubscriptionExtract}
             mniCreatePartnerBySpecialTypeExtract: {Label=Partner by Special Type, Action=actCreatePartnerBySpecialTypeExtract}
             mniSeparator:
+            mniCreateFamilyMembersExtract: {Label=Family Members Extract, Action=actCreateFamilyMembersExtract}
+            mniCreateFamilyExtractForPersons: {Label=Family Extract for Persons, Action=actCreateFamilyExtractForPersons}
+            mniSeparator:
             mniCreatePartnerByConferenceExtract: {Label=Partner by Conference, Action=actCreatePartnerByConferenceExtract}
             mniCreatePartnerByOutreachExtract: {Label=Partner by Outreach, Action=actCreatePartnerByOutreachExtract}
             mniSeparator:
@@ -98,6 +107,8 @@ RootNode:
             mniPurgeExtracts: {Label=Purge Extracts, Action=actPurgeExtracts}
         mniUpdatePartners:
             Label: &Update Partners
+            mniUpdateReceiptFrequency: {Label=Receipt Frequency, Action=actUpdateReceiptFrequency}
+            mniUpdateEmailGiftStatement: {Label=Email Gift Statement, Action=actUpdateEmailGiftStatement}
 
     Toolbar:
 
