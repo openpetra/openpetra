@@ -370,6 +370,145 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Add subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void AddSubscription(System.Object sender, EventArgs e)
+        {
+            //TODO
+        }
+        
+        /// <summary>
+        /// Delete subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DeleteSubscription(System.Object sender, EventArgs e)
+        {
+            String PublicationCode;
+            Boolean DeleteAllSubscriptions = false;
+            Boolean DeleteThisSubscription = false;
+            Boolean AllDeletionsSucceeded = true;
+            int CountDeleted = 0;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Delete Subscription"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractDeleteSubscriptionDialog dialog = new TFrmUpdateExtractDeleteSubscriptionDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out PublicationCode);
+
+                    ExtractTDSMExtractTable ExtractTable;
+        
+                    // retrieve all partners of extract from server
+                    ExtractTable = TRemote.MPartner.Partner.WebConnectors.GetExtractRowsWithPartnerData(GetSelectedDetailRow().ExtractId);
+
+                    foreach (ExtractTDSMExtractRow Row in ExtractTable.Rows)
+                    {
+                        if (TRemote.MPartner.Partner.WebConnectors.SubscriptionExists
+                                (Row.PartnerKey, PublicationCode))
+                        {
+                            DeleteThisSubscription = false;
+                            
+                            if (!DeleteAllSubscriptions)
+                            {
+                                TFrmExtendedMessageBox.TResult Result;
+                                TFrmExtendedMessageBox ExtMsgBox = new TFrmExtendedMessageBox(this.FindForm());
+                                Result = ExtMsgBox.ShowDialog(Catalog.GetString("You have chosen to delete the subscription of ") 
+                                                     + PublicationCode + "\r\n"
+                                                     + Catalog.GetString("for Partner ")
+                                                     + Row.PartnerShortName + " (" + Row.PartnerKey + ")\r\n\r\n"
+                                                     + Catalog.GetString("Do you really want to delete it?"),
+                                                     Catalog.GetString("Delete Subscription"),
+                                                     "", 
+                                                     TFrmExtendedMessageBox.TButtons.embbYesYesToAllNoCancel, 
+                                                     TFrmExtendedMessageBox.TIcon.embiQuestion);
+                                
+                                switch (Result)
+                                {
+                                    case TFrmExtendedMessageBox.TResult.embrYesToAll:
+                                        DeleteAllSubscriptions = true;
+                                        break;
+
+                                    case TFrmExtendedMessageBox.TResult.embrYes:
+                                        DeleteThisSubscription = true;
+                                        break;
+
+                                    case TFrmExtendedMessageBox.TResult.embrNo:
+                                        DeleteThisSubscription = false;
+                                        break;
+
+                                    case TFrmExtendedMessageBox.TResult.embrCancel:
+                                        MessageBox.Show(Catalog.GetString("Further deletion of Subscriptions cancelled"),
+                                            Catalog.GetString("Delete Subscription"),
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Information);
+                                        return;
+                                        
+                                    default:
+                                        break;
+                                }
+                            }
+                            
+                            if (   DeleteAllSubscriptions
+                                || DeleteThisSubscription)
+                            {
+                                if (!TRemote.MPartner.Partner.WebConnectors.DeleteSubscription
+                                    (GetSelectedDetailRow().ExtractId, Row.PartnerKey, PublicationCode))
+                                {
+                                    MessageBox.Show(Catalog.GetString("Error while deleting Subscription ") 
+                                                    + PublicationCode + Catalog.GetString(" for Partner ") 
+                                                    + Row.PartnerShortName + " (" + Row.PartnerKey + ")",
+                                        Catalog.GetString("Delete Subscription"),
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
+                                    AllDeletionsSucceeded = false;
+                                }
+                                else
+                                {
+                                    CountDeleted++;
+                                }
+                            }
+                               
+                        }
+                        
+                    }
+                    
+                    if (AllDeletionsSucceeded)
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("Subscription {0} successfully deleted for {1} Partners in Extract {2}"), 
+                                                      PublicationCode, CountDeleted, GetSelectedDetailRow().ExtractName),
+                            Catalog.GetString("Delete Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("Error while deleting Subscription {0} for some Partners in Extract {1}. Subscription deleted for {2} Partners."), 
+                                                      PublicationCode, GetSelectedDetailRow().ExtractName, CountDeleted),
+                            Catalog.GetString("Delete Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Change subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ChangeSubscription(System.Object sender, EventArgs e)
+        {
+            //TODO
+        }
+        
+        /// <summary>
         /// Update Receipt Frequency for Partners in selected extract
         /// </summary>
         /// <param name="sender"></param>

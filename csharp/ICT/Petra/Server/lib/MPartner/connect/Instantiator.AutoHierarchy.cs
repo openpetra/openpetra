@@ -2856,6 +2856,23 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean SubscriptionExists(Int64 APartnerKey,
+                                          String APublicationCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SubscriptionExists", ";LONG;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SubscriptionExists(APartnerKey, APublicationCode);
+        }
+
+        /// generated method from connector
+        public Boolean DeleteSubscription(System.Int32 AExtractId,
+                                          Int64 APartnerKey,
+                                          String APublicationCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "DeleteSubscription", ";INT;LONG;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.DeleteSubscription(AExtractId, APartnerKey, APublicationCode);
+        }
+
+        /// generated method from connector
         public Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
                                                 Boolean AEmailGiftStatement)
         {

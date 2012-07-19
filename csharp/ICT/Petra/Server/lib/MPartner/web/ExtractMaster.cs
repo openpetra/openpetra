@@ -605,6 +605,61 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// retrieve information if partner has subscription for certain publication
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="APublicationCode"></param>
+        /// <returns>true if subscription exists</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean SubscriptionExists(Int64 APartnerKey, String APublicationCode)
+        {
+            Boolean ResultValue = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            ResultValue = PSubscriptionAccess.Exists(APublicationCode, APartnerKey, Transaction);
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            return ResultValue;
+        }
+        
+        /// <summary>
+        /// delete subscription for a partner in a given extract
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="APublicationCode"></param>
+        /// <param name="APartnerKey"></param>
+        /// <returns>true if deletion was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean DeleteSubscription(int AExtractId, Int64 APartnerKey, String APublicationCode)
+        {
+            Boolean ResultValue = true;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt;
+
+            try
+            {
+                // Use a direct sql statement rather than db access classes to improve performance as otherwise
+                // we would need an extra query for each row of an extract to update data
+                SqlStmt = "DELETE FROM pub_" + PSubscriptionTable.GetTableDBName() +
+                            " WHERE " + PSubscriptionTable.GetPublicationCodeDBName() + " = '" + APublicationCode + "'" +
+                            " AND " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString();
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during deletion of subscription for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+        
+        /// <summary>
         /// update email gift statement flag for all partners in given extract
         /// </summary>
         /// <param name="AExtractId"></param>

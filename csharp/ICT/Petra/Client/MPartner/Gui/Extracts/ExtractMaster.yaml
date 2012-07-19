@@ -34,6 +34,9 @@ RootNode:
         actCreateDonorByAmountExtract: {ActionClick=CreateDonorByAmountExtract}     
         actCreateDonorByMiscellaneousExtract: {ActionClick=CreateDonorByMiscellaneousExtract}     
         
+        actAddSubscription: {ActionClick=AddSubscription}     
+        actDeleteSubscription: {ActionClick=DeleteSubscription}     
+        actChangeSubscription: {ActionClick=ChangeSubscription}     
         actUpdateReceiptFrequency: {ActionClick=UpdateReceiptFrequency}     
         actUpdateEmailGiftStatement: {ActionClick=UpdateEmailGiftStatement}     
         
@@ -107,6 +110,10 @@ RootNode:
             mniPurgeExtracts: {Label=Purge Extracts, Action=actPurgeExtracts}
         mniUpdatePartners:
             Label: &Update Partners
+            mniAddSubscription: {Label=Add Subscription, Action=actAddSubscription}
+            mniDeleteSubscription: {Label=Delete Subscription, Action=actDeleteSubscription}
+            mniChangeSubscription: {Label=Change Subscription, Action=actChangeSubscription}
+            mniSeparator:
             mniUpdateReceiptFrequency: {Label=Receipt Frequency, Action=actUpdateReceiptFrequency}
             mniUpdateEmailGiftStatement: {Label=Email Gift Statement, Action=actUpdateEmailGiftStatement}
 
