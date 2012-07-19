@@ -111,6 +111,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             grdSelectStatement.AddDateColumn(Catalog.GetString("Date"), stmts.ColumnDate);
 
             stmts.DefaultView.AllowNew = false;
+            stmts.DefaultView.Sort = AEpStatementTable.GetDateDBName() + " desc";
             grdSelectStatement.DataSource = new DevAge.ComponentModel.BoundDataView(stmts.DefaultView);
 
             RunningPopulateStatementGrid = false;

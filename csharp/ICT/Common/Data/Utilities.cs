@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 using System.Security.Cryptography;
 using System.Text;
 using System.Reflection;

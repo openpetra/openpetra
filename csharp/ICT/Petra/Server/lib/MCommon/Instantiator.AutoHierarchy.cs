@@ -230,8 +230,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             return null; // make sure that the TMCommon object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
         public ICacheableNamespace Cacheable
         {

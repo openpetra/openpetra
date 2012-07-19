@@ -1,6 +1,6 @@
 DevAge*=${dir.3rdParty}/DevAge/SourceGrid.dll
 SourceGrid*=${dir.3rdParty}/DevAge/SourceGrid.dll
-ExcelLibrary*=${dir.3rdParty}/ExcelLibrary/ExcelLibrary.dll
+OfficeOpenXml*=${dir.3rdParty}/EPPlus/EPPlus.dll
 GNU.Gettext=${dir.3rdParty}/GNU/GNU.Gettext.dll
 ICSharpCode.NRefactory*=${dir.3rdParty}/ICSharpCode/ICSharpCode.NRefactory.dll
 ICSharpCode.SharpZipLib*=${dir.3rdParty}/ICSharpCode/ICSharpCode.SharpZipLib.dll
@@ -25,6 +25,9 @@ System.Drawing*=${csharpStdLibs}/System.Drawing.dll
 System.Security*=${csharpStdLibs}/System.Security.dll
 System.Runtime.Remoting=${csharpStdLibs}/System.Runtime.Remoting.dll
 System.Web.Services=${csharpStdLibs}/System.Web.Services.dll
+System.ServiceModel.Web=${csharpStdLibs}/System.ServiceModel.Web.dll
+System.ServiceModel=${csharpStdLibs}/System.ServiceModel.dll
+System.Web.Script.Services=${csharpStdLibs}/System.Web.Extensions.dll
 System.Web*=${csharpStdLibs}/System.Web.dll
 System.Windows.Forms=${csharpStdLibs}/System.Windows.Forms.dll
 System.Xml=${csharpStdLibs}/System.Xml.dll

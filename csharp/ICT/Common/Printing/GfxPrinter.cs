@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -217,7 +217,14 @@ namespace Ict.Common.Printing
 
             if (CurrentRelativeFontSize != 0)
             {
-                ReturnValue = new Font(ReturnValue.FontFamily, ReturnValue.SizeInPoints + CurrentRelativeFontSize * 2.0f, ReturnValue.Style);
+                float FontSize = ReturnValue.SizeInPoints + CurrentRelativeFontSize;
+
+                if (FontSize <= 0.0f)
+                {
+                    FontSize = 0.5f;
+                }
+
+                ReturnValue = new Font(ReturnValue.FontFamily, FontSize, ReturnValue.Style);
             }
 
             return ReturnValue;
@@ -1005,31 +1012,46 @@ namespace Ict.Common.Printing
                 }
                 else
                 {
-                    foreach (PaperSize pkSize in FDocument.PrinterSettings.PaperSizes)
+                    try
                     {
-                        if (pkSize.Kind == MyPaperKind)
+                        foreach (PaperSize pkSize in FDocument.PrinterSettings.PaperSizes)
                         {
-                            FDocument.DefaultPageSettings.PaperSize = pkSize;
-
-                            if (FOrientation == eOrientation.ePortrait)
+                            if (pkSize.Kind == MyPaperKind)
                             {
-                                FWidth = pkSize.Width / 100.0f;
-                                FHeight = pkSize.Height / 100.0f;
-                            }
-                            else
-                            {
-                                FWidth = pkSize.Height / 100.0f;
-                                FHeight = pkSize.Width / 100.0f;
-                            }
+                                FDocument.DefaultPageSettings.PaperSize = pkSize;
 
-                            FLeftMargin = MyMargins.Left / 100.0f;
-                            FTopMargin = MyMargins.Top / 100.0f;
-                            FRightMargin = MyMargins.Right / 100.0f;
-                            FBottomMargin = MyMargins.Bottom / 100.0f;
+                                if (FOrientation == eOrientation.ePortrait)
+                                {
+                                    FWidth = pkSize.Width / 100.0f;
+                                    FHeight = pkSize.Height / 100.0f;
+                                }
+                                else
+                                {
+                                    FWidth = pkSize.Height / 100.0f;
+                                    FHeight = pkSize.Width / 100.0f;
+                                }
 
-                            FWidth -= FLeftMargin + FRightMargin;
-                            FHeight -= FTopMargin + FBottomMargin;
+                                FLeftMargin = MyMargins.Left / 100.0f;
+                                FTopMargin = MyMargins.Top / 100.0f;
+                                FRightMargin = MyMargins.Right / 100.0f;
+                                FBottomMargin = MyMargins.Bottom / 100.0f;
+
+                                FWidth -= FLeftMargin + FRightMargin;
+                                FHeight -= FTopMargin + FBottomMargin;
+                            }
                         }
+                    }
+                    catch (Exception)
+                    {
+                        // exception: no printers installed
+                        FDocument.DefaultPageSettings.PaperSize =
+                            new PaperSize("Custom", Convert.ToInt32(WidthInPoint / 72.0f * 100.0f), Convert.ToInt32(HeightInPoint / 72.0f * 100.0f));
+                        FWidth = WidthInPoint / 72.0f * 100.0f;
+                        FHeight = HeightInPoint / 72.0f * 100.0f;
+                        FLeftMargin = MyMargins.Left;
+                        FTopMargin = MyMargins.Top;
+                        FRightMargin = MyMargins.Right;
+                        FBottomMargin = MyMargins.Bottom;
                     }
                 }
 

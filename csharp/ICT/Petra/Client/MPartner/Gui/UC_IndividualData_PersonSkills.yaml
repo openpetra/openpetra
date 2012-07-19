@@ -20,8 +20,8 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
-        btnNew: {Action=actNew}
-        btnDelete: {Action=actDelete}
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             TableName: PmPersonSkill
@@ -70,6 +70,7 @@ RootNode:
             DataField: PmPersonSkill.DescriptionLanguage
             List: LanguageCodeList
             Width: 200
+            ColSpan: 2
         txtDescriptInLocalLanguage: {Label=Description in local language, DataField=PmPersonSkill.DescriptionLocal, Width=380, ColSpan=2}
         txtYearsOfExperience: {DataField=PmPersonSkill.YearsOfExperience, Width=25, Format=Integer}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonSkill.YearsOfExperienceAsOf}

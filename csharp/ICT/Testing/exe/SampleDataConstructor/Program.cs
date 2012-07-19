@@ -144,11 +144,19 @@ namespace Ict.Testing.SampleDataConstructor
                     for (int periodCounter = 1; periodCounter < 6; periodCounter++)
                     {
                         TLogging.Log("posting gift batches of period " + periodCounter.ToString());
-                        SampleDataGiftBatches.PostBatches(0, periodCounter);
+
+                        if (!SampleDataGiftBatches.PostBatches(0, periodCounter))
+                        {
+                            throw new Exception("failed to post gift batch");
+                        }
                     }
 
                     TLogging.Log("posting gift batches of period 6");
-                    SampleDataGiftBatches.PostBatches(0, 6, 1);
+
+                    if (!SampleDataGiftBatches.PostBatches(0, 6, 1))
+                    {
+                        throw new Exception("failed to post gift batch");
+                    }
                 }
 
                 operation = TAppSettingsManager.GetValue("operation", "exportGifts");
@@ -174,12 +182,26 @@ namespace Ict.Testing.SampleDataConstructor
                     SampleDataAccountsPayable.PostAndPayInvoices(0, 6, 1);
                 }
 
+                TLogging.Log("(9) Creating applications for conference");
+
+                operation = TAppSettingsManager.GetValue("operation", "conferenceApplications");
+
+                if (operation == "conferenceApplications")
+                {
+                    SampleDataConferenceApplicants.GenerateApplications(Path.Combine(datadirectory, "conferenceApplications.csv"));
+                }
+                else
+                {
+                    TLogging.Log("Please explicitely run nant importDemodata -D:operation=conferenceApplications");
+                }
+
                 TLogging.Log("Completed.");
             }
             catch (Exception e)
             {
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);
+                Environment.Exit(-1);
             }
         }
     }

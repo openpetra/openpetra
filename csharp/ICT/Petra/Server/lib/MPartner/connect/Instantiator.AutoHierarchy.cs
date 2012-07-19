@@ -297,8 +297,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator
             return null; // make sure that the TMPartner object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'Extracts' subnamespace contains further subnamespaces.</summary>
         public IExtractsNamespace Extracts
         {
@@ -574,8 +572,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Extracts
         {
             return null; // make sure that the TExtractsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'ExtractsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IExtractsUIConnectorsNamespace UIConnectors
@@ -862,8 +858,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.ImportExport
         {
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'ImportExportUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportUIConnectorsNamespace UIConnectors
@@ -1220,8 +1214,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Mailing
         {
             return null; // make sure that the TMailingNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'MailingCacheable' subnamespace contains further subnamespaces.</summary>
         public IMailingCacheableNamespace Cacheable
@@ -1721,8 +1713,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
             return null; // make sure that the TPartnerNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'PartnerCacheable' subnamespace contains further subnamespaces.</summary>
         public IPartnerCacheableNamespace Cacheable
         {
@@ -2098,8 +2088,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements
         {
             return null; // make sure that the TPartnerDataElementsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'PartnerDataElementsUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerDataElementsUIConnectorsNamespace UIConnectors
@@ -2772,7 +2760,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         /// generated method from connector
         public MExtractMasterTable GetAllExtractHeaders()
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders();
         }
 
@@ -2782,8 +2769,21 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                                         String AUserCreated,
                                                         String AUserModified)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";STRING;BOOL;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AAllUsers, AUserCreated, AUserModified);
+        }
+
+        /// generated method from connector
+        public MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                        String AExtractDescFilter,
+                                                        Boolean AAllUsers,
+                                                        String AUserCreated,
+                                                        String AUserModified,
+                                                        System.Nullable<DateTime>ADateCreatedFrom,
+                                                        System.Nullable<DateTime>ADateCreatedTo,
+                                                        System.Nullable<DateTime>ADateModifiedFrom,
+                                                        System.Nullable<DateTime>ADateModifiedTo)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AExtractDescFilter, AAllUsers, AUserCreated, AUserModified, ADateCreatedFrom, ADateCreatedTo, ADateModifiedFrom, ADateModifiedTo);
         }
 
         /// generated method from connector
@@ -2800,6 +2800,26 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateEmptyExtract", ";INT;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateEmptyExtract(ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
+        public Boolean CreateFamilyMembersExtract(System.Int32 ABaseExtractId,
+                                                  ref System.Int32 AExtractId,
+                                                  String AExtractName,
+                                                  String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateFamilyMembersExtract", ";INT;INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateFamilyMembersExtract(ABaseExtractId, ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
+        public Boolean CreateFamilyExtractForPersons(System.Int32 ABaseExtractId,
+                                                     ref System.Int32 AExtractId,
+                                                     String AExtractName,
+                                                     String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateFamilyExtractForPersons", ";INT;INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateFamilyExtractForPersons(ABaseExtractId, ref AExtractId, AExtractName, AExtractDescription);
         }
 
         /// generated method from connector
@@ -2833,6 +2853,25 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SaveExtract", ";INT;MEXTRACTTABLE;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SaveExtract(AExtractId, ref AExtractTable, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
+                                                Boolean AEmailGiftStatement)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateEmailGiftStatement", ";INT;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateEmailGiftStatement(AExtractId, AEmailGiftStatement);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateReceiptFrequency(System.Int32 AExtractId,
+                                              Boolean AUpdateReceiptLetterFrequency,
+                                              String AReceiptLetterFrequency,
+                                              Boolean AUpdateReceiptEachGift,
+                                              Boolean AReceiptEachGift)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateReceiptFrequency", ";INT;BOOL;STRING;BOOL;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateReceiptFrequency(AExtractId, AUpdateReceiptLetterFrequency, AReceiptLetterFrequency, AUpdateReceiptEachGift, AReceiptEachGift);
         }
 
         /// generated method from connector
@@ -3004,8 +3043,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.PartnerMerge
         {
             return null; // make sure that the TPartnerMergeNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'PartnerMergeUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPartnerMergeUIConnectorsNamespace UIConnectors
@@ -3180,8 +3217,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Subscriptions
         {
             return null; // make sure that the TSubscriptionsNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'SubscriptionsCacheable' subnamespace contains further subnamespaces.</summary>
         public ISubscriptionsCacheableNamespace Cacheable
@@ -3544,8 +3579,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.TableMaintenance
         {
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors

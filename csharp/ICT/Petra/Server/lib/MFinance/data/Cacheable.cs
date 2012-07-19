@@ -860,7 +860,10 @@ namespace Ict.Petra.Server.MFinance.Cacheable
         private DataTable GetLedgerNameListTable(TDBTransaction AReadTransaction, string ATableName)
         {
 #region ManualCode
-            return TALedgerNameAggregate.GetData(ATableName, AReadTransaction);
+			DataTable LedgerTable;
+            LedgerTable = TALedgerNameAggregate.GetData(ATableName, AReadTransaction);
+            LedgerTable.PrimaryKey = new DataColumn[] {LedgerTable.Columns[0]};
+            return LedgerTable;
 #endregion ManualCode
         }
 

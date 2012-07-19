@@ -275,6 +275,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPreviouslySelectedDetailRow = null;
                     grdDetails.SelectRowInGrid(rowIndex, true);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    ShowDetails(FPreviouslySelectedDetailRow);
                 }
             }
             // delete single selected record from extract
@@ -311,6 +312,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPreviouslySelectedDetailRow = null;
                     grdDetails.SelectRowInGrid(rowIndex, true);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    ShowDetails(FPreviouslySelectedDetailRow);
                 }
             }
 
@@ -338,13 +340,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void RefreshExtractList(String AExtractNameFilter, Boolean AAllUsers,
             String ACreatedByUser, String AModifiedByUser)
         {
-            this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
+            // only react here if screen is initialized
+            if (FPetraUtilsObject != null)
+            {
+                this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
 
-            // data can have changed completely, so easiest for now is to select first row
-            grdDetails.SelectRowInGrid(1, true);
+                // data can have changed completely, so easiest for now is to select first row
+                grdDetails.SelectRowInGrid(1, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
 
-            // enable/disable buttons
-            UpdateButtonStatus();
+                // enable/disable buttons
+                UpdateButtonStatus();
+            }
         }
 
         /// <summary>
@@ -358,6 +366,93 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), GetSelectedDetailRow().ExtractId);
+            }
+        }
+
+        /// <summary>
+        /// Update Receipt Frequency for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateReceiptFrequency(System.Object sender, EventArgs e)
+        {
+            bool UpdateReceiptLetterFrequency;
+            String ReceiptLetterFrequency;
+            bool UpdateReceiptEachGift;
+            bool ReceiptEachGift;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Update Receipt Frequency"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractReceiptFrequencyDialog dialog = new TFrmUpdateExtractReceiptFrequencyDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out UpdateReceiptLetterFrequency, out ReceiptLetterFrequency,
+                        out UpdateReceiptEachGift, out ReceiptEachGift);
+
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.UpdateReceiptFrequency
+                            (GetSelectedDetailRow().ExtractId, UpdateReceiptLetterFrequency,
+                            ReceiptLetterFrequency, UpdateReceiptEachGift, ReceiptEachGift))
+                    {
+                        MessageBox.Show(Catalog.GetString("Receipt Frequency successfully updated for all Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Receipt Frequency"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while updating Receipt Frequency for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Receipt Frequency"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update Email Gift Statement flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
+        {
+            bool EmailGiftStatement;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Update Email Gift Statement"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractEmailGiftStatementDialog dialog = new TFrmUpdateExtractEmailGiftStatementDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out EmailGiftStatement);
+
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.UpdateEmailGiftStatement
+                            (GetSelectedDetailRow().ExtractId, EmailGiftStatement))
+                    {
+                        MessageBox.Show(Catalog.GetString("Email Gift Statement successfully updated for all Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Email Gift Statement"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while updating Email Gift Statement for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Email Gift Statement"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
             }
         }
 

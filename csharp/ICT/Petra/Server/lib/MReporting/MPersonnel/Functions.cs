@@ -124,12 +124,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 return true;
             }
 
-            if (StringHelper.IsSame(f, "GetLeadershipRating"))
-            {
-                value = new TVariant(GetLeadershipRating(ops[1].ToInt64(), ops[2].ToInt(), ops[3].ToInt64()));
-                return true;
-            }
-
             if (StringHelper.IsSame(f, "GetDietary"))
             {
                 value = new TVariant(GetDietary(ops[1].ToInt64()));
@@ -145,12 +139,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             if (StringHelper.IsSame(f, "GetOtherNeeds"))
             {
                 value = new TVariant(GetOtherNeeds(ops[1].ToInt64()));
-                return true;
-            }
-
-            if (StringHelper.IsSame(f, "GetPartyType"))
-            {
-                value = new TVariant(GetPartyType(ops[1].ToString()));
                 return true;
             }
 
@@ -686,9 +674,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             {
                 PmShortTermApplicationRow Row = (PmShortTermApplicationRow)ShortTermApplicationTable.Rows[Counter];
 
-                if ((Row.ConfirmedOptionCode != "")
-                    || (Row.Option1Code != "")
-                    || (Row.Option2Code != ""))
+                if (Row.ConfirmedOptionCode != "")
                 {
                     HasEvent = true;
                 }
@@ -977,40 +963,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             return true;
         }
 
-        /// <summary>
-        /// Get the leadership rating of a short term application partner.
-        /// </summary>
-        /// <param name="APartnerKey">Partner Key</param>
-        /// <param name="AApplicationKey">Application Key</param>
-        /// <param name="ARegistrationOffice">Registration Office</param>
-        /// <returns>String of all the missing informations for this partner and application</returns>
-        private String GetLeadershipRating(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice)
-        {
-            String LeadershipRating = "";
-            PmShortTermApplicationTable ShortTermTable;
-            PtLeadershipRatingTable LeadershipRatingTable;
-
-            ShortTermTable = PmShortTermApplicationAccess.LoadByPrimaryKey(APartnerKey,
-                AApplicationKey, ARegistrationOffice, situation.GetDatabaseConnection().Transaction);
-
-            if (ShortTermTable.Rows.Count > 0)
-            {
-                if (!((PmShortTermApplicationRow)ShortTermTable.Rows[0]).IsStLeadershipRatingNull())
-                {
-                    String LeadershipRatingCode = ((PmShortTermApplicationRow)ShortTermTable.Rows[0]).StLeadershipRating;
-                    LeadershipRatingTable = PtLeadershipRatingAccess.LoadByPrimaryKey(LeadershipRatingCode,
-                        situation.GetDatabaseConnection().Transaction);
-
-                    if (LeadershipRatingTable.Rows.Count > 0)
-                    {
-                        LeadershipRating = ((PtLeadershipRatingRow)LeadershipRatingTable.Rows[0]).Description;
-                    }
-                }
-            }
-
-            return LeadershipRating;
-        }
-
         private String GetDietary(Int64 APartnerKey)
         {
             String Dietary = "";
@@ -1095,24 +1047,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             }
 
             return PartnerContact;
-        }
-
-        private String GetPartyType(String ATypeKey)
-        {
-            PtPartyTypeTable PartyTable;
-            String PartyType = "";
-
-            if (ATypeKey != "")
-            {
-                PartyTable = PtPartyTypeAccess.LoadByPrimaryKey(ATypeKey, situation.GetDatabaseConnection().Transaction);
-
-                if (PartyTable.Rows.Count > 0)
-                {
-                    PartyType = ATypeKey + " " + ((PtPartyTypeRow)PartyTable.Rows[0]).Description;
-                }
-            }
-
-            return PartyType;
         }
 
         /// <summary>

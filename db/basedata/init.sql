@@ -28,6 +28,7 @@ COPY p_banking_type FROM '{#ABSOLUTEBASEDATAPATH}/p_banking_type.csv' WITH DELIM
 COPY p_banking_details_usage_type FROM '{#ABSOLUTEBASEDATAPATH}/p_banking_details_usage_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_reason_subscription_cancelled FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscription_cancelled.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_reason_subscription_given FROM '{#ABSOLUTEBASEDATAPATH}/p_reason_subscription_given.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pt_leadership_rating FROM '{#ABSOLUTEBASEDATAPATH}/pt_leadership_rating.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_application_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_application_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_applicant_status FROM '{#ABSOLUTEBASEDATAPATH}/pt_applicant_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_congress_code FROM '{#ABSOLUTEBASEDATAPATH}/pt_congress_code.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

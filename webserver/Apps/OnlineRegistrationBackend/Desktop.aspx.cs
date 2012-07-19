@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -124,6 +124,11 @@ namespace Ict.Petra.WebServer.MConference
                 return;
             }
 
+            if (TLogging.DebugLevel > 1)
+            {
+                TLogging.Log("desktop constructor userid " + UserInfo.GUserInfo.UserID);
+            }
+
             EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode");
             EventPartnerKey = TAppSettingsManager.GetInt64("ConferenceTool.EventPartnerKey");
 
@@ -151,7 +156,7 @@ namespace Ict.Petra.WebServer.MConference
                 btnPrintArrivalRegistration.Visible = ConferenceOrganisingOffice;
                 btnExcelRolesPerCountry.Visible = ConferenceOrganisingOffice;
                 btnFixArrivalDepartureDates.Visible = ConferenceOrganisingOffice;
-                btnManualRegistration.Visible = ConferenceOrganisingOffice;
+                // btnManualRegistration.Visible = ConferenceOrganisingOffice;
 
                 // for the moment, do not confuse all offices with this button
                 btnCreateGiftBatch.Visible = ConferenceOrganisingOffice;
@@ -233,6 +238,11 @@ namespace Ict.Petra.WebServer.MConference
             try
             {
                 RegistrationOffice = Convert.ToInt64(this.FilterRegistrationOffice.SelectedItem.Value);
+
+                if (RegistrationOffice == 0)
+                {
+                    RegistrationOffice = -1;
+                }
             }
             catch (Exception)
             {
@@ -271,15 +281,23 @@ namespace Ict.Petra.WebServer.MConference
 
             if ((CurrentApplicants == null) || (sender != null) || (Session["CURRENTROW"] == null))
             {
-                CurrentApplicants = new ConferenceApplicationTDS();
-                TApplicationManagement.GetApplications(
-                    ref CurrentApplicants,
-                    EventPartnerKey,
-                    EventCode,
-                    this.FilterStatus.SelectedItem.Value,
-                    GetSelectedRegistrationOffice(),
-                    GetSelectedRole(),
-                    true);
+                try
+                {
+                    CurrentApplicants = new ConferenceApplicationTDS();
+                    TApplicationManagement.GetApplications(
+                        ref CurrentApplicants,
+                        EventPartnerKey,
+                        EventCode,
+                        this.FilterStatus.SelectedItem.Value,
+                        GetSelectedRegistrationOffice(),
+                        GetSelectedRole(),
+                        true);
+                }
+                catch (Exception exc)
+                {
+                    TLogging.Log(exc.ToString());
+                }
+
                 Session["CURRENTAPPLICANTS"] = CurrentApplicants;
                 this.FormPanel1.SetValues(new { });
                 this.FormPanel1.Disabled = true;
@@ -511,6 +529,19 @@ namespace Ict.Petra.WebServer.MConference
             this.StoreRegistrationOffice.DataBind();
         }
 
+        /// to avoid the error on the ext.js client: Status Text: BADRESPONSE: Parse Error
+        private object ReplaceQuotes(object value)
+        {
+            if (value.GetType() == typeof(string))
+            {
+                return value.ToString().Replace("&quot;", "\\\"");
+            }
+            else
+            {
+                return value;
+            }
+        }
+
         protected void RowSelect(object sender, DirectEventArgs e)
         {
             try
@@ -558,8 +589,8 @@ namespace Ict.Petra.WebServer.MConference
                 var dictionary = new Dictionary <string, object>();
                 dictionary.Add("PartnerKey", row.PartnerKey);
                 dictionary.Add("PersonKey", row.IsPersonKeyNull() ? "" : row.PersonKey.ToString());
-                dictionary.Add("FirstName", row.FirstName);
-                dictionary.Add("FamilyName", row.FamilyName);
+                dictionary.Add("FirstName", ReplaceQuotes(row.FirstName));
+                dictionary.Add("FamilyName", ReplaceQuotes(row.FamilyName));
                 dictionary.Add("Gender", row.Gender);
                 dictionary.Add("DateOfBirth", row.DateOfBirth);
                 dictionary.Add("DateOfArrival", row.DateOfArrival);
@@ -567,7 +598,7 @@ namespace Ict.Petra.WebServer.MConference
                 dictionary.Add("GenAppDate", row.GenAppDate);
                 dictionary.Add("GenApplicationStatus", row.GenApplicationStatus);
                 dictionary.Add("StCongressCode", row.StCongressCode);
-                dictionary.Add("Comment", row.Comment);
+                dictionary.Add("Comment", ReplaceQuotes(row.Comment));
                 dictionary.Add("StFgLeader", row.StFgLeader);
                 dictionary.Add("StFgCode", row.StFgCode);
                 dictionary.Add("StFieldCharged", row.StFieldCharged);
@@ -584,7 +615,7 @@ namespace Ict.Petra.WebServer.MConference
                     if (!dictionary.ContainsKey(key)
                         && FieldsOnFirstTab.Contains(key))
                     {
-                        dictionary.Add(key, rawDataObject[key]);
+                        dictionary.Add(key, ReplaceQuotes(rawDataObject[key]));
                     }
                 }
 
@@ -605,7 +636,7 @@ namespace Ict.Petra.WebServer.MConference
                             && !key.EndsWith("_Value")
                             && !key.EndsWith("_ActiveTab"))
                         {
-                            dictionary.Add(key, rawDataObject[key]);
+                            dictionary.Add(key, ReplaceQuotes(rawDataObject[key]));
 
                             if (rawDataObject[key].ToString().Length > 40)
                             {
@@ -637,6 +668,15 @@ namespace Ict.Petra.WebServer.MConference
                 JobAssigned.ClearValue();
                 SecondSibling.Clear();
                 CancelledByFinanceOffice.Clear();
+
+                if (rawDataObject.Contains("RegistrationCountryCode") && (rawDataObject["RegistrationCountryCode"].ToString() == "sv-SE"))
+                {
+                    X.Js.Call("SetDateFormat", "Y-m-d");
+                }
+                else
+                {
+                    X.Js.Call("SetDateFormat", "d-m-Y");
+                }
 
                 // SetValues: new {}; anonymous type: http://msdn.microsoft.com/en-us/library/bb397696.aspx
                 // instead a Dictionary can be used as well
@@ -698,124 +738,135 @@ namespace Ict.Petra.WebServer.MConference
             {
             }
 
-            if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+            try
             {
-                row.MedicalNotes = GetMedicalLogsFromScreen(values);
+                if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                {
+                    row.MedicalNotes = GetMedicalLogsFromScreen(values);
+                }
+                else
+                {
+                    string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
+                    Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
+
+                    if (!rawDataObject.Contains("RegistrationCountryCode"))
+                    {
+                        // some of the late registrations do not have a country code
+                        rawDataObject.Put("RegistrationCountryCode", "en-GB");
+                    }
+
+                    CultureInfo OrigCulture = Catalog.SetCulture(rawDataObject["RegistrationCountryCode"].ToString());
+
+                    row.FamilyName = values["FamilyName"];
+                    row.FirstName = values["FirstName"];
+                    row.Gender = values["Gender"];
+
+                    if (values["DateOfBirth"].Length == 0)
+                    {
+                        row.DateOfBirth = new Nullable <DateTime>();
+                    }
+                    else
+                    {
+                        // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
+                        // Problem: Mär und Mrz. caused by javascript, ext.js?
+                        values["DateOfBirth"] = values["DateOfBirth"].ToString().Replace("Mär", "Mrz");
+                        values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
+                        row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
+                    }
+
+                    if (values["DateOfArrival"].Length == 0)
+                    {
+                        row.SetDateOfArrivalNull();
+                    }
+                    else
+                    {
+                        values["DateOfArrival"] = Convert.ToDateTime(values["DateOfArrival"]).ToShortDateString();
+                        row.DateOfArrival = Convert.ToDateTime(values["DateOfArrival"]);
+                    }
+
+                    if (values["DateOfDeparture"].Length == 0)
+                    {
+                        row.SetDateOfDepartureNull();
+                    }
+                    else
+                    {
+                        values["DateOfDeparture"] = Convert.ToDateTime(values["DateOfDeparture"]).ToShortDateString();
+                        row.DateOfDeparture = Convert.ToDateTime(values["DateOfDeparture"]);
+                    }
+
+                    row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
+                    row.StCongressCode = values["StCongressCode_Value"];
+                    row.GenApplicationStatus = values["GenApplicationStatus_Value"];
+                    row.StFgLeader = values.ContainsKey("StFgLeader");
+                    row.StFgCode = values.ContainsKey("StFgCode") ? values["StFgCode"] : string.Empty;
+
+                    if (values.ContainsKey("StFieldCharged_Value"))
+                    {
+                        row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
+                    }
+
+                    row.Comment = values["Comment"];
+
+                    row.RebukeNotes = RebukeValues;
+
+                    bool SecondSibling = false;
+                    bool CancelledByFinanceOffice = false;
+
+                    foreach (string key in values.Keys)
+                    {
+                        // TODO: typecast dates?
+                        object value = values[key];
+
+                        if (rawDataObject.Contains(key))
+                        {
+                            rawDataObject[key] = value;
+                        }
+                        else if (key.EndsWith("_ActiveTab")
+                                 || key.EndsWith("_SelIndex")
+                                 || key.EndsWith("_Value"))
+                        {
+                            // do not add all values, eg. _Value or _SelIndex for comboboxes or _ActiveTab, cause trouble otherwise
+                        }
+                        else if (key == "JobAssigned")
+                        {
+                            rawDataObject.Put(key, value);
+                        }
+                        else if (key == "SecondSibling")
+                        {
+                            SecondSibling = true;
+                            rawDataObject.Put(key, true);
+                        }
+                        else if (key == "CancelledByFinanceOffice")
+                        {
+                            CancelledByFinanceOffice = true;
+                            rawDataObject.Put(key, true);
+                        }
+                    }
+
+                    if (!SecondSibling)
+                    {
+                        rawDataObject.Put("SecondSibling", false);
+                    }
+
+                    if (!CancelledByFinanceOffice)
+                    {
+                        rawDataObject.Put("CancelledByFinanceOffice", false);
+                    }
+
+                    rawDataObject["Role"] = values["StCongressCode_Value"];
+                    rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
+                    rawDataObject["CancelledByFinanceOffice"] = values.ContainsKey("CancelledByFinanceOffice");
+
+                    row.JSONData = TJsonTools.ToJsonString(rawDataObject);
+
+                    Catalog.SetCulture(OrigCulture);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
-                Jayrock.Json.JsonObject rawDataObject = TJsonTools.ParseValues(RawData);
-
-                if (!rawDataObject.Contains("RegistrationCountryCode"))
-                {
-                    // some of the late registrations do not have a country code
-                    rawDataObject.Put("RegistrationCountryCode", "en-GB");
-                }
-
-                CultureInfo OrigCulture = Catalog.SetCulture(rawDataObject["RegistrationCountryCode"].ToString());
-
-                row.FamilyName = values["FamilyName"];
-                row.FirstName = values["FirstName"];
-                row.Gender = values["Gender"];
-
-                if (values["DateOfBirth"].Length == 0)
-                {
-                    row.DateOfBirth = new Nullable <DateTime>();
-                }
-                else
-                {
-                    // avoid problems with different formatting of dates, could cause parsing errors later, into the typed class
-                    values["DateOfBirth"] = Convert.ToDateTime(values["DateOfBirth"]).ToShortDateString();
-                    row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
-                }
-
-                if (values["DateOfArrival"].Length == 0)
-                {
-                    row.SetDateOfArrivalNull();
-                }
-                else
-                {
-                    values["DateOfArrival"] = Convert.ToDateTime(values["DateOfArrival"]).ToShortDateString();
-                    row.DateOfArrival = Convert.ToDateTime(values["DateOfArrival"]);
-                }
-
-                if (values["DateOfDeparture"].Length == 0)
-                {
-                    row.SetDateOfDepartureNull();
-                }
-                else
-                {
-                    values["DateOfDeparture"] = Convert.ToDateTime(values["DateOfDeparture"]).ToShortDateString();
-                    row.DateOfDeparture = Convert.ToDateTime(values["DateOfDeparture"]);
-                }
-
-                row.GenAppDate = Convert.ToDateTime(values["GenAppDate"]);
-                row.StCongressCode = values["StCongressCode_Value"];
-                row.GenApplicationStatus = values["GenApplicationStatus_Value"];
-                row.StFgLeader = values.ContainsKey("StFgLeader");
-                row.StFgCode = values.ContainsKey("StFgCode") ? values["StFgCode"] : string.Empty;
-
-                if (values.ContainsKey("StFieldCharged_Value"))
-                {
-                    row.StFieldCharged = Convert.ToInt64(values["StFieldCharged_Value"]);
-                }
-
-                row.Comment = values["Comment"];
-
-                row.RebukeNotes = RebukeValues;
-
-                bool SecondSibling = false;
-                bool CancelledByFinanceOffice = false;
-
-                foreach (string key in values.Keys)
-                {
-                    // TODO: typecast dates?
-                    object value = values[key];
-
-                    if (rawDataObject.Contains(key))
-                    {
-                        rawDataObject[key] = value;
-                    }
-                    else if (key.EndsWith("_ActiveTab")
-                             || key.EndsWith("_SelIndex")
-                             || key.EndsWith("_Value"))
-                    {
-                        // do not add all values, eg. _Value or _SelIndex for comboboxes or _ActiveTab, cause trouble otherwise
-                    }
-                    else if (key == "JobAssigned")
-                    {
-                        rawDataObject.Put(key, value);
-                    }
-                    else if (key == "SecondSibling")
-                    {
-                        SecondSibling = true;
-                        rawDataObject.Put(key, true);
-                    }
-                    else if (key == "CancelledByFinanceOffice")
-                    {
-                        CancelledByFinanceOffice = true;
-                        rawDataObject.Put(key, true);
-                    }
-                }
-
-                if (!SecondSibling)
-                {
-                    rawDataObject.Put("SecondSibling", false);
-                }
-
-                if (!CancelledByFinanceOffice)
-                {
-                    rawDataObject.Put("CancelledByFinanceOffice", false);
-                }
-
-                rawDataObject["Role"] = values["StCongressCode_Value"];
-                rawDataObject["SecondSibling"] = values.ContainsKey("SecondSibling");
-                rawDataObject["CancelledByFinanceOffice"] = values.ContainsKey("CancelledByFinanceOffice");
-
-                row.JSONData = TJsonTools.ToJsonString(rawDataObject);
-
-                Catalog.SetCulture(OrigCulture);
+                TLogging.Log(ex.ToString());
+                X.Msg.Alert("Error", "Saving did not work").Show();
+                return;
             }
 
             if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
@@ -854,8 +905,10 @@ namespace Ict.Petra.WebServer.MConference
                 this.Response.Clear();
                 this.Response.ContentType = "application/pdf";
                 this.Response.AddHeader("Content-Type", "application/pdf");
-                this.Response.AddHeader("Content-Disposition", "attachment; filename=" + row.PartnerKey.ToString());
+                this.Response.AddHeader("Content-Length", (new FileInfo(pdfFilename)).Length.ToString());
+                this.Response.AddHeader("Content-Disposition", "attachment; filename=" + row.PartnerKey.ToString() + ".pdf");
                 this.Response.WriteFile(pdfFilename);
+                this.Response.Flush();
                 // this.Response.End(); avoid System.Threading.ThreadAbortException
             }
             catch (Exception ex2)
@@ -881,8 +934,11 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
-                    this.Response.AddHeader("Content-Disposition", "attachment; filename=Badge_" + row.FirstName + "_" + row.FamilyName + ".pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=Badge_" +
+                        (row.FirstName + "_" + row.FamilyName).Replace(".", "_").Replace(" ", string.Empty) + ".pdf");
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -980,7 +1036,7 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void DownloadPetra(object sender, StoreSubmitDataEventArgs e)
         {
-            string csvLines = TApplicationManagement.DownloadApplications(EventPartnerKey, EventCode, GetSelectedRegistrationOffice());
+            string csvLines = TApplicationManagement.DownloadApplications(EventPartnerKey, EventCode, GetSelectedRegistrationOffice(), true);
 
             this.Response.Clear();
             // TODO: this is a problem with old Petra 2.x, importing ANSI only
@@ -1000,9 +1056,9 @@ namespace Ict.Petra.WebServer.MConference
             ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
 
             this.Response.Clear();
-            this.Response.ContentType = "application/xls";
-            this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=Applicants.xls");
+            this.Response.ContentType = "application/xlsx";
+            this.Response.AddHeader("Content-Type", "application/xlsx");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=Applicants.xlsx");
             MemoryStream m = new MemoryStream();
             TApplicationManagement.DownloadApplications(EventPartnerKey, EventCode, ref CurrentApplicants, m);
             m.WriteTo(this.Response.OutputStream);
@@ -1021,7 +1077,7 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + ".pdf";
+                OutputName = (this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text).Replace(" ", "_") + ".pdf";
             }
             catch (Exception)
             {
@@ -1041,8 +1097,10 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1080,7 +1138,7 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = "FinanceReport_" + this.FilterRegistrationOffice.SelectedItem.Text + ".pdf";
+                OutputName = "FinanceReport_" + this.FilterRegistrationOffice.SelectedItem.Text.Replace(" ", "_") + ".pdf";
             }
             catch (Exception)
             {
@@ -1097,8 +1155,10 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1123,7 +1183,9 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = "RebukesReport_" + this.FilterRegistrationOffice.SelectedItem.Text + "_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
+                OutputName = "RebukesReport_" + (this.FilterRegistrationOffice.SelectedItem.Text + "_" + PrintDate.ToString("yyyy-MM-dd")).Replace(
+                    ".",
+                    "_").Replace(" ", "_") + ".pdf";
             }
             catch (Exception)
             {
@@ -1141,8 +1203,10 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1165,7 +1229,8 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + "_Labels.pdf";
+                OutputName =
+                    this.FilterRegistrationOffice.SelectedItem.Text.Replace(" ", "_") + "_" + this.FilterRole.SelectedItem.Text + "_Labels.pdf";
             }
             catch (Exception)
             {
@@ -1184,8 +1249,10 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1208,7 +1275,8 @@ namespace Ict.Petra.WebServer.MConference
 
             try
             {
-                OutputName = this.FilterRegistrationOffice.SelectedItem.Text + "_" + this.FilterRole.SelectedItem.Text + "_arrivals.pdf";
+                OutputName =
+                    this.FilterRegistrationOffice.SelectedItem.Text.Replace(" ", "_") + "_" + this.FilterRole.SelectedItem.Text + "_arrivals.pdf";
             }
             catch (Exception)
             {
@@ -1227,8 +1295,10 @@ namespace Ict.Petra.WebServer.MConference
                     this.Response.Clear();
                     this.Response.ContentType = "application/pdf";
                     this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
                     this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
                     this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
                     File.Delete(PDFPath);
                     // this.Response.End(); avoid System.Threading.ThreadAbortException
                 }
@@ -1253,9 +1323,9 @@ namespace Ict.Petra.WebServer.MConference
         protected void ExportTShirtNumbers(object sender, DirectEventArgs e)
         {
             this.Response.Clear();
-            this.Response.ContentType = "application/xls";
-            this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=TShirtNumbers.xls");
+            this.Response.ContentType = "application/xlsx";
+            this.Response.AddHeader("Content-Type", "application/xlsx");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=TShirtNumbers.xlsx");
             MemoryStream m = new MemoryStream();
             TConferenceFreeTShirt.DownloadTShirtNumbers(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
@@ -1266,9 +1336,9 @@ namespace Ict.Petra.WebServer.MConference
         protected void ExportArrivalRegistrationList(object sender, DirectEventArgs e)
         {
             this.Response.Clear();
-            this.Response.ContentType = "application/xls";
-            this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=ArrivalRegistration.xls");
+            this.Response.ContentType = "application/xlsx";
+            this.Response.AddHeader("Content-Type", "application/xlsx");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=ArrivalRegistration.xlsx");
             MemoryStream m = new MemoryStream();
             TConferenceExcelReports.DownloadArrivalRegistration(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
@@ -1279,9 +1349,9 @@ namespace Ict.Petra.WebServer.MConference
         protected void ExportRolesPerCountry(object sender, DirectEventArgs e)
         {
             this.Response.Clear();
-            this.Response.ContentType = "application/xls";
-            this.Response.AddHeader("Content-Type", "application/xls");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=RolesPerCountry.xls");
+            this.Response.ContentType = "application/xlsx";
+            this.Response.AddHeader("Content-Type", "application/xlsx");
+            this.Response.AddHeader("Content-Disposition", "attachment; filename=RolesPerCountry.xlsx");
             MemoryStream m = new MemoryStream();
             TConferenceExcelReports.GetNumbersOfRolesPerCountry(EventPartnerKey, EventCode, m);
             m.WriteTo(this.Response.OutputStream);
@@ -1552,30 +1622,35 @@ namespace Ict.Petra.WebServer.MConference
             {
                 //string test = "[{\"ID\":1,\"When\":\"2011-07-21T16:55:04\",\"What\":\"\",\"Consequence\":\"TBD\"}]";
 
-                Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(AData);
+                Object obj = Jayrock.Json.Conversion.JsonConvert.Import(AData);
 
-                foreach (Jayrock.Json.JsonObject element in list)
+                if (obj is Jayrock.Json.JsonArray)
                 {
-                    string time = string.Empty;
+                    Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)obj;
 
-                    try
+                    foreach (Jayrock.Json.JsonObject element in list)
                     {
-                        time = element["Time"].ToString();
-                    }
-                    catch (Exception)
-                    {
-                    }
+                        string time = string.Empty;
 
-                    if (Convert.ToInt32(element["ID"]) >= NewRebukeId)
-                    {
-                        NewRebukeId = Convert.ToInt32(element["ID"]) + 1;
-                    }
+                        try
+                        {
+                            time = element["Time"].ToString();
+                        }
+                        catch (Exception)
+                        {
+                        }
 
-                    store.Add(new TRebuke(Convert.ToInt32(element["ID"]),
-                            Convert.ToDateTime(element["When"]),
-                            time,
-                            element["What"].ToString(),
-                            element["Consequence"].ToString()));
+                        if (Convert.ToInt32(element["ID"]) >= NewRebukeId)
+                        {
+                            NewRebukeId = Convert.ToInt32(element["ID"]) + 1;
+                        }
+
+                        store.Add(new TRebuke(Convert.ToInt32(element["ID"]),
+                                Convert.ToDateTime(element["When"]),
+                                time,
+                                element["What"].ToString(),
+                                element["Consequence"].ToString()));
+                    }
                 }
             }
 
@@ -1617,7 +1692,7 @@ namespace Ict.Petra.WebServer.MConference
                                         .ID("dtpDate" + ARow.ID.ToString())
                                         .Width(300)
                                         .Value(ARow.Date)
-                                        .Format("dd-MMM-yyyy")
+                                        .Format("dd-MM-yyyy")
                                         .FieldLabel("Date");
 
             Ext.Net.Cell cDate = new Cell();

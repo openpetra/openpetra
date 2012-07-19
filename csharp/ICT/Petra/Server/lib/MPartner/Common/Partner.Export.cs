@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -75,20 +75,17 @@ namespace Ict.Petra.Server.MPartner.Import
 
             PmGeneralApplicationAccess.LoadViaPPersonPartnerKey(MainDS, APartnerKey, Transaction);
             PtApplicationTypeAccess.LoadAll(MainDS, Transaction);
-            PmShortTermApplicationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+            PmShortTermApplicationAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
             PmYearProgramApplicationAccess.LoadViaPPerson(MainDS, APartnerKey, Transaction);
-            PmApplicationFormsAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
 
             UmUnitStructureAccess.LoadViaPUnitChildUnitKey(MainDS, APartnerKey, Transaction);
             UmUnitAbilityAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
             UmUnitLanguageAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
-            UmUnitVisionAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
             UmUnitCostAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
             UmJobAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
             UmJobRequirementAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
             UmJobLanguageAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
             UmJobQualificationAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
-            UmJobVisionAccess.LoadViaPUnit(MainDS, APartnerKey, Transaction);
 
             PcBuildingAccess.LoadViaPVenue(MainDS, APartnerKey, Transaction);
             PcRoomAccess.LoadViaPVenue(MainDS, APartnerKey, Transaction);

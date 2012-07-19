@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using System.Data.Odbc;
 using System.Net.Mail;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
@@ -511,7 +512,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     newRow.JSONData = GeneralApplication.RawApplicationData;
                 }
 
-                if (AApplicationStatus.Length == 0)
+                if ((AApplicationStatus == null) || (AApplicationStatus.Length == 0))
                 {
                     AApplicationStatus = "on hold";
                 }
@@ -646,8 +647,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     ARegistrationOfficeKey,
                     Transaction);
 
-                // to avoid the error on the ext.js client: Status Text: BADRESPONSE: Parse Error
-                Result = application[0].RawApplicationData.Replace("&quot;", "\\\"");
+                Result = application[0].RawApplicationData;
             }
             finally
             {
@@ -937,16 +937,24 @@ namespace Ict.Petra.Server.MConference.Applications
                         // data has been loaded above already.
                         DataView DuplicateView = new DataView(AMainDS.PmGeneralApplication);
 
-                        DuplicateView.RowFilter =
-                            String.Format("{0} = '{1}' AND {2} = 'H'",
-                                PmGeneralApplicationTable.GetRawApplicationDataDBName(),
-                                AChangedRow.JSONData,
-                                PmGeneralApplicationTable.GetGenApplicationStatusDBName());
-
-                        foreach (DataRowView rv in DuplicateView)
+                        // TODO problems with single quotes in rawData: this is not the best solution, because it will not find matches, but at least it will save.
+                        try
                         {
-                            PmGeneralApplicationRow DuplicateApplication = (PmGeneralApplicationRow)rv.Row;
-                            DuplicateApplication.GenApplicationStatus = "I";
+                            DuplicateView.RowFilter =
+                                String.Format("{0} = '{1}' AND {2} = 'H'",
+                                    PmGeneralApplicationTable.GetRawApplicationDataDBName(),
+                                    AChangedRow.JSONData.Replace("'", "&apos;"),
+                                    PmGeneralApplicationTable.GetGenApplicationStatusDBName());
+
+                            foreach (DataRowView rv in DuplicateView)
+                            {
+                                PmGeneralApplicationRow DuplicateApplication = (PmGeneralApplicationRow)rv.Row;
+                                DuplicateApplication.GenApplicationStatus = "I";
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // some problem with Invalid escape sequence: '\"'.
                         }
                     }
                 }
@@ -1077,10 +1085,11 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <summary>
         /// export accepted and cancelled applications to Petra
         /// </summary>
-        /// <returns></returns>
-        public static string DownloadApplications(Int64 AEventPartnerKey, string AEventCode, Int64 ARegistrationOffice)
+        public static string DownloadApplications(Int64 AEventPartnerKey,
+            string AEventCode,
+            Int64 ARegistrationOffice,
+            bool AOnlyNotImportedYet = false)
         {
-            // TODO: export all partners that have not been imported to the local database yet
             string result = string.Empty;
 
             result += "PersonPartnerKey;EventPartnerKey;ApplicationDate;AcquisitionCode;Title;FirstName;FamilyName;Street;PostCode;City;";
@@ -1115,76 +1124,79 @@ namespace Ict.Petra.Server.MConference.Applications
                             ShortTermApplicationRow.RegistrationOffice,
                             Transaction)[0];
 
-                    if (GeneralApplicationRow.IsLocalPartnerKeyNull())
+                    if (GeneralApplicationRow.IsLocalPartnerKeyNull() || !AOnlyNotImportedYet)
                     {
-                        // TODO should we add the old partner key?
-                        result += "\"\";";
+                        if (GeneralApplicationRow.IsLocalPartnerKeyNull())
+                        {
+                            // TODO should we add the old partner key?
+                            result += "\"\";";
+                        }
+                        else
+                        {
+                            result += "\"" + GeneralApplicationRow.LocalPartnerKey.ToString() + "\";";
+                        }
+
+                        TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
+                            GeneralApplicationRow.RawApplicationData);
+                        string prevConf = string.Empty;
+
+                        if (data.numberprevconfadult != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfadult);
+                        }
+
+                        if (data.numberprevconfparticipant != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfparticipant);
+                        }
+
+                        if (data.numberprevconfleader != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfleader);
+                        }
+
+                        if (data.numberprevconfhelper != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfhelper);
+                        }
+
+                        if (data.numberprevconf != null)
+                        {
+                            prevConf = StringHelper.AddCSV(prevConf, data.numberprevconf);
+                        }
+
+                        result += "\"" + AEventPartnerKey.ToString() + "\";";
+                        result += "\"" + GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy") + "\";";
+                        // TODO AcquisitionCode
+                        result += "\"" + "\";";
+                        result += "\"" + PersonRow.Title + "\";";
+                        result += "\"" + PersonRow.FirstName + "\";";
+                        result += "\"" + PersonRow.FamilyName + "\";";
+                        result += "\"" + LocationRow.StreetName + "\";";
+                        result += "\"" + LocationRow.PostalCode + "\";";
+                        result += "\"" + LocationRow.City + "\";";
+                        result += "\"" + LocationRow.CountryCode + "\";";
+                        result += "\"" + PartnerLocationRow.TelephoneNumber + "\";";
+                        result += "\"" + PartnerLocationRow.MobileNumber + "\";";
+                        result += "\"" + PartnerLocationRow.EmailAddress + "\";";
+                        result += "\"" + PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy") + "\";";
+                        result += "\"" + PersonRow.MaritalStatus + "\";";
+                        result += "\"" + PersonRow.Gender + "\";";
+                        result += "\"" + /* vegetarian + */ "\";";
+                        result += "\"" + /* MedicalNeeds + */ "\";";
+                        result += "\"" + /* ArrivalDate + */ "\";";
+                        result += "\"" + /* DepartureDate + */ "\";";
+                        result += "\"" + ShortTermApplicationRow.StCongressCode + "\";";
+                        result += "\"" + GeneralApplicationRow.GenApplicationStatus + "\";";
+                        result += "\"" + prevConf + "\";";
+                        result += "\"" + /* AppComments + */ "\";";
+                        result += "\"" + /* NotesPerson + */ "\";";
+                        result += "\"" + PersonRow.PartnerKey.ToString() + "\";";
+                        result += "\"" + /* FamilyPartnerKey + */ "\";";
+                        result += "\"" + (GeneralApplicationRow.ImportedLocalPetra ? "yes" : "") + "\";";
+
+                        result += "\n";
                     }
-                    else
-                    {
-                        result += "\"" + GeneralApplicationRow.LocalPartnerKey.ToString() + "\";";
-                    }
-
-                    TApplicationFormData data = (TApplicationFormData)TJsonTools.ImportIntoTypedStructure(typeof(TApplicationFormData),
-                        GeneralApplicationRow.RawApplicationData);
-                    string prevConf = string.Empty;
-
-                    if (data.numberprevconfadult != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfadult);
-                    }
-
-                    if (data.numberprevconfparticipant != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfparticipant);
-                    }
-
-                    if (data.numberprevconfleader != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfleader);
-                    }
-
-                    if (data.numberprevconfhelper != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconfhelper);
-                    }
-
-                    if (data.numberprevconf != null)
-                    {
-                        prevConf = StringHelper.AddCSV(prevConf, data.numberprevconf);
-                    }
-
-                    result += "\"" + AEventPartnerKey.ToString() + "\";";
-                    result += "\"" + GeneralApplicationRow.GenAppDate.ToString("dd-MM-yyyy") + "\";";
-                    // TODO AcquisitionCode
-                    result += "\"" + "\";";
-                    result += "\"" + PersonRow.Title + "\";";
-                    result += "\"" + PersonRow.FirstName + "\";";
-                    result += "\"" + PersonRow.FamilyName + "\";";
-                    result += "\"" + LocationRow.StreetName + "\";";
-                    result += "\"" + LocationRow.PostalCode + "\";";
-                    result += "\"" + LocationRow.City + "\";";
-                    result += "\"" + LocationRow.CountryCode + "\";";
-                    result += "\"" + PartnerLocationRow.TelephoneNumber + "\";";
-                    result += "\"" + PartnerLocationRow.MobileNumber + "\";";
-                    result += "\"" + PartnerLocationRow.EmailAddress + "\";";
-                    result += "\"" + PersonRow.DateOfBirth.Value.ToString("dd-MM-yyyy") + "\";";
-                    result += "\"" + PersonRow.MaritalStatus + "\";";
-                    result += "\"" + PersonRow.Gender + "\";";
-                    result += "\"" + /* vegetarian + */ "\";";
-                    result += "\"" + /* MedicalNeeds + */ "\";";
-                    result += "\"" + /* ArrivalDate + */ "\";";
-                    result += "\"" + /* DepartureDate + */ "\";";
-                    result += "\"" + ShortTermApplicationRow.StCongressCode + "\";";
-                    result += "\"" + GeneralApplicationRow.GenApplicationStatus + "\";";
-                    result += "\"" + prevConf + "\";";
-                    result += "\"" + /* AppComments + */ "\";";
-                    result += "\"" + /* NotesPerson + */ "\";";
-                    result += "\"" + PersonRow.PartnerKey.ToString() + "\";";
-                    result += "\"" + /* FamilyPartnerKey + */ "\";";
-                    result += "\"" + (GeneralApplicationRow.ImportedLocalPetra ? "yes" : "") + "\";";
-
-                    result += "\n";
                 }
 
                 return result;
@@ -1242,23 +1254,66 @@ namespace Ict.Petra.Server.MConference.Applications
                 DateTime ConferenceStartDate = ConferenceTable[0].Start.Value;
                 DateTime ConferenceEndDate = ConferenceTable[0].End.Value;
 
+                // load all data at once
+                StringBuilder sb = new StringBuilder();
+
                 foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
                 {
-                    PmShortTermApplicationRow TemplateRow = AMainDS.PmShortTermApplication.NewRowTyped(false);
+                    sb.Append(row.PartnerKey.ToString());
+                    sb.Append(',');
+                }
 
+                sb.Append("-1");
+                string partnerkeys = sb.ToString();
+
+                string sqlLoadPersons = "SELECT PUB_p_person.* FROM PUB_p_person " +
+                                        "WHERE p_partner_key_n IN (" + partnerkeys + ")";
+                PPersonTable persons = new PPersonTable();
+                DBAccess.GDBAccessObj.SelectDT(persons, sqlLoadPersons, Transaction, new OdbcParameter[0], 0, 0);
+
+                string sqlLoadShortTermApplications = "SELECT PUB_pm_short_term_application.* FROM PUB_pm_short_term_application " +
+                                                      "WHERE p_partner_key_n IN (" +
+                                                      partnerkeys + ") AND pm_confirmed_option_code_c = '" + AEventCode + "'";
+                PmShortTermApplicationTable shorttermapplications = new PmShortTermApplicationTable();
+                DBAccess.GDBAccessObj.SelectDT(shorttermapplications, sqlLoadShortTermApplications, Transaction, new OdbcParameter[0], 0, 0);
+                shorttermapplications.DefaultView.Sort = PmShortTermApplicationTable.GetPartnerKeyDBName();
+
+                string sqlLoadGeneralApplications =
+                    "SELECT PUB_pm_general_application.* FROM PUB_pm_general_application, PUB_pm_short_term_application " +
+                    "WHERE PUB_pm_short_term_application.p_partner_key_n IN (" +
+                    partnerkeys + ") AND pm_confirmed_option_code_c = '" + AEventCode + "' " +
+                    "AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n "
+                    +
+                    "AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i "
+                    +
+                    "AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n ";
+                PmGeneralApplicationTable generalapplications = new PmGeneralApplicationTable();
+                DBAccess.GDBAccessObj.SelectDT(generalapplications, sqlLoadGeneralApplications, Transaction, new OdbcParameter[0], 0, 0);
+                generalapplications.DefaultView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName();
+
+                string sqlLoadPartnerLocations =
+                    "SELECT DISTINCT pl.* FROM PUB_p_partner_location pl, PUB_p_person pp WHERE pp.p_family_key_n = pl.p_partner_key_n AND pp.p_partner_key_n IN ("
+                    +
+                    partnerkeys + ")";
+                PPartnerLocationTable partnerLocations = new PPartnerLocationTable();
+                DBAccess.GDBAccessObj.SelectDT(partnerLocations, sqlLoadPartnerLocations, Transaction, new OdbcParameter[0], 0, 0);
+                partnerLocations.DefaultView.Sort = PPartnerLocationTable.GetPartnerKeyDBName();
+
+                foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
+                {
                     // one person is only registered once for the same event. each registration is a new partner key
-                    TemplateRow.PartnerKey = row.PartnerKey;
-                    TemplateRow.ConfirmedOptionCode = AEventCode;
-                    PmShortTermApplicationRow ShortTermApplicationRow = PmShortTermApplicationAccess.LoadUsingTemplate(TemplateRow, Transaction)[0];
+                    PmShortTermApplicationRow ShortTermApplicationRow =
+                        (PmShortTermApplicationRow)shorttermapplications.DefaultView.FindRows(row.PartnerKey)[0].Row;
 
-                    PPersonRow PersonRow = PPersonAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey, Transaction)[0];
-                    PPartnerLocationRow PartnerLocationRow = PPartnerLocationAccess.LoadViaPPartner(PersonRow.FamilyKey, Transaction)[0];
+                    PPersonRow PersonRow =
+                        (PPersonRow)persons.Rows.Find(ShortTermApplicationRow.PartnerKey);
+
+                    PPartnerLocationRow PartnerLocationRow =
+                        (PPartnerLocationRow)partnerLocations.DefaultView.FindRows(PersonRow.FamilyKey)[0].Row;
 
                     PmGeneralApplicationRow GeneralApplicationRow =
-                        PmGeneralApplicationAccess.LoadByPrimaryKey(ShortTermApplicationRow.PartnerKey,
-                            ShortTermApplicationRow.ApplicationKey,
-                            ShortTermApplicationRow.RegistrationOffice,
-                            Transaction)[0];
+                        (PmGeneralApplicationRow)generalapplications.DefaultView.FindRows(row.PartnerKey)[0].Row;
+
 
                     XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
                     myDoc.DocumentElement.AppendChild(newNode);
@@ -1289,15 +1344,16 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr = myDoc.CreateAttribute("EmailAddress");
                     attr.Value = PartnerLocationRow.EmailAddress;
                     newNode.Attributes.Append(attr);
-                    attr = myDoc.CreateAttribute("DateOfBirth");
-                    attr.Value = new TVariant(PersonRow.DateOfBirth.Value).EncodeToString();
-                    newNode.Attributes.Append(attr);
-                    attr = myDoc.CreateAttribute("DayOfBirth");
-                    attr.Value = PersonRow.DateOfBirth.Value.ToString("MMdd");
-                    newNode.Attributes.Append(attr);
 
                     if (PersonRow.DateOfBirth.HasValue)
                     {
+                        attr = myDoc.CreateAttribute("DateOfBirth");
+                        attr.Value = new TVariant(PersonRow.DateOfBirth.Value).EncodeToString();
+                        newNode.Attributes.Append(attr);
+                        attr = myDoc.CreateAttribute("DayOfBirth");
+                        attr.Value = PersonRow.DateOfBirth.Value.ToString("MMdd");
+                        newNode.Attributes.Append(attr);
+
                         Int32 AgeAtStartOfConference = CalculateAge(PersonRow.DateOfBirth.Value, ConferenceStartDate);
                         Int32 AgeAtEndOfConference = CalculateAge(PersonRow.DateOfBirth.Value, ConferenceEndDate);
 
@@ -1393,7 +1449,6 @@ namespace Ict.Petra.Server.MConference.Applications
 
             GetApplications(ref MainDS, AConferenceKey, AEventCode, "accepted", -1, true, null, true);
 
-            MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnDateOfBirth);
             MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnGenAppDate);
             MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnGenApplicationStatus);
             MainDS.ApplicationGrid.Columns.Remove(MainDS.ApplicationGrid.ColumnBadgePrint);
@@ -1433,13 +1488,20 @@ namespace Ict.Petra.Server.MConference.Applications
                 // get a list of partner keys that should get the person key from the local office
                 foreach (XmlNode applicant in partnerKeys.DocumentElement.ChildNodes)
                 {
-                    Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
-                    bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
-
-                    if (RecordImported)
+                    try
                     {
-                        // prepare SELECT WHERE IN (list of partner keys)
-                        RegistrationIDs = StringHelper.AddCSV(RegistrationIDs, RegistrationID.ToString(), ",");
+                        Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
+                        bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
+
+                        if (RecordImported)
+                        {
+                            // prepare SELECT WHERE IN (list of partner keys)
+                            RegistrationIDs = StringHelper.AddCSV(RegistrationIDs, RegistrationID.ToString(), ",");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("problem importing applicant: " + e.ToString());
                     }
                 }
 
@@ -1458,20 +1520,28 @@ namespace Ict.Petra.Server.MConference.Applications
                 foreach (XmlNode applicant in partnerKeys.DocumentElement.ChildNodes)
                 {
                     Int64 RegistrationID = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "HorstID"));
-                    bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
 
-                    if (RecordImported)
+                    try
                     {
-                        Int64 LocalOfficePartnerKey = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "PersonPartnerKey"));
+                        bool RecordImported = (TXMLParser.GetAttribute(applicant, "RecordImported").ToLower() == "yes");
 
-                        Int32 index = applicationTable.DefaultView.Find(RegistrationID);
-
-                        if (index != -1)
+                        if (RecordImported)
                         {
-                            PmGeneralApplicationRow row = (PmGeneralApplicationRow)applicationTable.DefaultView[index].Row;
-                            row.LocalPartnerKey = LocalOfficePartnerKey;
-                            row.ImportedLocalPetra = true;
+                            Int64 LocalOfficePartnerKey = Convert.ToInt64(TXMLParser.GetAttribute(applicant, "PersonPartnerKey"));
+
+                            Int32 index = applicationTable.DefaultView.Find(RegistrationID);
+
+                            if (index != -1)
+                            {
+                                PmGeneralApplicationRow row = (PmGeneralApplicationRow)applicationTable.DefaultView[index].Row;
+                                row.LocalPartnerKey = LocalOfficePartnerKey;
+                                row.ImportedLocalPetra = true;
+                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("problem importing applicant: " + e.ToString());
                     }
                 }
 

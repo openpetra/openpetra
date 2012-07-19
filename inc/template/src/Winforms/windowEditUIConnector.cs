@@ -23,6 +23,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonControls;
 {#IFDEF SHAREDVALIDATIONNAMESPACEMODULE}
 using {#SHAREDVALIDATIONNAMESPACEMODULE};
 {#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}

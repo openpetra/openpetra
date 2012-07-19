@@ -1,0 +1,53 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.ApplicationTDS
+    FormType: edit
+    Template: usercontrol
+    MasterTable: PmGeneralApplication
+    Actions:
+    Controls:
+        pnlDetails:
+            Controls: [grpArrivalInfo, grpDepartureInfo]
+            Dock: Fill
+        grpArrivalInfo: {Label=Arrival Details, Stretch=horizontally}
+            Controls: 
+                Row0: [cmbArrivalTravelMethod]
+                Row1: [cmbArrivalPoint]
+                Row2: [dtpArrival, txtArrivalTimeHour, txtArrivalTimeMinute]
+                Row3: [txtArrivalTransportCode, chkArrivalTransportNeeded]
+                Row4: [txtArrivalComment]
+        grpDepartureInfo: {Label=Departure Details, Stretch=horizontally}
+            Controls: 
+                Row0: [cmbDepartureTravelMethod]
+                Row1: [cmbDeparturePoint]
+                Row2: [dtpDeparture, txtDepartureTimeHour, txtDepartureTimeMinute]
+                Row3: [txtDepartureTransportCode, chkDepartureTransportNeeded]
+                Row4: [txtDepartureComment]
+                
+        cmbArrivalTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeToCongCode, ColSpan=3}
+        cmbArrivalPoint: {Label=Arrival Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.ArrivalPointCode, ColSpan=3}
+        dtpArrival: {Label=Arrival Date, DataField=PmShortTermApplication.Arrival, Validation=true}
+        txtArrivalTimeHour: {Label=Time, Width=25, Format=Integer, DataField=PmShortTermApplication.ArrivalHour, Validation=true}
+        txtArrivalTimeMinute: {Label=, Width=25, Format=Integer, DataField=PmShortTermApplication.ArrivalMinute, Validation=Pair(txtArrivalTimeHour)}
+        txtArrivalTransportCode: {Label=Transport Code, DataField=PmShortTermApplication.ToCongTravelInfo}
+        chkArrivalTransportNeeded: {Label=Transport needed from Arrival Point, CheckBoxAttachedLabel=right, DataField=PmShortTermApplication.ArrivalTransportNeeded, ColSpan=2}
+        txtArrivalComment: {Label=Arrival Comment, DataField=PmShortTermApplication.ArrivalComments, ColSpan=3, Stretch=horizontally}
+            Height: 35
+            Multiline: true
+            ScrollBars: Vertical
+
+        cmbDepartureTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeFromCongCode,ColSpan=3}
+        cmbDeparturePoint: {Label=Departure Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.DeparturePointCode, ColSpan=3}
+        dtpDeparture: {Label=Departure Date, DataField=PmShortTermApplication.Departure, Validation=Pair(dtpArrival)}
+        txtDepartureTimeHour: {Label=Time, Width=25, Format=Integer, DataField=PmShortTermApplication.DepartureHour, Validation=true}
+        txtDepartureTimeMinute: {Label=, Width=25, Format=Integer,DataField=PmShortTermApplication.DepartureMinute, Validation=Pair(txtDepartureTimeHour)}
+        txtDepartureTransportCode: {Label=Transport Code, DataField=PmShortTermApplication.FromCongTravelInfo}
+        chkDepartureTransportNeeded: {Label=Transport needed to Departure Point, CheckBoxAttachedLabel=right, DataField=PmShortTermApplication.DepartureTransportNeeded, ColSpan=2}
+        txtDepartureComment: {Label=Departure Comment, DataField=PmShortTermApplication.DepartureComments, ColSpan=3, Stretch=horizontally}
+            Height: 35
+            Multiline: true
+            ScrollBars: Vertical
+        

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,9 +44,6 @@ namespace Ict.Petra.WebServer.MConference
 {
     public partial class TManualRegistrationUI : System.Web.UI.Page
     {
-        protected Ext.Net.TextArea RegistrationsKeys;
-        protected Ext.Net.FormPanel FellowshipForm;
-
         protected void Page_Load(object sender, EventArgs e)
         {
             // check for valid user
@@ -61,11 +58,11 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void SubmitManualRegistration(Object sender, DirectEventArgs e)
         {
-            string JSONFormData = "{'RegistrationOffice':'#REGISTRATIONOFFICE'," +
+            string JSONFormData = "{'RegistrationOffice':'#REGISTRATIONOFFICE_VALUE'," +
                                   "'EventIdentifier':'#EVENTCODE','EventPartnerKey':'#EVENTPARTNERKEY'," +
-                                  "'RegistrationCountryCode':'','EventPartnerKey':'#EVENTPARTNERKEY'," +
+                                  "'RegistrationCountryCode':'en-EN','EventPartnerKey':'#EVENTPARTNERKEY'," +
                                   "'Role':'#ROLE','FirstName':'#FIRSTNAME','LastName':'#LASTNAME'," +
-                                  "'Street':'#STREET','Postcode':'#POSTCODE','City':'#CITY','Country':'#COUNTRY'," +
+                                  "'Street':'#STREET','Postcode':'#POSTCODE','City':'#CITY','Country':'#COUNTRY_VALUE'," +
                                   "'Phone':'#PHONE','Email':'#EMAIL','DateOfBirth':'#DATEOFBIRTH'," +
                                   "'DateOfArrival':'#DATEOFARRIVAL','DateOfDeparture':'#DATEOFDEPARTURE'," +
                                   "'Gender':'#GENDER','Vegetarian':'#VEGETARIAN','MedicalNeeds':'#MEDICALNEEDS','PaymentInfo':'#PAYMENTINFO'}";
@@ -87,10 +84,10 @@ namespace Ict.Petra.WebServer.MConference
             }
 
             Catalog.Init("en-GB", "en-GB");
-            JSONFormData = JSONFormData.Replace("#DATEOFBIRTH", DateTime.ParseExact(values["DateOfBirth"], "dd-MMM-yyyy", null).ToShortDateString());
-            JSONFormData = JSONFormData.Replace("#DATEOFARRIVAL", DateTime.ParseExact(values["DateOfArrival"], "dd-MMM-yyyy", null).ToShortDateString());
+            JSONFormData = JSONFormData.Replace("#DATEOFBIRTH", DateTime.ParseExact(values["DateOfBirth"], "dd-MM-yyyy", null).ToShortDateString());
+            JSONFormData = JSONFormData.Replace("#DATEOFARRIVAL", DateTime.ParseExact(values["DateOfArrival"], "dd-MM-yyyy", null).ToShortDateString());
             JSONFormData = JSONFormData.Replace("#DATEOFDEPARTURE", DateTime.ParseExact(values["DateOfDeparture"],
-                    "dd-MMM-yyyy",
+                    "dd-MM-yyyy",
                     null).ToShortDateString());
 
             foreach (string key in values.Keys)
@@ -103,7 +100,29 @@ namespace Ict.Petra.WebServer.MConference
             try
             {
                 // should not be able to create a PDF since the picture is missing, and not send an email
-                TImportPartnerForm.DataImportFromForm("RegisterPerson", JSONFormData);
+                string result = TImportPartnerForm.DataImportFromForm("RegisterPerson", JSONFormData);
+
+                if (result.StartsWith("{\"failure\":true, \"data\":{\"result\":\"We were not able to send the email to"))
+                {
+                    X.Msg.Show(new MessageBoxConfig
+                        {
+                            Buttons = MessageBox.Button.OK,
+                            Icon = MessageBox.Icon.INFO,
+                            Title = "Success",
+                            Message = "Application has been successful. Please add photo manually!"
+                        });
+                }
+                else
+                {
+                    TLogging.Log(result);
+                    X.Msg.Show(new MessageBoxConfig
+                        {
+                            Buttons = MessageBox.Button.OK,
+                            Icon = MessageBox.Icon.ERROR,
+                            Title = "Failure",
+                            Message = "Something is wrong. Please select valid values"
+                        });
+                }
             }
             catch (Exception ex)
             {

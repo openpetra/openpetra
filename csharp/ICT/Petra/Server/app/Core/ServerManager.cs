@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -86,6 +86,14 @@ namespace Ict.Petra.Server.App.Core
                 new TErrorLog(),
                 new TMaintenanceLogonMessage(),
                 new TClientAppDomainConnection());
+
+            Assembly SysManAssembly = Assembly.Load("Ict.Petra.Server.lib.MSysMan");
+            Type ImportExportType = SysManAssembly.GetType("Ict.Petra.Server.MSysMan.ImportExport.TImportExportManager");
+            FImportExportManager = (IImportExportManager)Activator.CreateInstance(ImportExportType,
+                (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
+                null,
+                null,
+                null);
         }
 
         private List <TDataBase>FDBConnections = new List <TDataBase>();
@@ -126,6 +134,10 @@ namespace Ict.Petra.Server.App.Core
 
             foreach (TDataBase dbToDisconnect in DBsToDisconnect)
             {
+                TLogging.Log("Disconnecting DB connection of client " +
+                    dbToDisconnect.UserID + " after timeout. Last activity was at: " +
+                    dbToDisconnect.LastDBAction.ToShortTimeString());
+
                 dbToDisconnect.CloseDBConnection();
                 FDBConnections.Remove(dbToDisconnect);
             }
@@ -150,6 +162,32 @@ namespace Ict.Petra.Server.App.Core
                 "");
 
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
+        }
+
+        private IImportExportManager FImportExportManager = null;
+
+        /// <summary>
+        /// BackupDatabaseToYmlGZ
+        /// </summary>
+        public override string BackupDatabaseToYmlGZ()
+        {
+            if (FImportExportManager != null)
+            {
+                return FImportExportManager.BackupDatabaseToYmlGZ();
+            }
+            else
+            {
+                TLogging.Log("please initialize FImportExportManager");
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// RestoreDatabaseFromYmlGZ
+        /// </summary>
+        public override bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
+        {
+            return FImportExportManager.RestoreDatabaseFromYmlGZ(AYmlGzData);
         }
     }
 }

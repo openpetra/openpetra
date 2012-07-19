@@ -1001,35 +1001,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     }
                 }
 
-                if ((rv.StLeadershipRating != "") && (!PtLeadershipRatingAccess.Exists(rv.StLeadershipRating, Transaction)))
-                {
-                    MainDS.PtLeadershipRating.DefaultView.RowFilter = String.Format("{0}='{1}'",
-                        PtLeadershipRatingTable.GetCodeDBName(), rv.StLeadershipRating);
-
-                    if (MainDS.PtLeadershipRating.DefaultView.Count == 0) // Check I've not just added this a moment ago..
-                    {
-                        AddVerificationResult(ref ReferenceResults, "Adding new Leadership Rating " + rv.StLeadershipRating);
-                        PtLeadershipRatingRow Row = MainDS.PtLeadershipRating.NewRowTyped();
-                        Row.Code = rv.StLeadershipRating;
-                        Row.Description = NewRowDescription;
-                        MainDS.PtLeadershipRating.Rows.Add(Row);
-                    }
-                }
-
-                if ((rv.StPartyTogether != "") && (!PtPartyTypeAccess.Exists(rv.StPartyTogether, Transaction)))
-                {
-                    MainDS.PtPartyType.DefaultView.RowFilter = String.Format("{0}='{1}'", PtPartyTypeTable.GetCodeDBName(), rv.StPartyTogether);
-
-                    if (MainDS.PtPartyType.DefaultView.Count == 0) // Check I've not just added this a moment ago..
-                    {
-                        AddVerificationResult(ref ReferenceResults, "Adding new Party Type " + rv.StPartyTogether);
-                        PtPartyTypeRow Row = MainDS.PtPartyType.NewRowTyped();
-                        Row.Code = rv.StPartyTogether;
-                        Row.Description = NewRowDescription;
-                        MainDS.PtPartyType.Rows.Add(Row);
-                    }
-                }
-
                 if ((rv.OutreachRole != "") && (!PtCongressCodeAccess.Exists(rv.OutreachRole, Transaction)))
                 {
                     MainDS.PtCongressCode.DefaultView.RowFilter = String.Format("{0}='{1}'", PtCongressCodeTable.GetCodeDBName(), (rv.OutreachRole));

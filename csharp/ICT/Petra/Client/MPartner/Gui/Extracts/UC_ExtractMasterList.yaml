@@ -21,11 +21,11 @@ RootNode:
         pnlButtons:
             Dock: Right
             Controls: [btnMaintain, btnDelete, btnRefreshGrid]
-        btnMaintain:
+        btnMaintain: {Stretch=horizontally}
             Action: actMaintain
-        btnDelete:
+        btnDelete: {Stretch=horizontally}
             Action: actDelete
-        btnRefreshGrid: {NoLabel=true}
+        btnRefreshGrid: {NoLabel=true, Stretch=horizontally}
             Action: actRefreshGrid
             Help: Refresh Extract List (e.g. after a new extract has been created)
         grdDetails:

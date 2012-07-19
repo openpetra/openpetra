@@ -274,8 +274,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             return null; // make sure that the TMSysMan object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'Application' subnamespace contains further subnamespaces.</summary>
         public IApplicationNamespace Application
         {
@@ -551,8 +549,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
         {
             return null; // make sure that the TApplicationNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'ApplicationUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IApplicationUIConnectorsNamespace UIConnectors
@@ -845,8 +841,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
         {
             return null; // make sure that the TMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'MaintenanceSystemDefaults' subnamespace contains further subnamespaces.</summary>
         public IMaintenanceSystemDefaultsNamespace SystemDefaults
@@ -1461,8 +1455,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors
         {
@@ -1672,8 +1664,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportWebConnectorsNamespace WebConnectors
         {
@@ -1868,8 +1858,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.PrintManagement
             return null; // make sure that the TPrintManagementNamespace object exists until this AppDomain is unloaded!
         }
 
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
-
         /// <summary>The 'PrintManagementUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPrintManagementUIConnectorsNamespace UIConnectors
         {
@@ -2043,8 +2031,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security
         {
             return null; // make sure that the TSecurityNamespace object exists until this AppDomain is unloaded!
         }
-
-        // NOTE AutoGeneration: There will be one Property like the following for each of the Petra Modules' Sub-Modules (Sub-Namespaces) (these are second-level ... n-level deep for the each Petra Module)
 
         /// <summary>The 'SecurityUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ISecurityUIConnectorsNamespace UIConnectors

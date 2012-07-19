@@ -490,6 +490,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Create Manual Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateFamilyMembersExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.FamilyMembersExtract(FindForm());
+        }
+
+        /// <summary>
+        /// Create Manual Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateFamilyExtractForPersons(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.FamilyExtractForPersons(FindForm());
+        }
+
+        /// <summary>
         /// Create Partner By Conference Extract
         /// </summary>
         /// <param name="sender"></param>
@@ -606,6 +626,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             frm.CalledFromExtracts = true;
             frm.Show();
+        }
+
+        /// <summary>
+        /// Update Receipt Frequency for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateReceiptFrequency(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.UpdateReceiptFrequency(sender, e);
+        }
+
+        /// <summary>
+        /// Update Email Gift Statement flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.UpdateEmailGiftStatement(sender, e);
         }
 
         #endregion

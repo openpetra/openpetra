@@ -869,7 +869,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                throw new EVerificationMissing(Catalog.GetString("FDelegateMaintainWorkerField"));
+                throw new EVerificationMissing("FDelegateMaintainWorkerField");
             }
         }
 

@@ -660,6 +660,28 @@ namespace Ict.Common.Printing
                     {
                         AWidthAvailable = ToInch(Styles[StyleName], eResolution.eHorizontal);
                     }
+                    else if (StyleName.ToLower() == "transform")
+                    {
+                        // see also http://www.w3schools.com/cssref/css3_pr_transform.asp
+                        string transformValue = Styles[StyleName].Trim().ToLower();
+
+                        if (transformValue.StartsWith("rotate(") && transformValue.EndsWith("deg)"))
+                        {
+                            CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+                            Double DegreeValue =
+                                Convert.ToDouble(transformValue.Substring("rotate(".Length, transformValue.Length - "rotate(deg)".Length));
+                            Catalog.SetCulture(OrigCulture);
+
+                            FPrinter.RotateAtTransform(
+                                DegreeValue,
+                                FPrinter.CurrentXPos,
+                                FPrinter.CurrentYPos);
+                        }
+                        else
+                        {
+                            TLogging.Log("TPrinterHtml: unsupported transform style. we only support rotation at the moment");
+                        }
+                    }
                 }
             }
 
@@ -691,6 +713,9 @@ namespace Ict.Common.Printing
             while (curNode != null && FPrinter.ValidYPos() && FContinueNextPageNode == null)
             {
                 AWidthAvailable = OrigWidthAvailable;
+
+                FPrinter.SaveState();
+
                 bool HasPositionInfo = SetPositionFromStyle(curNode, ref AWidthAvailable);
 
                 if (HasPositionInfo)
@@ -764,12 +789,12 @@ namespace Ict.Common.Printing
                 else if (curNode.Name == "font")
                 {
                     // TODO change font name and/or size
-                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+                    float previousFontSize = FPrinter.CurrentRelativeFontSize;
                     eFont previousFont = FPrinter.CurrentFont;
 
                     if (TXMLParser.HasAttribute(curNode, "size"))
                     {
-                        FPrinter.CurrentRelativeFontSize += TXMLParser.GetIntAttribute(curNode, "size");
+                        FPrinter.CurrentRelativeFontSize += (float)TXMLParser.GetDecimalAttribute(curNode, "size");
                     }
 
                     if (TXMLParser.HasAttribute(curNode, "face"))
@@ -948,7 +973,7 @@ namespace Ict.Common.Printing
                     // heading
                     eFont previousFont = FPrinter.CurrentFont;
                     FPrinter.CurrentFont = eFont.eHeadingFont;
-                    Int32 previousFontSize = FPrinter.CurrentRelativeFontSize;
+                    float previousFontSize = FPrinter.CurrentRelativeFontSize;
 
                     if (curNode.Name[1] == '1')
                     {
@@ -1003,6 +1028,8 @@ namespace Ict.Common.Printing
                     // reset to top of paper, so that there is no unintended page break
                     FPrinter.CurrentYPos = 0;
                 }
+
+                FPrinter.RestoreState();
 
                 // todo: h1, etc headings???
                 // todo: code, fixed width font (for currency amounts?) ???

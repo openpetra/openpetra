@@ -1,0 +1,45 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Organisation Contacts
+    Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
+    DetailTable: PtContact
+    CacheableTable: ContactList
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 750
+    WindowHeight: 400
+    Actions:
+        actNew: {Label=New, ActionClick=NewRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew]
+        btnNew:
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailContactName, DetailContactDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            CustomColumns:
+                DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+                DetailContactDescr: {Label=Description}
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailContactName, txtDetailContactDescr]
+                Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
+                Row2: [chkDetailDeletableFlag]
+        txtDetailContactName: {Label="Contact Name", Width=150}
+        txtDetailContactDescr: {Label=Description, Width=295}
+        chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
+        chkDetailDeletableFlag: {Label=Deletable}
+    Toolbar:
+        tbbNew:
+            Label: New Contact

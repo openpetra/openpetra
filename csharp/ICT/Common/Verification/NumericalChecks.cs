@@ -58,6 +58,7 @@ namespace Ict.Common.Verification
             "{0} must be a negative decimal number (= a number that has a fraction), or 0.");
         private static readonly string StrNumberCannotBeGreaterThan = Catalog.GetString("{0} cannot be greater than {1}.");
         private static readonly string StrNumberCannotBeGreaterOrEqualTo = Catalog.GetString("{0} cannot be greater or equal to {1}.");
+        private static readonly string StrNumberNeedsToBeInRange = Catalog.GetString("{0} needs to be between {1} and {2}.");
         private static readonly string StrNumberPrecisionExceededBeforeDecimalPoint = Catalog.GetString(
             "{0} must not have more than {1} digits before the decimal point, but it has got {2}.");
         private static readonly string StrNumberPrecisionExceededAfterDecimalPoint = Catalog.GetString(
@@ -961,6 +962,55 @@ namespace Ict.Common.Verification
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
                         CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberCannotBeGreaterThan, new string[] { FirstNumberDescription, SecondNumberDescription }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
+        #region IsInRange...
+
+        /// <summary>
+        /// Checks whether integer number is within a given range
+        /// </summary>
+        /// <param name="AValue">Integer number.</param>
+        /// <param name="ALowerLimit">Lower range limit.</param>
+        /// <param name="AUpperLimit">Upper range limit.</param>
+        /// <param name="ANumberDescription">Description what the number is about (for the
+        /// error message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
+        /// returned that contains details about the problem, with a message that uses
+        /// <paramref name="ANumberDescription" /></returns>
+        public static TVerificationResult IsInRange(Int64? AValue, Int64? ALowerLimit, Int64? AUpperLimit,
+            string ANumberDescription, object AResultContext = null,
+            System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+
+            if (!(AValue.HasValue))
+            {
+                return null;
+            }
+
+            string NumberDescription = THelper.NiceValueDescription(ANumberDescription);
+
+            // Check
+            if ((AValue < ALowerLimit)
+                || (AValue > AUpperLimit))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INCONGRUOUSNUMBERS,
+                        CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberNeedsToBeInRange, new string[] { NumberDescription, ALowerLimit.ToString(), AUpperLimit.ToString() }));
 
                 if (AResultColumn != null)
                 {

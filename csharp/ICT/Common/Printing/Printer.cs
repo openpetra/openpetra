@@ -169,7 +169,7 @@ namespace Ict.Common.Printing
         public eFont FCurrentFont;
 
         /// relative number; 0 is normal size
-        public Int32 FCurrentRelativeFontSize = 0;
+        public float FCurrentRelativeFontSize = 0;
 
         /// <summary>todoComment</summary>
         public eAlignment FCurrentAlignment = eAlignment.eLeft;
@@ -371,7 +371,7 @@ namespace Ict.Common.Printing
         /// <summary>
         /// the relative font size; 0 is default size
         /// </summary>
-        public Int32 CurrentRelativeFontSize
+        public float CurrentRelativeFontSize
         {
             get
             {
@@ -425,6 +425,27 @@ namespace Ict.Common.Printing
             {
                 return FPageFooterSpace;
             }
+        }
+
+        /// <summary>
+        /// save the state before a rotation etc
+        /// </summary>
+        public virtual void SaveState()
+        {
+        }
+
+        /// <summary>
+        /// restore the state after a rotation etc
+        /// </summary>
+        public virtual void RestoreState()
+        {
+        }
+
+        /// <summary>
+        /// rotate the following output by some degrees, at the given position
+        /// </summary>
+        public virtual void RotateAtTransform(double ADegrees, double XPos, double YPos)
+        {
         }
 
         /// <summary>

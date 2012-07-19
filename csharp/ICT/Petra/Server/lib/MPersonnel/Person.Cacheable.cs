@@ -200,6 +200,12 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
+                        case TCacheablePersonTablesEnum.ApplicationTypeList:
+                        {
+                            DataTable TmpTable = PtApplicationTypeAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
                         case TCacheablePersonTablesEnum.ArrivalDeparturePointList:
                         {
                             DataTable TmpTable = PtArrivalPointAccess.LoadAll(ReadTransaction);
@@ -233,12 +239,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                         case TCacheablePersonTablesEnum.LeadershipRatingList:
                         {
                             DataTable TmpTable = PtLeadershipRatingAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
-                        case TCacheablePersonTablesEnum.PartyTypeList:
-                        {
-                            DataTable TmpTable = PtPartyTypeAccess.LoadAll(ReadTransaction);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -278,27 +278,21 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
-                        case TCacheablePersonTablesEnum.ValuableItemList:
-                        {
-                            DataTable TmpTable = PtValuableItemAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
-                        case TCacheablePersonTablesEnum.VisionAreaList:
-                        {
-                            DataTable TmpTable = PtVisionAreaAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
-                        case TCacheablePersonTablesEnum.VisionLevelList:
-                        {
-                            DataTable TmpTable = PtVisionLevelAccess.LoadAll(ReadTransaction);
-                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
-                            break;
-                        }
                         case TCacheablePersonTablesEnum.OutreachPreferenceLevelList:
                         {
                             DataTable TmpTable = PtOutreachPreferenceLevelAccess.LoadAll(ReadTransaction);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.EventApplicationTypeList:
+                        {
+                            DataTable TmpTable = GetEventApplicationTypeListTable(ReadTransaction, TableName);
+                            FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
+                            break;
+                        }
+                        case TCacheablePersonTablesEnum.FieldApplicationTypeList:
+                        {
+                            DataTable TmpTable = GetFieldApplicationTypeListTable(ReadTransaction, TableName);
                             FCacheableTablesManager.AddOrRefreshCachedTable(TableName, TmpTable, DomainManager.GClientID);
                             break;
                         }
@@ -470,6 +464,23 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             }
 
                             break;
+                        case TCacheablePersonTablesEnum.ApplicationTypeList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                PtApplicationTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateApplicationTypeListManual(ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
                         case TCacheablePersonTablesEnum.ArrivalDeparturePointList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
@@ -564,23 +575,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (PtLeadershipRatingAccess.SubmitChanges((PtLeadershipRatingTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
-                        case TCacheablePersonTablesEnum.PartyTypeList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                PtPartyTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
-                                ValidatePartyTypeListManual(ref AVerificationResult, ASubmitTable);
-
-                                if (!AVerificationResult.HasCriticalErrors)
-                                {
-                                    if (PtPartyTypeAccess.SubmitChanges((PtPartyTypeTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
                                     {
                                         SubmissionResult = TSubmitChangesResult.scrOK;
@@ -691,57 +685,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
                             }
 
                             break;
-                        case TCacheablePersonTablesEnum.ValuableItemList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                PtValuableItemValidation.Validate(ASubmitTable, ref AVerificationResult);
-                                ValidateValuableItemListManual(ref AVerificationResult, ASubmitTable);
-
-                                if (!AVerificationResult.HasCriticalErrors)
-                                {
-                                    if (PtValuableItemAccess.SubmitChanges((PtValuableItemTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
-                        case TCacheablePersonTablesEnum.VisionAreaList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                PtVisionAreaValidation.Validate(ASubmitTable, ref AVerificationResult);
-                                ValidateVisionAreaListManual(ref AVerificationResult, ASubmitTable);
-
-                                if (!AVerificationResult.HasCriticalErrors)
-                                {
-                                    if (PtVisionAreaAccess.SubmitChanges((PtVisionAreaTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
-                        case TCacheablePersonTablesEnum.VisionLevelList:
-                            if (ASubmitTable.Rows.Count > 0)
-                            {
-                                PtVisionLevelValidation.Validate(ASubmitTable, ref AVerificationResult);
-                                ValidateVisionLevelListManual(ref AVerificationResult, ASubmitTable);
-
-                                if (!AVerificationResult.HasCriticalErrors)
-                                {
-                                    if (PtVisionLevelAccess.SubmitChanges((PtVisionLevelTable)ASubmitTable, SubmitChangesTransaction,
-                                        out SingleVerificationResultCollection))
-                                    {
-                                        SubmissionResult = TSubmitChangesResult.scrOK;
-                                    }
-                                }
-                            }
-
-                            break;
                         case TCacheablePersonTablesEnum.OutreachPreferenceLevelList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
@@ -815,24 +758,39 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
         partial void ValidateAbilityAreaListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateAbilityLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateApplicantStatusListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateApplicationTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateArrivalDeparturePointListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateEventRoleListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateContactListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateDriverStatusListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLanguageLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateLeadershipRatingListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePartyTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidatePassportTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateTransportTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateQualificationAreaListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateQualificationLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateSkillCategoryListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateSkillLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateValuableItemListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateVisionAreaListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateVisionLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         partial void ValidateOutreachPreferenceLevelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
+
+        private DataTable GetEventApplicationTypeListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+            PtApplicationTypeRow template = new PtApplicationTypeTable().NewRowTyped(false);
+            template.AppFormType = "SHORT FORM";
+            return PtApplicationTypeAccess.LoadUsingTemplate(template, AReadTransaction);
+#endregion ManualCode        
+        }
+
+        private DataTable GetFieldApplicationTypeListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+#region ManualCode
+            PtApplicationTypeRow template = new PtApplicationTypeTable().NewRowTyped(false);
+            template.AppFormType = "LONG FORM";
+            return PtApplicationTypeAccess.LoadUsingTemplate(template, AReadTransaction);
+#endregion ManualCode        
+        }
     }
 }

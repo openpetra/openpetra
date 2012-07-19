@@ -34,10 +34,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out TLocationPK ALocationPK,
         Form AParentForm);
 
-    /// <summary>Delegate for a call to open a Modal Partner Find screen</summary>
+    /// <summary>Delegate for a call to open a Modal Conference Find screen</summary>
     public delegate bool TDelegateOpenConferenceFindScreen(String AConferenceNamePattern,
         String AOutreachCodePattern,
         out Int64 AConferenceKey,
         out String AConferenceName,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Event Find screen</summary>
+    public delegate bool TDelegateOpenEventFindScreen(String AEventNamePattern,
+        out Int64 AEventKey,
+        out String AEventName,
+        out String AOutreachCode,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Extract Find screen</summary>
+    public delegate bool TDelegateOpenExtractFindScreen(out int AExtractId,
+        out String AExtractName,
+        out String AExtractDesc,
         Form AParentForm);
 }
