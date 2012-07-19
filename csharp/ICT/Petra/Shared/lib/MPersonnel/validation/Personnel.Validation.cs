@@ -107,19 +107,6 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
 
-            // 'Start of Commitment' must be defined
-            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnStartOfCommitmentId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.StartOfCommitment,
-                    ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
-                    ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-
             // 'End of Commitment' must be later than 'Start of Commitment'
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnEndOfCommitmentId];
 

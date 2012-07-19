@@ -411,7 +411,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPersonnelValidation_Personnel.ValidatePassportManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
         }
     }
 }

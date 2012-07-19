@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -171,6 +171,7 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                             }
 
                             snippetElement.SetCodelet("ENUMNAME", enumName);
+                            snippetElement.SetCodelet("DATATABLENAME", enumElement.Name);
 
                             snippetSubmodule.InsertSnippet("ENUMELEMENTS", snippetElement);
 
@@ -211,6 +212,7 @@ namespace Ict.Tools.CodeGeneration.CachedTables
 
                                 ProcessTemplate snippetDataValidation = ServerTemplate.GetSnippet("DATAVALIDATION");
                                 snippetDataValidation.SetCodelet("ENUMNAME", enumName);
+                                snippetDataValidation.SetCodelet("DATATABLENAME", enumElement.Name);
 
                                 if (DependsOnLedger)
                                 {

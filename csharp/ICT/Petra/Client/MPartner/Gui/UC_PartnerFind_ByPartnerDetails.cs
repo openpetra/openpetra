@@ -220,6 +220,25 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private TFrmPetraUtils FPetraUtilsObject;
 
+        /// Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+        public void GetDataFromControls()
+        {
+            // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+        }
+
+        /// <summary>
+        /// // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+        /// </summary>
+        /// <param name="ARecordChangeVerification"></param>
+        /// <param name="AProcessAnyDataValidationErrors"></param>
+        /// <returns></returns>
+        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+        {
+            // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+
+            return true;
+        }
+
         /// <summary>
         /// this provides general functionality for edit screens
         /// </summary>

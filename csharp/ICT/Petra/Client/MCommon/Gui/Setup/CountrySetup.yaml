@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: PCountry
     CacheableTable: CountryList
-    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MCommon.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 740

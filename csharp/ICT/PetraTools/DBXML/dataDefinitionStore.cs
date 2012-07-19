@@ -259,6 +259,61 @@ namespace Ict.Tools.DBXML
         }
 
         /// <summary>
+        /// get the namespace for this table, eg. MPersonnel.Units
+        /// </summary>
+        public static string GetNamespace(string AStrGroup)
+        {
+            String NamespaceTable;
+
+            if (AStrGroup == "partner")
+            {
+                NamespaceTable = "MPartner.Partner";
+            }
+            else if (AStrGroup == "mailroom")
+            {
+                NamespaceTable = "MPartner.Mailroom";
+            }
+            else if (AStrGroup == "account")
+            {
+                NamespaceTable = "MFinance.Account";
+            }
+            else if (AStrGroup == "gift")
+            {
+                NamespaceTable = "MFinance.Gift";
+            }
+            else if (AStrGroup == "ap")
+            {
+                NamespaceTable = "MFinance.AP";
+            }
+            else if (AStrGroup == "ar")
+            {
+                NamespaceTable = "MFinance.AR";
+            }
+            else if (AStrGroup == "personnel")
+            {
+                NamespaceTable = "MPersonnel.Personnel";
+            }
+            else if (AStrGroup == "units")
+            {
+                NamespaceTable = "MPersonnel.Units";
+            }
+            else if (AStrGroup == "common")
+            {
+                NamespaceTable = "MCommon";
+            }
+            else
+            {
+                NamespaceTable = 'M' + AStrGroup;
+            }
+
+            NamespaceTable = NamespaceTable.Replace("Msysman", "MSysMan").
+                             Replace("Mconference", "MConference").
+                             Replace("Mhospitality", "MHospitality");
+
+            return NamespaceTable;
+        }
+
+        /// <summary>
         /// overload, do warn about missing fields (if GEnabledLoggingMissingFields is set)
         /// </summary>
         /// <param name="s"></param>
@@ -378,15 +433,22 @@ namespace Ict.Tools.DBXML
         /// <returns>true if the table has a unique key constraint</returns>
         public bool HasUniqueKey()
         {
+            int NumberOfUniqueKeys = 0;
+
             foreach (TConstraint constr in grpConstraint)
             {
                 if (constr.strType == "uniquekey")
                 {
-                    return true;
+                    NumberOfUniqueKeys++;
                 }
             }
 
-            return false;
+            if (NumberOfUniqueKeys > 1)
+            {
+                throw new Exception("Currently we only support one unique key per DB Table!");
+            }
+
+            return NumberOfUniqueKeys > 0;
         }
 
         /// <summary>
@@ -920,6 +982,9 @@ namespace Ict.Tools.DBXML
 
         /// is this field part of the primary key of the table
         public bool bPartOfPrimKey = false;
+
+        /// is this field part of the first unique key of the table
+        public bool bPartOfFirstUniqueKey = false;
 
         /// name of the sequence that is used to fill this field
         public string strSequence;

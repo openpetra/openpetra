@@ -47,6 +47,7 @@ using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.MPersonnel.Units.Validation;
 #endregion ManualCode
 namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 {
@@ -263,8 +264,8 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                         case TCacheableUnitTablesEnum.PositionList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidatePositionList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidatePositionListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtPositionValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidatePositionListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -280,8 +281,8 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                         case TCacheableUnitTablesEnum.JobAssignmentTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateJobAssignmentTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateJobAssignmentTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtAssignmentTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateJobAssignmentTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -297,8 +298,8 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
                         case TCacheableUnitTablesEnum.LeavingCodeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateLeavingCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateLeavingCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtLeavingCodeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateLeavingCodeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -361,18 +362,9 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
 
 #region Data Validation
 
-        partial void ValidatePositionList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePositionListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateJobAssignmentTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateJobAssignmentTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateLeavingCodeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateLeavingCodeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePositionListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateJobAssignmentTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLeavingCodeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
 

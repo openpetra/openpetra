@@ -72,12 +72,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             #endregion
         }
 
-        private void ValidateDataDetailsManual(PBankRow ARow)
+        private void ValidateDataManual(PBankRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedPartnerValidation_Partner.ValidatePartnerBankDetailsManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+            TSharedPartnerValidation_Partner.ValidatePartnerBankManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
         }
     }
 }

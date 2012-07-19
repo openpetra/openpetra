@@ -59,6 +59,10 @@ namespace Ict.Common.Verification
         private static readonly string StrNumberCannotBeGreaterThan = Catalog.GetString("{0} cannot be greater than {1}.");
         private static readonly string StrNumberCannotBeGreaterOrEqualTo = Catalog.GetString("{0} cannot be greater or equal to {1}.");
         private static readonly string StrNumberNeedsToBeInRange = Catalog.GetString("{0} needs to be between {1} and {2}.");
+        private static readonly string StrNumberPrecisionExceededBeforeDecimalPoint = Catalog.GetString(
+            "{0} must not have more than {1} digits before the decimal point, but it has got {2}.");
+        private static readonly string StrNumberPrecisionExceededAfterDecimalPoint = Catalog.GetString(
+            "{0} has more digits after the decimal point ({1}) than can be stored ({2}). Therefore a loss in decimal precision will occur as rounding will be applied from decimal digit {3} onwards.");
 
         #endregion
 
@@ -1013,6 +1017,100 @@ namespace Ict.Common.Verification
                     ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
                 }
             }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
+        #region IsNumberPrecisionNotExceeded
+
+        /// <summary>
+        /// Checks whether a decimal's decimal digits and fractional digits are less or equal to the ones specified. A null value is accepted.
+        /// </summary>
+        /// <remarks>This Method can be used to check number formats as they are specified in petra.xml, e.g. "lenght=6", "decimals=2". - Set <paramref name="APrecision"></paramref> to 6 and <paramref name="AScale"></paramref>to 2 to validate this
+        /// number format with this method.</remarks>
+        /// <param name="AValue">Decimal number.</param>
+        /// <param name="APrecision">The total count of significant digits in the whole number, that is, the number of digits to *both sides* of the decimal point.</param>
+        /// <param name="AScale">The count of decimal digits in the fractional part, to the right of the decimal point.</param>
+        /// <param name="ADescription">Description what the decimal number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a decimal number which number precision is according to
+        /// <paramref name="APrecision"></paramref> and <paramref name="AScale"></paramref>, or if
+        /// <paramref name="AValue" /> is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNumberPrecisionNotExceeded(decimal? AValue, int APrecision, int AScale, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+            string DecimalsOnlyStr;
+            string FractionOnlyStr;
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            DecimalsOnlyStr = Decimal.Truncate(AValue.Value).ToString();
+
+            #region Check #1 - Number of digits to the left of the decimal point
+
+            if (DecimalsOnlyStr.Length > (APrecision - AScale))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberPrecisionExceededBeforeDecimalPoint,
+                        new string[] { Description, (APrecision - AScale).ToString(), DecimalsOnlyStr.Length.ToString() }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+
+                return ReturnValue;
+            }
+
+            #endregion
+
+            #region Check #2 - Number of significant digits to the right of the decimal point
+
+            FractionOnlyStr = (AValue.Value - Decimal.Truncate(AValue.Value)).ToString();
+
+            if (FractionOnlyStr.Length > 2)
+            {
+                FractionOnlyStr = FractionOnlyStr.Substring(2);
+            }
+            else if (FractionOnlyStr.Length > 1)
+            {
+                FractionOnlyStr = FractionOnlyStr.Substring(1);
+            }
+
+            // Remove any trailing zeroes as they do not form a significant part of the fraction for our purposes
+            while (FractionOnlyStr.EndsWith("0"))
+            {
+                FractionOnlyStr = FractionOnlyStr.Substring(0, FractionOnlyStr.Length - 1);
+            }
+
+            if (FractionOnlyStr.Length > AScale)
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_DECIMALPRECISIONLOSSROUNDING, CommonResourcestrings.StrPrecisionLossRounding +
+                        Environment.NewLine +
+                        StrNumberPrecisionExceededAfterDecimalPoint,
+                        new string[] { Description, FractionOnlyStr.Length.ToString(), AScale.ToString(), (AScale + 1).ToString() }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            #endregion
 
             return ReturnValue;
         }

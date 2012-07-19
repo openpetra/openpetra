@@ -24,6 +24,9 @@ using Ict.Petra.Client.MCommon;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Remoting.Shared;
+{#IFDEF SHAREDVALIDATIONNAMESPACEMODULE}
+using {#SHAREDVALIDATIONNAMESPACEMODULE};
+{#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -71,10 +74,10 @@ namespace {#NAMESPACE}
       }
 {#ENDIF DETAILTABLE}
       {#INITACTIONSTATE}
-{#IFDEF DATAVALIDATION}
 
+{#IFDEF MASTERTABLE OR DETAILTABLE}
       BuildValidationControlsDict();
-{#ENDIF DATAVALIDATION}
+{#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -166,18 +169,15 @@ namespace {#NAMESPACE}
         grdDetails.SelectRowInGrid(RowNumberGrid, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
     }
 
+{#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
+
     /// return the selected row
-    private {#DETAILTABLE}Row GetSelectedDetailRow()
+    public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
     {
-        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
-
-        if (SelectedGridRow.Length >= 1)
-        {
-            return ({#DETAILTABLE}Row)SelectedGridRow[0].Row;
-        }
-
-        return null;
+        {#GETSELECTEDDETAILROW}
     }
+{#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
+
 {#ENDIF DETAILTABLE}
 
 {#IFDEF PRIMARYKEYCONTROLSREADONLY}
@@ -363,13 +363,25 @@ namespace {#NAMESPACE}
 	    newFocusEventStarted = false;
 	}
 {#ENDIF SHOWDETAILS}
-{#IFDEF UNDODATA}
 
-    private void UndoData(DataRow ARow, Control AControl)
+{#IFDEF MASTERTABLE}
+
+    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
     {
-        {#UNDODATA}
+{#IFDEF SAVEDATA}
+        {#SAVEDATA}
+{#ENDIF SAVEDATA}
     }
-{#ENDIF UNDODATA}    
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+
+    private void GetDataFromControls()
+    {
+{#IFDEF SAVEDATA}
+        {#SAVEDATA}
+{#ENDIF SAVEDATA}
+    }
+{#ENDIFN MASTERTABLE}
 {#IFDEF SAVEDETAILS}
     private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
     {
@@ -379,7 +391,16 @@ namespace {#NAMESPACE}
             {#SAVEDETAILS}
             ARow.EndEdit();
         }
+    }							
+{#ENDIF SAVEDETAILS}
+{#IFDEF UNDODATA}
+
+    private void UndoData(DataRow ARow, Control AControl)
+    {
+        {#UNDODATA}
     }
+
+{#ENDIF UNDODATA}    
 
     /// <summary>
     /// Performs data validation.
@@ -392,33 +413,57 @@ namespace {#NAMESPACE}
     private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
     {
         bool ReturnValue = false;
-        {#DETAILTABLE}Row CurrentRow;
+
+        // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+        FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+
+{#IFDEF SHOWDETAILS}
+        {#DETAILTABLETYPE}Row CurrentRow;
 
         CurrentRow = GetSelectedDetailRow();
-        
+
         if (CurrentRow != null)
         {
-            GetDetailsFromControls(CurrentRow);
-            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+{#ENDIF SHOWDETAILS}        
+{#IFNDEF SHOWDETAILS}
+{#IFDEF MASTERTABLE}
+        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
+        ValidateData(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIF MASTERTABLE}        
+{#ENDIFN SHOWDETAILS}
+{#IFDEF SHOWDETAILS}
+        GetDetailsFromControls(CurrentRow);
+        ValidateDataDetails(CurrentRow);
+{#ENDIF SHOWDETAILS}
+
 {#IFDEF VALIDATEDATADETAILSMANUAL}
+{#IFDEF SHOWDETAILS}
             ValidateDataDetailsManual(CurrentRow);
+{#ENDIF SHOWDETAILS}
 {#ENDIF VALIDATEDATADETAILSMANUAL}
+{#IFDEF VALIDATEDATAMANUAL}
+{#IFDEF MASTERTABLE}
+            ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIF MASTERTABLE}
+{#ENDIF VALIDATEDATAMANUAL}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
             // Perform validation in UserControls, too
             {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
-
-            if (AProcessAnyDataValidationErrors)
-            {
-                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                    this.GetType(), null, true);
-            }
+        
+        if (AProcessAnyDataValidationErrors)
+        {
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType(), null);
+        }
+{#IFDEF SHOWDETAILS}            
         }
         else
         {
             ReturnValue = true;
         }
+{#ENDIF SHOWDETAILS}
 
         if(ReturnValue)
         {
@@ -428,7 +473,6 @@ namespace {#NAMESPACE}
 
         return ReturnValue;
     }
-{#ENDIF SAVEDETAILS}
 
 #region Implement interface functions
 
@@ -663,7 +707,6 @@ namespace {#NAMESPACE}
     {#ACTIONHANDLERS}
 
 #endregion
-{#IFDEF DATAVALIDATION}
 
 #region Data Validation
     
@@ -714,14 +757,38 @@ namespace {#NAMESPACE}
             }
         }
     }
+{#IFDEF MASTERTABLE}
+    private void ValidateData({#MASTERTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        {#MASTERTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
+    }
+{#ENDIF MASTERTABLE}
+{#IFDEF DETAILTABLE}
+    private void ValidateDataDetails({#DETAILTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        {#DETAILTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
+    }
+{#ENDIF DETAILTABLE}
+{#IFDEF MASTERTABLE OR DETAILTABLE}
 
     private void BuildValidationControlsDict()
     {
-        {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+        if (FMainDS != null)
+        {
+{#IFDEF ADDCONTROLTOVALIDATIONCONTROLSDICT}
+            {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+{#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
+        }
     }
-    
+{#ENDIF MASTERTABLE OR DETAILTABLE}    
+
 #endregion
-{#ENDIF DATAVALIDATION}
   }
 }
 

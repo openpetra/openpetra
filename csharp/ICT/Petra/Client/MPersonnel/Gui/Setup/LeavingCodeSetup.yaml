@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtLeavingCode
     CacheableTable: LeavingCodeList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Units.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Units.Data,Ict.Petra.Shared.MPersonnel.Units.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
