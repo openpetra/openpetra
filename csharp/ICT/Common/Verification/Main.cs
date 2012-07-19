@@ -169,8 +169,8 @@ namespace Ict.Common.Verification
         /// Data Validation Run ID.
         /// </summary>
         protected System.Guid FDataValidationRunID;
-        
-        
+
+
         /// <summary>
         /// We need this constructor so that inherited Classes can get by not having a default constructor...
         /// </summary>
@@ -213,7 +213,7 @@ namespace Ict.Common.Verification
                 FResultSeverity = TResultSeverity.Resv_Noncritical;
             }
 
-            FControlValueUndoRequested = AErrorCodeInfo.ControlValueUndoRequested;            
+            FControlValueUndoRequested = AErrorCodeInfo.ControlValueUndoRequested;
             FDataValidationRunID = ADataValidationRunID;
         }
 
@@ -224,11 +224,14 @@ namespace Ict.Common.Verification
         /// <param name="AResultText">Verification failure explanation</param>
         /// <param name="AResultSeverity">is this an error or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
-        public TVerificationResult(object AResultContext, String AResultText, TResultSeverity AResultSeverity, System.Guid ADataValidationRunID = new System.Guid())
+        public TVerificationResult(object AResultContext,
+            String AResultText,
+            TResultSeverity AResultSeverity,
+            System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
             FResultText = AResultText;
-            FResultSeverity = AResultSeverity;            
+            FResultSeverity = AResultSeverity;
             FDataValidationRunID = ADataValidationRunID;
         }
 
@@ -240,12 +243,16 @@ namespace Ict.Common.Verification
         /// <param name="AResultCode">a result code to identify error messages</param>
         /// <param name="AResultSeverity">is this an error or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
-        public TVerificationResult(object AResultContext, String AResultText, String AResultCode, TResultSeverity AResultSeverity, System.Guid ADataValidationRunID = new System.Guid())
+        public TVerificationResult(object AResultContext,
+            String AResultText,
+            String AResultCode,
+            TResultSeverity AResultSeverity,
+            System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
             FResultText = AResultText;
             FResultCode = AResultCode;
-            FResultSeverity = AResultSeverity;            
+            FResultSeverity = AResultSeverity;
             FDataValidationRunID = ADataValidationRunID;
         }
 
@@ -259,18 +266,18 @@ namespace Ict.Common.Verification
         /// <param name="AResultSeverity">is this an error or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TVerificationResult(String AResultContext,
-                                   String AResultText,
-                                   String AResultTextCaption,
-                                   String AResultCode,
-                                   TResultSeverity AResultSeverity,
-                                   System.Guid ADataValidationRunID = new System.Guid())
+            String AResultText,
+            String AResultTextCaption,
+            String AResultCode,
+            TResultSeverity AResultSeverity,
+            System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
             FResultText = AResultText;
             FResultTextCaption = AResultTextCaption;
             FResultCode = AResultCode;
             FResultSeverity = AResultSeverity;
-            FDataValidationRunID = ADataValidationRunID;        
+            FDataValidationRunID = ADataValidationRunID;
         }
 
         /// <summary>
@@ -287,7 +294,7 @@ namespace Ict.Common.Verification
             FResultSeverity = AScreenVerificationResult.ResultSeverity;
             FDataValidationRunID = AScreenVerificationResult.DataValidationRunID;
         }
-        
+
         /// <summary>
         /// Context of the Verification Result (where the Verification Result originated from).
         /// </summary>
@@ -397,13 +404,13 @@ namespace Ict.Common.Verification
             {
                 return FDataValidationRunID;
             }
-            
+
             set
             {
                 FDataValidationRunID = value;
             }
         }
-        
+
         /// <summary>
         /// Overrides the ResultText that the <see cref="TVerificationResult" /> was
         /// originally populated with.
@@ -457,11 +464,11 @@ namespace Ict.Common.Verification
         /// <param name="AResultControl">which control is involved</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
-                                         DataColumn AResultColumn,
-                                         String AResultText,
-                                         String AResultCode,
-                                         Control AResultControl,
-                                         System.Guid ADataValidationRunID = new System.Guid())
+            DataColumn AResultColumn,
+            String AResultText,
+            String AResultCode,
+            Control AResultControl,
+            System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
             FResultColumn = AResultColumn;
@@ -482,11 +489,11 @@ namespace Ict.Common.Verification
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
-                                         DataColumn AResultColumn,
-                                         String AResultText,
-                                         Control AResultControl,
-                                         TResultSeverity AResultSeverity,
-                                         System.Guid ADataValidationRunID = new System.Guid())
+            DataColumn AResultColumn,
+            String AResultText,
+            Control AResultControl,
+            TResultSeverity AResultSeverity,
+            System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
             FResultColumn = AResultColumn;
@@ -507,12 +514,12 @@ namespace Ict.Common.Verification
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
-                                         DataColumn AResultColumn,
-                                         String AResultText,
-                                         String AResultCode,
-                                         Control AResultControl,
-                                         TResultSeverity AResultSeverity,
-                                         System.Guid ADataValidationRunID = new System.Guid())
+            DataColumn AResultColumn,
+            String AResultText,
+            String AResultCode,
+            Control AResultControl,
+            TResultSeverity AResultSeverity,
+            System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
             FResultColumn = AResultColumn;
@@ -535,13 +542,13 @@ namespace Ict.Common.Verification
         /// <param name="AResultSeverity">is this serious, or just a warning</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(object AResultContext,
-                                         DataColumn AResultColumn,
-                                         String AResultText,
-                                         String AResultCaption,
-                                         String AResultCode,
-                                         Control AResultControl,
-                                         TResultSeverity AResultSeverity,
-                                         System.Guid ADataValidationRunID = new System.Guid())
+            DataColumn AResultColumn,
+            String AResultText,
+            String AResultCaption,
+            String AResultCode,
+            Control AResultControl,
+            TResultSeverity AResultSeverity,
+            System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AResultContext;
             FResultColumn = AResultColumn;
@@ -563,7 +570,7 @@ namespace Ict.Common.Verification
         /// <param name="AResultControl">which control is involved</param>
         /// <param name="ADataValidationRunID">A Data Validation Run ID that this instance should be associated with. Default: a new System.Guid instance.</param>
         public TScreenVerificationResult(TVerificationResult AVerificationResult,
-                                         DataColumn AResultColumn, Control AResultControl, System.Guid ADataValidationRunID = new System.Guid())
+            DataColumn AResultColumn, Control AResultControl, System.Guid ADataValidationRunID = new System.Guid())
         {
             FResultContext = AVerificationResult.ResultContext;
             FResultColumn = AResultColumn;
@@ -647,7 +654,7 @@ namespace Ict.Common.Verification
         /// Data Validation Run ID that this instance is associated with.
         /// </summary>
         System.Guid FCurrentDataValidationRunID;
-        
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -763,7 +770,7 @@ namespace Ict.Common.Verification
                 return FCurrentDataValidationRunID;
             }
         }
-        
+
         /// <summary>
         /// Adds a new verification object.
         /// </summary>
@@ -824,7 +831,7 @@ namespace Ict.Common.Verification
         /// <paramref name="ARestrictToTypeWhichRaisesError"></paramref> (defaults to null).</param>
         /// <param name="AIgnoreWarnings">Set to true if Warnings are to be ignored (defaults to false).</param>
         public void BuildScreenVerificationResultList(out String AErrorMessages, out Control AFirstErrorControl, out object AFirstErrorContext,
-                                                      bool AUpdateFirstErrorControl = true, Type ARestrictToTypeWhichRaisesError = null, bool AIgnoreWarnings = false)
+            bool AUpdateFirstErrorControl = true, Type ARestrictToTypeWhichRaisesError = null, bool AIgnoreWarnings = false)
         {
             TVerificationResult si;
             TScreenVerificationResult siScr;
@@ -898,7 +905,7 @@ namespace Ict.Common.Verification
         /// <param name="AUpdateFirstErrorControl" >Set to false to not update the <see cref="FirstErrorControl" /> Property
         /// of this Class (defaults to true).</param>
         public void BuildScreenVerificationResultList(object AResultContext, out String AErrorMessages, out Control AFirstErrorControl,
-                                                      bool AUpdateFirstErrorControl = true)
+            bool AUpdateFirstErrorControl = true)
         {
             TScreenVerificationResult si;
 
@@ -942,9 +949,9 @@ namespace Ict.Common.Verification
                 si = (TVerificationResult)(List[i]);
 
                 ReturnValue = ReturnValue +
-                    (String.Format(StrMessageFooter,
+                              (String.Format(StrMessageFooter,
                                    new object[] { si.ResultContext, si.ResultSeverity, si.ResultText, si.ResultCode })) +
-                    Environment.NewLine + Environment.NewLine;
+                              Environment.NewLine + Environment.NewLine;
             }
 
             return ReturnValue;
@@ -1032,7 +1039,7 @@ namespace Ict.Common.Verification
 
             return Found;
         }
-        
+
         /// <summary>
         /// Adds a <see cref="TVerificationResult" /> for a <see cref="System.Data.DataColumn" />
         /// specified with <paramref name="AResultColumn" />, or removes a
@@ -1059,7 +1066,7 @@ namespace Ict.Common.Verification
         /// where it is placed on as identical ResultContexts. (Default: false.)</param>
         /// <returns>True if the <see cref="TVerificationResult" /> got added, otherwise false.</returns>
         public bool AddOrRemove(TVerificationResult AVerificationResult, DataColumn AResultColumn, object AResultContext = null,
-                                bool ATreatUserControlAndFormContextsAsIdentical = false)
+            bool ATreatUserControlAndFormContextsAsIdentical = false)
         {
             List <TScreenVerificationResult>si = FindAllBy(AResultColumn);
             bool IdenticalVResultFound = false;
@@ -1070,13 +1077,13 @@ namespace Ict.Common.Verification
                 if (si == null)
                 {
                     // If CurrentDataValidationRunID was set on this instance, set it on any AVerificationResult we add so it can be associated with a "run" of the Data Validation.
-                    if (CurrentDataValidationRunID != new System.Guid()) 
+                    if (CurrentDataValidationRunID != new System.Guid())
                     {
                         AVerificationResult.DataValidationRunID = CurrentDataValidationRunID;
                     }
-                    
+
                     this.Add(AVerificationResult);
-                    
+
                     ReturnValue = true;
                 }
                 else
@@ -1085,31 +1092,31 @@ namespace Ict.Common.Verification
                     foreach (TScreenVerificationResult SingleEntry in si)
                     {
                         if (TVerificationHelper.AreVerificationResultsIdentical(SingleEntry, AVerificationResult, false,
-                                                                                ATreatUserControlAndFormContextsAsIdentical))
+                                ATreatUserControlAndFormContextsAsIdentical))
                         {
-                            // The existing TVerificationResult is identical to AVerificationResult: 
-                            // update the existing TVerificationResult's DataValidationRunID to the current one as it will need to be 
+                            // The existing TVerificationResult is identical to AVerificationResult:
+                            // update the existing TVerificationResult's DataValidationRunID to the current one as it will need to be
                             // treated in further processing as if it was found in this run.
                             SingleEntry.DataValidationRunID = CurrentDataValidationRunID;
-                            
+
                             IdenticalVResultFound = true;
-                            
+
                             break;
                         }
                     }
 
                     if (!IdenticalVResultFound)
                     {
-                        // The existing TVerificationResult is NOT identical to AVerificationResult: 
-                        // if CurrentDataValidationRunID was set on this instance of TVerificationResultColleciont, set it on any 
+                        // The existing TVerificationResult is NOT identical to AVerificationResult:
+                        // if CurrentDataValidationRunID was set on this instance of TVerificationResultColleciont, set it on any
                         // AVerificationResult we add so it can be associated with a 'run' of the Data Validation.
-                        if (CurrentDataValidationRunID != new System.Guid()) 
+                        if (CurrentDataValidationRunID != new System.Guid())
                         {
                             AVerificationResult.DataValidationRunID = CurrentDataValidationRunID;
                         }
-                        
+
                         this.Add(AVerificationResult);
-                        
+
                         ReturnValue = true;
                     }
                 }
@@ -1119,8 +1126,8 @@ namespace Ict.Common.Verification
                 foreach (TScreenVerificationResult SingleEntry in si)
                 {
                     // Only remove a VerificationResult if it hasn't been added in this "run" of Data Validation
-                    //  - This allows multiple Data Validations in one run on a single DataColumn as it prevents the last successful 
-                    //    Data Validation from removing a Data Validation error/warning for the same DataColumn that was enlisted in 
+                    //  - This allows multiple Data Validations in one run on a single DataColumn as it prevents the last successful
+                    //    Data Validation from removing a Data Validation error/warning for the same DataColumn that was enlisted in
                     //    the same "run".
                     if (SingleEntry.DataValidationRunID != this.CurrentDataValidationRunID)
                     {
@@ -1157,7 +1164,7 @@ namespace Ict.Common.Verification
         /// where it is placed on as identical ResultContexts. (Default: false.)</param>
         /// <returns>True if the <see cref="TVerificationResult" /> got added, otherwise false.</returns>
         public bool Auto_Add_Or_AddOrRemove(object AContext, TVerificationResult AVerificationResult, DataColumn AValidationColumn,
-                                            bool ATreatUserControlAndFormContextsAsIdentical = false)
+            bool ATreatUserControlAndFormContextsAsIdentical = false)
         {
             bool ReturnValue = false;
 
@@ -1305,7 +1312,7 @@ namespace Ict.Common.Verification
 
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Find a <see cref="TScreenVerificationResult" /> by ResultContext
         /// </summary>
@@ -1414,7 +1421,7 @@ namespace Ict.Common.Verification
             catch (Exception Exp)
             {
                 MessageBox.Show("Exception occured in TVerificationResultCollection.Remove(AResultColumnName): " +
-                                Exp.ToString());
+                    Exp.ToString());
             }
         }
 
@@ -1510,7 +1517,7 @@ namespace Ict.Common.Verification
         /// <returns>True if the two <see cref="TVerificationResult" />s are completely identical,
         /// otherwise false.</returns>
         public static bool AreVerificationResultsIdentical(TVerificationResult AVerificationResult1, TVerificationResult AVerificationResult2,
-                                                           bool ACompareResultContextsAsStrings = false, bool ATreatUserControlAndFormContextsAsIdentical = false)
+            bool ACompareResultContextsAsStrings = false, bool ATreatUserControlAndFormContextsAsIdentical = false)
         {
             if ((AVerificationResult1 == null)
                 || (AVerificationResult2 == null))
@@ -1643,8 +1650,8 @@ namespace Ict.Common.Verification
                 si = (TVerificationResult)(AVerifColl[i]);
 
                 ReturnValue = ReturnValue + String.Format(PRINTFORMAT,
-                                                          si.ResultContext, si.ResultText, si.ResultTextCaption, si.ResultCode,
-                                                          si.ResultSeverity) + Environment.NewLine;
+                    si.ResultContext, si.ResultText, si.ResultTextCaption, si.ResultCode,
+                    si.ResultSeverity) + Environment.NewLine;
             }
 
             if (ReturnValue != String.Empty)
@@ -1669,14 +1676,14 @@ namespace Ict.Common.Verification
         /// <param name="AResetValue">Set this to true to retain the
         /// <see cref="DataColumnChangeEventArgs.ProposedValue " />.</param>
         public static void SetColumnErrorText(DataColumnChangeEventArgs AEventArgs,
-                                              TVerificationResult AVerificationResultEntry,
-                                              String AControlName,
-                                              Boolean AResetValue)
+            TVerificationResult AVerificationResultEntry,
+            String AControlName,
+            Boolean AResetValue)
         {
             object PreviousProposedValue = AEventArgs.ProposedValue;
 
             AEventArgs.Row.SetColumnError(AEventArgs.Column,
-                                          AVerificationResultEntry.ResultText + "//[[" + AControlName + "]]");
+                AVerificationResultEntry.ResultText + "//[[" + AControlName + "]]");
 
             /*
              * SetColumnError automatically resets the value of the DataColumn.
@@ -1745,21 +1752,21 @@ namespace Ict.Common.Verification
             TVerificationResult avrEntry;
 
             avrEntry = new TVerificationResult(this.Context,
-                                               this.Message, "",
-                                               this.ErrorCode,
-                                               TResultSeverity.Resv_Critical);
+                this.Message, "",
+                this.ErrorCode,
+                TResultSeverity.Resv_Critical);
             collection.Add(avrEntry);
             avrEntry = new TVerificationResult(Catalog.GetString("Exception has been thrown"),
-                                               this.ToString(), "",
-                                               this.ErrorCode,
-                                               TResultSeverity.Resv_Critical);
+                this.ToString(), "",
+                this.ErrorCode,
+                TResultSeverity.Resv_Critical);
             collection.Add(avrEntry);
 
             if (this.InnerException != null)
             {
                 avrEntry = new TVerificationResult(Catalog.GetString("Inner Exception"),
-                                                   this.InnerException.ToString(),
-                                                   TResultSeverity.Resv_Critical);
+                    this.InnerException.ToString(),
+                    TResultSeverity.Resv_Critical);
                 collection.Add(avrEntry);
             }
 

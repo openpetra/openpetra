@@ -197,7 +197,7 @@ namespace Ict.Petra.Client.CommonForms
         public TFrmPetraEditUtils(Form ACallerForm, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerForm,
                                                                                                                 (IFrmPetra)ATheForm,
                                                                                                                 AStatusBar)
-        {          
+        {
             FCloseFormCheckRun = false;
             FFormLoadedTime = DateTime.Now;
 

@@ -434,7 +434,7 @@ namespace Ict.Tools.DBXML
         public bool HasUniqueKey()
         {
             int NumberOfUniqueKeys = 0;
-            
+
             foreach (TConstraint constr in grpConstraint)
             {
                 if (constr.strType == "uniquekey")
@@ -443,11 +443,11 @@ namespace Ict.Tools.DBXML
                 }
             }
 
-            if (NumberOfUniqueKeys > 1) 
+            if (NumberOfUniqueKeys > 1)
             {
                 throw new Exception("Currently we only support one unique key per DB Table!");
             }
-            
+
             return NumberOfUniqueKeys > 0;
         }
 
@@ -985,7 +985,7 @@ namespace Ict.Tools.DBXML
 
         /// is this field part of the first unique key of the table
         public bool bPartOfFirstUniqueKey = false;
-        
+
         /// name of the sequence that is used to fill this field
         public string strSequence;
 

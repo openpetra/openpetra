@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             FPetraUtilsObject.OpenFinDevModule(sender, e);
         }
-    
+
         /// <summary>
         /// Doesn't do anything, but needs to be present as the Template requires this Method to be present...
         /// </summary>
@@ -203,7 +203,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
         }
-        
+
         /// <summary>
         /// Doesn't do anything, but needs to be present as the Template requires this Method to be present...
         /// </summary>
@@ -213,7 +213,7 @@ namespace Ict.Petra.Client.App.PetraClient
         public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
         {
             // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
-            
+
             return true;
         }
     }

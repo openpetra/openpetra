@@ -38,6 +38,5 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         //
         // Put Methods for the validation of GL Setup DataTables in this code file.
         //
-
     }
 }

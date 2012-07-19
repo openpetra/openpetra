@@ -58,8 +58,9 @@ namespace Ict.Common.Verification
         private static readonly string StrInvalidStringOrder = Catalog.GetString("Invalid Order.\r\n{0} cannot be greater than {1}.");
 
         private static readonly string StrStringMustNotBeEmpty = Catalog.GetString("A value must be entered for {0}.");
-        
-        private static readonly string StrStringTooLong = Catalog.GetString("The value you entered for {0} is too long - it's maximum length is {1} characters, but you entered {2} characters.");
+
+        private static readonly string StrStringTooLong = Catalog.GetString(
+            "The value you entered for {0} is too long - it's maximum length is {1} characters, but you entered {2} characters.");
 
         #endregion
 
@@ -142,7 +143,7 @@ namespace Ict.Common.Verification
         }
 
         #endregion
-        
+
         #region FirstLesserOrEqualThanSecondString
 
         /// <summary>

@@ -51,21 +51,21 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             ProcessTemplate snippet = Template.GetSnippet("TABLEVALIDATION");
             string ReasonForAutomValidation;
-            
+
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
-            
+
             foreach (TTableField col in currentTable.grpTableField)
             {
                 ProcessTemplate columnTemplate;
-                
+
                 // NOT NULL checks
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNotNullChecks,
-                    out ReasonForAutomValidation))
+                        out ReasonForAutomValidation))
                 {
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
-                    
+
                     if (col.GetDotNetType().Contains("String"))
                     {
                         ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKEMPTYSTRING");
@@ -87,46 +87,46 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
                     }
-                                       
-                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);    
-                    
+
+                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
+
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                 }
 
-                // String Length checks                
+                // String Length checks
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsStringLengthChecks,
-                    out ReasonForAutomValidation))
+                        out ReasonForAutomValidation))
                 {
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
-                    
+
                     ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKSTRINGLENGTH");
                     validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                     validateColumnTemplate.SetCodelet("COLUMNLENGTH", (col.iCharLength * 2).ToString());
 
-                    columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);                                        
+                    columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
                     columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
-                    
+
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
-                }                    
-                
+                }
+
                 // Number Range checks
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNumberRangeChecks,
-                    out ReasonForAutomValidation))
+                        out ReasonForAutomValidation))
                 {
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
-                    
+
                     ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKNUMBERRANGE");
                     validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                     validateColumnTemplate.SetCodelet("NUMBEROFDECIMALDIGITS", col.iLength.ToString());
                     validateColumnTemplate.SetCodelet("NUMBEROFFRACTIONALDIGITS", col.iDecimals > 0 ? col.iDecimals.ToString() : "0");
 
-                    columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);                                        
+                    columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
                     columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
-                    
+
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
-                }                                    
+                }
             }
 
             Template.InsertSnippet(WhereToInsert, snippet);

@@ -312,7 +312,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             return ctrl.controlName + ".Checked";
-        }        
+        }
     }
 
     /// <summary>

@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.CommonForms
                 FVerificationResultCollection = value;
             }
         }
-        
+
         /// <summary>
         /// constructor
         /// </summary>

@@ -777,7 +777,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             GetDataFromControls();
         }
-        
+
         private void GetDataFromControls()
         {
             ucoUpperPart.GetDataFromControls();

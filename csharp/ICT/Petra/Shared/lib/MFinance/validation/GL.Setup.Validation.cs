@@ -37,7 +37,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
     /// </summary>
     public static partial class TSharedFinanceValidation_GLSetup
     {
-
         /// <summary>
         /// Validates the Daily Exchange Rates screen data.
         /// </summary>

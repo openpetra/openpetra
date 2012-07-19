@@ -65,7 +65,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
             // TODO: check access permissions for the current user
-            
+
             bool NewTransaction = false;
             TDBTransaction ReadTransaction;
 
@@ -73,9 +73,9 @@ namespace Ict.Petra.Server.MCommon.DataReader
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead, 
-                        TEnforceIsolationLevel.eilMinimum,
-                        out NewTransaction);                                                                                   
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
 
                 // TODO: auto generate
                 if (ATablename == AApSupplierTable.GetTableDBName())

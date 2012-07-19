@@ -233,10 +233,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 GetDetailsFromControls(GetSelectedDetailRowManual());
             }
         }
-        
+
         private ACostCentreRow GetSelectedDetailRowManual()
         {
             return (ACostCentreRow)FCurrentNode.Tag;;
-        }        
+        }
     }
 }

@@ -38,7 +38,7 @@ namespace Ict.Common.Verification
 
         /// <summary>Generic indication of an invalid number.</summary>
         public static readonly string StrInvalidNumberEntered = Catalog.GetString("Invalid number entered.");
-        
+
         /// <summary>Generic indication of a precision loss due to rounding.</summary>
         public static readonly string StrPrecisionLossRounding = Catalog.GetString("Precision loss due to rounding.");
 

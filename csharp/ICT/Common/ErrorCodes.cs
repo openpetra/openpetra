@@ -121,12 +121,14 @@ namespace Ict.Common
         [ErrCodeAttribute("Alphanumeric value is too long.",
              FullDescription = "The value entered contains too many characters.")]
         public const String ERR_STRINGTOOLONG = "GENC.00011V";
-        
+
         /// <summary>Invalid number entered.</summary>
         [ErrCodeAttribute("Precision loss.",
-             FullDescription = "The value entered has more decimals than can be stored. Therefore a loss in decimal precision will occur as rounding will be applied.")]
+             FullDescription =
+                 "The value entered has more decimals than can be stored. Therefore a loss in decimal precision will occur as rounding will be applied.")
+        ]
         public const String ERR_DECIMALPRECISIONLOSSROUNDING = "GENC.00012N";
-        
+
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
 

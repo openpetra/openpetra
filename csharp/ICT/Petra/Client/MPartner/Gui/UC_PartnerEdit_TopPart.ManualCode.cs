@@ -677,46 +677,41 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TSharedPartnerValidation_Partner.ValidatePartnerManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
-            
+
             if (FPartnerClass == "PERSON")
             {
                 PPersonValidation.Validate(this, FMainDS.PPerson[0], ref VerificationResultCollection,
-                    FValidationControlsDict);            
+                    FValidationControlsDict);
             }
             else if (FPartnerClass == "FAMILY")
-            {            
+            {
                 PFamilyValidation.Validate(this, FMainDS.PFamily[0], ref VerificationResultCollection,
-                    FValidationControlsDict);            
+                    FValidationControlsDict);
             }
             else if (FPartnerClass == "CHURCH")
             {
                 PChurchValidation.Validate(this, FMainDS.PChurch[0], ref VerificationResultCollection,
-                    FValidationControlsDict);            
-
+                    FValidationControlsDict);
             }
             else if (FPartnerClass == "ORGANISATION")
             {
                 POrganisationValidation.Validate(this, FMainDS.POrganisation[0], ref VerificationResultCollection,
-                    FValidationControlsDict);            
-
+                    FValidationControlsDict);
             }
             else if (FPartnerClass == "UNIT")
             {
                 PUnitValidation.Validate(this, FMainDS.PUnit[0], ref VerificationResultCollection,
-                    FValidationControlsDict);            
-
+                    FValidationControlsDict);
             }
             else if (FPartnerClass == "BANK")
             {
                 PBankValidation.Validate(this, FMainDS.PBank[0], ref VerificationResultCollection,
-                    FValidationControlsDict);            
-
+                    FValidationControlsDict);
             }
             else if (FPartnerClass == "VENUE")
             {
                 PVenueValidation.Validate(this, FMainDS.PVenue[0], ref VerificationResultCollection,
-                    FValidationControlsDict);            
-
+                    FValidationControlsDict);
             }
         }
 

@@ -225,7 +225,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
         }
-        
+
         /// <summary>
         /// // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
         /// </summary>
@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AProcessAnyDataValidationErrors"></param>
         /// <returns></returns>
         public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
-        {   
+        {
             // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
 
             return true;

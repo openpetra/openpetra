@@ -38,15 +38,15 @@ namespace Ict.Tools.CodeGeneration
         {
             /// <summary>All checks</summary>
             advsAll,
-            
+
             /// <summary>Only NOT NULL checks</summary>
             advsNotNullChecks,
-            
+
             /// <summary>Only String Lenght Checks</summary>
             advsStringLengthChecks,
-            
+
             /// <summary>Only Number Range Checks</summary>
-            advsNumberRangeChecks           
+            advsNumberRangeChecks
         }
 
         /// <summary>
@@ -56,61 +56,63 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="AHasDataField"></param>
         /// <param name="AMasterOrDetailTable">Pass in 'true' if the YAML file has got a 'MasterTable' or 'DetailTable' Element. </param>
         /// <param name="AIncludeMasterOrDetailTableControl"></param>
-        /// <param name="AScope">Scope of the Data Validation that should be checked for. Specify <see cref="TAutomDataValidationScope.advsAll"/> 
+        /// <param name="AScope">Scope of the Data Validation that should be checked for. Specify <see cref="TAutomDataValidationScope.advsAll"/>
         /// to find out if any of the scopes should be checked against, or use any other value of that enum to specifiy a specific scope.</param>
         /// <param name="AReasonForAutomValidation">Contains the reason why automatic data validation code needs to be generated.</param>
         /// <returns>True if automatic Data Validation code should be created for the Control in a YAML that was passed in in <paramref name="AControl" /> for
-        /// the scope that was specified with <paramref name="AScope" />, otherwise false. This Method also returns false if the Control specified in 
+        /// the scope that was specified with <paramref name="AScope" />, otherwise false. This Method also returns false if the Control specified in
         /// <paramref name="AControl" /> isn't linked to a DB Table Field.</returns>
-        public static bool GenerateAutoValidationCodeForControl(TControlDef AControl, bool AHasDataField, bool AMasterOrDetailTable, 
+        public static bool GenerateAutoValidationCodeForControl(TControlDef AControl, bool AHasDataField, bool AMasterOrDetailTable,
             bool AIncludeMasterOrDetailTableControl, TAutomDataValidationScope AScope, out string AReasonForAutomValidation)
         {
             TTableField DBField = null;
             bool IsDetailNotMaster;
-            
+
             AReasonForAutomValidation = String.Empty;
 
-            if (AHasDataField) 
+            if (AHasDataField)
             {
                 DBField = TDataBinding.GetTableField(AControl, AControl.GetAttribute("DataField"), out IsDetailNotMaster, true);
             }
-            else if (AMasterOrDetailTable && AIncludeMasterOrDetailTableControl) 
+            else if (AMasterOrDetailTable && AIncludeMasterOrDetailTableControl)
             {
                 DBField = TDataBinding.GetTableField(AControl, AControl.controlName.Substring(
-                    AControl.controlTypePrefix.Length), out IsDetailNotMaster, false);
+                        AControl.controlTypePrefix.Length), out IsDetailNotMaster, false);
             }
 
-            if (DBField != null) 
+            if (DBField != null)
             {
-                return GenerateAutoValidationCodeForDBTableField(DBField, AScope, out AReasonForAutomValidation);    
+                return GenerateAutoValidationCodeForDBTableField(DBField, AScope, out AReasonForAutomValidation);
             }
             else
             {
                 return false;
-            }            
+            }
         }
-        
+
         /// <summary>
         /// Determines whether automatic Data Validation code should be created for a certain DB Table Field.
         /// </summary>
         /// <param name="ADBField">DB Field.</param>
-        /// <param name="AScope">Scope of the Data Validation that should be checked for. Specify <see cref="TAutomDataValidationScope.advsAll"/> 
+        /// <param name="AScope">Scope of the Data Validation that should be checked for. Specify <see cref="TAutomDataValidationScope.advsAll"/>
         /// to find out if any of the scopes should be checked against, or use any other value of that enum to specifiy a specific scope.</param>
         /// <param name="AReasonForAutomValidation">Contains the reason why automatic data validation code needs to be generated.</param>
         /// <returns>True if automatic Data Validation code should be created for the DB Table Field passed in in <paramref name="ADBField" /> for
         /// the scope that was specified with <paramref name="AScope" />, otherwise false.</returns>
-        public static bool GenerateAutoValidationCodeForDBTableField(TTableField ADBField, TAutomDataValidationScope AScope, out string AReasonForAutomValidation)
+        public static bool GenerateAutoValidationCodeForDBTableField(TTableField ADBField,
+            TAutomDataValidationScope AScope,
+            out string AReasonForAutomValidation)
         {
             AReasonForAutomValidation = String.Empty;
-            
+
             // NOT NULL checks
             if ((AScope == TAutomDataValidationScope.advsNotNullChecks)
                 || (AScope == TAutomDataValidationScope.advsAll))
-            {                
+            {
                 if (ADBField.bPartOfPrimKey)
                 {
                     AReasonForAutomValidation = "must have a value (it is part of the Primary Key)";
-                                        
+
                     if ((ADBField.strType == "varchar") || (ADBField.strType == "text"))
                     {
                         AReasonForAutomValidation += " and must not be an empty string";
@@ -121,7 +123,7 @@ namespace Ict.Tools.CodeGeneration
                 else if (ADBField.bPartOfFirstUniqueKey)
                 {
                     AReasonForAutomValidation = "must have a value (it is part of the first Unique Key)";
-                    
+
                     if ((ADBField.strType == "varchar") || (ADBField.strType == "text"))
                     {
                         AReasonForAutomValidation += " and must not be an empty string";
@@ -131,22 +133,22 @@ namespace Ict.Tools.CodeGeneration
                 }
                 else if (ADBField.bNotNull)
                 {
-                    AReasonForAutomValidation = "must have a value (NOT NULL constraint)";    
-                    
+                    AReasonForAutomValidation = "must have a value (NOT NULL constraint)";
+
                     return true;
-                }                
+                }
             }
-                
+
             // String Length checks
             if ((AScope == TAutomDataValidationScope.advsStringLengthChecks)
                 || (AScope == TAutomDataValidationScope.advsAll))
             {
                 if (((ADBField.strType == "varchar") || (ADBField.strType == "text"))
-                    && ((ADBField.strName != "s_created_by_c") 
+                    && ((ADBField.strName != "s_created_by_c")
                         && (ADBField.strName != "s_modified_by_c")))
                 {
                     AReasonForAutomValidation = "must not contain more than " + (ADBField.iCharLength * 2).ToString() + " characters";
-                    
+
                     return true;
                 }
             }
@@ -157,20 +159,23 @@ namespace Ict.Tools.CodeGeneration
             {
                 if (ADBField.strType == "number")
                 {
-                    if (ADBField.iDecimals > 0) 
+                    if (ADBField.iDecimals > 0)
                     {
-                        AReasonForAutomValidation = "must not have more than " + (ADBField.iLength - ADBField.iDecimals).ToString() + " digits before the decimal point and not more than " + ADBField.iDecimals.ToString() + " after the decimal point";
+                        AReasonForAutomValidation = "must not have more than " +
+                                                    (ADBField.iLength -
+                        ADBField.iDecimals).ToString() + " digits before the decimal point and not more than " + ADBField.iDecimals.ToString() +
+                                                    " after the decimal point";
                     }
                     else
                     {
                         AReasonForAutomValidation = "must not have more than " + ADBField.iLength.ToString() + " digits and no decimals";
-                    }    
-                    
+                    }
+
                     return true;
                 }
             }
-    
-            return false;            
+
+            return false;
         }
     }
 }

@@ -424,7 +424,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             if (FCurrentNode != null)
-            {                
+            {
                 GetDetailsFromControls(GetSelectedDetailRowManual());
             }
         }
@@ -432,10 +432,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private GLSetupTDSAAccountRow GetSelectedDetailRowManual()
         {
             return (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
-                    new object[] { FLedgerNumber,
-                                   ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
+                new object[] { FLedgerNumber,
+                               ((AAccountHierarchyDetailRow)FCurrentNode.Tag).ReportingAccountCode });
         }
-        
+
         /// <summary>
         /// Event which shall invoke ChangeAccountCodeValue(), for details see
         /// the description of ChangeAccountCodeValue()
