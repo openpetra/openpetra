@@ -29,6 +29,7 @@ RootNode:
                 Row1: [cmbUnitTypeCode]
                 Row2: [cmbLanguageCode]
                 Row3: [cmbAcquisitionCode]
+                Row4: [txtParentKey, lblParentName, btnOrganise]
             ColWidths: [0=Fixed:120]
             
         cmbCountryCode: {List=CountryList}
@@ -38,6 +39,18 @@ RootNode:
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         
         cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
+
+        txtParentKey:
+            Width: 100
+            ReadOnly: true
+            Validation: false
+            Label: Parent
+        lblParentName:
+            Width: 170
+            Nolabel: true
+        btnOrganise:
+            ActionClick: OpenUnitHierarchy
+            Label: Organise..
 
         grpOutreachInfo: {Label=Outreach Information, Dock=Top}
             Controls: 

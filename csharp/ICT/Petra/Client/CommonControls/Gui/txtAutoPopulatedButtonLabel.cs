@@ -88,8 +88,8 @@ namespace Ict.Petra.Client.CommonControls
 
     /// <summary>
     /// Petra CustomControls
-    /// This unit provides a TextBox with adjacent Button and Label. The TextBox is
-    /// prepared for AutoPopulation
+    /// This unit provides a TextBox with adjacent Button and Label.
+    /// The TextBox is prepared for AutoPopulation
     ///
     /// Short description on how to add other TextBox types:
     ///  1. Add the new type to the following list: "TListTableEnum"
@@ -462,7 +462,7 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// ButtonWidth if the type 'PartnerKey' from the ListTable property is chosen.
+        /// TextBox Width if the type 'PartnerKey' from the ListTable property is chosen.
         /// </summary>
         public int TextBoxWidth
         {
@@ -911,7 +911,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// Property Fields
         /// This function ensures that the format of the PartnerClass property string
-        /// is correctly passed to 4GL. It basicly removes all blanks and changes the
+        /// is correctly passed to the server. It removes blanks and changes the
         /// case to upper case. The following would be for example a correct
         /// PartnerClass string: PERSON,FAMILY
         /// </summary>
@@ -1894,7 +1894,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// This function gets DataBinding of this System.Object. The function is used by the
         /// expTextBoxStringLengthCheck module in order to expand the TextBox properties.
-        /// }//    function  GetTextBoxDataBinding(): System.Windows.Forms.Binding;{***************************************************************************
+        /// //    function  GetTextBoxDataBinding(): System.Windows.Forms.Binding
         /// This procedure enables the monitoring of changes to the DataSource.
         /// </summary>
         /// <returns>void</returns>

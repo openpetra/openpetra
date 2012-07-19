@@ -5,7 +5,7 @@ RootNode:
     FormType: edit
     Template: window
     WindowWidth: 400
-    WindowHeight: 550
+    WindowHeight: 570
     Actions:
         actAddNewUnit: {Label=Add Account, ActionClick=AddNewUnit}
     Controls:
@@ -23,7 +23,7 @@ RootNode:
         pnlUnits:
             Controls: [trvUnits]
             Dock: Top
-            Height:350
+            Height:300
         pnlDetails:
             Dock: Top
             ControlsOrientation: horizontal

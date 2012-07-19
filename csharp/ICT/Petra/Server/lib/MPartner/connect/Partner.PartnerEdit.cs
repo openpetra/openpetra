@@ -735,6 +735,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.UNIT:
                             PUnitAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+                            UmUnitStructureAccess.LoadViaPUnitChildUnitKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
                             break;
 
                         case TPartnerClass.VENUE:

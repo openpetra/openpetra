@@ -39,6 +39,14 @@ using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
+    /// <summary>
+    /// Prototype for handler of reassign event
+    /// (Used by Unit tab of Partner edit)
+    /// </summary>
+    /// <param name="ChildKey"></param>
+    /// <param name="ParentKey"></param>
+    public delegate void UnitReassignHandler (Int64 ChildKey, Int64 ParentKey);
+
     public partial class TFrmUnitHierarchy
     {
         private TreeNode FDragNode = null;
@@ -47,6 +55,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private String FStatus = "";
         private TreeNode FChildNodeReference;
         private TreeNode FParentNodeReference;
+        private SortedList<Int64,Int64> ChangedParents = new SortedList<Int64,Int64>();
+
+        /// <summary>Event raise on re-assign</summary>
+        public event UnitReassignHandler ReassignEvent;
 
         private UnitHierarchyNode FindNodeWithThisParent(Int64 ParentKey, ArrayList UnitNodes)
         {
@@ -191,7 +203,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             ScrollIntoView(FDragTarget);
             if ((FDragTarget == FDragNode) || (IsDescendantOf(FDragTarget, FDragNode)))
             {
-                e.Effect = DragDropEffects.None;
+                e.Effect = DragDropEffects.Scroll;
                 FDragTarget = null;
             }
             else
@@ -233,7 +245,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 NewNode.Expand();
                 NewParent.Expand();
                 NewParent.BackColor = Color.White;
-
+                ChangedParents[((UnitHierarchyNode)NewNode.Tag).MyUnitKey] = ((UnitHierarchyNode)NewNode.Tag).ParentUnitKey;
                 FStatus += String.Format(Catalog.GetString("{0} was moved from {1} to {2}.\r\n"),
                     Child.Text, PrevParent, NewParent.Text);
                 txtStatus.Text = FStatus;
@@ -276,10 +288,34 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 }
 
             }
-            catch (Exception ignored)
+            catch (Exception)
             {
             }
             btnMove.Enabled = ICanReassign;
+        }
+
+        private void treeView_MouseWheel (object sender, MouseEventArgs e)
+        {
+            int YScroll = (e.Delta / -40);
+
+            while (YScroll > 0)
+            {
+                TreeNode LastNode = trvUnits.GetNodeAt(1, trvUnits.Bottom - 2);
+                if ((LastNode != null) && (LastNode.NextVisibleNode != null))
+                {
+                    LastNode.NextVisibleNode.EnsureVisible();
+                }
+                YScroll--;
+            }
+            while (YScroll < 0)
+            {
+                TreeNode FirstNode = trvUnits.GetNodeAt(1, 1);
+                if ((FirstNode != null) && (FirstNode.PrevVisibleNode != null))
+                {
+                    FirstNode.PrevVisibleNode.EnsureVisible();
+                }
+                YScroll++;
+            }
         }
 
         /// <summary>
@@ -295,7 +331,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 trvUnits.CollapseAll();
                 SelectedNode.Expand();
                 SelectedNode.EnsureVisible();
-                ShowNodeSelected(SelectedNode);
+                SelectNode(SelectedNode);
             }
 
             return (SelectedNode != null);
@@ -310,9 +346,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             trvUnits.Click += new EventHandler(UnitsClick);
             trvUnits.AllowDrop = true;
             trvUnits.ShowNodeToolTips = true;
+            trvUnits.MouseWheel += new MouseEventHandler(treeView_MouseWheel);
+            trvUnits.Focus();
 
             txtChild.TextChanged += new EventHandler(EvaluateParentChange);
             txtParent.TextChanged += new EventHandler(EvaluateParentChange);
+
+            FPetraUtilsObject.UnhookControl(pnlDetails, true); // I don't want changes in these values to cause SetChangedFlag.
+            FPetraUtilsObject.UnhookControl(txtStatus, false);
 
             ArrayList UnitNodes = TRemote.MPersonnel.WebConnectors.GetUnitHeirarchy();
             //
@@ -356,6 +397,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             Boolean SavedOk = TRemote.MPersonnel.WebConnectors.SaveUnitHierarchy(UnitNodes);
             if (SavedOk)
             {
+                foreach (Int64 Child in ChangedParents.Keys)
+                {
+                    ReassignEvent(Child, ChangedParents[Child]);
+                }
+                FStatus = "";
                 FPetraUtilsObject.HasChanges = false;
             }
             return SavedOk;
