@@ -1029,7 +1029,7 @@ namespace Ict.Common.Verification
         /// Checks whether a decimal's decimal digits and fractional digits are less or equal to the ones specified. A null value is accepted.
         /// </summary>
         /// <remarks>This Method can be used to check number formats as they are specified in petra.xml, e.g. "lenght=6", "decimals=2". - Set <paramref name="APrecision"></paramref> to 6 and <paramref name="AScale"></paramref>to 2 to validate this
-        // number format with this method.</remarks>
+        /// number format with this method.</remarks>
         /// <param name="AValue">Decimal number.</param>
         /// <param name="APrecision">The total count of significant digits in the whole number, that is, the number of digits to *both sides* of the decimal point.</param>
         /// <param name="AScale">The count of decimal digits in the fractional part, to the right of the decimal point.</param>
