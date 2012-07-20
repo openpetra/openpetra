@@ -279,6 +279,40 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return writer.FTemplate;
         }
+
+        /// <summary>
+        /// how to assign a value to the control
+        /// </summary>
+        protected override string AssignValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            if (AFieldOrNull == null)
+            {
+                return ctrl.controlName + ".Checked = false;";
+            }
+
+            return ctrl.controlName + ".Checked = " + AFieldOrNull + ";";
+        }
+
+        /// <summary>
+        /// how to undo the change of a value of a control
+        /// </summary>
+        protected override string UndoValue(TControlDef ctrl, string AFieldOrNull, string AFieldTypeDotNet)
+        {
+            return ctrl.controlName + ".Checked = (bool)" + AFieldOrNull + ";";
+        }
+
+        /// <summary>
+        /// how to get the value from the control
+        /// </summary>
+        protected override string GetControlValue(TControlDef ctrl, string AFieldTypeDotNet)
+        {
+            if (AFieldTypeDotNet == null)
+            {
+                return null;
+            }
+
+            return ctrl.controlName + ".Checked";
+        }
     }
 
     /// <summary>

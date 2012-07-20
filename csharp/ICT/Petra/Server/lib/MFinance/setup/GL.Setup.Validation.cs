@@ -36,24 +36,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
     public partial class TGLSetupWebConnector
     {
         //
-        // Put Methods for the validation of Cacheable DataTables in this code file.
+        // Put Methods for the validation of GL Setup DataTables in this code file.
         //
-
-        static partial void ValidateAAnalysisTypeManual(TValidationControlsDict AValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
-        {
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-            ValidationControlsDict.Add(ASubmitTable.Columns[AAnalysisTypeTable.ColumnAnalysisTypeDescriptionId],
-                new TValidationControlsData(null, AAnalysisTypeTable.GetAnalysisTypeDescriptionDBName()));
-
-            for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
-            {
-                TSharedFinanceValidation_GLSetup.ValidateAnalysisTypesSetupManual("TGLSetupWebConnector" +
-                    " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (AAnalysisTypeRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                    ValidationControlsDict);
-            }
-        }
     }
 }

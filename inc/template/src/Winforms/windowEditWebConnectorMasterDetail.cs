@@ -23,6 +23,9 @@ using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+{#IFDEF SHAREDVALIDATIONNAMESPACEMODULE}
+using {#SHAREDVALIDATIONNAMESPACEMODULE};
+{#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -59,10 +62,10 @@ namespace {#NAMESPACE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
       {#INITACTIONSTATE}
-{#IFDEF DATAVALIDATION}
 
+{#IFDEF MASTERTABLE OR DETAILTABLE}
       BuildValidationControlsDict();
-{#ENDIF DATAVALIDATION}
+{#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -127,7 +130,8 @@ namespace {#NAMESPACE}
 			grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-            SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+            int newRowIndex = FMainDS.{#DETAILTABLE}.Rows.Count - 1;
+			SelectDetailRowByDataTableIndex(newRowIndex);
             InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
             //Must be set after the FocusRowChanged event is called as it sets this flag to false
@@ -156,7 +160,10 @@ namespace {#NAMESPACE}
 	                }
 	            }
 
-				GetDetailsFromControls(FPreviouslySelectedDetailRow);
+				GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
+
+                //Need to redo this just in case the sorting is not on primary key
+	            SelectDetailRowByDataTableIndex(newRowIndex);
             }
         
             return true;
@@ -194,18 +201,52 @@ namespace {#NAMESPACE}
         grdDetails.SelectRowInGrid(RowNumberGrid, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
     }
 
-    /// return the selected row
-    private {#DETAILTABLETYPE}Row GetSelectedDetailRow()
+    private int GetDetailGridRowDataTableIndex()
     {
-        DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
-
-        if (SelectedGridRow.Length >= 1)
-        {
-            return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;
-        }
-
-        return null;
+    	Int32 RowNumberInData = -1;
+    	
+    	int gridRowIndex = grdDetails.SelectedRowIndex();
+    	
+    	if (gridRowIndex > 0 && FPreviouslySelectedDetailRow != null)
+    	{
+    	    	
+	    	int dataRowIndex = 0;
+	    	
+	    	foreach ({#DETAILTABLE}Row myRow in FMainDS.{#DETAILTABLE}.Rows)
+	        {
+	    		bool found = true;
+	            foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
+	            {
+	                string value1 = myRow[myColumn].ToString();
+	                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[gridRowIndex - 1][myColumn.Ordinal].ToString();
+	                if (value1 != value2)
+	                {
+	                    found = false;
+	                }
+	            }
+	            
+	            if (found)
+	            {
+	                RowNumberInData = dataRowIndex;
+	                break;
+	            }
+	            
+	            dataRowIndex++;
+	        }
+    	}
+    	
+    	return RowNumberInData;
     }
+	
+{#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
+
+    /// return the selected row
+    public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
+    {
+        {#GETSELECTEDDETAILROW}
+    }
+{#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
+
 {#ENDIF DETAILTABLE}
 
 {#IFDEF CANFINDWEBCONNECTOR_LOADMASTER}
@@ -485,31 +526,66 @@ namespace {#NAMESPACE}
 {#ENDIFN POSTDELETEMANUAL}
 
     }
+
+    private void ResetGridFocus(int ADataRowPosition)
+    {
+    	int selectedRowIndex = grdDetails.SelectedRowIndex();
+    	
+    	if (selectedRowIndex > 0 && !grdDetails.Sorting)
+    	{
+    		if (ADataRowPosition != GetDetailGridRowDataTableIndex())
+	        {
+	            grdDetails.DataSource = null;
+	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
+	        	SelectDetailRowByDataTableIndex(ADataRowPosition);
+	        	InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+	        }
+    	}
+
+    }
 {#ENDIF SHOWDETAILS}
-    
-    
-{#IFDEF SAVEDATA}
+   
+{#IFDEF MASTERTABLE}
+
     private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
     {
+{#IFDEF SAVEDATA}
         {#SAVEDATA}
+{#ENDIF SAVEDATA}
 {#IFDEF SAVEDETAILS}
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
 {#ENDIF SAVEDETAILS}
     }
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+
+    private void GetDataFromControls()
+    {
+{#IFDEF SAVEDATA}
+        {#SAVEDATA}
 {#ENDIF SAVEDATA}
+    }
+{#ENDIFN MASTERTABLE}
 
 {#IFDEF SAVEDETAILS}
-    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, bool AIsNewRow = false)
     {
-        if (ARow != null)
+        if (ARow != null && !grdDetails.Sorting)
         {
-            ARow.BeginEdit();
-            {#SAVEDETAILS}
-            ARow.BeginEdit();
+            if (AIsNewRow)
+            {
+				{#SAVEDETAILS}
+            }
+            else
+            {
+				ARow.BeginEdit();
+				{#SAVEDETAILS}
+				ARow.EndEdit();
+            }
         }
     }
-{#ENDIF SAVEDETAILS}
 
+{#ENDIF SAVEDETAILS}
     /// <summary>
     /// Performs data validation.
     /// </summary>
@@ -521,36 +597,88 @@ namespace {#NAMESPACE}
     private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
     {
         bool ReturnValue = false;
-        {#DETAILTABLE}Row CurrentRow;
 
+        // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+        FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+
+{#IFDEF MASTERTABLE}
+        // Validate MasterTable
         GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
-
-        // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+        ValidateData(FMainDS.{#MASTERTABLE}[0]);
 {#IFDEF VALIDATEDATAMANUAL}
         ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
 {#ENDIF VALIDATEDATAMANUAL}
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+        GetDataFromControls();
+{#ENDIFN MASTERTABLE}
 
+{#IFDEF SHOWDETAILS}
+        {#DETAILTABLETYPE}Row CurrentRow = GetSelectedDetailRow();
 
-        CurrentRow = GetSelectedDetailRow();
-        
         if (CurrentRow != null)
         {
-            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
+            // Validate DetailTable
+{#IFNDEF MASTERTABLE}
+            GetDetailsFromControls(CurrentRow);
+{#ENDIFN MASTERTABLE}
+            ValidateDataDetails(CurrentRow);
 {#IFDEF VALIDATEDATADETAILSMANUAL}
             ValidateDataDetailsManual(CurrentRow);
-{#ENDIF VALIDATEDATADETAILSMANUAL}
+{#ENDIF VALIDATEDATADETAILSMANUAL}            
+{#ENDIF SHOWDETAILS}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
             // Perform validation in UserControls, too
             {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
+
+{#IFDEF SHOWDETAILS}
+            if (AProcessAnyDataValidationErrors)
+            {
+                if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
+                {
+                    // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
+                    // Data Validation Errors/Warnins as something that is record-related.
+                    ARecordChangeVerification = false;
+                }
+
+                // Process Data Validation result(s)
+                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType(), null);
+            }
+{#IFDEF MASTERTABLE}
         }
-        
+        else if (AProcessAnyDataValidationErrors)
+        {
+            if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
+            {
+                // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
+                // Data Validation Errors/Warnins as something that is record-related.
+                ARecordChangeVerification = false;
+            }
+
+            // Process Data Validation result(s)
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType(), null);
+        }
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}            
+        }
+        else
+        {
+            ReturnValue = true;
+        }
+{#ENDIFN MASTERTABLE}
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
         if (AProcessAnyDataValidationErrors)
         {
+            // Process Data Validation result(s)
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType(), null, true);
+                this.GetType(), null);
         }
+{#ENDIFN SHOWDETAILS}
 
         if(ReturnValue)
         {
@@ -792,12 +920,13 @@ namespace {#NAMESPACE}
     {#ACTIONHANDLERS}
 
 #endregion
-{#IFDEF DATAVALIDATION}
 
 #region Data Validation
     
     private void ControlValidatedHandler(object sender, EventArgs e)
     {
+    	int dataRowIndex = GetDetailGridRowDataTableIndex();
+    	
         TScreenVerificationResult SingleVerificationResult;
         
         ValidateAllData(true, false);
@@ -839,15 +968,42 @@ namespace {#NAMESPACE}
                 }
             }
         }
+ 
+        ResetGridFocus(dataRowIndex);
+        
+   }
+{#IFDEF MASTERTABLE}
+    private void ValidateData({#MASTERTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        {#MASTERTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
     }
+{#ENDIF MASTERTABLE}
+{#IFDEF DETAILTABLE}
+    private void ValidateDataDetails({#DETAILTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        {#DETAILTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
+    }
+{#ENDIF DETAILTABLE}
+{#IFDEF MASTERTABLE OR DETAILTABLE}
 
     private void BuildValidationControlsDict()
     {
-        {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+        if (FMainDS != null)
+        {
+{#IFDEF ADDCONTROLTOVALIDATIONCONTROLSDICT}
+            {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+{#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
+        }
     }
-    
+{#ENDIF MASTERTABLE OR DETAILTABLE}    
+
 #endregion
-{#ENDIF DATAVALIDATION}
   }
 }
 

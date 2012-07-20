@@ -7,7 +7,7 @@ RootNode:
     FormType: edit
     Template: windowEditUIConnector
     MasterTable: AApSupplier
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     WindowWidth: 800
     WindowHeight: 500
     Actions:

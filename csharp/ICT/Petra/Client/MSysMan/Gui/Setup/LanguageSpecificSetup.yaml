@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MSysMan.Gui.Setup
     DetailTable: SLanguageSpecific
     CacheableTable: LanguageSpecificList
-    UsingNamespaces: [Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MCommon.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan.Validation, Ict.Petra.Shared.MCommon.Data]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750

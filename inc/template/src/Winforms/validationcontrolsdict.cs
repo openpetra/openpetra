@@ -1,8 +1,14 @@
 {##VALIDATIONCONTROLSDICTADD}
-FPetraUtilsObject.ValidationControlsDict.Add({#COLUMNID},
-    new TValidationControlsData({#VALIDATIONCONTROL}, {#LABELTEXT}));
+if (FMainDS.{#TABLENAME} != null)
+{
+    {#VALIDATIONCONTROLSDICTVAR}.Add({#COLUMNID},
+        new TValidationControlsData({#VALIDATIONCONTROL}, {#LABELTEXT}));{#AUTOMATICVALIDATIONCOMMENT}
+}
     
 {##VALIDATIONCONTROLSDICTADDMULTI}
-FPetraUtilsObject.ValidationControlsDict.Add({#COLUMNID},
-    new TValidationControlsData({#VALIDATIONCONTROL}, {#LABELTEXT},
-                                {#VALIDATIONCONTROL2}, {#LABELTEXT2}));
+if (FMainDS.{#TABLENAME} != null)
+{
+    {#VALIDATIONCONTROLSDICTVAR}.Add({#COLUMNID},
+        new TValidationControlsData({#VALIDATIONCONTROL}, {#LABELTEXT},
+                                    {#VALIDATIONCONTROL2}, {#LABELTEXT2}));{#AUTOMATICVALIDATIONCOMMENT}
+}

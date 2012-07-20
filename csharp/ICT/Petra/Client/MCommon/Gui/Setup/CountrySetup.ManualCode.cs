@@ -58,11 +58,6 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             ARow.CountryCode = newName;
         }
 
-        private void GetDetailDataFromControlsManual(PCountryRow ARow)
-        {
-            ARow.NationalityName = "";
-        }
-
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPCountry();

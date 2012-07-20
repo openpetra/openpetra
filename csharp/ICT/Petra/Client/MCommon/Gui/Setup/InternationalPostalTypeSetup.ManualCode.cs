@@ -79,7 +79,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private bool PreDeleteManual(ref PInternationalPostalTypeRow ARowToDelete, ref string ADeletionQuestion)
         {
         	/*Code to execute before the delete can take place*/
-        	ADeletionQuestion = "Are you sure you want to delete Postal Type Code: '" + ARowToDelete.InternatPostalTypeCode + "'?";
+        	ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Postal Type Code: '{0}'?"),
+        	                                  ARowToDelete.InternatPostalTypeCode);
         	return true;
         }
 
@@ -92,11 +93,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private bool DeleteRowManual(ref PInternationalPostalTypeRow ARowToDelete, out string ACompletionMessage)
         {
         	bool deletionSuccessful = false;
-        	
+
         	try
         	{
-	        	//Must be set before the delete is performed if reading any of the row values
-        		ACompletionMessage = "Postal Type Code: '" + ARowToDelete.InternatPostalTypeCode + "' deleted successfully.";
+	        	//Must set the message parameters before the delete is performed if requiring any of the row values
+        		ACompletionMessage = String.Format(Catalog.GetString("Postal Type Code: '{0}' deleted successfully."),
+        	                                       ARowToDelete.InternatPostalTypeCode);
 	        	ARowToDelete.Delete();
 	        	deletionSuccessful = true;
         	}

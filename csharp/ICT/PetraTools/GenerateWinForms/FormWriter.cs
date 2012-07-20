@@ -1034,10 +1034,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     TTable table = DataSetTables[FCodeStorage.GetAttribute("MasterTable")];
                     FTemplate.AddToCodelet("MASTERTABLE", table.strVariableNameInDataset);
                     FTemplate.AddToCodelet("MASTERTABLETYPE", table.strDotNetName);
+                    FTemplate.SetCodelet("SHAREDVALIDATIONNAMESPACEMODULE",
+                        String.Format("Ict.Petra.Shared.{0}.Validation",
+                            TTable.GetNamespace(table.strGroup)));
                 }
                 else
                 {
                     FTemplate.AddToCodelet("MASTERTABLE", FCodeStorage.GetAttribute("MasterTable"));
+
+                    TTable table = TDataBinding.FPetraXMLStore.GetTable(FCodeStorage.GetAttribute("MasterTable"));
+                    FTemplate.SetCodelet("SHAREDVALIDATIONNAMESPACEMODULE",
+                        String.Format("Ict.Petra.Shared.{0}.Validation",
+                            TTable.GetNamespace(table.strGroup)));
 
                     if (FCodeStorage.HasAttribute("MasterTableType"))
                     {
@@ -1060,6 +1068,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if ((DataSetTables != null) && DataSetTables.ContainsKey(FCodeStorage.GetAttribute("DetailTable")))
                 {
                     TTable table = DataSetTables[FCodeStorage.GetAttribute("DetailTable")];
+
+                    FTemplate.SetCodelet("SHAREDVALIDATIONNAMESPACEMODULE",
+                        String.Format("Ict.Petra.Shared.{0}.Validation",
+                            TTable.GetNamespace(table.strGroup)));
+
                     FTemplate.AddToCodelet("DETAILTABLE", table.strVariableNameInDataset);
                     FTemplate.AddToCodelet("DETAILTABLETYPE", table.strDotNetName);
                 }
@@ -1067,6 +1080,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
                     FTemplate.AddToCodelet("DETAILTABLETYPE", FCodeStorage.GetAttribute("DetailTable"));
+
+                    TTable table = TDataBinding.FPetraXMLStore.GetTable(FCodeStorage.GetAttribute("DetailTable"));
+                    FTemplate.SetCodelet("SHAREDVALIDATIONNAMESPACEMODULE",
+                        String.Format("Ict.Petra.Shared.{0}.Validation",
+                            TTable.GetNamespace(table.strGroup)));
                 }
             }
             else
@@ -1118,6 +1136,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FTemplate.AddToCodelet("CACHEABLETABLESAVEMETHOD", "SaveChangedCacheableDataTableToPetraServer");
                     //FTemplate.AddToCodelet("CACHEABLETABLESPECIFICFILTERSAVE", "out VerificationResult");
                 }
+            }
+
+            if (FCodeStorage.HasAttribute("GenerateGetSelectedDetailRow")
+                && (FCodeStorage.GetAttribute("GenerateGetSelectedDetailRow") == "true"))
+            {
+                FTemplate.AddToCodelet("GENERATEGETSELECTEDDETAILROW", "true");
             }
 
             // find the first control that is a panel or groupbox or tab control
@@ -1283,6 +1307,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("ValidateDataDetailsManual"))
             {
                 FTemplate.SetCodelet("VALIDATEDATADETAILSMANUAL", "true");
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("GetSelectedDetailRowManual"))
+            {
+                FTemplate.AddToCodelet("GETSELECTEDDETAILROW", "return GetSelectedDetailRowManual();" + Environment.NewLine);
+            }
+            else
+            {
+                string getSelectedDetailRow =
+                    "DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;" + Environment.NewLine + Environment.NewLine +
+                    "if (SelectedGridRow.Length >= 1)" + Environment.NewLine +
+                    "{" + Environment.NewLine +
+                    "    return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;" + Environment.NewLine +
+                    "}" + Environment.NewLine + Environment.NewLine +
+                    "return null;" + Environment.NewLine + Environment.NewLine;
+
+                FTemplate.SetCodelet("GETSELECTEDDETAILROW", getSelectedDetailRow);
             }
 
             InsertCodeIntoTemplate(AXAMLFilename);

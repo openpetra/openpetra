@@ -497,8 +497,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PastExperienceRow.IsSiteKeyNull() ? 0 : PastExperienceRow.SiteKey);
                 Write(PastExperienceRow.IsKeyNull() ? 0 : PastExperienceRow.Key);
                 Write(PastExperienceRow.IsPrevLocationNull() ? "" : PastExperienceRow.PrevLocation);
-                Write(PastExperienceRow.IsStartDateNull() ? "?" : PastExperienceRow.StartDate.Value.ToString(DATEFORMAT));
-                Write(PastExperienceRow.IsEndDateNull() ? "?" : PastExperienceRow.EndDate.Value.ToString(DATEFORMAT));
+                Write(PastExperienceRow.IsStartDateNull() ? "?" : PastExperienceRow.StartDate.ToString(DATEFORMAT));
+                Write(PastExperienceRow.IsEndDateNull() ? "?" : PastExperienceRow.EndDate.ToString(DATEFORMAT));
                 WriteLine();
                 Write(PastExperienceRow.IsPrevWorkHereNull() ? false : PastExperienceRow.PrevWorkHere);
                 Write(PastExperienceRow.IsPrevWorkNull() ? false : PastExperienceRow.PrevWork);
@@ -548,7 +548,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(StaffDataRow.IsKeyNull() ? 0 : StaffDataRow.Key);
                 Write(StaffDataRow.IsStartOfCommitmentNull() ? "?" : StaffDataRow.StartOfCommitment.ToString(DATEFORMAT));
                 Write(StaffDataRow.IsStartDateApproxNull() ? false : StaffDataRow.StartDateApprox);
-                Write(StaffDataRow.IsEndOfCommitmentNull() ? "?" : StaffDataRow.EndOfCommitment.Value.ToString(DATEFORMAT));
+                Write(StaffDataRow.IsEndOfCommitmentNull() ? "?" : StaffDataRow.EndOfCommitment.ToString(DATEFORMAT));
                 WriteLine();
                 Write(StaffDataRow.IsStatusCodeNull() ? "" : StaffDataRow.StatusCode);
                 Write(StaffDataRow.IsReceivingFieldNull() ? 0 : StaffDataRow.ReceivingField);

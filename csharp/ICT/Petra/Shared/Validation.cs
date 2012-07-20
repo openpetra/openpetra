@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Ict.Common.Data;
 
 namespace Ict.Petra.Shared
 {
@@ -191,6 +192,19 @@ namespace Ict.Petra.Shared
 
             AValue = new TValidationControlsData(null, null);
             return false;
+        }
+
+        /// create a dictionary that contains all columns
+        static public TValidationControlsDict PopulateDictionaryWithAllColumns(TTypedDataTable ATable)
+        {
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
+
+            foreach (DataColumn col in ATable.Columns)
+            {
+                ValidationControlsDict.Add(col, new TValidationControlsData(null, col.ColumnName));
+            }
+
+            return ValidationControlsDict;
         }
     }
 }
