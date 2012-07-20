@@ -3,7 +3,6 @@ RootNode:
     FormTitle: Auto Generate Budget
     Namespace: Ict.Petra.Client.MFinance.Gui.Budget
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.BudgetTDS
-    DetailTable: ABudget
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
     FormType: dialog
     Template: window

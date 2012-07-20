@@ -60,7 +60,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>void</returns>
-        public static void ValidatePartnerBankDetailsManual(object AContext, PBankRow ARow,
+        public static void ValidatePartnerBankManual(object AContext, PBankRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;

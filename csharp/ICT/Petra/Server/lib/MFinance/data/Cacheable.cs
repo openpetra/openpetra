@@ -49,6 +49,9 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.DataAggregates;
+using Ict.Petra.Shared.MFinance.Account.Validation;
+using Ict.Petra.Shared.MFinance.Gift.Validation;
+using Ict.Petra.Shared.MFinance.AP.Validation;
 #endregion ManualCode
 namespace Ict.Petra.Server.MFinance.Cacheable
 {
@@ -460,8 +463,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.AnalysisTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateAnalysisTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateAnalysisTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AAnalysisTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateAnalysisTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -477,8 +480,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.FreeformAnalysisList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateFreeformAnalysisList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateFreeformAnalysisListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AFreeformAnalysisValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateFreeformAnalysisListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -494,8 +497,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.AnalysisAttributeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateAnalysisAttributeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateAnalysisAttributeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AAnalysisAttributeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateAnalysisAttributeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -511,8 +514,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.BudgetTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateBudgetTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateBudgetTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ABudgetTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateBudgetTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -528,8 +531,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.CostCentreTypesList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateCostCentreTypesList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateCostCentreTypesListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ACostCentreTypesValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateCostCentreTypesListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -545,8 +548,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.EmailDestinationList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateEmailDestinationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateEmailDestinationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AEmailDestinationValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateEmailDestinationListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -562,8 +565,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.MethodOfGivingList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMethodOfGivingList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateMethodOfGivingListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AMethodOfGivingValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateMethodOfGivingListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -579,8 +582,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.MethodOfPaymentList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMethodOfPaymentList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateMethodOfPaymentListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AMethodOfPaymentValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateMethodOfPaymentListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -596,8 +599,8 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                         case TCacheableFinanceTablesEnum.ValidLedgerNumberList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateValidLedgerNumberList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateValidLedgerNumberListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AValidLedgerNumberValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateValidLedgerNumberListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -660,42 +663,15 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
 #region Data Validation
 
-        partial void ValidateAnalysisTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAnalysisTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateFreeformAnalysisList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateFreeformAnalysisListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAnalysisAttributeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAnalysisAttributeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateBudgetTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateBudgetTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateCostCentreTypesList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateCostCentreTypesListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateEmailDestinationList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateEmailDestinationListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMethodOfGivingList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMethodOfGivingListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMethodOfPaymentList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMethodOfPaymentListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateValidLedgerNumberList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateValidLedgerNumberListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAnalysisTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateFreeformAnalysisListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAnalysisAttributeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateBudgetTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateCostCentreTypesListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateEmailDestinationListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMethodOfGivingListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMethodOfPaymentListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateValidLedgerNumberListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
 
@@ -743,15 +719,66 @@ namespace Ict.Petra.Server.MFinance.Cacheable
                 {
                     switch (ACacheableTable)
                     {
+                        case TCacheableFinanceTablesEnum.MotivationGroupList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                AMotivationGroupValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateMotivationGroupListManual(ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (AMotivationGroupAccess.SubmitChanges((AMotivationGroupTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
                         case TCacheableFinanceTablesEnum.MotivationList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMotivationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateMotivationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                AMotivationDetailValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateMotivationListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
                                     if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
+                        case TCacheableFinanceTablesEnum.FeesPayableList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                AFeesPayableValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateFeesPayableListManual(ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
+                                        out SingleVerificationResultCollection))
+                                    {
+                                        SubmissionResult = TSubmitChangesResult.scrOK;
+                                    }
+                                }
+                            }
+
+                            break;
+                        case TCacheableFinanceTablesEnum.FeesReceivableList:
+                            if (ASubmitTable.Rows.Count > 0)
+                            {
+                                AFeesReceivableValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateFeesReceivableListManual(ref AVerificationResult, ASubmitTable);
+
+                                if (!AVerificationResult.HasCriticalErrors)
+                                {
+                                    if (AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction,
                                         out SingleVerificationResultCollection))
                                     {
                                         SubmissionResult = TSubmitChangesResult.scrOK;
@@ -810,22 +837,10 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
         #region Data Validation
 
-                partial void ValidateMotivationGroupList(TValidationControlsDict ValidationControlsDict,
-                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-                partial void ValidateMotivationGroupListManual(TValidationControlsDict ValidationControlsDict,
-                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-                partial void ValidateMotivationList(TValidationControlsDict ValidationControlsDict,
-                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-                partial void ValidateMotivationListManual(TValidationControlsDict ValidationControlsDict,
-                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-                partial void ValidateFeesPayableList(TValidationControlsDict ValidationControlsDict,
-                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-                partial void ValidateFeesPayableListManual(TValidationControlsDict ValidationControlsDict,
-                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-                partial void ValidateFeesReceivableList(TValidationControlsDict ValidationControlsDict,
-                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-                partial void ValidateFeesReceivableListManual(TValidationControlsDict ValidationControlsDict,
-                    ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+                partial void ValidateMotivationGroupListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+                partial void ValidateMotivationListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+                partial void ValidateFeesPayableListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+                partial void ValidateFeesReceivableListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
 

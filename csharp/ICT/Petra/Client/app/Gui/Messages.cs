@@ -64,9 +64,9 @@ namespace Ict.Petra.Client.App.Gui
         /// <summary>Shown when invalid data was entered.</summary>
         private static readonly string StrInvalidDataTitle = Catalog.GetString("Invalid Data");
 
-        /// <summary>Shown when the Form contains invalid data at the point of saving data.</summary>
-        private static readonly string StrFormSaveInvalidDataNeedsCorrecting = Catalog.GetString(
-            "Data cannot be saved because invalid data has not been corrected:");
+        /// <summary>Shown when the Form contains invalid data at a certain point when Data Validation runs (e.g. saving of data, change of context [e.g. switching of Tab]).</summary>
+        private static readonly string StrInvalidDataNeedsCorrecting = Catalog.GetString(
+            "The operation cannot be performed because the form contains invalid data:");
 
         /// <summary>Shown when a record contains warnings at the poing of changing to a different record.</summary>
         private static readonly string StrRecordChangeInvalidDataWarning = Catalog.GetString(
@@ -377,7 +377,7 @@ namespace Ict.Petra.Client.App.Gui
             else
             {
                 Title = TMessages.StrInvalidDataNeedsCorrectingTitle;
-                Heading = StrFormSaveInvalidDataNeedsCorrecting;
+                Heading = StrInvalidDataNeedsCorrecting;
                 Icon = MessageBoxIcon.Error;
             }
 

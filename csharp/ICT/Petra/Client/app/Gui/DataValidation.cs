@@ -87,6 +87,10 @@ namespace Ict.Petra.Client.App.Gui
                         FirstErrorControl.Focus();
                     }
                 }
+                else
+                {
+                    ReturnValue = true;
+                }
             }
             else
             {

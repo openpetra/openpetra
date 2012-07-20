@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Maintain Application Types
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtApplicationType
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.Interfaces.MCommon]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation,Ict.Petra.Shared.Interfaces.MCommon]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 750

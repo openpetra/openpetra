@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: PLanguage
     CacheableTable: LanguageCodeList
-    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MCommon.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 660

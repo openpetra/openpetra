@@ -405,23 +405,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
         {
             switch (ACacheableTable)
             {
-                case TCacheableFinanceTablesEnum.MotivationList:
-                    if (ASubmitTable.Rows.Count > 0) 
-                    { 
-                        ValidateMotivationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                        ValidateMotivationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-
-                        if (!AVerificationResult.HasCriticalErrors)
-                        {
-                            if (AMotivationDetailAccess.SubmitChanges((AMotivationDetailTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                        }
-                    }
-
-                    break;
+                {#SAVETABLE}
 
                 default:
 
@@ -525,8 +509,8 @@ private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction,
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     if (ASubmitTable.Rows.Count > 0) 
     { 
-        Validate{#ENUMNAME}(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-        Validate{#ENUMNAME}Manual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+        {#DATATABLENAME}Validation.Validate(ASubmitTable, ref AVerificationResult);
+        Validate{#ENUMNAME}Manual(ref AVerificationResult, ASubmitTable);
 
         if (!AVerificationResult.HasCriticalErrors)
         {
@@ -541,8 +525,5 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     break;
     
 {##DATAVALIDATION}
-    partial void Validate{#ENUMNAME}(TValidationControlsDict ValidationControlsDict, 
-        ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
-    partial void Validate{#ENUMNAME}Manual(TValidationControlsDict ValidationControlsDict, 
-        ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
+    partial void Validate{#ENUMNAME}Manual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
 

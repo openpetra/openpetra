@@ -108,3 +108,13 @@ else
 {
     {#ROW}.{#COLUMNNAME} = {#CONTROLVALUE};
 }
+
+{##GETSELECTEDDETAILROW}
+DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+if (SelectedGridRow.Length >= 1)
+{
+    return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;
+}
+
+return null;

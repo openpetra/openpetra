@@ -367,6 +367,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            bool AutomDataValidation;
+            string ReasonForAutomValidation;
+
             writer.SetControlProperty(ctrl, "Name", "\"" + ctrl.controlName + "\"");
 
             if (FLocation && !ctrl.HasAttribute("Dock"))
@@ -851,13 +854,42 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            if ((ctrl.HasAttribute("Validation"))
-                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
+            if (GenerateDataValidationCode(writer, ctrl, out AutomDataValidation, out ReasonForAutomValidation))
             {
                 AssignEventHandlerToControl(writer, ctrl, "Validated", "ControlValidatedHandler");
             }
 
             return writer.Template;
+        }
+
+        private bool GenerateDataValidationCode(TFormWriter writer, TControlDef ctrl, out bool AAutomDataValidation,
+            out string AReasonForAutomValidation)
+        {
+            AAutomDataValidation = false;
+            AReasonForAutomValidation = String.Empty;
+
+            if ((ctrl.HasAttribute("Validation"))
+                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
+            {
+                return true;
+            }
+
+            if (TDataValidation.GenerateAutoValidationCodeForControl(ctrl,
+                    ctrl.HasAttribute("DataField"),
+                    (writer.CodeStorage.HasAttribute("MasterTable")
+                     || writer.CodeStorage.HasAttribute("DetailTable")),
+                    !((this is LabelGenerator) || (this is LinkLabelGenerator)),
+                    TDataValidation.TAutomDataValidationScope.advsAll, out AReasonForAutomValidation)
+                )
+            {
+                AAutomDataValidation = true;
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -919,6 +951,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
         private void LinkControlDataField(TFormWriter writer, TControlDef ctrl, TTableField AField, bool AIsDetailNotMaster)
         {
             ProcessTemplate snippetValidationControlsDictAdd;
+            bool AutomDataValidation;
+            string ReasonForAutomValidation;
+            string ColumnIDStr;
+            bool OKToGenerateDVCode = true;
 
             if (AField == null)
             {
@@ -1000,59 +1036,87 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             // Data Validation
-            if ((ctrl.HasAttribute("Validation"))
-                && (ctrl.GetAttribute("Validation").ToLower() != "false"))
+            if (GenerateDataValidationCode(writer, ctrl, out AutomDataValidation, out ReasonForAutomValidation))
             {
-                writer.FTemplate.SetCodelet("DATAVALIDATION", "TRUE");
-
                 string targetCodeletValidation = "ADDCONTROLTOVALIDATIONCONTROLSDICT";
 
-                if (!ctrl.GetAttribute("Validation").ToLower().StartsWith("pair("))
-                {
-                    snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADD");
-                }
-                else
-                {
-                    snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADDMULTI");
+                ColumnIDStr = "FMainDS." + tablename + ".Columns[(short)FMainDS." + tablename + ".GetType().GetField(\"Column" + fieldname +
+                              "Id\", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).GetValue(FMainDS." + tablename +
+                              ".GetType())]";
 
-                    string PairControlName = ctrl.GetAttribute("Validation").Substring(5, ctrl.GetAttribute("Validation").Length - 6);
-                    TControlDef SecondValidationControl = writer.CodeStorage.GetControl(PairControlName);
-
-                    if (SecondValidationControl != null)
+                if (writer.Template.FCodelets[targetCodeletValidation] != null)
+                {
+                    // Check if code for the addition of a certain DataColumn is is already contained in Template;
+                    // if so, skip a further addition to prevent an Exception at runtime
+                    if (writer.Template.FCodelets[targetCodeletValidation].ToString().Contains(ColumnIDStr))
                     {
-                        snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL2", SecondValidationControl.controlName);
+                        OKToGenerateDVCode = false;
+                    }
+                }
 
-                        if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(SecondValidationControl.Label)))
-                        {
-                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2",
-                                "Catalog.GetString(" + "\"" + SecondValidationControl.Label + "\")");
-                        }
-                        else
-                        {
-                            snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2", "\"" + SecondValidationControl.Label + "\"");
-                        }
+                if (OKToGenerateDVCode)
+                {
+                    if (!ctrl.GetAttribute("Validation").ToLower().StartsWith("pair("))
+                    {
+                        snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADD");
                     }
                     else
                     {
-                        throw new ApplicationException(
-                            "Pair Control for Validation '" + PairControlName + "' does not exist. Please specify a valid control!");
+                        snippetValidationControlsDictAdd = writer.Template.GetSnippet("VALIDATIONCONTROLSDICTADDMULTI");
+
+                        string PairControlName = ctrl.GetAttribute("Validation").Substring(5, ctrl.GetAttribute("Validation").Length - 6);
+                        TControlDef SecondValidationControl = writer.CodeStorage.GetControl(PairControlName);
+
+                        if (SecondValidationControl != null)
+                        {
+                            snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL2", SecondValidationControl.controlName);
+
+                            if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(SecondValidationControl.Label)))
+                            {
+                                snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2",
+                                    "Catalog.GetString(" + "\"" + SecondValidationControl.Label + "\")");
+                            }
+                            else
+                            {
+                                snippetValidationControlsDictAdd.SetCodelet("LABELTEXT2", "\"" + SecondValidationControl.Label + "\"");
+                            }
+                        }
+                        else
+                        {
+                            throw new ApplicationException(
+                                "Pair Control for Validation '" + PairControlName + "' does not exist. Please specify a valid control!");
+                        }
                     }
-                }
 
-                snippetValidationControlsDictAdd.SetCodelet("COLUMNID",
-                    "FMainDS." + tablename + ".Columns[" + tablename + "Table.Column" + fieldname + "Id" + "]");
-                snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL", ctrl.controlName);
+                    snippetValidationControlsDictAdd.SetCodelet("TABLENAME", tablename);
+                    snippetValidationControlsDictAdd.SetCodelet("COLUMNID", ColumnIDStr);
+                    snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROLSDICTVAR",
+                        writer.Template.FTemplateCode.Contains(
+                            "FValidationControlsDict") ? "FValidationControlsDict" : "FPetraUtilsObject.ValidationControlsDict");
 
-                if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(ctrl.Label)))
-                {
-                    snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "Catalog.GetString(" + "\"" + ctrl.Label + "\")");
-                }
-                else
-                {
-                    snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "\"" + ctrl.Label + "\"");
-                }
+                    if (AutomDataValidation)
+                    {
+                        snippetValidationControlsDictAdd.SetCodelet("AUTOMATICVALIDATIONCOMMENT",
+                            " // Automatic Data Validation based on DB specification: " + ReasonForAutomValidation);
+                    }
+                    else
+                    {
+                        snippetValidationControlsDictAdd.SetCodelet("AUTOMATICVALIDATIONCOMMENT", "");
+                    }
 
-                writer.Template.InsertSnippet(targetCodeletValidation, snippetValidationControlsDictAdd);
+                    snippetValidationControlsDictAdd.SetCodelet("VALIDATIONCONTROL", ctrl.controlName);
+
+                    if (TFormWriter.ProperI18NCatalogGetString(StringHelper.TrimQuotes(ctrl.Label)))
+                    {
+                        snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "Catalog.GetString(" + "\"" + ctrl.Label + "\")");
+                    }
+                    else
+                    {
+                        snippetValidationControlsDictAdd.SetCodelet("LABELTEXT", "\"" + ctrl.Label + "\"");
+                    }
+
+                    writer.Template.InsertSnippet(targetCodeletValidation, snippetValidationControlsDictAdd);
+                }
             }
         }
 
@@ -1122,7 +1186,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             snippetShowData.SetCodelet("UNDOCONTROLVALUE",
                 this.UndoValue(ctrl, "ARow[FMainDS." + tablename + ".Columns[(short)FMainDS." + tablename + ".GetType().GetField(\"Column" +
                     fieldname +
-                    "Id\", BindingFlags.Public | BindingFlags.Static).GetValue(FMainDS." + tablename + ".GetType())], DataRowVersion.Original]",
+                    "Id\", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).GetValue(FMainDS." + tablename +
+                    ".GetType())], DataRowVersion.Original]",
                     AField.GetDotNetType()));
             snippetShowData.InsertSnippet("UNDOROWVALUE", writer.Template.GetSnippet("UNDOROWVALUE"));
 
