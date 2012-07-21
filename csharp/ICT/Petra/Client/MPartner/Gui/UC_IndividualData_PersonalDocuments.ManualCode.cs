@@ -139,26 +139,24 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPreviouslySelectedDetailRow.DocumentId), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
-                int rowIndex = grdDetails.SelectedRowIndex();
+                int newCurrentRowPos = grdDetails.SelectedRowIndex();
                 FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
+                //FPetraUtilsObject.SetChangedFlag();
 
                 // temporarily reset selected row to avoid interference with validation
-                FPreviouslySelectedDetailRow = null;
-                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                grdDetails.SelectRowInGrid(rowIndex, true);
-                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+//                FPreviouslySelectedDetailRow = null;
+//                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+//                grdDetails.SelectRowInGrid(rowIndex, true);
+//                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+//                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+//                ShowDetails(FPreviouslySelectedDetailRow);
+
+//                DoRecalculateScreenParts();
+
+				//TODO: move to template
+				InvokeFocusedRowChanged(newCurrentRowPos);
 
                 DoRecalculateScreenParts();
-
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    pnlDetails.Visible = false;
-                }
             }
         }
 

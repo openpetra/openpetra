@@ -366,7 +366,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DoRecalculateScreenParts();
         }
 
-        private void GetDetailsFromControls(IndividualDataTDSPmGeneralApplicationRow ARow)
+        private void GetDetailsFromControls(IndividualDataTDSPmGeneralApplicationRow ARow, bool AIsNewRow = false)
         {
             if (IsEventApplication(ARow))
             {

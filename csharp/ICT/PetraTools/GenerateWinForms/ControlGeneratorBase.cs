@@ -783,6 +783,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "\"));" + Environment.NewLine);
             }
 
+
+            //TODO: CT
+//            if (ctrl.HasAttribute("DefaultValue"))
+//            {
+//                writer.Template.AddToCodelet("DEFAULTOVERRIDE", UndoValue(ctrl, ;
+//            }
+
             if (ctrl.HasAttribute("PartnerShortNameLookup"))
             {
                 LinkControlPartnerShortNameLookup(writer, ctrl);

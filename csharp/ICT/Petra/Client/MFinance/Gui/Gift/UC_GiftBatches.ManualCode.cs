@@ -267,67 +267,116 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+        	this.DeleteAGiftBatch();
+        }
 
-            //Check if any rows exist
-            if (grdDetails.Rows.Count < 2)
-            {
-                return;
-            }
-            //Check if any row is selected
-            else if ((newCurrentRowPos == -1) || (FPreviouslySelectedDetailRow == null))
+                /// <summary>
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(ref AGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
                 MessageBox.Show(Catalog.GetString("No batch is selected to delete."),
                     Catalog.GetString("Cancelling of Gift Batch"));
-                return;
+                return false;
             }
-            // ask if the user really wants to cancel the batch
-            else if (MessageBox.Show(Catalog.GetString("Do you really want to cancel this gift batch?"),
-                         Catalog.GetString("Confirm cancelling of Gift Batch"),
-                         MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
-            {
-                return;
-            }
-
-            GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-            FPetraUtilsObject.SetChangedFlag();
-
-            // save first, then post
-            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
-            {
-                // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("The cancelled batch cannot be saved!") + Environment.NewLine +
-                    Catalog.GetString("Please click Save to confirm the deletion."));
-            }
-
-            grdDetails.Refresh();
-
-            //If some row(s) still exist after deletion
-            if (grdDetails.Rows.Count > 1)
-            {
-                //If last row just deleted, select row at old position - 1
-                if (newCurrentRowPos == grdDetails.Rows.Count)
-                {
-                    newCurrentRowPos--;
-                }
-
-                grdDetails.Selection.ResetSelection(false);
-                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-                pnlDetails.Enabled = false;
-                ClearControls();
-            }
+			else
+			{
+	            // ask if the user really wants to cancel the batch
+	        	ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to cancel Batch no: {0} ?"),
+	        	                                  ARowToDelete.BatchNumber);
+	        	return true;
+			}
+			
         }
 
+        /// <summary>
+        /// Deletes the current row and optionally populates a completion message
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to delete</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        /// <returns>true if row deletion is successful</returns>
+        private bool DeleteRowManual(ref AGiftBatchRow ARowToDelete, out string ACompletionMessage)
+        {
+        	bool deletionSuccessful = false;
+        	
+        	try
+        	{
+	        	//Normally need to set the message parameters before the delete is performed if requiring any of the row values
+        		ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
+        	                                       ARowToDelete.BatchNumber);
+	            
+	        	//Batch is only cancelled and never deleted
+	        	ARowToDelete.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+
+	            // save first, then post
+	            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+	            {
+	                // saving failed, therefore do not try to post
+	                MessageBox.Show(Catalog.GetString("The cancelled batch cannot be saved!") + Environment.NewLine +
+	                    Catalog.GetString("Please click Save to confirm the deletion."));
+	                
+	                deletionSuccessful = false;
+	            }
+	            else
+	            {
+	            	deletionSuccessful = true;
+	            }
+	            	        	
+        	}
+        	catch (Exception ex)
+        	{
+        		ACompletionMessage = ex.Message;
+        		MessageBox.Show(ex.Message,
+        		                "Deletion Error",
+        		                MessageBoxButtons.OK,
+        		                MessageBoxIcon.Error);
+        	}
+        	
+        	return deletionSuccessful;
+        }
+
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(ref AGiftBatchRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+        {
+        	/*Code to execute after the delete has occurred*/
+        	if (ADeletionPerformed && ACompletionMessage.Length > 0)
+        	{
+        		MessageBox.Show(ACompletionMessage,
+        		                "Deletion Completed",
+        		                MessageBoxButtons.OK,
+        		                MessageBoxIcon.Information);
+        		
+        		if (!pnlDetails.Enabled) //set by FocusedRowChanged if grdDetails.Rows.Count < 2
+        		{
+        			ClearControls();
+        		}
+        	}
+        	else if (!AAllowDeletion)
+        	{
+        		//message to user	
+        	}
+        	else if (!ADeletionPerformed)
+        	{
+        		//message to user
+        	}
+        }
+
+        
         private void ClearControls()
         {
-            txtDetailBatchDescription.Clear();
+        	txtDetailBatchDescription.Clear();
             txtDetailHashTotal.NumberValueDecimal = 0;
             dtpDetailGlEffectiveDate.Clear();
             cmbDetailBankCostCentre.SelectedIndex = -1;
@@ -361,7 +410,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Read current rows position
-            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
             {
@@ -406,7 +455,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     grdDetails.Selection.ResetSelection(false);
-                    TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                    grdDetails.SelectRowInGrid(newCurrentRowPos);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
                     ShowDetails(FPreviouslySelectedDetailRow);
