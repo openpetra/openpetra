@@ -163,7 +163,8 @@ namespace Ict.Tools.CodeGeneration
                     {
                         AReasonForAutomValidation = "must not have more than " +
                                                     (ADBField.iLength -
-                        ADBField.iDecimals).ToString() + " digits before the decimal point and not more than " + ADBField.iDecimals.ToString() +
+                                                     ADBField.iDecimals).ToString() + " digits before the decimal point and not more than " +
+                                                    ADBField.iDecimals.ToString() +
                                                     " after the decimal point";
                     }
                     else

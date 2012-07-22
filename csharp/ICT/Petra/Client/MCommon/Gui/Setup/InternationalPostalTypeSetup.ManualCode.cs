@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,13 +62,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
             CreateNewPInternationalPostalType();
         }
-        
+
         private void DeleteRecord(Object sender, EventArgs e)
         {
-        	DeletePInternationalPostalType();
+            DeletePInternationalPostalType();
         }
-        
-        
+
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -78,10 +77,10 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(ref PInternationalPostalTypeRow ARowToDelete, ref string ADeletionQuestion)
         {
-        	/*Code to execute before the delete can take place*/
-        	ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Postal Type Code: '{0}'?"),
-        	                                  ARowToDelete.InternatPostalTypeCode);
-        	return true;
+            /*Code to execute before the delete can take place*/
+            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Postal Type Code: '{0}'?"),
+                ARowToDelete.InternatPostalTypeCode);
+            return true;
         }
 
         /// <summary>
@@ -92,26 +91,26 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ref PInternationalPostalTypeRow ARowToDelete, out string ACompletionMessage)
         {
-        	bool deletionSuccessful = false;
+            bool deletionSuccessful = false;
 
-        	try
-        	{
-	        	//Must set the message parameters before the delete is performed if requiring any of the row values
-        		ACompletionMessage = String.Format(Catalog.GetString("Postal Type Code: '{0}' deleted successfully."),
-        	                                       ARowToDelete.InternatPostalTypeCode);
-	        	ARowToDelete.Delete();
-	        	deletionSuccessful = true;
-        	}
-        	catch (Exception ex)
-        	{
-        		ACompletionMessage = ex.Message;
-        		MessageBox.Show(ex.Message,
-        		                "Deletion Error",
-        		                MessageBoxButtons.OK,
-        		                MessageBoxIcon.Error);
-        	}
-        	
-        	return deletionSuccessful;
+            try
+            {
+                //Must set the message parameters before the delete is performed if requiring any of the row values
+                ACompletionMessage = String.Format(Catalog.GetString("Postal Type Code: '{0}' deleted successfully."),
+                    ARowToDelete.InternatPostalTypeCode);
+                ARowToDelete.Delete();
+                deletionSuccessful = true;
+            }
+            catch (Exception ex)
+            {
+                ACompletionMessage = ex.Message;
+                MessageBox.Show(ex.Message,
+                    "Deletion Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+
+            return deletionSuccessful;
         }
 
         /// <summary>
@@ -121,25 +120,27 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(ref PInternationalPostalTypeRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+        private void PostDeleteManual(ref PInternationalPostalTypeRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
         {
-        	/*Code to execute after the delete has occurred*/
-        	if (ADeletionPerformed && ACompletionMessage.Length > 0)
-        	{
-        		MessageBox.Show(ACompletionMessage,
-        		                "Deletion Completed",
-        		                MessageBoxButtons.OK,
-        		                MessageBoxIcon.Information);
-        	}
-        	else if (!AAllowDeletion)
-        	{
-        		//message to user	
-        	}
-        	else if (!ADeletionPerformed)
-        	{
-        		//message to user
-        	}
+            /*Code to execute after the delete has occurred*/
+            if (ADeletionPerformed && (ACompletionMessage.Length > 0))
+            {
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion Completed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            else if (!AAllowDeletion)
+            {
+                //message to user
+            }
+            else if (!ADeletionPerformed)
+            {
+                //message to user
+            }
         }
-
     }
 }

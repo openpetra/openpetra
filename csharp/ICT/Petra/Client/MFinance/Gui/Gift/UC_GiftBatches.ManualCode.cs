@@ -267,10 +267,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-        	this.DeleteAGiftBatch();
+            this.DeleteAGiftBatch();
         }
 
-                /// <summary>
+        /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
         /// </summary>
@@ -285,14 +285,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     Catalog.GetString("Cancelling of Gift Batch"));
                 return false;
             }
-			else
-			{
-	            // ask if the user really wants to cancel the batch
-	        	ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to cancel Batch no: {0} ?"),
-	        	                                  ARowToDelete.BatchNumber);
-	        	return true;
-			}
-			
+            else
+            {
+                // ask if the user really wants to cancel the batch
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to cancel Batch no: {0} ?"),
+                    ARowToDelete.BatchNumber);
+                return true;
+            }
         }
 
         /// <summary>
@@ -303,42 +302,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ref AGiftBatchRow ARowToDelete, out string ACompletionMessage)
         {
-        	bool deletionSuccessful = false;
-        	
-        	try
-        	{
-	        	//Normally need to set the message parameters before the delete is performed if requiring any of the row values
-        		ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
-        	                                       ARowToDelete.BatchNumber);
-	            
-	        	//Batch is only cancelled and never deleted
-	        	ARowToDelete.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+            bool deletionSuccessful = false;
 
-	            // save first, then post
-	            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
-	            {
-	                // saving failed, therefore do not try to post
-	                MessageBox.Show(Catalog.GetString("The cancelled batch cannot be saved!") + Environment.NewLine +
-	                    Catalog.GetString("Please click Save to confirm the deletion."));
-	                
-	                deletionSuccessful = false;
-	            }
-	            else
-	            {
-	            	deletionSuccessful = true;
-	            }
-	            	        	
-        	}
-        	catch (Exception ex)
-        	{
-        		ACompletionMessage = ex.Message;
-        		MessageBox.Show(ex.Message,
-        		                "Deletion Error",
-        		                MessageBoxButtons.OK,
-        		                MessageBoxIcon.Error);
-        	}
-        	
-        	return deletionSuccessful;
+            try
+            {
+                //Normally need to set the message parameters before the delete is performed if requiring any of the row values
+                ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
+                    ARowToDelete.BatchNumber);
+
+                //Batch is only cancelled and never deleted
+                ARowToDelete.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+
+                // save first, then post
+                if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+                {
+                    // saving failed, therefore do not try to post
+                    MessageBox.Show(Catalog.GetString("The cancelled batch cannot be saved!") + Environment.NewLine +
+                        Catalog.GetString("Please click Save to confirm the deletion."));
+
+                    deletionSuccessful = false;
+                }
+                else
+                {
+                    deletionSuccessful = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ACompletionMessage = ex.Message;
+                MessageBox.Show(ex.Message,
+                    "Deletion Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+
+            return deletionSuccessful;
         }
 
         /// <summary>
@@ -350,33 +348,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         private void PostDeleteManual(ref AGiftBatchRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
         {
-        	/*Code to execute after the delete has occurred*/
-        	if (ADeletionPerformed && ACompletionMessage.Length > 0)
-        	{
-        		MessageBox.Show(ACompletionMessage,
-        		                "Deletion Completed",
-        		                MessageBoxButtons.OK,
-        		                MessageBoxIcon.Information);
-        		
-        		if (!pnlDetails.Enabled) //set by FocusedRowChanged if grdDetails.Rows.Count < 2
-        		{
-        			ClearControls();
-        		}
-        	}
-        	else if (!AAllowDeletion)
-        	{
-        		//message to user	
-        	}
-        	else if (!ADeletionPerformed)
-        	{
-        		//message to user
-        	}
+            /*Code to execute after the delete has occurred*/
+            if (ADeletionPerformed && (ACompletionMessage.Length > 0))
+            {
+                MessageBox.Show(ACompletionMessage,
+                    "Deletion Completed",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
+                {
+                    ClearControls();
+                }
+            }
+            else if (!AAllowDeletion)
+            {
+                //message to user
+            }
+            else if (!ADeletionPerformed)
+            {
+                //message to user
+            }
         }
 
-        
         private void ClearControls()
         {
-        	txtDetailBatchDescription.Clear();
+            txtDetailBatchDescription.Clear();
             txtDetailHashTotal.NumberValueDecimal = 0;
             dtpDetailGlEffectiveDate.Clear();
             cmbDetailBankCostCentre.SelectedIndex = -1;

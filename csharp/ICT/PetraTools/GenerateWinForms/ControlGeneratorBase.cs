@@ -783,7 +783,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "\"));" + Environment.NewLine);
             }
 
-
             //TODO: CT
 //            if (ctrl.HasAttribute("DefaultValue"))
 //            {

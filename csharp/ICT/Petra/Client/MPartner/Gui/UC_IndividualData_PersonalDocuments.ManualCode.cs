@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -153,8 +153,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 //                DoRecalculateScreenParts();
 
-				//TODO: move to template
-				InvokeFocusedRowChanged(newCurrentRowPos);
+                //TODO: move to template
+                InvokeFocusedRowChanged(newCurrentRowPos);
 
                 DoRecalculateScreenParts();
             }
