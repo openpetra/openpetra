@@ -349,7 +349,7 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    throw;
                 }
             }
 

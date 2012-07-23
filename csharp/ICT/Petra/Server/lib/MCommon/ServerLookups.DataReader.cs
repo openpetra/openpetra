@@ -171,7 +171,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 TLogging.Log("TCommonDataReader.GetData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                 TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                throw Exp;
+                throw;
             }
             finally
             {

@@ -216,16 +216,16 @@ namespace Ict.Common.Remoting.Client
                 }
                 else
                 {
-                    throw exp;
+                    throw;
                 }
             }
-            catch (EClientVersionMismatchException exp)
+            catch (EClientVersionMismatchException)
             {
-                throw exp;
+                throw;
             }
-            catch (ELoginFailedServerTooBusyException exp)
+            catch (ELoginFailedServerTooBusyException)
             {
-                throw exp;
+                throw;
             }
             catch (Exception exp)
             {
@@ -344,7 +344,7 @@ namespace Ict.Common.Remoting.Client
             catch (Exception exp)
             {
                 TLogging.Log(exp.ToString() + Environment.NewLine + exp.StackTrace, TLoggingType.ToLogfile);
-                throw exp;
+                throw;
             }
         }
 

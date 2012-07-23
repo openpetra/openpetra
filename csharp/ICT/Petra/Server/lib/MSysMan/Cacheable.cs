@@ -280,7 +280,7 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    throw;
                 }
             }
 

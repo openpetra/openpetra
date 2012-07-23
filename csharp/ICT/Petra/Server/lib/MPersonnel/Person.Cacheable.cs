@@ -726,7 +726,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    throw;
                 }
             }
 

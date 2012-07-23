@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MConference.Applications
             catch (Exception ex)
             {
                 TLogging.Log(ex.ToString());
-                throw ex;
+                throw;
             }
             finally
             {

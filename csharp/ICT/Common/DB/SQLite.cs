@@ -460,11 +460,11 @@ namespace Ict.Common.DB
                             ADBVersion));
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
-                throw e;
+                throw;
             }
         }
     }

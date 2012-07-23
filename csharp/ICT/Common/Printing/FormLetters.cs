@@ -890,7 +890,7 @@ namespace Ict.Common.Printing
             {
                 TLogging.Log("Exception while writing PDF: " + e.Message);
                 TLogging.Log(e.StackTrace);
-                throw e;
+                throw;
             }
 
             return filename;
