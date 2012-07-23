@@ -293,16 +293,17 @@ namespace Ict.Petra.Server.MConference.Applications
                         AttendeeRow.BadgePrint = DatePrinted;
                         CountPrinted++;
                     }
-                }
 
-                const Int32 MAXPRINTALLBADGES = 500;
+                    const Int32 MAXPRINTBADGES = 200;
 
-                if ((CountPrinted > MAXPRINTALLBADGES) && ADoNotReprint
-                    && ((ASelectedRegistrationOffice == -1) || (ASelectedRole == null) || (ASelectedRole.Length == 0)))
-                {
-                    TLogging.Log(
-                        String.Format("PrintBadges: if more than {0} badges, print only per role and registration office", MAXPRINTALLBADGES));
-                    return string.Empty;
+                    // print maximum MAXPRINTBADGES badges at the time, otherwise the server is out of memory
+                    if (!AReprintPrinted)
+                    {
+                        if (CountPrinted > MAXPRINTBADGES)
+                        {
+                            break;
+                        }
+                    }
                 }
 
                 TFormLettersTools.CloseDocument(ref ResultDocument);
