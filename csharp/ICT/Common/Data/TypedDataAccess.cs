@@ -413,15 +413,15 @@ namespace Ict.Common.Data
                 out LastModifiedBy,
                 out LastModifiedDate);
 
-            // check the modification ID (if the row was already there in the base database, it will have no modification ID, NULL)
-            Boolean DbRowHasModifId = (ADataRow[MODIFICATION_ID, DataRowVersion.Original] != System.DBNull.Value);
-            DateTime OriginalLastModificationID = new DateTime();
-            if (DbRowHasModifId)
+            object OriginalModificationIdObject = ADataRow[MODIFICATION_ID, DataRowVersion.Original];
+            DateTime OriginalLastModificationID = DateTime.MinValue;
+
+            if (OriginalModificationIdObject != System.DBNull.Value)
             {
-                OriginalLastModificationID = Convert.ToDateTime(ADataRow[MODIFICATION_ID, DataRowVersion.Original]);
+                OriginalLastModificationID = Convert.ToDateTime(OriginalModificationIdObject);
             }
 
-            if (DbRowHasModifId && (LastModificationId != OriginalLastModificationID))
+            if (LastModificationId != OriginalLastModificationID)
             {
                 throw new EDBConcurrencyException(
                     "Cannot delete row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
