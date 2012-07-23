@@ -398,7 +398,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheablePartnerTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Partner.SaveChangedStandardCacheableTable...");

@@ -216,7 +216,6 @@ namespace Ict.Petra.Server.MConference.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableConferenceTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Conference.SaveChangedStandardCacheableTable...");

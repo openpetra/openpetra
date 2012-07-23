@@ -243,7 +243,6 @@ namespace Ict.Petra.Server.MCommon.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableCommonTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Common.SaveChangedStandardCacheableTable...");

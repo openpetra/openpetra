@@ -240,7 +240,6 @@ namespace Ict.Petra.Server.MPartner.Subscriptions.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Subscriptions.SaveChangedStandardCacheableTable...");

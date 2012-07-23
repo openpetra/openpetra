@@ -345,7 +345,6 @@ namespace Ict.Petra.Server.MPersonnel.Person.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheablePersonTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Person.SaveChangedStandardCacheableTable...");

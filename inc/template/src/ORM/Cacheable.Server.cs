@@ -167,7 +167,6 @@ namespace {#NAMESPACE}
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
@@ -387,7 +386,6 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     TDBTransaction SubmitChangesTransaction;
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     TVerificationResultCollection SingleVerificationResultCollection;
-    TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();    
     string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
     Type TmpType;
 

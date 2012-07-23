@@ -222,7 +222,6 @@ namespace Ict.Petra.Server.MSysMan.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableSysManTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering SysMan.SaveChangedStandardCacheableTable...");

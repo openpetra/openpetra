@@ -253,7 +253,6 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Mailing.SaveChangedStandardCacheableTable...");
