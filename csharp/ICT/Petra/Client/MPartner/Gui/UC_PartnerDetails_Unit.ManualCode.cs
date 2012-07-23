@@ -56,6 +56,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void SetParentLabel(Int64 AParentUnitKey)
         {
             String PartnerShortName;
+
             Shared.TPartnerClass PartnerClass;
             bool ServerResult = TServerLookup.TMPartner.GetPartnerShortName(AParentUnitKey, out PartnerShortName, out PartnerClass, true);
             FPetraUtilsObject.UnhookControl(lblParentName, false); // I don't want this change to cause SetChangedFlag.
@@ -82,6 +83,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void OpenUnitHierarchy(object sender, EventArgs e)
         {
             TFrmUnitHierarchy HierarchyForm = new TFrmUnitHierarchy(this.ParentForm);
+
             HierarchyForm.Show();
             HierarchyForm.ShowThisUnit(FMainDS.PPartner[0].PartnerKey);
             HierarchyForm.ReassignEvent += new UnitReassignHandler(HierarchyForm_ReassignEvent);

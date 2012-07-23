@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private String FStatus = "";
         private TreeNode FChildNodeReference;
         private TreeNode FParentNodeReference;
-        private SortedList<Int64,Int64> ChangedParents = new SortedList<Int64,Int64>();
+        private SortedList <Int64, Int64>ChangedParents = new SortedList <Int64, Int64>();
 
         /// <summary>Event raise on re-assign</summary>
         public event UnitReassignHandler ReassignEvent;
@@ -69,12 +69,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                     return Node;
                 }
             }
+
             return null;
         }
 
         private void InsertAlphabetically(TreeNode Parent, TreeNode Child)
         {
             int Idx;
+
             for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
             {
                 if (Parent.Nodes[Idx].Text.CompareTo(Child.Text) > 0)
@@ -82,13 +84,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                     break;
                 }
             }
+
             if (Idx == Parent.Nodes.Count)
             {
                 Parent.Nodes.Add(Child);
             }
             else
             {
-                Parent.Nodes.Insert(Idx,Child);
+                Parent.Nodes.Insert(Idx, Child);
             }
         }
 
@@ -102,11 +105,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 }
 
                 TreeNode ChildResult = FindChild(Node, AUnitKey);
+
                 if (ChildResult != null)
                 {
                     return ChildResult;
                 }
             }
+
             return null;
         }
 
@@ -115,6 +120,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             while (true)
             {
                 UnitHierarchyNode Child = FindNodeWithThisParent(((UnitHierarchyNode)ParentNode.Tag).MyUnitKey, UnitNodes);
+
                 if (Child == null)
                 {
                     ParentNode.Expand();
@@ -148,7 +154,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ADestinationNode"></param>
         /// <param name="ADragNode"></param>
@@ -159,10 +165,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 return false;
             }
+
             if (ADestinationNode.Parent == ADragNode)
             {
                 return true;
             }
+
             return IsDescendantOf(ADestinationNode.Parent, ADragNode);
         }
 
@@ -171,19 +179,20 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             if (FSelectedNode != null)
             {
                 FSelectedNode.BackColor = Color.White;
-
             }
+
             if (ASelThis != null)
             {
                 ASelThis.BackColor = Color.Turquoise;
             }
+
             FSelectedNode = ASelThis;
         }
 
         private void SelectNode(TreeNode ASelThis)
         {
-
             ShowNodeSelected(ASelThis);
+
             if (ASelThis != null)
             {
                 txtChild.Text = ((UnitHierarchyNode)ASelThis.Tag).MyUnitKey.ToString("D10");
@@ -195,12 +204,16 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private void treeView_DragOver(object sender, DragEventArgs e)
         {
             Point pt = trvUnits.PointToClient(new Point(e.X, e.Y));
+
             FDragTarget = trvUnits.GetNodeAt(pt);
 
             if (FDragTarget == null)
+            {
                 return;
+            }
 
             ScrollIntoView(FDragTarget);
+
             if ((FDragTarget == FDragNode) || (IsDescendantOf(FDragTarget, FDragNode)))
             {
                 e.Effect = DragDropEffects.Scroll;
@@ -216,6 +229,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private void ScrollIntoView(TreeNode ATarget)
         {
             TreeNode HigherNode = ATarget.PrevVisibleNode;
+
             if (HigherNode != null)
             {
                 if (!HigherNode.IsVisible)
@@ -225,6 +239,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
 
             TreeNode LowerNode = ATarget.NextVisibleNode;
+
             if (LowerNode != null)
             {
                 if (!LowerNode.IsVisible)
@@ -264,9 +279,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         private void UnitsClick(object sender, EventArgs e)
         {
-
             Point pt = new Point(((MouseEventArgs)e).X, ((MouseEventArgs)e).Y);
             TreeNode ClickTarget = trvUnits.GetNodeAt(pt);
+
             SelectNode(ClickTarget);
         }
 
@@ -275,18 +290,21 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             bool ICanReassign = false;
             Int64 ChildKey;
             Int64 ParentKey;
+
             try
             {
                 ChildKey = Convert.ToInt64(txtChild.Text);
                 ParentKey = Convert.ToInt64(txtParent.Text);
                 FChildNodeReference = FindChild(trvUnits.Nodes[0], ChildKey);
                 FParentNodeReference = FindChild(trvUnits.Nodes[0], ParentKey);
+
                 if ((FChildNodeReference != null) && (FParentNodeReference != null))
                 {
                     if (!IsDescendantOf(FParentNodeReference, FChildNodeReference))
+                    {
                         ICanReassign = true;
+                    }
                 }
-
             }
             catch (Exception)
             {
@@ -294,38 +312,44 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             btnMove.Enabled = ICanReassign;
         }
 
-        private void treeView_MouseWheel (object sender, MouseEventArgs e)
+        private void treeView_MouseWheel(object sender, MouseEventArgs e)
         {
             int YScroll = (e.Delta / -40);
 
             while (YScroll > 0)
             {
                 TreeNode LastNode = trvUnits.GetNodeAt(1, trvUnits.Bottom - 2);
+
                 if ((LastNode != null) && (LastNode.NextVisibleNode != null))
                 {
                     LastNode.NextVisibleNode.EnsureVisible();
                 }
+
                 YScroll--;
             }
+
             while (YScroll < 0)
             {
                 TreeNode FirstNode = trvUnits.GetNodeAt(1, 1);
+
                 if ((FirstNode != null) && (FirstNode.PrevVisibleNode != null))
                 {
                     FirstNode.PrevVisibleNode.EnsureVisible();
                 }
+
                 YScroll++;
             }
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AUnitKey"></param>
         /// <returns>true if this unit can be shown</returns>
-        public bool ShowThisUnit (Int64 AUnitKey)
+        public bool ShowThisUnit(Int64 AUnitKey)
         {
             TreeNode SelectedNode = FindChild(trvUnits.Nodes[0], AUnitKey);
+
             if (SelectedNode != null)
             {
                 trvUnits.CollapseAll();
@@ -334,10 +358,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 SelectNode(SelectedNode);
             }
 
-            return (SelectedNode != null);
+            return SelectedNode != null;
         }
 
-        
         private void RunOnceOnActivationManual()
         {
             trvUnits.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
@@ -374,6 +397,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private void GetAllChildren(TreeNode Parent, ref ArrayList UnitNodes)
         {
             UnitNodes.Add(Parent.Tag);
+
             foreach (TreeNode Node in Parent.Nodes)
             {
                 GetAllChildren(Node, ref UnitNodes);
@@ -381,34 +405,38 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public bool SaveChanges()
         {
-            if (MessageBox.Show(FStatus + "\r\n" + Catalog.GetString("Do you want to keep these changes?"), 
-                Catalog.GetString("Unit Hierarchy"), MessageBoxButtons.YesNo)
+            if (MessageBox.Show(FStatus + "\r\n" + Catalog.GetString("Do you want to keep these changes?"),
+                    Catalog.GetString("Unit Hierarchy"), MessageBoxButtons.YesNo)
                 == DialogResult.No)
             {
                 return false;
             }
+
             ArrayList UnitNodes = new ArrayList();
-            GetAllChildren (trvUnits.Nodes[0], ref UnitNodes);
+            GetAllChildren(trvUnits.Nodes[0], ref UnitNodes);
             Boolean SavedOk = TRemote.MPersonnel.WebConnectors.SaveUnitHierarchy(UnitNodes);
+
             if (SavedOk)
             {
                 foreach (Int64 Child in ChangedParents.Keys)
                 {
                     ReassignEvent(Child, ChangedParents[Child]);
                 }
+
                 FStatus = "";
                 FPetraUtilsObject.HasChanges = false;
             }
+
             return SavedOk;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -418,7 +446,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

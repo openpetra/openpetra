@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         Int64 ExistingPartnerKey = -1;
         int UserSelLocationKey = -1;
         PartnerFindTDSSearchResultRow UserSelectedRow;
-        List<Int64> FImportedUnits = new List<Int64>();
+        List <Int64>FImportedUnits = new List <Int64>();
 
         private void AddStatus(String ANewStuff)
         {
@@ -200,6 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     return;
                 }
+
                 AddStatus(String.Format(Catalog.GetString("File read OK ({0} partners) - press Start to import.\r\n"), FMainDS.PPartner.Rows.Count));
             }
         }
@@ -405,6 +406,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             do
             {
                 FCurrentPartner = FMainDS.PPartner[FCurrentNumberOfRecord - 1];
+
                 if (FImportedUnits.Contains(FCurrentPartner.PartnerKey))
                 {
                     AddStatus(String.Format(Catalog.GetString("Unit [{0}] already imported.\r\n"), FCurrentPartner.PartnerKey));
@@ -851,7 +853,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!recordAlreadyExists)
             {
-
                 ImportRecordsByPartnerKey(ANewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
                     UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
             }
@@ -861,13 +862,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             // otherwise the UmUnitStructure record will not save.
             ANewPartnerDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
             Int32 RowIdx = ANewPartnerDS.UmUnitStructure.DefaultView.Find(AOrigPartnerKey);
-            
+
             if (RowIdx < 0) // If I can't find the record I've just added, that's pretty bad!
             {
-                return; 
+                return;
             }
 
-            UmUnitStructureRow NewRow = (UmUnitStructureRow) ANewPartnerDS.UmUnitStructure.DefaultView[RowIdx].Row;
+            UmUnitStructureRow NewRow = (UmUnitStructureRow)ANewPartnerDS.UmUnitStructure.DefaultView[RowIdx].Row;
             Int64 ParentKey = NewRow.ParentUnitKey;
 
             if (!FImportedUnits.Contains(ParentKey))
@@ -878,17 +879,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Boolean UserCanAccessPartner;
 
                 Boolean PartnerExistsInDB = TServerLookup.TMPartner.VerifyPartner(ParentKey,
-                out PartnerShortName,
-                out PartnerClass,
-                out IsMergedPartner,
-                out UserCanAccessPartner);
+                    out PartnerShortName,
+                    out PartnerClass,
+                    out IsMergedPartner,
+                    out UserCanAccessPartner);
 
                 if (!PartnerExistsInDB) // If this partner is not already in the database
                 {
                     FMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}",
                         PPartnerTable.GetPartnerKeyDBName(), ParentKey);
+
                     //
-                    // If there is no parent I can still import this UNIT, 
+                    // If there is no parent I can still import this UNIT,
                     // but I'll set the parent to root, and modify the description
                     //
                     if (FMainDS.PPartner.DefaultView.Count == 0)
@@ -978,7 +980,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Copy this Partner, and all the data linked to it, from the large DataSet into a new one,
         /// and send it back to the server for committing.
-        /// 
+        ///
         /// NOTE: May be called recursively to add parent records before adding children.
         /// </summary>
         /// <param name="APartnerRow">Row to import</param>
@@ -991,7 +993,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return 0;
             }
 
-            if (FImportedUnits.Contains (APartnerRow.PartnerKey))
+            if (FImportedUnits.Contains(APartnerRow.PartnerKey))
             {
                 return APartnerRow.PartnerKey;
             }
@@ -1078,18 +1080,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.PUnit, FMainDS.PUnit,
                     PUnitTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+
 /*
-    // I'm doing this later, in AddUnitstructure
-                ImportRecordsByPartnerKey(NewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
-                    UmUnitStructureTable.GetChildUnitKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
-*/
+ *  // I'm doing this later, in AddUnitstructure
+ *              ImportRecordsByPartnerKey(NewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
+ *                  UmUnitStructureTable.GetChildUnitKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+ */
                 FImportedUnits.Add(NewPartnerKey);
+
 /*
-   // I don't need this at all...
-                foreach (UmUnitStructureRow UnitStructureRow in NewPartnerDS.UmUnitStructure.Rows)
-                {
-                    UnitStructureRow.ChildUnitKey = NewPartnerKey;
-                }
+ * // I don't need this at all...
+ *              foreach (UmUnitStructureRow UnitStructureRow in NewPartnerDS.UmUnitStructure.Rows)
+ *              {
+ *                  UnitStructureRow.ChildUnitKey = NewPartnerKey;
+ *              }
  */
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_VENUE)

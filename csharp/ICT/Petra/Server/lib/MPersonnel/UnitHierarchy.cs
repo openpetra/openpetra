@@ -46,9 +46,8 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
     /// </summary>
     public partial class TPersonnelWebConnector
     {
-
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("PERSONNEL")]
@@ -57,6 +56,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             const Int64 THE_ORGANISATION = 1000000;
 
             ArrayList Ret = new ArrayList();
+
             try
             {
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -83,6 +83,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     RootNode.Description = ((PUnitRow)UnitTbl.DefaultView[RootUnitIdx].Row).UnitName;
                     UnitTbl.DefaultView.Delete(RootUnitIdx);
                 }
+
                 Ret.Add(RootNode);
 
                 foreach (DataRowView rv in UnitTbl.DefaultView)
@@ -90,15 +91,18 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     PUnitRow UnitRow = (PUnitRow)rv.Row;
                     UnitHierarchyNode Node = new UnitHierarchyNode();
                     Node.Description = UnitRow.UnitName + " " + UnitRow.Description;
+
                     if (Node.Description == "")
                     {
                         Node.Description = "[" + UnitRow.PartnerKey.ToString("D10") + "]";
                     }
+
                     Node.MyUnitKey = UnitRow.PartnerKey;
 
                     //
                     // Retrieve parent..
                     Int32 HierarchyTblIdx = HierarchyTbl.DefaultView.Find(Node.MyUnitKey);
+
                     if (HierarchyTblIdx >= 0)
                     {
                         Node.ParentUnitKey = ((UmUnitStructureRow)HierarchyTbl.DefaultView[HierarchyTblIdx].Row).ParentUnitKey;
@@ -111,6 +115,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     //
                     // Retrieve TypeCode..
                     Int32 TypeTblIndex = UnitTypeTbl.DefaultView.Find(UnitRow.UnitTypeCode);
+
                     if (TypeTblIndex >= 0)
                     {
                         Node.TypeCode = ((UUnitTypeRow)UnitTypeTbl.DefaultView[TypeTblIndex].Row).UnitTypeName;
@@ -119,6 +124,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     {
                         Node.TypeCode = "Type: " + UnitRow.UnitTypeCode;
                     }
+
                     Ret.Add(Node);
                 }
             }
@@ -130,7 +136,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="Nodes"></param>
         /// <returns></returns>
@@ -145,7 +151,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             }
 
             // This new table I've constructed COMPLETELY REPLACES
-            // the existing UmUnitStructure table. 
+            // the existing UmUnitStructure table.
             // I'll delete the whole content before calling SubmitChanges with my new data.
 
             Boolean CommitOK = false;

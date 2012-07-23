@@ -1187,25 +1187,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             TDBTransaction ATransaction)
         {
             bool EveryoneHasAParent = true;
+
             // UmUnitStructure: the ParentUnit must exist
             foreach (UmUnitStructureRow Row in AMainDS.UmUnitStructure.Rows)
             {
                 AMainDS.PPartner.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName();
                 Int32 RowIdx = AMainDS.PPartner.DefaultView.Find(Row.ParentUnitKey);
+
                 if (RowIdx < 0)
                 {
                     if (!PPartnerAccess.Exists(Row.ParentUnitKey, ATransaction))
                     {
-                        AddVerificationResult(ref ReferenceResults, "Required Parent UNIT not Found: " + Row.ParentUnitKey.ToString(),TResultSeverity.Resv_Critical);
+                        AddVerificationResult(ref ReferenceResults,
+                            "Required Parent UNIT not Found: " + Row.ParentUnitKey.ToString(), TResultSeverity.Resv_Critical);
                         EveryoneHasAParent = false;
                         break;
                     }
                 }
+
                 if (UmUnitStructureAccess.Exists(Row.ParentUnitKey, Row.ChildUnitKey, ATransaction))
                 {
                     Row.AcceptChanges();
                 }
             }
+
             return EveryoneHasAParent;
         }
 

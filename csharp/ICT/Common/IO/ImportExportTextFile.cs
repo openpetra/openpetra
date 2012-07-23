@@ -415,6 +415,7 @@ namespace Ict.Common.IO
         public Int32 ReadInt32()
         {
             string s = ReadNextStringItem();
+
             return Convert.ToInt32(s);
         }
 

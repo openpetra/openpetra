@@ -1334,7 +1334,7 @@ namespace Ict.Common.Data
             }
 
             // modification id
-            if (!((ADataRow.IsNull(MODIFICATION_ID) || Convert.ToDateTime(ADataRow[MODIFICATION_ID]) == DateTime.MinValue)))
+            if (!((ADataRow.IsNull(MODIFICATION_ID) || (Convert.ToDateTime(ADataRow[MODIFICATION_ID]) == DateTime.MinValue))))
             {
                 // modification id for the where clause
                 parameter = new OdbcParameter("s_modification_id_t", OdbcType.DateTime);
@@ -1511,7 +1511,7 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
                 }
 
-                if (ADataRow.IsNull(MODIFICATION_ID) || Convert.ToDateTime(ADataRow[MODIFICATION_ID]) == DateTime.MinValue)
+                if (ADataRow.IsNull(MODIFICATION_ID) || (Convert.ToDateTime(ADataRow[MODIFICATION_ID]) == DateTime.MinValue))
                 {
                     ReturnValue += " AND " + MODIFICATION_ID + " IS NULL";
                 }
