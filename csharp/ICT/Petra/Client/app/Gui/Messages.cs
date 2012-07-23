@@ -99,10 +99,10 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>Part of a Database Concurrency Message.</summary>
         private static readonly string StrDBConcurrencySelf = Catalog.GetString(
-            "You have tried to {1} the same record in Table '{2}' after you have" + "\r\n" + "{3}{4}." +
+            "You have tried to {1} the same record in Table\r\n" + "'{2}' after you have {3}{4}." +
             "\r\n" + "\r\n" +
-            "None of your current changes can be saved, since these changes could potentially" + "\r\n" +
-            "conflict with each other." +
+            "None of your current changes can be saved, since these changes could" + "\r\n" +
+            "potentially conflict with each other." +
             "\r\n" + "\r\n");
 
         /// <summary>Part of a Database Concurrency Message.</summary>
