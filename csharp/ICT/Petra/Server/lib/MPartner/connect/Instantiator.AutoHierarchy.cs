@@ -2760,7 +2760,6 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         /// generated method from connector
         public MExtractMasterTable GetAllExtractHeaders()
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders();
         }
 
@@ -2770,8 +2769,21 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                                         String AUserCreated,
                                                         String AUserModified)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";STRING;BOOL;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AAllUsers, AUserCreated, AUserModified);
+        }
+
+        /// generated method from connector
+        public MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                        String AExtractDescFilter,
+                                                        Boolean AAllUsers,
+                                                        String AUserCreated,
+                                                        String AUserModified,
+                                                        System.Nullable<DateTime>ADateCreatedFrom,
+                                                        System.Nullable<DateTime>ADateCreatedTo,
+                                                        System.Nullable<DateTime>ADateModifiedFrom,
+                                                        System.Nullable<DateTime>ADateModifiedTo)
+        {
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AExtractDescFilter, AAllUsers, AUserCreated, AUserModified, ADateCreatedFrom, ADateCreatedTo, ADateModifiedFrom, ADateModifiedTo);
         }
 
         /// generated method from connector
@@ -2788,6 +2800,26 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateEmptyExtract", ";INT;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateEmptyExtract(ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
+        public Boolean CreateFamilyMembersExtract(System.Int32 ABaseExtractId,
+                                                  ref System.Int32 AExtractId,
+                                                  String AExtractName,
+                                                  String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateFamilyMembersExtract", ";INT;INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateFamilyMembersExtract(ABaseExtractId, ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
+        public Boolean CreateFamilyExtractForPersons(System.Int32 ABaseExtractId,
+                                                     ref System.Int32 AExtractId,
+                                                     String AExtractName,
+                                                     String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateFamilyExtractForPersons", ";INT;INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateFamilyExtractForPersons(ABaseExtractId, ref AExtractId, AExtractName, AExtractDescription);
         }
 
         /// generated method from connector
@@ -2821,6 +2853,25 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SaveExtract", ";INT;MEXTRACTTABLE;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SaveExtract(AExtractId, ref AExtractTable, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
+                                                Boolean AEmailGiftStatement)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateEmailGiftStatement", ";INT;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateEmailGiftStatement(AExtractId, AEmailGiftStatement);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateReceiptFrequency(System.Int32 AExtractId,
+                                              Boolean AUpdateReceiptLetterFrequency,
+                                              String AReceiptLetterFrequency,
+                                              Boolean AUpdateReceiptEachGift,
+                                              Boolean AReceiptEachGift)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateReceiptFrequency", ";INT;BOOL;STRING;BOOL;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateReceiptFrequency(AExtractId, AUpdateReceiptLetterFrequency, AReceiptLetterFrequency, AUpdateReceiptEachGift, AReceiptEachGift);
         }
 
         /// generated method from connector

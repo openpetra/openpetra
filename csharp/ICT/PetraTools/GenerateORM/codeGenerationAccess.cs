@@ -76,57 +76,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <summary>
         /// get the namespace for a given table group name
         /// </summary>
-        /// <param name="ATableGroup"></param>
-        /// <returns></returns>
-        public static string GetNamespace(String ATableGroup)
+        public static string GetNamespace(string AStrGroup)
         {
-            String NamespaceTable;
-
-            if (ATableGroup == "partner")
-            {
-                NamespaceTable = "MPartner.Partner";
-            }
-            else if (ATableGroup == "mailroom")
-            {
-                NamespaceTable = "MPartner.Mailroom";
-            }
-            else if (ATableGroup == "account")
-            {
-                NamespaceTable = "MFinance.Account";
-            }
-            else if (ATableGroup == "gift")
-            {
-                NamespaceTable = "MFinance.Gift";
-            }
-            else if (ATableGroup == "ap")
-            {
-                NamespaceTable = "MFinance.AP";
-            }
-            else if (ATableGroup == "ar")
-            {
-                NamespaceTable = "MFinance.AR";
-            }
-            else if (ATableGroup == "personnel")
-            {
-                NamespaceTable = "MPersonnel.Personnel";
-            }
-            else if (ATableGroup == "units")
-            {
-                NamespaceTable = "MPersonnel.Units";
-            }
-            else if (ATableGroup == "common")
-            {
-                NamespaceTable = "MCommon";
-            }
-            else
-            {
-                NamespaceTable = 'M' + ATableGroup;
-            }
+            String NamespaceTable = TTable.GetNamespace(AStrGroup);
 
             return "using Ict.Petra.Shared." +
-                   NamespaceTable.Replace("Msysman", "MSysMan").
-                   Replace("Mconference", "MConference").
-                   Replace("Mhospitality", "MHospitality") + ".Data" +
+                   NamespaceTable + ".Data" +
                    ";" + Environment.NewLine;
         }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -309,6 +309,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 if (ResultDocument.Length == 0)
                 {
+                    TLogging.Log("there are no batches to be printed");
                     return String.Empty;
                 }
 
@@ -320,6 +321,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 {
                     // store modified date printed for badges
                     TVerificationResultCollection VerificationResult;
+
+                    MainDS.ThrowAwayAfterSubmitChanges = true;
+
                     ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
                 }
 

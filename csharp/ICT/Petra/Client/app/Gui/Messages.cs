@@ -64,9 +64,9 @@ namespace Ict.Petra.Client.App.Gui
         /// <summary>Shown when invalid data was entered.</summary>
         private static readonly string StrInvalidDataTitle = Catalog.GetString("Invalid Data");
 
-        /// <summary>Shown when the Form contains invalid data at the point of saving data.</summary>
-        private static readonly string StrFormSaveInvalidDataNeedsCorrecting = Catalog.GetString(
-            "Data cannot be saved because invalid data has not been corrected:");
+        /// <summary>Shown when the Form contains invalid data at a certain point when Data Validation runs (e.g. saving of data, change of context [e.g. switching of Tab]).</summary>
+        private static readonly string StrInvalidDataNeedsCorrecting = Catalog.GetString(
+            "The operation cannot be performed because the form contains invalid data:");
 
         /// <summary>Shown when a record contains warnings at the poing of changing to a different record.</summary>
         private static readonly string StrRecordChangeInvalidDataWarning = Catalog.GetString(
@@ -99,10 +99,10 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>Part of a Database Concurrency Message.</summary>
         private static readonly string StrDBConcurrencySelf = Catalog.GetString(
-            "You have tried to {1} the same record in Table '{2}' after you have" + "\r\n" + "{3}{4}." +
+            "You have tried to {1} the same record in Table\r\n" + "'{2}' after you have {3}{4}." +
             "\r\n" + "\r\n" +
-            "None of your current changes can be saved, since these changes could potentially" + "\r\n" +
-            "conflict with each other." +
+            "None of your current changes can be saved, since these changes could" + "\r\n" +
+            "potentially conflict with each other." +
             "\r\n" + "\r\n");
 
         /// <summary>Part of a Database Concurrency Message.</summary>
@@ -377,7 +377,7 @@ namespace Ict.Petra.Client.App.Gui
             else
             {
                 Title = TMessages.StrInvalidDataNeedsCorrectingTitle;
-                Heading = StrFormSaveInvalidDataNeedsCorrecting;
+                Heading = StrInvalidDataNeedsCorrecting;
                 Icon = MessageBoxIcon.Error;
             }
 

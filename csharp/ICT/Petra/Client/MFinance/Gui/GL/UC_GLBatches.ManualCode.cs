@@ -229,6 +229,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ClearDetailControls();
             EnableButtonControl(true);
 
+            grdDetails.DataSource = null;
+
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
             ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
@@ -240,13 +242,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-            grdDetails.Refresh();
+            //grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            txtDetailBatchDescription.Text = "Please enter a batch description.";
+            //FCurrentRow = FMainDS.ABatch.Rows.Count - 1;
+
+            txtDetailBatchDescription.Text = "PLEASE ENTER DESCRIPTION";
             txtDetailBatchDescription.Focus();
 
             ((TFrmGLBatch)ParentForm).SaveChanges();
@@ -264,7 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 ||
@@ -330,20 +335,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         {
                             newCurrentRowPos--;
                         }
-
-                        grdDetails.Selection.ResetSelection(false);
-                        TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
-                        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-                        ShowDetails(FPreviouslySelectedDetailRow);
                     }
                     else
                     {
-                        FPreviouslySelectedDetailRow = null;
                         EnableButtonControl(false);
                         ClearDetailControls();
-                        pnlDetails.Enabled = false;
+
+                        newCurrentRowPos = 0;
                     }
+
+                    //Select and call the event that doesn't occur automatically
+                    InvokeFocusedRowChanged(newCurrentRowPos);
+                    //!!DO NOT USE THIS: grdDetails.Selection.FocusRow(0);
+
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
@@ -406,7 +410,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //get index position of row to post
-            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             //TODO: Correct this if needed
             DateTime StartDateCurrentPeriod;
@@ -473,7 +477,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
 
                         grdDetails.Selection.ResetSelection(false);
-                        TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                        grdDetails.SelectRowInGrid(newCurrentRowPos);
                         FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
                         ShowDetails(FPreviouslySelectedDetailRow);

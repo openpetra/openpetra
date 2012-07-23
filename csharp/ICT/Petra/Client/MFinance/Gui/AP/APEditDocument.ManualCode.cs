@@ -286,19 +286,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 DetailAmount = 0;
             }
 
-            CreateAApDocumentDetail(
-                FMainDS.AApDocument[0].LedgerNumber,
-                FMainDS.AApDocument[0].ApDocumentId,
-                FMainDS.AApSupplier[0].DefaultExpAccount,
-                FMainDS.AApSupplier[0].DefaultCostCentre,
-                DetailAmount,
-                FMainDS.AApDocument[0].LastDetailNumber);
-            FMainDS.AApDocument[0].LastDetailNumber++;
+            if (CreateAApDocumentDetail(
+                    FMainDS.AApDocument[0].LedgerNumber,
+                    FMainDS.AApDocument[0].ApDocumentId,
+                    FMainDS.AApSupplier[0].DefaultExpAccount,
+                    FMainDS.AApSupplier[0].DefaultCostCentre,
+                    DetailAmount,
+                    FMainDS.AApDocument[0].LastDetailNumber))
+            {
+                FMainDS.AApDocument[0].LastDetailNumber++;
 
-            // for the moment, set all to approved, since we don't yet support approval of documents
-            FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
-            EnableControls();
-            txtDetailNarrative.Focus();
+                // for the moment, set all to approved, since we don't yet support approval of documents
+                FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+                EnableControls();
+                txtDetailNarrative.Focus();
+            }
         }
 
         private void RemoveDetail(Object sender, EventArgs e)

@@ -43,6 +43,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Server.MConference.Data.Access;
+using Ict.Petra.Shared.MConference.Validation;
 #endregion ManualCode
 namespace Ict.Petra.Server.MConference.Cacheable
 {
@@ -215,7 +216,6 @@ namespace Ict.Petra.Server.MConference.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheableConferenceTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Conference.SaveChangedStandardCacheableTable...");
@@ -235,8 +235,8 @@ namespace Ict.Petra.Server.MConference.Cacheable
                         case TCacheableConferenceTablesEnum.ConferenceOptionTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateConferenceOptionTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateConferenceOptionTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PcConferenceOptionTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateConferenceOptionTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -299,10 +299,7 @@ namespace Ict.Petra.Server.MConference.Cacheable
 
 #region Data Validation
 
-        partial void ValidateConferenceOptionTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateConferenceOptionTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateConferenceOptionTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
     }

@@ -156,7 +156,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //        GetDataFromControls(FMainDS.PSubscription[0]);
 //
 //            // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
-//            ValidateDataDetailsManual(FMainDS.PSubscription[0]);
+//            ValidateDataManual(FMainDS.PSubscription[0]);
 //
 //            if (AProcessAnyDataValidationErrors)
 //            {

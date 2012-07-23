@@ -212,13 +212,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailAnalysisTypeCode.Enabled = false;
             return txtDetailAnalysisTypeCode.Text;
         }
-
-        private void ValidateDataDetailsManual(AAnalysisTypeRow ARow)
-        {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            TSharedFinanceValidation_GLSetup.ValidateAnalysisTypesSetupManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
-        }
     }
 }

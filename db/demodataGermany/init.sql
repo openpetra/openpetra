@@ -114,10 +114,11 @@ COPY a_motivation_detail_fee FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_detail_f
 COPY p_publication FROM '{#ABSOLUTEBASEDATAPATH}/p_publication.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 -- sample partner for online registration demo
-INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(1110198, 'DemoConference', 'UNIT', 'ACTIVE'); 
+INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(1110198, 'DemoConference', 'UNIT', 'ACTIVE');
 INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(1110198,'DemoConference','CONF'); 
 INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(1110198, 0, 0);
 INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(43000000,1110198);
+INSERT INTO pc_conference(pc_conference_key_n, pc_outreach_prefix_c, pc_start_d, pc_end_d, a_currency_code_c) values( 1110198, 'DEMO77', '2013-01-01', '2013-01-14', 'EUR');
 
 -- import sample partners (donor and supplier)
 COPY p_partner FROM '{#ABSOLUTEBASEDATAPATH}/p_partner.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

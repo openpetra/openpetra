@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -156,6 +156,27 @@ namespace Ict.Common.Controls
                 return FSorting;
             }
         }
+
+        /// <summary>
+        /// behaviour for invoking focus events
+        /// </summary>
+        public enum TInvokeGridFocusEventEnum
+        {
+            /// <summary>
+            /// no focus events
+            /// </summary>
+            NoFocusEvent,
+
+            /// <summary>
+            /// FocusRowLeaving event
+            /// </summary>
+            FocusRowLeavingEvent,
+
+            /// <summary>
+            /// FocusedRowChanged event
+            /// </summary>0295BC0D-ECC1-4E71-8152-D236FEEA6FB5
+            FocusedRowChangedEvent
+        };
 
         /// <summary>
         /// Read access to the View for the ColumnHeaders of this Grid (used by
@@ -1087,21 +1108,17 @@ namespace Ict.Common.Controls
 
             FSorting = true;
 
-            // MessageBox.Show('Length(FRowsSelectedBeforeSort): ' + Convert.ToString(Length(FRowsSelectedBeforeSort)));
             if (FRowsSelectedBeforeSort.Length > 0)
             {
                 if (FKeepRowSelectedAfterSort)
                 {
-                    this.Selection.ResetSelection(false);
-                    this.Selection.Focus(Position.Empty, true);
-                    this.Selection.SelectRow(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, true);
+                    this.SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, false);
                 }
 
                 this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
             }
 
             FSorting = false;
-            // MessageBox.Show('TSgrdDataGrid.OnSortedRangeRows');
         }
 
         /// <summary>
@@ -1363,10 +1380,46 @@ namespace Ict.Common.Controls
             return rowIndex;
         }
 
-        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        /// select a row in the grid, and invoke the event for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid)
         {
             SelectRowInGrid(ARowNumberInGrid, false);
+        }
+
+        /// select a row in the grid, and optionally invoke the event for FocusedRowChanged
+        public void SelectRowInGrid(Int32 ARowNumberInGrid, TInvokeGridFocusEventEnum AInvokeEvent)
+        {
+            switch (AInvokeEvent)
+            {
+                case TInvokeGridFocusEventEnum.FocusRowLeavingEvent:  //Invoke FocusRowLeaving event
+
+                    break;
+
+                case TInvokeGridFocusEventEnum.FocusedRowChangedEvent:  //Invoke FocusedRowChanged event
+                    SelectRowInGrid(ARowNumberInGrid, false);
+
+                    break;
+
+                default: //TInvokeGridFocusEventEnum.NoFocusEvent
+                    int NumRows = this.Rows.Count;
+
+                    if (NumRows == 1)
+                    {
+                        return;
+                    }
+                    else if ((ARowNumberInGrid < 1) || (ARowNumberInGrid >= NumRows))
+                    {
+                        return;
+                    }
+
+                    //Select and show specified row
+                    this.Selection.FocusStyle = FocusStyle.None;
+                    this.Selection.SelectRow(ARowNumberInGrid, true);
+                    this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+                    this.Selection.FocusStyle = FocusStyle.Default;
+
+                    break;
+            }
         }
 
         /// select a row in the grid, and invoke the event for FocusedRowChanged
@@ -1622,6 +1675,14 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnInsertKeyPressed(new RowEventArgs(SelectedDataRow));
+
+                //TODO: check if this will work for tabbed forms that contain subforms
+                //If a New button exists call its code.
+                if (this.FindForm().Controls.Find("btnNew", true).Length > 0)
+                {
+                    System.Windows.Forms.Button insertButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnNew", true)[0];
+                    insertButton.PerformClick();
+                }
             }
             // Key for firing OnDeleteKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Delete)
@@ -1638,6 +1699,14 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnDeleteKeyPressed(new RowEventArgs(SelectedDataRow));
+
+                //TODO: check if this will work for tabbed forms that contain subforms
+                //If a Delete button exists call its code.
+                if (this.FindForm().Controls.Find("btnDelete", true).Length > 0)
+                {
+                    System.Windows.Forms.Button deleteButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnDelete", true)[0];
+                    deleteButton.PerformClick();
+                }
             }
             // Keys that can trigger AutoFind
             else if (((AKeyEventArgs.KeyCode >= Keys.A)

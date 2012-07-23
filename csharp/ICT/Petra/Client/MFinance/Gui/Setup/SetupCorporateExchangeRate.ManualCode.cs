@@ -156,10 +156,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ACorporateExRateRow.TimeEffectiveFrom = 0;
 
             FMainDS.ACorporateExchangeRate.Rows.Add(ACorporateExRateRow);
-            grdDetails.Refresh();
+//            grdDetails.Refresh();
+//
+//            FPetraUtilsObject.SetChangedFlag();
+//            SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1);
 
             FPetraUtilsObject.SetChangedFlag();
+
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACorporateExchangeRate.DefaultView);
+
             SelectDetailRowByDataTableIndex(FMainDS.ACorporateExchangeRate.Rows.Count - 1);
+            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+
+            //Must be set after the FocusRowChanged event is called as it sets this flag to false
+            FNewRecordUnsavedInFocus = true;
+
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+
+            Control[] pnl = this.Controls.Find("pnlDetails", true);
+
+            if (pnl.Length > 0)
+            {
+                //Look for Key & Description fields
+                bool keyFieldFound = false;
+
+                foreach (Control detailsCtrl in pnl[0].Controls)
+                {
+                    if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+                    {
+                        keyFieldFound = true;
+                        detailsCtrl.Focus();
+                    }
+
+                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && (detailsCtrl.Text == string.Empty))
+                    {
+                        detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+                        break;
+                    }
+                }
+            }
 
             UpdateExchangeRateLabels();
         }

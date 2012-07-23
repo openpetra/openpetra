@@ -83,7 +83,6 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             FStringWriter = new StringWriter();
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            GLSetupTDS SetupTDS = new GLSetupTDS();
             FDelimiter = (String)requestParams["Delimiter"];
             FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
             FDateFormatString = (String)requestParams["DateFormatString"];
@@ -167,6 +166,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             UInt32 counter = 0;
             AGiftSummaryRow giftSummary = null;
 
+            MainDS.AGiftDetail.DefaultView.Sort =
+                AGiftDetailTable.GetLedgerNumberDBName() + "," +
+                AGiftDetailTable.GetBatchNumberDBName() + "," +
+                AGiftDetailTable.GetGiftTransactionNumberDBName() + "," +
+                AGiftDetailTable.GetDetailNumberDBName();
+
             foreach (AGiftBatchRow giftBatch in MainDS.AGiftBatch.Rows)
             {
                 if (!FTransactionsOnly & !Summary)
@@ -180,22 +185,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                     if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
                     {
-                        MainDS.AGiftDetail.DefaultView.Sort = AGiftDetailTable.GetDetailNumberDBName();
-                        MainDS.AGiftDetail.DefaultView.RowFilter =
-                            String.Format("{0}={1} and {2}={3} and {4}={5}",
-                                AGiftDetailTable.GetLedgerNumberDBName(),
-                                gift.LedgerNumber,
-                                AGiftDetailTable.GetBatchNumberDBName(),
-                                gift.BatchNumber,
-                                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                                gift.GiftTransactionNumber);
-
-                        foreach (DataRowView dv in MainDS.AGiftDetail.DefaultView)
+                        for (int detailNumber = 1; detailNumber <= gift.LastDetailNumber; detailNumber++)
                         {
-                            AGiftDetailRow giftDetail = (AGiftDetailRow)dv.Row;
-                            Ict.Petra.Server.MPartner.Partner.Data.Access.PPartnerAccess.LoadByPrimaryKey(SetupTDS,
-                                giftDetail.RecipientKey,
-                                FTransaction);
+                            AGiftDetailRow giftDetail = (AGiftDetailRow)MainDS.AGiftDetail.DefaultView.FindRows(
+                                new object[] { gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber, detailNumber })[0].Row;
 
                             if (Summary)
                             {
@@ -368,7 +361,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteBoolean(giftDetails.ConfidentialGiftFlag);
             WriteStringQuoted(giftDetails.MotivationGroupCode);
             WriteStringQuoted(giftDetails.MotivationDetailCode);
-            WriteStringQuoted(giftDetails.CostCentreCode);
+
+            if (FExtraColumns)
+            {
+                WriteStringQuoted(giftDetails.CostCentreCode);
+            }
+
             WriteStringQuoted(giftDetails.GiftCommentOne);
             WriteStringQuoted(giftDetails.CommentOneType);
 

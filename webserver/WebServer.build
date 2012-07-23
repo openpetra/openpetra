@@ -150,7 +150,11 @@ list of available commands:
       <exclude name="Ionic.Zip.dll" />
       <exclude name="Ict.Testing.*"/>
       <exclude name="Ict.Petra.Client*"/>
+      <exclude name="Ict.Petra.ServerAdmin*"/>
       <exclude name="Ict.Tools.*"/>
+      <exclude name="NUnitForms.dll" />
+      <exclude name="nunitframework.dll" />
+      <exclude name="ICSharpCode.NRefactory.dll" />
       <!-- some unmanaged dlls cause problems for mono xsp -->
       <exclude name="Mono*" />
     </fileset>

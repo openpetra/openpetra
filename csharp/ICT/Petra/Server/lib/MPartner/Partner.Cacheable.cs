@@ -50,6 +50,9 @@ using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Shared.MPartner.Partner.Validation;
+using Ict.Petra.Shared.MPartner.Mailroom.Validation;
+using Ict.Petra.Shared.MCommon.Validation;
 #endregion ManualCode
 using Ict.Petra.Server.App.Core;
 
@@ -395,7 +398,6 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TVerificationResultCollection SingleVerificationResultCollection;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             string CacheableDTName = Enum.GetName(typeof(TCacheablePartnerTablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering Partner.SaveChangedStandardCacheableTable...");
@@ -415,8 +417,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.AddresseeTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateAddresseeTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateAddresseeTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PAddresseeTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateAddresseeTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -432,8 +434,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.AcquisitionCodeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateAcquisitionCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateAcquisitionCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PAcquisitionValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateAcquisitionCodeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -449,8 +451,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.BusinessCodeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateBusinessCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateBusinessCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PBusinessValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateBusinessCodeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -466,8 +468,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.CurrencyCodeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateCurrencyCodeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateCurrencyCodeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                ACurrencyValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateCurrencyCodeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -483,8 +485,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.DataLabelList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateDataLabelList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateDataLabelListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PDataLabelValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateDataLabelListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -500,8 +502,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.DataLabelUseList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateDataLabelUseList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateDataLabelUseListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PDataLabelUseValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateDataLabelUseListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -517,8 +519,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.DataLabelLookupCategoryList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateDataLabelLookupCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateDataLabelLookupCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PDataLabelLookupCategoryValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateDataLabelLookupCategoryListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -534,8 +536,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.DataLabelLookupList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateDataLabelLookupList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateDataLabelLookupListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PDataLabelLookupValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateDataLabelLookupListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -551,8 +553,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.DenominationList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateDenominationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateDenominationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PDenominationValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateDenominationListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -568,8 +570,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.InterestList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateInterestList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateInterestListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PInterestValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateInterestListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -585,8 +587,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.InterestCategoryList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateInterestCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateInterestCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PInterestCategoryValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateInterestCategoryListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -602,8 +604,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.LocationTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateLocationTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateLocationTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PLocationTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateLocationTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -619,8 +621,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.MaritalStatusList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMaritalStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateMaritalStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PtMaritalStatusValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateMaritalStatusListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -636,8 +638,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.MethodOfContactList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateMethodOfContactList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateMethodOfContactListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PMethodOfContactValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateMethodOfContactListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -653,8 +655,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.OccupationList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateOccupationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateOccupationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                POccupationValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateOccupationListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -670,8 +672,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.PartnerStatusList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidatePartnerStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidatePartnerStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PPartnerStatusValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidatePartnerStatusListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -687,8 +689,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.PartnerTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidatePartnerTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidatePartnerTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidatePartnerTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -704,8 +706,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.ProposalStatusList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateProposalStatusList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateProposalStatusListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PFoundationProposalStatusValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateProposalStatusListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -721,8 +723,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.ProposalSubmissionTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateProposalSubmissionTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateProposalSubmissionTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PProposalSubmissionTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateProposalSubmissionTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -738,8 +740,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.RelationList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateRelationList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateRelationListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PRelationValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateRelationListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -755,8 +757,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.RelationCategoryList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateRelationCategoryList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateRelationCategoryListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                PRelationCategoryValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateRelationCategoryListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -772,8 +774,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                         case TCacheablePartnerTablesEnum.UnitTypeList:
                             if (ASubmitTable.Rows.Count > 0)
                             {
-                                ValidateUnitTypeList(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                                ValidateUnitTypeListManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                                UUnitTypeValidation.Validate(ASubmitTable, ref AVerificationResult);
+                                ValidateUnitTypeListManual(ref AVerificationResult, ASubmitTable);
 
                                 if (!AVerificationResult.HasCriticalErrors)
                                 {
@@ -836,94 +838,28 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 
 #region Data Validation
 
-        partial void ValidateAddresseeTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAddresseeTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAcquisitionCodeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateAcquisitionCodeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateBusinessCodeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateBusinessCodeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateCurrencyCodeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateCurrencyCodeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDataLabelList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDataLabelListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDataLabelUseList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDataLabelUseListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDataLabelLookupCategoryList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDataLabelLookupCategoryListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDataLabelLookupList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDataLabelLookupListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDenominationList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateDenominationListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateInterestList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateInterestListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateInterestCategoryList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateInterestCategoryListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateLocationTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateLocationTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMaritalStatusList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMaritalStatusListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMethodOfContactList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateMethodOfContactListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateOccupationList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateOccupationListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePartnerStatusList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePartnerStatusListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePartnerTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidatePartnerTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateProposalStatusList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateProposalStatusListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateProposalSubmissionTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateProposalSubmissionTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateRelationList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateRelationListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateRelationCategoryList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateRelationCategoryListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateUnitTypeList(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        partial void ValidateUnitTypeListManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAddresseeTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateAcquisitionCodeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateBusinessCodeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateCurrencyCodeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelUseListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelLookupCategoryListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDataLabelLookupListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateDenominationListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateInterestListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateInterestCategoryListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateLocationTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMaritalStatusListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateMethodOfContactListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateOccupationListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePartnerStatusListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidatePartnerTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateProposalStatusListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateProposalSubmissionTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateRelationListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateRelationCategoryListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        partial void ValidateUnitTypeListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
 #endregion Data Validation
 
