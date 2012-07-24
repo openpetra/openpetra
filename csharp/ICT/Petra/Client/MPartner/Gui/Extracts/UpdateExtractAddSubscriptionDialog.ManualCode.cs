@@ -72,25 +72,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             FMainDS.PSubscription.Rows.Add(SubscriptionRow);
             
             ucoSubscription.MainDS = FMainDS;
-            
+            ucoSubscription.SpecialInitUserControl();
             FPetraUtilsObject.HasChanges = false;
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (Validate())
-            {
-                e.Cancel = true;
-            }
-            else
-            {
-                // Needs to be set to false because it got set to true in ancestor Form!
-                e.Cancel = false;
-            }
-
+            // Needs to be set to false because it got set to true in ancestor Form!
+            e.Cancel = false;
+            
             // Need to call the following method in the Base Form to remove this Form from the Open Forms List
-            FPetraUtilsObject.TFrmPetra_Closing(this, e);
-//            FPetraUtilsObject.TFrmPetra_Closing(this, null);
+            FPetraUtilsObject.HasChanges = false; // this has to be set as otherwise the following call won't work
+            FPetraUtilsObject.TFrmPetra_Closing(this, null);
         }
 
         /// <summary>
@@ -110,14 +103,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to add the selected subscription" +
-                        "\r\nfor all partners in the extract?"),
-                    Catalog.GetString("Add Subscription"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+            if (ucoSubscription.ValidateAllData(true, ucoSubscription))
             {
-                this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                this.Close();
+                if (MessageBox.Show(Catalog.GetString("Are you sure that you want to add the selected subscription" +
+                            "\r\nfor all partners in the extract?"),
+                        Catalog.GetString("Add Subscription"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                    this.Close();
+                }
             }
         }
 

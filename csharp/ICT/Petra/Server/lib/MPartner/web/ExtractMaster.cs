@@ -637,6 +637,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PSubscriptionRow SubscriptionRowTemplate;
             PSubscriptionRow SubscriptionRow;
             MExtractTable ExtractTable;
+            PPartnerTable PartnerTable;
             PPartnerRow PartnerRow;
             TVerificationResultCollection VerificationResultCollection;
             
@@ -658,9 +659,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     if (PSubscriptionAccess.Exists(SubscriptionRowTemplate.PublicationCode, ExtractRow.PartnerKey, Transaction))
                     {
                         PartnerRow = AExistingSubscriptionPartners.NewRowTyped();
-                        PartnerRow.PartnerKey = ExtractRow.PartnerKey;
+                        PartnerTable = PPartnerAccess.LoadByPrimaryKey(ExtractRow.PartnerKey, Transaction);
+                        DataUtilities.CopyAllColumnValues(PartnerTable.Rows[0], PartnerRow);
                         AExistingSubscriptionPartners.Rows.Add(PartnerRow);
-                        //TODO: add this partner to AExistingSubscriptionPartners table. Retrieve short name
                     }
                     else
                     {

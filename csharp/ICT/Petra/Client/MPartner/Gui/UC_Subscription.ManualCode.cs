@@ -154,6 +154,35 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grpIssues.Visible = !value;
         }
 
+        /// <summary>todoComment</summary>
+        public void SpecialInitUserControl()
+        {
+            BuildValidationControlsDict();
+        }
+
+        /// <summary>
+        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// Since we don't have controls on this UserControl that need adjusting after resizing
+        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
+        /// </summary>
+        public void AdjustAfterResizing()
+        {
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void InitializeManualCode()
+        {
+            FPublicationCostDT = (PPublicationCostTable)TDataCache.TMPartner.GetCacheableSubscriptionsTable(
+                TCacheableSubscriptionsTablesEnum.PublicationCostList);
+        }
+
+        private void GetDataFromControlsManual(PSubscriptionRow ARow)
+        {
+        }
+
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)
@@ -264,36 +293,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.cmbPSubscriptionReasonSubsCancelledCode.Enabled = false;
             }
         }
-
-        /// <summary>todoComment</summary>
-        public void SpecialInitUserControl()
-        {
-            BuildValidationControlsDict();
-        }
-
-        /// <summary>
-        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
-        /// Since we don't have controls on this UserControl that need adjusting after resizing
-        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
-        /// </summary>
-        public void AdjustAfterResizing()
-        {
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        private void InitializeManualCode()
-        {
-            FPublicationCostDT = (PPublicationCostTable)TDataCache.TMPartner.GetCacheableSubscriptionsTable(
-                TCacheableSubscriptionsTablesEnum.PublicationCostList);
-        }
-
-        private void GetDataFromControlsManual(PSubscriptionRow ARow)
-        {
-        }
-
+        
         private void EditIssues(System.Object sender, EventArgs e)
         {
             /* if anwered OK to question below, the Issuesgroupbox screenparts are enabled. */

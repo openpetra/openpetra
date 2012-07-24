@@ -401,9 +401,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
                         
+                        string test = "";
+                        foreach(DataRow Row in PartnersWithExistingSubs.Rows)
+                        {
+                            test = test + ((PPartnerRow)Row).PartnerShortName + "\r\n";
+                        }
+                        MessageBox.Show(test);
                         //TODO: show names of partners that already had a subscription
                     }
-                    //else
+                    else
                     {
                         MessageBox.Show(Catalog.GetString("Error while adding Subscription for Partners in Extract ") +
                             GetSelectedDetailRow().ExtractName,
