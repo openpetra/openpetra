@@ -333,7 +333,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log("Exception while printing badges: " + e.Message);
                 TLogging.Log(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -391,7 +391,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log("Exception while reprinting badge: " + e.Message);
                 TLogging.Log(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -591,7 +591,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log("Exception while printing badge labels: " + e.Message);
                 TLogging.Log(e.StackTrace);
-                throw e;
+                throw;
             }
         }
     }

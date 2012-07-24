@@ -813,7 +813,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    throw;
                 }
             }
 

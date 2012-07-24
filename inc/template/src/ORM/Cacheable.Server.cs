@@ -209,7 +209,7 @@ namespace {#NAMESPACE}
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    throw;
                 }
             }
 
@@ -429,7 +429,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            throw new Exception(e.ToString() + " " + e.Message);
+            throw;
         }
     }
 

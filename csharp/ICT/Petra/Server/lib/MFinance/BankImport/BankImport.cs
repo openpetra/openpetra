@@ -99,7 +99,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             {
                 TLogging.Log(ex.ToString());
                 TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
-                throw ex;
+                throw;
             }
 
             return SubmissionResult;
@@ -328,7 +328,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 TLogging.Log(e.GetType().ToString() + " in BankImport, GetBankStatementTransactionsAndMatches; " + e.Message);
                 TLogging.Log(e.StackTrace);
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw e;
+                throw;
             }
 
             // drop all matches that do not occur on this statement

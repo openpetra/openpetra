@@ -216,10 +216,10 @@ namespace Ict.Petra.Server.MPartner.Common
                     }
                 }
             }
-            catch (ESecurityPartnerAccessDeniedException Exp)
+            catch (ESecurityPartnerAccessDeniedException)
             {
                 // don't log this exception - this is thrown on purpose here and the Client needs to deal with it.
-                throw Exp;
+                throw;
             }
             catch (Exception Exp)
             {
@@ -310,10 +310,10 @@ namespace Ict.Petra.Server.MPartner.Common
                     ReturnValue = true;
                 }
             }
-            catch (ESecurityPartnerAccessDeniedException Exp)
+            catch (ESecurityPartnerAccessDeniedException)
             {
                 // don't log this exception  this is thrown on purpose here and the Client needs to deal with it.
-                throw Exp;
+                throw;
             }
             catch (Exception Exp)
             {
@@ -388,10 +388,10 @@ namespace Ict.Petra.Server.MPartner.Common
                     ReturnValue = true;
                 }
             }
-            catch (ESecurityPartnerAccessDeniedException Exp)
+            catch (ESecurityPartnerAccessDeniedException)
             {
-                // don't log this exception  this is thrown on purpose here and the Client needs to deal with it.
-                throw Exp;
+                // don't log this exception - this is thrown on purpose here and the Client needs to deal with it.
+                throw;
             }
             catch (Exception Exp)
             {

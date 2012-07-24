@@ -41,6 +41,8 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using System.Collections.Generic;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -70,13 +72,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         PartnerImportExportTDS FMainDS = null;
-        PPartnerRow CurrentPartner;
+        PPartnerRow FCurrentPartner;
         Int32 FCurrentNumberOfRecord = 0;
         Int32 FTotalNumberOfRecords = 0;
         Int64 FoundPartnerMatchingKey = -1;
         Int64 ExistingPartnerKey = -1;
         int UserSelLocationKey = -1;
         PartnerFindTDSSearchResultRow UserSelectedRow;
+        List <Int64>FImportedUnits = new List <Int64>();
 
         private void AddStatus(String ANewStuff)
         {
@@ -151,6 +154,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (Path.GetExtension(DialogOpen.FileName) == ".yml")
                 {
                     TYml2Xml yml = new TYml2Xml(DialogOpen.FileName);
+                    AddStatus(Catalog.GetString("Parsing file. Please wait..\r\n"));
                     FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportPartnersFromYml(TXMLParser.XmlToString(
                             yml.ParseYML2XML()), out VerificationResult);
                 }
@@ -173,6 +177,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     string[] FileContent = sr.ReadToEnd().Replace("\r", "").Split(new char[] { '\n' });
                     sr.Close();
                     AddStatus(String.Format("{0} lines.\r\n", FileContent.Length));
+                    AddStatus(Catalog.GetString("Parsing file. Please wait..\r\n"));
                     FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromPartnerExtract(FileContent, out VerificationResult);
                 }
 
@@ -195,6 +200,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     return;
                 }
+
+                AddStatus(String.Format(Catalog.GetString("File read OK ({0} partners) - press Start to import.\r\n"), FMainDS.PPartner.Rows.Count));
             }
         }
 
@@ -237,7 +244,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 UserSelLocationKey = UserSelectedRow.LocationKey;
 
                 if ((UserSelectedRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-                    && (CurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                    && (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
                 {
                     Msg += ", add Person to this Family";
                     btnUseSelectedFamily.Enabled = true;
@@ -264,11 +271,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             AddStatus("<Add PERSON to existing FAMILY>" + Environment.NewLine);
 
             // I need to get the Person linked to this Partner, and overwrite its FamilyKey.
-            FMainDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}", PPersonTable.GetPartnerKeyDBName(), CurrentPartner.PartnerKey);
+            FMainDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}", PPersonTable.GetPartnerKeyDBName(), FCurrentPartner.PartnerKey);
 
             PPersonRow PersonRow = (PPersonRow)FMainDS.PPerson.DefaultView[0].Row;  // I'm assuming this succeeds, because if it doesn't, something bad has happened!
             PersonRow.FamilyKey = UserSelectedRow.PartnerKey;
-            CreateOrUpdatePartner(CurrentPartner);
+            CreateOrUpdatePartner(FCurrentPartner, true);
         }
 
         private void UseSelectedAddress(Object sender, EventArgs e)
@@ -282,7 +289,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // these will be created. (And checks on CommitChanges may catch them.) But in most cases it's probably useful.
 
             ((PPartnerLocationRow)FMainDS.PPartnerLocation.DefaultView[0].Row).LocationKey = UserSelLocationKey;
-            CreateOrUpdatePartner(CurrentPartner);
+            CreateOrUpdatePartner(FCurrentPartner, true);
         }
 
         private void UseSelectedPerson(Object sender, EventArgs e)
@@ -293,13 +300,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (UserSelectedRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
             {
                 // I need to get the Person linked to this Partner, and overwrite its FamilyKey.
-                FMainDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}", PPersonTable.GetPartnerKeyDBName(), CurrentPartner.PartnerKey);
+                FMainDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}", PPersonTable.GetPartnerKeyDBName(), FCurrentPartner.PartnerKey);
 
                 PPersonRow PersonRow = (PPersonRow)FMainDS.PPerson.DefaultView[0].Row; // I'm assuming this succeeds, because if it doesn't, something bad has happened!
                 PersonRow.FamilyKey = UserSelectedRow.FamilyKey;
             }
 
-            CreateOrUpdatePartner(CurrentPartner);
+            CreateOrUpdatePartner(FCurrentPartner, true);
         }
 
         private void StartImport(Object sender, EventArgs e)
@@ -323,8 +330,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FCurrentNumberOfRecord = 1;
             FTotalNumberOfRecords = FMainDS.PPartner.Count;
-
-            SkipImportedPartners();
 
             pnlActions.Enabled = true;
 
@@ -377,6 +382,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
+            if (grdMatchingRecords.InvokeRequired) // must be called from UI thread.
+            {
+                grdMatchingRecords.Invoke(new MethodInvoker(delegate { DisplayCurrentRecord(); }));
+                return;
+            }
+
             // have we finished importing?
             if (FCurrentNumberOfRecord > FTotalNumberOfRecords)
             {
@@ -392,22 +403,31 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            CurrentPartner = FMainDS.PPartner[FCurrentNumberOfRecord - 1];
+            do
+            {
+                FCurrentPartner = FMainDS.PPartner[FCurrentNumberOfRecord - 1];
+
+                if (FImportedUnits.Contains(FCurrentPartner.PartnerKey))
+                {
+                    AddStatus(String.Format(Catalog.GetString("Unit [{0}] already imported.\r\n"), FCurrentPartner.PartnerKey));
+                    FCurrentNumberOfRecord++;
+                }
+            } while (FImportedUnits.Contains(FCurrentPartner.PartnerKey));
 
             string PartnerInfo = String.Format("[{0}] {1} ",
-                CurrentPartner.PartnerClass,
-                CurrentPartner.PartnerShortName);
+                FCurrentPartner.PartnerClass,
+                FCurrentPartner.PartnerShortName);
 
-            if (CurrentPartner.PartnerKey > 0)
+            if (FCurrentPartner.PartnerKey > 0)
             {
-                PartnerInfo += CurrentPartner.PartnerKey.ToString();
+                PartnerInfo += FCurrentPartner.PartnerKey.ToString();
             }
 
             PartnerInfo += Environment.NewLine;
 
             FMainDS.PPartnerLocation.DefaultView.RowFilter = String.Format("{0}={1}",
                 PPartnerLocationTable.GetPartnerKeyDBName(),
-                CurrentPartner.PartnerKey);
+                FCurrentPartner.PartnerKey);
 
             foreach (DataRowView rv in FMainDS.PPartnerLocation.DefaultView)
             {
@@ -468,12 +488,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Try to find an existing partner and set the partner key
             // Or if the address is found, the location record can be shared.
-            if ((BestLocation != null) && (CurrentPartner.PartnerKey < 0))
+            if ((BestLocation != null) && (FCurrentPartner.PartnerKey < 0))
             {
                 PartnerFindTDS result =
                     TRemote.MPartner.Partner.WebConnectors.FindPartners(
                         "",
-                        Ict.Petra.Shared.MPartner.Calculations.FormatShortName(CurrentPartner.PartnerShortName, eShortNameFormat.eOnlySurname),
+                        Ict.Petra.Shared.MPartner.Calculations.FormatShortName(FCurrentPartner.PartnerShortName, eShortNameFormat.eOnlySurname),
                         BestLocation.City,
                         new StringCollection());
 
@@ -490,7 +510,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     //
                     // For any partner class OTHER THAN Person, I only want to see matching records of the same class.
-                    if (CurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                    if (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
                         result.SearchResult.DefaultView.RowFilter = String.Empty;
                     }
@@ -498,7 +518,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         result.SearchResult.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                             PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
-                            CurrentPartner.PartnerClass);
+                            FCurrentPartner.PartnerClass);
                     }
 
                     grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
@@ -519,8 +539,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if ((row.StreetName == BestLocation.StreetName)
                         && (row.City == BestLocation.City)
                         && (row.PostalCode == BestLocation.PostalCode)
-                        && (row.PartnerClass == CurrentPartner.PartnerClass)
-                        && (row.PartnerShortName == CurrentPartner.PartnerShortName))
+                        && (row.PartnerClass == FCurrentPartner.PartnerClass)
+                        && (row.PartnerShortName == FCurrentPartner.PartnerShortName))
                     {
                         FoundPartnerInDatabase = true;
                         FoundPartnerMatchingKey = row.PartnerKey;
@@ -562,7 +582,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     try
                     {
                         AddStatus("<Automatic import>" + Environment.NewLine);
-                        CreateOrUpdatePartner(CurrentPartner);
+                        CreateOrUpdatePartner(FCurrentPartner, true);
                     }
                     catch (Exception e)
                     {
@@ -595,18 +615,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.FPetraUtilsObject.EnableAction("actCancelImport", false);
         }
 
-        /// <summary>
-        /// check for hash values etc to see if the partner has been imported already.
-        /// modify FCurrentNumberOfRecord to move to next partner that should be imported
-        /// </summary>
-        private void SkipImportedPartners()
-        {
-            // TODO check for import settings, which partners to skip etc
-            // TODO: CurrentNumberOfRecord and TotalRecords different?
-
-            // TODO modify FCurrentNumberOfRecord
-        }
-
         private void NextRecord()
         {
             if (FThreadAutomaticImport != null)
@@ -618,8 +626,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FMainDS != null)
             {
                 FCurrentNumberOfRecord++;
-
-                SkipImportedPartners();
             }
 
             if (chkSemiAutomatic.Checked)
@@ -850,6 +856,59 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ImportRecordsByPartnerKey(ANewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
                     UmUnitStructureTable.GetChildUnitKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
             }
+
+            //
+            // I need to import, or have imported, the unit that's the parent of this unit
+            // otherwise the UmUnitStructure record will not save.
+            ANewPartnerDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
+            Int32 RowIdx = ANewPartnerDS.UmUnitStructure.DefaultView.Find(AOrigPartnerKey);
+
+            if (RowIdx < 0) // If I can't find the record I've just added, that's pretty bad!
+            {
+                return;
+            }
+
+            UmUnitStructureRow NewRow = (UmUnitStructureRow)ANewPartnerDS.UmUnitStructure.DefaultView[RowIdx].Row;
+            Int64 ParentKey = NewRow.ParentUnitKey;
+
+            if (!FImportedUnits.Contains(ParentKey))
+            {
+                String PartnerShortName;
+                TPartnerClass PartnerClass;
+                Boolean IsMergedPartner;
+                Boolean UserCanAccessPartner;
+
+                Boolean PartnerExistsInDB = TServerLookup.TMPartner.VerifyPartner(ParentKey,
+                    out PartnerShortName,
+                    out PartnerClass,
+                    out IsMergedPartner,
+                    out UserCanAccessPartner);
+
+                if (!PartnerExistsInDB) // If this partner is not already in the database
+                {
+                    FMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}",
+                        PPartnerTable.GetPartnerKeyDBName(), ParentKey);
+
+                    //
+                    // If there is no parent I can still import this UNIT,
+                    // but I'll set the parent to root, and modify the description
+                    //
+                    if (FMainDS.PPartner.DefaultView.Count == 0)
+                    {
+                        NewRow.ParentUnitKey = 1000000;
+                        ANewPartnerDS.PUnit.DefaultView.Sort = PUnitTable.GetPartnerKeyDBName();
+                        RowIdx = ANewPartnerDS.PUnit.DefaultView.Find(AOrigPartnerKey);
+                        PUnitRow UnitRow = (PUnitRow)ANewPartnerDS.PUnit.DefaultView[RowIdx].Row;
+                        UnitRow.Description += String.Format("(Prev. parent {0})", ParentKey);
+                    }
+                    else
+                    {
+                        PPartnerRow ParentRow = (PPartnerRow)FMainDS.PPartner.DefaultView[0].Row;
+                        AddStatus("<Import parent Unit>" + Environment.NewLine);
+                        CreateOrUpdatePartner(ParentRow, false); // This is recursive!
+                    }
+                }
+            }
         }
 
         private void AddBankingDetails(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
@@ -921,13 +980,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Copy this Partner, and all the data linked to it, from the large DataSet into a new one,
         /// and send it back to the server for committing.
+        ///
+        /// NOTE: May be called recursively to add parent records before adding children.
         /// </summary>
-        /// <param name="APartnerRow"></param>
-        private Int64 CreateOrUpdatePartner(PPartnerRow APartnerRow)
+        /// <param name="APartnerRow">Row to import</param>
+        /// <param name="StepAfterImport">Go on to next record afterwards. (Usually true)</param>
+        /// <returns>Partner key of imported record (although no-one cares)</returns>
+        private Int64 CreateOrUpdatePartner(PPartnerRow APartnerRow, Boolean StepAfterImport)
         {
             if ((FCurrentNumberOfRecord < 1) || (FCurrentNumberOfRecord > FTotalNumberOfRecords))
             {
                 return 0;
+            }
+
+            if (FImportedUnits.Contains(APartnerRow.PartnerKey))
+            {
+                return APartnerRow.PartnerKey;
             }
 
             PartnerImportExportTDS NewPartnerDS = new PartnerImportExportTDS();
@@ -1012,13 +1080,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.PUnit, FMainDS.PUnit,
                     PUnitTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
-                ImportRecordsByPartnerKey(NewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
-                    UmUnitStructureTable.GetChildUnitKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
 
-                foreach (UmUnitStructureRow UnitStructureRow in NewPartnerDS.UmUnitStructure.Rows)
-                {
-                    UnitStructureRow.ChildUnitKey = NewPartnerKey;
-                }
+/*
+ *  // I'm doing this later, in AddUnitstructure
+ *              ImportRecordsByPartnerKey(NewPartnerDS.UmUnitStructure, FMainDS.UmUnitStructure,
+ *                  UmUnitStructureTable.GetChildUnitKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+ */
+                FImportedUnits.Add(NewPartnerKey);
+
+/*
+ * // I don't need this at all...
+ *              foreach (UmUnitStructureRow UnitStructureRow in NewPartnerDS.UmUnitStructure.Rows)
+ *              {
+ *                  UnitStructureRow.ChildUnitKey = NewPartnerKey;
+ *              }
+ */
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_VENUE)
             {
@@ -1053,7 +1129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             AddInterest(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
-//            AddVision(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
+//          AddVision(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
 
             AddUnitstructure(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddBuilding(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
@@ -1085,7 +1161,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 // new record has been created, now load the next record
-                NextRecord();
+                if (StepAfterImport)
+                {
+                    NextRecord();
+                }
             }
 
             return NewPartnerKey;
@@ -1094,7 +1173,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void CreateNewPartner(Object sender, EventArgs e)
         {
             AddStatus("<Create New Partner>\r\n");
-            CreateOrUpdatePartner(CurrentPartner);
+            CreateOrUpdatePartner(FCurrentPartner, true);
         }
     }
 }

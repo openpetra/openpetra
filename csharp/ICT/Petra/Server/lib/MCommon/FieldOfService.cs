@@ -128,18 +128,18 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                     // Load data for Field Of Service
                     PPartnerFieldOfServiceAccess.LoadViaPPartner(FMainDS, FPartnerKey, ReadTransaction);
                 }
-                catch (EPartnerNotExistantException Exp)
+                catch (EPartnerNotExistantException)
                 {
                     // don't log this exception  this is thrown on purpose here and the Client deals with it.
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw Exp;
+                    throw;
                 }
                 catch (Exception Exp)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     TLogging.Log(this.GetType().FullName + ".LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                     TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                    throw Exp;
+                    throw;
                 }
             }
             finally

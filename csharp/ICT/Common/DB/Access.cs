@@ -1435,7 +1435,7 @@ namespace Ict.Common.DB
                     catch (Exception e2)
                     {
                         TLogging.Log("Another Exception while trying to establish the connection: " + e2.Message);
-                        throw e2;
+                        throw;
                     }
 
                     return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);

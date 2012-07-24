@@ -637,7 +637,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    throw;
                 }
             }
 
@@ -810,7 +810,7 @@ namespace Ict.Petra.Server.MFinance.Cacheable
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    throw;
                 }
             }
 

@@ -99,10 +99,10 @@ namespace Ict.Common.IO
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 TLogging.Log("Problem parsing: " + AJsonData);
-                throw e;
+                throw;
             }
         }
 
@@ -289,7 +289,7 @@ namespace Ict.Common.IO
                 {
                     TLogging.Log("problem parsing: " + AJSONFormData);
                     TLogging.Log(e.ToString());
-                    throw e;
+                    throw;
                 }
             }
         }

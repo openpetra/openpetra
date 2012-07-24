@@ -387,7 +387,7 @@ namespace Ict.Common.Remoting.Server
             catch (Exception e)
             {
                 TLogging.Log(e.ToString());
-                throw e;
+                throw;
             }
 
 #if DEBUGMODE

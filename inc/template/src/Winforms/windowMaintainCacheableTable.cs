@@ -884,8 +884,9 @@ namespace {#NAMESPACE}
     
     private void ControlValidatedHandler(object sender, EventArgs e)
     {
+{#IFDEF SHOWDETAILS}
     	int dataRowIndex = GetDetailGridRowDataTableIndex();
-    	
+{#ENDIF SHOWDETAILS}
         TScreenVerificationResult SingleVerificationResult;
         
         ValidateAllData(true, false);
