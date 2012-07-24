@@ -623,6 +623,78 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
         
         /// <summary>
+        /// add subscription for all partners in a given extract
+        /// </summary>
+        /// <param name="AExtractId">extract to add subscription to</param>
+        /// <param name="ATable">table with only one subscription row to be added for each partner</param>
+        /// <param name="AExistingSubscriptionPartners">table containing partners that already have subscription for given publication</param>
+        /// <returns>true if deletion was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean AddSubscription(int AExtractId, ref PSubscriptionTable ATable, out PPartnerTable AExistingSubscriptionPartners)
+        {
+            Boolean ResultValue = true;
+            PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
+            PSubscriptionRow SubscriptionRowTemplate;
+            PSubscriptionRow SubscriptionRow;
+            MExtractTable ExtractTable;
+            PPartnerRow PartnerRow;
+            TVerificationResultCollection VerificationResultCollection;
+            
+            // only use first row in table (as rows can't be serialized as parameters)
+            SubscriptionRowTemplate = (PSubscriptionRow)ATable.Rows[0];
+            
+            AExistingSubscriptionPartners = new PPartnerTable();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
+                
+                // query all rows of given extract
+                foreach (MExtractRow ExtractRow in ExtractTable.Rows)
+                {
+                    // for each extract row either add subscription or add to list of partners already having one
+                    if (PSubscriptionAccess.Exists(SubscriptionRowTemplate.PublicationCode, ExtractRow.PartnerKey, Transaction))
+                    {
+                        PartnerRow = AExistingSubscriptionPartners.NewRowTyped();
+                        PartnerRow.PartnerKey = ExtractRow.PartnerKey;
+                        AExistingSubscriptionPartners.Rows.Add(PartnerRow);
+                        //TODO: add this partner to AExistingSubscriptionPartners table. Retrieve short name
+                    }
+                    else
+                    {
+                        SubscriptionRow = SubscriptionTable.NewRowTyped();
+                        DataUtilities.CopyAllColumnValues(SubscriptionRowTemplate, SubscriptionRow);
+                        SubscriptionRow.PartnerKey = ExtractRow.PartnerKey;                        
+                        SubscriptionTable.Rows.Add(SubscriptionRow);
+                    }
+                    
+                }
+                
+                // now submit changes to the database
+                if (PSubscriptionAccess.SubmitChanges(SubscriptionTable, Transaction, out VerificationResultCollection))
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ResultValue = true;
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    ResultValue = false;
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during adding of subscription for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+        
+        /// <summary>
         /// delete subscription for a partner in a given extract
         /// </summary>
         /// <param name="AExtractId"></param>
@@ -652,6 +724,54 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             catch (Exception e)
             {
                 TLogging.Log("Problem during deletion of subscription for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
+        /// update solicitations flag for all partners in given extract
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="ANoSolicitations"></param>
+        /// <returns>true if update was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean UpdateSolicitationFlag(int AExtractId, Boolean ANoSolicitations)
+        {
+            Boolean ResultValue = true;
+            String NoSolicitationsValue;
+
+            if (ANoSolicitations)
+            {
+                NoSolicitationsValue = "true";
+            }
+            else
+            {
+                NoSolicitationsValue = "false";
+            }
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt;
+
+            try
+            {
+                // Use a direct sql statement rather than db access classes to improve performance as otherwise
+                // we would need an extra query for each row of an extract to update data
+                SqlStmt = "UPDATE pub_" + PPartnerTable.GetTableDBName() +
+                          " SET " + PPartnerTable.GetNoSolicitationsDBName() + " = " + NoSolicitationsValue +
+                          " WHERE " + PPartnerTable.GetPartnerKeyDBName() +
+                          " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
+                          " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")";
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during update of solicitation flag for an extract: " + e.Message);
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 ResultValue = false;
             }

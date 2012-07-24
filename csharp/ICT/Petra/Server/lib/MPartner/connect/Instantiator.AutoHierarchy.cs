@@ -2864,12 +2864,29 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public Boolean AddSubscription(System.Int32 AExtractId,
+                                       ref PSubscriptionTable ATable,
+                                       out PPartnerTable AExistingSubscriptionPartners)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "AddSubscription", ";INT;PSUBSCRIPTIONTABLE;PPARTNERTABLE;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.AddSubscription(AExtractId, ref ATable, out AExistingSubscriptionPartners);
+        }
+
+        /// generated method from connector
         public Boolean DeleteSubscription(System.Int32 AExtractId,
                                           Int64 APartnerKey,
                                           String APublicationCode)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "DeleteSubscription", ";INT;LONG;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.DeleteSubscription(AExtractId, APartnerKey, APublicationCode);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateSolicitationFlag(System.Int32 AExtractId,
+                                              Boolean ANoSolicitations)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateSolicitationFlag", ";INT;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateSolicitationFlag(AExtractId, ANoSolicitations);
         }
 
         /// generated method from connector

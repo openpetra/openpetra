@@ -376,7 +376,43 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void AddSubscription(System.Object sender, EventArgs e)
         {
-            //TODO
+            PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
+            PSubscriptionRow SubscriptionRow = SubscriptionTable.NewRowTyped();
+            PPartnerTable PartnersWithExistingSubs = new PPartnerTable();
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Add Subscription"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractAddSubscriptionDialog dialog = new TFrmUpdateExtractAddSubscriptionDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(ref SubscriptionRow);
+                    SubscriptionTable.Rows.Add(SubscriptionRow);
+
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.AddSubscription
+                            (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs))
+                    {
+                        MessageBox.Show(Catalog.GetString("Subscription successfully added for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Add Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                        
+                        //TODO: show names of partners that already had a subscription
+                    }
+                    //else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while adding Subscription for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Add Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
         
         /// <summary>
@@ -506,6 +542,47 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void ChangeSubscription(System.Object sender, EventArgs e)
         {
             //TODO
+        }
+        
+        /// <summary>
+        /// Update 'No Solicitations' flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateSolicitationFlag(System.Object sender, EventArgs e)
+        {
+            bool NoSolicitations;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Update 'No Solicitations' Flag"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractSolicitationFlagDialog dialog = new TFrmUpdateExtractSolicitationFlagDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out NoSolicitations);
+
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.UpdateSolicitationFlag
+                            (GetSelectedDetailRow().ExtractId, NoSolicitations))
+                    {
+                        MessageBox.Show(Catalog.GetString("'No Solicitations' flag successfully updated for all Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update 'No Solicitations' Flag"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while updating 'No Solicitations' flag for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update 'No Solicitations' Flag"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
         
         /// <summary>

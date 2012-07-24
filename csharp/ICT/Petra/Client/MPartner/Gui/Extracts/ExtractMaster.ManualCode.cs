@@ -664,6 +664,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             ucoExtractMasterList.ChangeSubscription(sender, e);
         }
+
+        /// <summary>
+        /// Update Solicitation Flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateSolicitationFlag(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.UpdateSolicitationFlag(sender, e);
+        }
         
         /// <summary>
         /// Update Receipt Frequency for Partners in selected extract
