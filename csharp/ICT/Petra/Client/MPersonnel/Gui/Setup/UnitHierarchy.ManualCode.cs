@@ -388,7 +388,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             RootNode.Tag = RootData;
             RootNode.ToolTipText = RootData.TypeCode;
             UnitNodes.RemoveAt(0);
-            int ParentNodeIndex = trvUnits.Nodes.Add(RootNode);
+            trvUnits.Nodes.Add(RootNode);
             AddChildren(RootNode, UnitNodes);
             Int64 MySiteKey = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
             ShowThisUnit(MySiteKey);

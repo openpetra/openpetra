@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             String PartnerShortName;
 
             Shared.TPartnerClass PartnerClass;
-            bool ServerResult = TServerLookup.TMPartner.GetPartnerShortName(AParentUnitKey, out PartnerShortName, out PartnerClass, true);
+            TServerLookup.TMPartner.GetPartnerShortName(AParentUnitKey, out PartnerShortName, out PartnerClass, true);
             FPetraUtilsObject.UnhookControl(lblParentName, false); // I don't want this change to cause SetChangedFlag.
             lblParentName.Text = PartnerShortName;
         }
