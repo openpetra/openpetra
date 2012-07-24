@@ -142,10 +142,10 @@ namespace Ict.Common.Remoting.Server
                         // DB connection was already closed.
                         DBConnectionAlreadyClosed = true;
                     }
-                    catch (Exception Exp)
+                    catch (Exception)
                     {
                         // make sure any other Exception is going to be handled
-                        throw Exp;
+                        throw;
                     }
 
                     if (!DBConnectionAlreadyClosed)
@@ -304,7 +304,7 @@ Retry:                          //             used only for repeating Unload wh
                             {
                                 Monitor.PulseAll(UAppDomainUnloadMonitor);
                             }
-                            catch (System.Threading.SynchronizationLockException Exp)
+                            catch (System.Threading.SynchronizationLockException)
                             {
                                 if (UnloadExceptionCount == UNLOAD_RETRIES)
                                 {
@@ -313,12 +313,12 @@ Retry:                          //             used only for repeating Unload wh
                                 // the Monitor is already Exited in this case
                                 else
                                 {
-                                    throw Exp;
+                                    throw;
                                 }
                             }
-                            catch (Exception Exp)
+                            catch (Exception)
                             {
-                                throw Exp;
+                                throw;
                             }
                         }
                         else

@@ -3,6 +3,7 @@ RootNode:
     UtilObjectClass: TFrmPetraEditUtils
     FormTitle: Add Subscription
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPartner.Mailroom.Validation]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     MasterTable: PSubscription
     FormType: dialog

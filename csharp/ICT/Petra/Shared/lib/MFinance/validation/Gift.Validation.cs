@@ -56,23 +56,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
-            // 'Batch Description' must not be empty
-            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBatchDescriptionId];
-            ValidationContext = ARow.BatchNumber;
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.BatchDescription,
-                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-                {
-                    VerifResultCollAddedCount++;
-                }
-            }
-
             // 'Exchange Rate' must be greater than 0
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId];
             ValidationContext = ARow.BatchNumber;

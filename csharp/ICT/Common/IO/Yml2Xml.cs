@@ -848,7 +848,7 @@ namespace Ict.Common.IO
                     TLogging.Log(e.StackTrace);
                 }
 
-                throw e;
+                throw;
             }
 
             return myDoc;

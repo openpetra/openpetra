@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1675,6 +1675,14 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnInsertKeyPressed(new RowEventArgs(SelectedDataRow));
+
+                //TODO: check if this will work for tabbed forms that contain subforms
+                //If a New button exists call its code.
+                if (this.FindForm().Controls.Find("btnNew", true).Length > 0)
+                {
+                    System.Windows.Forms.Button insertButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnNew", true)[0];
+                    insertButton.PerformClick();
+                }
             }
             // Key for firing OnDeleteKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Delete)
@@ -1691,6 +1699,14 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnDeleteKeyPressed(new RowEventArgs(SelectedDataRow));
+
+                //TODO: check if this will work for tabbed forms that contain subforms
+                //If a Delete button exists call its code.
+                if (this.FindForm().Controls.Find("btnDelete", true).Length > 0)
+                {
+                    System.Windows.Forms.Button deleteButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnDelete", true)[0];
+                    deleteButton.PerformClick();
+                }
             }
             // Keys that can trigger AutoFind
             else if (((AKeyEventArgs.KeyCode >= Keys.A)

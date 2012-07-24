@@ -1313,14 +1313,11 @@ namespace Ict.Common.Data
                 }
             }
 
-            // modification id
-            DateTime OldModificationId = (ADataRow.IsNull(MODIFICATION_ID) ? DateTime.MinValue : Convert.ToDateTime(ADataRow[MODIFICATION_ID]));
-
-            parameter = new OdbcParameter("", OdbcType.VarChar, 20);
+            parameter = new OdbcParameter("s_modified_by_c", OdbcType.VarChar, 20);
             parameter.Value = ACurrentUser;
             ADataRow[MODIFIED_BY] = parameter.Value;
             ReturnValue.Add(parameter);
-            parameter = new OdbcParameter("", OdbcType.Date);
+            parameter = new OdbcParameter("s_date_modified_d", OdbcType.Date);
             parameter.Value = DateTime.Now;
             ADataRow[MODIFIED_DATE] = parameter.Value;
             ReturnValue.Add(parameter);
@@ -1336,11 +1333,12 @@ namespace Ict.Common.Data
                 }
             }
 
-            if (OldModificationId != DateTime.MinValue)
+            // modification id
+            if (!((ADataRow.IsNull(MODIFICATION_ID) || (Convert.ToDateTime(ADataRow[MODIFICATION_ID]) == DateTime.MinValue))))
             {
                 // modification id for the where clause
-                parameter = new OdbcParameter("", OdbcType.DateTime);
-                parameter.Value = OldModificationId;
+                parameter = new OdbcParameter("s_modification_id_t", OdbcType.DateTime);
+                parameter.Value = Convert.ToDateTime(ADataRow[MODIFICATION_ID]);
                 ReturnValue.Add(parameter);
             }
 
@@ -1513,7 +1511,7 @@ namespace Ict.Common.Data
                     ReturnValue = ReturnValue + AColumnNames[PrimKeyOrd] + " = ?";
                 }
 
-                if (ADataRow.IsNull(MODIFICATION_ID))
+                if (ADataRow.IsNull(MODIFICATION_ID) || (Convert.ToDateTime(ADataRow[MODIFICATION_ID]) == DateTime.MinValue))
                 {
                     ReturnValue += " AND " + MODIFICATION_ID + " IS NULL";
                 }

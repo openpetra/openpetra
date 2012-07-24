@@ -355,11 +355,11 @@ namespace Ict.Tools.DataDumpPetra2
                     return null;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 TLogging.Log(csvfile.FCurrentLine);
                 TLogging.Log("Problem parsing file, in line " + csvfile.FRealLineCounter.ToString());
-                throw e;
+                throw;
             }
         }
     }

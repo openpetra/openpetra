@@ -750,7 +750,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 TLogging.Log(Exp.Message);
                 TLogging.Log(Exp.StackTrace);
 
-                throw Exp;
+                throw;
             }
         }
     }

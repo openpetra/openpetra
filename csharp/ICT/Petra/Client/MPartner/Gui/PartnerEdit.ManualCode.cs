@@ -773,6 +773,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoUpperPart.PartnerClassMainDataChanged += new TPartnerClassMainDataChangedHandler(this.UcoUpperPart_PartnerClassMainDataChanged);
         }
 
+        private void GetDataFromControlsManual(PPartnerRow ARow)
+        {
+            GetDataFromControls();
+        }
+
         private void GetDataFromControls()
         {
             ucoUpperPart.GetDataFromControls();
@@ -786,6 +791,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool ValidateAllData()
         {
             bool ReturnValue = false;
+
+            // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+            FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
 
             // Perform validation in UserControls, too
             ucoUpperPart.ValidateAllData(false);

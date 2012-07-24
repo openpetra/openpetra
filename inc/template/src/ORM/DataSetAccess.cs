@@ -77,7 +77,7 @@ static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out 
             DBAccess.GDBAccessObj.RollbackTransaction();
         }
 
-        throw new Exception(e.ToString() + " " + e.Message);
+        throw;
     }
 
     return SubmissionResult;
