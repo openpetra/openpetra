@@ -616,6 +616,13 @@ namespace Ict.Petra.WebServer.MConference
                         && FieldsOnFirstTab.Contains(key))
                     {
                         dictionary.Add(key, ReplaceQuotes(rawDataObject[key]));
+
+                        if (((key == "SecondSibling") || (key == "CancelledByFinanceOffice"))
+                            && (rawDataObject[key].ToString().ToLower() == "true"))
+                        {
+                            // CheckBox: need to set the name of the checkbox as value
+                            dictionary[key] = key;
+                        }
                     }
                 }
 
