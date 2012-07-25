@@ -108,8 +108,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 Units.DefaultView.Sort = PUnitTable.GetPartnerKeyDBName();
             }
 
-            HTMLText = HTMLText.Replace("#COUNTRY", ((PUnitRow)Units.DefaultView[Units.DefaultView.Find(
-                                                                                     AApplicant.RegistrationOffice)].Row).UnitName);
+            HTMLText = HTMLText.Replace("#COUNTRY",
+                ((PUnitRow)Units.Rows.Find(AApplicant.RegistrationOffice)).UnitName);
 
             HTMLText = HTMLText.Replace("#REGISTRATIONKEY", AApplicant.PartnerKey.ToString());
 
@@ -189,8 +189,10 @@ namespace Ict.Petra.Server.MConference.Applications
                     tssize = tssize.Substring(0, tssize.IndexOf("(") - 1);
                 }
 
+                int indexAttendee = AMainDS.PcAttendee.DefaultView.Find(AApplicant.PartnerKey);
+
                 PcAttendeeRow AttendeeRow =
-                    (PcAttendeeRow)AMainDS.PcAttendee.DefaultView[AMainDS.PcAttendee.DefaultView.Find(AApplicant.PartnerKey)].Row;
+                    (PcAttendeeRow)AMainDS.PcAttendee.DefaultView[indexAttendee].Row;
 
                 // TShirt only for applicants who have registered before the TShirt deadline
                 if (TConferenceFreeTShirt.AcceptedBeforeTShirtDeadLine(AttendeeRow, AApplicant))
@@ -359,6 +361,13 @@ namespace Ict.Petra.Server.MConference.Applications
                     -1,
                     null,
                     false);
+
+                int indexAttendee = MainDS.PcAttendee.DefaultView.Find(APartnerKey);
+
+                if (indexAttendee == -1)
+                {
+                    TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
+                }
 
                 string ResultDocument = string.Empty;
 
