@@ -63,8 +63,6 @@ namespace Ict.Petra.Shared
             list.Add("s_logon_message");
             list.Add("s_patch_log");
             list.Add("s_reports_to_archive");
-            list.Add("s_system_status");
-            list.Add("s_system_status_log");
             list.Add("s_user_defaults");
             list.Add("s_system_defaults");
             list.Add("s_error_log");

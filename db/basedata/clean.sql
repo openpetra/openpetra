@@ -289,8 +289,6 @@ DELETE FROM p_partner_status;
 DELETE FROM s_error_log;
 DELETE FROM s_system_defaults;
 DELETE FROM s_user_defaults;
-DELETE FROM s_system_status_log;
-DELETE FROM s_system_status;
 DELETE FROM s_reports_to_archive;
 DELETE FROM s_patch_log;
 DELETE FROM s_logon_message;
