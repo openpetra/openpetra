@@ -1267,6 +1267,64 @@
       <indexfield name="s_report_title_c" order="ascending"/>
     </index>
   </table>
+  <table name="s_system_status"
+         descr="Records current status of system (up, maintenance etc.)"
+         area="Petra Data"
+         label="System Status"
+         dumpname="s_syssts"
+         group="sysman">
+    <tablefield name="s_user_id_c"
+                type="varchar"
+                descr="This is the system user id. Each user of the system is allocated one"
+                format="X(10)"
+                label="User ID"
+                notnull="yes"/>
+    <tablefield name="s_system_disabled_date_d"
+                type="date"
+                descr=""
+                format="99/99/9999"
+                label="Date Disabled"/>
+    <tablefield name="s_system_disabled_time_i"
+                type="integer"
+                descr=""
+                format="999999"
+                label="Time Disabled"
+                initial="0"/>
+    <tablefield name="s_system_disabled_reason_c"
+                type="varchar"
+                descr=""
+                format="X(80)"
+                label="Reason Disabled"
+                help="Enter a reason"/>
+    <tablefield name="s_system_available_date_d"
+                type="date"
+                descr=""
+                format="99/99/9999"
+                label="Date Available"/>
+    <tablefield name="s_system_available_time_i"
+                type="integer"
+                descr=""
+                format="999999"
+                label="Time Available"
+                initial="0"/>
+    <tablefield name="s_system_login_status_l"
+                type="bit"
+                descr="The log in status of the system."
+                format="Yes/No"
+                label="System Enabled"
+                help="Check if system is enabled."
+                initial="no"/>
+    <!-- Constraints on table s_system_status -->
+    <primarykey name="s_system_status_pk"
+                descr=""
+                thisFields="s_user_id_c"/>
+    <foreignkey name="s_system_status_fk1"
+                descr=""
+                thisFields="s_user_id_c"
+                otherTable="s_user"
+                otherFields="s_user_id_c"/>
+    <!-- Explicit Indexes on table s_system_status  -->
+  </table>
   <table name="s_user_defaults"
          descr="Stores various default values and options for each user."
          catchupdateexception="yes"
