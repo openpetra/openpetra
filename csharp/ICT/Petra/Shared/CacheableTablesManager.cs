@@ -751,9 +751,10 @@ namespace Ict.Petra.Shared
                             UDataCacheDataSet.Tables[ACacheableTableName].Rows.Count.ToString());
                     }
 #endif
-                    TmpDT = ACacheableTable.Copy();
+                    TmpDT = ACacheableTable.Copy();                    
                     TmpDT.TableName = ACacheableTableName;
                     UDataCacheDataSet.Merge(TmpDT);
+                    DataUtilities.RemoveRowsNotPresentInDT(TmpDT, UDataCacheDataSet.Tables[ACacheableTableName]);
                     ContentsEntryDR.DataUpToDate = true;
 #if DEBUGMODE
                     if (TLogging.DL >= 7)
