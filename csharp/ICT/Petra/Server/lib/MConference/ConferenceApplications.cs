@@ -71,6 +71,8 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmShortTermApplicationTable.GetTableDBName()),
                 "registrationoffice", ATransaction);
 
+            bool isOrganizer = IsConferenceOrganisingOffice();
+
             // if there are no REG-... module permissions for anyone, allow all offices? this would help with a base database for testing?
             Int32 CountRegModules =
                 Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM " + SModuleTable.GetTableDBName() + " WHERE " +
@@ -81,7 +83,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 Int64 RegistrationOffice = Convert.ToInt64(officeRow[0]);
                 try
                 {
-                    if ((CountRegModules == 0) || TModuleAccessManager.CheckUserModulePermissions(String.Format("REG-{0:10}",
+                    if ((CountRegModules == 0) || isOrganizer || TModuleAccessManager.CheckUserModulePermissions(String.Format("REG-{0:10}",
                                 StringHelper.PartnerKeyToStr(RegistrationOffice))))
                     {
                         AllowedRegistrationOffices.Add(RegistrationOffice);
