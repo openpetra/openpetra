@@ -192,6 +192,16 @@ namespace Ict.Petra.WebServer.MConference
                     PrintDate.AddDays(-1);
                 }
 
+                // users in group HEADSET will only see the headset window
+                if (UserInfo.GUserInfo.IsInModule("HEADSET"))
+                {
+                    X.Js.Call("#{winHeadsets}.show()");
+                }
+                else
+                {
+                    X.Js.Call("#{winApplications}.show()");
+                }
+
                 dtpRebukesReportForDate.Value = PrintDate;
 
                 MyData_Refresh(null, null);

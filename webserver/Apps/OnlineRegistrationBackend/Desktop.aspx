@@ -86,8 +86,11 @@
             <StartButton Text="OpenPetra" IconCls="start-button" />
 
             <Modules>
-                <ext:DesktopModule ModuleID="DesktopModule2" WindowID="winApplications" AutoRun="true">
+                <ext:DesktopModule ModuleID="DesktopModule2" WindowID="winApplications" AutoRun="false">
                     <Launcher ID="Launcher2" runat="server" Text="Applications" Icon="Lorry" />
+                </ext:DesktopModule>
+                <ext:DesktopModule ModuleID="DesktopModule3" WindowID="winHeadsets" AutoRun="false">
+                    <Launcher ID="Launcher4" runat="server" Text="Headsets" Icon="Lorry" />
                 </ext:DesktopModule>
                 <ext:DesktopModule ModuleID="ChangePassword" WindowID="winChangePassword" AutoRun="false">
                     <Launcher ID="Launcher3" runat="server" Text="Change Password"/>
@@ -96,6 +99,7 @@
             
             <Shortcuts>
                 <ext:DesktopShortcut ModuleID="DesktopModule2" Text="Applications" IconCls="shortcut-icon icon-grid48" />
+                <ext:DesktopShortcut ModuleID="DesktopModule3" Text="Headsets" IconCls="shortcut-icon icon-grid48" />
                 <ext:DesktopShortcut ModuleID="ChangePassword" Text="Change Password" IconCls="shortcut-icon icon-grid48" />
             </Shortcuts>
             
@@ -608,6 +612,19 @@
             PageY="100"
             Layout="Border">
             <AutoLoad Url="ImportFellowshipGroups.aspx" Mode="IFrame" ShowMask="true" />
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
+            ID="winHeadsets" 
+            runat="server" 
+            Title="Manage headsets" 
+            Width="600"
+            Height="608"
+            PageX="200" 
+            PageY="100"
+            Maximized="true"
+            Layout="Border">
+            <AutoLoad Url="Headsets.aspx" Mode="IFrame" ShowMask="true" />
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
