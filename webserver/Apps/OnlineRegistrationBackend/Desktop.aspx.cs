@@ -1928,7 +1928,7 @@ namespace Ict.Petra.WebServer.MConference
             }
 
             MedicalInfo += "</table>";
-            TabMedicalInfo.Html = MedicalInfo;
+            TabMedicalInfo.Html = MedicalInfo.Replace("&quot;", "\\\"");
 
             LoadMedicalLogs(ARow.MedicalNotes);
         }
