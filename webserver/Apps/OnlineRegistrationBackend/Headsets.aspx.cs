@@ -44,11 +44,11 @@ namespace Ict.Petra.WebServer.MConference
 {
     public partial class THeadsetManagementUI : System.Web.UI.Page
     {
-        protected Ext.Net.TextArea PartnerKeysHandingOut;
-        protected Ext.Net.TextArea PartnerKeysReturning;
+        protected Ext.Net.TextArea PartnerKeysRentedOut;
+        protected Ext.Net.TextArea PartnerKeysReturned;
         protected Ext.Net.FormPanel HeadsetsForm;
-        protected Ext.Net.ComboBox CurrentSessionHandingOut;
-        protected Ext.Net.ComboBox CurrentSessionReturning;
+        protected Ext.Net.ComboBox CurrentSessionRentedOut;
+        protected Ext.Net.ComboBox CurrentSessionReturned;
         protected Ext.Net.Store SessionsStore;
 
         protected void Page_Load(object sender, EventArgs e)
@@ -97,29 +97,29 @@ namespace Ict.Petra.WebServer.MConference
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
             THeadsetManagement.AddSession(values["txtNewSession"].ToString());
             Sessions_Refresh(null, null);
-            CurrentSessionHandingOut.SelectedIndex = 0;
-            CurrentSessionReturning.SelectedIndex = 0;
+            CurrentSessionRentedOut.SelectedIndex = 0;
+            CurrentSessionReturned.SelectedIndex = 0;
         }
 
-        protected void ImportHeadsetKeysHandingOut(Object sender, DirectEventArgs e)
+        protected void ImportHeadsetKeysRentedOut(Object sender, DirectEventArgs e)
         {
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
-            string EnteredValues = values["PartnerKeysHandingOut"].ToString().Trim();
+            string EnteredValues = values["PartnerKeysRentedOut"].ToString().Trim();
 
-            if (THeadsetManagement.AddScannedKeys(values["CurrentSessionHandingOut"].ToString(), EnteredValues, true))
+            if (THeadsetManagement.AddScannedKeys(values["CurrentSessionRentedOut"].ToString(), EnteredValues, true))
             {
-                PartnerKeysHandingOut.Clear();
+                PartnerKeysRentedOut.Clear();
             }
         }
 
-        protected void ImportHeadsetKeysReturning(Object sender, DirectEventArgs e)
+        protected void ImportHeadsetKeysReturned(Object sender, DirectEventArgs e)
         {
             Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
-            string EnteredValues = values["PartnerKeysReturning"].ToString().Trim();
+            string EnteredValues = values["PartnerKeysReturned"].ToString().Trim();
 
-            if (THeadsetManagement.AddScannedKeys(values["CurrentSessionReturning"].ToString(), EnteredValues, false))
+            if (THeadsetManagement.AddScannedKeys(values["CurrentSessionReturned"].ToString(), EnteredValues, false))
             {
-                PartnerKeysReturning.Clear();
+                PartnerKeysReturned.Clear();
             }
         }
 

@@ -66,11 +66,11 @@
 						</ext:Button>
 				      </Content>
 					</ext:Panel>
-					<ext:Panel ID="TabHandingOutHeadsets" runat="server" Title="Handing out Headsets" AutoScroll="true">
+					<ext:Panel ID="TabRentedOutHeadsets" runat="server" Title="Headsets rented out" AutoScroll="true">
 					  <Content>
 					     <table><tr><td>
 						  <ext:ComboBox 
-							ID="CurrentSessionHandingOut"
+							ID="CurrentSessionRentedOut"
 							runat="server" 
 							FieldLabel="Select session for which the headsets are handed out" 
 							Editable="false"
@@ -88,15 +88,15 @@
 						  </td></tr><tr><td>
 						  <ext:Label runat="server" Text="Please paste from Excel or Text file. One partner key per row. "/>
 						  </td></tr><tr><td>
-						  <ext:TextArea ID="PartnerKeysHandingOut" 
-							DataIndex="PartnerKeysHandingOut" 
+						  <ext:TextArea ID="PartnerKeysRentedOut" 
+							DataIndex="PartnerKeysRentedOut" 
 							runat="server" 
 							Height="360" 
 							Width="500"/>
 						  </td></tr><tr><td>
-						  <ext:Button ID="ImportButtonHandingOut" runat="server" Text="Handing out Headsets">
+						  <ext:Button ID="ImportButtonRentedOut" runat="server" Text="Headsets rented out">
 							<DirectEvents>
-								<Click OnEvent="ImportHeadsetKeysHandingOut">
+								<Click OnEvent="ImportHeadsetKeysRentedOut">
 									<EventMask ShowMask="true" />
 									<ExtraParams>
 										<ext:Parameter Name="Values" Value="#{HeadsetsForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
@@ -107,11 +107,11 @@
 						  </td></tr></table>
 				      </Content>
 					</ext:Panel>
-					<ext:Panel ID="TabReturningHeadsets" runat="server" Title="Returning Headsets" AutoScroll="true">
+					<ext:Panel ID="TabReturnedHeadsets" runat="server" Title="Returned Headsets" AutoScroll="true">
 					  <Content>
 					     <table><tr><td>
 						  <ext:ComboBox 
-							ID="CurrentSessionReturning"
+							ID="CurrentSessionReturned"
 							runat="server" 
 							FieldLabel="Select session for which the headsets are returned" 
 							Editable="false"
@@ -129,15 +129,15 @@
 						  </td></tr><tr><td>
 						  <ext:Label runat="server" Text="Please paste from Excel or Text file. One partner key per row. "/>
 						  </td></tr><tr><td>
-						  <ext:TextArea ID="PartnerKeysReturning" 
-							DataIndex="PartnerKeysReturning" 
+						  <ext:TextArea ID="PartnerKeysReturned" 
+							DataIndex="PartnerKeysReturned" 
 							runat="server" 
 							Height="360" 
 							Width="500"/>
 						  </td></tr><tr><td>
-						  <ext:Button ID="ImportButtonReturning" runat="server" Text="Returning Headsets">
+						  <ext:Button ID="ImportButtonReturned" runat="server" Text="Returned Headsets">
 							<DirectEvents>
-								<Click OnEvent="ImportHeadsetKeysReturning">
+								<Click OnEvent="ImportHeadsetKeysReturned">
 									<EventMask ShowMask="true" />
 									<ExtraParams>
 										<ext:Parameter Name="Values" Value="#{HeadsetsForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
