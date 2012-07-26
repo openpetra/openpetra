@@ -49,6 +49,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.FormPanel HeadsetsForm;
         protected Ext.Net.ComboBox CurrentSessionRentedOut;
         protected Ext.Net.ComboBox CurrentSessionReturned;
+        protected Ext.Net.ComboBox ReportSelectedSession;
         protected Ext.Net.Store SessionsStore;
 
         protected void Page_Load(object sender, EventArgs e)
@@ -99,6 +100,7 @@ namespace Ict.Petra.WebServer.MConference
             Sessions_Refresh(null, null);
             CurrentSessionRentedOut.SelectedIndex = 0;
             CurrentSessionReturned.SelectedIndex = 0;
+            ReportSelectedSession.SelectedIndex = 0;
         }
 
         protected void ImportHeadsetKeysRentedOut(Object sender, DirectEventArgs e)
@@ -123,14 +125,18 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
-        protected void ReportUnreturnedHeadsets(Object sender, DirectEventArgs e)
+        protected void ReportHeadsetsPerSession(Object sender, DirectEventArgs e)
         {
+            string SessionName = ReportSelectedSession.SelectedItem.Value.ToString();
+
             this.Response.Clear();
             this.Response.ContentType = "application/xlsx";
             this.Response.AddHeader("Content-Type", "application/xlsx");
-            this.Response.AddHeader("Content-Disposition", "attachment; filename=UnreturnedHeadsets.xlsx");
+            this.Response.AddHeader("Content-Disposition",
+                String.Format("attachment; filename=HeadsetReportForSession_{0}.xlsx", SessionName.Replace(" ", "_")));
             MemoryStream m = new MemoryStream();
-            THeadsetManagement.DownloadUnreturnedHeadsets(m);
+            string EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode");
+            THeadsetManagement.ReportHeadsetsPerSession(m, EventCode, SessionName);
             m.WriteTo(this.Response.OutputStream);
             m.Close();
             this.Response.End();

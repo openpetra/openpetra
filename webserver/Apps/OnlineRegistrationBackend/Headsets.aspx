@@ -72,7 +72,7 @@
 						  <ext:ComboBox 
 							ID="CurrentSessionRentedOut"
 							runat="server" 
-							FieldLabel="Select session for which the headsets are handed out" 
+							FieldLabel="Select session for which the headsets are rented out" 
 							Editable="false"
 							ForceSelection="true"
 							EmptyText="current session"
@@ -152,16 +152,34 @@
 					  <Content>
 					     <table>
 						  <tr><td>
-						  <ext:Button ID="btnReportUnreturnedHeadsets" runat="server" Text="Show headsets that need to be returned">
+						  <ext:ComboBox 
+							ID="ReportSelectedSession"
+							runat="server" 
+							FieldLabel="Select session for which the reports should be run" 
+							Editable="false"
+							ForceSelection="true"
+							EmptyText="select session"
+							Mode="Local"
+							Width="350"
+							LabelWidth="150"
+							StoreID="SessionsStore"
+							DisplayField="SessionName"
+							ValueField="SessionName"
+							SelectOnFocus="true"
+							SelectedIndex = "0">
+  						  </ext:ComboBox>
+						  </td></tr>
+						  <tr><td>
+						  <ext:Button ID="btnReportUnreturnedHeadsets" runat="server" Text="Show headsets per session (unreturned and statistics per country)">
 							<DirectEvents>
-								<Click OnEvent="ReportUnreturnedHeadsets"/>
+								<Click OnEvent="ReportHeadsetsPerSession" IsUpload="true"/>
 							</DirectEvents>
 						  </ext:Button>
 						  </td></tr>
 						  <tr><td>
 						  <ext:Button ID="btnStatistics" runat="server" Text="Show Statistics">
 							<DirectEvents>
-								<Click OnEvent="ReportStatistics"/>
+								<Click OnEvent="ReportStatistics" IsUpload="true"/>
 							</DirectEvents>
 						  </ext:Button>
 						  </td></tr>

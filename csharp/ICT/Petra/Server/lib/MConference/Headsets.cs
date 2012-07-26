@@ -89,11 +89,18 @@ namespace Ict.Petra.Server.MConference.Applications
             TVerificationResultCollection VerificationResult;
             table.ThrowAwayAfterSubmitChanges = true;
 
-            if (PContactAttributeDetailAccess.SubmitChanges(table, writeTransaction, out VerificationResult))
+            try
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                if (PContactAttributeDetailAccess.SubmitChanges(table, writeTransaction, out VerificationResult))
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
-            else
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -138,11 +145,103 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <summary>
         /// get Excel file with unreturned headsets
         /// </summary>
-        /// <param name="m"></param>
-        /// <returns></returns>
-        public static bool DownloadUnreturnedHeadsets(MemoryStream m)
+        public static bool ReportHeadsetsPerSession(MemoryStream AStream, string AEventCode, string ASessionName)
         {
-            return false;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            DataTable HeadsetsTable;
+
+            try
+            {
+                string stmt = TDataBase.ReadSqlFile("Conference.ReportHeadsetsForSession.sql");
+
+                OdbcParameter parameter;
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
+                parameter = new OdbcParameter("SessionName", OdbcType.VarChar);
+                parameter.Value = ASessionName;
+                parameters.Add(parameter);
+                parameter = new OdbcParameter("EventCode", OdbcType.VarChar);
+                parameter.Value = AEventCode;
+                parameters.Add(parameter);
+
+                HeadsetsTable = DBAccess.GDBAccessObj.SelectDT(stmt, "headsets", Transaction, parameters.ToArray());
+                HeadsetsTable.PrimaryKey = new DataColumn[] {
+                    HeadsetsTable.Columns["PartnerKey"],
+                    HeadsetsTable.Columns["RentedOutOrReturned"]
+                };
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            // list all partners that have not returned their headsets yet
+            XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
+            SortedList <string, Int32>HeadsetsPerCountry = new SortedList <string, Int32>();
+
+            foreach (DataRow row in HeadsetsTable.Rows)
+            {
+                if (row["RentedOutOrReturned"].ToString() == HEADSET_OUT_METHOD_OF_CONTACT)
+                {
+                    if (null == HeadsetsTable.Rows.Find(new object[] { row["PartnerKey"], HEADSET_RETURN_METHOD_OF_CONTACT }))
+                    {
+                        // add partner to Excel file
+                        XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
+                        myDoc.DocumentElement.AppendChild(newNode);
+                        XmlAttribute attr;
+
+                        attr = myDoc.CreateAttribute("PartnerKey");
+                        attr.Value = row["PartnerKey"].ToString();
+                        newNode.Attributes.Append(attr);
+
+                        attr = myDoc.CreateAttribute("ShortName");
+                        attr.Value = row["ShortName"].ToString();
+                        newNode.Attributes.Append(attr);
+
+                        attr = myDoc.CreateAttribute("FellowshipGroup");
+                        attr.Value = row["FellowshipGroup"].ToString();
+                        newNode.Attributes.Append(attr);
+
+                        attr = myDoc.CreateAttribute("Country");
+                        attr.Value = row["Country"].ToString();
+                        newNode.Attributes.Append(attr);
+                    }
+
+                    string Country = row["Country"].ToString();
+
+                    if (!HeadsetsPerCountry.ContainsKey(Country))
+                    {
+                        HeadsetsPerCountry.Add(Country, 1);
+                    }
+                    else
+                    {
+                        HeadsetsPerCountry[Country]++;
+                    }
+                }
+            }
+
+            XmlDocument statsPerCountry = TYml2Xml.CreateXmlDocument();
+
+            foreach (string country in HeadsetsPerCountry.Keys)
+            {
+                XmlNode newNode = statsPerCountry.CreateElement("", "ELEMENT", "");
+                statsPerCountry.DocumentElement.AppendChild(newNode);
+                XmlAttribute attr;
+
+                attr = statsPerCountry.CreateAttribute("Country");
+                attr.Value = country;
+                newNode.Attributes.Append(attr);
+
+                attr = statsPerCountry.CreateAttribute("RentedOut");
+                attr.Value = HeadsetsPerCountry[country].ToString();
+                newNode.Attributes.Append(attr);
+            }
+
+            SortedList <string, XmlDocument>worksheets = new SortedList <string, XmlDocument>();
+            worksheets.Add("Unreturned", myDoc);
+            worksheets.Add("Statistics per country", statsPerCountry);
+
+            return TCsv2Xml.Xml2ExcelStream(worksheets, AStream);
         }
     }
 }
