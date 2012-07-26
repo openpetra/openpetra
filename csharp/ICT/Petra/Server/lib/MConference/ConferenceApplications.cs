@@ -56,6 +56,8 @@ namespace Ict.Petra.Server.MConference.Applications
     /// </summary>
     public class TApplicationManagement
     {
+        private static Int32 MINIMUM_OFFICES_TO_BECOME_ORGANIZER = 3;
+
         /// <summary>
         /// use the permissions of the user to get all offices that this user has permissions for
         /// </summary>
@@ -71,8 +73,6 @@ namespace Ict.Petra.Server.MConference.Applications
                     PmShortTermApplicationTable.GetTableDBName()),
                 "registrationoffice", ATransaction);
 
-            bool isOrganizer = IsConferenceOrganisingOffice();
-
             // if there are no REG-... module permissions for anyone, allow all offices? this would help with a base database for testing?
             Int32 CountRegModules =
                 Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM " + SModuleTable.GetTableDBName() + " WHERE " +
@@ -83,7 +83,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 Int64 RegistrationOffice = Convert.ToInt64(officeRow[0]);
                 try
                 {
-                    if ((CountRegModules == 0) || isOrganizer || TModuleAccessManager.CheckUserModulePermissions(String.Format("REG-{0:10}",
+                    if ((CountRegModules == 0) || TModuleAccessManager.CheckUserModulePermissions(String.Format("REG-{0:10}",
                                 StringHelper.PartnerKeyToStr(RegistrationOffice))))
                     {
                         AllowedRegistrationOffices.Add(RegistrationOffice);
@@ -92,6 +92,18 @@ namespace Ict.Petra.Server.MConference.Applications
                 catch (EvaluateException)
                 {
                     // no permissions for this registration office
+                }
+            }
+
+            // the organizer has access to all attendees
+            if (AllowedRegistrationOffices.Count > MINIMUM_OFFICES_TO_BECOME_ORGANIZER)
+            {
+                AllowedRegistrationOffices = new List <long>();
+
+                foreach (DataRow officeRow in offices.Rows)
+                {
+                    Int64 RegistrationOffice = Convert.ToInt64(officeRow[0]);
+                    AllowedRegistrationOffices.Add(RegistrationOffice);
                 }
             }
 
@@ -119,7 +131,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
             }
 
-            return AllowedRegistrationOffices.Count > 3;
+            return AllowedRegistrationOffices.Count > MINIMUM_OFFICES_TO_BECOME_ORGANIZER;
         }
 
         /// <summary>
