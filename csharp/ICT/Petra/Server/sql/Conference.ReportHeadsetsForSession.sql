@@ -1,4 +1,5 @@
-SELECT PUB_p_partner_contact.p_partner_key_n AS PartnerKey, 
+SELECT DISTINCT
+       PUB_p_partner_contact.p_partner_key_n AS PartnerKey, 
        PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS SessionName,
        PUB_p_partner_contact.p_contact_code_c AS RentedOutOrReturned,
        PUB_p_partner.p_partner_short_name_c AS ShortName,
