@@ -47,6 +47,9 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.TextArea PartnerKeysRentedOut;
         protected Ext.Net.TextArea PartnerKeysReturned;
         protected Ext.Net.FormPanel HeadsetsForm;
+        protected Ext.Net.Panel TabCreateSession;
+        protected Ext.Net.Panel TabRentedOutHeadsets;
+        protected Ext.Net.Panel TabReturnedHeadsets;
         protected Ext.Net.ComboBox CurrentSessionRentedOut;
         protected Ext.Net.ComboBox CurrentSessionReturned;
         protected Ext.Net.ComboBox ReportSelectedSession;
@@ -66,6 +69,16 @@ namespace Ict.Petra.WebServer.MConference
             if (!X.IsAjaxRequest)
             {
                 Sessions_Refresh(null, null);
+
+                if (!UserInfo.GUserInfo.IsInModule("HEADSET"))
+                {
+                    TabReturnedHeadsets.Enabled = false;
+                    TabReturnedHeadsets.Visible = false;
+                    TabRentedOutHeadsets.Enabled = false;
+                    TabRentedOutHeadsets.Visible = false;
+                    TabCreateSession.Enabled = false;
+                    TabCreateSession.Visible = false;
+                }
             }
         }
 
@@ -129,17 +142,24 @@ namespace Ict.Petra.WebServer.MConference
         {
             string SessionName = ReportSelectedSession.SelectedItem.Value.ToString();
 
-            this.Response.Clear();
-            this.Response.ContentType = "application/xlsx";
-            this.Response.AddHeader("Content-Type", "application/xlsx");
-            this.Response.AddHeader("Content-Disposition",
-                String.Format("attachment; filename=HeadsetReportForSession_{0}.xlsx", SessionName.Replace(" ", "_")));
-            MemoryStream m = new MemoryStream();
-            string EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode");
-            THeadsetManagement.ReportHeadsetsPerSession(m, EventCode, SessionName);
-            m.WriteTo(this.Response.OutputStream);
-            m.Close();
-            this.Response.End();
+            try
+            {
+                this.Response.Clear();
+                this.Response.ContentType = "application/xlsx";
+                this.Response.AddHeader("Content-Type", "application/xlsx");
+                this.Response.AddHeader("Content-Disposition",
+                    String.Format("attachment; filename=HeadsetReportForSession_{0}.xlsx", SessionName.Replace(" ", "_")));
+                MemoryStream m = new MemoryStream();
+                string EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode");
+                THeadsetManagement.ReportHeadsetsPerSession(m, EventCode, SessionName);
+                m.WriteTo(this.Response.OutputStream);
+                m.Close();
+                this.Response.End();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.ToString());
+            }
         }
 
         protected void ReportStatistics(Object sender, DirectEventArgs e)

@@ -580,7 +580,8 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <returns></returns>
         public static PPartnerTable GetRegistrationOffices()
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             PPartnerTable result = new PPartnerTable();
 
@@ -618,7 +619,10 @@ namespace Ict.Petra.Server.MConference.Applications
             }
             finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             result.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName();

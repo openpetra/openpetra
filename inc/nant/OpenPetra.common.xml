@@ -200,6 +200,8 @@
           overwrite="false" />
 <property name="dir.3rdParty" value="${path::combine(dir.csharp, 'ThirdParty')}"
           overwrite="false" />
+<property name="dir.sql" value="${path::combine(dir.csharp, 'ICT/Petra/Server/sql')}"
+          overwrite="false" />
  <!-- delivery -->
 <property name="dir.delivery" value="${path::combine(dir.root, 'delivery')}"
           overwrite="false" />

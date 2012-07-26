@@ -35,6 +35,7 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Printing;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -59,6 +60,7 @@ namespace Ict.Petra.Server.MConference.Applications
         private static string SESSION_CONTACT_ATTRIBUTE = "SESSION";
         private static string HEADSET_OUT_METHOD_OF_CONTACT = "HEADSET_OUT";
         private static string HEADSET_RETURN_METHOD_OF_CONTACT = "HEADSET_RETURN";
+        private static string MODULE_HEADSET = "HEADSET";
 
         /// <summary>
         /// get the sessions available for headset usage
@@ -73,6 +75,12 @@ namespace Ict.Petra.Server.MConference.Applications
         /// </summary>
         public static void AddSession(string ASessionName)
         {
+            if (!UserInfo.GUserInfo.IsInModule(MODULE_HEADSET))
+            {
+                return;
+            }
+
+            // todo check permissions
             if (ASessionName.Trim().Length == 0)
             {
                 return;
@@ -111,6 +119,11 @@ namespace Ict.Petra.Server.MConference.Applications
         /// </summary>
         public static bool AddScannedKeys(string ASessionName, string APartnerKeys, bool AHandingOutHeadset)
         {
+            if (!UserInfo.GUserInfo.IsInModule(MODULE_HEADSET))
+            {
+                return false;
+            }
+
             if (APartnerKeys.Trim().Length == 0)
             {
                 return true;
@@ -142,17 +155,35 @@ namespace Ict.Petra.Server.MConference.Applications
             return TSubmitChangesResult.scrOK == ContactTDSAccess.SubmitChanges(MainDS, out VerificationResult);
         }
 
-        /// <summary>
-        /// get Excel file with unreturned headsets
-        /// </summary>
-        public static bool ReportHeadsetsPerSession(MemoryStream AStream, string AEventCode, string ASessionName)
+        private static void GetDataForHeadsetReports(string AEventCode,
+            string ASessionName,
+            out DataTable AHeadsetsTable,
+            out DataTable AAttendeesTable)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            DataTable HeadsetsTable;
 
             try
             {
-                string stmt = TDataBase.ReadSqlFile("Conference.ReportHeadsetsForSession.sql");
+                string stmtReportHeadsetsForSession = TDataBase.ReadSqlFile("Conference.ReportHeadsetsForSession.sql");
+                string stmtAllParticipantsWithRoleAndCountry = TDataBase.ReadSqlFile("Conference.GetAllParticipantsWithRoleAndCountry.sql");
+
+                if (!UserInfo.GUserInfo.IsInModule(MODULE_HEADSET))
+                {
+                    // only get the headsets for the offices that this person has permissions for
+                    PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
+
+                    string ByRegistrationOffice = " AND PUB_pm_short_term_application.pm_registration_office_n IN (";
+
+                    foreach (PPartnerRow partnerRow in offices.Rows)
+                    {
+                        ByRegistrationOffice += partnerRow.PartnerKey.ToString() + ",";
+                    }
+
+                    ByRegistrationOffice += "0)";
+
+                    stmtReportHeadsetsForSession += ByRegistrationOffice;
+                    stmtAllParticipantsWithRoleAndCountry += ByRegistrationOffice;
+                }
 
                 OdbcParameter parameter;
 
@@ -164,26 +195,38 @@ namespace Ict.Petra.Server.MConference.Applications
                 parameter.Value = AEventCode;
                 parameters.Add(parameter);
 
-                HeadsetsTable = DBAccess.GDBAccessObj.SelectDT(stmt, "headsets", Transaction, parameters.ToArray());
-                HeadsetsTable.PrimaryKey = new DataColumn[] {
-                    HeadsetsTable.Columns["PartnerKey"],
-                    HeadsetsTable.Columns["RentedOutOrReturned"]
+                AHeadsetsTable = DBAccess.GDBAccessObj.SelectDT(stmtReportHeadsetsForSession, "headsets", Transaction, parameters.ToArray());
+                AHeadsetsTable.PrimaryKey = new DataColumn[] {
+                    AHeadsetsTable.Columns["PartnerKey"],
+                    AHeadsetsTable.Columns["RentedOutOrReturned"]
+                };
+
+                parameters = new List <OdbcParameter>();
+                parameter = new OdbcParameter("EventCode", OdbcType.VarChar);
+                parameter.Value = AEventCode;
+                parameters.Add(parameter);
+
+                AAttendeesTable = DBAccess.GDBAccessObj.SelectDT(stmtAllParticipantsWithRoleAndCountry, "attendees", Transaction, parameters.ToArray());
+                AAttendeesTable.PrimaryKey = new DataColumn[] {
+                    AAttendeesTable.Columns["PartnerKey"]
                 };
             }
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
+        }
 
-            // list all partners that have not returned their headsets yet
+        /// list all partners that have not returned their headsets yet
+        private static XmlDocument GetUnreturnedHeadsets(DataTable AHeadsetsTable)
+        {
             XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
-            SortedList <string, Int32>HeadsetsPerCountry = new SortedList <string, Int32>();
 
-            foreach (DataRow row in HeadsetsTable.Rows)
+            foreach (DataRow row in AHeadsetsTable.Rows)
             {
                 if (row["RentedOutOrReturned"].ToString() == HEADSET_OUT_METHOD_OF_CONTACT)
                 {
-                    if (null == HeadsetsTable.Rows.Find(new object[] { row["PartnerKey"], HEADSET_RETURN_METHOD_OF_CONTACT }))
+                    if (null == AHeadsetsTable.Rows.Find(new object[] { row["PartnerKey"], HEADSET_RETURN_METHOD_OF_CONTACT }))
                     {
                         // add partner to Excel file
                         XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
@@ -198,6 +241,10 @@ namespace Ict.Petra.Server.MConference.Applications
                         attr.Value = row["ShortName"].ToString();
                         newNode.Attributes.Append(attr);
 
+                        attr = myDoc.CreateAttribute("Role");
+                        attr.Value = row["Role"].ToString();
+                        newNode.Attributes.Append(attr);
+
                         attr = myDoc.CreateAttribute("FellowshipGroup");
                         attr.Value = row["FellowshipGroup"].ToString();
                         newNode.Attributes.Append(attr);
@@ -206,40 +253,157 @@ namespace Ict.Petra.Server.MConference.Applications
                         attr.Value = row["Country"].ToString();
                         newNode.Attributes.Append(attr);
                     }
+                }
+            }
 
-                    string Country = row["Country"].ToString();
+            return myDoc;
+        }
 
-                    if (!HeadsetsPerCountry.ContainsKey(Country))
+        private static XmlDocument GetStatisticsPerCountry(DataTable AHeadsetsTable, DataTable AttendeesTable)
+        {
+            SortedList <string, Int32>HeadsetsPerCountryAndRole = new SortedList <string, Int32>();
+            SortedList <string, Int32>ParticipantsPerCountryAndRole = new SortedList <string, Int32>();
+
+            foreach (DataRow rowAttendee in AttendeesTable.Rows)
+            {
+                string Country = rowAttendee["Country"].ToString() + " _ Total";
+                string CountryAndRole = rowAttendee["Country"].ToString() + " _ " + rowAttendee["Role"].ToString();
+
+                if (null != AHeadsetsTable.Rows.Find(new object[] { rowAttendee["PartnerKey"], HEADSET_OUT_METHOD_OF_CONTACT }))
+                {
+                    if (!HeadsetsPerCountryAndRole.ContainsKey(CountryAndRole))
                     {
-                        HeadsetsPerCountry.Add(Country, 1);
+                        HeadsetsPerCountryAndRole.Add(CountryAndRole, 1);
                     }
                     else
                     {
-                        HeadsetsPerCountry[Country]++;
+                        HeadsetsPerCountryAndRole[CountryAndRole]++;
                     }
+
+                    if (!HeadsetsPerCountryAndRole.ContainsKey(Country))
+                    {
+                        HeadsetsPerCountryAndRole.Add(Country, 1);
+                    }
+                    else
+                    {
+                        HeadsetsPerCountryAndRole[Country]++;
+                    }
+                }
+
+                if (!ParticipantsPerCountryAndRole.ContainsKey(CountryAndRole))
+                {
+                    ParticipantsPerCountryAndRole.Add(CountryAndRole, 1);
+                }
+                else
+                {
+                    ParticipantsPerCountryAndRole[CountryAndRole]++;
+                }
+
+                if (!ParticipantsPerCountryAndRole.ContainsKey(Country))
+                {
+                    ParticipantsPerCountryAndRole.Add(Country, 1);
+                }
+                else
+                {
+                    ParticipantsPerCountryAndRole[Country]++;
                 }
             }
 
             XmlDocument statsPerCountry = TYml2Xml.CreateXmlDocument();
 
-            foreach (string country in HeadsetsPerCountry.Keys)
+            foreach (string country in ParticipantsPerCountryAndRole.Keys)
             {
                 XmlNode newNode = statsPerCountry.CreateElement("", "ELEMENT", "");
                 statsPerCountry.DocumentElement.AppendChild(newNode);
                 XmlAttribute attr;
 
                 attr = statsPerCountry.CreateAttribute("Country");
-                attr.Value = country;
+                attr.Value = country.Substring(0, country.IndexOf(" _ "));
+                newNode.Attributes.Append(attr);
+
+                attr = statsPerCountry.CreateAttribute("Role");
+                attr.Value = country.Substring(country.IndexOf(" _ ") + 3);
                 newNode.Attributes.Append(attr);
 
                 attr = statsPerCountry.CreateAttribute("RentedOut");
-                attr.Value = HeadsetsPerCountry[country].ToString();
+
+                if (HeadsetsPerCountryAndRole.ContainsKey(country))
+                {
+                    attr.Value = HeadsetsPerCountryAndRole[country].ToString();
+                }
+                else
+                {
+                    attr.Value = "0";
+                }
+
+                newNode.Attributes.Append(attr);
+
+                attr = statsPerCountry.CreateAttribute("Attendees");
+                attr.Value = ParticipantsPerCountryAndRole[country].ToString();;
                 newNode.Attributes.Append(attr);
             }
 
+            return statsPerCountry;
+        }
+
+        private static XmlDocument GetHeadsetUsers(DataTable AHeadsetsTable, DataTable AttendeesTable, bool AUsedHeadset)
+        {
+            XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
+
+            foreach (DataRow row in AttendeesTable.Rows)
+            {
+                if (AUsedHeadset ==
+                    (null != AHeadsetsTable.Rows.Find(new object[] { row["PartnerKey"], HEADSET_OUT_METHOD_OF_CONTACT })))
+                {
+                    XmlNode newNode = myDoc.CreateElement("", "ELEMENT", "");
+                    myDoc.DocumentElement.AppendChild(newNode);
+                    XmlAttribute attr;
+
+                    attr = myDoc.CreateAttribute("PartnerKey");
+                    attr.Value = row["PartnerKey"].ToString();
+                    newNode.Attributes.Append(attr);
+
+                    attr = myDoc.CreateAttribute("ShortName");
+                    attr.Value = row["ShortName"].ToString();
+                    newNode.Attributes.Append(attr);
+
+                    attr = myDoc.CreateAttribute("Role");
+                    attr.Value = row["Role"].ToString();
+                    newNode.Attributes.Append(attr);
+
+                    attr = myDoc.CreateAttribute("FellowshipGroup");
+                    attr.Value = row["FellowshipGroup"].ToString();
+                    newNode.Attributes.Append(attr);
+
+                    attr = myDoc.CreateAttribute("Country");
+                    attr.Value = row["Country"].ToString();
+                    newNode.Attributes.Append(attr);
+                }
+            }
+
+            return myDoc;
+        }
+
+        /// <summary>
+        /// get Excel file with unreturned headsets
+        /// </summary>
+        public static bool ReportHeadsetsPerSession(MemoryStream AStream, string AEventCode, string ASessionName)
+        {
+            DataTable HeadsetsTable;
+            DataTable AttendeesTable;
+
+            GetDataForHeadsetReports(AEventCode, ASessionName, out HeadsetsTable, out AttendeesTable);
+
             SortedList <string, XmlDocument>worksheets = new SortedList <string, XmlDocument>();
-            worksheets.Add("Unreturned", myDoc);
-            worksheets.Add("Statistics per country", statsPerCountry);
+            worksheets.Add("a - Unreturned", GetUnreturnedHeadsets(HeadsetsTable));
+            worksheets.Add("b - Statistics per country", GetStatisticsPerCountry(HeadsetsTable, AttendeesTable));
+
+            if (!UserInfo.GUserInfo.IsInModule(MODULE_HEADSET))
+            {
+                // add a list of all people who have or have not used the headset
+                worksheets.Add("c - No headset", GetHeadsetUsers(HeadsetsTable, AttendeesTable, false));
+                worksheets.Add("d - With headset", GetHeadsetUsers(HeadsetsTable, AttendeesTable, true));
+            }
 
             return TCsv2Xml.Xml2ExcelStream(worksheets, AStream);
         }
