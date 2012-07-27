@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,20 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Server.MConference.Applications
 {
+    /// <summary>
+    /// reports for medical team
+    /// </summary>
+    public class TMedicalReport
+    {
+        /// <summary>
+        /// print all incidents of one day
+        /// </summary>
+        public static string PrintReport(Int64 AEventPartnerKey, string AEventCode, DateTime ADateToPrint)
+        {
+            return string.Empty;
+        }
+    }
+
     /// <summary>for each medical incident</summary>
     public class TMedicalIncident
     {

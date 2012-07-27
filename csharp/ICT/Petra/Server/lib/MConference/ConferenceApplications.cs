@@ -1005,6 +1005,10 @@ namespace Ict.Petra.Server.MConference.Applications
                             AMainDS.PDataLabelValuePartner.Rows.Add(newLabel);
                         }
                     }
+                    else
+                    {
+                        TLogging.Log("we are missing data label for MedicalNotes");
+                    }
                 }
 
                 // only allow the boundaries team to modify rebukes
@@ -1031,6 +1035,10 @@ namespace Ict.Petra.Server.MConference.Applications
                             newLabel.ValueChar = AChangedRow.RebukeNotes;
                             AMainDS.PDataLabelValuePartner.Rows.Add(newLabel);
                         }
+                    }
+                    else
+                    {
+                        TLogging.Log("we are missing data label for Boundaries");
                     }
                 }
             }

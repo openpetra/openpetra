@@ -59,11 +59,6 @@
             Ext.getCmp('TabPanelApplication').setActiveTab(0);
         }
 
-        function SetActiveMedicalIncident(panelId)
-        {
-            Ext.getCmp('MedicalPanel').setActiveTab(panelId);
-        }
-
         function SetDateFormat(format)
         {
             Ext.getCmp('DateOfArrival').format = format;
@@ -71,7 +66,32 @@
             Ext.getCmp('GenAppDate').format = format;
             Ext.getCmp('DateOfBirth').format = format;
         }
-</script>        
+
+        function SetActiveMedicalIncident(panelId)
+        {
+            var myTabPanel = Ext.getCmp('MedicalPanel');
+            var tabs = myTabPanel.find( 'title', 'incident ' + (panelId + 1));
+            myTabPanel.setActiveTab( tabs[ 0 ] );
+        }
+
+        var MedicalIncidentToDelete = -1;
+        
+        function ReallyDeleteMedicalIncident(btn)
+        {
+            if (btn == 'yes')
+            {
+                tab = document.getElementById('TabMedicalIncident' + MedicalIncidentToDelete);
+                tab.parentNode.removeChild(tab);
+            }
+        }
+
+        function DeleteMedicalIncident(RowId)
+        {
+            MedicalIncidentToDelete = RowId;
+            Ext.MessageBox.confirm('Confirm', 'Are you sure you want to delete this incident?', ReallyDeleteMedicalIncident);
+        }
+
+</script>
 </head>
 <body>
     <form runat="server">
@@ -827,6 +847,16 @@
                                 </ext:Button>
                               </Items>
                             </ext:Panel>
+                            <ext:Panel ID="TabMedical" runat="server" Title="Medical" AutoScroll="true">
+                              <Items>
+                                <ext:DateField ID="dtpMedicalReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MM-yyyy" width="230"/>
+                                <ext:Button ID="btnMedicalReport" runat="server" Text="Print Medical Report">
+                                    <DirectEvents>
+                                        <Click OnEvent="PrintMedicalReport"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                              </Items>
+                            </ext:Panel>
                             <ext:Panel ID="TabBadges" runat="server" Title="Badges" AutoScroll="true">
                               <Content>
                                 <table>
@@ -898,7 +928,7 @@
                                 </table>
                               </Content>
                             </ext:Panel>
-                            <ext:Panel ID="Groups" runat="server" Title="Groups" AutoScroll="true">
+                            <ext:Panel ID="TabTopGroups" runat="server" Title="Groups" AutoScroll="true">
                               <Content>
                                 <table>
                                 <tr>
@@ -919,7 +949,7 @@
                                 </table>
                               </Content>
                             </ext:Panel>
-                            <ext:Panel ID="TODO" runat="server" Title="TODO" AutoScroll="true">
+                            <ext:Panel ID="TabTODO" runat="server" Title="TODO" AutoScroll="true">
                               <Content>
                                 <table>
                                 <tr>
@@ -1039,6 +1069,11 @@
                                 <ext:Button ID="btnReprintBadge" runat="server" Text="Reprint Badge" Icon="Printer">
                                     <DirectEvents>
                                         <Click OnEvent="ReprintBadge" IsUpload="true"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                                <ext:Button ID="btnPrintMedicalReport" runat="server" Text="Print Report" Icon="Printer">
+                                    <DirectEvents>
+                                        <Click OnEvent="PrintMedicalReportForParticipant" IsUpload="true"/>
                                     </DirectEvents>
                                 </ext:Button>
                             </Items>

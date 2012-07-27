@@ -78,6 +78,15 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Panel TabMedicalInfo;
         protected Ext.Net.Panel TabRebukes;
         protected Ext.Net.Panel TabGroups;
+        protected Ext.Net.Panel TabPetra;
+        protected Ext.Net.Panel TabManualRegistration;
+        protected Ext.Net.Panel TabTopFinance;
+        protected Ext.Net.Panel TabBoundaries;
+        protected Ext.Net.Panel TabMedical;
+        protected Ext.Net.Panel TabBadges;
+        protected Ext.Net.Panel TabExport;
+        protected Ext.Net.Panel TabTopGroups;
+        protected Ext.Net.Panel TabTODO;
         protected Ext.Net.TabPanel TabPanelApplication;
         protected Ext.Net.ComboBox JobWish1;
         protected Ext.Net.ComboBox JobWish2;
@@ -95,6 +104,9 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Button btnTestPrintBadges;
         protected Ext.Net.Button btnPrintBadges;
         protected Ext.Net.Button btnReprintBadges;
+        protected Ext.Net.Button btnReprintPDF;
+        protected Ext.Net.Button btnReprintBadge;
+        protected Ext.Net.Button btnPrintMedicalReport;
         protected Ext.Net.Button btnExportTShirtNumbers;
         protected Ext.Net.Button btnImportPrintedBadges;
         protected Ext.Net.Button btnExcelArrivalRegistration;
@@ -105,6 +117,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Store StoreRebukes;
         protected Ext.Net.Button btnNewRebuke;
         protected Ext.Net.DateField dtpRebukesReportForDate;
+        protected Ext.Net.DateField dtpMedicalReportForDate;
         protected Ext.Net.TabPanel MedicalPanel;
         protected Ext.Net.TextField MaxGroupMembers;
         protected Ext.Net.TextArea GroupMembers;
@@ -167,6 +180,8 @@ namespace Ict.Petra.WebServer.MConference
                     TabMedicalLog.Visible = false;
                     TabMedicalInfo.Enabled = false;
                     TabMedicalInfo.Visible = false;
+                    TabMedical.Visible = false;
+                    btnPrintMedicalReport.Visible = false;
                 }
                 else
                 {
@@ -175,6 +190,18 @@ namespace Ict.Petra.WebServer.MConference
                     TabServiceTeam.Visible = false;
                     TabApplicantDetails.Visible = false;
                     TabGroups.Visible = false;
+
+                    TabPetra.Visible = false;
+                    TabManualRegistration.Visible = false;
+                    TabTopFinance.Visible = false;
+                    TabBoundaries.Visible = false;
+                    TabBadges.Visible = false;
+                    TabExport.Visible = false;
+                    TabTopGroups.Visible = false;
+                    TabTODO.Visible = false;
+
+                    btnReprintBadge.Visible = false;
+                    btnReprintPDF.Visible = false;
                 }
 
                 if (!UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
@@ -203,6 +230,7 @@ namespace Ict.Petra.WebServer.MConference
                 }
 
                 dtpRebukesReportForDate.Value = PrintDate;
+                dtpMedicalReportForDate.Value = PrintDate;
 
                 MyData_Refresh(null, null);
             }
@@ -1240,6 +1268,57 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
+        protected void PrintMedicalReportForParticipant(object sender, DirectEventArgs e)
+        {
+        }
+
+        protected void PrintMedicalReport(object sender, DirectEventArgs e)
+        {
+            DateTime PrintDate = (DateTime)dtpMedicalReportForDate.Value;
+
+            string OutputName = "MedicalReport_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
+
+            try
+            {
+                OutputName = "MedicalReport_" + PrintDate.ToString("yyyy-MM-dd").Replace(
+                    ".",
+                    "_").Replace(" ", "_") + ".pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TMedicalReport.PrintReport(EventPartnerKey,
+                    EventCode,
+                    PrintDate);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
         protected void PrintBarcodeLabels(object sender, DirectEventArgs e)
         {
             string OutputName = "badgeLabels.pdf";
@@ -1790,6 +1869,16 @@ namespace Ict.Petra.WebServer.MConference
             cKeywords.Items.Add(txtKeywords);
             tblMedicalIncident.Cells.Add(cKeywords);
 
+            Ext.Net.Button btnDeleteIncident = this.X().Button()
+                                               .ID("btnDeleteIncident" + ARow.ID.ToString())
+                                               .Text("Delete Incident")
+                                               .OnClientClick("DeleteMedicalIncident(" + ARow.ID.ToString() + ")");
+
+            Ext.Net.Cell cDelete = new Cell();
+            cDelete.ColSpan = 3;
+            cDelete.Items.Add(btnDeleteIncident);
+            tblMedicalIncident.Cells.Add(cDelete);
+
             panel.ContentControls.Add(tblMedicalIncident);
             panel.Render("MedicalPanel", RenderMode.AddTo);
             X.Js.Call("SetActiveMedicalIncident", ARow.ID - 1);
@@ -1808,23 +1897,26 @@ namespace Ict.Petra.WebServer.MConference
 
             for (Int32 Counter = 1; Counter < NewIncidentID; Counter++)
             {
-                if (Result.EndsWith("}"))
+                if (AValues.ContainsKey("dtpDate" + Counter.ToString()))
                 {
-                    Result += ",";
+                    if (Result.EndsWith("}"))
+                    {
+                        Result += ",";
+                    }
+
+                    Result += "{\"ID\":\"" + Counter.ToString() + "\"";
+
+                    string[] fields = new string[] {
+                        "dtpDate", "txtExaminer", "txtPulse", "txtBloodPressure", "txtTemperature", "txtDiagnosis", "txtTherapy", "txtKeywords"
+                    };
+
+                    foreach (string name in fields)
+                    {
+                        Result += ",\"" + name + "\":\"" + AValues[name + Counter.ToString()] + "\"";
+                    }
+
+                    Result += "}";
                 }
-
-                Result += "{\"ID\":\"" + Counter.ToString() + "\"";
-
-                string[] fields = new string[] {
-                    "dtpDate", "txtExaminer", "txtPulse", "txtBloodPressure", "txtTemperature", "txtDiagnosis", "txtTherapy", "txtKeywords"
-                };
-
-                foreach (string name in fields)
-                {
-                    Result += ",\"" + name + "\":\"" + AValues[name + Counter.ToString()] + "\"";
-                }
-
-                Result += "}";
             }
 
             Result += "]";

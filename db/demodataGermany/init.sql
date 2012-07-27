@@ -36,6 +36,9 @@ INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('D
 INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('HEADSET', 'HEADSET', true);
 INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('MEDICAL', 'MEDICAL', true);
 INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('BOUNDARIES', 'BOUNDARIES', true);
+insert into p_data_label(p_key_i, p_text_c, p_data_type_c, p_char_length_i, p_restricted_l) values(1, 'Rebukes', 'char', 8000, false);
+insert into p_data_label(p_key_i, p_text_c, p_data_type_c, p_char_length_i, p_restricted_l) values(2, 'MedicalNotes', 'char', 8000, false);
+
 
 -- setup the user ANONYMOUS for the webforms
 INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'PTNRUSER', true);
