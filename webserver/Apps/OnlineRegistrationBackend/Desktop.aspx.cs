@@ -806,7 +806,7 @@ namespace Ict.Petra.WebServer.MConference
                     row.FirstName = values["FirstName"];
                     row.Gender = values["Gender"];
 
-                    if (values["DateOfBirth"].Length == 0)
+                    if (!values.ContainsKey("DateOfBirth") || (values["DateOfBirth"].Length == 0))
                     {
                         row.DateOfBirth = new Nullable <DateTime>();
                     }
@@ -819,7 +819,7 @@ namespace Ict.Petra.WebServer.MConference
                         row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
                     }
 
-                    if (values["DateOfArrival"].Length == 0)
+                    if (!values.ContainsKey("DateOfArrival") || (values["DateOfArrival"].Length == 0))
                     {
                         row.SetDateOfArrivalNull();
                     }
@@ -829,7 +829,7 @@ namespace Ict.Petra.WebServer.MConference
                         row.DateOfArrival = Convert.ToDateTime(values["DateOfArrival"]);
                     }
 
-                    if (values["DateOfDeparture"].Length == 0)
+                    if (!values.ContainsKey("DateOfDeparture") || (values["DateOfDeparture"].Length == 0))
                     {
                         row.SetDateOfDepartureNull();
                     }
@@ -1947,6 +1947,14 @@ namespace Ict.Petra.WebServer.MConference
                     {
                         string value = AValues[name + Counter.ToString()];
 
+                        if (name == "dtpDate")
+                        {
+                            // TODO: assume European Date format on the client
+                            value = value.Substring(6, 4) + "-" +
+                                    value.Substring(3, 2) + "-" +
+                                    value.Substring(0, 2);
+                        }
+
                         if (value == "for statistics, separated by comma")
                         {
                             value = string.Empty;
@@ -1984,7 +1992,13 @@ namespace Ict.Petra.WebServer.MConference
                     DateTime date = DateTime.Today;
                     try
                     {
-                        date = Convert.ToDateTime(element["dtpDate"]);
+                        string dateText = element["dtpDate"].ToString();
+
+                        // TODO: assume European Date format on the client
+                        date = new DateTime(
+                            Convert.ToInt32(dateText.Substring(0, 4)),
+                            Convert.ToInt32(dateText.Substring(5, 2)),
+                            Convert.ToInt32(dateText.Substring(8, 2)));
                     }
                     catch (Exception)
                     {
