@@ -37,6 +37,11 @@ namespace Ict.Common.Printing
     public class TFormLettersTools
     {
         /// <summary>
+        /// define the first row in the details to apply to the whole group
+        /// </summary>
+        public static string HEADERGROUP = "HEADERGROUP:";
+
+        /// <summary>
         /// for form letter files, we need to check if there is a template specific for the country or form.
         /// Otherwise the next best fitting template is used
         /// </summary>
@@ -622,9 +627,22 @@ namespace Ict.Common.Printing
 
                     if (GroupTopNode != null)
                     {
-                        ConditionalPageBreak(groupTopHeight + detailHeight * 3);
+                        ConditionalPageBreak(groupTopHeight + detailHeight);
 
                         string GroupTopText = GroupTopNode.InnerXml;
+
+                        if (AData[group][0].StartsWith(HEADERGROUP))
+                        {
+                            string CSVLine = AData[group][0].Substring(HEADERGROUP.Length);
+                            int CountCSVValue = 1;
+
+                            while (CSVLine.Length > 0)
+                            {
+                                string value = StringHelper.GetNextCSV(ref CSVLine);
+                                GroupTopText = GroupTopText.Replace("#VALUE" + CountCSVValue.ToString(), value);
+                                CountCSVValue++;
+                            }
+                        }
 
                         ResultDocument += Environment.NewLine +
                                           String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
@@ -640,6 +658,11 @@ namespace Ict.Common.Printing
                     {
                         foreach (string line in AData[group])
                         {
+                            if (line.StartsWith(HEADERGROUP))
+                            {
+                                continue;
+                            }
+
                             string DetailText = DetailNode.InnerXml;
 
                             string CSVLine = line;

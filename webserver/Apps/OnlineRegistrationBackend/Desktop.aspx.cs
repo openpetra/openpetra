@@ -1270,6 +1270,39 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void PrintMedicalReportForParticipant(object sender, DirectEventArgs e)
         {
+            ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
+
+            string OutputName = ("MedicalReport_" + row.FamilyName + "_" + row.FirstName + ".pdf").Replace(" ", "_");
+
+            try
+            {
+                string PDFPath = TMedicalReport.PrintReport(
+                    EventCode,
+                    row.PartnerKey);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
         }
 
         protected void PrintMedicalReport(object sender, DirectEventArgs e)
@@ -1912,7 +1945,14 @@ namespace Ict.Petra.WebServer.MConference
 
                     foreach (string name in fields)
                     {
-                        Result += ",\"" + name + "\":\"" + AValues[name + Counter.ToString()] + "\"";
+                        string value = AValues[name + Counter.ToString()];
+
+                        if (value == "for statistics, separated by comma")
+                        {
+                            value = string.Empty;
+                        }
+
+                        Result += ",\"" + name + "\":\"" + value + "\"";
                     }
 
                     Result += "}";

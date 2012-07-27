@@ -302,6 +302,33 @@ namespace Ict.Petra.Server.MConference.Applications
             }
         }
 
+        /// <summary>
+        /// load one specific application from the database
+        /// </summary>
+        public static ConferenceApplicationTDS LoadApplicationFromDB(
+            string AEventCode,
+            Int64 APartnerKey)
+        {
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            try
+            {
+                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+                LoadApplicationsFromDB(ref MainDS, AEventCode, new Nullable <long>(), null, APartnerKey, transaction);
+
+                return MainDS;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+        }
+
         private static bool LoadApplicationsFromDB(
             ref ConferenceApplicationTDS AMainDS,
             string AEventCode,
@@ -401,6 +428,10 @@ namespace Ict.Petra.Server.MConference.Applications
 
             AMainDS.Merge(MainDS);
 
+            AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                              PDataLabelValuePartnerTable.GetPartnerKeyDBName();
+            AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
+
             return true;
         }
 
@@ -428,10 +459,6 @@ namespace Ict.Petra.Server.MConference.Applications
                 AEventCode, ARegisteringOffice,
                 ARole, new Nullable <Int64>(),
                 ATransaction);
-
-            AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
-                                                              PDataLabelValuePartnerTable.GetPartnerKeyDBName();
-            AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
 
             DataView PersonView = AMainDS.PPerson.DefaultView;
 
@@ -480,19 +507,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 // only allow the medical team to read and write
                 if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
-                    Int32 IndexLabelMedical = AMainDS.PDataLabel.DefaultView.Find("MedicalNotes");
-
-                    if (IndexLabelMedical != -1)
-                    {
-                        Int32 MedicalLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelMedical].Row).Key;
-
-                        int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { MedicalLabelID, newRow.PartnerKey });
-
-                        if (IndexLabel != -1)
-                        {
-                            newRow.MedicalNotes = ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar;
-                        }
-                    }
+                    newRow.MedicalNotes = TMedicalLogs.GetMedicalLogs(AMainDS, newRow.PartnerKey);
                 }
 
                 Int32 IndexLabelRebuke = AMainDS.PDataLabel.DefaultView.Find("Rebukes");
