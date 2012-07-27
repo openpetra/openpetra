@@ -696,8 +696,9 @@ namespace Ict.Petra.Client.MCommon.Gui
             System.Windows.Forms.DialogResult AddressAddedPromotionDialogResult;
             int Counter;
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedPromotionRow;            
-            string FilterCriteria;            
+                        
 #if TODO    
+            string FilterCriteria;
             DataView PersonsLocationsDV;
             DataView PartnerSharingLocationDV;
             TPartnerAddressChangePropagationSelectionWinForm AddressChangedDialog;
@@ -756,12 +757,14 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (AParameterDT != null)
                         {
+#if TODO
                             FilterCriteria = PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.SiteKey.ToString() + " AND " +
                                              PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.LocationKey.ToString();
 
                             // MessageBox.Show('FilterCriteria: ' + FilterCriteria);
+#endif                            
                             LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { AddressAddedOrChangedPromotionRow.SiteKey,
                                                                                                    AddressAddedOrChangedPromotionRow.LocationKey });
 
@@ -836,12 +839,14 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (AParameterDT != null)
                         {
+#if TODO                            
                             FilterCriteria = PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyOfEditedRecordDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.SiteKey.ToString() + " AND " +
                                              PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyOfEditedRecordDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.LocationKey.ToString();
 
                             // MessageBox.Show('FilterCriteria: ' + FilterCriteria);
+#endif                            
                             LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { AddressAddedOrChangedPromotionRow.SiteKey,
                                                                                                    AddressAddedOrChangedPromotionRow.LocationKey });
 
