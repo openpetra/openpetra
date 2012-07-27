@@ -695,11 +695,11 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             System.Windows.Forms.DialogResult AddressAddedPromotionDialogResult;
             int Counter;
-            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedPromotionRow;
-            DataView PartnerSharingLocationDV;
-            string FilterCriteria;
+            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedPromotionRow;            
+            string FilterCriteria;            
+#if TODO    
             DataView PersonsLocationsDV;
-#if TODO            
+            DataView PartnerSharingLocationDV;
             TPartnerAddressChangePropagationSelectionWinForm AddressChangedDialog;
             string UserAnswer;
             TPartnerLocationChangePropagationSelectionWinForm LocationChangedDialog;
@@ -767,11 +767,12 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                             if (LocationRow != null)
                             {
+#if TODO                                
                                 PartnerSharingLocationDV = new DataView(AParameterDT,
                                     FilterCriteria,
                                     PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
                                     DataViewRowState.CurrentRows);
-#if TODO                                
+
                             AddressChangedDialog = new TPartnerAddressChangePropagationSelectionWinForm();
                                 AddressChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PartnerSharingLocationDV, LocationRow, "", "");
 
@@ -860,11 +861,12 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                             if (LocationRow != null)
                             {
+#if TODO                                
                                 PersonsLocationsDV = new DataView(AParameterDT,
                                     FilterCriteria,
                                     PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
                                     DataViewRowState.CurrentRows);
-#if TODO                                
+
                                 LocationChangedDialog = new TPartnerLocationChangePropagationSelectionWinForm();
                                 LocationChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PersonsLocationsDV, LocationRow, "", "");
 
