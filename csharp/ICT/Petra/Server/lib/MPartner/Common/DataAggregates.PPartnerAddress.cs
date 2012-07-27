@@ -254,6 +254,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         NewLocationTable = new PLocationTable();
                         NewLocationRowSaved = NewLocationTable.NewRowTyped(false);
                         NewLocationRowSaved.ItemArray = DataUtilities.DestinationSaveItemArray(NewLocationRowSaved, ALocationRow);
+                        NewLocationRowSaved.LocationKey = -1;
                         NewLocationTable.Rows.Add(NewLocationRowSaved);
 
                         // Submit the NEW Location to the DB
@@ -2474,7 +2475,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// - Deleted Location: remove references from any Extracts
         /// </summary>
         private static TSubmitChangesResult ProcessLocationChanges(
-            PLocationTable LocationTable,
+            PLocationTable ALocationTable,
             PPartnerLocationTable APartnerLocationTable,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
@@ -2488,32 +2489,32 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             TSubmitChangesResult Result = TSubmitChangesResult.scrOK;
             TSubmitChangesResult TmpResult;
 
-            for (Int16 LocationCounter = 0; LocationCounter < LocationTable.Rows.Count; LocationCounter++)
+            for (Int16 LocationCounter = 0; LocationCounter < ALocationTable.Rows.Count; LocationCounter++)
             {
-                if ((LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
-                    || (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))
+                if ((ALocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
+                    || (ALocationTable.Rows[LocationCounter].RowState == DataRowState.Modified))
                 {
-                    if (LocationTable[LocationCounter].LocationKey == 0)
+                    if (ALocationTable[LocationCounter].LocationKey == 0)
                     {
                         throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not add or modify the empty location");
                     }
                 }
 
-                if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
+                if (ALocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
                 {
-                    if (Convert.ToInt32(LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                    if (Convert.ToInt32(ALocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
                                                                        DataRowVersion.Original]) == 0)
                     {
                         throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not delete the empty location");
                     }
                 }
 
-                if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
+                if (ALocationTable.Rows[LocationCounter].RowState == DataRowState.Added)
                 {
                     bool ReUseSimilarLocation = false;
 
                     // Check for reuse of a similar location in the DB
-                    PLocationRow TmpRow = LocationTable[LocationCounter];
+                    PLocationRow TmpRow = ALocationTable[LocationCounter];
                     TmpResult = PerformSimilarLocationReUseChecks(
                         ref TmpRow,
                         ref AResponseDS,
@@ -2542,14 +2543,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         return TmpResult;
                     }
                 } // DataRowState.Added
-                else if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Modified)
+                else if (ALocationTable.Rows[LocationCounter].RowState == DataRowState.Modified)
                 {
-                    if (CheckHasLocationChanged(LocationTable[LocationCounter]))
+                    if (CheckHasLocationChanged(ALocationTable[LocationCounter]))
                     {
                         bool ReUseSimilarLocation = false;
 
                         // Check for reuse of a similar location in the DB
-                        PLocationRow TmpRow = LocationTable[LocationCounter];
+                        PLocationRow TmpRow = ALocationTable[LocationCounter];
                         TmpResult = PerformSimilarLocationReUseChecks(ref TmpRow,
                             ref AResponseDS,
                             ASubmitChangesTransaction,
@@ -2582,14 +2583,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         {
                             // No similar Location exists, or an existing similar Location
                             // should not be reused
-                            if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey,
+                            if (CheckHasPartnerLocationOtherPartnerReferences(ALocationTable[LocationCounter], APartnerKey,
                                     ASubmitChangesTransaction))
                             {
 #if DEBUGMODE
                                 if (TLogging.DL >= 9)
                                 {
                                     TLogging.Log(
-                                        "SubmitChanges: Location " + LocationTable[LocationCounter].LocationKey.ToString() +
+                                        "SubmitChanges: Location " + ALocationTable[LocationCounter].LocationKey.ToString() +
                                         ": is used by other Partners as well.");
                                 }
 #endif
@@ -2598,7 +2599,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                 TLocationPK OriginalLocationKey;
 
                                 TmpResult =
-                                    PerformLocationChangeChecks(LocationTable[LocationCounter],
+                                    PerformLocationChangeChecks(ALocationTable[LocationCounter],
                                         APartnerKey,
                                         ref AResponseDS,
                                         ASubmitChangesTransaction,
@@ -2621,12 +2622,12 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                                 if (CreateLocationFlag)
                                 {
-                                    ModifyExistingLocationParameters(LocationTable[LocationCounter],
+                                    ModifyExistingLocationParameters(ALocationTable[LocationCounter],
                                         OriginalLocationKey,
                                         ref AExistingLocationParametersDT);
 
-                                    // remove this location because it should not be submitted to the database
-                                    LocationTable.Rows.RemoveAt(LocationCounter);
+                                    // Make this location's DataRow undmodified because it should not be submitted to the database
+                                    ALocationTable.Rows[LocationCounter].AcceptChanges();
                                     LocationCounter--;
                                 }
                             } // if CheckHasPartnerLocationOtherPartnerReferences ... then
@@ -2639,41 +2640,41 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         if (TLogging.DL >= 9)
                         {
                             TLogging.Log(
-                                "Location " + LocationTable[LocationCounter].LocationKey.ToString() +
+                                "Location " + ALocationTable[LocationCounter].LocationKey.ToString() +
                                 ": data has NOT changed -> will not be saved.");
                         }
 #endif
 
                         // remove this location because it should not be submitted to the database
-                        LocationTable.Rows.RemoveAt(LocationCounter);
+                        ALocationTable.Rows.RemoveAt(LocationCounter);
                         LocationCounter--;
                     }
                 } // DataRowState.Modified
-                else if (LocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
+                else if (ALocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
                 {
 #if DEBUGMODE
                     if (TLogging.DL >= 9)
                     {
                         TLogging.Log("SubmitChanges: Location " +
-                            LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                            ALocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
                                                            DataRowVersion.Original].ToString() + ": has been marked for deletion.");
                     }
 #endif
 
                     // Handle deletion of Location row: delete it only if no other PartnerLocation is referencing it
-                    if (CheckHasPartnerLocationOtherPartnerReferences(LocationTable[LocationCounter], APartnerKey, ASubmitChangesTransaction))
+                    if (CheckHasPartnerLocationOtherPartnerReferences(ALocationTable[LocationCounter], APartnerKey, ASubmitChangesTransaction))
                     {
 #if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
                             TLogging.Log("SubmitChanges: Location " +
-                                LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                ALocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
                                                                DataRowVersion.Original].ToString() +
                                 ": has been marked for deletion and is used by others, so it won''t get deleted.");
                         }
 #endif
                         // remove this location because it should not be submitted to the database
-                        LocationTable.Rows.RemoveAt(LocationCounter);
+                        ALocationTable.Rows.RemoveAt(LocationCounter);
                         LocationCounter--;
                     }
                     else
@@ -2682,7 +2683,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         if (TLogging.DL >= 9)
                         {
                             TLogging.Log("SubmitChanges: Location " +
-                                LocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
+                                ALocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
                                                                DataRowVersion.Original].ToString() +
                                 ": has been marked for deletion and will get deleted.");
                         }
@@ -2690,17 +2691,17 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                         // Any Extract in Petra that references this Location must no longer
                         // reference this Location since it will get deleted
-                        if (!RemoveLocationFromExtracts(LocationTable[LocationCounter], ASubmitChangesTransaction, ref AVerificationResult))
+                        if (!RemoveLocationFromExtracts(ALocationTable[LocationCounter], ASubmitChangesTransaction, ref AVerificationResult))
                         {
                             return TSubmitChangesResult.scrError;
                         }
                     }
                 } // if LocationTable.Rows[LocationCounter].RowState = DataRowState.Deleted
-                else if (LocationTable.Rows[LocationCounter].RowState != DataRowState.Unchanged)
+                else if (ALocationTable.Rows[LocationCounter].RowState != DataRowState.Unchanged)
                 {
                     throw new ArgumentException(
                         "SubmitChanges can only deal with Locations of DataRowState Added, Modified or Deleted, but not with " +
-                        (Enum.GetName(typeof(DataRowState), LocationTable.Rows[LocationCounter].RowState)));
+                        (Enum.GetName(typeof(DataRowState), ALocationTable.Rows[LocationCounter].RowState)));
                 }
             }
 
@@ -2728,7 +2729,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         ///  don't delete the PartnerLocation, but set it's LocationKey to 0.
         /// </summary>
         private static TSubmitChangesResult ProcessPartnerLocationChanges(
-            PLocationTable ALocationTable,
             PPartnerLocationTable PartnerLocationTable,
             ref PartnerAddressAggregateTDS AResponseDS,
             TDBTransaction ASubmitChangesTransaction,
@@ -2765,7 +2765,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                     APartnerKey,
                                     APartnerClass,
                                     ref AAddressAddedOrChangedPromotionParametersDT,
-                                    ref ALocationTable,
                                     ref PartnerLocationTable,
                                     AExistingLocationParametersDT,
                                     ASimilarLocationReUseKeyMapping,
@@ -3062,7 +3061,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             if (AInspectDS.PPartnerLocation != null)
             {
                 TSubmitChangesResult result = ProcessPartnerLocationChanges(
-                    AInspectDS.PLocation,
                     AInspectDS.PPartnerLocation,
                     ref AResponseDS,
                     ASubmitChangesTransaction,
@@ -3735,7 +3733,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             Int64 APartnerKey,
             String APartnerClass,
             ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedPromotionDT,
-            ref PLocationTable ALocationTable,
             ref PPartnerLocationTable APartnerLocationTable,
             PartnerAddressAggregateTDSSimilarLocationParametersTable AExistingLocationParametersDT,
             TLocationPK[, ] ALocationReUseKeyMapping,
