@@ -133,11 +133,22 @@ namespace Ict.Petra.Server.MConference.Applications
 
             string[] InputLines = APartnerKeys.Replace("\r", "").Split(new char[] { '\n' });
 
+            List <Int64>Keys = new List <long>();
+
             foreach (string InputLine in InputLines)
             {
+                Int64 PartnerKey = Convert.ToInt64(InputLine);
+
+                if (Keys.Contains(PartnerKey))
+                {
+                    continue;
+                }
+
+                Keys.Add(PartnerKey);
+
                 PPartnerContactRow PartnerContactRow = MainDS.PPartnerContact.NewRowTyped(true);
                 PartnerContactRow.ContactId = (MainDS.PPartnerContact.Rows.Count + 1) * -1;
-                PartnerContactRow.PartnerKey = Convert.ToInt64(InputLine);
+                PartnerContactRow.PartnerKey = PartnerKey;
                 PartnerContactRow.ContactCode = (AHandingOutHeadset ? HEADSET_OUT_METHOD_OF_CONTACT : HEADSET_RETURN_METHOD_OF_CONTACT);
                 PartnerContactRow.ContactDate = DateTime.Now;
                 PartnerContactRow.ContactTime = Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds);
