@@ -461,6 +461,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             AMainDS.AEpTransaction.DefaultView.Sort =
                 AEpTransactionTable.GetNumberOnPaperStatementDBName();
 
+            AMainDS.AEpMatch.DefaultView.RowFilter = String.Empty;
             AMainDS.AEpMatch.DefaultView.Sort =
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
