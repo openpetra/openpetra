@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -154,23 +154,27 @@ namespace Ict.Petra.Server.MConference.Applications
                         participantValues = StringHelper.AddCSV(participantValues, "N/A");
                     }
 
+                    DateTime ArrivalDate = DateTime.ParseExact(TAppSettingsManager.GetValue(
+                            "ConferenceTool.DefaultArrivalDate"), "yyyy/MM/dd", null);
+
+                    if (shorttermRow.Arrival.HasValue)
+                    {
+                        ArrivalDate = shorttermRow.Arrival.Value;
+                    }
+
                     if (DateCancelled.HasValue)
                     {
                         participantValues = StringHelper.AddCSV(participantValues, DateCancelled.Value.ToString("dd-MMM-yyyy") + " C");
                     }
-                    else if (shorttermRow.Arrival.HasValue)
-                    {
-                        participantValues = StringHelper.AddCSV(participantValues, shorttermRow.Arrival.Value.ToString("dd-MMM-yyyy"));
-                    }
                     else
                     {
-                        participantValues = StringHelper.AddCSV(participantValues, "N/A");
+                        participantValues = StringHelper.AddCSV(participantValues, ArrivalDate.ToString("dd-MMM-yyyy"));
                     }
 
-                    if (applicant.DateOfBirth.HasValue && shorttermRow.Arrival.HasValue)
+                    if (applicant.DateOfBirth.HasValue)
                     {
                         participantValues = StringHelper.AddCSV(participantValues,
-                            (TApplicationManagement.CalculateAge(applicant.DateOfBirth, shorttermRow.Arrival.Value) >=
+                            (TApplicationManagement.CalculateAge(applicant.DateOfBirth, ArrivalDate) >=
                              TAppSettingsManager.GetInt32("ConferenceTool.OldieIncreasedTaxes")) ? "X" : string.Empty);
                     }
                     else
