@@ -321,7 +321,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 string Country = rowAttendee["Country"].ToString() + " _ Total";
                 string CountryAndRole = rowAttendee["Country"].ToString() + " _ " + rowAttendee["Role"].ToString();
 
-                if (null != AHeadsetsTable.Rows.Find(new object[] { rowAttendee["PartnerKey"], HEADSET_OUT_METHOD_OF_CONTACT }))
+                if ((null != AHeadsetsTable.Rows.Find(new object[] { rowAttendee["PartnerKey"], HEADSET_OUT_METHOD_OF_CONTACT }))
+                    || (null != AHeadsetsTable.Rows.Find(new object[] { rowAttendee["PartnerKey"], HEADSET_RETURN_METHOD_OF_CONTACT })))
                 {
                     if (!HeadsetsPerCountryAndRole.ContainsKey(CountryAndRole))
                     {
