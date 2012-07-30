@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Drawing.Printing;
 using Ict.Common.IO;
@@ -633,14 +634,11 @@ namespace Ict.Common.Printing
 
                         if (AData[group][0].StartsWith(HEADERGROUP))
                         {
-                            string CSVLine = AData[group][0].Substring(HEADERGROUP.Length);
-                            int CountCSVValue = 1;
+                            StringCollection Values = StringHelper.GetCSVList(AData[group][0].Substring(HEADERGROUP.Length), ",");
 
-                            while (CSVLine.Length > 0)
+                            for (int CountCSVValue = Values.Count; CountCSVValue > 0; CountCSVValue--)
                             {
-                                string value = StringHelper.GetNextCSV(ref CSVLine);
-                                GroupTopText = GroupTopText.Replace("#VALUE" + CountCSVValue.ToString(), value);
-                                CountCSVValue++;
+                                GroupTopText = GroupTopText.Replace("#VALUE" + CountCSVValue.ToString(), Values[CountCSVValue - 1]);
                             }
                         }
 
@@ -665,25 +663,24 @@ namespace Ict.Common.Printing
 
                             string DetailText = DetailNode.InnerXml;
 
-                            string CSVLine = line;
-                            int CountCSVValue = 1;
+                            StringCollection Values = StringHelper.GetCSVList(line, ",");
 
-                            while (CSVLine.Length > 0)
+                            for (int CountCSVValue = Values.Count; CountCSVValue > 0; CountCSVValue--)
                             {
-                                string value = StringHelper.GetNextCSV(ref CSVLine);
-                                DetailText = DetailText.Replace("#VALUE" + CountCSVValue.ToString(), value);
+                                DetailText = DetailText.Replace("#VALUE" + CountCSVValue.ToString(), Values[CountCSVValue - 1]);
+                            }
 
+                            for (int CountCSVValue = 1; CountCSVValue <= Values.Count; CountCSVValue++)
+                            {
                                 if (Total.Count < CountCSVValue)
                                 {
                                     Total.Add(0);
                                 }
 
-                                if (value.Length > 0)
+                                if (Values[CountCSVValue - 1].Length > 0)
                                 {
                                     Total[CountCSVValue - 1]++;
                                 }
-
-                                CountCSVValue++;
                             }
 
                             ConditionalPageBreak(detailHeight);
