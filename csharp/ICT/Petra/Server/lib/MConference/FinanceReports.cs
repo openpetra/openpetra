@@ -56,6 +56,11 @@ namespace Ict.Petra.Server.MConference.Applications
         {
             CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
 
+            DateTime LatestFreeCancelledDate = DateTime.ParseExact(TAppSettingsManager.GetValue(
+                    "ConferenceTool.LatestFreeCancelledDate"), "yyyy/MM/dd", null);
+            DateTime LatestFreeCancelledDate50 = DateTime.ParseExact(TAppSettingsManager.GetValue(
+                    "ConferenceTool.LatestFreeCancelledDate50"), "yyyy/MM/dd", null);
+
             try
             {
                 ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
@@ -102,11 +107,10 @@ namespace Ict.Petra.Server.MConference.Applications
                         continue;
                     }
 
+                    string pay50Percent = string.Empty;
+
                     if (applicant.GenApplicationStatus.StartsWith("C") || applicant.GenApplicationStatus.StartsWith("R"))
                     {
-                        DateTime LatestFreeCancelledDate = DateTime.ParseExact(TAppSettingsManager.GetValue(
-                                "ConferenceTool.LatestFreeCancelledDate"), "yyyy/MM/dd", null);
-
                         DateCancelled = appRow.GenAppCancelled;
 
                         if (!appRow.GenAppCancelled.HasValue)
@@ -116,6 +120,10 @@ namespace Ict.Petra.Server.MConference.Applications
                         else if (appRow.GenAppCancelled.Value <= LatestFreeCancelledDate)
                         {
                             continue;
+                        }
+                        else if (appRow.GenAppCancelled.Value <= LatestFreeCancelledDate50)
+                        {
+                            pay50Percent = "X";
                         }
                     }
                     else if (applicant.GenApplicationStatus != "A")
@@ -189,6 +197,7 @@ namespace Ict.Petra.Server.MConference.Applications
                         (rawDataObject.Contains(
                              "CancelledByFinanceOffice") && rawDataObject["CancelledByFinanceOffice"].ToString().ToLower() ==
                          "true") ? "X" : string.Empty);
+                    participantValues = StringHelper.AddCSV(participantValues, pay50Percent);
 
                     roles[applicant.StCongressCode].Add(participantValues);
                 }
