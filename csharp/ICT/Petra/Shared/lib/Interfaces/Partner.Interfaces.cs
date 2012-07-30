@@ -745,6 +745,21 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
                                          ref MExtractTable AExtractTable,
                                          out TVerificationResultCollection AVerificationResult);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean SubscriptionExists(Int64 APartnerKey,
+                                   String APublicationCode);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean AddSubscription(System.Int32 AExtractId,
+                                ref PSubscriptionTable ATable,
+                                out PPartnerTable AExistingSubscriptionPartners,
+                                out System.Int32 ASubscriptionsAdded);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean DeleteSubscription(System.Int32 AExtractId,
+                                   Int64 APartnerKey,
+                                   String APublicationCode);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
+        Boolean UpdateSolicitationFlag(System.Int32 AExtractId,
+                                       Boolean ANoSolicitations);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
                                          Boolean AEmailGiftStatement);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
