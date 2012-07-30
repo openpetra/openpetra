@@ -54,7 +54,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// retrieve all extract master records
         /// </summary>
         /// <returns>returns table filled with all extract headers</returns>
-        //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders()
         {
             MExtractMasterTable ExtractMasterDT;
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AUserCreated"></param>
         /// <param name="AUserModified"></param>
         /// <returns>returns table filled with all extract headers</returns>
-        //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, Boolean AAllUsers,
             String AUserCreated, String AUserModified)
         {
@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ADateModifiedFrom"></param>
         /// <param name="ADateModifiedTo"></param>
         /// <returns>returns table filled with all extract headers</returns>
-        //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, String AExtractDescFilter,
             Boolean AAllUsers, String AUserCreated, String AUserModified, DateTime? ADateCreatedFrom,
             DateTime? ADateCreatedTo, DateTime? ADateModifiedFrom, DateTime ? ADateModifiedTo)

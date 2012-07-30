@@ -1325,54 +1325,6 @@
                 otherFields="s_user_id_c"/>
     <!-- Explicit Indexes on table s_system_status  -->
   </table>
-  <table name="s_system_status_log"
-         descr="Log of changes in system status"
-         area="Petra Data"
-         label="System Status Log"
-         dumpname="s_sysslg"
-         group="sysman">
-    <tablefield name="s_user_id_c"
-                type="varchar"
-                descr="This is the system user id. Each user of the system is allocated one"
-                format="X(10)"
-                label="User ID"
-                notnull="yes"/>
-    <tablefield name="s_system_disabled_date_d"
-                type="date"
-                descr=""
-                format="99/99/9999"
-                label="Date Disabled"/>
-    <tablefield name="s_system_disabled_time_i"
-                type="integer"
-                descr=""
-                format="999999"
-                label="Time Disabled"
-                initial="0"/>
-    <tablefield name="s_system_disabled_reason_c"
-                type="varchar"
-                descr=""
-                format="X(40)"
-                label="Reason Disabled"
-                help="Enter a reason"/>
-    <tablefield name="s_system_enabled_date_d"
-                type="date"
-                descr=""
-                format="99/99/9999"
-                label="Date Enabled"/>
-    <tablefield name="s_system_enabled_time_i"
-                type="integer"
-                descr=""
-                format="999999"
-                label="Time Enabled"
-                initial="0"/>
-    <!-- Constraints on table s_system_status_log -->
-    <foreignkey name="s_system_status_log_fk1"
-                descr=""
-                thisFields="s_user_id_c"
-                otherTable="s_user"
-                otherFields="s_user_id_c"/>
-    <!-- Explicit Indexes on table s_system_status_log  -->
-  </table>
   <table name="s_user_defaults"
          descr="Stores various default values and options for each user."
          catchupdateexception="yes"
