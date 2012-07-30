@@ -145,7 +145,10 @@ namespace {#NAMESPACE}
     {
         {#SHOWDETAILS}
     }
+
+    private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
 {#ENDIF SHOWDETAILS}
+
 {#IFDEF MASTERTABLE}
 
     private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
@@ -166,7 +169,7 @@ namespace {#NAMESPACE}
 {#ENDIFN MASTERTABLE}
 {#IFDEF SAVEDETAILS}
 
-    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, Control AControl=null)
     {
         if (ARow != null)
         {
@@ -175,6 +178,13 @@ namespace {#NAMESPACE}
             ARow.EndEdit();
         }
     }
+{#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
+
+    private void ControlUpdateDataHandler(object sender, EventArgs e)
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow, (Control)sender);
+    }
+{#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 {#IFDEF UNDODATA}
 
