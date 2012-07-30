@@ -203,8 +203,15 @@ namespace Ict.Common.IO
                 return String.Empty;
             }
 
+            AJSONFormData = AJSONFormData.Replace(Environment.NewLine, "<br/>");
             AJSONFormData = AJSONFormData.Replace("\\\\\"", "&quot;");
             AJSONFormData = AJSONFormData.Replace("\"\"\"", "\"\"");
+
+            if (!AJSONFormData.StartsWith("{"))
+            {
+                // at the moment, we cannot fix arrays
+                return AJSONFormData;
+            }
 
             try
             {
