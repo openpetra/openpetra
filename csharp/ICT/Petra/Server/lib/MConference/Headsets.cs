@@ -49,6 +49,7 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Import;
 using Ict.Petra.Server.MPartner.ImportExport;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MConference.Applications
 {
@@ -61,6 +62,46 @@ namespace Ict.Petra.Server.MConference.Applications
         private static string HEADSET_OUT_METHOD_OF_CONTACT = "HEADSET_OUT";
         private static string HEADSET_RETURN_METHOD_OF_CONTACT = "HEADSET_RETURN";
         private static string MODULE_HEADSET = "HEADSET";
+
+        /// <summary>
+        /// save message for home office reps
+        /// </summary>
+        /// <param name="AMessage"></param>
+        public static void SetMessageForHomeOfficeReps(string AMessage)
+        {
+            SLogonMessageTable table = SLogonMessageAccess.LoadByPrimaryKey("HU", null);
+
+            if (table.Rows.Count == 0)
+            {
+                SLogonMessageRow row = table.NewRowTyped(true);
+                row.LanguageCode = "HU";
+                table.Rows.Add(row);
+            }
+
+            table[0].LogonMessage = AMessage;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            TVerificationResultCollection Verification;
+            SLogonMessageAccess.SubmitChanges(table, Transaction, out Verification);
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        /// <summary>
+        /// get message for home office reps
+        /// </summary>
+        public static string GetMessageForHomeOfficeReps()
+        {
+            SLogonMessageTable table = SLogonMessageAccess.LoadByPrimaryKey("HU", null);
+
+            if (table.Rows.Count > 0)
+            {
+                return table[0].LogonMessage;
+            }
+
+            return string.Empty;
+        }
 
         /// <summary>
         /// get the sessions available for headset usage

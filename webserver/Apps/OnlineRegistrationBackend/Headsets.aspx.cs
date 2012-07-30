@@ -46,7 +46,9 @@ namespace Ict.Petra.WebServer.MConference
     {
         protected Ext.Net.TextArea PartnerKeysRentedOut;
         protected Ext.Net.TextArea PartnerKeysReturned;
+        protected Ext.Net.TextArea txtReadMessageToHomeOfficeReps;
         protected Ext.Net.FormPanel HeadsetsForm;
+        protected Ext.Net.Panel TabEditMessageToHomeOfficeReps;
         protected Ext.Net.Panel TabCreateSession;
         protected Ext.Net.Panel TabRentedOutHeadsets;
         protected Ext.Net.Panel TabReturnedHeadsets;
@@ -72,12 +74,19 @@ namespace Ict.Petra.WebServer.MConference
 
                 if (!UserInfo.GUserInfo.IsInModule("HEADSET"))
                 {
+                    TabEditMessageToHomeOfficeReps.Enabled = false;
+                    TabEditMessageToHomeOfficeReps.Visible = false;
                     TabReturnedHeadsets.Enabled = false;
                     TabReturnedHeadsets.Visible = false;
                     TabRentedOutHeadsets.Enabled = false;
                     TabRentedOutHeadsets.Visible = false;
                     TabCreateSession.Enabled = false;
                     TabCreateSession.Visible = false;
+                    txtReadMessageToHomeOfficeReps.Text = THeadsetManagement.GetMessageForHomeOfficeReps();
+                }
+                else
+                {
+                    txtReadMessageToHomeOfficeReps.Visible = false;
                 }
             }
         }
@@ -114,6 +123,12 @@ namespace Ict.Petra.WebServer.MConference
             CurrentSessionRentedOut.SelectedIndex = 0;
             CurrentSessionReturned.SelectedIndex = 0;
             ReportSelectedSession.SelectedIndex = 0;
+        }
+
+        protected void SaveMessageToReps(Object sender, DirectEventArgs e)
+        {
+            Dictionary <string, string>values = JSON.Deserialize <Dictionary <string, string>>(e.ExtraParams["Values"]);
+            THeadsetManagement.SetMessageForHomeOfficeReps(values["txtMessageToHomeOfficeReps"].ToString());
         }
 
         protected void ImportHeadsetKeysRentedOut(Object sender, DirectEventArgs e)

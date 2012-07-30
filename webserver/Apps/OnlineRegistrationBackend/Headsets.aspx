@@ -51,6 +51,25 @@
             <Items>
 			  <ext:TabPanel ID="TabHeadsets" runat="server" Height="800" Width="600">   
 				<Items>
+					<ext:Panel ID="TabEditMessageToHomeOfficeReps" runat="server" Title="Edit Message" AutoScroll="true">
+					  <Content>
+						  <ext:TextArea ID="txtMessageToHomeOfficeReps" 
+							DataIndex="txtMessageToHomeOfficeReps" 
+							runat="server" 
+							Height="360" 
+							Width="500"/>
+  						  <ext:Button ID="SaveMessage" runat="server" Text="Save">
+							<DirectEvents>
+								<Click OnEvent="SaveMessageToReps">
+									<EventMask ShowMask="true" />
+									<ExtraParams>
+										<ext:Parameter Name="Values" Value="#{HeadsetsForm}.getForm().getValues(false)" Mode="Raw" Encode="true" />
+									</ExtraParams>
+								</Click>
+							</DirectEvents>
+						</ext:Button>
+				      </Content>
+					</ext:Panel>
 					<ext:Panel ID="TabCreateSession" runat="server" Title="Add Session" AutoScroll="true">
 					  <Content>
 						<ext:TextField ID="txtNewSession" runat="server" FieldLabel="Add new session" EmptyText="eg. Friday July 6 Morning session" Width="300"/>
@@ -151,6 +170,13 @@
 					<ext:Panel ID="TabReporting" runat="server" Title="Reporting" AutoScroll="true">
 					  <Content>
 					     <table>
+						  <tr><td>
+						  <ext:TextArea ID="txtReadMessageToHomeOfficeReps" 
+							runat="server" 
+							ReadOnly=true
+							Height="360" 
+							Width="500"/>
+						  </td></tr>
 						  <tr><td>
 						  <ext:ComboBox 
 							ID="ReportSelectedSession"
