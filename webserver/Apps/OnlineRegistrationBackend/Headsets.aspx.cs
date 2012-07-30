@@ -179,6 +179,24 @@ namespace Ict.Petra.WebServer.MConference
 
         protected void ReportStatistics(Object sender, DirectEventArgs e)
         {
+            try
+            {
+                this.Response.Clear();
+                this.Response.ContentType = "application/xlsx";
+                this.Response.AddHeader("Content-Type", "application/xlsx");
+                this.Response.AddHeader("Content-Disposition",
+                    "attachment; filename=HeadsetReportStatistics.xlsx");
+                MemoryStream m = new MemoryStream();
+                string EventCode = TAppSettingsManager.GetValue("ConferenceTool.EventCode");
+                THeadsetManagement.ReportOverallStatistics(m, EventCode);
+                m.WriteTo(this.Response.OutputStream);
+                m.Close();
+                this.Response.End();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.ToString());
+            }
         }
     }
 }

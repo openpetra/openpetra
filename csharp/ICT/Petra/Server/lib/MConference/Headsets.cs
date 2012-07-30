@@ -209,15 +209,13 @@ namespace Ict.Petra.Server.MConference.Applications
 
         private static void GetDataForHeadsetReports(string AEventCode,
             string ASessionName,
-            out DataTable AHeadsetsTable,
-            out DataTable AAttendeesTable)
+            out DataTable AHeadsetsTable)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             try
             {
                 string stmtReportHeadsetsForSession = TDataBase.ReadSqlFile("Conference.ReportHeadsetsForSession.sql");
-                string stmtAllParticipantsWithRoleAndCountry = TDataBase.ReadSqlFile("Conference.GetAllParticipantsWithRoleAndCountry.sql");
 
                 if (!UserInfo.GUserInfo.IsInModule(MODULE_HEADSET))
                 {
@@ -234,7 +232,6 @@ namespace Ict.Petra.Server.MConference.Applications
                     ByRegistrationOffice += "0)";
 
                     stmtReportHeadsetsForSession += ByRegistrationOffice;
-                    stmtAllParticipantsWithRoleAndCountry += ByRegistrationOffice;
                 }
 
                 OdbcParameter parameter;
@@ -252,8 +249,42 @@ namespace Ict.Petra.Server.MConference.Applications
                     AHeadsetsTable.Columns["PartnerKey"],
                     AHeadsetsTable.Columns["RentedOutOrReturned"]
                 };
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+        }
 
-                parameters = new List <OdbcParameter>();
+        private static void GetDataForHeadsetReports(string AEventCode,
+            out DataTable AAttendeesTable)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                string stmtAllParticipantsWithRoleAndCountry = TDataBase.ReadSqlFile("Conference.GetAllParticipantsWithRoleAndCountry.sql");
+
+                if (!UserInfo.GUserInfo.IsInModule(MODULE_HEADSET))
+                {
+                    // only get the headsets for the offices that this person has permissions for
+                    PPartnerTable offices = TApplicationManagement.GetRegistrationOffices();
+
+                    string ByRegistrationOffice = " AND PUB_pm_short_term_application.pm_registration_office_n IN (";
+
+                    foreach (PPartnerRow partnerRow in offices.Rows)
+                    {
+                        ByRegistrationOffice += partnerRow.PartnerKey.ToString() + ",";
+                    }
+
+                    ByRegistrationOffice += "0)";
+
+                    stmtAllParticipantsWithRoleAndCountry += ByRegistrationOffice;
+                }
+
+                OdbcParameter parameter;
+
+                List <OdbcParameter>parameters = new List <OdbcParameter>();
                 parameter = new OdbcParameter("EventCode", OdbcType.VarChar);
                 parameter.Value = AEventCode;
                 parameters.Add(parameter);
@@ -366,6 +397,12 @@ namespace Ict.Petra.Server.MConference.Applications
 
             foreach (string country in ParticipantsPerCountryAndRole.Keys)
             {
+                // ignore rows without any rented out headsets
+                if (!HeadsetsPerCountryAndRole.ContainsKey(country))
+                {
+                    continue;
+                }
+
                 XmlNode newNode = statsPerCountry.CreateElement("", "ELEMENT", "");
                 statsPerCountry.DocumentElement.AppendChild(newNode);
                 XmlAttribute attr;
@@ -379,16 +416,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 newNode.Attributes.Append(attr);
 
                 attr = statsPerCountry.CreateAttribute("RentedOut");
-
-                if (HeadsetsPerCountryAndRole.ContainsKey(country))
-                {
-                    attr.Value = HeadsetsPerCountryAndRole[country].ToString();
-                }
-                else
-                {
-                    attr.Value = "0";
-                }
-
+                attr.Value = HeadsetsPerCountryAndRole[country].ToString();
                 newNode.Attributes.Append(attr);
 
                 attr = statsPerCountry.CreateAttribute("Attendees");
@@ -445,7 +473,8 @@ namespace Ict.Petra.Server.MConference.Applications
             DataTable HeadsetsTable;
             DataTable AttendeesTable;
 
-            GetDataForHeadsetReports(AEventCode, ASessionName, out HeadsetsTable, out AttendeesTable);
+            GetDataForHeadsetReports(AEventCode, ASessionName, out HeadsetsTable);
+            GetDataForHeadsetReports(AEventCode, out AttendeesTable);
 
             SortedList <string, XmlDocument>worksheets = new SortedList <string, XmlDocument>();
             worksheets.Add("a - Unreturned", GetUnreturnedHeadsets(HeadsetsTable));
@@ -458,7 +487,121 @@ namespace Ict.Petra.Server.MConference.Applications
                 worksheets.Add("d - With headset", GetHeadsetUsers(HeadsetsTable, AttendeesTable, true));
             }
 
-            return TCsv2Xml.Xml2ExcelStream(worksheets, AStream);
+            return TCsv2Xml.Xml2ExcelStream(worksheets, AStream, false);
+        }
+
+        /// <summary>
+        /// get Excel file with statistics for all countries and sessions
+        /// </summary>
+        public static bool ReportOverallStatistics(MemoryStream AStream, string AEventCode)
+        {
+            // get all sessions
+            PContactAttributeDetailTable sessions = GetSessions();
+
+            DataTable HeadsetsTable;
+            DataTable AttendeesTable;
+
+            GetDataForHeadsetReports(AEventCode, out AttendeesTable);
+
+            SortedList <string, SortedList <string, Int32>>HeadsetsPerCountryAndSession =
+                new SortedList <string, SortedList <string, Int32>>();
+
+            foreach (PContactAttributeDetailRow row in sessions.Rows)
+            {
+                string sessionName = row.ContactAttrDetailCode;
+
+                GetDataForHeadsetReports(AEventCode, sessionName, out HeadsetsTable);
+
+                foreach (DataRow rowAttendee in AttendeesTable.Rows)
+                {
+                    string country = rowAttendee["Country"].ToString();
+
+                    if ((null != HeadsetsTable.Rows.Find(new object[] { rowAttendee["PartnerKey"], HEADSET_OUT_METHOD_OF_CONTACT }))
+                        || (null != HeadsetsTable.Rows.Find(new object[] { rowAttendee["PartnerKey"], HEADSET_RETURN_METHOD_OF_CONTACT })))
+                    {
+                        if (!HeadsetsPerCountryAndSession.ContainsKey(country))
+                        {
+                            HeadsetsPerCountryAndSession.Add(country, new SortedList <string, Int32>());
+                        }
+
+                        if (!HeadsetsPerCountryAndSession[country].ContainsKey(sessionName))
+                        {
+                            HeadsetsPerCountryAndSession[country].Add(sessionName, 1);
+                        }
+                        else
+                        {
+                            HeadsetsPerCountryAndSession[country][sessionName]++;
+                        }
+                    }
+                }
+            }
+
+            XmlDocument statistics = TYml2Xml.CreateXmlDocument();
+
+            // first add a row with empty elements, for each session, to keep the right order of sessions
+            XmlNode newNode = statistics.CreateElement("", "ELEMENT", "");
+            statistics.DocumentElement.AppendChild(newNode);
+            XmlAttribute attr;
+
+            attr = statistics.CreateAttribute("Country");
+            attr.Value = string.Empty;
+            newNode.Attributes.Append(attr);
+
+            for (int counterSession = sessions.Rows.Count - 1; counterSession >= 0; counterSession--)
+            {
+                string sessionName = sessions[counterSession].ContactAttrDetailCode;
+
+                attr = statistics.CreateAttribute(sessionName.Replace(" ", "_"));
+                attr.Value = string.Empty;
+                newNode.Attributes.Append(attr);
+            }
+
+            foreach (string country in HeadsetsPerCountryAndSession.Keys)
+            {
+                newNode = statistics.CreateElement("", "ELEMENT", "");
+                statistics.DocumentElement.AppendChild(newNode);
+
+                attr = statistics.CreateAttribute("Country");
+                attr.Value = country;
+                newNode.Attributes.Append(attr);
+
+                foreach (string sessionName in HeadsetsPerCountryAndSession[country].Keys)
+                {
+                    attr = statistics.CreateAttribute(sessionName.Replace(" ", "_"));
+                    attr.Value = HeadsetsPerCountryAndSession[country][sessionName].ToString();
+                    newNode.Attributes.Append(attr);
+                }
+            }
+
+            newNode = statistics.CreateElement("", "ELEMENT", "");
+            statistics.DocumentElement.AppendChild(newNode);
+
+            newNode = statistics.CreateElement("", "ELEMENT", "");
+            statistics.DocumentElement.AppendChild(newNode);
+
+            attr = statistics.CreateAttribute("Country");
+            attr.Value = "Total";
+            newNode.Attributes.Append(attr);
+
+            for (int counterSession = sessions.Rows.Count - 1; counterSession >= 0; counterSession--)
+            {
+                string sessionName = sessions[counterSession].ContactAttrDetailCode;
+                Int32 Total = 0;
+
+                foreach (string country in HeadsetsPerCountryAndSession.Keys)
+                {
+                    if (HeadsetsPerCountryAndSession[country].ContainsKey(sessionName))
+                    {
+                        Total += HeadsetsPerCountryAndSession[country][sessionName];
+                    }
+                }
+
+                attr = statistics.CreateAttribute(sessionName.Replace(" ", "_"));
+                attr.Value = Total.ToString();
+                newNode.Attributes.Append(attr);
+            }
+
+            return TCsv2Xml.Xml2ExcelStream(statistics, AStream, false);
         }
     }
 }
