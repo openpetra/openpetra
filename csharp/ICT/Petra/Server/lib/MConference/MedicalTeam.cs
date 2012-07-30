@@ -93,7 +93,18 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     if (MedicalLogs.Length > 0)
                     {
-                        Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(MedicalLogs);
+                        Jayrock.Json.JsonArray list;
+
+                        try
+                        {
+                            list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(
+                                TJsonTools.RemoveContainerControls(MedicalLogs));
+                        }
+                        catch (Exception)
+                        {
+                            TLogging.Log(MedicalLogs);
+                            throw;
+                        }
 
                         foreach (Jayrock.Json.JsonObject element in list)
                         {
@@ -240,7 +251,18 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 if (MedicalLogs.Length > 0)
                 {
-                    Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(MedicalLogs);
+                    Jayrock.Json.JsonArray list;
+
+                    try
+                    {
+                        list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(
+                            TJsonTools.RemoveContainerControls(MedicalLogs));
+                    }
+                    catch (Exception)
+                    {
+                        TLogging.Log(MedicalLogs);
+                        throw;
+                    }
 
                     foreach (Jayrock.Json.JsonObject element in list)
                     {

@@ -180,6 +180,18 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// remove ext-comp controls, for multi-page forms.
+        /// this overload does not require a ref string for the culture
+        /// </summary>
+        /// <returns></returns>
+        public static string RemoveContainerControls(string AJSONFormData)
+        {
+            string dummy = string.Empty;
+
+            return RemoveContainerControls(AJSONFormData, ref dummy);
+        }
+
+        /// <summary>
+        /// remove ext-comp controls, for multi-page forms.
         /// will give information for the required culture, so that the dates can be parsed correctly
         /// </summary>
         /// <returns></returns>
