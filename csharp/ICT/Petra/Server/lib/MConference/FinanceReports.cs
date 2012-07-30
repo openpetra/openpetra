@@ -209,8 +209,16 @@ namespace Ict.Petra.Server.MConference.Applications
                     "html");
 
                 PPartnerTable regOffices = TApplicationManagement.GetRegistrationOffices();
-                string RegistrationOfficeName =
-                    ((PPartnerRow)regOffices.DefaultView[regOffices.DefaultView.Find(ASelectedRegistrationOffice)].Row).PartnerShortName;
+                string RegistrationOfficeName = ASelectedRegistrationOffice.ToString();
+
+                try
+                {
+                    RegistrationOfficeName =
+                        ((PPartnerRow)regOffices.DefaultView[regOffices.DefaultView.Find(ASelectedRegistrationOffice)].Row).PartnerShortName;
+                }
+                catch (Exception)
+                {
+                }
 
                 string ResultDocument = TFormLettersTools.PrintReport(TemplateFilename, roles, RegistrationOfficeName, false);
 

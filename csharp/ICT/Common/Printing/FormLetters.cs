@@ -703,7 +703,7 @@ namespace Ict.Common.Printing
                         GroupBottomText = GroupBottomText.Replace("#TOTALPERGROUP", AData[group].Count.ToString());
                         TotalOverall += AData[group].Count;
 
-                        for (int TotalCount = 0; TotalCount < Total.Count; TotalCount++)
+                        for (int TotalCount = Total.Count - 1; TotalCount >= 0; TotalCount--)
                         {
                             GroupBottomText = GroupBottomText.Replace("#TOTAL" + (TotalCount + 1).ToString(), Total[TotalCount].ToString());
                         }
