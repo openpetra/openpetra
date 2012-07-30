@@ -628,9 +628,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AExtractId">extract to add subscription to</param>
         /// <param name="ATable">table with only one subscription row to be added for each partner</param>
         /// <param name="AExistingSubscriptionPartners">table containing partners that already have subscription for given publication</param>
+        /// <param name="ASubscriptionsAdded">number of subscriptions added</param>
         /// <returns>true if deletion was successful</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static Boolean AddSubscription(int AExtractId, ref PSubscriptionTable ATable, out PPartnerTable AExistingSubscriptionPartners)
+        public static Boolean AddSubscription(int AExtractId, ref PSubscriptionTable ATable, 
+            out PPartnerTable AExistingSubscriptionPartners, out int ASubscriptionsAdded)
         {
             Boolean ResultValue = true;
             PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
@@ -645,6 +647,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             SubscriptionRowTemplate = (PSubscriptionRow)ATable.Rows[0];
             
             AExistingSubscriptionPartners = new PPartnerTable();
+            ASubscriptionsAdded = 0;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -669,6 +672,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         DataUtilities.CopyAllColumnValues(SubscriptionRowTemplate, SubscriptionRow);
                         SubscriptionRow.PartnerKey = ExtractRow.PartnerKey;                        
                         SubscriptionTable.Rows.Add(SubscriptionRow);
+                        ASubscriptionsAdded++;
                     }
                     
                 }

@@ -2866,10 +2866,11 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         /// generated method from connector
         public Boolean AddSubscription(System.Int32 AExtractId,
                                        ref PSubscriptionTable ATable,
-                                       out PPartnerTable AExistingSubscriptionPartners)
+                                       out PPartnerTable AExistingSubscriptionPartners,
+                                       out System.Int32 ASubscriptionsAdded)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "AddSubscription", ";INT;PSUBSCRIPTIONTABLE;PPARTNERTABLE;");
-            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.AddSubscription(AExtractId, ref ATable, out AExistingSubscriptionPartners);
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "AddSubscription", ";INT;PSUBSCRIPTIONTABLE;PPARTNERTABLE;INT;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.AddSubscription(AExtractId, ref ATable, out AExistingSubscriptionPartners, out ASubscriptionsAdded);
         }
 
         /// generated method from connector

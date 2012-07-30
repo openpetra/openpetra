@@ -379,6 +379,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
             PSubscriptionRow SubscriptionRow = SubscriptionTable.NewRowTyped();
             PPartnerTable PartnersWithExistingSubs = new PPartnerTable();
+            int SubscriptionsAdded;
+            String MessageText;
 
             if (!WarnIfNotSingleSelection(Catalog.GetString("Add Subscription"))
                 && (GetSelectedDetailRow() != null))
@@ -393,21 +395,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                     // perform update of extract data on server side
                     if (TRemote.MPartner.Partner.WebConnectors.AddSubscription
-                            (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs))
+                            (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs, out SubscriptionsAdded))
                     {
-                        MessageBox.Show(Catalog.GetString("Subscription successfully added for Partners in Extract ") +
-                            GetSelectedDetailRow().ExtractName,
+                        MessageText = String.Format(Catalog.GetString("Subscription {0} successfully added for {1} out of {2} Partner(s) in Extract {3}."), SubscriptionRow.PublicationCode, SubscriptionsAdded, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
+
+                        if (PartnersWithExistingSubs.Rows.Count > 0)
+                        {
+                            MessageText += "\r\n\r\n" + 
+                                String.Format(Catalog.GetString("See the following Dialog for the {0} Partner(s) that were already subscribed for this Publication. The Subscription was not added for those Partners."), PartnersWithExistingSubs.Rows.Count);
+                        }
+                        
+                        MessageBox.Show(MessageText,
                             Catalog.GetString("Add Subscription"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
-                        
-                        string test = "";
-                        foreach(DataRow Row in PartnersWithExistingSubs.Rows)
+
+                        if (PartnersWithExistingSubs.Rows.Count > 0)
                         {
-                            test = test + ((PPartnerRow)Row).PartnerShortName + "\r\n";
+                            TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
+                            partnerDialog.SetExplanation("These partners already have a Subscription for " + SubscriptionRow.PublicationCode,
+                                                         "The Subscription was not added to the following Partners:");
+                            partnerDialog.SetPartnerList(PartnersWithExistingSubs);
+                            partnerDialog.ShowDialog();
                         }
-                        MessageBox.Show(test);
-                        //TODO: show names of partners that already had a subscription
                     }
                     else
                     {

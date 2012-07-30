@@ -750,7 +750,8 @@ namespace Ict.Petra.Shared.Interfaces.MPartner.Partner.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean AddSubscription(System.Int32 AExtractId,
                                 ref PSubscriptionTable ATable,
-                                out PPartnerTable AExistingSubscriptionPartners);
+                                out PPartnerTable AExistingSubscriptionPartners,
+                                out System.Int32 ASubscriptionsAdded);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector)</summary>
         Boolean DeleteSubscription(System.Int32 AExtractId,
                                    Int64 APartnerKey,
