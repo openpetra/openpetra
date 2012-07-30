@@ -699,11 +699,12 @@ namespace Ict.Petra.Client.MCommon.Gui
             DataView PartnerSharingLocationDV;
             string FilterCriteria;
             DataView PersonsLocationsDV;
-#if TODO            
+#if TODO
             TPartnerAddressChangePropagationSelectionWinForm AddressChangedDialog;
             string UserAnswer;
             TPartnerLocationChangePropagationSelectionWinForm LocationChangedDialog;
-#endif            
+#endif
+
             for (Counter = 0; Counter <= AAddedOrChangedPromotionDT.Rows.Count - 1; Counter += 1)
             {
                 AddressAddedOrChangedPromotionRow =
@@ -771,8 +772,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     FilterCriteria,
                                     PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
                                     DataViewRowState.CurrentRows);
-#if TODO                                
-                            AddressChangedDialog = new TPartnerAddressChangePropagationSelectionWinForm();
+#if TODO
+                                AddressChangedDialog = new TPartnerAddressChangePropagationSelectionWinForm();
                                 AddressChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PartnerSharingLocationDV, LocationRow, "", "");
 
                                 if (AddressChangedDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
@@ -790,30 +791,30 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     {
                                         AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
 #endif
-                                        AddressAddedOrChangedPromotionRow.UserAnswer = "CHANGE-NONE";  // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
+                                AddressAddedOrChangedPromotionRow.UserAnswer = "CHANGE-NONE";          // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
 
-                                        if (AddressAddedOrChangedPromotionRow.UserAnswer.StartsWith("CHANGE"))
-                                        {
-                                            /*
-                                             * The LocationRow gets deleted from the LocationTable on the
-                                             * Server side, but there a AcceptChanges is done so that the
-                                             * DataRow doesn't actually get deleted from the DB. The Client
-                                             * would then no longer know that it needs to delete it, so we
-                                             * need do remember to do it later!
-                                             */
-                                            FLogic.AddCleanupAddressesLocationKey((Int32)AddressAddedOrChangedPromotionRow.LocationKey);
+                                if (AddressAddedOrChangedPromotionRow.UserAnswer.StartsWith("CHANGE"))
+                                {
+                                    /*
+                                     * The LocationRow gets deleted from the LocationTable on the
+                                     * Server side, but there a AcceptChanges is done so that the
+                                     * DataRow doesn't actually get deleted from the DB. The Client
+                                     * would then no longer know that it needs to delete it, so we
+                                     * need do remember to do it later!
+                                     */
+                                    FLogic.AddCleanupAddressesLocationKey((Int32)AddressAddedOrChangedPromotionRow.LocationKey);
 #if TODO
-                                        }
-                                    }
-                                    else
-                                    {
-                                        throw new System.Exception(
-                                            "GetReturnedParameters called, but Form '" + AddressChangedDialog.Name +
-                                            "' is not finished yet with initialisation");
-                                    }
+                                }
+                            }
+                            else
+                            {
+                                throw new System.Exception(
+                                    "GetReturnedParameters called, but Form '" + AddressChangedDialog.Name +
+                                    "' is not finished yet with initialisation");
+                            }
 
-                                    // get NewPartnerDialog out of memory
-                                    AddressChangedDialog.Dispose();
+                            // get NewPartnerDialog out of memory
+                            AddressChangedDialog.Dispose();
 #endif
                                 }
                             }
@@ -864,7 +865,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     FilterCriteria,
                                     PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
                                     DataViewRowState.CurrentRows);
-#if TODO                                
+#if TODO
                                 LocationChangedDialog = new TPartnerLocationChangePropagationSelectionWinForm();
                                 LocationChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PersonsLocationsDV, LocationRow, "", "");
 
@@ -883,19 +884,19 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     {
                                         AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
 #endif
-                                        AddressAddedOrChangedPromotionRow.UserAnswer = "NO";  // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
+                                AddressAddedOrChangedPromotionRow.UserAnswer = "NO";          // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
 #if TODO
-                                    }
-                                    else
-                                    {
-                                        throw new System.Exception(
-                                            "GetReturnedParameters called, but Form '" + LocationChangedDialog.Name +
-                                            "' is not finished yet with initialisation");
-                                    }
+                            }
+                            else
+                            {
+                                throw new System.Exception(
+                                    "GetReturnedParameters called, but Form '" + LocationChangedDialog.Name +
+                                    "' is not finished yet with initialisation");
+                            }
 
-                                    // get NewPartnerDialog out of memory
-                                    LocationChangedDialog.Dispose();
-                                }
+                            // get NewPartnerDialog out of memory
+                            LocationChangedDialog.Dispose();
+                        }
 #endif
                             }
                             else

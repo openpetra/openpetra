@@ -866,26 +866,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else
             {
                 bool AssignControlUpdateDataHandler = false;
-                
+
                 if (ctrl.HasAttribute("DataField"))
                 {
-                    TDataBinding.GetTableField(ctrl, ctrl.GetAttribute("DataField"), out IsDetailNotMaster, true);                        
-                    
-                    if (IsDetailNotMaster) 
+                    TDataBinding.GetTableField(ctrl, ctrl.GetAttribute("DataField"), out IsDetailNotMaster, true);
+
+                    if (IsDetailNotMaster)
                     {
-                        AssignControlUpdateDataHandler = true;    
+                        AssignControlUpdateDataHandler = true;
                     }
                 }
                 else
                 {
-                    if(writer.CodeStorage.HasAttribute("DetailTable"))
+                    if (writer.CodeStorage.HasAttribute("DetailTable"))
                     {
                         if (!((this is LabelGenerator) || (this is LinkLabelGenerator)))
-                        {                    
-                            if(TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
-                                ctrl.controlTypePrefix.Length), out IsDetailNotMaster, false) != null)
+                        {
+                            if (TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
+                                        ctrl.controlTypePrefix.Length), out IsDetailNotMaster, false) != null)
                             {
-                                if (IsDetailNotMaster) 
+                                if (IsDetailNotMaster)
                                 {
                                     AssignControlUpdateDataHandler = true;
                                 }
@@ -893,21 +893,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
                     }
                 }
-                
+
                 if (AssignControlUpdateDataHandler)
                 {
                     if ((!ctrl.controlTypePrefix.StartsWith("mn"))
-                         && (!ctrl.controlTypePrefix.StartsWith("tb"))
-                         && (ctrl.controlTypePrefix != "pnl")
-                         && (ctrl.controlTypePrefix != "grp")
-                         && (ctrl.controlTypePrefix != "grd")
-                         && (ctrl.controlTypePrefix != "btn")
-                         && (ctrl.controlTypePrefix != "stb")
-                         && (ctrl.controlTypePrefix != "lbl"))
+                        && (!ctrl.controlTypePrefix.StartsWith("tb"))
+                        && (ctrl.controlTypePrefix != "pnl")
+                        && (ctrl.controlTypePrefix != "grp")
+                        && (ctrl.controlTypePrefix != "grd")
+                        && (ctrl.controlTypePrefix != "btn")
+                        && (ctrl.controlTypePrefix != "stb")
+                        && (ctrl.controlTypePrefix != "lbl"))
                     {
                         AssignEventHandlerToControl(writer, ctrl, "Validated", "ControlUpdateDataHandler");
                         writer.Template.SetCodelet("GENERATECONTROLUPDATEDATAHANDLER", "true");
-                    }                
+                    }
                 }
             }
 

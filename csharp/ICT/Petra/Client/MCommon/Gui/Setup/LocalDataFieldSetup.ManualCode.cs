@@ -405,7 +405,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     if (!CurrentRow.IsCharLengthNull())
                     {
                         ARow.CharLength = CurrentRow.CharLength;
-                        VisibleIndex = 0;                        
+                        VisibleIndex = 0;
                     }
                 }
                 else if (String.Compare(ARow.DataType, "float", true) == 0)
@@ -413,7 +413,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     if (!CurrentRow.IsNumDecimalPlacesNull())
                     {
                         ARow.NumDecimalPlaces = CurrentRow.NumDecimalPlaces;
-                        VisibleIndex = 1;                        
+                        VisibleIndex = 1;
                     }
                 }
                 else if (String.Compare(ARow.DataType, "currency", true) == 0)
@@ -421,7 +421,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     if (!CurrentRow.IsCurrencyCodeNull())
                     {
                         ARow.CurrencyCode = CurrentRow.CurrencyCode;
-                        VisibleIndex = 2;                        
+                        VisibleIndex = 2;
                     }
                 }
                 else if (String.Compare(ARow.DataType, "lookup", true) == 0)
@@ -429,7 +429,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     if (!CurrentRow.IsLookupCategoryCodeNull())
                     {
                         ARow.LookupCategoryCode = CurrentRow.LookupCategoryCode;
-                        VisibleIndex = 6;                        
+                        VisibleIndex = 6;
                     }
                 }
 

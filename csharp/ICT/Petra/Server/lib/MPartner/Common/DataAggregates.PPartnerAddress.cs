@@ -2503,7 +2503,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 if (ALocationTable.Rows[LocationCounter].RowState == DataRowState.Deleted)
                 {
                     if (Convert.ToInt32(ALocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                                       DataRowVersion.Original]) == 0)
+                                                                        DataRowVersion.Original]) == 0)
                     {
                         throw new Exception("TPPartnerAddress.ProcessLocationChanges: must not delete the empty location");
                     }
@@ -2657,7 +2657,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     {
                         TLogging.Log("SubmitChanges: Location " +
                             ALocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                           DataRowVersion.Original].ToString() + ": has been marked for deletion.");
+                                                            DataRowVersion.Original].ToString() + ": has been marked for deletion.");
                     }
 #endif
 
@@ -2669,7 +2669,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         {
                             TLogging.Log("SubmitChanges: Location " +
                                 ALocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                               DataRowVersion.Original].ToString() +
+                                                                DataRowVersion.Original].ToString() +
                                 ": has been marked for deletion and is used by others, so it won''t get deleted.");
                         }
 #endif
@@ -2684,7 +2684,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         {
                             TLogging.Log("SubmitChanges: Location " +
                                 ALocationTable[LocationCounter][PLocationTable.GetLocationKeyDBName(),
-                                                               DataRowVersion.Original].ToString() +
+                                                                DataRowVersion.Original].ToString() +
                                 ": has been marked for deletion and will get deleted.");
                         }
 #endif
