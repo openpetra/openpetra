@@ -628,45 +628,47 @@ namespace Ict.Common.Data
         {
             return AcceptChangesForUnmodifiedRows(AInspectDT, -1, false);
         }
-        
+
         /// <summary>
         /// Removes any DataRow from the Destination DataTable that isn't found in the Source DataTable.
         /// </summary>
         /// <remarks><para><em>Both DataTables must have the same Primary Key for this Method to work!</em></para>
         /// <para>A possible use for this Method is the removing of DataRows from a DataTable that is held on
-        /// the Client side when the DataTable is re-loaded from the DB and the reloaded DataTable may contains less rows. 
-        /// Performing a DataSet.Merge operation (DataTable reloaded from the DB merged into client-side DataSet) 
-        /// does not remove DataRows that don't exist in the DataTable that got reloaded from the DB, 
+        /// the Client side when the DataTable is re-loaded from the DB and the reloaded DataTable may contains less rows.
+        /// Performing a DataSet.Merge operation (DataTable reloaded from the DB merged into client-side DataSet)
+        /// does not remove DataRows that don't exist in the DataTable that got reloaded from the DB,
         /// but calling this Method after the DataSet.Merge does that.</para></remarks>
         /// <param name="ASourceDT">Source DataTable.</param>
         /// <param name="ADestinationDT">Destination DataTable.</param>
         public static void RemoveRowsNotPresentInDT(DataTable ASourceDT, DataTable ADestinationDT)
         {
             DataRow FoundRow;
+
             DataColumn[] PrimaryKeyArr = ADestinationDT.PrimaryKey;
             object[] PrimaryKeyValues;
-            
-            if (ASourceDT.PrimaryKey.Length == 0) 
+
+            if (ASourceDT.PrimaryKey.Length == 0)
             {
                 throw new ArgumentException("DataTable specified with ASourceDT must have a Primary Key specified");
             }
-            if (PrimaryKeyArr.Length == 0) 
+
+            if (PrimaryKeyArr.Length == 0)
             {
                 throw new ArgumentException("DataTable specified with ADestinationDT must have a Primary Key specified");
             }
-            
-            for (int Counter = 0; Counter < ADestinationDT.Rows.Count; Counter++) 
+
+            for (int Counter = 0; Counter < ADestinationDT.Rows.Count; Counter++)
             {
                 PrimaryKeyValues = new object[PrimaryKeyArr.Length];
-                
-                for (int Counter2 = 0; Counter2 < PrimaryKeyArr.Length; Counter2++) 
+
+                for (int Counter2 = 0; Counter2 < PrimaryKeyArr.Length; Counter2++)
                 {
-                    PrimaryKeyValues[Counter2] = ADestinationDT.Rows[Counter][PrimaryKeyArr[Counter2]];                                                   
+                    PrimaryKeyValues[Counter2] = ADestinationDT.Rows[Counter][PrimaryKeyArr[Counter2]];
                 }
-                
+
                 FoundRow = ASourceDT.Rows.Find(PrimaryKeyValues);
-                
-                if (FoundRow == null) 
+
+                if (FoundRow == null)
                 {
                     ADestinationDT.Rows.Remove(ADestinationDT.Rows[Counter]);
                 }

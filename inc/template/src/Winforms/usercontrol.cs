@@ -285,7 +285,7 @@ namespace {#NAMESPACE}
 
 {#IFDEF MASTERTABLE}
 
-    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
+    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow, Control AControl=null)
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
@@ -304,7 +304,7 @@ namespace {#NAMESPACE}
 
 {#IFDEF SAVEDETAILS}
 
-    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, Control AControl=null)
     {
         if (ARow != null)
         {
@@ -313,7 +313,13 @@ namespace {#NAMESPACE}
             ARow.EndEdit();
         }
     }
-    
+{#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
+
+    private void ControlUpdateDataHandler(object sender, EventArgs e)
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow, (Control)sender);
+    }
+{#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 
 

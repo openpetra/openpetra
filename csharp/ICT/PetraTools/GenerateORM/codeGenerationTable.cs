@@ -388,11 +388,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 if (currentTable.strGroup == strGroup)
                 {
-                	if (!currentTable.HasPrimaryKey())
-                	{
-	            		TLogging.Log("Warning: there is no primary key for table " + currentTable.strName);
-                	}
-                	
+                    if (!currentTable.HasPrimaryKey())
+                    {
+                        TLogging.Log("Warning: there is no primary key for table " + currentTable.strName);
+                    }
+
                     InsertTableDefinition(Template, currentTable, null, "TABLELOOP");
                     InsertRowDefinition(Template, currentTable, null, "TABLELOOP");
                 }

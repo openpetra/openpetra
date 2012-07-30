@@ -1015,9 +1015,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // $IFDEF DEBUGMODE if SubmitDS = nil then MessageBox.Show('SubmitDS = nil!'); $ENDIF
-#if DATASETDEBUGGING                    
+#if DATASETDEBUGGING
                     TLogging.Log("Before submitting data to the Server. Client DataSet: " + SubmitDS.GetXml());
-#endif                    
+#endif
                     // Submit changes to the PETRAServer
                     try
                     {
@@ -1097,20 +1097,25 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
                                 }
                             }
+
 #if DATASETDEBUGGING
                             TLogging.Log("After submtting returned Server DataSet: " + SubmitDS.GetXml());
                             MessageBox.Show("Before CleanupAddressesBeforeMerge");
-#endif                                            
+#endif
                             // Get rid of any new Addresses; they are returned back with different LocationKeys (based on a Sequence)
                             ucoLowerPart.CleanupAddressesBeforeMerge();
 #if DATASETDEBUGGING
                             MessageBox.Show("After CleanupAddressesBeforeMerge");
-                                            
-                            if (SubmitDS.PLocation.Rows.Count > 0) 
+
+                            if (SubmitDS.PLocation.Rows.Count > 0)
                             {
-                                MessageBox.Show("Location[0] LocationKey: " + SubmitDS.PLocation[0].LocationKey.ToString() + "; PartnerLocation[0] LocationKey: " + SubmitDS.PPartnerLocation[0].LocationKey.ToString());    
-                            }                            
+                                MessageBox.Show(
+                                    "Location[0] LocationKey: " + SubmitDS.PLocation[0].LocationKey.ToString() +
+                                    "; PartnerLocation[0] LocationKey: " +
+                                    SubmitDS.PPartnerLocation[0].LocationKey.ToString());
+                            }
 #endif
+
                             if (AInspectDS.PDataLabelValuePartner != null)
                             {
                                 // Delete all added Rows in the original dataset. They will automatically
@@ -1142,31 +1147,43 @@ namespace Ict.Petra.Client.MPartner.Gui
                             AInspectDS.AcceptChanges();
 #if DATASETDEBUGGING
                             TLogging.Log("After getting rid now of any deleted columns   Client DataSet: " + AInspectDS.GetXml());
- 
+
                             if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
                             {
                                 for (TmpRowCounter = 0; TmpRowCounter < AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count; TmpRowCounter++)
                                 {
-                                    TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
-                                        AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.GetLocationKeyDBName()].ToString() + "(); PSiteKey: " +
-                                        AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()].ToString() + "\r\n";
+                                    TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                                     "]: PLocationKey: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetLocationKeyDBName()].
+                                                     ToString() + "(); PSiteKey: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetSiteKeyDBName()].
+                                                     ToString() + "\r\n";
                                 }
                             }
-                             
+
                             if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
                             {
                                 TmpDebugString = TmpDebugString + "\r\n";
-                                for (TmpRowCounter = 0; TmpRowCounter < AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count; TmpRowCounter++)
+
+                                for (TmpRowCounter = 0;
+                                     TmpRowCounter < AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count;
+                                     TmpRowCounter++)
                                 {
-                                    TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.GetLocationKeyDBName()].ToString() + "(); PSiteKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.GetSiteKeyDBName()].ToString() + "(); PPartnerKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "\r\n";
+                                    TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                                     "]: PLocationKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetLocationKeyDBName()].ToString() + "(); PSiteKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetSiteKeyDBName()].ToString() + "(); PPartnerKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "\r\n";
                                 }
 
                                 MessageBox.Show(TmpDebugString, "DEBUG: PLocation / PPartnerLocation local contents  [#1]");
                             }
- #endif
+#endif
                             // Merge back with data from the Server (eg. for getting Sequence values)
                             AInspectDS.Merge(SubmitDS, false);
 #if DATASETDEBUGGING
@@ -1176,30 +1193,44 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if (AInspectDS.Tables.Contains(PLocationTable.GetTableName()))
                             {
                                 TmpDebugString = "";
+
                                 for (TmpRowCounter = 0; TmpRowCounter < AInspectDS.Tables[PLocationTable.GetTableName()].Rows.Count; TmpRowCounter++)
-                                {                            
-                                    TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
-                                        AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.GetLocationKeyDBName()].ToString() + "(); PSiteKey: " +
-                                        AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.GetSiteKeyDBName()].ToString() + "\r\n";
+                                {
+                                    TmpDebugString = TmpDebugString + PLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                                     "]: PLocationKey: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetLocationKeyDBName()].
+                                                     ToString() + "(); PSiteKey: " +
+                                                     AInspectDS.Tables[PLocationTable.GetTableName()].Rows[TmpRowCounter][PLocationTable.
+                                                                                                                          GetSiteKeyDBName()].
+                                                     ToString() + "\r\n";
                                 }
                             }
-                                
+
                             if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
                             {
                                 TmpDebugString = TmpDebugString + "\r\n";
-                                for (TmpRowCounter = 0; TmpRowCounter < AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count; TmpRowCounter++)
+
+                                for (TmpRowCounter = 0;
+                                     TmpRowCounter < AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows.Count;
+                                     TmpRowCounter++)
                                 {
-                                    TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.GetLocationKeyDBName()].ToString() + "(); PSiteKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.GetSiteKeyDBName()].ToString() + "(); PPartnerKey: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "(); RowError: " +
-                                        AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowError.ToString() + "\r\n";
+                                    TmpDebugString = TmpDebugString + PPartnerLocationTable.GetTableName() + ".Row[" + TmpRowCounter.ToString() +
+                                                     "]: PLocationKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetLocationKeyDBName()].ToString() + "(); PSiteKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetSiteKeyDBName()].ToString() + "(); PPartnerKey: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
+                                        PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "(); RowError: " +
+                                                     AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowError.ToString()
+                                                     + "\r\n";
                                 }
-                             
+
                                 MessageBox.Show(TmpDebugString, "DEBUG: PLocation / PPartnerLocation local contents  [#2]");
                             }
-#endif                    
-                             
+#endif
+
                             ucoLowerPart.RefreshAddressesAfterMerge();
                             ucoLowerPart.RefreshPersonnelDataAfterMerge(AddressesOrRelationsChanged);
 
@@ -1207,7 +1238,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             AInspectDS.AcceptChanges();
 #if DATASETDEBUGGING
                             TLogging.Log("After calling AcceptChanges on the Client DataSet: " + AInspectDS.GetXml());
-#endif                            
+#endif
                             // Update UI
                             FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
                             this.Cursor = Cursors.Default;
@@ -1289,28 +1320,36 @@ namespace Ict.Petra.Client.MPartner.Gui
 #if DATASETDEBUGGING
                             for (int Counter = 0; Counter < FResponseDS.Tables.Count; Counter++)
                             {
-                                MessageBox.Show("Table #" + Counter.ToString() + "'s name is " + FResponseDS.Tables[Counter].TableName + ". It has " + FResponseDS.Tables[Counter].Rows.Count.ToString() + " Rows. Type: " +
-                                                FResponseDS.Tables[Counter].GetType().ToString());
-
+                                MessageBox.Show(
+                                    "Table #" + Counter.ToString() + "'s name is " + FResponseDS.Tables[Counter].TableName + ". It has " +
+                                    FResponseDS.Tables[Counter].Rows.Count.ToString() + " Rows. Type: " +
+                                    FResponseDS.Tables[Counter].GetType().ToString());
                             }
+
                             if (FResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                             {
                                 MessageBox.Show("FResponseDS Type: " + FResponseDS.GetType().ToString());
-                                MessageBox.Show(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " + FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
-                                MessageBox.Show("FResponseDS.Tables[" + MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + "].Rows.Count: " + FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+                                MessageBox.Show(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                                    FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
+                                MessageBox.Show(
+                                    "FResponseDS.Tables[" + MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + "].Rows.Count: " +
+                                    FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                                 // Check if there is a Parameter Row that is not yet processed
                                 DataView ExistingLocationParametersDV = new DataView(
                                     FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME],
                                     PartnerAddressAggregateTDSSimilarLocationParametersTable.GetAnswerProcessedClientSideDBName() +
-                                        " = false", "", DataViewRowState.CurrentRows);
-                            
+                                    " = false", "", DataViewRowState.CurrentRows);
+
                                 if (ExistingLocationParametersDV.Count > 0)
                                 {
                                     MessageBox.Show("ExistingLocationParametersDV.Count: " + ExistingLocationParametersDV.Count.ToString());
-                                    MessageBox.Show("Row[0].LocationKey: " + (ExistingLocationParametersDV[0].Row as PartnerAddressAggregateTDSSimilarLocationParametersRow).LocationKey.ToString());
+                                    MessageBox.Show(
+                                        "Row[0].LocationKey: " +
+                                        (ExistingLocationParametersDV[0].Row as PartnerAddressAggregateTDSSimilarLocationParametersRow).LocationKey.
+                                        ToString());
                                 }
                             }
-#endif                            
+#endif
                             ucoLowerPart.SimilarLocationsProcessing(
                             (PartnerAddressAggregateTDSSimilarLocationParametersTable)FResponseDS.Tables[MPartnerConstants.
                                                                                                          EXISTINGLOCATIONPARAMETERS_TABLENAME]);
@@ -1318,38 +1357,45 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if (FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
                             {
                                 MessageBox.Show("Reuse?: " + (FResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME]
-                                   as PartnerAddressAggregateTDSSimilarLocationParametersTable)[0].AnswerReuse.ToString());
+                                                              as PartnerAddressAggregateTDSSimilarLocationParametersTable)[0].AnswerReuse.ToString());
                             }
 
                             if (FResponseDS.Tables.Contains(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME))
                             {
-                                MessageBox.Show(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " + FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
-                                MessageBox.Show("FResponseDS.Tables[" + MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + "].Rows.Count: " + FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count.ToString());
+                                MessageBox.Show(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
+                                    FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
+                                MessageBox.Show(
+                                    "FResponseDS.Tables[" + MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + "].Rows.Count: " +
+                                    FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count.ToString());
                                 //Check if there is a Parameter Row that is not yet processed
                                 DataView AddressAddedOrChangedParametersDV = new DataView(
                                     FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME],
                                     PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetAnswerProcessedClientSideDBName() +
                                     " = false", "", DataViewRowState.CurrentRows);
-                            
+
                                 if (AddressAddedOrChangedParametersDV.Count > 0)
                                 {
                                     MessageBox.Show("AddressAddedOrChangedParametersDV.Count: " + AddressAddedOrChangedParametersDV.Count.ToString());
-                                    MessageBox.Show("Row[0].LocationKey: " + (AddressAddedOrChangedParametersDV[0].Row as PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow).LocationKey.ToString());
+                                    MessageBox.Show(
+                                        "Row[0].LocationKey: " +
+                                        (AddressAddedOrChangedParametersDV[0].Row as PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow).
+                                        LocationKey.
+                                        ToString());
                                 }
                             }
 #endif
                             ucoLowerPart.AddressAddedOrChangedProcessing(
-                                (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)
-                                FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME],
-                                (PartnerAddressAggregateTDSChangePromotionParametersTable)
-                                FResponseDS.Tables[MPartnerConstants.ADDRESSCHANGEPROMOTIONPARAMETERS_TABLENAME]);
+                            (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)
+                            FResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME],
+                            (PartnerAddressAggregateTDSChangePromotionParametersTable)
+                            FResponseDS.Tables[MPartnerConstants.ADDRESSCHANGEPROMOTIONPARAMETERS_TABLENAME]);
 #if DATASETDEBUGGING
                             MessageBox.Show("After AddressAddedOrChangedProcessing");
-#endif                            
+#endif
                             // Recursive call!
                             FPetraUtilsObject.SubmitChangesContinue = true;
                             ReturnValue = SaveChanges(ref AInspectDS);
-                            
+
                             return ReturnValue;
                     }
                 }
