@@ -1968,6 +1968,7 @@ namespace Ict.Petra.WebServer.MConference
             }
 
             Result += "]";
+            Result = Result.Replace(Environment.NewLine, "<br/");
 
             return Result;
         }
