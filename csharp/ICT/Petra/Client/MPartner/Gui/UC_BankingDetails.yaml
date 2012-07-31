@@ -1,8 +1,8 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
-    Namespace: Ict.Petra.Client.MPartner.Gui   
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     DetailTable: PBankingDetails
     FormType: edit
@@ -26,7 +26,8 @@ RootNode:
             Action: actDelete
         grdDetails:
             Dock: Fill
-            Columns: [AccountName, BankAccountNumber, IBAN]
+            TableName: PBankingDetails
+            Columns: [AccountName, BankAccountNumber, Iban]
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
             Dock: Bottom

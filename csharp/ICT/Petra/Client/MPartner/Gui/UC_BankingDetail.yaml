@@ -1,8 +1,8 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
-    Namespace: Ict.Petra.Client.MPartner.Gui   
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: usercontrol
@@ -39,7 +39,6 @@ RootNode:
         cmbPReceiptLetterFrequency: {OnChange=ReceiptLetterFrequencyChanged}
             Label: R&eceiptLetterFrequency
             OptionalValues: [=ANNUAL, MONTHLY]
-            Validation: true
         chkPPrintedReceiptForEachGift:  {OnChange=PrintedReceiptForEachGiftChanged}
             Label: Free Subscri&ption
         chkPAnonymousDonor: {OnChange=AnonymousDonorChanged}
