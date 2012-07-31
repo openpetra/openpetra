@@ -423,17 +423,22 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
 
+            AMainDS.AEpMatch.DefaultView.Sort =
+                AEpMatchTable.GetActionDBName() + ", " +
+                AEpMatchTable.GetMatchTextDBName();
+
             foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
             {
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
-                DataView v = AMainDS.AEpMatch.DefaultView;
-                v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT + "' and " +
-                              AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
+                DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
+                        MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT,
+                        transactionRow.MatchText
+                    });
 
-                if (v.Count > 0)
+                if (matches.Length > 0)
                 {
-                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+                    AEpMatchRow match = (AEpMatchRow)matches[0].Row;
 
                     if (match.IsDonorKeyNull() || (match.DonorKey == 0))
                     {
