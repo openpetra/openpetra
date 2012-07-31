@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -111,11 +111,20 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     string RebukeNotes = ((PDataLabelValuePartnerRow)MainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar;
 
-                    Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)Jayrock.Json.Conversion.JsonConvert.Import(RebukeNotes);
+                    object obj = Jayrock.Json.Conversion.JsonConvert.Import(RebukeNotes);
+
+                    if (!(obj is Jayrock.Json.JsonArray))
+                    {
+                        // somehow the RebukesNotes string just contains two double quotes, but not a list
+                        continue;
+                    }
+
+                    Jayrock.Json.JsonArray list = (Jayrock.Json.JsonArray)obj;
 
                     foreach (Jayrock.Json.JsonObject element in list)
                     {
-                        if (Convert.ToDateTime(element["When"]).ToString("yyyy-MM-dd") == AAllRebukesOnThisDay.ToString("yyyy-MM-dd"))
+                        if (element.Contains("When")
+                            && (Convert.ToDateTime(element["When"]).ToString("yyyy-MM-dd") == AAllRebukesOnThisDay.ToString("yyyy-MM-dd")))
                         {
                             string rebukeValues = string.Empty;
 
