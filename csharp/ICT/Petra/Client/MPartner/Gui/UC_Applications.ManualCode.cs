@@ -546,7 +546,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            GetDetailsFromControls(GetSelectedDetailRow());
+            IndividualDataTDSPmGeneralApplicationRow Row = GetSelectedDetailRow();
+            
+            if (Row != null)
+            {
+                GetDetailsFromControls(Row);
+            }
         }
 
         private void ProcessApplicationEventOrFieldChanged(Int64 APartnerKey, int AApplicationKey, Int64 ARegistrationOffice,
