@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui   
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
-    DetailTable: PFinanceDetail
+    DetailTable: PBankingDetails
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -26,7 +26,7 @@ RootNode:
             Action: actDelete
         grdDetails:
             Dock: Fill
-            Columns: [PFinanceDetail.PublicationCode, PFinanceDetail.SubscriptionStatus, PFinanceDetail.GratisSubscription]
+            Columns: [AccountName, BankAccountNumber, IBAN]
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
             Dock: Bottom
@@ -34,4 +34,4 @@ RootNode:
             Controls: [ucoDetails]
         ucoDetails:
             Dock: Fill
-            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFinanceDetails
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerBankingDetails

@@ -512,8 +512,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFinanceDetails))
             {
-                TUC_PartnerFinanceDetails UCFinanceDetails =
-                    (TUC_PartnerFinanceDetails)FTabSetup[TDynamicLoadableUserControls.dlucFinanceDetails];
+                TUC_PartnerBankingDetails UCFinanceDetails =
+                    (TUC_PartnerBankingDetails)FTabSetup[TDynamicLoadableUserControls.dlucFinanceDetails];
 
                 if (!UCFinanceDetails.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
@@ -1060,7 +1060,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
             
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerFinanceDetails))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerBankingDetails))
             {
                 if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
                 {
@@ -1296,7 +1296,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         break;
                         
-                    case TPartnerEditTabPageEnum.petpFinanceDetails:
+                    case TPartnerEditTabPageEnum.petPBankingDetailss:
                         tabPartners.SelectedTab = tpgFinanceDetails;
                         break;
                 }
