@@ -838,14 +838,32 @@
                               </Content>
                             </ext:Panel>
                             <ext:Panel ID="TabBoundaries" runat="server" Title="Boundaries" AutoScroll="true">
-                              <Items>
-                                <ext:DateField ID="dtpRebukesReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MM-yyyy" width="230"/>
-                                <ext:Button ID="btnRebukesReport" runat="server" Text="Print Rebukes Report">
+                              <Content>
+                                <table>
+                                <tr>
+                                <td><ext:DateField ID="dtpRebukesReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MM-yyyy" width="230"/></td>
+                                <td><ext:Button ID="btnRebukesReport" runat="server" Text="Print Rebukes Report">
                                     <DirectEvents>
                                         <Click OnEvent="PrintRebukesReport"/>
                                     </DirectEvents>
                                 </ext:Button>
-                              </Items>
+                                </td>
+                                </tr>
+                                <tr><td>
+                                <ext:Button ID="btnFilterByRebukes" runat="server" Text="Filter for all participants with rebukes">
+                                    <DirectEvents>
+                                        <Click OnEvent="FilterByRebukes"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                                </td><td>
+                                <ext:Button ID="btnResetFilterByRebukes" runat="server" Text="Reset Filter">
+                                    <DirectEvents>
+                                        <Click OnEvent="ClearFilterByRebukes"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                                </td></tr>
+                                </table>
+                              </Content>
                             </ext:Panel>
                             <ext:Panel ID="TabMedical" runat="server" Title="Medical" AutoScroll="true">
                               <Items>

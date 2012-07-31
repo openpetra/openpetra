@@ -97,7 +97,6 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.TextArea Comment;
         protected Ext.Net.TextArea CommentRegistrationOfficeReadOnly;
         protected Ext.Net.Panel TabServiceTeam;
-        protected Ext.Net.Panel TabMoreDetails;
         protected Ext.Net.Button btnJSONApplication;
         protected Ext.Net.Button btnCreateGiftBatch;
         protected Ext.Net.Button btnLoadRefreshApplicants;
@@ -183,7 +182,8 @@ namespace Ict.Petra.WebServer.MConference
                     TabMedical.Visible = false;
                     btnPrintMedicalReport.Visible = false;
                 }
-                else
+
+                if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
                     TabRawApplicationData.Visible = false;
                     TabFinance.Visible = false;
@@ -195,6 +195,27 @@ namespace Ict.Petra.WebServer.MConference
                     TabManualRegistration.Visible = false;
                     TabTopFinance.Visible = false;
                     TabBoundaries.Visible = false;
+                    TabBadges.Visible = false;
+                    TabExport.Visible = false;
+                    TabTopGroups.Visible = false;
+                    TabTODO.Visible = false;
+
+                    btnReprintBadge.Visible = false;
+                    btnReprintPDF.Visible = false;
+                }
+
+                if (UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    TabRawApplicationData.Visible = false;
+                    TabFinance.Visible = false;
+                    TabServiceTeam.Visible = false;
+                    TabApplicantDetails.Visible = false;
+                    TabGroups.Visible = false;
+
+                    TabPetra.Visible = false;
+                    TabManualRegistration.Visible = false;
+                    TabTopFinance.Visible = false;
+                    TabMedical.Visible = false;
                     TabBadges.Visible = false;
                     TabExport.Visible = false;
                     TabTopGroups.Visible = false;
@@ -605,6 +626,9 @@ namespace Ict.Petra.WebServer.MConference
                 {
                     LoadDataForMedicalTeam(row, rawDataObject);
                 }
+                else if (UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                }
                 else
                 {
                     TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
@@ -670,7 +694,11 @@ namespace Ict.Petra.WebServer.MConference
                                                                          "CLS", "Dresscode", "LegalImprint"
                                                                      });
 
-                if (!UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                if (UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    RefreshRebukesStore(row.RebukeNotes);
+                }
+                else if (!UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
                     foreach (string key in rawDataObject.Names)
                     {
@@ -750,8 +778,6 @@ namespace Ict.Petra.WebServer.MConference
                 Random rand = new Random();
                 Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
 
-                RefreshRebukesStore(row.RebukeNotes);
-
                 GroupMembers.Text = string.Empty;
             }
             catch (Exception ex)
@@ -788,6 +814,10 @@ namespace Ict.Petra.WebServer.MConference
                 if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
                     row.MedicalNotes = GetMedicalLogsFromScreen(values);
+                }
+                else if (UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    row.RebukeNotes = RebukeValues;
                 }
                 else
                 {
@@ -851,8 +881,6 @@ namespace Ict.Petra.WebServer.MConference
                     }
 
                     row.Comment = values["Comment"];
-
-                    row.RebukeNotes = RebukeValues;
 
                     bool SecondSibling = false;
                     bool CancelledByFinanceOffice = false;
@@ -1218,6 +1246,31 @@ namespace Ict.Petra.WebServer.MConference
                         Message = ex.Message
                     });
             }
+        }
+
+        protected void ClearFilterByRebukes(object sender, DirectEventArgs e)
+        {
+            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+
+            this.Store1.DataSource = DataTableToArray(CurrentApplicants.ApplicationGrid);
+            this.Store1.DataBind();
+        }
+
+        protected void FilterByRebukes(object sender, DirectEventArgs e)
+        {
+            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+
+            CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                ConferenceApplicationTDSApplicationGridTable.GetRebukeNotesDBName() + " <> '' AND " +
+                ConferenceApplicationTDSApplicationGridTable.GetRebukeNotesDBName() + " IS NOT NULL";
+
+            if (CurrentApplicants.ApplicationGrid.DefaultView.Count > 0)
+            {
+                this.Store1.DataSource = DataTableToArray(CurrentApplicants.ApplicationGrid);
+                this.Store1.DataBind();
+            }
+
+            CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = string.Empty;
         }
 
         protected void PrintRebukesReport(object sender, DirectEventArgs e)
