@@ -414,7 +414,9 @@ namespace Ict.Common.IO
         /// </summary>
         public Int32 ReadInt32()
         {
-            return Convert.ToInt32(ReadNextStringItem());
+            string s = ReadNextStringItem();
+
+            return Convert.ToInt32(s);
         }
 
         /// <summary>
@@ -454,7 +456,9 @@ namespace Ict.Common.IO
         /// </summary>
         public decimal ReadDecimal()
         {
-            return Convert.ToDecimal(ReadNextStringItem(), CultureInfo.InvariantCulture);
+            string s = ReadNextStringItem();
+
+            return Convert.ToDecimal(s, CultureInfo.InvariantCulture);
         }
 
         /// <summary>

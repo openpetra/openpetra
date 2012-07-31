@@ -451,7 +451,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
             //Must be set after the FocusRowChanged event is called as it sets this flag to false
-            newRecordUnsavedInFocus = true;
+            FNewRecordUnsavedInFocus = true;
 
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             ShowDetails(FPreviouslySelectedDetailRow);

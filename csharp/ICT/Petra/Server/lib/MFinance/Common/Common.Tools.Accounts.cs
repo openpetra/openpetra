@@ -313,10 +313,10 @@ namespace Ict.Petra.Server.MFinance.Common
                     ledgerInfo.LedgerNumber, transaction);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw exception;
+                throw;
             }
         }
 
@@ -426,10 +426,10 @@ namespace Ict.Petra.Server.MFinance.Common
                     ledgerInfo.LedgerNumber, transaction);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw exception;
+                throw;
             }
             accountRow = null;
         }
@@ -666,10 +666,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 periodTable = AAccountingPeriodAccess.LoadViaALedger(intLedgerNumber, transaction);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw exception;
+                throw;
             }
         }
 

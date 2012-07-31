@@ -105,6 +105,10 @@ namespace Ict.Petra.Shared.Interfaces.MPersonnel.WebConnectors
         System.Int32 GetOrCreateUmJobKey(Int64 AUnitKey,
                                          System.String APositionName,
                                          System.String APositionScope);
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        ArrayList GetUnitHeirarchy();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector)</summary>
+        System.Boolean SaveUnitHierarchy(ArrayList Nodes);
     }
 
 }

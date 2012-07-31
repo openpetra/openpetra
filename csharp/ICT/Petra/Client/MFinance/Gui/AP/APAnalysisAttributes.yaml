@@ -5,7 +5,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
     MasterTable: AApAnalAttrib
     DetailTable: AApDocumentDetail
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: dialog
     WindowWidth: 450
     WindowHeight: 250

@@ -459,7 +459,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 Object Cell = SelectedGridRow[0]["p_partner_key_n"];
 
-                if (Cell.GetType() == typeof(Decimal))
+                if (Cell.GetType() == typeof(Int64))
                 {
                     SupplierKey = Convert.ToInt64(Cell);
                 }

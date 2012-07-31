@@ -133,7 +133,7 @@ namespace Ict.Common.IO
                 myDoc = new XmlDocument();
                 myDoc.Load(reader);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (reader != null)
                 {
@@ -144,7 +144,7 @@ namespace Ict.Common.IO
                 // throw the exception again,
                 // so that the error message of the validation and wellformedness checks
                 // can be displayed to the user
-                throw e;
+                throw;
             }
             sr.Close();
             reader.Close();

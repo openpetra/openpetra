@@ -413,7 +413,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void DeleteDetail(System.Object sender, EventArgs e)
         {
-            int newCurrentRowPos = TFinanceControls.GridCurrentRowIndex(grdDetails);
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             //Check if any rows exist
             if (grdDetails.Rows.Count < 2)
@@ -496,7 +496,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 grdDetails.Selection.ResetSelection(false);
-                TFinanceControls.ViewAndSelectRowInGrid(grdDetails, newCurrentRowPos);
+                grdDetails.SelectRowInGrid(newCurrentRowPos);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
                 //ShowDetails(FPreviouslySelectedDetailRow);
@@ -1018,7 +1018,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
         }
     }
 }

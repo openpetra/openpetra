@@ -1,0 +1,34 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Update Receipt Frequency
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    FormType: dialog
+    Template: window
+    WindowWidth: 600
+    WindowHeight: 200
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [lblExtractName]
+                Row1: [Empty]
+                Row2: [chkUpdateReceiptLetterFrequency, cmbReceiptLetterFrequency]
+                Row3: [chkUpdateReceiptEachGift, chkReceiptEachGift]
+                
+        lblExtractName:
+            
+        Empty:
+
+        chkUpdateReceiptLetterFrequency: {CheckBoxAttachedLabel=right, ActionClick=OnUpdateReceiptLetterFrequencyChecked}
+            Label: Update Receipt Letter Frequency:
+            
+        cmbReceiptLetterFrequency: {NoLabel=true, List=FrequencyList}
+
+        chkUpdateReceiptEachGift: {CheckBoxAttachedLabel=right, ActionClick=OnReceiptEachGiftChecked}
+            Label: Update Receipt for each Gift:
+
+        chkReceiptEachGift: {NoLabel=true, CheckBoxAttachedLabel=right}
+            

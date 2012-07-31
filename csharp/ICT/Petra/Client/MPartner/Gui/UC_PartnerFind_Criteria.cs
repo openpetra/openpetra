@@ -1113,12 +1113,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUserDefaults.PARTNER_FINDOPTIONS_EXACTPARTNERKEYMATCHSEARCH,
                     true))
             {
-                if (System.Convert.ToInt64(txtPartnerKey.Text) == 0)
+                Int64 PartnerKey = 0;
+
+                try
+                {
+                    PartnerKey = System.Convert.ToInt64(txtPartnerKey.Text);
+                }
+                catch (Exception)
+                {
+                }
+
+                if (PartnerKey == 0)
                 {
                     this.EnableAllPanel();
                 }
-
-                if (System.Convert.ToInt64(txtPartnerKey.Text) != 0)
+                else
                 {
                     this.DisableAllPanel(pnlPartnerKey);
                 }

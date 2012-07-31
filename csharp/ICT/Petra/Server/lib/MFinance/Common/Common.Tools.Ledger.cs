@@ -68,9 +68,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, transaction);
                 row = (ALedgerRow)ledger[0];
             }
-            catch (Exception exception)
+            catch (Exception)
             {
-                throw exception;
+                throw;
             }
             finally
             {

@@ -1457,7 +1457,7 @@ namespace Ict.Petra.Client.MCommon
         {
             DataRowView TheDataRowView;
 
-            // MessageBox.Show('DetermineCurrentKey:  ARow: ' + ARow.ToString);
+//TLogging.Log("DetermineCurrentKey:  ARow: " + ARow.ToString());
             if (FDataGrid != null)
             {
                 TheDataRowView = (DataRowView)FDataGrid.Rows.IndexToDataSourceRow(ARow);
@@ -1472,7 +1472,7 @@ namespace Ict.Petra.Client.MCommon
             FCurrentLocationKey = (Int32)FCurrentDataRow.LocationKey;
             FCurrentSiteKey = FCurrentDataRow.SiteKey;
 
-//          MessageBox.Show("DetermineCurrentKey:  FCurrentLocationKey: " + FCurrentLocationKey.ToString());
+//TLogging.Log("DetermineCurrentKey:  FCurrentLocationKey: " + FCurrentLocationKey.ToString());
             return FCurrentLocationKey;
         }
 

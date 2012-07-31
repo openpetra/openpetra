@@ -279,7 +279,29 @@ namespace Ict.Tools.DBXML
             {
                 foreach (string primKeyField in table.GetPrimaryKey().strThisFields)
                 {
+                    if (!table.GetField(primKeyField).bNotNull)
+                    {
+                        throw new Exception(String.Format(
+                                "Primary Key field '{0}' of DB Table '{1}' is not marked as NOT NULL in petra.xml, but this is mandatory!",
+                                table.GetField(primKeyField).strName, table.strName));
+                    }
+
                     table.GetField(primKeyField).bPartOfPrimKey = true;
+                }
+            }
+
+            if (table.HasUniqueKey())
+            {
+                foreach (string uniqueKeyField in table.GetFirstUniqueKey().strThisFields)
+                {
+                    if (!table.GetField(uniqueKeyField).bNotNull)
+                    {
+                        throw new Exception(String.Format(
+                                "Unique Key field '{0}' of DB Table '{1}' is not marked as NOT NULL in petra.xml, but this is mandatory!",
+                                table.GetField(uniqueKeyField).strName, table.strName));
+                    }
+
+                    table.GetField(uniqueKeyField).bPartOfFirstUniqueKey = true;
                 }
             }
 

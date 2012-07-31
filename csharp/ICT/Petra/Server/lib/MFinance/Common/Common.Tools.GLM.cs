@@ -72,10 +72,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 aGLMp = AGeneralLedgerMasterPeriodAccess.LoadAll(transaction);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw exception;
+                throw;
             }
         }
 
@@ -283,10 +283,10 @@ namespace Ict.Petra.Server.MFinance.Common
                     strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw exception;
+                throw;
             }
         }
 

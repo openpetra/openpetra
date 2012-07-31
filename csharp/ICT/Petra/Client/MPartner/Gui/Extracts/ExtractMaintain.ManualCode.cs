@@ -117,13 +117,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        private void ShowDataManual()
-        {
-        }
-
-        /// <summary>
         /// Copy partner key of currenly selected partner to clipboard
         /// </summary>
         /// <param name="sender"></param>

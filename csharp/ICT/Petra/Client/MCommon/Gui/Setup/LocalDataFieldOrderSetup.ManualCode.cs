@@ -207,7 +207,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
         }
 
-        private void GetDetailsFromControls(PDataLabelUseRow ARow)
+        private void GetDetailsFromControls(PDataLabelUseRow ARow, bool AIsNewRow = false)
         {
         }
     }

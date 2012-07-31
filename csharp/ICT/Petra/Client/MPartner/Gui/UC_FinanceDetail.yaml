@@ -12,24 +12,21 @@ RootNode:
     Controls:
         pnlDetails:
             Controls: 
-                Row0: [pnlDetailsLeft, pnlDetailsRight]
+                Row0: [pnlDetailsLeft]
             Dock: Fill
         pnlDetailsLeft:
-            Controls: [grpSubscription, grpMisc]
-        pnlDetailsRight:
-            Controls: [grpDates, grpIssues]
-                
-        grpSubscription: {Label=Subscription, Stretch=horizontally}
-            Controls: [cmbPSubscriptionPublicationCode, cmbPSubscriptionSubscriptionStatus, chkPSubscriptionGratisSubscription]
+            Controls: [grpAccountDetail, grpGiftReceipting, grpMisc]
+            
+        grpAccountDetail: {Label=AccountDetail, Strech=horizontally}
+            Controls: [txtAccountNumber, txtAccountName, txtBank, txtBLZ]
+    
+        grpGiftReceipting: {Label=GiftReceipting, Stretch=horizontally}
+            Controls: [cmbPReceiptLetterFrequency, chkPPrintedReceiptForEachGift, chkPAnonymousDonor]
 
         grpMisc: {Label=Miscellaneous, Stretch=horizontally}
             Controls: [txtPublicationCost, txtPSubscriptionNumberComplimentary, txtPSubscriptionPublicationCopies, cmbPSubscriptionReasonSubsGivenCode, cmbPSubscriptionReasonSubsCancelledCode, txtPSubscriptionGiftFromKey]
         
-        grpDates: {Label=Dates, Stretch=horizontally}
-            Controls: [dtpPSubscriptionStartDate, dtpPSubscriptionExpiryDate, dtpPSubscriptionSubscriptionRenewalDate, dtpPSubscriptionDateNoticeSent, dtpPSubscriptionDateCancelled]
-        
-        grpIssues: {Label=Issues, Stretch=horizontally}
-            Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue, btnEditIssues]
+
 
         cmbPSubscriptionPublicationCode: {List=PublicationInfoList, OnChange=PublicationCodeChanged}
             Label: Pub&lication Code
@@ -53,24 +50,3 @@ RootNode:
         txtPSubscriptionGiftFromKey:
             Label: Gift Given By
             Type: PartnerKey
-
-        dtpPSubscriptionStartDate:
-            Label: S&tart Date
-        dtpPSubscriptionExpiryDate:
-            Label: E&xpiry Date
-        dtpPSubscriptionSubscriptionRenewalDate:
-            Label: Date Rene&wed
-        dtpPSubscriptionDateNoticeSent:
-            Label: Not&ice Sent
-        dtpPSubscriptionDateCancelled:
-            Label: Date E&nded
-
-        txtPSubscriptionNumberIssuesReceived: {Format=Integer, Width=60}
-            Label: Issues Received
-        dtpPSubscriptionFirstIssue:
-            Label: Fi&rst Issue Sent
-        dtpPSubscriptionLastIssue:
-            Label: L&ast Issue Sent
-        btnEditIssues: {Stretch=horizontally}
-            Label: Edit Issues
-            Action: actEditIssues

@@ -10,7 +10,6 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRow}      
-        actCancelAllSubscriptions: {Label=&Cancel All Subscriptions, ActionClick=CancelAllSubscriptions}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -20,16 +19,14 @@ RootNode:
             Controls: [grdDetails,pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete, btnCancelAllSubscriptions]
+            Controls: [btnNew, btnDelete]
         btnNew: {Stretch=horizontally}
             Action: actNew
         btnDelete: {Stretch=horizontally}
             Action: actDelete
-        btnCancelAllSubscriptions: {Stretch=horizontally}
-            Action: actCancelAllSubscriptions
         grdDetails:
             Dock: Fill
-            Columns: [PSubscription.PublicationCode, PSubscription.SubscriptionStatus, PSubscription.GratisSubscription]
+            Columns: [PFinanceDetail.PublicationCode, PFinanceDetail.SubscriptionStatus, PFinanceDetail.GratisSubscription]
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
             Dock: Bottom
@@ -37,4 +34,4 @@ RootNode:
             Controls: [ucoDetails]
         ucoDetails:
             Dock: Fill
-            Type: Ict.Petra.Client.MPartner.Gui.TUC_Subscription
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFinanceDetails

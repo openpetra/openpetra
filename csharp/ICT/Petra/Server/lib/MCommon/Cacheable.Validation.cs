@@ -39,8 +39,7 @@ namespace Ict.Petra.Server.MCommon.Cacheable
         // Put Methods for the validation of Cacheable DataTables in this code file.
         //
 
-        partial void ValidateCountryListManual(TValidationControlsDict AValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
+        partial void ValidateCountryListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 

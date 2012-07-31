@@ -54,6 +54,23 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <returns></returns>
         protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults)
         {
+            int ExtractId;
+
+            return CalculateExtractInternal(AParameters, ASqlStmt, AResults, out ExtractId);
+        }
+
+        /// <summary>
+        /// calculate an extract from a report: all partners of a given type (or selection of multiple types)
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="ASqlStmt"></param>
+        /// <param name="AResults"></param>
+        /// <param name="AExtractId"></param>
+        /// <returns></returns>
+        protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults, out int AExtractId)
+        {
+            AExtractId = -1;
+
             // get the partner keys from the database
             try
             {
@@ -65,7 +82,7 @@ namespace Ict.Petra.Server.MCommon.queries
 
                 if (FSpecialTreatment)
                 {
-                    ReturnValue = RunSpecialTreatment(AParameters, Transaction);
+                    ReturnValue = RunSpecialTreatment(AParameters, Transaction, out AExtractId);
                 }
                 else
                 {
@@ -95,13 +112,12 @@ namespace Ict.Petra.Server.MCommon.queries
                     TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
                     TVerificationResultCollection VerificationResult;
-                    int NewExtractID;
 
                     // create an extract with the given name in the parameters
                     ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                         AParameters.Get("param_extract_name").ToString(),
                         AParameters.Get("param_extract_description").ToString(),
-                        out NewExtractID,
+                        out AExtractId,
                         out VerificationResult,
                         partnerkeys,
                         0,
@@ -442,8 +458,10 @@ namespace Ict.Petra.Server.MCommon.queries
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        protected virtual bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction)
+        /// <param name="AExtractId"></param>
+        protected virtual bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction, out int AExtractId)
         {
+            AExtractId = -1;
             return true;
         }
 

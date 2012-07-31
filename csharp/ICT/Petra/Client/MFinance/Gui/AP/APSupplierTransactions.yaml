@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Supplier Transactions
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
     MasterTable: AApSupplier
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: browse
     Template: windowFind
     WindowWidth: 754
