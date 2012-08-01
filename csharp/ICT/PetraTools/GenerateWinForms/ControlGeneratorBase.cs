@@ -369,6 +369,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             bool AutomDataValidation;
             string ReasonForAutomValidation;
+            bool IsDetailNotMaster;
 
             writer.SetControlProperty(ctrl, "Name", "\"" + ctrl.controlName + "\"");
 
@@ -796,7 +797,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (ctrl.HasAttribute("DataField"))
             {
                 string dataField = ctrl.GetAttribute("DataField");
-                bool IsDetailNotMaster;
 
                 TTableField field = TDataBinding.GetTableField(ctrl, dataField, out IsDetailNotMaster, true);
 
@@ -808,7 +808,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 //if (ctrl.controlTypePrefix != "lbl" && ctrl.controlTypePrefix != "pnl" && ctrl.controlTypePrefix != "grp" &&
                 if (!((this is LabelGenerator) || (this is LinkLabelGenerator)))
                 {
-                    bool IsDetailNotMaster;
                     TTableField field = TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
                             ctrl.controlTypePrefix.Length), out IsDetailNotMaster, false);
 
@@ -863,6 +862,53 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (GenerateDataValidationCode(writer, ctrl, out AutomDataValidation, out ReasonForAutomValidation))
             {
                 AssignEventHandlerToControl(writer, ctrl, "Validated", "ControlValidatedHandler");
+            }
+            else
+            {
+                bool AssignControlUpdateDataHandler = false;
+
+                if (ctrl.HasAttribute("DataField"))
+                {
+                    TDataBinding.GetTableField(ctrl, ctrl.GetAttribute("DataField"), out IsDetailNotMaster, true);
+
+                    if (IsDetailNotMaster)
+                    {
+                        AssignControlUpdateDataHandler = true;
+                    }
+                }
+                else
+                {
+                    if (writer.CodeStorage.HasAttribute("DetailTable"))
+                    {
+                        if (!((this is LabelGenerator) || (this is LinkLabelGenerator)))
+                        {
+                            if (TDataBinding.GetTableField(ctrl, ctrl.controlName.Substring(
+                                        ctrl.controlTypePrefix.Length), out IsDetailNotMaster, false) != null)
+                            {
+                                if (IsDetailNotMaster)
+                                {
+                                    AssignControlUpdateDataHandler = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (AssignControlUpdateDataHandler)
+                {
+                    if ((!ctrl.controlTypePrefix.StartsWith("mn"))
+                        && (!ctrl.controlTypePrefix.StartsWith("tb"))
+                        && (ctrl.controlTypePrefix != "pnl")
+                        && (ctrl.controlTypePrefix != "grp")
+                        && (ctrl.controlTypePrefix != "grd")
+                        && (ctrl.controlTypePrefix != "btn")
+                        && (ctrl.controlTypePrefix != "stb")
+                        && (ctrl.controlTypePrefix != "lbl"))
+                    {
+                        AssignEventHandlerToControl(writer, ctrl, "Validated", "ControlUpdateDataHandler");
+                        writer.Template.SetCodelet("GENERATECONTROLUPDATEDATAHANDLER", "true");
+                    }
+                }
             }
 
             return writer.Template;
@@ -1021,6 +1067,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 snippetGetData.SetCodelet("ROW", RowName);
                 snippetGetData.SetCodelet("COLUMNNAME", fieldname);
                 snippetGetData.SetCodelet("CONTROLVALUE", this.GetControlValue(ctrl, AField.GetDotNetType()));
+                snippetGetData.SetCodelet("CONTROLNAME", ctrl.controlName);
 
                 writer.Template.InsertSnippet(targetCodelet, snippetGetData);
             }

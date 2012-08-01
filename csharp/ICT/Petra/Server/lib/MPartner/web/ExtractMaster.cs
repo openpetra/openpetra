@@ -54,7 +54,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// retrieve all extract master records
         /// </summary>
         /// <returns>returns table filled with all extract headers</returns>
-        //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders()
         {
             MExtractMasterTable ExtractMasterDT;
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AUserCreated"></param>
         /// <param name="AUserModified"></param>
         /// <returns>returns table filled with all extract headers</returns>
-        //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, Boolean AAllUsers,
             String AUserCreated, String AUserModified)
         {
@@ -96,7 +96,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ADateModifiedFrom"></param>
         /// <param name="ADateModifiedTo"></param>
         /// <returns>returns table filled with all extract headers</returns>
-        //TODO (gave problems because of DateTime?): [RequireModulePermission("PTNRUSER")]
+        [RequireModulePermission("PTNRUSER")]
         public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, String AExtractDescFilter,
             Boolean AAllUsers, String AUserCreated, String AUserModified, DateTime? ADateCreatedFrom,
             DateTime? ADateCreatedTo, DateTime? ADateModifiedFrom, DateTime ? ADateModifiedTo)
@@ -604,6 +604,186 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return SubmissionResult;
         }
 
+        /// <summary>
+        /// retrieve information if partner has subscription for certain publication
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="APublicationCode"></param>
+        /// <returns>true if subscription exists</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean SubscriptionExists(Int64 APartnerKey, String APublicationCode)
+        {
+            Boolean ResultValue = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            ResultValue = PSubscriptionAccess.Exists(APublicationCode, APartnerKey, Transaction);
+            DBAccess.GDBAccessObj.CommitTransaction();
+
+            return ResultValue;
+        }
+        
+        /// <summary>
+        /// add subscription for all partners in a given extract
+        /// </summary>
+        /// <param name="AExtractId">extract to add subscription to</param>
+        /// <param name="ATable">table with only one subscription row to be added for each partner</param>
+        /// <param name="AExistingSubscriptionPartners">table containing partners that already have subscription for given publication</param>
+        /// <param name="ASubscriptionsAdded">number of subscriptions added</param>
+        /// <returns>true if deletion was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean AddSubscription(int AExtractId, ref PSubscriptionTable ATable, 
+            out PPartnerTable AExistingSubscriptionPartners, out int ASubscriptionsAdded)
+        {
+            Boolean ResultValue = true;
+            PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
+            PSubscriptionRow SubscriptionRowTemplate;
+            PSubscriptionRow SubscriptionRow;
+            MExtractTable ExtractTable;
+            PPartnerTable PartnerTable;
+            PPartnerRow PartnerRow;
+            TVerificationResultCollection VerificationResultCollection;
+            
+            // only use first row in table (as rows can't be serialized as parameters)
+            SubscriptionRowTemplate = (PSubscriptionRow)ATable.Rows[0];
+            
+            AExistingSubscriptionPartners = new PPartnerTable();
+            ASubscriptionsAdded = 0;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
+                
+                // query all rows of given extract
+                foreach (MExtractRow ExtractRow in ExtractTable.Rows)
+                {
+                    // for each extract row either add subscription or add to list of partners already having one
+                    if (PSubscriptionAccess.Exists(SubscriptionRowTemplate.PublicationCode, ExtractRow.PartnerKey, Transaction))
+                    {
+                        PartnerRow = AExistingSubscriptionPartners.NewRowTyped();
+                        PartnerTable = PPartnerAccess.LoadByPrimaryKey(ExtractRow.PartnerKey, Transaction);
+                        DataUtilities.CopyAllColumnValues(PartnerTable.Rows[0], PartnerRow);
+                        AExistingSubscriptionPartners.Rows.Add(PartnerRow);
+                    }
+                    else
+                    {
+                        SubscriptionRow = SubscriptionTable.NewRowTyped();
+                        DataUtilities.CopyAllColumnValues(SubscriptionRowTemplate, SubscriptionRow);
+                        SubscriptionRow.PartnerKey = ExtractRow.PartnerKey;                        
+                        SubscriptionTable.Rows.Add(SubscriptionRow);
+                        ASubscriptionsAdded++;
+                    }
+                    
+                }
+                
+                // now submit changes to the database
+                if (PSubscriptionAccess.SubmitChanges(SubscriptionTable, Transaction, out VerificationResultCollection))
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ResultValue = true;
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    ResultValue = false;
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during adding of subscription for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+        
+        /// <summary>
+        /// delete subscription for a partner in a given extract
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="APublicationCode"></param>
+        /// <param name="APartnerKey"></param>
+        /// <returns>true if deletion was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean DeleteSubscription(int AExtractId, Int64 APartnerKey, String APublicationCode)
+        {
+            Boolean ResultValue = true;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt;
+
+            try
+            {
+                // Use a direct sql statement rather than db access classes to improve performance as otherwise
+                // we would need an extra query for each row of an extract to update data
+                SqlStmt = "DELETE FROM pub_" + PSubscriptionTable.GetTableDBName() +
+                            " WHERE " + PSubscriptionTable.GetPublicationCodeDBName() + " = '" + APublicationCode + "'" +
+                            " AND " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString();
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during deletion of subscription for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
+        /// update solicitations flag for all partners in given extract
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="ANoSolicitations"></param>
+        /// <returns>true if update was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean UpdateSolicitationFlag(int AExtractId, Boolean ANoSolicitations)
+        {
+            Boolean ResultValue = true;
+            String NoSolicitationsValue;
+
+            if (ANoSolicitations)
+            {
+                NoSolicitationsValue = "true";
+            }
+            else
+            {
+                NoSolicitationsValue = "false";
+            }
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            string SqlStmt;
+
+            try
+            {
+                // Use a direct sql statement rather than db access classes to improve performance as otherwise
+                // we would need an extra query for each row of an extract to update data
+                SqlStmt = "UPDATE pub_" + PPartnerTable.GetTableDBName() +
+                          " SET " + PPartnerTable.GetNoSolicitationsDBName() + " = " + NoSolicitationsValue +
+                          " WHERE " + PPartnerTable.GetPartnerKeyDBName() +
+                          " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
+                          " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")";
+
+                DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Problem during update of solicitation flag for an extract: " + e.Message);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                ResultValue = false;
+            }
+
+            return ResultValue;
+        }
+        
         /// <summary>
         /// update email gift statement flag for all partners in given extract
         /// </summary>

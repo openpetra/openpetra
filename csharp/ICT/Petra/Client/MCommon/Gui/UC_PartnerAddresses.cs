@@ -71,13 +71,13 @@ namespace Ict.Petra.Client.MCommon.Gui
 
         private static readonly string StrSimilarLocationUsedByN1 = Catalog.GetString("NOTE: this is used by {0} ");
 
-// TODO        private static readonly string StrAddressAddedFamilyPromotion1stLine = Catalog.GetString(
-// TODO            "You have added the following address to this family:");
+        private static readonly string StrAddressAddedFamilyPromotion1stLine = Catalog.GetString(
+            "You have added the following address to this family:");
 
-// TODO        private static readonly string StrAddressAddedFamilyPromotionQuestion = Catalog.GetString(
-// TODO            "Do you want to add this address to all members\r\nof this family?");
+        private static readonly string StrAddressAddedFamilyPromotionQuestion = Catalog.GetString(
+            "Do you want to add this address to all members\r\nof this family?");
 
-// TODO        private static readonly string StrAddressAddedFamilyPromotionQuestionTitle = Catalog.GetString("Add Address to Family Members?");
+        private static readonly string StrAddressAddedFamilyPromotionQuestionTitle = Catalog.GetString("Add Address to Family Members?");
 
         private static readonly string StrExpireAllCurrentAddressesTitle = Catalog.GetString("Expire All Current Addresses");
 
@@ -690,21 +690,21 @@ namespace Ict.Petra.Client.MCommon.Gui
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddedOrChangedPromotionDT,
             PartnerAddressAggregateTDSChangePromotionParametersTable AParameterDT)
         {
-// TODO ProcessServerResponseAddressAddedOrChanged
-#if TODO
             PLocationRow LocationRow;
             PLocationTable LocationDT;
 
             System.Windows.Forms.DialogResult AddressAddedPromotionDialogResult;
             int Counter;
-            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedPromotionRow;
-            TPartnerAddressChangePropagationSelectionWinForm AddressChangedDialog;
-            DataView PartnerSharingLocationDV;
-            string UserAnswer;
+            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedPromotionRow;            
+                        
+#if TODO    
             string FilterCriteria;
             DataView PersonsLocationsDV;
+            DataView PartnerSharingLocationDV;
+            TPartnerAddressChangePropagationSelectionWinForm AddressChangedDialog;
+            string UserAnswer;
             TPartnerLocationChangePropagationSelectionWinForm LocationChangedDialog;
-
+#endif            
             for (Counter = 0; Counter <= AAddedOrChangedPromotionDT.Rows.Count - 1; Counter += 1)
             {
                 AddressAddedOrChangedPromotionRow =
@@ -757,22 +757,26 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (AParameterDT != null)
                         {
+#if TODO
                             FilterCriteria = PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.SiteKey.ToString() + " AND " +
                                              PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.LocationKey.ToString();
 
                             // MessageBox.Show('FilterCriteria: ' + FilterCriteria);
+#endif                            
                             LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { AddressAddedOrChangedPromotionRow.SiteKey,
                                                                                                    AddressAddedOrChangedPromotionRow.LocationKey });
 
                             if (LocationRow != null)
                             {
+#if TODO                                
                                 PartnerSharingLocationDV = new DataView(AParameterDT,
                                     FilterCriteria,
                                     PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
                                     DataViewRowState.CurrentRows);
-                                AddressChangedDialog = new TPartnerAddressChangePropagationSelectionWinForm();
+
+                            AddressChangedDialog = new TPartnerAddressChangePropagationSelectionWinForm();
                                 AddressChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PartnerSharingLocationDV, LocationRow, "", "");
 
                                 if (AddressChangedDialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
@@ -789,6 +793,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     if (AddressChangedDialog.GetReturnedParameters(out UserAnswer))
                                     {
                                         AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
+#endif
+                                        AddressAddedOrChangedPromotionRow.UserAnswer = "CHANGE-NONE";  // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
 
                                         if (AddressAddedOrChangedPromotionRow.UserAnswer.StartsWith("CHANGE"))
                                         {
@@ -800,6 +806,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                                              * need do remember to do it later!
                                              */
                                             FLogic.AddCleanupAddressesLocationKey((Int32)AddressAddedOrChangedPromotionRow.LocationKey);
+#if TODO
                                         }
                                     }
                                     else
@@ -811,6 +818,7 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                                     // get NewPartnerDialog out of memory
                                     AddressChangedDialog.Dispose();
+#endif
                                 }
                             }
                             else
@@ -831,12 +839,14 @@ namespace Ict.Petra.Client.MCommon.Gui
                     {
                         if (AParameterDT != null)
                         {
+#if TODO                            
                             FilterCriteria = PartnerAddressAggregateTDSChangePromotionParametersTable.GetSiteKeyOfEditedRecordDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.SiteKey.ToString() + " AND " +
                                              PartnerAddressAggregateTDSChangePromotionParametersTable.GetLocationKeyOfEditedRecordDBName() + " = " +
                                              AddressAddedOrChangedPromotionRow.LocationKey.ToString();
 
                             // MessageBox.Show('FilterCriteria: ' + FilterCriteria);
+#endif                            
                             LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { AddressAddedOrChangedPromotionRow.SiteKey,
                                                                                                    AddressAddedOrChangedPromotionRow.LocationKey });
 
@@ -856,10 +866,12 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                             if (LocationRow != null)
                             {
+#if TODO                                
                                 PersonsLocationsDV = new DataView(AParameterDT,
                                     FilterCriteria,
                                     PartnerAddressAggregateTDSChangePromotionParametersTable.GetPartnerKeyDBName() + " ASC",
                                     DataViewRowState.CurrentRows);
+
                                 LocationChangedDialog = new TPartnerLocationChangePropagationSelectionWinForm();
                                 LocationChangedDialog.SetParameters(AddressAddedOrChangedPromotionRow, PersonsLocationsDV, LocationRow, "", "");
 
@@ -877,6 +889,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     if (LocationChangedDialog.GetReturnedParameters(out UserAnswer))
                                     {
                                         AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
+#endif
+                                        AddressAddedOrChangedPromotionRow.UserAnswer = "NO";  // TODO Remove this assignment once the code lines immediately above are no longer in compiler directive '#if Todo'!
+#if TODO
                                     }
                                     else
                                     {
@@ -888,6 +903,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                                     // get NewPartnerDialog out of memory
                                     LocationChangedDialog.Dispose();
                                 }
+#endif
                             }
                             else
                             {
@@ -905,7 +921,6 @@ namespace Ict.Petra.Client.MCommon.Gui
                     }
                 }
             }
-#endif
         }
 
         /// <summary>

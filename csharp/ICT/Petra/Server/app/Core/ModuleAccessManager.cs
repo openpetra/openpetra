@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -229,25 +229,18 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         string ParameterName = Parameter.ParameterType.ToString().Replace("&", "");
 
-                        // This "fix" was helpful at one time, but now it's now wanted:
-
-                        /*
-                         * if (ParameterName.IndexOf("System.Collections.Generic.List") == 0)
-                         * {
-                         *  ParameterName = "LIST";
-                         * }
-                         */
+                        ParameterName = ParameterName.Replace("System.", string.Empty);
 
                         if (ParameterName.Contains("."))
                         {
                             ParameterName = ParameterName.Substring(ParameterName.LastIndexOf(".") + 1);
                         }
 
+                        ParameterName = ParameterName.Replace("`1", string.Empty);
                         ParameterName = ParameterName.Replace("Boolean", "bool");
                         ParameterName = ParameterName.Replace("Int32", "int");
                         ParameterName = ParameterName.Replace("Int64", "long");
                         ParameterName = ParameterName.Replace("[]", ".Array");
-                        ParameterName = ParameterName.Replace("]", "?");
 
                         ParameterTypes += ParameterName + ";";
                     }

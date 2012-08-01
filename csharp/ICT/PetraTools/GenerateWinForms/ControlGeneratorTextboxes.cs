@@ -604,7 +604,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    return "?????";
+                    TLogging.Log("Warning: unknown type " + AFieldTypeDotNet + " for Textbox.AssignValue for control " + ctrl.controlName);
+                    return string.Empty;
                 }
             }
         }
@@ -628,7 +629,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
-                return "?????";
+                TLogging.Log("Warning: unknown type " + AFieldTypeDotNet + " for Textbox.UndoValue for control " + ctrl.controlName);
+                return string.Empty;
             }
         }
 

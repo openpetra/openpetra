@@ -402,23 +402,35 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
                 if (String.Compare(ARow.DataType, "char", true) == 0)
                 {
-                    ARow.CharLength = CurrentRow.CharLength;
-                    VisibleIndex = 0;
+                    if (!CurrentRow.IsCharLengthNull())
+                    {
+                        ARow.CharLength = CurrentRow.CharLength;
+                        VisibleIndex = 0;
+                    }
                 }
                 else if (String.Compare(ARow.DataType, "float", true) == 0)
                 {
-                    ARow.NumDecimalPlaces = CurrentRow.NumDecimalPlaces;
-                    VisibleIndex = 1;
+                    if (!CurrentRow.IsNumDecimalPlacesNull())
+                    {
+                        ARow.NumDecimalPlaces = CurrentRow.NumDecimalPlaces;
+                        VisibleIndex = 1;
+                    }
                 }
                 else if (String.Compare(ARow.DataType, "currency", true) == 0)
                 {
-                    ARow.CurrencyCode = CurrentRow.CurrencyCode;
-                    VisibleIndex = 2;
+                    if (!CurrentRow.IsCurrencyCodeNull())
+                    {
+                        ARow.CurrencyCode = CurrentRow.CurrencyCode;
+                        VisibleIndex = 2;
+                    }
                 }
                 else if (String.Compare(ARow.DataType, "lookup", true) == 0)
                 {
-                    ARow.LookupCategoryCode = CurrentRow.LookupCategoryCode;
-                    VisibleIndex = 6;
+                    if (!CurrentRow.IsLookupCategoryCodeNull())
+                    {
+                        ARow.LookupCategoryCode = CurrentRow.LookupCategoryCode;
+                        VisibleIndex = 6;
+                    }
                 }
 
                 // Now set the hidden fields to default values in case the user selects them
@@ -756,6 +768,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     FExtraDS.PDataLabelUse.AcceptChanges();
 
                     // Merge back with data from the Server (eg. for getting Sequence values)
+                    SubmitDT.AcceptChanges();
                     FExtraDS.PDataLabelUse.Merge(SubmitDT, false);
 
                     // need to accept the new modification ID
