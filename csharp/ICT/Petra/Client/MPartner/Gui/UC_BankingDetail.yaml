@@ -18,7 +18,7 @@ RootNode:
             Controls: [grpAccountDetail, grpGiftReceiptingDonors, grpGiftReceiptingRecipients, grpMisc]
             
         grpAccountDetail: {Label=AccountDetail, Strech=horizontally}
-            Controls: [txtAccountName, txtBankAccountNumber,            y       ]
+            Controls: [txtAccountName, txtBankAccountNumber, txtIban]
     
         grpGiftReceiptingDonors: {Label=GiftReceiptingforDonors, Stretch=horizontally}
             Controls: [cmbPReceiptLetterFrequency, chkPPrintedReceiptForEachGift, chkPAnonymousDonor]
@@ -29,7 +29,7 @@ RootNode:
         grpMisc: {Label=Other, Stretch=horizontally}
             Controls: [txtFinanceComment]
             
-        txtAccountName: {Format=Integer}                               
+        txtAccountName: {Format=Integer}
             Label: Account Name       
         txtBankAccountNumber: {Format=Integer}
             Label: Bank Account Number
@@ -37,4 +37,15 @@ RootNode:
             Label: IBAN
             
         cmbPReceiptLetterFrequency: {OnChange=ReceiptLetterFrequencyChanged}
-            Label: R&eceiptLetterFrequency 
+            Label: R&eceiptLetterFrequency
+            OptionalValues: [=ANNUAL, MONTHLY]
+        chkPPrintedReceiptForEachGift:  {OnChange=PrintedReceiptForEachGiftChanged}
+            Label: Free Subscri&ption
+        chkPAnonymousDonor: {OnChange=AnonymousDonorChanged}
+            Label: Anonymous Donor
+            
+        chkPEMailRecipientGiftStatement: {OnChange=EMailRecipientGiftStatementChanged}
+            Label: EMail Recipient Gift Statement
+            
+        txtFinanceComment: 
+            Label: &Finance Comment
