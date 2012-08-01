@@ -39,10 +39,12 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
@@ -452,6 +454,17 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 }
             }
 
+            string sqlGetBankSortCode =
+                "SELECT bank.p_branch_code_c " +
+                "FROM PUB_p_banking_details details, PUB_p_bank bank " +
+                "WHERE details.p_banking_details_key_i = ?" +
+                "AND details.p_bank_key_n = bank.p_partner_key_n";
+            OdbcParameter param = new OdbcParameter("detailkey", OdbcType.Int);
+            param.Value = stmt.BankAccountKey;
+
+            PBankTable bankTable = new PBankTable();
+            DBAccess.GDBAccessObj.SelectDT(bankTable, sqlGetBankSortCode, Transaction, new OdbcParameter[] { param }, 0, 0);
+
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(
@@ -490,6 +503,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
                     gift.DonorKey = match.DonorKey;
                     gift.DateEntered = transactionRow.DateEffective;
+                    gift.Reference = bankTable[0].BranchCode + " " + stmt.Date.Day.ToString();
                     GiftDS.AGift.Rows.Add(gift);
                     giftbatchRow.LastGiftNumber++;
 
@@ -508,7 +522,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         HashTotal += match.GiftTransactionAmount;
                         detail.MotivationGroupCode = match.MotivationGroupCode;
                         detail.MotivationDetailCode = match.MotivationDetailCode;
-                        detail.GiftCommentOne = transactionRow.Description;
+
+                        // do not use the description in comment one, because that could show up on the gift receipt???
+                        // detail.GiftCommentOne = transactionRow.Description;
+
                         detail.CommentOneType = MFinanceConstants.GIFT_COMMENT_TYPE_BOTH;
                         detail.CostCentreCode = match.CostCentreCode;
                         detail.RecipientKey = match.RecipientKey;
