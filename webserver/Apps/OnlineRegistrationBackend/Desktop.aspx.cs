@@ -2118,6 +2118,7 @@ namespace Ict.Petra.WebServer.MConference
                 }
             }
 
+#if disabled
             foreach (string key in ARawDataObject.Names)
             {
                 // show the answers to these personal questions, since the applicants might write about past health issues
@@ -2128,6 +2129,7 @@ namespace Ict.Petra.WebServer.MConference
                     MedicalInfo += "<tr><th>" + key + "</th><td>" + ARawDataObject[key].ToString() + "</td></tr>";
                 }
             }
+#endif
 
             MedicalInfo += "</table>";
             TabMedicalInfo.Html = MedicalInfo.Replace("&quot;", "\\\"");
