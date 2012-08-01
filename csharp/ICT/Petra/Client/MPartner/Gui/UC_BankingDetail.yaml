@@ -29,11 +29,11 @@ RootNode:
         grpMisc: {Label=Other, Stretch=horizontally}
             Controls: [txtFinanceComment]
             
-        txtAccountName: {Format=Integer}
+        txtAccountName:
             Label: Account Name       
-        txtBankAccountNumber: {Format=Integer}
+        txtBankAccountNumber:
             Label: Bank Account Number
-        txtIban: {Format=Integer}
+        txtIban:
             Label: IBAN
             
         cmbPReceiptLetterFrequency: {OnChange=ReceiptLetterFrequencyChanged}
