@@ -942,9 +942,11 @@ namespace Ict.Petra.WebServer.MConference
                 return;
             }
 
-            if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
+            TVerificationResultCollection VerificationResult;
+
+            if (TApplicationManagement.SaveApplication(EventCode, row, out VerificationResult) != TSubmitChangesResult.scrOK)
             {
-                X.Msg.Alert("Error", "Saving did not work").Show();
+                X.Msg.Alert("Error", "Saving did not work: " + VerificationResult.BuildVerificationResultString()).Show();
             }
 
             // save some time? user can click refresh himself.

@@ -107,6 +107,12 @@ namespace Ict.Petra.Server.MConference.Applications
                         continue;
                     }
 
+                    if (appRow.IsGenAppSendFldAcceptDateNull())
+                    {
+                        // ignore partners that have never been accepted.
+                        continue;
+                    }
+
                     string pay50Percent = string.Empty;
 
                     if (applicant.GenApplicationStatus.StartsWith("C") || applicant.GenApplicationStatus.StartsWith("R"))

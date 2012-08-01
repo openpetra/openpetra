@@ -848,8 +848,11 @@ namespace Ict.Petra.Server.MConference.Applications
 
         private static void InsertDataIntoConferenceApplicationTDS(ConferenceApplicationTDSApplicationGridRow AChangedRow,
             ref ConferenceApplicationTDS AMainDS,
-            string AEventCode, TDBTransaction ATransaction)
+            string AEventCode, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             if (AChangedRow.RowState == DataRowState.Modified)
             {
                 if (ATransaction != null)
@@ -966,6 +969,19 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
                     else if (AChangedRow.GenApplicationStatus == "I")
                     {
+                        if (GeneralApplication.GenApplicationStatus != "H")
+                        {
+                            AVerificationResult.Add(new TVerificationResult("Saving application",
+                                    "Cannot set Application Status from " +
+                                    GeneralApplication.GenApplicationStatus +
+                                    "to Ignored, please use status Cancelled",
+                                    "Application status problem",
+                                    TResultSeverity.Resv_Critical, new Guid()));
+                            throw new Exception("Cannot set Application Status from " +
+                                GeneralApplication.GenApplicationStatus +
+                                "to Ignored, please use status Cancelled");
+                        }
+
                         // drop all other applications of this person, that are on hold.
                         // data has been loaded above already.
                         DataView DuplicateView = new DataView(AMainDS.PmGeneralApplication);
@@ -1066,11 +1082,13 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <returns></returns>
         public static TSubmitChangesResult SaveApplications(ref ConferenceApplicationTDS AMainDS)
         {
+            TVerificationResultCollection VerificationResult;
+
             try
             {
                 foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
                 {
-                    InsertDataIntoConferenceApplicationTDS(row, ref AMainDS, string.Empty, null);
+                    InsertDataIntoConferenceApplicationTDS(row, ref AMainDS, string.Empty, null, out VerificationResult);
                 }
             }
             catch (Exception e)
@@ -1081,7 +1099,6 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
 
-            TVerificationResultCollection VerificationResult;
             TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(AMainDS, out VerificationResult);
 
             // this takes 6 seconds!
@@ -1094,15 +1111,19 @@ namespace Ict.Petra.Server.MConference.Applications
         /// store the selected application to the database
         /// </summary>
         /// <returns></returns>
-        public static TSubmitChangesResult SaveApplication(string AEventCode, ConferenceApplicationTDSApplicationGridRow ARow)
+        public static TSubmitChangesResult SaveApplication(string AEventCode,
+            ConferenceApplicationTDSApplicationGridRow ARow,
+            out TVerificationResultCollection AVerificationResult)
         {
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            AVerificationResult = new TVerificationResultCollection();
+
             try
             {
-                InsertDataIntoConferenceApplicationTDS(ARow, ref MainDS, AEventCode, Transaction);
+                InsertDataIntoConferenceApplicationTDS(ARow, ref MainDS, AEventCode, Transaction, out AVerificationResult);
             }
             catch (Exception e)
             {
@@ -1115,8 +1136,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
 
             ARow.AcceptChanges();
 
