@@ -48,7 +48,7 @@ RootNode:
         actMaintainFinanceReports: {Label=Finance Report&s, ActionClick=MaintainFinanceReports}
         actMaintainBankAccounts: {Label=Ban&k Accounts, ActionClick=MaintainBankAccounts}
         actMaintainGiftReceipting: {Label=&Gift Receipting, ActionClick=MaintainGiftReceipting}
-        actMaintainFinanceDetails: {Label=&Finance Details, ActionClick=MaintainFinanceDetails, Image: FinanceDetails.ico}        
+        actMaintainBankingDetails: {Label=&Banking Details, ActionClick=MaintainBankingDetails, Image: FinanceDetails.ico}        
 
         actViewUpperScreenPartExpanded: {Label=&Expanded, ActionClick=ViewUpperScreenPartExpanded}
         actViewUpperScreenPartCollapsed: {Label=&Collapsed, ActionClick=ViewUpperScreenPartExpanded}

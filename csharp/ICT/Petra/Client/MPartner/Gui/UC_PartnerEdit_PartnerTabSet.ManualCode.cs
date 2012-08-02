@@ -510,12 +510,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
             
-            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFinanceDetails))
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucBankingDetails))
             {
-                TUC_PartnerBankingDetails UCFinanceDetails =
-                    (TUC_PartnerBankingDetails)FTabSetup[TDynamicLoadableUserControls.dlucFinanceDetails];
+                TUC_PartnerBankingDetails UCBankingDetails =
+                    (TUC_PartnerBankingDetails)FTabSetup[TDynamicLoadableUserControls.dlucBankingDetails];
 
-                if (!UCFinanceDetails.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCBankingDetails.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }

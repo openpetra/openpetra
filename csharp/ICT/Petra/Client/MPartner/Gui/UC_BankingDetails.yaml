@@ -2,9 +2,9 @@ RootNode:
     BaseClass: System.Windows.Forms.UserControl
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     DetailTable: PBankingDetails
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -31,8 +31,40 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
             Dock: Bottom
-            Height: 300
-            Controls: [ucoDetails]
-        ucoDetails:
-            Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerBankingDetails
+            Height: 300
+            Controls: 
+                Row0: [grpAccountDetail, grpGiftReceiptingDonors, grpGiftReceiptingRecipients, grpMisc]
+            
+        grpAccountDetail: {Label=AccountDetail, Strech=horizontally}
+            Controls: [txtAccountName, txtBankAccountNumber, txtIban]
+    
+        grpGiftReceiptingDonors: {Label=GiftReceiptingforDonors, Stretch=horizontally}
+            Controls: [cmbPReceiptLetterFrequency, chkPPrintedReceiptForEachGift, chkPAnonymousDonor]
+            
+        grpGiftReceiptingRecipients: {Label=GiftReceiptingforRecipients, Stretch=horizontally}
+            Controls: [chkPEMailRecipientGiftStatement]
+
+        grpMisc: {Label=Other, Stretch=horizontally}
+            Controls: [txtFinanceComment]
+            
+        txtAccountName:
+            Label: Account Name       
+        txtBankAccountNumber:
+            Label: Bank Account Number
+        txtIban:
+            Label: IBAN
+            
+        cmbPReceiptLetterFrequency: {OnChange=ReceiptLetterFrequencyChanged}
+            Label: R&eceiptLetterFrequency
+            OptionalValues: [=ANNUAL, MONTHLY]
+        chkPPrintedReceiptForEachGift:  {OnChange=PrintedReceiptForEachGiftChanged}
+            Label: Free Subscri&ption
+        chkPAnonymousDonor: {OnChange=AnonymousDonorChanged}
+            Label: Anonymous Donor
+            
+        chkPEMailRecipientGiftStatement: {OnChange=EMailRecipientGiftStatementChanged}
+            Label: EMail Recipient Gift Statement
+            
+        txtFinanceComment: 
+            Label: &Finance Comment
