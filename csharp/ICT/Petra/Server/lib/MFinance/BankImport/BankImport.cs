@@ -454,16 +454,23 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 }
             }
 
-            string sqlGetBankSortCode =
-                "SELECT bank.p_branch_code_c " +
-                "FROM PUB_p_banking_details details, PUB_p_bank bank " +
-                "WHERE details.p_banking_details_key_i = ?" +
-                "AND details.p_bank_key_n = bank.p_partner_key_n";
-            OdbcParameter param = new OdbcParameter("detailkey", OdbcType.Int);
-            param.Value = stmt.BankAccountKey;
+            string MatchedGiftReference = stmt.Filename;
 
-            PBankTable bankTable = new PBankTable();
-            DBAccess.GDBAccessObj.SelectDT(bankTable, sqlGetBankSortCode, Transaction, new OdbcParameter[] { param }, 0, 0);
+            if (!stmt.IsBankAccountKeyNull())
+            {
+                string sqlGetBankSortCode =
+                    "SELECT bank.p_branch_code_c " +
+                    "FROM PUB_p_banking_details details, PUB_p_bank bank " +
+                    "WHERE details.p_banking_details_key_i = ?" +
+                    "AND details.p_bank_key_n = bank.p_partner_key_n";
+                OdbcParameter param = new OdbcParameter("detailkey", OdbcType.Int);
+                param.Value = stmt.BankAccountKey;
+
+                PBankTable bankTable = new PBankTable();
+                DBAccess.GDBAccessObj.SelectDT(bankTable, sqlGetBankSortCode, Transaction, new OdbcParameter[] { param }, 0, 0);
+
+                MatchedGiftReference = bankTable[0].BranchCode + " " + stmt.Date.Day.ToString();
+            }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
@@ -503,7 +510,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     gift.GiftTransactionNumber = giftbatchRow.LastGiftNumber + 1;
                     gift.DonorKey = match.DonorKey;
                     gift.DateEntered = transactionRow.DateEffective;
-                    gift.Reference = bankTable[0].BranchCode + " " + stmt.Date.Day.ToString();
+                    gift.Reference = MatchedGiftReference;
                     GiftDS.AGift.Rows.Add(gift);
                     giftbatchRow.LastGiftNumber++;
 
