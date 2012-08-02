@@ -637,7 +637,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             ucoExtractMasterList.AddSubscription(sender, e);
         }
-        
+
         /// <summary>
         /// Delete subscription for Partners in selected Extract
         /// </summary>
@@ -647,7 +647,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             ucoExtractMasterList.DeleteSubscription(sender, e);
         }
-        
+
         /// <summary>
         /// Change subscription for Partners in selected Extract
         /// </summary>
@@ -667,7 +667,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             ucoExtractMasterList.UpdateSolicitationFlag(sender, e);
         }
-        
+
         /// <summary>
         /// Update Receipt Frequency for Partners in selected extract
         /// </summary>
