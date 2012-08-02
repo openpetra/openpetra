@@ -2990,8 +2990,8 @@
                 format="9999999999"
                 label="Partner Key"
                 help="Enter the partner key of the Family record"
-                initial="0"
-                notnull="yes" />
+                initial="0"/>
+    <!-- We need to allow NULL values for p_family_key_n as a merged PERSON looses its association with a FAMILY. For this reason p_family_key_n gets set to NULL in this case. -->
     <tablefield name="p_family_id_i"
                 type="integer"
                 descr="This field indicates the family id of the individual.
