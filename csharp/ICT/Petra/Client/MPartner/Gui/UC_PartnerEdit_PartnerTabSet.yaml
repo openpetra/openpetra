@@ -61,7 +61,7 @@ RootNode:
         tpgBankingDetails: {LoadPageDynamically=true}
             Label: Banking Details ({0})
             Image: FinanceDetails.ico
-            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerBankingDetails
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_BankingDetails
             
         tpgOfficeSpecific: {LoadPageDynamically=true}        
             Label: Local Data
