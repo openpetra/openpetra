@@ -510,12 +510,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
             
-            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucBankingDetails))
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucFinanceDetails))
             {
-                TUC_PartnerBankingDetails UCBankingDetails =
-                    (TUC_PartnerBankingDetails)FTabSetup[TDynamicLoadableUserControls.dlucBankingDetails];
+                TUC_FinanceDetails UCFinanceDetails =
+                    (TUC_FinanceDetails)FTabSetup[TDynamicLoadableUserControls.dlucBankingDetails];
 
-                if (!UCBankingDetails.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                if (!UCFinanceDetails.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -1059,10 +1059,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tpgNotes.ToolTipText = "Notes are entered";
                 }
             }
-            
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerBankingDetails))
+            //TODO
+/*            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_FinanceDetails))
             {
-                if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
+                if (FMainDS.Tables.Contains(PBankingTable.GetTableName()))
                 {
                     Calculations.CalculateTabCountsSubscriptions(FMainDS.PSubscription, out CountAll, out CountActive);
                     tpgSubscriptions.Text = String.Format(StrFinanceDetailsTabHeader + " ({0})", CountActive);
@@ -1095,8 +1095,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         CountActive,
                         DynamicToolTipPart1);
                 }
-            }            
+            } */           
         }
+        
 
         /// <summary>
         /// Changed data (eg. caused by the data saving process) will make a databound SourceGrid redraw,
@@ -1296,7 +1297,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         break;
                         
-                    case TPartnerEditTabPageEnum.petPBankingDetailss:
+                    case TPartnerEditTabPageEnum.petPFinanceDetailss:
                         tabPartners.SelectedTab = tpgFinanceDetails;
                         break;
                 }
