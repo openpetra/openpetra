@@ -321,7 +321,8 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         public static void StartUp()
         {
-            string UsersLanguageCode = CultureInfo.CurrentUICulture.Name;
+            // for the moment default to english, because translations are not fully supported, and the layout does not adjust
+            string UsersLanguageCode = "en-EN";
             string UsersCultureCode = CultureInfo.CurrentCulture.Name;
 
             try

@@ -83,8 +83,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             cmbLanguage.SetDataSourceStringList(LanguagesAvailable);
 
-
-            string LanguageCode = CultureInfo.CurrentUICulture.Name;
+            // for the moment default to english, because translations are not fully supported, and the layout does not adjust
+            string LanguageCode = "en-EN";
             string CultureCode = CultureInfo.CurrentCulture.Name;
             TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(ref LanguageCode, ref CultureCode);
 
@@ -119,7 +119,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             TRemote.MSysMan.Maintenance.WebConnectors.LoadLanguageAndCultureFromUserDefaults();
 
-            string LanguageCode = CultureInfo.CurrentUICulture.Name;
+            // for the moment default to english, because translations are not fully supported, and the layout does not adjust
+            string LanguageCode = "en-EN";
             string CultureCode = CultureInfo.CurrentCulture.Name;
             TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(ref LanguageCode, ref CultureCode);
 
