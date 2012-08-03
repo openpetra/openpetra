@@ -643,6 +643,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     attr = statistics.CreateAttribute("Country");
                     attr.Value = row["Country"].ToString();
                     newNode.Attributes.Append(attr);
+                    attr = statistics.CreateAttribute("NumberOfSessions");
+                    attr.Value = UsagePerPartner[partnerkey].ToString();
+                    newNode.Attributes.Append(attr);
 
                     counter++;
                 }
@@ -714,8 +717,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 SortedList <string, XmlDocument>worksheets = new SortedList <string, XmlDocument>();
                 worksheets.Add("a - By country", GenerateWorksheetStatistics(sessions, HeadsetsPerCountryAndSession));
                 worksheets.Add("b - Counting per person", GenerateWorksheetUsageByPerson(UsagePerPartner));
-                worksheets.Add("c - At least 9 sessions", GetPeopleWithMinimumRentalTimes(AttendeesTable, UsagePerPartner, 9));
-                worksheets.Add("d - At least 10 sessions", GetPeopleWithMinimumRentalTimes(AttendeesTable, UsagePerPartner, 10));
+                worksheets.Add("c - At least 1 session", GetPeopleWithMinimumRentalTimes(AttendeesTable, UsagePerPartner, 1));
+                worksheets.Add("d - At least 9 sessions", GetPeopleWithMinimumRentalTimes(AttendeesTable, UsagePerPartner, 9));
+                worksheets.Add("e - At least 10 sessions", GetPeopleWithMinimumRentalTimes(AttendeesTable, UsagePerPartner, 10));
 
                 return TCsv2Xml.Xml2ExcelStream(worksheets, AStream, false);
             }
