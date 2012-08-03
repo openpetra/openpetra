@@ -582,8 +582,6 @@ namespace Ict.Petra.Server.MConference.Applications
 
             XmlDocument statistics = TYml2Xml.CreateXmlDocument();
 
-            Int32 Total = 0;
-
             foreach (int count in CountUsage.Keys)
             {
                 XmlNode newNode = statistics.CreateElement("", "ELEMENT", "");
@@ -597,7 +595,17 @@ namespace Ict.Petra.Server.MConference.Applications
                 attr.Value = CountUsage[count].ToString();
                 newNode.Attributes.Append(attr);
 
-                Total += CountUsage[count];
+                // count all people who have at least rented count many times
+                Int32 Total = 0;
+
+                foreach (int count2 in CountUsage.Keys)
+                {
+                    if (count2 >= count)
+                    {
+                        Total += CountUsage[count2];
+                    }
+                }
+
                 attr = statistics.CreateAttribute("NumberOfPeopleForDraw");
                 attr.Value = Total.ToString();
                 newNode.Attributes.Append(attr);
