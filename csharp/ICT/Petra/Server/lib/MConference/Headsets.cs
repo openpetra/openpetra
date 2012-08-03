@@ -490,56 +490,15 @@ namespace Ict.Petra.Server.MConference.Applications
             return TCsv2Xml.Xml2ExcelStream(worksheets, AStream, false);
         }
 
-        /// <summary>
-        /// get Excel file with statistics for all countries and sessions
-        /// </summary>
-        public static bool ReportOverallStatistics(MemoryStream AStream, string AEventCode)
+        private static XmlDocument GenerateWorksheetStatistics(
+            PContactAttributeDetailTable sessions,
+            SortedList <string, SortedList <string, Int32>>HeadsetsPerCountryAndSession)
         {
-            // get all sessions
-            PContactAttributeDetailTable sessions = GetSessions();
-
-            DataTable HeadsetsTable;
-            DataTable AttendeesTable;
-
-            GetDataForHeadsetReports(AEventCode, out AttendeesTable);
-
-            SortedList <string, SortedList <string, Int32>>HeadsetsPerCountryAndSession =
-                new SortedList <string, SortedList <string, Int32>>();
-
-            foreach (PContactAttributeDetailRow row in sessions.Rows)
-            {
-                string sessionName = row.ContactAttrDetailCode;
-
-                GetDataForHeadsetReports(AEventCode, sessionName, out HeadsetsTable);
-
-                foreach (DataRow rowAttendee in AttendeesTable.Rows)
-                {
-                    string country = rowAttendee["Country"].ToString();
-
-                    if ((null != HeadsetsTable.Rows.Find(new object[] { rowAttendee["PartnerKey"], HEADSET_OUT_METHOD_OF_CONTACT }))
-                        || (null != HeadsetsTable.Rows.Find(new object[] { rowAttendee["PartnerKey"], HEADSET_RETURN_METHOD_OF_CONTACT })))
-                    {
-                        if (!HeadsetsPerCountryAndSession.ContainsKey(country))
-                        {
-                            HeadsetsPerCountryAndSession.Add(country, new SortedList <string, Int32>());
-                        }
-
-                        if (!HeadsetsPerCountryAndSession[country].ContainsKey(sessionName))
-                        {
-                            HeadsetsPerCountryAndSession[country].Add(sessionName, 1);
-                        }
-                        else
-                        {
-                            HeadsetsPerCountryAndSession[country][sessionName]++;
-                        }
-                    }
-                }
-            }
-
             XmlDocument statistics = TYml2Xml.CreateXmlDocument();
 
             // first add a row with empty elements, for each session, to keep the right order of sessions
             XmlNode newNode = statistics.CreateElement("", "ELEMENT", "");
+
             statistics.DocumentElement.AppendChild(newNode);
             XmlAttribute attr;
 
@@ -601,7 +560,162 @@ namespace Ict.Petra.Server.MConference.Applications
                 newNode.Attributes.Append(attr);
             }
 
-            return TCsv2Xml.Xml2ExcelStream(statistics, AStream, false);
+            return statistics;
+        }
+
+        /// report how many people have used the headsets how many times
+        private static XmlDocument GenerateWorksheetUsageByPerson(SortedList <Int64, Int32>UsagePerPartner)
+        {
+            SortedList <Int32, Int32>CountUsage = new SortedList <int, int>();
+
+            foreach (Int32 count in UsagePerPartner.Values)
+            {
+                if (!CountUsage.ContainsKey(count))
+                {
+                    CountUsage.Add(count, 1);
+                }
+                else
+                {
+                    CountUsage[count]++;
+                }
+            }
+
+            XmlDocument statistics = TYml2Xml.CreateXmlDocument();
+
+            Int32 Total = 0;
+
+            foreach (int count in CountUsage.Keys)
+            {
+                XmlNode newNode = statistics.CreateElement("", "ELEMENT", "");
+                statistics.DocumentElement.AppendChild(newNode);
+
+                XmlAttribute attr = statistics.CreateAttribute("NumberOfRentals");
+                attr.Value = count.ToString();
+                newNode.Attributes.Append(attr);
+
+                attr = statistics.CreateAttribute("NumberOfPeople");
+                attr.Value = CountUsage[count].ToString();
+                newNode.Attributes.Append(attr);
+
+                Total += CountUsage[count];
+                attr = statistics.CreateAttribute("NumberOfPeopleForDraw");
+                attr.Value = Total.ToString();
+                newNode.Attributes.Append(attr);
+            }
+
+            return statistics;
+        }
+
+        private static XmlDocument GetPeopleWithMinimumRentalTimes(DataTable AttendeesTable,
+            SortedList <Int64, Int32>UsagePerPartner,
+            int AMinimumRental)
+        {
+            XmlDocument statistics = TYml2Xml.CreateXmlDocument();
+
+            int counter = 1;
+
+            foreach (Int64 partnerkey in UsagePerPartner.Keys)
+            {
+                if (UsagePerPartner[partnerkey] >= AMinimumRental)
+                {
+                    DataRow row = AttendeesTable.Rows.Find(partnerkey);
+
+                    XmlNode newNode = statistics.CreateElement("", "ELEMENT", "");
+                    statistics.DocumentElement.AppendChild(newNode);
+
+                    XmlAttribute attr = statistics.CreateAttribute("Row");
+                    attr.Value = counter.ToString();
+                    newNode.Attributes.Append(attr);
+                    attr = statistics.CreateAttribute("PartnerKey");
+                    attr.Value = partnerkey.ToString();
+                    newNode.Attributes.Append(attr);
+                    attr = statistics.CreateAttribute("Name");
+                    attr.Value = row["ShortName"].ToString();
+                    newNode.Attributes.Append(attr);
+                    attr = statistics.CreateAttribute("Country");
+                    attr.Value = row["Country"].ToString();
+                    newNode.Attributes.Append(attr);
+
+                    counter++;
+                }
+            }
+
+            return statistics;
+        }
+
+        /// <summary>
+        /// get Excel file with statistics for all countries and sessions
+        /// </summary>
+        public static bool ReportOverallStatistics(MemoryStream AStream, string AEventCode)
+        {
+            try
+            {
+                // get all sessions
+                PContactAttributeDetailTable sessions = GetSessions();
+
+                DataTable HeadsetsTable;
+                DataTable AttendeesTable;
+
+                GetDataForHeadsetReports(AEventCode, out AttendeesTable);
+
+                SortedList <string, SortedList <string, Int32>>HeadsetsPerCountryAndSession =
+                    new SortedList <string, SortedList <string, Int32>>();
+
+                SortedList <Int64, Int32>UsagePerPartner = new SortedList <Int64, Int32>();
+
+                foreach (PContactAttributeDetailRow row in sessions.Rows)
+                {
+                    string sessionName = row.ContactAttrDetailCode;
+
+                    GetDataForHeadsetReports(AEventCode, sessionName, out HeadsetsTable);
+
+                    foreach (DataRow rowAttendee in AttendeesTable.Rows)
+                    {
+                        string country = rowAttendee["Country"].ToString();
+                        Int64 PartnerKey = Convert.ToInt64(rowAttendee["PartnerKey"]);
+
+                        if ((null != HeadsetsTable.Rows.Find(new object[] { PartnerKey, HEADSET_OUT_METHOD_OF_CONTACT }))
+                            || (null != HeadsetsTable.Rows.Find(new object[] { PartnerKey, HEADSET_RETURN_METHOD_OF_CONTACT })))
+                        {
+                            if (!HeadsetsPerCountryAndSession.ContainsKey(country))
+                            {
+                                HeadsetsPerCountryAndSession.Add(country, new SortedList <string, Int32>());
+                            }
+
+                            if (!HeadsetsPerCountryAndSession[country].ContainsKey(sessionName))
+                            {
+                                HeadsetsPerCountryAndSession[country].Add(sessionName, 1);
+                            }
+                            else
+                            {
+                                HeadsetsPerCountryAndSession[country][sessionName]++;
+                            }
+
+                            if (!UsagePerPartner.ContainsKey(PartnerKey))
+                            {
+                                UsagePerPartner.Add(PartnerKey, 1);
+                            }
+                            else
+                            {
+                                UsagePerPartner[PartnerKey]++;
+                            }
+                        }
+                    }
+                }
+
+                SortedList <string, XmlDocument>worksheets = new SortedList <string, XmlDocument>();
+                worksheets.Add("a - By country", GenerateWorksheetStatistics(sessions, HeadsetsPerCountryAndSession));
+                worksheets.Add("b - Counting per person", GenerateWorksheetUsageByPerson(UsagePerPartner));
+                worksheets.Add("c - At least 9 sessions", GetPeopleWithMinimumRentalTimes(AttendeesTable, UsagePerPartner, 9));
+                worksheets.Add("d - At least 10 sessions", GetPeopleWithMinimumRentalTimes(AttendeesTable, UsagePerPartner, 10));
+
+                return TCsv2Xml.Xml2ExcelStream(worksheets, AStream, false);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("In THeadsetManagement.ReportOverallStatistics: " + ex.ToString());
+                return false;
+            }
         }
     }
 }
