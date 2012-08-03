@@ -3,7 +3,7 @@ RootNode:
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MPartner.Gui
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
-    DetailTable: PFinanceDetails
+    DetailTable: PBankingDetails
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
     Template: controlMaintainTable

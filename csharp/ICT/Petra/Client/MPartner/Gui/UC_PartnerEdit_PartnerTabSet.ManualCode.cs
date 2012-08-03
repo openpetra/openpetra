@@ -1297,7 +1297,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         break;
                         
-                    case TPartnerEditTabPageEnum.petPFinanceDetailss:
+                    case TPartnerEditTabPageEnum.petPFinanceDetails:
                         tabPartners.SelectedTab = tpgFinanceDetails;
                         break;
                 }
