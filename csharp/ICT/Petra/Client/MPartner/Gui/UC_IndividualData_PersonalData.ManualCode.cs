@@ -27,12 +27,14 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Person;
+using Ict.Petra.Shared.MPersonnel.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -65,6 +67,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
             FMainDS = AMainDS;
+
+            // year information must not be longer than 4 digits
+            txtBelieverSinceYear.MaxLength = 4;
 
             LoadDataOnDemand();
 
@@ -149,6 +154,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             return ReturnValue;
+        }
+
+        private void ValidateDataManual(PmPersonalDataRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPersonnelValidation_Personnel.ValidatePersonalDataManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
         }
     }
 }

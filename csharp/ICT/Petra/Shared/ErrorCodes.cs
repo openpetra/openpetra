@@ -112,6 +112,11 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUESIDENTICAL_ERROR = "GEN.00009V";
 
+        /// <summary>Date must have a sensible value (e.g. not too far in the past).</summary>
+        [ErrCodeAttribute("Date must have a sensible value.",
+             ErrorMessageText = "'{0}' is not a possible value in this case",
+             ErrorMessageTitle = "Invalid Data Entered")]
+        public const String ERR_UNREALISTICDATE_ERROR = "GEN.00010V";
         #endregion
 
         #region Partner Module-specific error codes
