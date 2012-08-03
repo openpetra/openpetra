@@ -60,6 +60,8 @@ namespace Ict.Tools.DataDumpPetra2
                 TDataDefinitionParser parserOld = new TDataDefinitionParser(PetraOldPath);
                 storeOld = new TDataDefinitionStore();
 
+                parserOld.SupportPetra2xLegacyStandard = true;
+
                 if (!parserOld.ParseDocument(ref storeOld, false, true))
                 {
                     return null;

@@ -99,6 +99,8 @@ namespace Ict.Tools.DataDumpPetra2
 
             TDataDefinitionParser parserOld = new TDataDefinitionParser(PetraOldPath);
 
+            parserOld.SupportPetra2xLegacyStandard = true;
+
             storeOld = new TDataDefinitionStore();
 
             System.Console.WriteLine("Reading 2.x xml file {0}...", PetraOldPath);
