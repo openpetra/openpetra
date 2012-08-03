@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
             FMainDS = AMainDS;
-            
+
             // year information must not be longer than 4 digits
             txtBelieverSinceYear.MaxLength = 4;
 
@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-        
+
         private void ValidateDataManual(PmPersonalDataRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;

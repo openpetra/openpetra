@@ -711,7 +711,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
+
             // 'Next Evaluation Date' must be later than 'Evaluation Date'
             ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnNextEvaluationDateId];
 
@@ -783,9 +783,8 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-
         }
-    
+
         /// <summary>
         /// Validates the general application record of a Person.
         /// </summary>

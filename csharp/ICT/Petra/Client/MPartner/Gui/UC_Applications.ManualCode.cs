@@ -547,7 +547,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
             IndividualDataTDSPmGeneralApplicationRow Row = GetSelectedDetailRow();
-            
+
             if (Row != null)
             {
                 GetDetailsFromControls(Row);
