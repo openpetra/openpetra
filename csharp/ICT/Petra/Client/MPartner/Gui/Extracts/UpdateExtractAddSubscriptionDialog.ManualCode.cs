@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     public partial class TFrmUpdateExtractAddSubscriptionDialog : System.Windows.Forms.Form
     {
         private PartnerEditTDS FMainDS;
-        
+
         /// <summary>
         /// set the initial value for passport name in the dialog
         /// </summary>
@@ -61,16 +61,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // show this dialog in center of screen
             this.StartPosition = FormStartPosition.CenterScreen;
-            
+
             FMainDS = new PartnerEditTDS();
 
-            // now add the one subscription row to the DS that we are working with            
+            // now add the one subscription row to the DS that we are working with
             PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
             FMainDS.Merge(SubscriptionTable);
             PSubscriptionRow SubscriptionRow = FMainDS.PSubscription.NewRowTyped(true);
             SubscriptionRow.PublicationCode = ""; // avoid NOT NULL error message
             FMainDS.PSubscription.Rows.Add(SubscriptionRow);
-            
+
             ucoSubscription.MainDS = FMainDS;
             ucoSubscription.SpecialInitUserControl();
             FPetraUtilsObject.HasChanges = false;
@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // Needs to be set to false because it got set to true in ancestor Form!
             e.Cancel = false;
-            
+
             // Need to call the following method in the Base Form to remove this Form from the Open Forms List
             FPetraUtilsObject.HasChanges = false; // this has to be set as otherwise the following call won't work
             FPetraUtilsObject.TFrmPetra_Closing(this, null);
@@ -116,11 +116,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
-
     }
-    
+
     // in addition derive class from IFrmPetraEdit so TFrmPetraEditUtils can be created
-    public partial class TFrmUpdateExtractAddSubscriptionDialog: Ict.Petra.Client.CommonForms.IFrmPetraEdit
+    public partial class TFrmUpdateExtractAddSubscriptionDialog : Ict.Petra.Client.CommonForms.IFrmPetraEdit
     {
         /// <summary>
         /// save the changes on the screen
@@ -131,7 +130,5 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // method needs to be provided here for interface but will never be called
             return false;
         }
-        
     }
-    
 }

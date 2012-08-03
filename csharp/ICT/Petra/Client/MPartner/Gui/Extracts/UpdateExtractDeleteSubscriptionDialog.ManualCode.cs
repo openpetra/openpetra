@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             Boolean ReturnValue = true;
 
             APublicationCode = cmbPublicationCode.GetSelectedString();
-            
+
             return ReturnValue;
         }
 
@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // don't display extra warning message at the moment as user is presented with extra dialog
             // per partner to delete subscription from anyway
-            
+
             //if (MessageBox.Show(Catalog.GetString("Are you sure that you want to delete Subscription "
             //            + cmbPublicationCode.GetSelectedString()
             //            + "\r\nfor all partners in the extract?"),
@@ -101,10 +101,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             //        MessageBoxButtons.YesNo,
             //        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             //{
-                this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                this.Close();
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Close();
             //}
         }
-
     }
 }

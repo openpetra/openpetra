@@ -120,17 +120,6 @@ namespace Ict.Tools.CodeGeneration
 
                     return true;
                 }
-                else if (ADBField.bPartOfFirstUniqueKey)
-                {
-                    AReasonForAutomValidation = "must have a value (it is part of the first Unique Key)";
-
-                    if ((ADBField.strType == "varchar") || (ADBField.strType == "text"))
-                    {
-                        AReasonForAutomValidation += " and must not be an empty string";
-                    }
-
-                    return true;
-                }
                 else if (ADBField.bNotNull)
                 {
                     AReasonForAutomValidation = "must have a value (NOT NULL constraint)";

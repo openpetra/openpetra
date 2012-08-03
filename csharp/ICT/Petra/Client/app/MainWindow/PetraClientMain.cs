@@ -321,8 +321,9 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         public static void StartUp()
         {
-            string UsersLanguageCode;
-            string UsersCultureCode;
+            // for the moment default to english, because translations are not fully supported, and the layout does not adjust
+            string UsersLanguageCode = "en-EN";
+            string UsersCultureCode = CultureInfo.CurrentCulture.Name;
 
             try
             {
@@ -487,7 +488,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 try
                 {
                     // Set Application Help language to the User's preferred language
-                    TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(out UsersLanguageCode, out UsersCultureCode);
+                    TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(ref UsersLanguageCode, ref UsersCultureCode);
 
                     if (UsersLanguageCode != String.Empty)
                     {
