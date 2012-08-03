@@ -163,7 +163,6 @@ namespace Ict.Petra.Shared
             list.Add("pt_skill_level");
             list.Add("pt_driver_status");
             list.Add("pt_personal_data_labels");
-            list.Add("pt_office_specific_data_labels");
             list.Add("p_data_label_lookup_category");
             list.Add("p_data_label");
             list.Add("p_data_label_use");
