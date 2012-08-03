@@ -65,6 +65,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SpecialInitUserControl(IndividualDataTDS AMainDS)
         {
             FMainDS = AMainDS;
+            
+            // year information must not be longer than 4 digits
+            txtBelieverSinceYear.MaxLength = 4;
 
             LoadDataOnDemand();
 
