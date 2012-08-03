@@ -711,6 +711,19 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+            
+            // 'Next Evaluation Date' must be later than 'Evaluation Date'
+            ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnNextEvaluationDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.NextEvaluationDate, ARow.EvaluationDate,
+                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
 
             // 'Report Type' must have a value
             ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnEvaluationTypeId];
