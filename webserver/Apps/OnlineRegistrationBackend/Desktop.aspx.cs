@@ -78,6 +78,15 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Panel TabMedicalInfo;
         protected Ext.Net.Panel TabRebukes;
         protected Ext.Net.Panel TabGroups;
+        protected Ext.Net.Panel TabPetra;
+        protected Ext.Net.Panel TabManualRegistration;
+        protected Ext.Net.Panel TabTopFinance;
+        protected Ext.Net.Panel TabBoundaries;
+        protected Ext.Net.Panel TabMedical;
+        protected Ext.Net.Panel TabBadges;
+        protected Ext.Net.Panel TabExport;
+        protected Ext.Net.Panel TabTopGroups;
+        protected Ext.Net.Panel TabTODO;
         protected Ext.Net.TabPanel TabPanelApplication;
         protected Ext.Net.ComboBox JobWish1;
         protected Ext.Net.ComboBox JobWish2;
@@ -88,13 +97,15 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.TextArea Comment;
         protected Ext.Net.TextArea CommentRegistrationOfficeReadOnly;
         protected Ext.Net.Panel TabServiceTeam;
-        protected Ext.Net.Panel TabMoreDetails;
         protected Ext.Net.Button btnJSONApplication;
         protected Ext.Net.Button btnCreateGiftBatch;
         protected Ext.Net.Button btnLoadRefreshApplicants;
         protected Ext.Net.Button btnTestPrintBadges;
         protected Ext.Net.Button btnPrintBadges;
         protected Ext.Net.Button btnReprintBadges;
+        protected Ext.Net.Button btnReprintPDF;
+        protected Ext.Net.Button btnReprintBadge;
+        protected Ext.Net.Button btnPrintMedicalReport;
         protected Ext.Net.Button btnExportTShirtNumbers;
         protected Ext.Net.Button btnImportPrintedBadges;
         protected Ext.Net.Button btnExcelArrivalRegistration;
@@ -105,6 +116,7 @@ namespace Ict.Petra.WebServer.MConference
         protected Ext.Net.Store StoreRebukes;
         protected Ext.Net.Button btnNewRebuke;
         protected Ext.Net.DateField dtpRebukesReportForDate;
+        protected Ext.Net.DateField dtpMedicalReportForDate;
         protected Ext.Net.TabPanel MedicalPanel;
         protected Ext.Net.TextField MaxGroupMembers;
         protected Ext.Net.TextArea GroupMembers;
@@ -167,14 +179,50 @@ namespace Ict.Petra.WebServer.MConference
                     TabMedicalLog.Visible = false;
                     TabMedicalInfo.Enabled = false;
                     TabMedicalInfo.Visible = false;
+                    TabMedical.Visible = false;
+                    btnPrintMedicalReport.Visible = false;
                 }
-                else
+
+                if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
                     TabRawApplicationData.Visible = false;
                     TabFinance.Visible = false;
                     TabServiceTeam.Visible = false;
                     TabApplicantDetails.Visible = false;
                     TabGroups.Visible = false;
+
+                    TabPetra.Visible = false;
+                    TabManualRegistration.Visible = false;
+                    TabTopFinance.Visible = false;
+                    TabBoundaries.Visible = false;
+                    TabBadges.Visible = false;
+                    TabExport.Visible = false;
+                    TabTopGroups.Visible = false;
+                    TabTODO.Visible = false;
+
+                    btnReprintBadge.Visible = false;
+                    btnReprintPDF.Visible = false;
+                }
+
+                if (UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    TabRawApplicationData.Visible = false;
+                    TabFinance.Visible = false;
+                    TabServiceTeam.Visible = false;
+                    TabApplicantDetails.Visible = false;
+                    TabGroups.Visible = false;
+
+                    TabPetra.Visible = false;
+                    TabManualRegistration.Visible = false;
+                    TabTopFinance.Visible = false;
+                    TabMedical.Visible = false;
+                    TabBadges.Visible = false;
+                    TabExport.Visible = false;
+                    TabTopGroups.Visible = false;
+                    TabTODO.Visible = false;
+
+                    btnReprintBadge.Visible = false;
+                    btnReprintPDF.Visible = false;
                 }
 
                 if (!UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
@@ -192,7 +240,18 @@ namespace Ict.Petra.WebServer.MConference
                     PrintDate.AddDays(-1);
                 }
 
+                // users in group HEADSET will only see the headset window
+                if (UserInfo.GUserInfo.IsInModule("HEADSET"))
+                {
+                    X.Js.Call("#{winHeadsets}.show()");
+                }
+                else
+                {
+                    X.Js.Call("#{winApplications}.show()");
+                }
+
                 dtpRebukesReportForDate.Value = PrintDate;
+                dtpMedicalReportForDate.Value = PrintDate;
 
                 MyData_Refresh(null, null);
             }
@@ -567,6 +626,9 @@ namespace Ict.Petra.WebServer.MConference
                 {
                     LoadDataForMedicalTeam(row, rawDataObject);
                 }
+                else if (UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                }
                 else
                 {
                     TabRawApplicationData.Html = TJsonTools.DataToHTMLTable(RawData);
@@ -616,6 +678,13 @@ namespace Ict.Petra.WebServer.MConference
                         && FieldsOnFirstTab.Contains(key))
                     {
                         dictionary.Add(key, ReplaceQuotes(rawDataObject[key]));
+
+                        if (((key == "SecondSibling") || (key == "CancelledByFinanceOffice"))
+                            && (rawDataObject[key].ToString().ToLower() == "true"))
+                        {
+                            // CheckBox: need to set the name of the checkbox as value
+                            dictionary[key] = key;
+                        }
                     }
                 }
 
@@ -625,7 +694,11 @@ namespace Ict.Petra.WebServer.MConference
                                                                          "CLS", "Dresscode", "LegalImprint"
                                                                      });
 
-                if (!UserInfo.GUserInfo.IsInModule("MEDICAL"))
+                if (UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    RefreshRebukesStore(row.RebukeNotes);
+                }
+                else if (!UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
                     foreach (string key in rawDataObject.Names)
                     {
@@ -705,8 +778,6 @@ namespace Ict.Petra.WebServer.MConference
                 Random rand = new Random();
                 Image1.ImageUrl = "photos.aspx?id=" + PartnerKey.ToString() + ".jpg&" + rand.Next(1, 10000).ToString();
 
-                RefreshRebukesStore(row.RebukeNotes);
-
                 GroupMembers.Text = string.Empty;
             }
             catch (Exception ex)
@@ -744,6 +815,10 @@ namespace Ict.Petra.WebServer.MConference
                 {
                     row.MedicalNotes = GetMedicalLogsFromScreen(values);
                 }
+                else if (UserInfo.GUserInfo.IsInModule("BOUNDARIES"))
+                {
+                    row.RebukeNotes = RebukeValues;
+                }
                 else
                 {
                     string RawData = TApplicationManagement.GetRawApplicationData(row.PartnerKey, row.ApplicationKey, row.RegistrationOffice);
@@ -761,7 +836,7 @@ namespace Ict.Petra.WebServer.MConference
                     row.FirstName = values["FirstName"];
                     row.Gender = values["Gender"];
 
-                    if (values["DateOfBirth"].Length == 0)
+                    if (!values.ContainsKey("DateOfBirth") || (values["DateOfBirth"].Length == 0))
                     {
                         row.DateOfBirth = new Nullable <DateTime>();
                     }
@@ -774,7 +849,7 @@ namespace Ict.Petra.WebServer.MConference
                         row.DateOfBirth = Convert.ToDateTime(values["DateOfBirth"]);
                     }
 
-                    if (values["DateOfArrival"].Length == 0)
+                    if (!values.ContainsKey("DateOfArrival") || (values["DateOfArrival"].Length == 0))
                     {
                         row.SetDateOfArrivalNull();
                     }
@@ -784,7 +859,7 @@ namespace Ict.Petra.WebServer.MConference
                         row.DateOfArrival = Convert.ToDateTime(values["DateOfArrival"]);
                     }
 
-                    if (values["DateOfDeparture"].Length == 0)
+                    if (!values.ContainsKey("DateOfDeparture") || (values["DateOfDeparture"].Length == 0))
                     {
                         row.SetDateOfDepartureNull();
                     }
@@ -806,8 +881,6 @@ namespace Ict.Petra.WebServer.MConference
                     }
 
                     row.Comment = values["Comment"];
-
-                    row.RebukeNotes = RebukeValues;
 
                     bool SecondSibling = false;
                     bool CancelledByFinanceOffice = false;
@@ -869,9 +942,11 @@ namespace Ict.Petra.WebServer.MConference
                 return;
             }
 
-            if (TApplicationManagement.SaveApplication(EventCode, row) != TSubmitChangesResult.scrOK)
+            TVerificationResultCollection VerificationResult;
+
+            if (TApplicationManagement.SaveApplication(EventCode, row, out VerificationResult) != TSubmitChangesResult.scrOK)
             {
-                X.Msg.Alert("Error", "Saving did not work").Show();
+                X.Msg.Alert("Error", "Saving did not work: " + VerificationResult.BuildVerificationResultString()).Show();
             }
 
             // save some time? user can click refresh himself.
@@ -1175,6 +1250,31 @@ namespace Ict.Petra.WebServer.MConference
             }
         }
 
+        protected void ClearFilterByRebukes(object sender, DirectEventArgs e)
+        {
+            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+
+            this.Store1.DataSource = DataTableToArray(CurrentApplicants.ApplicationGrid);
+            this.Store1.DataBind();
+        }
+
+        protected void FilterByRebukes(object sender, DirectEventArgs e)
+        {
+            ConferenceApplicationTDS CurrentApplicants = (ConferenceApplicationTDS)Session["CURRENTAPPLICANTS"];
+
+            CurrentApplicants.ApplicationGrid.DefaultView.RowFilter =
+                ConferenceApplicationTDSApplicationGridTable.GetRebukeNotesDBName() + " <> '' AND " +
+                ConferenceApplicationTDSApplicationGridTable.GetRebukeNotesDBName() + " IS NOT NULL";
+
+            if (CurrentApplicants.ApplicationGrid.DefaultView.Count > 0)
+            {
+                this.Store1.DataSource = DataTableToArray(CurrentApplicants.ApplicationGrid);
+                this.Store1.DataBind();
+            }
+
+            CurrentApplicants.ApplicationGrid.DefaultView.RowFilter = string.Empty;
+        }
+
         protected void PrintRebukesReport(object sender, DirectEventArgs e)
         {
             DateTime PrintDate = (DateTime)dtpRebukesReportForDate.Value;
@@ -1196,6 +1296,90 @@ namespace Ict.Petra.WebServer.MConference
                 string PDFPath = TRebukeReport.PrintRebukeReport(EventPartnerKey,
                     EventCode,
                     GetSelectedRegistrationOffice(),
+                    PrintDate);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
+        protected void PrintMedicalReportForParticipant(object sender, DirectEventArgs e)
+        {
+            ConferenceApplicationTDSApplicationGridRow row = (ConferenceApplicationTDSApplicationGridRow)Session["CURRENTROW"];
+
+            string OutputName = ("MedicalReport_" + row.FamilyName + "_" + row.FirstName + ".pdf").Replace(" ", "_");
+
+            try
+            {
+                string PDFPath = TMedicalReport.PrintReport(
+                    EventCode,
+                    row.PartnerKey);
+
+                if (File.Exists(PDFPath))
+                {
+                    this.Response.Clear();
+                    this.Response.ContentType = "application/pdf";
+                    this.Response.AddHeader("Content-Type", "application/pdf");
+                    this.Response.AddHeader("Content-Length", (new FileInfo(PDFPath)).Length.ToString());
+                    this.Response.AddHeader("Content-Disposition", "attachment; filename=" + OutputName);
+                    this.Response.WriteFile(PDFPath);
+                    this.Response.Flush();
+                    File.Delete(PDFPath);
+                    // this.Response.End(); avoid System.Threading.ThreadAbortException
+                }
+            }
+            catch (Exception ex)
+            {
+                X.Msg.Show(new MessageBoxConfig
+                    {
+                        Buttons = MessageBox.Button.OK,
+                        Icon = MessageBox.Icon.ERROR,
+                        Title = "Fail",
+                        Message = ex.Message
+                    });
+            }
+        }
+
+        protected void PrintMedicalReport(object sender, DirectEventArgs e)
+        {
+            DateTime PrintDate = (DateTime)dtpMedicalReportForDate.Value;
+
+            string OutputName = "MedicalReport_" + PrintDate.ToString("yyyy-MM-dd") + ".pdf";
+
+            try
+            {
+                OutputName = "MedicalReport_" + PrintDate.ToString("yyyy-MM-dd").Replace(
+                    ".",
+                    "_").Replace(" ", "_") + ".pdf";
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                string PDFPath = TMedicalReport.PrintReport(EventPartnerKey,
+                    EventCode,
                     PrintDate);
 
                 if (File.Exists(PDFPath))
@@ -1773,6 +1957,16 @@ namespace Ict.Petra.WebServer.MConference
             cKeywords.Items.Add(txtKeywords);
             tblMedicalIncident.Cells.Add(cKeywords);
 
+            Ext.Net.Button btnDeleteIncident = this.X().Button()
+                                               .ID("btnDeleteIncident" + ARow.ID.ToString())
+                                               .Text("Delete Incident")
+                                               .OnClientClick("DeleteMedicalIncident(" + ARow.ID.ToString() + ")");
+
+            Ext.Net.Cell cDelete = new Cell();
+            cDelete.ColSpan = 3;
+            cDelete.Items.Add(btnDeleteIncident);
+            tblMedicalIncident.Cells.Add(cDelete);
+
             panel.ContentControls.Add(tblMedicalIncident);
             panel.Render("MedicalPanel", RenderMode.AddTo);
             X.Js.Call("SetActiveMedicalIncident", ARow.ID - 1);
@@ -1791,26 +1985,45 @@ namespace Ict.Petra.WebServer.MConference
 
             for (Int32 Counter = 1; Counter < NewIncidentID; Counter++)
             {
-                if (Result.EndsWith("}"))
+                if (AValues.ContainsKey("dtpDate" + Counter.ToString()))
                 {
-                    Result += ",";
+                    if (Result.EndsWith("}"))
+                    {
+                        Result += ",";
+                    }
+
+                    Result += "{\"ID\":\"" + Counter.ToString() + "\"";
+
+                    string[] fields = new string[] {
+                        "dtpDate", "txtExaminer", "txtPulse", "txtBloodPressure", "txtTemperature", "txtDiagnosis", "txtTherapy", "txtKeywords"
+                    };
+
+                    foreach (string name in fields)
+                    {
+                        string value = AValues[name + Counter.ToString()];
+
+                        if (name == "dtpDate")
+                        {
+                            // TODO: assume European Date format on the client
+                            value = value.Substring(6, 4) + "-" +
+                                    value.Substring(3, 2) + "-" +
+                                    value.Substring(0, 2);
+                        }
+
+                        if (value == "for statistics, separated by comma")
+                        {
+                            value = string.Empty;
+                        }
+
+                        Result += ",\"" + name + "\":\"" + value + "\"";
+                    }
+
+                    Result += "}";
                 }
-
-                Result += "{\"ID\":\"" + Counter.ToString() + "\"";
-
-                string[] fields = new string[] {
-                    "dtpDate", "txtExaminer", "txtPulse", "txtBloodPressure", "txtTemperature", "txtDiagnosis", "txtTherapy", "txtKeywords"
-                };
-
-                foreach (string name in fields)
-                {
-                    Result += ",\"" + name + "\":\"" + AValues[name + Counter.ToString()] + "\"";
-                }
-
-                Result += "}";
             }
 
             Result += "]";
+            Result = Result.Replace(Environment.NewLine, "<br/");
 
             return Result;
         }
@@ -1835,7 +2048,13 @@ namespace Ict.Petra.WebServer.MConference
                     DateTime date = DateTime.Today;
                     try
                     {
-                        date = Convert.ToDateTime(element["dtpDate"]);
+                        string dateText = element["dtpDate"].ToString();
+
+                        // TODO: assume European Date format on the client
+                        date = new DateTime(
+                            Convert.ToInt32(dateText.Substring(0, 4)),
+                            Convert.ToInt32(dateText.Substring(5, 2)),
+                            Convert.ToInt32(dateText.Substring(8, 2)));
                     }
                     catch (Exception)
                     {
@@ -1899,6 +2118,7 @@ namespace Ict.Petra.WebServer.MConference
                 }
             }
 
+#if disabled
             foreach (string key in ARawDataObject.Names)
             {
                 // show the answers to these personal questions, since the applicants might write about past health issues
@@ -1909,9 +2129,10 @@ namespace Ict.Petra.WebServer.MConference
                     MedicalInfo += "<tr><th>" + key + "</th><td>" + ARawDataObject[key].ToString() + "</td></tr>";
                 }
             }
+#endif
 
             MedicalInfo += "</table>";
-            TabMedicalInfo.Html = MedicalInfo;
+            TabMedicalInfo.Html = MedicalInfo.Replace("&quot;", "\\\"");
 
             LoadMedicalLogs(ARow.MedicalNotes);
         }
