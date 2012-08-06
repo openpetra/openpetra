@@ -38,28 +38,6 @@ namespace Ict.Common.Controls
 		private TaskAppearance FTaskAppearance;
 		private int FMaxTaskWidth;
 		private TUcoSingleTask FirstTaskInGroup = null;
-		
-		/// <summary>
-		/// Holds the Tasks that are to be displayed in the Task Group.
-		/// </summary>
-        private Dictionary<string, TUcoSingleTask> Tasks
-        {
-        	get
-        	{
-        		return FTasks;
-        	}
-        }
-
-        /// <summary>
-        /// Fired when a Task is clicked by the user.
-        /// </summary>
-        public event EventHandler TaskClicked;
-        
-        /// <summary>
-        /// Fired when a Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
-        /// </summary>
-        public event EventHandler TaskSelected;
-
 
         /// <summary>
         /// Constructor.
@@ -73,29 +51,19 @@ namespace Ict.Common.Controls
 			flpTaskGroup.Resize += new EventHandler(flpTaskGroup_Resize);
         }
 
-        /// <summary>
-        /// We need to manually re-size the UserControl on the Resize event of the FlowLayoutPanel. 
-        /// The reason for that is that when the FlowLayoutPanel is in a UserControl, it doesn't re-size 
-        /// the UserControl and, consequently, we can't expect it to re-size the UserControl.
-        /// If we don't manually re-size the UserControl, the TUcoTaskGroup UserControl doesn't 'shrink'
-        /// back in height if the height that was needed to display a FlowLayoutPanel is reduced
-        /// because the Main Menu form is enlarged.
-        /// </summary>
-        /// <param name="sender">Set by WinForms. Ignored.</param>
-        /// <param name="e">Set by WinForms. Ignored.</param>
-        void flpTaskGroup_Resize(object sender, EventArgs e)
+        #region Properties
+        
+		/// <summary>
+		/// Holds the Tasks that are to be displayed in the Task Group.
+		/// </summary>
+        private Dictionary<string, TUcoSingleTask> Tasks
         {
-            this.Height = flpTaskGroup.Height + nlnGroupTitle.Height;      
-
-            if (flpTaskGroup.Width < MaxTaskWidth) 
-            {
-                flpTaskGroup.Width = MaxTaskWidth;
-//                this.Width = MaxTaskWidth;
-            }            
-//TLogging.Log("flpTaskGroup_Resize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
-//TLogging.Log("flpTaskGroup_Resize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
+        	get
+        	{
+        		return FTasks;
+        	}
         }
-		
+
 		/// <summary>
 		/// Sets the Group Title.
 		/// </summary>
@@ -158,6 +126,24 @@ namespace Ict.Common.Controls
             }
         }
         
+        #endregion
+        
+        #region Events
+        
+        /// <summary>
+        /// Fired when a Task is clicked by the user.
+        /// </summary>
+        public event EventHandler TaskClicked;
+        
+        /// <summary>
+        /// Fired when a Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
+        /// </summary>
+        public event EventHandler TaskSelected;
+
+        #endregion
+
+        #region Public Methods
+        
         /// <summary>
         /// Adds a Task to the Task Group.
         /// </summary>
@@ -203,6 +189,10 @@ namespace Ict.Common.Controls
 		    }
 		}
 		
+		#endregion
+		
+		#region Private Methods
+		
         private void FireTaskClicked(object sender, EventArgs e)
         {
             if (TaskClicked != null) {
@@ -230,8 +220,6 @@ namespace Ict.Common.Controls
 		    {
 		        flpTaskGroup.MaximumSize = new System.Drawing.Size(this.Width, 0);
 		    }
-		    
-		    			    
 
 //TLogging.Log("TUcoTaskGroupResize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
 //TLogging.Log("TUcoTaskGroupResize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
@@ -246,7 +234,34 @@ namespace Ict.Common.Controls
             
 //TLogging.Log(ControlsList + "\r\n" + "\r\n");
 		}
+
+        #endregion		
+        
+		#region Event Handlers
 		
+        /// <summary>
+        /// We need to manually re-size the UserControl on the Resize event of the FlowLayoutPanel. 
+        /// The reason for that is that when the FlowLayoutPanel is in a UserControl, it doesn't re-size 
+        /// the UserControl and, consequently, we can't expect it to re-size the UserControl.
+        /// If we don't manually re-size the UserControl, the TUcoTaskGroup UserControl doesn't 'shrink'
+        /// back in height if the height that was needed to display a FlowLayoutPanel is reduced
+        /// because the Main Menu form is enlarged.
+        /// </summary>
+        /// <param name="sender">Set by WinForms. Ignored.</param>
+        /// <param name="e">Set by WinForms. Ignored.</param>
+        void flpTaskGroup_Resize(object sender, EventArgs e)
+        {
+            this.Height = flpTaskGroup.Height + nlnGroupTitle.Height;      
+
+            if (flpTaskGroup.Width < MaxTaskWidth) 
+            {
+                flpTaskGroup.Width = MaxTaskWidth;
+//                this.Width = MaxTaskWidth;
+            }            
+//TLogging.Log("flpTaskGroup_Resize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
+//TLogging.Log("flpTaskGroup_Resize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
+        }
+
 // TODO: Try to prevent the UserControl from shrinking below MaxTaskWidth to allow showing of horizontal scrollbar in the Tasks List. The code below achieves the shrink-stopping, but introduces undesired side effects. Needs more investigation...
 //		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
 //		{
@@ -268,5 +283,7 @@ namespace Ict.Common.Controls
 //		    }
 //TLogging.Log("SetBoundsCore: ucoTaskGroup " + Name + "'s size: " + Size.ToString());	    
 //		}
+        
+		#endregion		
 	}
 }

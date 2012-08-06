@@ -50,114 +50,9 @@ namespace Ict.Common.Controls
 		
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
         static private Form FLastOpenedScreen = null;
-        
-        /// <summary>
-        /// this function checks if the user has access to the navigation node
-        /// </summary>
-        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
-		
-        /// <summary>
-        /// Groups that are to be shown in the Task List.
-        /// </summary>
-        public Dictionary<string, TUcoTaskGroup> Groups
-        {
-        	get
-        	{
-        		return FGroups;
-        	}        	
-        }
-        
-        /// <summary>
-        /// Appearance of the Task (Large Tile, ListEntry).
-        /// </summary>
-        public TaskAppearance TaskAppearance
-        {
-            get
-            {
-                return FTaskAppearance;
-            }
-            
-            set
-            {
-                if (FTaskAppearance != value) 
-                {
-                    FTaskAppearance = value;
-                    
-                    foreach (var Group in Groups) 
-                    {
-                    	Group.Value.TaskAppearance = FTaskAppearance;	
-                    }                   
-                }
-            }
-        }
-        
-		/// <summary>
-		/// Maximum Task Width.
-		/// </summary>
-        public int MaxTaskWidth
-        {
-            get
-            {
-                return FMaxTaskWidth;
-            }
-            
-            set
-            {
-                if (FMaxTaskWidth != value) 
-                {
-                    FMaxTaskWidth = value;
-                    
-                    foreach (var Group in Groups) 
-                    {
-                    	Group.Value.MaxTaskWidth = value;                	                	
-                    }                                    
-                }
-            }
-        }
 
-        /// <summary>
-        /// The object of the last opened screen - useful for testing.
-        /// </summary>
-        static public Form LastOpenedScreen
-        {
-            get
-            {
-                return FLastOpenedScreen;
-            }
-        }
+        #region Constructors
         
-        /// <summary>
-        /// Sets the Status Bar Text so that error messages can be displayed.
-        /// </summary>
-        public TExtStatusBarHelp Statusbar
-        {
-            set
-            {
-                FStatusbar = value;
-            }
-        }       
-       
-        /// <summary>
-        /// Fired when a Task is clicked by the user.
-        /// </summary>
-        public event EventHandler TaskClicked;
-        
-        /// <summary>
-        /// Fired when a Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
-        /// </summary>
-        public event EventHandler TaskSelected;
-        
-        /// <summary>
-        /// Initialise the permissions callback function for the current user.
-        /// </summary>
-        /// <param name="AUserId"></param>
-        /// <param name="AHasAccessPermission"></param>
-        public static void Init(string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
-        {
-            FUserId = AUserId;
-            FHasAccessPermission = AHasAccessPermission;
-        }
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -168,7 +63,6 @@ namespace Ict.Common.Controls
 			//
 			InitializeComponent();
 		}
-		
 
         /// <summary>
         /// Constructor. Generates several Groups of Tasks from an xml document.
@@ -268,65 +162,129 @@ namespace Ict.Common.Controls
             
             this.ResumeLayout();
         }
+        
+        #endregion        
+
+        #region Delegates
+
+        /// <summary>
+        /// this function checks if the user has access to the navigation node
+        /// </summary>
+        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+
+        #endregion
+
+        #region Properties
+        
+        /// <summary>
+        /// Groups that are to be shown in the Task List.
+        /// </summary>
+        public Dictionary<string, TUcoTaskGroup> Groups
+        {
+        	get
+        	{
+        		return FGroups;
+        	}        	
+        }
+        
+        /// <summary>
+        /// Appearance of the Task (Large Tile, ListEntry).
+        /// </summary>
+        public TaskAppearance TaskAppearance
+        {
+            get
+            {
+                return FTaskAppearance;
+            }
             
-        void ListResize(object sender, EventArgs e)
-        {
-			foreach (var Group in Groups) 
-			{
-				Group.Value.MaximumSize = new System.Drawing.Size(this.Width, 0);
-			}
-        }
-        
-        void SingleTask_ExecuteTask(object sender, EventArgs e)
-        {
-            Cursor = Cursors.WaitCursor;
-
-            Control parentForm = Parent;
-
-            while (parentForm != null && !(parentForm is Form))
+            set
             {
-                parentForm = parentForm.Parent;
-            }
-
-            string message = ExecuteAction((XmlNode)((TUcoSingleTask)sender).Tag, (Form)parentForm);
-            WriteToStatusBar(message);
-
-            Cursor = Cursors.Default;
-        }
-        
-        void SingleTask_TaskSelected(object sender, EventArgs e)
-        {
-            FSelectedTask = ((TUcoSingleTask)sender);
-
-            foreach(Control TaskGroups in this.Controls)
-            {
-                foreach(Control TaskGroup in TaskGroups.Controls)
+                if (FTaskAppearance != value) 
                 {
-                    foreach(TUcoSingleTask Task in TaskGroup.Controls)
+                    FTaskAppearance = value;
+                    
+                    foreach (var Group in Groups) 
                     {
-                        if (Task != sender) 
-                        {                        	
-                            Task.DeselectTask();        
-                        }
-                    }
-                }                
+                    	Group.Value.TaskAppearance = FTaskAppearance;	
+                    }                   
+                }
             }
         }
         
-        void FireTaskClicked()
+		/// <summary>
+		/// Maximum Task Width.
+		/// </summary>
+        public int MaxTaskWidth
         {
-            if (TaskClicked != null) {
-                TaskClicked(this, null);
+            get
+            {
+                return FMaxTaskWidth;
             }
-        }        
+            
+            set
+            {
+                if (FMaxTaskWidth != value) 
+                {
+                    FMaxTaskWidth = value;
+                    
+                    foreach (var Group in Groups) 
+                    {
+                    	Group.Value.MaxTaskWidth = value;                	                	
+                    }                                    
+                }
+            }
+        }
 
-        void FireTaskSelected(object sender, EventArgs e)
+        /// <summary>
+        /// The object of the last opened screen - useful for testing.
+        /// </summary>
+        static public Form LastOpenedScreen
         {
-            if (TaskSelected != null) {
-                TaskSelected(sender, null);
+            get
+            {
+                return FLastOpenedScreen;
             }
         }
         
+        /// <summary>
+        /// Sets the Status Bar Text so that error messages can be displayed.
+        /// </summary>
+        public TExtStatusBarHelp Statusbar
+        {
+            set
+            {
+                FStatusbar = value;
+            }
+        }    
+
+        #endregion        
+       
+        #region Events
+        
+        /// <summary>
+        /// Fired when a Task is clicked by the user.
+        /// </summary>
+        public event EventHandler TaskClicked;
+        
+        /// <summary>
+        /// Fired when a Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
+        /// </summary>
+        public event EventHandler TaskSelected;
+        
+        #endregion
+        
+        #region Public Methods
+        
+        /// <summary>
+        /// Initialise the permissions callback function for the current user.
+        /// </summary>
+        /// <param name="AUserId"></param>
+        /// <param name="AHasAccessPermission"></param>
+        public static void Init(string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
+        {
+            FUserId = AUserId;
+            FHasAccessPermission = AHasAccessPermission;
+        }
 
         /// <summary>
         /// Execute action from the navigation tree.
@@ -518,7 +476,19 @@ namespace Ict.Common.Controls
 
             return "";
         }        
-
+        
+        #endregion
+        
+        #region Private Methods
+        
+        void ListResize(object sender, EventArgs e)
+        {
+			foreach (var Group in Groups) 
+			{
+				Group.Value.MaximumSize = new System.Drawing.Size(this.Width, 0);
+			}
+        }
+        
         private void WriteToStatusBar(string s)
         {
             if (FStatusbar != null)
@@ -556,5 +526,61 @@ namespace Ict.Common.Controls
 //		    }
 //TLogging.Log("SetBoundsCore: TLstTask " + Name + "'s size: " + Size.ToString());	    
 //		}
+        
+        #endregion
+        
+        #region Event Handling
+        
+        void SingleTask_ExecuteTask(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+
+            Control parentForm = Parent;
+
+            while (parentForm != null && !(parentForm is Form))
+            {
+                parentForm = parentForm.Parent;
+            }
+
+            string message = ExecuteAction((XmlNode)((TUcoSingleTask)sender).Tag, (Form)parentForm);
+            WriteToStatusBar(message);
+
+            Cursor = Cursors.Default;
+        }
+        
+        void SingleTask_TaskSelected(object sender, EventArgs e)
+        {
+            FSelectedTask = ((TUcoSingleTask)sender);
+
+            foreach(Control TaskGroups in this.Controls)
+            {
+                foreach(Control TaskGroup in TaskGroups.Controls)
+                {
+                    foreach(TUcoSingleTask Task in TaskGroup.Controls)
+                    {
+                        if (Task != sender) 
+                        {                        	
+                            Task.DeselectTask();        
+                        }
+                    }
+                }                
+            }
+        }
+        
+        void FireTaskClicked()
+        {
+            if (TaskClicked != null) {
+                TaskClicked(this, null);
+            }
+        }        
+
+        void FireTaskSelected(object sender, EventArgs e)
+        {
+            if (TaskSelected != null) {
+                TaskSelected(sender, null);
+            }
+        }
+        
+        #endregion
 	}
 }

@@ -35,6 +35,12 @@ namespace Ict.Common.Controls
     /// </summary>
     public partial class TLstFolderNavigation : System.Windows.Forms.Panel
     {
+        private TDashboard FDashboard;
+        private TExtStatusBarHelp FStatusbar = null;
+        private bool FMovingSplitter = false;       // avoid recursion of events on Mono
+        
+        #region Public Static
+        
         /// <summary>
         /// this is the path to the resource directory of the icons.
         /// this is public and static so that the TPnlAccordion can access it too.
@@ -53,7 +59,11 @@ namespace Ict.Common.Controls
                     "Label") : StringHelper.ReverseUpperCamelCase(ANode.Name));
         }
 
-        /// constructor
+        #endregion
+        
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public TLstFolderNavigation()
         {
             ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
@@ -78,8 +88,17 @@ namespace Ict.Common.Controls
             pnlNavigationCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xAD, 0xBE, 0xE7);
         }
 
-        private TDashboard FDashboard;
+        #region Delegates
+        
+        /// <summary>
+        /// this function checks if the user has access to the navigation node
+        /// </summary>
+        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
 
+        #endregion
+        
+        #region Properties
+        
         /// <summary>
         /// set the dashboard so that the task lists can be displayed in the right place
         /// </summary>
@@ -90,8 +109,6 @@ namespace Ict.Common.Controls
                 FDashboard = value;
             }
         }
-
-        private TExtStatusBarHelp FStatusbar = null;
 
         /// <summary>
         /// set the statusbar so that error messages can be displayed
@@ -104,71 +121,9 @@ namespace Ict.Common.Controls
             }
         }
 
-        // avoid recursion of events on Mono
-        private bool FMovingSplitter = false;
-
-        private void SptNavigationSplitterMoved(object sender, EventArgs e)
-        {
-            // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
-            if ((sptNavigation.Panel2.Controls.Count > 0) && !FMovingSplitter
-                && (sptNavigation.Height > sptNavigation.Panel2.Controls[0].Height * sptNavigation.Panel2.Controls.Count))
-            {
-                FMovingSplitter = true;
-                sptNavigation.SplitterDistance = sptNavigation.Height - sptNavigation.Panel2.Controls[0].Height * sptNavigation.Panel2.Controls.Count;
-                FMovingSplitter = false;
-            }
-        }
-
-        private void SptNavigationSplitterMoving(object sender, System.Windows.Forms.SplitterCancelEventArgs e)
-        {
-            // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
-        }
-
-        private TPnlAccordion GetOrCreatePanel(XmlNode AFolderNode)
-        {
-            string pnlName = "pnl" + AFolderNode.Name;
-
-            if (AFolderNode.Attributes["Label"] != null)
-            {
-                pnlName = AFolderNode.Attributes["Label"].Value.Replace(" ", "");
-            }
-
-            if (this.sptNavigation.Panel1.Controls.ContainsKey(pnlName))
-            {
-                return (TPnlAccordion) this.sptNavigation.Panel1.Controls[pnlName];
-            }
-            else
-            {
-                TPnlAccordion pnlAccordion = new TPnlAccordion(AFolderNode, FDashboard, pnlName);
-
-                pnlAccordion.Statusbar = FStatusbar;
-                this.sptNavigation.Panel1.Controls.Add(pnlAccordion);
-
-                return pnlAccordion;
-            }
-        }
-
-        private void FolderCheckedChanged(object sender, EventArgs e)
-        {
-            TRbtNavigationButton rbtFolder = (TRbtNavigationButton)sender;
-            TPnlAccordion pnlAccordion = GetOrCreatePanel((XmlNode)rbtFolder.Tag);
-
-            if (rbtFolder.Checked)
-            {
-                lblNavigationCaption.Text = rbtFolder.Text;
-                pnlAccordion.Show();
-                pnlAccordion.SelectFirstLink();
-            }
-            else
-            {
-                pnlAccordion.Hide();
-            }
-        }
-
-        /// <summary>
-        /// this function checks if the user has access to the navigation node
-        /// </summary>
-        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+        #endregion
+        
+        #region Public Methods
 
         /// <summary>
         /// add a folder to the list
@@ -239,5 +194,73 @@ namespace Ict.Common.Controls
                 Index++;
             }
         }
+        
+        #endregion
+        
+        #region Private Methods
+        
+        private TPnlAccordion GetOrCreatePanel(XmlNode AFolderNode)
+        {
+            string pnlName = "pnl" + AFolderNode.Name;
+
+            if (AFolderNode.Attributes["Label"] != null)
+            {
+                pnlName = AFolderNode.Attributes["Label"].Value.Replace(" ", "");
+            }
+
+            if (this.sptNavigation.Panel1.Controls.ContainsKey(pnlName))
+            {
+                return (TPnlAccordion) this.sptNavigation.Panel1.Controls[pnlName];
+            }
+            else
+            {
+                TPnlAccordion pnlAccordion = new TPnlAccordion(AFolderNode, FDashboard, pnlName);
+
+                pnlAccordion.Statusbar = FStatusbar;
+                this.sptNavigation.Panel1.Controls.Add(pnlAccordion);
+
+                return pnlAccordion;
+            }
+        }
+
+        #endregion
+        
+        #region Event Handling
+        
+        private void FolderCheckedChanged(object sender, EventArgs e)
+        {
+            TRbtNavigationButton rbtFolder = (TRbtNavigationButton)sender;
+            TPnlAccordion pnlAccordion = GetOrCreatePanel((XmlNode)rbtFolder.Tag);
+
+            if (rbtFolder.Checked)
+            {
+                lblNavigationCaption.Text = rbtFolder.Text;
+                pnlAccordion.Show();
+                pnlAccordion.SelectFirstLink();
+            }
+            else
+            {
+                pnlAccordion.Hide();
+            }
+        }
+
+        private void SptNavigationSplitterMoved(object sender, EventArgs e)
+        {
+            // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
+            if ((sptNavigation.Panel2.Controls.Count > 0) && !FMovingSplitter
+                && (sptNavigation.Height > sptNavigation.Panel2.Controls[0].Height * sptNavigation.Panel2.Controls.Count))
+            {
+                FMovingSplitter = true;
+                sptNavigation.SplitterDistance = sptNavigation.Height - sptNavigation.Panel2.Controls[0].Height * sptNavigation.Panel2.Controls.Count;
+                FMovingSplitter = false;
+            }
+        }
+
+        private void SptNavigationSplitterMoving(object sender, System.Windows.Forms.SplitterCancelEventArgs e)
+        {
+            // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
+        }
+        
+        #endregion
     }
 }

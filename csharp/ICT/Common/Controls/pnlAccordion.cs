@@ -49,39 +49,19 @@ namespace Ict.Common.Controls
         /// This is the content panel which will host the task lists
         /// </summary>
         private TDashboard FDashboard;
-
-        
+       
         /// <summary>
         /// This is the currently displayed Task List
         /// </summary>
 		private TLstTasks FCurrentTaskList = null;
 		
 		private int FMaxTaskWidth;
+        private TExtStatusBarHelp FStatusbar = null;
+
 		        
         static System.Drawing.Bitmap UpArrow = null;
         static System.Drawing.Bitmap DownArrow = null;
 
-		/// <summary>
-		/// Maximum Task Width
-		/// </summary>        
-        public int MaxTaskWidth
-        {
-            get
-            {
-                return FMaxTaskWidth;
-            }
-            
-            set
-            {
-                if (FMaxTaskWidth != value) 
-                {
-                    FMaxTaskWidth = value;
-                    
-                    FCurrentTaskList.MaxTaskWidth = FMaxTaskWidth;                   
-                }
-            }
-        }
-        
         /// create an accordion with several items for the given folder, with all sub menus
         public TPnlAccordion(XmlNode AFolderNode, TDashboard ADashboard, string APanelName)
         {
@@ -180,7 +160,76 @@ namespace Ict.Common.Controls
                 ModuleNode = ModuleNode.PreviousSibling;
             }
         }
+        
+        #region Properties
+        
+		/// <summary>
+		/// Maximum Task Width
+		/// </summary>        
+        public int MaxTaskWidth
+        {
+            get
+            {
+                return FMaxTaskWidth;
+            }
+            
+            set
+            {
+                if (FMaxTaskWidth != value) 
+                {
+                    FMaxTaskWidth = value;
+                    
+                    FCurrentTaskList.MaxTaskWidth = FMaxTaskWidth;                   
+                }
+            }
+        }
+        
+        #endregion
+        
+        #region Public Methods
+        
+        /// <summary>
+        /// set the statusbar so that error messages can be displayed
+        /// </summary>
+        public TExtStatusBarHelp Statusbar
+        {
+            set
+            {
+                FStatusbar = value;
+            }
+        }
+        
+        /// <summary>
+        /// make sure that the content panel is populated with the contents of the first link;
+        /// this might be called when selecting a folder
+        /// </summary>
+        public void SelectFirstLink()
+        {
+            bool validContent = false;
 
+            if (this.Controls.Count > 0)
+            {
+                Panel pnlModule = (Panel) this.Controls[this.Controls.Count - 1];
+
+                if (pnlModule.Controls.Count > 1)
+                {
+                    // first child is module caption
+                    LinkLabel lbl = (LinkLabel)pnlModule.Controls[1];
+                    LinkClicked(lbl, null);
+                    validContent = true;
+                }
+            }
+
+            if (!validContent)
+            {
+                FDashboard.ShowTaskList(null);
+            }
+        }
+        
+        #endregion
+        
+        #region Private Methods
+        
         private void CollapseModuleMenu(object sender, EventArgs e)
         {
             Button btnModuleCollapse;
@@ -238,44 +287,6 @@ namespace Ict.Common.Controls
 //            Invalidate();
         }
 
-        private TExtStatusBarHelp FStatusbar = null;
-
-        /// <summary>
-        /// set the statusbar so that error messages can be displayed
-        /// </summary>
-        public TExtStatusBarHelp Statusbar
-        {
-            set
-            {
-                FStatusbar = value;
-            }
-        }
-
-        /// <summary>
-        /// make sure that the content panel is populated with the contents of the first link;
-        /// this might be called when selecting a folder
-        /// </summary>
-        public void SelectFirstLink()
-        {
-            bool validContent = false;
-
-            if (this.Controls.Count > 0)
-            {
-                Panel pnlModule = (Panel) this.Controls[this.Controls.Count - 1];
-
-                if (pnlModule.Controls.Count > 1)
-                {
-                    // first child is module caption
-                    LinkLabel lbl = (LinkLabel)pnlModule.Controls[1];
-                    LinkClicked(lbl, null);
-                    validContent = true;
-                }
-            }
-
-            if (!validContent)
-            {
-                FDashboard.ShowTaskList(null);
-            }
-        }
+        #endregion
     }
 }

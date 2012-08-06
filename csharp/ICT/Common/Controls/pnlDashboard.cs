@@ -37,6 +37,18 @@ namespace Ict.Common.Controls
     	private int FMaxTaskWidth;
     	private TaskAppearance FTaskAppearance = TaskAppearance.staLargeTile;
     	private Dictionary<string, TLstTasks> FTaskLists = new Dictionary<string, TLstTasks>();
+
+        /// <summary>
+        /// default constructor
+        /// </summary>
+        public TDashboard()
+        {
+        	this.Padding = new System.Windows.Forms.Padding(5,3,5,3);
+        	this.AutoScroll = true;
+//        	this.BackColor = System.Drawing.Color.Green;            // for debugging only...
+        }
+
+    	#region Properties
     	
    		/// <summary>
 		/// Maximum Task Width
@@ -85,17 +97,11 @@ namespace Ict.Common.Controls
                 }
             }
         }
-    	        
-        /// <summary>
-        /// default constructor
-        /// </summary>
-        public TDashboard()
-        {
-        	this.Padding = new System.Windows.Forms.Padding(5,3,5,3);
-        	this.AutoScroll = true;
-//        	this.BackColor = System.Drawing.Color.Green;            
-        }
+    	
+        #endregion
 
+        #region Public Methods
+        
         /// <summary>
         /// quick implementation of hosting task list
         /// TODO: this needs to support several panels etc
@@ -126,5 +132,7 @@ namespace Ict.Common.Controls
                 }
             }
         }
+        
+        #endregion
     }
 }

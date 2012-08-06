@@ -54,7 +54,6 @@ namespace Ict.Common.Controls
         int FMaxTaskWidth;
         int FMaxTaskHeight;
         TUcoTaskGroup FTaskGroup;
-        
         TaskAppearance FSingleTaskAppearance = TaskAppearance.staLargeTile;
         
         /// <summary>
@@ -70,7 +69,9 @@ namespace Ict.Common.Controls
             FMaxTaskWidth = this.Width;
             FMaxTaskHeight = this.Height;
         }
-        
+
+        #region Properties
+
         /// <summary>
         /// The Task Group the Task belongs to.
         /// </summary>
@@ -138,29 +139,6 @@ namespace Ict.Common.Controls
             }
         }
 
-
-        
-
-        
-
-        void UpdateTaskAppearance()
-        {
-            if (FSingleTaskAppearance == TaskAppearance.staLargeTile) 
-            {
-                // In LargeTile appearance the items should all have the same width
-                lblTaskDescription.Visible = true;
-                llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 9f, FontStyle.Regular);
-                Size = new Size(MaxTaskWidth, MaxTaskHeight);
-            } 
-            else
-            {
-                // In ListEntry appearance the items should only be as wide as they need
-                lblTaskDescription.Visible = false;
-                llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 8f, FontStyle.Regular);
-                Size = RequiredSize;
-            }
-        }
-        
         /// <summary>
         /// Maximum Task Width.
         /// </summary>
@@ -300,6 +278,24 @@ namespace Ict.Common.Controls
             }
         }
         
+        #endregion
+        
+        #region Event Handlers
+
+        /// <summary>
+        /// Fired when the Task is clicked by the user.
+        /// </summary>
+        public event EventHandler TaskClicked;
+        
+        /// <summary>
+        /// Fired when the Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
+        /// </summary>
+        public event EventHandler TaskSelected;
+                
+        #endregion
+        
+        #region Public Methods
+        
         /// <summary>
         /// Selects (highlights) the Task.
         /// </summary>
@@ -326,15 +322,9 @@ namespace Ict.Common.Controls
             FTaskSelected = false;
         }
         
-        /// <summary>
-        /// Fired when the Task is clicked by the user.
-        /// </summary>
-        public event EventHandler TaskClicked;
+        #endregion
         
-        /// <summary>
-        /// Fired when the Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
-        /// </summary>
-        public event EventHandler TaskSelected;
+        #region Private Methods
         
         void LlbTaskTitleLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -397,6 +387,24 @@ namespace Ict.Common.Controls
             }
         }
         
+        void UpdateTaskAppearance()
+        {
+            if (FSingleTaskAppearance == TaskAppearance.staLargeTile) 
+            {
+                // In LargeTile appearance the items should all have the same width
+                lblTaskDescription.Visible = true;
+                llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 9f, FontStyle.Regular);
+                Size = new Size(MaxTaskWidth, MaxTaskHeight);
+            } 
+            else
+            {
+                // In ListEntry appearance the items should only be as wide as they need
+                lblTaskDescription.Visible = false;
+                llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 8f, FontStyle.Regular);
+                Size = RequiredSize;
+            }
+        }
+                
         private void UpdateLayout()
         {
             if(FSingleTaskAppearance == TaskAppearance.staLargeTile)
@@ -428,5 +436,7 @@ namespace Ict.Common.Controls
         {
             FireTaskClicked();
         }
+        
+        #endregion
     }
 }
