@@ -109,14 +109,14 @@ namespace Ict.Common.Controls
             {
                 if (FTaskLists.TryGetValue(ATaskList.Name, out ExistingTaskList))
                 {
-TLogging.Log("Found TaskList '" + ATaskList.Name + "' - bringing it to front.");
+//TLogging.Log("Found TaskList '" + ATaskList.Name + "' - bringing it to front.");
                     ExistingTaskList.MaxTaskWidth = FMaxTaskWidth;
                     ExistingTaskList.TaskAppearance = FTaskAppearance;
                     ExistingTaskList.BringToFront();
                 }
                 else
                 {
-TLogging.Log("Couldn't find TaskList '" + ATaskList.Name + "' - adding it.");                
+//TLogging.Log("Couldn't find TaskList '" + ATaskList.Name + "' - adding it.");                
                     this.Controls.Add(ATaskList);
                     ATaskList.MaxTaskWidth = FMaxTaskWidth;
                     ATaskList.TaskAppearance = FTaskAppearance;

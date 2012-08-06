@@ -222,12 +222,12 @@ namespace Ict.Common.Controls
             if (tag.GetType() == typeof(TLstTasks))
             {
                 FCurrentTaskList = (TLstTasks)tag;
-TLogging.Log("LinkClicked for existing " + FCurrentTaskList.Name);                
+//TLogging.Log("LinkClicked for existing " + FCurrentTaskList.Name);                
             }
             else
             {
                 FCurrentTaskList = new TLstTasks((XmlNode)tag);
-TLogging.Log("LinkClicked for NEW " + FCurrentTaskList.Name);
+//TLogging.Log("LinkClicked for NEW " + FCurrentTaskList.Name);
                 ((Control)sender).Tag = FCurrentTaskList;
             }
 
