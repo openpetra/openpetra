@@ -79,11 +79,14 @@ namespace Ict.Common.Controls
             
             set
             {
-                FTaskAppearance = value;
-                
-                foreach (var Group in Groups) 
+                if (FTaskAppearance != value) 
                 {
-                	Group.Value.TaskAppearance = FTaskAppearance;	
+                    FTaskAppearance = value;
+                    
+                    foreach (var Group in Groups) 
+                    {
+                    	Group.Value.TaskAppearance = FTaskAppearance;	
+                    }                   
                 }
             }
         }
@@ -100,12 +103,15 @@ namespace Ict.Common.Controls
             
             set
             {
-                FMaxTaskWidth = value;
-                
-                foreach (var Group in Groups) 
+                if (FMaxTaskWidth != value) 
                 {
-                	Group.Value.MaxTaskWidth = value;                	                	
-                }                
+                    FMaxTaskWidth = value;
+                    
+                    foreach (var Group in Groups) 
+                    {
+                    	Group.Value.MaxTaskWidth = value;                	                	
+                    }                                    
+                }
             }
         }
 
@@ -168,18 +174,16 @@ namespace Ict.Common.Controls
         /// Constructor. Generates several Groups of Tasks from an xml document.
         /// </summary>
         /// <param name="ATaskGroups"></param>
-        /// <param name="AMaxTaskWidth"></param>
-        public TLstTasks(XmlNode ATaskGroups, int AMaxTaskWidth)
+        public TLstTasks(XmlNode ATaskGroups)
         {
             this.SuspendLayout();
             
             this.Name = "lstTasks" + ATaskGroups.Name;
             this.AutoScroll = true;            
+//            this.HorizontalScroll.Enabled = true;
             this.Resize += new EventHandler(ListResize);
 
             XmlNode TaskGroupNode = ATaskGroups.FirstChild;
-
-            FMaxTaskWidth = AMaxTaskWidth;
             
             while (TaskGroupNode != null)
             {
@@ -191,9 +195,6 @@ namespace Ict.Common.Controls
                 {
                 	TUcoTaskGroup TaskGroup = new TUcoTaskGroup();
                 	TaskGroup.GroupTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
-					TaskGroup.AutoSize = true;
-					TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-
                 	TaskGroup.Name = TaskGroupNode.Name;
             		
                     Groups.Add(TaskGroup.Name, TaskGroup);
@@ -207,7 +208,6 @@ namespace Ict.Common.Controls
                                 "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description")) : "";
                         SingleTask.Name = TaskGroupNode.Name;
                         SingleTask.TaskGroup = TaskGroup;
-                        SingleTask.MaxTaskWidth = FMaxTaskWidth;
                         SingleTask.Tag = TaskGroupNode;
                         
                         if (!FHasAccessPermission(TaskGroupNode, FUserId))
@@ -229,7 +229,6 @@ namespace Ict.Common.Controls
 	                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
                             SingleTask.Name = TaskNode.Name;
                             SingleTask.TaskGroup = TaskGroup;
-                            SingleTask.MaxTaskWidth = FMaxTaskWidth;
                             SingleTask.Tag = TaskNode;
 
                             if (!FHasAccessPermission(TaskNode, FUserId))
@@ -244,6 +243,7 @@ namespace Ict.Common.Controls
                     
                     // Add TaskGroup to this UserControls' Controls
 	                TaskGroup.Dock = DockStyle.Top;
+//	                TaskGroup.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
 	                TaskGroup.Margin = new Padding(3);
 	                TaskGroup.AutoSize = true;
 	                TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -530,5 +530,30 @@ namespace Ict.Common.Controls
                 TLogging.Log(s, TLoggingType.ToStatusBar);
             }
         }        
+        
+//		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+//		{
+//            // Set a fixed width for the control.
+//            // ADD AN EXTRA HEIGHT VALIDATION TO AVOID INITIALIZATION PROBLEMS
+//            // BITWISE 'AND' OPERATION: IF ZERO THEN HEIGHT IS NOT INVOLVED IN THIS OPERATION
+//            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)                  
+//            {
+//    		    if (width < MaxTaskWidth) 
+//    		    {               
+////TLogging.Log("SetBoundsCore: Before setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
+//                    base.SetBoundsCore(x, y, MaxTaskWidth, height, specified);
+////TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());	                    
+//                }
+//		    }
+//            else if ((specified&BoundsSpecified.Height) == 0)
+//            {
+//                base.SetBoundsCore(x, y, width, this.Height, specified);
+//            }                
+//		    else
+//		    {
+//                return;
+//		    }
+//TLogging.Log("SetBoundsCore: TLstTask " + Name + "'s size: " + Size.ToString());	    
+//		}
 	}
 }

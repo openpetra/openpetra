@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Ict.Common.Controls
 {
@@ -34,7 +36,8 @@ namespace Ict.Common.Controls
     {
     	private int FMaxTaskWidth;
     	private TaskAppearance FTaskAppearance = TaskAppearance.staLargeTile;
-
+    	private Dictionary<string, TLstTasks> FTaskLists = new Dictionary<string, TLstTasks>();
+    	
    		/// <summary>
 		/// Maximum Task Width
 		/// </summary>        
@@ -47,9 +50,15 @@ namespace Ict.Common.Controls
             
             set
             {
-                FMaxTaskWidth = value;
-                
-                ((TLstTasks)this.Controls[0]).MaxTaskWidth = FMaxTaskWidth;
+                if (FMaxTaskWidth != value) 
+                {
+                    FMaxTaskWidth = value;
+                    
+                    if (this.Controls.Count > 0) 
+                    {
+                        ((TLstTasks)this.Controls[0]).MaxTaskWidth = FMaxTaskWidth;    
+                    }                                   
+                }
             }
         }
     	
@@ -65,9 +74,15 @@ namespace Ict.Common.Controls
             
             set
             {
-                FTaskAppearance = value;
-                
-                ((TLstTasks)this.Controls[0]).TaskAppearance = FTaskAppearance;                
+                if (FTaskAppearance != value)
+                {
+                    FTaskAppearance = value;
+                    
+                    if (this.Controls.Count > 0) 
+                    {
+                        ((TLstTasks)this.Controls[0]).TaskAppearance = FTaskAppearance;
+                    }                    
+                }
             }
         }
     	        
@@ -78,7 +93,7 @@ namespace Ict.Common.Controls
         {
         	this.Padding = new System.Windows.Forms.Padding(5,3,5,3);
         	this.AutoScroll = true;
-        	this.BackColor = System.Drawing.Color.White;            
+//        	this.BackColor = System.Drawing.Color.Green;            
         }
 
         /// <summary>
@@ -86,16 +101,29 @@ namespace Ict.Common.Controls
         /// TODO: this needs to support several panels etc
         /// </summary>
         /// <param name="ATaskList"></param>
-        public void ReplaceTaskList(TLstTasks ATaskList)
+        public void ShowTaskList(TLstTasks ATaskList)
         {
-            if (this.Controls.Count > 0)
-            {
-                this.Controls.RemoveAt(0);
-            }
-
+            TLstTasks ExistingTaskList;
+            
             if (ATaskList != null)
             {
-                this.Controls.Add(ATaskList);
+                if (FTaskLists.TryGetValue(ATaskList.Name, out ExistingTaskList))
+                {
+TLogging.Log("Found TaskList '" + ATaskList.Name + "' - bringing it to front.");
+                    ExistingTaskList.MaxTaskWidth = FMaxTaskWidth;
+                    ExistingTaskList.TaskAppearance = FTaskAppearance;
+                    ExistingTaskList.BringToFront();
+                }
+                else
+                {
+TLogging.Log("Couldn't find TaskList '" + ATaskList.Name + "' - adding it.");                
+                    this.Controls.Add(ATaskList);
+                    ATaskList.MaxTaskWidth = FMaxTaskWidth;
+                    ATaskList.TaskAppearance = FTaskAppearance;
+                    ATaskList.BringToFront();
+                                        
+                    FTaskLists.Add(ATaskList.Name, ATaskList);
+                }
             }
         }
     }

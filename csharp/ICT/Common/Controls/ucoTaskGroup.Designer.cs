@@ -57,7 +57,7 @@ namespace Ict.Common.Controls
 			// 
 			// nlnGroupTitle
 			// 
-			this.nlnGroupTitle.BackColor = System.Drawing.Color.White;
+//			this.nlnGroupTitle.BackColor = System.Drawing.Color.White;
 			this.nlnGroupTitle.Caption = "General";
 			this.nlnGroupTitle.Dock = System.Windows.Forms.DockStyle.Top;
 			this.nlnGroupTitle.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -71,11 +71,11 @@ namespace Ict.Common.Controls
 			// 
 			this.flpTaskGroup.AutoSize = true;
 			this.flpTaskGroup.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.flpTaskGroup.BackColor = System.Drawing.Color.White;
-			this.flpTaskGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+//			this.flpTaskGroup.BackColor = System.Drawing.Color.White;
+			this.flpTaskGroup.Dock = System.Windows.Forms.DockStyle.Top;
 			this.flpTaskGroup.Location = new System.Drawing.Point(0, 22);
 			this.flpTaskGroup.Name = "flpTaskGroup";
-			this.flpTaskGroup.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
+			this.flpTaskGroup.Padding = new System.Windows.Forms.Padding(0, 3, 0, 7);
 			this.flpTaskGroup.Size = new System.Drawing.Size(805, 417);
 			this.flpTaskGroup.TabIndex = 3;
 			// 
@@ -83,7 +83,7 @@ namespace Ict.Common.Controls
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.Color.White;
+//			this.BackColor = System.Drawing.Color.Red;
 			this.Controls.Add(this.flpTaskGroup);
 			this.Controls.Add(this.nlnGroupTitle);
 			this.Name = "TUcoTaskGroup";

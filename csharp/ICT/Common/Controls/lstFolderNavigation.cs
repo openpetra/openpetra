@@ -142,7 +142,6 @@ namespace Ict.Common.Controls
                 TPnlAccordion pnlAccordion = new TPnlAccordion(AFolderNode, FDashboard, pnlName);
 
                 pnlAccordion.Statusbar = FStatusbar;
-
                 this.sptNavigation.Panel1.Controls.Add(pnlAccordion);
 
                 return pnlAccordion;

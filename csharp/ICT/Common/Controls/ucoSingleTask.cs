@@ -76,15 +76,15 @@ namespace Ict.Common.Controls
         /// </summary>
         public TUcoTaskGroup TaskGroup
         {
-        	get
-        	{
-        		return FTaskGroup;
-        	}
-        	
-        	set
-        	{
-        		FTaskGroup = value;
-        	}
+            get
+            {
+                return FTaskGroup;
+            }
+            
+            set
+            {
+                FTaskGroup = value;
+            }
         }
         
         /// <summary>
@@ -133,30 +133,37 @@ namespace Ict.Common.Controls
             {
                 FSingleTaskAppearance = value;
                 
-                if(FSingleTaskAppearance == TaskAppearance.staLargeTile)
-                {
-                    lblTaskDescription.Visible = true;
-                    llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 9.0f, FontStyle.Regular);
-                    
-               		// In LargeTile appearance the items should all have the same width
-            		Size = new Size(MaxTaskWidth, MaxTaskHeight);
-                }
-                else
-                {
-                    lblTaskDescription.Visible = false;
-                    llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 8.0f, FontStyle.Regular);
-					
-                    // In ListEntry appearance the items should only be as wide as they need
-                	Size = RequiredSize;	
-                }
-
+                UpdateTaskAppearance();
                 UpdateLayout();
             }
         }
+
+
         
-		/// <summary>
-		/// Maximum Task Width.
-		/// </summary>        
+
+        
+
+        void UpdateTaskAppearance()
+        {
+            if (FSingleTaskAppearance == TaskAppearance.staLargeTile) 
+            {
+                // In LargeTile appearance the items should all have the same width
+                lblTaskDescription.Visible = true;
+                llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 9f, FontStyle.Regular);
+                Size = new Size(MaxTaskWidth, MaxTaskHeight);
+            } 
+            else
+            {
+                // In ListEntry appearance the items should only be as wide as they need
+                lblTaskDescription.Visible = false;
+                llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 8f, FontStyle.Regular);
+                Size = RequiredSize;
+            }
+        }
+        
+        /// <summary>
+        /// Maximum Task Width.
+        /// </summary>
         public int MaxTaskWidth
         {
             get
@@ -169,7 +176,13 @@ namespace Ict.Common.Controls
                 FMaxTaskWidth = value;
                 
                 Width = value;
-        		UpdateLayout();
+                if (Width == 0)
+                {
+                    TLogging.Log(Name + ": Width got set programmatically to 0!");
+                }
+                
+                UpdateTaskAppearance();
+                UpdateLayout();
             }
         }
         
@@ -188,7 +201,7 @@ namespace Ict.Common.Controls
                 FMaxTaskHeight = value;
             }
         }
-                
+        
         /// <summary>
         /// Icon to be displayed left of the Task Title LinkLabel.
         /// </summary>
@@ -241,7 +254,7 @@ namespace Ict.Common.Controls
         }
         
         /// <summary>
-        /// Set to true if a single click anywhere in the Control should cause a 
+        /// Set to true if a single click anywhere in the Control should cause a
         /// <see cref="TaskClick" /> Event to be fired.
         /// </summary>
         public bool SingleClickAnywhereMeansTaskClicked
@@ -278,7 +291,7 @@ namespace Ict.Common.Controls
                     RequiredHeight = 24;
                 }
                 
-                if (RequiredWidth > FMaxTaskWidth) 
+                if (RequiredWidth > FMaxTaskWidth)
                 {
                     RequiredWidth = FMaxTaskWidth;
                 }
@@ -324,7 +337,7 @@ namespace Ict.Common.Controls
         public event EventHandler TaskSelected;
         
         void LlbTaskTitleLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {            
+        {
             FireTaskClicked();
         }
 

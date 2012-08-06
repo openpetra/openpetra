@@ -51,16 +51,18 @@ namespace Ict.Common.Controls
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.SuspendLayout();
-			// 
-			// TLstTasks
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.Color.RosyBrown;
-			this.Name = "TLstTasks";
+		    this.SuspendLayout();
+		    // 
+		    // TLstTasks
+		    // 
+		    this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+		    this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+		    this.AutoSize = true;
+		    this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+//		    this.BackColor = System.Drawing.Color.Sienna;
+		    this.Name = "TLstTasks";
 			this.Size = new System.Drawing.Size(714, 276);
-			this.ResumeLayout(false);
+		    this.ResumeLayout(false);
 		}
 	}
 }

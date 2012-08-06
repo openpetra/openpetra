@@ -73,9 +73,12 @@ namespace Ict.Common.Controls
             
             set
             {
-                FMaxTaskWidth = value;
-                
-                FCurrentTaskList.MaxTaskWidth = FMaxTaskWidth;
+                if (FMaxTaskWidth != value) 
+                {
+                    FMaxTaskWidth = value;
+                    
+                    FCurrentTaskList.MaxTaskWidth = FMaxTaskWidth;                   
+                }
             }
         }
         
@@ -219,16 +222,20 @@ namespace Ict.Common.Controls
             if (tag.GetType() == typeof(TLstTasks))
             {
                 FCurrentTaskList = (TLstTasks)tag;
-                FCurrentTaskList.MaxTaskWidth =  FMaxTaskWidth;
+TLogging.Log("LinkClicked for existing " + FCurrentTaskList.Name);                
             }
             else
             {
-                FCurrentTaskList = new TLstTasks((XmlNode)tag, FMaxTaskWidth);
-                FCurrentTaskList.Statusbar = FStatusbar;
+                FCurrentTaskList = new TLstTasks((XmlNode)tag);
+TLogging.Log("LinkClicked for NEW " + FCurrentTaskList.Name);
                 ((Control)sender).Tag = FCurrentTaskList;
             }
 
-            FDashboard.ReplaceTaskList(FCurrentTaskList);
+            FCurrentTaskList.Statusbar = FStatusbar;
+            FCurrentTaskList.Dock = DockStyle.Fill;
+            
+            FDashboard.ShowTaskList(FCurrentTaskList);            
+//            Invalidate();
         }
 
         private TExtStatusBarHelp FStatusbar = null;
@@ -267,7 +274,7 @@ namespace Ict.Common.Controls
 
             if (!validContent)
             {
-                FDashboard.ReplaceTaskList(null);
+                FDashboard.ShowTaskList(null);
             }
         }
     }

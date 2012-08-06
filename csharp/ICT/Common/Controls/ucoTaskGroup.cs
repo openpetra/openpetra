@@ -69,7 +69,31 @@ namespace Ict.Common.Controls
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-		}
+			flpTaskGroup.Resize += new EventHandler(flpTaskGroup_Resize);
+        }
+
+        /// <summary>
+        /// We need to manually re-size the UserControl on the Resize event of the FlowLayoutPanel. 
+        /// The reason for that is that when the FlowLayoutPanel is in a UserControl, it doesn't re-size 
+        /// the UserControl and, consequently, we can't expect it to re-size the UserControl.
+        /// If we don't manually re-size the UserControl, the TUcoTaskGroup UserControl doesn't 'shrink'
+        /// back in height if the height that was needed to display a FlowLayoutPanel is reduced
+        /// because the Main Menu form is enlarged.
+        /// </summary>
+        /// <param name="sender">Set by WinForms. Ignored.</param>
+        /// <param name="e">Set by WinForms. Ignored.</param>
+        void flpTaskGroup_Resize(object sender, EventArgs e)
+        {
+            this.Height = flpTaskGroup.Height + nlnGroupTitle.Height;      
+
+            if (flpTaskGroup.Width < MaxTaskWidth) 
+            {
+                flpTaskGroup.Width = MaxTaskWidth;
+//                this.Width = MaxTaskWidth;
+            }            
+//TLogging.Log("flpTaskGroup_Resize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
+TLogging.Log("flpTaskGroup_Resize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
+        }
 		
 		/// <summary>
 		/// Sets the Group Title.
@@ -84,6 +108,7 @@ namespace Ict.Common.Controls
 			set
 			{
 				nlnGroupTitle.Caption = value;
+				flpTaskGroup.Name = value;  // for debugging only...
 			}
 		}
 
@@ -120,12 +145,19 @@ namespace Ict.Common.Controls
             
             set
             {
-                FMaxTaskWidth = value;
-                
-                foreach (var Task in Tasks) 
+                if (FMaxTaskWidth != value) 
                 {
-                	Task.Value.MaxTaskWidth = value;                	                	
-                }                
+                FMaxTaskWidth = value;
+                    
+                    foreach (var Task in Tasks) 
+                    {
+if (value == 0) 
+{
+    TLogging.Log(Task.Value.Name + ": SETTING Width programmatically to 0!");
+}                    
+                    	Task.Value.MaxTaskWidth = value;                	                	
+                    }                                   
+                }
             }
         }
         
@@ -138,14 +170,28 @@ namespace Ict.Common.Controls
 		{
 			FTasks.Add(ATaskname, ATask);
 		
-			// Add Task to this UserControls' Controls			
-			ATask.Dock = DockStyle.Top;
+//			 Add Task to this UserControls' Controls			
+//			ATask.Dock = DockStyle.Top;
 			ATask.Margin = new Padding(5);
 
-			flpTaskGroup.Controls.Add(ATask);			
-			
-			ATask.TaskClicked += new EventHandler(FireTaskClicked);
-			ATask.TaskSelected += new EventHandler(FireTaskSelected);
+            flpTaskGroup.Controls.Add(ATask);
+//            Controls.Add(ATask);
+            
+            
+//TLogging.Log("flpTaskGroup '" + flpTaskGroup.Name + "' Controls.Add: " + ATask.Name);
+//			ATask.TaskClicked += new EventHandler(FireTaskClicked);
+//			ATask.TaskSelected += new EventHandler(FireTaskSelected);
+//			ATask.Dock = DockStyle.Top;
+
+//
+//            Button button1 = new Button();
+//            button1.Text = "Click Me";
+//            button1.Name = "btn" + ATaskname;
+//            
+//			button1.Dock = DockStyle.Top;
+//			button1.Margin = new Padding(50);
+//            
+//            flpTaskGroup.Controls.Add(button1);			
 		}
 
         
@@ -175,8 +221,54 @@ namespace Ict.Common.Controls
 		
 		private void TUcoTaskGroupResize(object sender, EventArgs e)
 		{
+		    string ControlsList = "\r\n" + flpTaskGroup.Name + "\r\n";
+		    
 		    // Cause the FlowLayoutPanel to resize as well (stangely this doesn't happen automatically!)
-			flpTaskGroup.MaximumSize = new System.Drawing.Size(this.Width, 0);			
+		    if (this.Width < MaxTaskWidth) 
+		    {
+//                this.Width = MaxTaskWidth;
+		    }
+		    else
+		    {
+		        flpTaskGroup.MaximumSize = new System.Drawing.Size(this.Width, 0);
+		    }
+		    
+		    			    
+
+//TLogging.Log("TUcoTaskGroupResize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
+TLogging.Log("TUcoTaskGroupResize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
+		    
+//			TLogging.Log("flpTaskGroup '" + flpTaskGroup.Name + "' FTasks.Count: " + FTasks.Count.ToString());
+//TLogging.Log("flpTaskGroup '" + flpTaskGroup.Name + "' Controls.Count: " + flpTaskGroup.Controls.Count.ToString());
+
+            foreach (Control SingleControl in flpTaskGroup.Controls) 
+            {
+                ControlsList += SingleControl.Name + "; X: " + SingleControl.Location.X.ToString() + "; Y: " + SingleControl.Location.Y.ToString() + "; Size: " + SingleControl.Size.ToString() + "\r\n";
+            }
+            
+TLogging.Log(ControlsList + "\r\n" + "\r\n");
 		}
+		
+// TODO: Try to prevent the UserControl from shrinking below MaxTaskWidth to allow showing of horizontal scrollbar in the Tasks List. The code below achieves the shrink-stopping, but introduces undesired side effects. Needs more investigation...
+//		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+//		{
+//            // Set a fixed width for the control.
+//            // ADD AN EXTRA HEIGHT VALIDATION TO AVOID INITIALIZATION PROBLEMS
+//            // BITWISE 'AND' OPERATION: IF ZERO THEN HEIGHT IS NOT INVOLVED IN THIS OPERATION
+//            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)                  
+//            {
+//    		    if (width < MaxTaskWidth) 
+//    		    {               
+//TLogging.Log("SetBoundsCore: Before setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
+//                    base.SetBoundsCore(x, y, MaxTaskWidth, height, specified);
+//TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());	                    
+//                }
+//		    }
+//		    else
+//		    {
+//                return;
+//		    }
+//TLogging.Log("SetBoundsCore: ucoTaskGroup " + Name + "'s size: " + Size.ToString());	    
+//		}
 	}
 }
