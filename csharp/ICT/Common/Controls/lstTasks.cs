@@ -243,7 +243,6 @@ namespace Ict.Common.Controls
                     
                     // Add TaskGroup to this UserControls' Controls
 	                TaskGroup.Dock = DockStyle.Top;
-//	                TaskGroup.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
 	                TaskGroup.Margin = new Padding(3);
 	                TaskGroup.AutoSize = true;
 	                TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -252,17 +251,19 @@ namespace Ict.Common.Controls
 	                TaskGroup.TaskSelected += new EventHandler(SingleTask_TaskSelected);
 
 	                this.Controls.Add(TaskGroup);
+	                
+	                // Make sure Task Groups are shown in correct order and not in reverse order.
+	                // (This is needed because we 'stack them up' with 'TaskGroup.Dock = DockStyle.Top')      
+	                TaskGroup.BringToFront();
+	                
+	                // Select (highlight) first Task in the first Group
+                    if (Groups.Count == 1) 
+                    {
+                        TaskGroup.SelectFirstTask();    
+                    }	                
                 }
                 
                 TaskGroupNode = TaskGroupNode.NextSibling;
-            }
-            
-            // Inverse the Z-Order of the the Task Groups so that the Task Groups are shown in correct order, 
-            // and not in reverse order.
-            // (This is needed because we 'stack them up' with 'TaskGroup.Dock = DockStyle.Top')
-            for (int ControlCounter = 0; ControlCounter < Controls.Count; ControlCounter++) 
-            {
-                Controls[ControlCounter].SendToBack();
             }
             
             this.ResumeLayout();

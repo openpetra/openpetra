@@ -37,6 +37,7 @@ namespace Ict.Common.Controls
         private Dictionary<string, TUcoSingleTask> FTasks = new Dictionary<string, TUcoSingleTask>();
 		private TaskAppearance FTaskAppearance;
 		private int FMaxTaskWidth;
+		private TUcoSingleTask FirstTaskInGroup = null;
 		
 		/// <summary>
 		/// Holds the Tasks that are to be displayed in the Task Group.
@@ -92,7 +93,7 @@ namespace Ict.Common.Controls
 //                this.Width = MaxTaskWidth;
             }            
 //TLogging.Log("flpTaskGroup_Resize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
-TLogging.Log("flpTaskGroup_Resize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
+//TLogging.Log("flpTaskGroup_Resize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
         }
 		
 		/// <summary>
@@ -151,10 +152,6 @@ TLogging.Log("flpTaskGroup_Resize: flpTaskGroup " + Name + "'s size: " + flpTask
                     
                     foreach (var Task in Tasks) 
                     {
-if (value == 0) 
-{
-    TLogging.Log(Task.Value.Name + ": SETTING Width programmatically to 0!");
-}                    
                     	Task.Value.MaxTaskWidth = value;                	                	
                     }                                   
                 }
@@ -170,28 +167,17 @@ if (value == 0)
 		{
 			FTasks.Add(ATaskname, ATask);
 		
-//			 Add Task to this UserControls' Controls			
-//			ATask.Dock = DockStyle.Top;
+            //	Add Task to this UserControls' Controls			
 			ATask.Margin = new Padding(5);
-
             flpTaskGroup.Controls.Add(ATask);
-//            Controls.Add(ATask);
-            
-            
-//TLogging.Log("flpTaskGroup '" + flpTaskGroup.Name + "' Controls.Add: " + ATask.Name);
-//			ATask.TaskClicked += new EventHandler(FireTaskClicked);
-//			ATask.TaskSelected += new EventHandler(FireTaskSelected);
-//			ATask.Dock = DockStyle.Top;
-
-//
-//            Button button1 = new Button();
-//            button1.Text = "Click Me";
-//            button1.Name = "btn" + ATaskname;
-//            
-//			button1.Dock = DockStyle.Top;
-//			button1.Margin = new Padding(50);
-//            
-//            flpTaskGroup.Controls.Add(button1);			
+           
+			ATask.TaskClicked += new EventHandler(FireTaskClicked);
+			ATask.TaskSelected += new EventHandler(FireTaskSelected);
+			
+			if (FTasks.Count == 1) 
+			{
+			    FirstTaskInGroup = ATask;
+			}
 		}
 
         
@@ -203,8 +189,20 @@ if (value == 0)
 			FTasks.Clear();
 			
 			flpTaskGroup.Controls.Clear();
+			FirstTaskInGroup = null;
 		}
 
+		/// <summary>
+		/// Selects (highlights) the task that was first added to a TaskGroup.
+		/// </summary>
+		public void SelectFirstTask()
+		{
+		    if (FTasks.Count > 0) 
+		    {
+		        FirstTaskInGroup.SelectTask();
+		    }
+		}
+		
         private void FireTaskClicked(object sender, EventArgs e)
         {
             if (TaskClicked != null) {
@@ -236,7 +234,7 @@ if (value == 0)
 		    			    
 
 //TLogging.Log("TUcoTaskGroupResize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
-TLogging.Log("TUcoTaskGroupResize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
+//TLogging.Log("TUcoTaskGroupResize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
 		    
 //			TLogging.Log("flpTaskGroup '" + flpTaskGroup.Name + "' FTasks.Count: " + FTasks.Count.ToString());
 //TLogging.Log("flpTaskGroup '" + flpTaskGroup.Name + "' Controls.Count: " + flpTaskGroup.Controls.Count.ToString());
@@ -246,7 +244,7 @@ TLogging.Log("TUcoTaskGroupResize: flpTaskGroup " + Name + "'s size: " + flpTask
                 ControlsList += SingleControl.Name + "; X: " + SingleControl.Location.X.ToString() + "; Y: " + SingleControl.Location.Y.ToString() + "; Size: " + SingleControl.Size.ToString() + "\r\n";
             }
             
-TLogging.Log(ControlsList + "\r\n" + "\r\n");
+//TLogging.Log(ControlsList + "\r\n" + "\r\n");
 		}
 		
 // TODO: Try to prevent the UserControl from shrinking below MaxTaskWidth to allow showing of horizontal scrollbar in the Tasks List. The code below achieves the shrink-stopping, but introduces undesired side effects. Needs more investigation...
