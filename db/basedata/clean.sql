@@ -189,7 +189,6 @@ DELETE FROM p_data_label_lookup;
 DELETE FROM p_data_label_use;
 DELETE FROM p_data_label;
 DELETE FROM p_data_label_lookup_category;
-DELETE FROM pt_personal_data_labels;
 DELETE FROM pt_driver_status;
 DELETE FROM pt_skill_level;
 DELETE FROM pt_skill_category;

@@ -22,7 +22,6 @@
         <Table sqltable="pm_short_term_application"/>      <!-- Short Term Application Data -->
         <Table sqltable="pm_year_program_application"/>   <!-- Long Term Application Data -->
         <Table sqltable="pm_personal_data"/>              <!-- Personal Data -->
-        <Table sqltable="pt_personal_data_labels"/>       <!-- Personal Data -->
         <Table sqltable="pm_passport_details"/>           <!-- Passport Details -->
         <Table sqltable="pm_document"/>                   <!-- Personal Documents -->
         <Table sqltable="pm_special_need"/>               <!-- Special Needs -->
