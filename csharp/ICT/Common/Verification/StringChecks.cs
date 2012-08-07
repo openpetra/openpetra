@@ -59,6 +59,9 @@ namespace Ict.Common.Verification
 
         private static readonly string StrStringMustNotBeEmpty = Catalog.GetString("A value must be entered for {0}.");
 
+        private static readonly string StrStringTooLong = Catalog.GetString(
+            "The value you entered for {0} is too long - it's maximum length is {1} characters, but you entered {2} characters.");
+
         #endregion
 
 
@@ -89,6 +92,46 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOEMPTYSTRING, CommonResourcestrings.StrInvalidStringEntered + Environment.NewLine +
                         StrStringMustNotBeEmpty, new string[] { Description }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
+        #region StringLengthLesserOrEqual
+
+        /// <summary>
+        /// Checks whether a strings' length is lesser or equal to the specified amount of characters.  Null values are accepted.
+        /// </summary>
+        /// <param name="AValue">The string to check.</param>
+        /// <param name="APermittedStringLength">The permitted amount of characters.</param>
+        /// <param name="ADescription">Description what the value is about (for the
+        /// error message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> is not null and not <see cref="String.Empty" />,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that
+        /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult StringLengthLesserOrEqual(string AValue, int APermittedStringLength, string ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            // Check
+            if ((AValue != null)
+                && (AValue.Length > APermittedStringLength))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_STRINGTOOLONG, CommonResourcestrings.StrInvalidStringEntered + Environment.NewLine +
+                        StrStringTooLong, new string[] { Description, APermittedStringLength.ToString(), AValue.Length.ToString() }));
 
                 if (AResultColumn != null)
                 {

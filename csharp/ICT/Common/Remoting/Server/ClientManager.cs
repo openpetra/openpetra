@@ -1571,7 +1571,7 @@ namespace Ict.Common.Remoting.Server
                             throw;
                         }
                     }
-                    catch (Exception exp)
+                    catch (Exception)
                     {
                         // we should cleanly shut down the appdomain, to avoid exception:
                         // System.Net.Sockets.SocketException: Address already in use
@@ -1588,7 +1588,7 @@ namespace Ict.Common.Remoting.Server
                             ServerDisconnectClient(AClientID, out CantDisconnectReason);
                         }
 
-                        throw exp;
+                        throw;
                     }
                     #endregion
 #if DEBUGMODE

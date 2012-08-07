@@ -3,7 +3,7 @@ RootNode:
     FormTitle: Maintain Daily Exchange Rates
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: ADailyExchangeRate
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 660
@@ -11,7 +11,7 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actImport: {ActionClick=Import}
-        actClose:  {Label=Close, ActionClick=CloseDialog}
+        actClose:  {Label=Accept, ActionClick=CloseDialog}
         actCancel:  {Label=Cancel, ActionClick=CancelDialog}
     Controls:
         pnlContent:
@@ -46,8 +46,8 @@ RootNode:
                 Row5: [lblValueOtherDirection]
         cmbDetailFromCurrencyCode: {OnlySetOnce=true, Label=&From Currency Code, List=CurrencyCodeList, ColSpan=2}
         cmbDetailToCurrencyCode: {OnlySetOnce=true, Label=&To Currency Code, List=CurrencyCodeList, ColSpan=2}
-        dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate}
-        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100}
+        dtpDetailDateEffectiveFrom: {OnlySetOnce=true, Label=D&ate, Validation=true}
+        txtDetailRateOfExchange: {OnlySetOnce=true, Label=&Rate of exchange, Format=Decimal(10), Width=100, Validation=true}
         btnInvertExchangeRate: {Label=&Invert value}
         lblValueOneDirection: {ColSpan=2}
         lblValueOtherDirection: {ColSpan=2}

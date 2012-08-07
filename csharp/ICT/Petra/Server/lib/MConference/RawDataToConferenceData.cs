@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log("Fixing Arrival and Departure Dates: " + ex.Message);
                 TLogging.Log(ex.ToString());
-                throw ex;
+                throw;
             }
             finally
             {

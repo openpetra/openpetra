@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui
     DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
     DetailTable: PmStaffData
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -20,8 +20,8 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
-        btnNew: {Action=actNew}
-        btnDelete: {Action=actDelete}
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             TableName: PmStaffData

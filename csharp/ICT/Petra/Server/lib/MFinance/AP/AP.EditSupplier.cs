@@ -125,7 +125,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     TLogging.Log("TSupplierEditUIConnector.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                     TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                    throw Exp;
+                    throw;
                 }
             }
             finally
@@ -199,7 +199,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw e;
+                    throw;
                 }
             }
 

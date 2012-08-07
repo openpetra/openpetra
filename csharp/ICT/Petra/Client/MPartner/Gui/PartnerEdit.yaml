@@ -2,7 +2,7 @@ RootNode:
     BaseYaml: ../../CommonForms/PetraEditForm.yaml
     FormTitle: Partner Edit
     Namespace: Ict.Petra.Client.MPartner.Gui
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: windowEditUIConnector 

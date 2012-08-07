@@ -36,6 +36,8 @@ Source: ..\..\..\csharp\ThirdParty\SQLite\sqlite3.dll; DestDir: {userappdata}/Op
 Source: ..\..\..\csharp\ThirdParty\ICSharpCode\ICSharpCode.SharpZipLib.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\GNU\GNU.Gettext.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\csharp\ThirdParty\A1Panel\Owf.Controls.A1Panel.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+
 Source: ..\..\..\delivery\bin\Ict.Common*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Client*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Shared*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion

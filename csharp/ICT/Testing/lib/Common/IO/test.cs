@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
 using System.Threading;
 using System.Collections;
@@ -31,6 +32,7 @@ using System.Xml;
 using System.IO;
 using Ict.Common;
 using Ict.Common.IO;
+using Jayrock.Json;
 
 namespace Ict.Common.IO.Testing
 {
@@ -384,6 +386,43 @@ namespace Ict.Common.IO.Testing
             Assert.AreEqual("test11" + Environment.NewLine + "test1" + Environment.NewLine,
                 template.FinishWriting(true),
                 "TEST11");
+        }
+
+        /// test json parser
+        [Test]
+        public void TestJsonParser()
+        {
+            string JSONFormData = "{'FirstName':'#FIRSTNAME','LastName':'#LASTNAME','Street':'#STREET'}";
+
+            JSONFormData = JSONFormData.Replace("'", "\"");
+
+            string problem = "My \"Lastname\" with quotes";
+            string test = JSONFormData.Replace("#LASTNAME", problem);
+            JsonObject obj = TJsonTools.ParseValues(test);
+            Assert.AreEqual(problem.Replace("\"", "&quot;"), obj["LastName"].ToString());
+
+            problem = "My \"Lastname\", with comma";
+            test = JSONFormData.Replace("#LASTNAME", problem);
+            obj = TJsonTools.ParseValues(test);
+            Assert.AreEqual(problem.Replace("\"", "&quot;"), obj["LastName"].ToString());
+
+            problem = "My \"Lastname\": with colon";
+            test = JSONFormData.Replace("#LASTNAME", problem);
+            obj = TJsonTools.ParseValues(test);
+            Assert.AreEqual(problem.Replace("\"", "&quot;"), obj["LastName"].ToString());
+
+            problem = "My \"Lastname\",\" with\" quote comma quote";
+            test = JSONFormData.Replace("#LASTNAME", problem);
+            obj = TJsonTools.ParseValues(test);
+            Assert.AreEqual(problem.Replace("\"", "&quot;"), obj["LastName"].ToString());
+
+            // test with more curly brackets, nested lists
+            JSONFormData = "{'card-0':{'FirstName':'#FIRSTNAME','LastName':'#LASTNAME'},'card-1':{'Street':'#STREET'}}";
+            JSONFormData = JSONFormData.Replace("'", "\"");
+            problem = "My \"Lastname\": with nested values and colon";
+            test = JSONFormData.Replace("#LASTNAME", problem);
+            obj = TJsonTools.ParseValues(test);
+            Assert.AreEqual(problem.Replace("\"", "&quot;"), obj["LastName"].ToString());
         }
     }
 }

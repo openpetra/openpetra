@@ -147,10 +147,10 @@ namespace Ict.Common.IO
         /// this makes use of the EPPlus library
         /// http://epplus.codeplex.com/
         /// </summary>
-        private static void Xml2ExcelWorksheet(XmlDocument ADoc, ExcelWorksheet AWorksheet)
+        private static void Xml2ExcelWorksheet(XmlDocument ADoc, ExcelWorksheet AWorksheet, bool AWithHashInCaption = true)
         {
-            Int32 rowCounter = 0;
-            Int16 colCounter = 0;
+            Int32 rowCounter = 1;
+            Int16 colCounter = 1;
 
             // first write the header of the csv file
             List <string>AllAttributes = new List <string>();
@@ -159,12 +159,20 @@ namespace Ict.Common.IO
 
             foreach (string attrName in AllAttributes)
             {
-                AWorksheet.Cells[rowCounter, colCounter].Value = "#" + attrName;
+                if (AWithHashInCaption)
+                {
+                    AWorksheet.Cells[rowCounter, colCounter].Value = "#" + attrName;
+                }
+                else
+                {
+                    AWorksheet.Cells[rowCounter, colCounter].Value = attrName;
+                }
+
                 colCounter++;
             }
 
             rowCounter++;
-            colCounter = 0;
+            colCounter = 1;
 
             foreach (XmlNode node in AllNodes)
             {
@@ -181,6 +189,7 @@ namespace Ict.Common.IO
                         if (value.StartsWith(eVariantTypes.eDateTime.ToString() + ":"))
                         {
                             AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToDate();
+                            AWorksheet.Cells[rowCounter, colCounter].Style.Numberformat.Format = "dd/mm/yyyy";
                         }
                         else if (value.StartsWith(eVariantTypes.eInteger.ToString() + ":"))
                         {
@@ -196,7 +205,7 @@ namespace Ict.Common.IO
                 }
 
                 rowCounter++;
-                colCounter = 0;
+                colCounter = 1;
             }
         }
 
@@ -206,20 +215,25 @@ namespace Ict.Common.IO
         /// this makes use of the EPPlus library
         /// http://epplus.codeplex.com/
         /// </summary>
-        /// <param name="ADoc"></param>
-        /// <param name="AStream"></param>
-        /// <returns></returns>
-        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream)
+        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream, bool AWithHashInCaption = true)
         {
-            ExcelPackage pck = new ExcelPackage();
+            try
+            {
+                ExcelPackage pck = new ExcelPackage();
 
-            ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
+                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
 
-            Xml2ExcelWorksheet(ADoc, worksheet);
+                Xml2ExcelWorksheet(ADoc, worksheet, AWithHashInCaption);
 
-            pck.SaveAs(AStream);
+                pck.SaveAs(AStream);
 
-            return true;
+                return true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                return false;
+            }
         }
 
         /// <summary>
@@ -230,22 +244,27 @@ namespace Ict.Common.IO
         ///
         /// this overload stores several worksheets
         /// </summary>
-        /// <param name="ADocs"></param>
-        /// <param name="AStream"></param>
-        /// <returns></returns>
-        public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream)
+        public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream, bool AWithHashInCaption = true)
         {
-            ExcelPackage pck = new ExcelPackage();
-
-            foreach (string WorksheetTitle in ADocs.Keys)
+            try
             {
-                ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(WorksheetTitle);
+                ExcelPackage pck = new ExcelPackage();
 
-                Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet);
+                foreach (string WorksheetTitle in ADocs.Keys)
+                {
+                    ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(WorksheetTitle);
+
+                    Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet, AWithHashInCaption);
+                }
+
+                pck.SaveAs(AStream);
+                return true;
             }
-
-            pck.SaveAs(AStream);
-            return true;
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+                return false;
+            }
         }
 
         /// <summary>

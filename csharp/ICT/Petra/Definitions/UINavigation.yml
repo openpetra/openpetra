@@ -49,6 +49,8 @@ OpenPetra:
                         PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by City, ActionClick=TPartnerExtractsMain.PartnerByCityExtract}
                         PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Subscription, ActionClick=TPartnerExtractsMain.PartnerBySubscriptionExtract}
                         PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Special Type, ActionClick=TPartnerExtractsMain.PartnerBySpecialTypeExtract}
+                        FamilyMembersExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Members Extract, ActionClick=TPartnerExtractsMain.FamilyMembersExtract}
+                        FamilyExtractForPersons: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Extract for Persons, ActionClick=TPartnerExtractsMain.FamilyExtractForPersons}
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extract}
                         PartnerByConference: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Conference, ActionClick=TFrmPersonnelMain.PartnerByConferenceExtract}
                         PartnerByOutreach: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Outreach, ActionClick=TFrmPersonnelMain.PartnerByOutreachExtract}
@@ -292,30 +294,28 @@ OpenPetra:
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup}
                     General:
                         AbilityArea: {Label=Setup Ability Areas, Description=Maintain Ability Areas, ActionOpenScreen=TFrmAbilityAreaSetup}
-                        AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}                           
+                        AbilityLevel: {Label=Setup Ability Levels, Description=Maintain Ability Levels, ActionOpenScreen=TFrmAbilityLevelSetup}
                         DocumentTypeCategory: {Label=Setup Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypeCategorySetup}
                         DocumentType: {Label=Setup Document Types, Description=Maintain Document Types, ActionOpenScreen=TFrmDocumentTypeSetup}
-                        DriverStatus: {Label=Setup Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}   
+                        DriverStatus: {Label=Setup Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}
                         JobAssignmentType: {Label=Setup Job Assignment Types, Description=Maintain Job Assignment Types, ActionOpenScreen=TFrmJobAssignmentTypeSetup}
                         LanguageLevel: {Label=Setup Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
                         LeadershipRating: {Label=Setup Leadership Ratings, Description=Maintain Leadership Ratings, ActionOpenScreen=TFrmLeadershipRatingSetup}
                         LeavingCode: {Label=Setup Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
-                        PassportType: {Label=Setup Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup} 
+                        PassportType: {Label=Setup Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup}
                         Position: {Label=Setup Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
-                        ProfessionalArea: {Label=Setup Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}   
+                        ProfessionalArea: {Label=Setup Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}
                         QualificationLevel: {Label=Setup Qualification Levels, Description=Maintain Qualification Levels, ActionOpenScreen=TFrmQualificationLevelSetup}
                         SkillCategory: {Label=Setup Skill Categories, Description=Maintain Skill Categories, ActionOpenScreen=TFrmSkillCategorySetup}
-                        SkillLevel: {Label=Setup Skill Levels, Description=Maintain Skill Levels, ActionOpenScreen=TFrmSkillLevelSetup} 						
-                        ValuableItem: {Label=Setup Valuable Items, Description=Maintain Valuable Items, ActionOpenScreen=TFrmValuableItemSetup}
-                        VisionArea: {Label=Setup Vision Areas, Description=Maintain Vision Areas, ActionOpenScreen=TFrmVisionAreaSetup} 
-                        VisionLevel: {Label=Setup Vision Levels, Description=Maintain Vision Levels, ActionOpenScreen=TFrmVisionLevelSetup}
+                        SkillLevel: {Label=Setup Skill Levels, Description=Maintain Skill Levels, ActionOpenScreen=TFrmSkillLevelSetup}
+                        UnitHierarchy: {Label=Unit Hierarchy, Description=Arrange Units in a tree, ActionOpenScreen=TFrmUnitHierarchy}
                     Application-related:
                         ApplicantStatus: {Label=Setup Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
-                        ApplicationForm: {Label=Setup Application Forms, Description=Maintain Application Forms, ActionOpenScreen=TFrmApplicationFormSetup}
                         ApplicationType: {Label=Setup Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
                         ArrivalDeparturePoint: {Label=Setup Arrival and Departure Points, Description=Maintain Arrival and Departure Points, ActionOpenScreen=TFrmArrivalDeparturePointSetup}
                         Country_EventPreferenceLevel: {Label=Setup Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
                         EventRole: {Label=Setup Event Roles, Description=Maintain Event Roles, ActionOpenScreen=TFrmEventRoleSetup}
+                        OrganisationContact: {Label=Setup Organisation Contacts, Description=Maintain Organisation Contacts, ActionOpenScreen=TFrmOrganisationContactSetup}
                     LocalDataRelated: {Label=Local Data-related}
                         LocalDataOptionListNames: {Label=Setup Local Data Option List Names, Description=Maintain Local Data Option List names, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
                         #LocalApplicationDataFields: {Label=Setup Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}

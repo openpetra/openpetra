@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PReasonSubscriptionCancelled
     CacheableTable: ReasonSubscriptionCancelledList
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 660

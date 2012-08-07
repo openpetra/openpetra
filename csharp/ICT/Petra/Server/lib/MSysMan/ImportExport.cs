@@ -407,7 +407,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         catch (Exception e)
                         {
                             TLogging.Log("error in ResetDatabase, LoadTable " + ATableName + ":" + e.Message);
-                            throw e;
+                            throw;
                         }
 
                         InsertStatement = new StringBuilder(OrigInsertStatement);
@@ -513,7 +513,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
             catch (Exception e)
             {
                 TLogging.Log("error in ResetDatabase, LoadTable " + ATableName + ":" + e.Message);
-                throw e;
+                throw;
             }
             return true;
         }

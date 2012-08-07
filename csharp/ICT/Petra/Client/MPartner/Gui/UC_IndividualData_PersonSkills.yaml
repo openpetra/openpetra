@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui
     DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
     DetailTable: PmPersonSkill
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -20,17 +20,16 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
-        btnNew: {Action=actNew}
-        btnDelete: {Action=actDelete}
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             TableName: PmPersonSkill
-            Columns: [SkillCategoryCode, SkillLevel, YearsOfExperience, YearsOfExperienceAsOf]
+            Columns: [SkillCategoryCode, SkillLevel, DescriptionEnglish]
             CustomColumns:
                 SkillCategoryCode: {Label=Skill}
                 SkillLevel: {Label=Level}
-                YearsOfExperience: {Label=Years Of Experience}
-                YearsOfExperienceAsOf: {Label=as of, Type=DateTime}
+                DescriptionEnglish: {Label=Description}
             ActionFocusRow: FocusedRowChanged
             SortOrder: SkillCategoryCode ASC
             
@@ -70,6 +69,7 @@ RootNode:
             DataField: PmPersonSkill.DescriptionLanguage
             List: LanguageCodeList
             Width: 200
+            ColSpan: 2
         txtDescriptInLocalLanguage: {Label=Description in local language, DataField=PmPersonSkill.DescriptionLocal, Width=380, ColSpan=2}
         txtYearsOfExperience: {DataField=PmPersonSkill.YearsOfExperience, Width=25, Format=Integer}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonSkill.YearsOfExperienceAsOf}

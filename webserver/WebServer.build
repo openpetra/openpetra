@@ -140,6 +140,13 @@ list of available commands:
 
   <copy file="${dir.root}/csharp/ICT/Petra/Server/app/WebService/server.asmx"
               tofile="${dir.webserver}/server.asmx" overwrite="true"/>
+
+  <copy todir="${dir.webserver}/sql" overwrite="true">
+    <fileset basedir="${dir.sql}">
+      <include name="*.sql" />
+    </fileset>
+  </copy>
+
   <copy todir="${dir.webserver.bin}" overwrite="true">
     <fileset basedir="${dir.bin}">
       <include name="*.dll" />
@@ -150,7 +157,11 @@ list of available commands:
       <exclude name="Ionic.Zip.dll" />
       <exclude name="Ict.Testing.*"/>
       <exclude name="Ict.Petra.Client*"/>
+      <exclude name="Ict.Petra.ServerAdmin*"/>
       <exclude name="Ict.Tools.*"/>
+      <exclude name="NUnitForms.dll" />
+      <exclude name="nunitframework.dll" />
+      <exclude name="ICSharpCode.NRefactory.dll" />
       <!-- some unmanaged dlls cause problems for mono xsp -->
       <exclude name="Mono*" />
     </fileset>
@@ -256,10 +267,15 @@ call SimpleHost.exe</echo>
       <include name="**.*" />
       <exclude name="web.config" />
       <exclude name="formletters/*.*" />
+      <exclude name="sql/*.*" />
       <exclude name="config/*.*" />
     </fileset>
 
     <fileset basedir="${dir.webserver}/formletters" prefix="formletters">
+      <include name="*.*" />
+    </fileset>
+
+    <fileset basedir="${dir.webserver}/sql" prefix="sql30">
       <include name="*.*" />
     </fileset>
 

@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PContactAttributeDetail
     CacheableTable: ContactAttributeDetailList
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     FormType: edit
     Template: controlMaintainCachableTable
     Actions:

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -139,6 +139,44 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         private Boolean FAutoFindListRebuildNeeded;
+
+        /// <summary>
+        /// A flag that is true during the 'Sorted' event.
+        /// </summary>
+        private Boolean FSorting;
+
+        /// <summary>
+        /// Returns true when the grid is re-ordering rows after a sort operation.  Can be used to ignore updates from a panel to the grid
+        /// because the sort operation never changes the selected row.
+        /// </summary>
+        public Boolean Sorting
+        {
+            get
+            {
+                return FSorting;
+            }
+        }
+
+        /// <summary>
+        /// behaviour for invoking focus events
+        /// </summary>
+        public enum TInvokeGridFocusEventEnum
+        {
+            /// <summary>
+            /// no focus events
+            /// </summary>
+            NoFocusEvent,
+
+            /// <summary>
+            /// FocusRowLeaving event
+            /// </summary>
+            FocusRowLeavingEvent,
+
+            /// <summary>
+            /// FocusedRowChanged event
+            /// </summary>0295BC0D-ECC1-4E71-8152-D236FEEA6FB5
+            FocusedRowChangedEvent
+        };
 
         /// <summary>
         /// Read access to the View for the ColumnHeaders of this Grid (used by
@@ -1068,20 +1106,19 @@ namespace Ict.Common.Controls
         {
             base.OnSortedRangeRows(e);
 
-            // MessageBox.Show('Length(FRowsSelectedBeforeSort): ' + Convert.ToString(Length(FRowsSelectedBeforeSort)));
+            FSorting = true;
+
             if (FRowsSelectedBeforeSort.Length > 0)
             {
                 if (FKeepRowSelectedAfterSort)
                 {
-                    this.Selection.ResetSelection(false);
-                    this.Selection.Focus(Position.Empty, true);
-                    this.Selection.SelectRow(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, true);
+                    this.SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, false);
                 }
 
                 this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
             }
 
-            // MessageBox.Show('TSgrdDataGrid.OnSortedRangeRows');
+            FSorting = false;
         }
 
         /// <summary>
@@ -1299,14 +1336,24 @@ namespace Ict.Common.Controls
         ///
         /// DataSourceRowToIndex2 manually iterates through the Grid's DataView and compares Rows objects. This works!
         /// </summary>
-        /// <returns>int</returns>
+        /// <returns>The 0-based index of the specified DataRowView in the grid's DataView</returns>
         public int DataSourceRowToIndex2(DataRowView ADataRowView)
+        {
+            return DataSourceRowToIndex2(ADataRowView.Row);
+        }
+
+        /// <summary>
+        /// This overload takes a DataRow as the parameter in place of a DataRowView.  See also the comment for the DataRowView overload.
+        /// </summary>
+        /// <param name="ADataRow">The Row object whose rowindex is required</param>
+        /// <returns>The 0-based index of the specified DataRow in the grid's DataView</returns>
+        public int DataSourceRowToIndex2(DataRow ADataRow)
         {
             int RowIndex = -1;
 
             for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).DataView.Count; Counter2++)
             {
-                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRowView.Row)
+                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRow)
                 {
                     RowIndex = Counter2;
                 }
@@ -1333,13 +1380,49 @@ namespace Ict.Common.Controls
             return rowIndex;
         }
 
-        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        /// select a row in the grid, and invoke the event for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid)
         {
             SelectRowInGrid(ARowNumberInGrid, false);
         }
 
-        /// select a row in the grid, and invoke the even for FocusedRowChanged
+        /// select a row in the grid, and optionally invoke the event for FocusedRowChanged
+        public void SelectRowInGrid(Int32 ARowNumberInGrid, TInvokeGridFocusEventEnum AInvokeEvent)
+        {
+            switch (AInvokeEvent)
+            {
+                case TInvokeGridFocusEventEnum.FocusRowLeavingEvent:  //Invoke FocusRowLeaving event
+
+                    break;
+
+                case TInvokeGridFocusEventEnum.FocusedRowChangedEvent:  //Invoke FocusedRowChanged event
+                    SelectRowInGrid(ARowNumberInGrid, false);
+
+                    break;
+
+                default: //TInvokeGridFocusEventEnum.NoFocusEvent
+                    int NumRows = this.Rows.Count;
+
+                    if (NumRows == 1)
+                    {
+                        return;
+                    }
+                    else if ((ARowNumberInGrid < 1) || (ARowNumberInGrid >= NumRows))
+                    {
+                        return;
+                    }
+
+                    //Select and show specified row
+                    this.Selection.FocusStyle = FocusStyle.None;
+                    this.Selection.SelectRow(ARowNumberInGrid, true);
+                    this.ShowCell(new SourceGrid.Position(ARowNumberInGrid, 0), true);
+                    this.Selection.FocusStyle = FocusStyle.Default;
+
+                    break;
+            }
+        }
+
+        /// select a row in the grid, and invoke the event for FocusedRowChanged
         public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
         {
             if (ASelectBorderIfOutsideLimit)
@@ -1356,7 +1439,7 @@ namespace Ict.Common.Controls
             }
 
             this.Selection.ResetSelection(false);
-            this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighed (overcome buggy behaviour of SourceGrid)
+            this.Selection.Focus(new SourceGrid.Position(ARowNumberInGrid, 0), true);   // to prevent the Cell into which the user had previously clicked into from staying highlighted (overcome buggy behaviour of SourceGrid)
             this.Selection.SelectRow(ARowNumberInGrid, true);
 
             // scroll to the row
@@ -1592,6 +1675,14 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnInsertKeyPressed(new RowEventArgs(SelectedDataRow));
+
+                //TODO: check if this will work for tabbed forms that contain subforms
+                //If a New button exists call its code.
+                if (this.FindForm().Controls.Find("btnNew", true).Length > 0)
+                {
+                    System.Windows.Forms.Button insertButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnNew", true)[0];
+                    insertButton.PerformClick();
+                }
             }
             // Key for firing OnDeleteKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Delete)
@@ -1608,6 +1699,14 @@ namespace Ict.Common.Controls
                 }
 
                 this.OnDeleteKeyPressed(new RowEventArgs(SelectedDataRow));
+
+                //TODO: check if this will work for tabbed forms that contain subforms
+                //If a Delete button exists call its code.
+                if (this.FindForm().Controls.Find("btnDelete", true).Length > 0)
+                {
+                    System.Windows.Forms.Button deleteButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnDelete", true)[0];
+                    deleteButton.PerformClick();
+                }
             }
             // Keys that can trigger AutoFind
             else if (((AKeyEventArgs.KeyCode >= Keys.A)

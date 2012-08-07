@@ -295,6 +295,14 @@ namespace Ict.Tools.DevelopersAssistant
          * ************************************************************************************************************************************/
         private void DoFileSave(string path)
         {
+            // Make sure that the folder exists
+            string folderName = Path.GetDirectoryName(path);
+
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+            }
+
             // Save each key/value pair
             using (StreamWriter sw = new StreamWriter(path))
             {

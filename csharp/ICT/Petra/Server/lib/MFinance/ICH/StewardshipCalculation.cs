@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 TLogging.Log(Exp.Message);
                 TLogging.Log(Exp.StackTrace);
 
-                throw Exp;
+                throw;
             }
         }
 

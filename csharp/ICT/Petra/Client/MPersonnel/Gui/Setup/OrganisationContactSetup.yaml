@@ -1,14 +1,14 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Valuable Items
+    FormTitle: Organisation Contacts
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
-    DetailTable: PtValuableItem
-    CacheableTable: ValuableItemList
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    DetailTable: PtContact
+    CacheableTable: ContactList
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 750
-    WindowHeight: 600
+    WindowHeight: 400
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
     Controls:
@@ -24,22 +24,22 @@ RootNode:
         btnNew:
         grdDetails:
             Dock: Fill
-            Columns: [DetailValuableItemName, DetailValuableItemDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
+            Columns: [DetailContactName, DetailContactDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
-                DetailValuableItemName: {Label=Valuable Item}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+                DetailContactDescr: {Label=Description}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailValuableItemName, txtDetailValuableItemDescr]
+                Row0: [txtDetailContactName, txtDetailContactDescr]
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
-        txtDetailValuableItemName: {Label=Valuable Item, CharacterCasing=Upper}
-        txtDetailValuableItemDescr: {Label=Description, Width=285}
+        txtDetailContactName: {Label="Contact Name", Width=150}
+        txtDetailContactDescr: {Label=Description, Width=295}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:
-            Label: New Valuable Item
+            Label: New Contact

@@ -3099,7 +3099,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                          System.String AMailingCode,
                                          out TVerificationResultCollection AVerificationResults)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "AddContact", ";LONG?;DATETIME;STRING;STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "AddContact", ";LIST[LONG];DATETIME;STRING;STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.AddContact(APartnerKeys, AContactDate, AMethodOfContact, AComment, AModuleID, AMailingCode, out AVerificationResults);
         }
 
@@ -3111,7 +3111,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                                  System.String AModuleID,
                                                  System.String AMailingCode)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "FindContacts", ";STRING;NULLABLE;STRING;STRING;STRING;STRING;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "FindContacts", ";STRING;NULLABLE[DATETIME];STRING;STRING;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.FindContacts(AContactor, AContactDate, ACommentContains, AMethodOfContact, AModuleID, AMailingCode);
         }
 
@@ -3141,6 +3141,21 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         }
 
         /// generated method from connector
+        public MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                        String AExtractDescFilter,
+                                                        Boolean AAllUsers,
+                                                        String AUserCreated,
+                                                        String AUserModified,
+                                                        System.Nullable<DateTime>ADateCreatedFrom,
+                                                        System.Nullable<DateTime>ADateCreatedTo,
+                                                        System.Nullable<DateTime>ADateModifiedFrom,
+                                                        System.Nullable<DateTime>ADateModifiedTo)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";STRING;STRING;BOOL;STRING;STRING;NULLABLE[DATETIME];NULLABLE[DATETIME];NULLABLE[DATETIME];NULLABLE[DATETIME];");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AExtractDescFilter, AAllUsers, AUserCreated, AUserModified, ADateCreatedFrom, ADateCreatedTo, ADateModifiedFrom, ADateModifiedTo);
+        }
+
+        /// generated method from connector
         public Boolean ExtractExists(String AExtractName)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "ExtractExists", ";STRING;");
@@ -3154,6 +3169,26 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateEmptyExtract", ";INT;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateEmptyExtract(ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
+        public Boolean CreateFamilyMembersExtract(System.Int32 ABaseExtractId,
+                                                  ref System.Int32 AExtractId,
+                                                  String AExtractName,
+                                                  String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateFamilyMembersExtract", ";INT;INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateFamilyMembersExtract(ABaseExtractId, ref AExtractId, AExtractName, AExtractDescription);
+        }
+
+        /// generated method from connector
+        public Boolean CreateFamilyExtractForPersons(System.Int32 ABaseExtractId,
+                                                     ref System.Int32 AExtractId,
+                                                     String AExtractName,
+                                                     String AExtractDescription)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "CreateFamilyExtractForPersons", ";INT;INT;STRING;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.CreateFamilyExtractForPersons(ABaseExtractId, ref AExtractId, AExtractName, AExtractDescription);
         }
 
         /// generated method from connector
@@ -3187,6 +3222,60 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SaveExtract", ";INT;MEXTRACTTABLE;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SaveExtract(AExtractId, ref AExtractTable, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public Boolean SubscriptionExists(Int64 APartnerKey,
+                                          String APublicationCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SubscriptionExists", ";LONG;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SubscriptionExists(APartnerKey, APublicationCode);
+        }
+
+        /// generated method from connector
+        public Boolean AddSubscription(System.Int32 AExtractId,
+                                       ref PSubscriptionTable ATable,
+                                       out PPartnerTable AExistingSubscriptionPartners,
+                                       out System.Int32 ASubscriptionsAdded)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "AddSubscription", ";INT;PSUBSCRIPTIONTABLE;PPARTNERTABLE;INT;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.AddSubscription(AExtractId, ref ATable, out AExistingSubscriptionPartners, out ASubscriptionsAdded);
+        }
+
+        /// generated method from connector
+        public Boolean DeleteSubscription(System.Int32 AExtractId,
+                                          Int64 APartnerKey,
+                                          String APublicationCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "DeleteSubscription", ";INT;LONG;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.DeleteSubscription(AExtractId, APartnerKey, APublicationCode);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateSolicitationFlag(System.Int32 AExtractId,
+                                              Boolean ANoSolicitations)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateSolicitationFlag", ";INT;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateSolicitationFlag(AExtractId, ANoSolicitations);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
+                                                Boolean AEmailGiftStatement)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateEmailGiftStatement", ";INT;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateEmailGiftStatement(AExtractId, AEmailGiftStatement);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateReceiptFrequency(System.Int32 AExtractId,
+                                              Boolean AUpdateReceiptLetterFrequency,
+                                              String AReceiptLetterFrequency,
+                                              Boolean AUpdateReceiptEachGift,
+                                              Boolean AReceiptEachGift)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateReceiptFrequency", ";INT;BOOL;STRING;BOOL;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateReceiptFrequency(AExtractId, AUpdateReceiptLetterFrequency, AReceiptLetterFrequency, AUpdateReceiptEachGift, AReceiptEachGift);
         }
 
         /// generated method from connector

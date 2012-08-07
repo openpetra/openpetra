@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,7 +23,9 @@
 //
 using System;
 using System.Xml;
+using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using Jayrock.Json;
 using Jayrock.Json.Conversion;
@@ -46,6 +48,9 @@ namespace Ict.Common.IO
             {
                 return String.Empty;
             }
+
+            string RequiredCulture = CultureInfo.CurrentCulture.Name;
+            AJsonData = RemoveContainerControls(AJsonData, ref RequiredCulture);
 
             string Result = "<table cellspacing=\"2\">";
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
@@ -75,18 +80,29 @@ namespace Ict.Common.IO
                 return;
             }
 
-            JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
-
-            foreach (string key in list.Names)
+            try
             {
-                if (AOverwrite || !TXMLParser.HasAttribute(ANode, key))
-                {
-                    XmlAttribute attr = ADoc.CreateAttribute(StringHelper.UpperCamelCase(key));
-                    string text = list[key].ToString().Replace("<br/>", "_");
-                    attr.Value = text;
+                string RequiredCulture = CultureInfo.CurrentCulture.Name;
+                AJsonData = RemoveContainerControls(AJsonData, ref RequiredCulture);
 
-                    ANode.Attributes.Append(attr);
+                JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
+
+                foreach (string key in list.Names)
+                {
+                    if (AOverwrite || !TXMLParser.HasAttribute(ANode, key))
+                    {
+                        XmlAttribute attr = ADoc.CreateAttribute(StringHelper.UpperCamelCase(key));
+                        string text = list[key].ToString().Replace("<br/>", "_");
+                        attr.Value = text;
+
+                        ANode.Attributes.Append(attr);
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                TLogging.Log("Problem parsing: " + AJsonData);
+                throw;
             }
         }
 
@@ -102,6 +118,9 @@ namespace Ict.Common.IO
             {
                 return ATemplate;
             }
+
+            string RequiredCulture = CultureInfo.CurrentCulture.Name;
+            AJsonData = RemoveContainerControls(AJsonData, ref RequiredCulture);
 
             JsonObject list = (JsonObject)JsonConvert.Import(AJsonData);
 
@@ -161,6 +180,18 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// remove ext-comp controls, for multi-page forms.
+        /// this overload does not require a ref string for the culture
+        /// </summary>
+        /// <returns></returns>
+        public static string RemoveContainerControls(string AJSONFormData)
+        {
+            string dummy = string.Empty;
+
+            return RemoveContainerControls(AJSONFormData, ref dummy);
+        }
+
+        /// <summary>
+        /// remove ext-comp controls, for multi-page forms.
         /// will give information for the required culture, so that the dates can be parsed correctly
         /// </summary>
         /// <returns></returns>
@@ -172,11 +203,114 @@ namespace Ict.Common.IO
                 return String.Empty;
             }
 
-            JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+            AJSONFormData = AJSONFormData.Replace(Environment.NewLine, "<br/>");
+            AJSONFormData = AJSONFormData.Replace("\\\\\"", "&quot;");
+            AJSONFormData = AJSONFormData.Replace("\"\"\"", "\"\"");
 
-            string result = "{" + parseJSonValues(root, ref ARequiredCulture) + "}";
+            if (!AJSONFormData.StartsWith("{"))
+            {
+                // at the moment, we cannot fix arrays
+                return AJSONFormData;
+            }
 
-            return result;
+            try
+            {
+                JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(AJSONFormData);
+
+                string result = "{" + parseJSonValues(root, ref ARequiredCulture) + "}";
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                // we have some json strings which do include unescaped quotes, which causes confusion
+
+                string copy = AJSONFormData;
+
+                // simple fix for flat list. advantage over the replace method: only quote colon quote are searched, quote comma quote is handled correctly inside a value
+                if (!AJSONFormData.Substring(1).Contains("{"))
+                {
+                    // find the names first, by looking for quote colon quote. the values must not contain those 3 characters in that order!!!
+                    int posColon = AJSONFormData.IndexOf("\":\"");
+
+                    List <string>names = new List <string>();
+
+                    while (posColon != -1)
+                    {
+                        string before = AJSONFormData.Substring(0, posColon);
+                        int posBeginName = before.LastIndexOf("\"");
+                        string name = before.Substring(posBeginName + 1);
+                        names.Add(name);
+                        posColon = AJSONFormData.IndexOf("\":\"", posColon + 1);
+                    }
+
+                    SortedList <string, string>values = new SortedList <string, string>();
+
+                    names.Reverse();
+                    int posNextName = AJSONFormData.Length - 1;
+
+                    foreach (string name in names)
+                    {
+                        int indexOfName = AJSONFormData.IndexOf(",\"" + name + "\":\"");
+
+                        if (indexOfName == -1)
+                        {
+                            // first value
+                            indexOfName = AJSONFormData.IndexOf("{\"" + name + "\":\"");
+                        }
+
+                        int indexOfValue = indexOfName + name.Length + 5;
+                        string value = AJSONFormData.Substring(indexOfValue, posNextName - indexOfValue - 1);
+                        values.Add(name, value);
+                        posNextName = indexOfName;
+                    }
+
+                    names.Reverse();
+                    StringBuilder s = new StringBuilder("{");
+
+                    foreach (string name in names)
+                    {
+                        s.Append("\"");
+                        s.Append(name);
+                        s.Append("\":\"");
+                        s.Append(values[name].Replace("\"", "&quot;"));
+                        s.Append("\",");
+                    }
+
+                    s.Remove(s.Length - 1, 1);
+                    s.Append("}");
+                    copy = s.ToString();
+                }
+                else
+                {
+                    // fix also more complex strings, with several {} lists
+                    // disadvantage over first method: more string combinations are disallowed in the values, eg. ","
+                    copy = copy.Replace("{\"", "{'");
+                    copy = copy.Replace("\":\"", "':'");
+                    copy = copy.Replace("\":{", "':{");
+                    copy = copy.Replace("\",\"", "','");
+                    copy = copy.Replace("\"},\"", "'},'");
+                    copy = copy.Replace("\"}", "'}");
+
+                    copy = copy.Replace("\"", "&quot;");
+                }
+
+                // try again
+                try
+                {
+                    JsonObject root = (JsonObject)Jayrock.Json.Conversion.JsonConvert.Import(copy);
+
+                    string result = "{" + parseJSonValues(root, ref ARequiredCulture) + "}";
+
+                    return result;
+                }
+                catch (Exception)
+                {
+                    TLogging.Log("problem parsing: " + AJSONFormData);
+                    TLogging.Log(e.ToString());
+                    throw;
+                }
+            }
         }
 
         /// <summary>
@@ -231,7 +365,7 @@ namespace Ict.Common.IO
 
             // set the current culture, so that the dates can be parsed correctly
             string RequiredCulture = CultureInfo.CurrentCulture.Name;
-            RemoveContainerControls(AJSONFormData, ref RequiredCulture);
+            AJSONFormData = RemoveContainerControls(AJSONFormData, ref RequiredCulture);
             CultureInfo OrigCulture = Catalog.SetCulture(RequiredCulture);
 
             try

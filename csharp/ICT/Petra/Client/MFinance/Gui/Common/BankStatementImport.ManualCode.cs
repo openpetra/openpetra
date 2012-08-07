@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             CurrentStatement = (AEpStatementRow)FMainDS.AEpStatement[0];
 
             grdAllTransactions.Columns.Clear();
-            grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnOrder, 40);
+            grdAllTransactions.AddTextColumn(Catalog.GetString("Nr"), FMainDS.AEpTransaction.ColumnNumberOnPaperStatement, 40);
             grdAllTransactions.AddTextColumn(Catalog.GetString("Account Name"), FMainDS.AEpTransaction.ColumnAccountName, 150);
             grdAllTransactions.AddTextColumn(Catalog.GetString("description"), FMainDS.AEpTransaction.ColumnDescription, 200);
             grdAllTransactions.AddDateColumn(Catalog.GetString("Date Effective"), FMainDS.AEpTransaction.ColumnDateEffective);
@@ -703,12 +703,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             if (GiftBatchNumber != -1)
             {
+                if ((VerificationResult != null) && (VerificationResult.Count > 0))
+                {
+                    MessageBox.Show(
+                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Info: gift batch has been created"));
+                }
+
                 // export to csv
                 TFrmGiftBatchExport exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
                 exportForm.LedgerNumber = FLedgerNumber;
                 exportForm.FirstBatchNumber = GiftBatchNumber;
                 exportForm.LastBatchNumber = GiftBatchNumber;
                 exportForm.IncludeUnpostedBatches = true;
+                exportForm.TransactionsOnly = true;
+                exportForm.ExtraColumns = false;
                 exportForm.OutputFilename = TAppSettingsManager.GetValue("BankImport.GiftBatchExportFilename",
                     TAppSettingsManager.GetValue("OpenPetra.PathTemp") +
                     Path.DirectorySeparatorChar +
@@ -755,25 +764,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             if (rbtListAll.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Full bank statement") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListUnmatchedGift.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Unmatched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListUnmatchedGL.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Unmatched GL") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
             else if (rbtListGift.Checked)
             {
                 HtmlDocument =
-                    PrintHTML(FMainDS.AEpTransaction.DefaultView, Catalog.GetString(
+                    PrintHTML(FMainDS.AEpTransaction.DefaultView, FMainDS.AEpMatch, Catalog.GetString(
                             "Matched gifts") + ", " + ShortCodeOfBank + ", " + DateOfStatement);
             }
 
@@ -803,7 +812,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         /// <summary>
         /// dump unmatched gifts or other transactions to a HTML table for printing
         /// </summary>
-        private static string PrintHTML(DataView AEpTransactions, string ATitle)
+        private static string PrintHTML(DataView AEpTransactions, AEpMatchTable AMatches, string ATitle)
         {
             string letterTemplateFilename = TAppSettingsManager.GetValue("BankImport.ReportHTMLTemplate", false);
 
@@ -840,6 +849,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
             Decimal Sum = 0.0m;
 
+            DataView MatchesByMatchText = new DataView(AMatches,
+                string.Empty,
+                AEpMatchTable.GetMatchTextDBName(),
+                DataViewRowState.CurrentRows);
+
+            string thinLine = "<font size=\"-3\">-------------------------------------------------------------------------<br/></font>";
+
             foreach (DataRowView rv in AEpTransactions)
             {
                 row = (BankImportTDSAEpTransactionRow)rv.Row;
@@ -849,40 +865,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 rowToPrint = rowToPrint.Replace("#NAME", row.AccountName);
                 rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.Description);
 
-#if TODO
-                if (row.IsDonorKeyNull())
+                string RecipientDescription = string.Empty;
+
+                DataRowView[] matches = MatchesByMatchText.FindRows(row.MatchText);
+
+                AEpMatchRow match = null;
+
+                foreach (DataRowView rvMatch in matches)
                 {
-                    rowToPrint = rowToPrint.Replace("#NAME", row.AccountName);
+                    match = (AEpMatchRow)rvMatch.Row;
+
+                    if (RecipientDescription.Length > 0)
+                    {
+                        RecipientDescription += "<br/>";
+                    }
+
+                    if (!match.IsRecipientKeyNull() && (match.RecipientKey > 0))
+                    {
+                        RecipientDescription += match.RecipientKey.ToString() + " ";
+                    }
+
+                    RecipientDescription += match.RecipientShortName;
+                }
+
+                if (RecipientDescription.Trim().Length > 0)
+                {
+                    rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", "<br/>" + thinLine + RecipientDescription);
                 }
                 else
                 {
-                    rowToPrint = rowToPrint.Replace("#NAME", row.DonorShortName);
+                    rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", string.Empty);
                 }
 
-                if (row.IsRecipientDescriptionNull() || (row.RecipientDescription.Length == 0))
+                if (!match.IsDonorKeyNull() && (match.DonorKey > 0))
                 {
-                    rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.Description);
+                    string DonorDescription = "<br/>" + thinLine + match.DonorKey.ToString() + " " + match.DonorShortName;
+
+                    rowToPrint = rowToPrint.Replace("#DONORDESCRIPTION", DonorDescription);
                 }
                 else
                 {
-                    rowToPrint = rowToPrint.Replace("#DESCRIPTION", row.RecipientDescription);
-                }
-#endif
-
-                //                if (row.IsRecipientKeyNull() || row.RecipientKey <= 0)
-                //                {
-                //                      rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", row.RecipientKey.ToString());
-                //                }
-                // TODO: print recipientkey
-                rowToPrint = rowToPrint.Replace("#RECIPIENTKEY", "");
-
-                if (row.IsDonorKeyNull() || (row.DonorKey <= 0))
-                {
-                    rowToPrint = rowToPrint.Replace("#DONORKEY", "");
-                }
-                else
-                {
-                    rowToPrint = rowToPrint.Replace("#DONORKEY", row.DonorKey.ToString());
+                    rowToPrint = rowToPrint.Replace("#DONORDESCRIPTION", string.Empty);
                 }
 
                 rowTexts += rowToPrint.

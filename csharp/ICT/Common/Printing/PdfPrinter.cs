@@ -141,7 +141,8 @@ namespace Ict.Common.Printing
             {
                 // TODO it seems negative values have no effect?
                 Font gFont = GetFont(AFont);
-                ReturnValue = new XFont(gFont.FontFamily, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, null);
+                XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
+                ReturnValue = new XFont(gFont.FontFamily, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, options);
             }
 
             return ReturnValue;
@@ -553,11 +554,11 @@ namespace Ict.Common.Printing
         }
 
         /// <summary>
-        /// rotate the following output by some degrees
+        /// rotate the following output by some degrees, at the given position
         /// </summary>
-        public override void Rotate(Int32 ADegrees)
+        public override void RotateAtTransform(double ADegrees, double XPos, double YPos)
         {
-            FXGraphics.RotateTransform(ADegrees);
+            FXGraphics.RotateAtTransform(ADegrees, new XPoint(XPos, YPos));
         }
 
         /// <summary>

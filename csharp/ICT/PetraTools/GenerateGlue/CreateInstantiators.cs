@@ -78,16 +78,21 @@ class CreateInstantiators : AutoGenerationWriter
                                 snippet.SetCodelet("LEDGERNUMBER", ", ALedgerNumber");
                             }
 
-                            string ParameterType = p.TypeReference.Type.Replace("&", "");
+                            string ParameterType = p.TypeReference.Type.Replace("&", "").Replace("System.", String.Empty);
 
                             if (ParameterType == "List")
                             {
-                                ParameterType = p.TypeReference.GenericTypes[0].Type + "?";
+                                ParameterType = ParameterType.Replace("List", "List[" + p.TypeReference.GenericTypes[0].ToString() + "]");
                             }
 
                             if (ParameterType.Contains("."))
                             {
                                 ParameterType = ParameterType.Substring(ParameterType.LastIndexOf(".") + 1);
+                            }
+
+                            if (p.TypeReference.Type == "System.Nullable")
+                            {
+                                ParameterType = ParameterType.Replace("Nullable", "Nullable[" + p.TypeReference.GenericTypes[0].ToString() + "]");
                             }
 
                             if (p.TypeReference.IsArrayType)

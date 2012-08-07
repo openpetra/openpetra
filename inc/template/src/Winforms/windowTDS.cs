@@ -11,6 +11,7 @@ using System.Collections.Generic;
 {#ENDIF TABPAGECTRL}
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Reflection;
 using System.Data;
 using Ict.Petra.Shared;
 using System.Resources;
@@ -24,7 +25,11 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
 using Ict.Common.Controls;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonForms;
+{#IFDEF SHAREDVALIDATIONNAMESPACEMODULE}
+using {#SHAREDVALIDATIONNAMESPACEMODULE};
+{#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -93,9 +98,21 @@ namespace {#NAMESPACE}
       // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
       TEnsureKeepAlive.Register(FUIConnector);
 {#ENDIF UICONNECTORCREATE}
+
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+      BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
     }
 
     {#EVENTHANDLERSIMPLEMENTATION}
+{#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
+
+    /// return the selected row
+    public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
+    {
+        {#GETSELECTEDDETAILROW}
+    }
+{#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
@@ -128,24 +145,31 @@ namespace {#NAMESPACE}
     {
         {#SHOWDETAILS}
     }
+
+    private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
 {#ENDIF SHOWDETAILS}
+
 {#IFDEF MASTERTABLE}
 
     private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
     {
+{#IFDEF SAVEDATA}
         {#SAVEDATA}
+{#ENDIF SAVEDATA}
     }
 {#ENDIF MASTERTABLE}
 {#IFNDEF MASTERTABLE}
 
     private void GetDataFromControls()
     {
+{#IFDEF SAVEDATA}
         {#SAVEDATA}
+{#ENDIF SAVEDATA}
     }
 {#ENDIFN MASTERTABLE}
 {#IFDEF SAVEDETAILS}
 
-    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, Control AControl=null)
     {
         if (ARow != null)
         {
@@ -154,7 +178,21 @@ namespace {#NAMESPACE}
             ARow.EndEdit();
         }
     }
+{#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
+
+    private void ControlUpdateDataHandler(object sender, EventArgs e)
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow, (Control)sender);
+    }
+{#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
+{#IFDEF UNDODATA}
+
+    private void UndoData(DataRow ARow, Control AControl)
+    {
+        {#UNDODATA}
+    }
+{#ENDIF UNDODATA}
 
     /// <summary>
     /// Performs data validation.
@@ -173,10 +211,30 @@ namespace {#NAMESPACE}
     private bool ValidateAllData(bool ARecordChangeVerification, Control AValidateSpecificControl = null)
     {
         bool ReturnValue = false;
-        Control ControlToValidate;
-        
-        GetDataFromControls();
+        Control ControlToValidate = null;
 
+        // Record a new Data Validation Run. (All TVerificationResults/TScreenVerificationResults that are created during this 'run' are associated with this 'run' through that.)
+        FPetraUtilsObject.VerificationResultCollection.RecordNewDataValidationRun();
+
+{#IFDEF MASTERTABLE}
+        // Validate MasterTable
+        GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
+        ValidateData(FMainDS.{#MASTERTABLE}[0]);
+{#IFDEF VALIDATEDATAMANUAL}
+        ValidateDataManual(FMainDS.{#MASTERTABLE}[0]);
+{#ENDIF VALIDATEDATAMANUAL}
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+        GetDataFromControls();
+{#ENDIFN MASTERTABLE}
+
+{#IFDEF SHOWDETAILS}
+        {#DETAILTABLETYPE}Row CurrentRow = GetSelectedDetailRow();
+
+        if (CurrentRow != null)
+        {
+{#ENDIF SHOWDETAILS}        
+{#IFNDEF SHOWDETAILS}
         if (AValidateSpecificControl != null) 
         {
             ControlToValidate = AValidateSpecificControl;
@@ -185,19 +243,63 @@ namespace {#NAMESPACE}
         {
             ControlToValidate = this.ActiveControl;
         }
-
-        // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
-{#IFDEF VALIDATEDATAMANUAL}
-        ValidateDataManual();
-{#ENDIF VALIDATEDATAMANUAL}
+{#ENDIFN SHOWDETAILS}
+{#IFDEF SHOWDETAILS}
+            // Validate DetailTable
+{#IFNDEF MASTERTABLE}
+            GetDetailsFromControls(CurrentRow);
+{#ENDIFN MASTERTABLE}
+            ValidateDataDetails(CurrentRow);
+{#IFDEF VALIDATEDATADETAILSMANUAL}
+            ValidateDataDetailsManual(CurrentRow);
+{#ENDIF VALIDATEDATADETAILSMANUAL}            
+{#ENDIF SHOWDETAILS}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
         // Perform validation in UserControls, too
         {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
+{#IFDEF SHOWDETAILS}
+                if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
+                {
+                    // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
+                    // Data Validation Errors/Warnins as something that is record-related.
+                    ARecordChangeVerification = false;
+                }
+
+                // Process Data Validation result(s)
+                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+{#IFDEF MASTERTABLE}
+        }
+        else
+        {
+            if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
+            {
+                // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
+                // Data Validation Errors/Warnins as something that is record-related.
+                ARecordChangeVerification = false;
+            }
+        
+            // Process Data Validation result(s)
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+        }
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+        }
+        else
+        {
+            ReturnValue = true;
+        }
+{#ENDIFN MASTERTABLE}
+{#ENDIF SHOWDETAILS}
+{#IFNDEF SHOWDETAILS}
+        // Process Data Validation result(s)
         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, true);
+            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+{#ENDIFN SHOWDETAILS}
 
         if(ReturnValue)
         {
@@ -445,6 +547,88 @@ namespace {#NAMESPACE}
 
 #endregion
 {#ENDIF ACTIONENABLING}
+
+#region Data Validation
+    
+    private void ControlValidatedHandler(object sender, EventArgs e)
+    {
+        TScreenVerificationResult SingleVerificationResult;
+        
+        ValidateAllData(true, (Control)sender);
+        
+        FPetraUtilsObject.ValidationToolTip.RemoveAll();
+        
+        if (FPetraUtilsObject.VerificationResultCollection.Count > 0) 
+        {
+            for (int Counter = 0; Counter < FPetraUtilsObject.VerificationResultCollection.Count; Counter++) 
+            {
+                SingleVerificationResult = (TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[Counter];
+                
+                if (SingleVerificationResult.ResultControl == sender) 
+                {
+                    if (FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested)
+                    {
+                        SingleVerificationResult.ResultControl.Focus();
+                        FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = false;
+                    }
+
+{#IFDEF UNDODATA}
+                    if(SingleVerificationResult.ControlValueUndoRequested)
+                    {
+                        UndoData(SingleVerificationResult.ResultColumn.Table.Rows[0], SingleVerificationResult.ResultControl);
+                        SingleVerificationResult.OverrideResultText(SingleVerificationResult.ResultText + Environment.NewLine + Environment.NewLine + 
+                            Catalog.GetString("--> The value you entered has been changed back to what it was before! <--"));
+                    }
+
+{#ENDIF UNDODATA}
+                    if (!SingleVerificationResult.SuppressValidationToolTip) 
+                    {
+                        FPetraUtilsObject.ValidationToolTipSeverity = SingleVerificationResult.ResultSeverity;
+
+                        if (SingleVerificationResult.ResultTextCaption != String.Empty) 
+                        {
+                            FPetraUtilsObject.ValidationToolTip.ToolTipTitle += ":  " + SingleVerificationResult.ResultTextCaption;    
+                        }
+
+                        FPetraUtilsObject.ValidationToolTip.Show(SingleVerificationResult.ResultText, (Control)sender, 
+                            ((Control)sender).Width / 2, ((Control)sender).Height);
+                    }
+                }
+            }
+        }
+    }
+{#IFDEF MASTERTABLE}
+    private void ValidateData({#MASTERTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        {#MASTERTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
+    }
+{#ENDIF MASTERTABLE}
+{#IFDEF DETAILTABLE}
+    private void ValidateDataDetails({#DETAILTABLE}Row ARow)
+    {
+        TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        {#DETAILTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+            FPetraUtilsObject.ValidationControlsDict);
+    }
+{#ENDIF DETAILTABLE}
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+
+    private void BuildValidationControlsDict()
+    {
+        if (FMainDS != null)
+        {
+{#IFDEF ADDCONTROLTOVALIDATIONCONTROLSDICT}
+            {#ADDCONTROLTOVALIDATIONCONTROLSDICT}
+{#ENDIF ADDCONTROLTOVALIDATIONCONTROLSDICT}
+        }
+    }
+{#ENDIF MASTERTABLE OR DETAILTABLE}    
+
+#endregion
 {#IFDEF TABPAGECTRL}
 
         private ToolStrip PreviouslyMergedToolbarItems = null;
@@ -529,6 +713,7 @@ namespace {#NAMESPACE}
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE validationcontrolsdict.cs}
 
 {#INCLUDE dynamictabpage_basics.cs}
 {#INCLUDE dynamictabpage_usercontrol_selectionchanged.cs}
