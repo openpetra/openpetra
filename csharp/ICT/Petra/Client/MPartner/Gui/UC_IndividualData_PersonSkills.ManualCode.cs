@@ -117,39 +117,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
 
-            if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete this record ({0} - {1}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.SkillCategoryCode,
-                        FPreviouslySelectedDetailRow.DescriptionEnglish),
-                    Catalog.GetString("Confirm Delete"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                int rowIndex = grdDetails.SelectedRowIndex();
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
+        	DeletePmPersonSkill();
+        	
+            DoRecalculateScreenParts();
 
-                // temporarily reset selected row to avoid interference with validation
-                FPreviouslySelectedDetailRow = null;
-                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                grdDetails.SelectRowInGrid(rowIndex, true);
-                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-
-                DoRecalculateScreenParts();
-
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    pnlDetails.Visible = false;
-                }
-            }
         }
 
         private void DoRecalculateScreenParts()

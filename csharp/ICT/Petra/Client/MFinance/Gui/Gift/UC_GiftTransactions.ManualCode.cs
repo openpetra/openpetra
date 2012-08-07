@@ -342,25 +342,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
             {
-                if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+                if (gdr.RowState != DataRowState.Deleted)
                 {
-                    if (gdr.GiftTransactionNumber == GiftNumber)
-                    {
-                        if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
-                        {
-                            sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
-                            sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
-                        }
-                        else
-                        {
-                            sum += gdr.GiftTransactionAmount;
-                            sumBatch += gdr.GiftTransactionAmount;
-                        }
-                    }
-                    else
-                    {
-                        sumBatch += gdr.GiftTransactionAmount;
-                    }
+	            	if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+	                {
+	                    if (gdr.GiftTransactionNumber == GiftNumber)
+	                    {
+	                        if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+	                        {
+	                            sum += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+	                            sumBatch += Convert.ToDecimal(txtDetailGiftTransactionAmount.NumberValueDecimal);
+	                        }
+	                        else
+	                        {
+	                            sum += gdr.GiftTransactionAmount;
+	                            sumBatch += gdr.GiftTransactionAmount;
+	                        }
+	                    }
+	                    else
+	                    {
+	                        sumBatch += gdr.GiftTransactionAmount;
+	                    }
+	                }
                 }
             }
 
@@ -484,28 +487,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FPetraUtilsObject.SetChangedFlag();
 
+            grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
-            grdDetails.Refresh();
 
-            if (grdDetails.Rows.Count > 1)
+            InvokeFocusedRowChanged(newCurrentRowPos);
+            
+            if (!pnlDetails.Enabled)
             {
-                //If last row just deleted, select row at old position - 1
-                if (newCurrentRowPos == grdDetails.Rows.Count)
-                {
-                    newCurrentRowPos--;
-                }
-
-                grdDetails.Selection.ResetSelection(false);
-                grdDetails.SelectRowInGrid(newCurrentRowPos);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-                //ShowDetails(FPreviouslySelectedDetailRow);
+            	ClearControls();
             }
-            else
-            {
-                pnlDetails.Enabled = false;
-                ClearControls();
-            }
+          
         }
 
         private void ClearControls()
@@ -562,11 +553,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
+	            grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
-                grdDetails.Refresh();
-                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+	
+                int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
 
-                ShowDetails(FPreviouslySelectedDetailRow);
+                SelectDetailRowByDataTableIndex(newRowIndex);
+	            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
+	
+	            GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
+	
+	            //Need to redo this just in case the sorting is not on primary key
+	            SelectDetailRowByDataTableIndex(newRowIndex);
             }
         }
 
@@ -653,9 +654,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
+                grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
-                grdDetails.Refresh();
-                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+
+				int newRowIndex = FMainDS.AGiftDetail.Rows.Count - 1;
+
+                SelectDetailRowByDataTableIndex(newRowIndex);
+	            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+                
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
+	
+	            GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
+	
+	            //Need to redo this just in case the sorting is not on primary key
+	            SelectDetailRowByDataTableIndex(newRowIndex);
+
                 RetrieveMotivationDetailAccountCode();
                 txtDetailGiftTransactionAmount.Focus();
             }
