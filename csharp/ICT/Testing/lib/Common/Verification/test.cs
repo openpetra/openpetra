@@ -1944,7 +1944,7 @@ namespace Ict.Common.Verification.Testing
 
             #endregion
 
-            
+
             #region IsDateBetweenDates
 
             Testname = "Test with null, Date, Date";
@@ -1995,20 +1995,22 @@ namespace Ict.Common.Verification.Testing
             TestResult = TDateChecks.IsDateBetweenDates(new DateTime(1849, 1, 1), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
                 Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)), 
-                                                           StringHelper.DateToLocalizedString(new DateTime(DateTime.Today.Year, 12, 31))), "GENC.00013V", 
+                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)),
+                    StringHelper.DateToLocalizedString(new DateTime(DateTime.Today.Year, 12, 31))), "GENC.00013V",
                 TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
-            
+
             ExpectedErrorText = "'{0}' is not allowed as it does not lie within the required date range. It must lie between {1} and {2}.";
 
             Testname = "Test with Jan. 1st, 1850 for lower date and DateTime.Today.Year for upper date: validated date is Jan. 1st of next year.";
-            TestResult = TDateChecks.IsDateBetweenDates(new DateTime(DateTime.Today.Year, 12, 31).AddDays(1), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
-                Testname);
+            TestResult =
+                TDateChecks.IsDateBetweenDates(new DateTime(DateTime.Today.Year, 12,
+                        31).AddDays(1), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
+                    Testname);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)), 
-                                                           StringHelper.DateToLocalizedString(new DateTime(DateTime.Today.Year, 12, 31))), "GENC.00013V", 
+                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)),
+                    StringHelper.DateToLocalizedString(new DateTime(DateTime.Today.Year, 12, 31))), "GENC.00013V",
                 TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
@@ -2016,36 +2018,39 @@ namespace Ict.Common.Verification.Testing
             ExpectedErrorText = "'{0}' is not a possible value in this case.";
 
             Testname = "Test with Jan. 1st, 1850 for lower date and DateTime.Today.Year for upper date: validated date is Dec. 31st, 1849";
-            TestResult = TDateChecks.IsDateBetweenDates(new DateTime(1849, 12, 31), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
-                Testname, TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate);
+            TestResult =
+                TDateChecks.IsDateBetweenDates(new DateTime(1849, 12, 31), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
+                    Testname, TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00014V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
 
             ExpectedErrorText = "'{0}' may not be a future date.";
-            
-            Testname = "Test with Jan. 1st, 1850 for lower date and DateTime.Today for upper date: validated date is today plus one day (future date)";
+
+            Testname =
+                "Test with Jan. 1st, 1850 for lower date and DateTime.Today for upper date: validated date is today plus one day (future date)";
             TestResult = TDateChecks.IsDateBetweenDates(DateTime.Today.AddDays(1), new DateTime(1850, 1, 1), DateTime.Today,
                 Testname, TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00003V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
-            
+
             ExpectedErrorText = "'{0}' may not be a past date.";
-            
+
             Testname = "Test with today for lower date and Jan 1st, 2099 for upper date: validated date is today minus one day (past date)";
-            TestResult = TDateChecks.IsDateBetweenDates(DateTime.Today.AddDays(-1), DateTime.Today, new DateTime(2099, 1, 1), 
+            TestResult = TDateChecks.IsDateBetweenDates(DateTime.Today.AddDays(-1), DateTime.Today, new DateTime(2099, 1, 1),
                 Testname, TDateBetweenDatesCheckType.dbdctNoPastDate, TDateBetweenDatesCheckType.dbdctUnspecific);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
                 String.Format(ExpectedErrorText, Testname), "GENC.00004V", TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
-            
+
             ExpectedErrorText = "'{0}' is not a possible value in this case.";
 
-            Testname = "Test with Jan. 1st, 1850 for lower date and DateTime.Today for upper date: validated date is today plus eleven years (unrealistic date)";
+            Testname =
+                "Test with Jan. 1st, 1850 for lower date and DateTime.Today for upper date: validated date is today plus eleven years (unrealistic date)";
             TestResult = TDateChecks.IsDateBetweenDates(DateTime.Today.AddYears(11), new DateTime(1850, 1, 1), DateTime.Today,
                 Testname, TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctUnrealisticDate);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
@@ -2057,10 +2062,10 @@ namespace Ict.Common.Verification.Testing
 
             Testname = "Test with Jan. 1st, 1850 for lower date and DateTime.Today.Year for upper date: validated date is Dec. 31st, 1849";
             TestResult = TDateChecks.IsDateBetweenDates(new DateTime(1849, 1, 1), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
-                                                        Testname, TDateBetweenDatesCheckType.dbdctUnspecific, TDateBetweenDatesCheckType.dbdctNoPastDate);
+                Testname, TDateBetweenDatesCheckType.dbdctUnspecific, TDateBetweenDatesCheckType.dbdctNoPastDate);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)), 
-                                                           StringHelper.DateToLocalizedString(new DateTime(DateTime.Today.Year, 12, 31))), "GENC.00013V", 
+                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)),
+                    StringHelper.DateToLocalizedString(new DateTime(DateTime.Today.Year, 12, 31))), "GENC.00013V",
                 TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
@@ -2069,23 +2074,23 @@ namespace Ict.Common.Verification.Testing
             TestResult = TDateChecks.IsDateBetweenDates(new DateTime(2099, 1, 1), new DateTime(1850, 1, 1), new DateTime(2012, 1, 1),
                 Testname, TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctUnspecific);
             ExpectedResult = new TVerificationResult(null, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)), 
-                                                           StringHelper.DateToLocalizedString(new DateTime(2012, 1, 1))), "GENC.00013V", 
+                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)),
+                    StringHelper.DateToLocalizedString(new DateTime(2012, 1, 1))), "GENC.00013V",
                 TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
-            
+
             Testname = "Test with Jan. 1st, 1850 for lower date and DateTime.Today for upper date: validated date is Jan. 1st, 2099(future date)";
             TestResult = TDateChecks.IsDateBetweenDates(new DateTime(2099, 1, 1), new DateTime(1850, 1, 1), new DateTime(2012, 1, 1),
                 Testname, TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctUnspecific,
                 TestContext, TestColumn, TestControl);
             ExpectedResult = new TVerificationResult(TestContext, "Invalid date entered." + Environment.NewLine +
-                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)), 
-                                                           StringHelper.DateToLocalizedString(new DateTime(2012, 1, 1))), "GENC.00013V", 
+                String.Format(ExpectedErrorText, Testname, StringHelper.DateToLocalizedString(new DateTime(1850, 1, 1)),
+                    StringHelper.DateToLocalizedString(new DateTime(2012, 1, 1))), "GENC.00013V",
                 TResultSeverity.Resv_Critical);
             VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
             Assert.IsEmpty(VerificationProblemListing, "IsDateBetweenDates: " + Testname);
-                        
+
             #endregion
 
             #region Helper Methods

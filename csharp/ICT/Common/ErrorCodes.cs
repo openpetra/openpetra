@@ -131,14 +131,15 @@ namespace Ict.Common
 
         /// <summary>Date is not within date range.</summary>
         [ErrCodeAttribute("Date is not within date range.",
-             FullDescription = "The date entered is not allowed as it does not lie within the required date range. It must lie between {0} and {1}.")]
+             FullDescription =
+                 "The date entered is not allowed as it does not lie within the required date range. It must lie between {0} and {1}.")]
         public const String ERR_DATENOTINDATERANGE = "GENC.00013V";
-        
+
         /// <summary>Date must have a sensible value (e.g. not too far in the past).</summary>
         [ErrCodeAttribute("Date must have a sensible value.",
-                          ErrorMessageText = "'{0}' is not a possible value in this case")]
+             ErrorMessageText = "'{0}' is not a possible value in this case")]
         public const String ERR_UNREALISTICDATE_ERROR = "GENC.00014V";
-        
+
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
 

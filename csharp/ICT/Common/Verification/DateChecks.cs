@@ -36,17 +36,17 @@ namespace Ict.Common.Verification
     {
         /// <summary>Unspecific check.</summary>
         dbdctUnspecific,
-        
+
         /// <summary>Value must not be a future date.</summary>
         dbdctNoFutureDate,
-        
+
         /// <summary>Value must not be a past date.</summary>
         dbdctNoPastDate,
-        
+
         /// <summary>Value represents and unrealistic date in that circumstance (e.g. birth date below 1850).</summary>
         dbdctUnrealisticDate
     }
-    
+
     /// <summary>
     /// Class for date verifications that are needed both on Server and Client side.
     /// </summary>
@@ -65,9 +65,10 @@ namespace Ict.Common.Verification
         private static readonly string StrDateCannotBeEarlier = Catalog.GetString("{0} cannot be earlier than {1}.");
         private static readonly string StrDateCannotBeEarlierOrEqual = Catalog.GetString("{0} cannot be earlier than or equal to {1}.");
         private static readonly string StrMustBeDate = Catalog.GetString("{0} must be a date.");
-        private static readonly string StrDateNotInRange = Catalog.GetString("{0} is not allowed as it does not lie within the required date range. It must lie between {1} and {2}.");
+        private static readonly string StrDateNotInRange = Catalog.GetString(
+            "{0} is not allowed as it does not lie within the required date range. It must lie between {1} and {2}.");
         private static readonly string StrDateNotSensible = "{0} is not a possible value in this case.";
-        
+
         #endregion
 
         #region IsNotUndefinedDateTime
@@ -86,8 +87,8 @@ namespace Ict.Common.Verification
         /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
         /// returned that contains details about the problem.</returns>
         public static TVerificationResult IsNotUndefinedDateTime(DateTime? ADate, String ADescription,
-                                                                 bool ATreatNullAsInvalid = false, object AResultContext = null, System.Data.DataColumn AResultColumn = null,
-                                                                 System.Windows.Forms.Control AResultControl = null)
+            bool ATreatNullAsInvalid = false, object AResultContext = null, System.Data.DataColumn AResultColumn = null,
+            System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
@@ -102,9 +103,9 @@ namespace Ict.Common.Verification
                 else
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
-                                                          ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
-                                                                                  CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                  StrDateMayNotBeEmpty, new string[] { Description }));
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
+                            CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            StrDateMayNotBeEmpty, new string[] { Description }));
 
                     if (AResultColumn != null)
                     {
@@ -122,9 +123,9 @@ namespace Ict.Common.Verification
             else
             {
                 ReturnValue = new TVerificationResult(AResultContext,
-                                                      ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
-                                                                              CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                              StrDateMayNotBeEmpty, new string[] { Description }));
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
+                        CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                        StrDateMayNotBeEmpty, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {
@@ -152,7 +153,7 @@ namespace Ict.Common.Verification
         /// <see cref="TVerificationResult" /> with a message which uses
         /// <paramref name="ADescription" /> is returned.</returns>
         public static TVerificationResult IsValidDateTime(String AString, String ADescription,
-                                                          object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -193,7 +194,7 @@ namespace Ict.Common.Verification
         /// otherwise a verification result with a message that uses <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsCurrentOrFutureDate(DateTime? ADate, String ADescription,
-                                                                object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
@@ -215,8 +216,8 @@ namespace Ict.Common.Verification
                 if (TheDate != DateTime.MinValue)
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
-                                                          ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                  StrDateMayNotBePastDate, new string[] { Description }));
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            StrDateMayNotBePastDate, new string[] { Description }));
 
                     if (AResultColumn != null)
                     {
@@ -249,7 +250,7 @@ namespace Ict.Common.Verification
         /// otherwise a verification result with a message that uses <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsCurrentOrPastDate(DateTime? ADate, String ADescription,
-                                                              object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             String Description = THelper.NiceValueDescription(ADescription);
@@ -268,8 +269,8 @@ namespace Ict.Common.Verification
             else
             {
                 ReturnValue = new TVerificationResult(AResultContext,
-                                                      ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
-                                                                              Environment.NewLine + StrDateMayNotBeFutureDate, new string[] { Description }));
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
+                        Environment.NewLine + StrDateMayNotBeFutureDate, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {
@@ -284,7 +285,7 @@ namespace Ict.Common.Verification
 
         #endregion
 
-        
+
         #region IsDateBetweenDates
 
         /// <summary>
@@ -307,10 +308,10 @@ namespace Ict.Common.Verification
         /// <paramref name="ADescription" />.
         /// </returns>
         public static TVerificationResult IsDateBetweenDates(DateTime? ADate, DateTime? ALowerDateRangeEnd, DateTime? AUpperDateRangeEnd,
-                                                             String ADescription,
-                                                             TDateBetweenDatesCheckType ALowerRangeCheckType = TDateBetweenDatesCheckType.dbdctUnspecific,
-                                                             TDateBetweenDatesCheckType AUpperRangeCheckType = TDateBetweenDatesCheckType.dbdctUnspecific,
-                                                             object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            String ADescription,
+            TDateBetweenDatesCheckType ALowerRangeCheckType = TDateBetweenDatesCheckType.dbdctUnspecific,
+            TDateBetweenDatesCheckType AUpperRangeCheckType = TDateBetweenDatesCheckType.dbdctUnspecific,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
             DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
@@ -332,42 +333,57 @@ namespace Ict.Common.Verification
                 if ((ALowerRangeCheckType == TDateBetweenDatesCheckType.dbdctUnspecific)
                     && (AUpperRangeCheckType == TDateBetweenDatesCheckType.dbdctUnspecific))
                 {
-                    ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate, UpperDateRangeEndDate, Description, AResultContext);
-                } else if (TheDate < LowerDateRangeEndDate)
+                    ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate,
+                        UpperDateRangeEndDate,
+                        Description,
+                        AResultContext);
+                }
+                else if (TheDate < LowerDateRangeEndDate)
                 {
                     if (ALowerRangeCheckType == TDateBetweenDatesCheckType.dbdctNoPastDate)
                     {
                         ReturnValue = new TVerificationResult(AResultContext,
-                                                              ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                      StrDateMayNotBePastDate, new string[] { Description }));
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered +
+                                Environment.NewLine +
+                                StrDateMayNotBePastDate, new string[] { Description }));
                     }
                     else if (ALowerRangeCheckType == TDateBetweenDatesCheckType.dbdctUnrealisticDate)
                     {
                         ReturnValue = new TVerificationResult(AResultContext,
-                                                              ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_UNREALISTICDATE_ERROR, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                      StrDateNotSensible, new string[] { Description }));
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_UNREALISTICDATE_ERROR, CommonResourcestrings.StrInvalidDateEntered +
+                                Environment.NewLine +
+                                StrDateNotSensible, new string[] { Description }));
                     }
                     else
                     {
-                        ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate, UpperDateRangeEndDate, Description, AResultContext);
+                        ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate,
+                            UpperDateRangeEndDate,
+                            Description,
+                            AResultContext);
                     }
-                } else if (TheDate > UpperDateRangeEndDate)
+                }
+                else if (TheDate > UpperDateRangeEndDate)
                 {
                     if (AUpperRangeCheckType == TDateBetweenDatesCheckType.dbdctNoFutureDate)
                     {
                         ReturnValue = new TVerificationResult(AResultContext,
-                                                              ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                      StrDateMayNotBeFutureDate, new string[] { Description }));
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
+                                Environment.NewLine +
+                                StrDateMayNotBeFutureDate, new string[] { Description }));
                     }
                     else if (AUpperRangeCheckType == TDateBetweenDatesCheckType.dbdctUnrealisticDate)
                     {
                         ReturnValue = new TVerificationResult(AResultContext,
-                                                              ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_UNREALISTICDATE_ERROR, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                      StrDateNotSensible, new string[] { Description }));
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_UNREALISTICDATE_ERROR, CommonResourcestrings.StrInvalidDateEntered +
+                                Environment.NewLine +
+                                StrDateNotSensible, new string[] { Description }));
                     }
                     else
                     {
-                        ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate, UpperDateRangeEndDate, Description, AResultContext);
+                        ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate,
+                            UpperDateRangeEndDate,
+                            Description,
+                            AResultContext);
                     }
                 }
 
@@ -405,8 +421,8 @@ namespace Ict.Common.Verification
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstLesserOrEqualThanSecondDate(DateTime? ADate1,
-                                                                           DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-                                                                           object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
@@ -428,8 +444,8 @@ namespace Ict.Common.Verification
                 if (ADate2 != DateTime.MinValue)
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
-                                                          ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                  StrDateCannotBeLater, new string[] { FirstDateDescription, SecondDateDescription }));
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            StrDateCannotBeLater, new string[] { FirstDateDescription, SecondDateDescription }));
 
                     if (AResultColumn != null)
                     {
@@ -462,8 +478,8 @@ namespace Ict.Common.Verification
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstLesserThanSecondDate(DateTime? ADate1,
-                                                                    DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-                                                                    object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
@@ -485,8 +501,8 @@ namespace Ict.Common.Verification
                 if (ADate2 != DateTime.MinValue)
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
-                                                          ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                  StrDateCannotBeLaterOrEqual, new string[] { FirstDateDescription, SecondDateDescription }));
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            StrDateCannotBeLaterOrEqual, new string[] { FirstDateDescription, SecondDateDescription }));
 
                     if (AResultColumn != null)
                     {
@@ -526,8 +542,8 @@ namespace Ict.Common.Verification
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstGreaterOrEqualThanSecondDate(DateTime? ADate1,
-                                                                            DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-                                                                            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
@@ -549,8 +565,8 @@ namespace Ict.Common.Verification
                 if (ADate1 != DateTime.MinValue)
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
-                                                          ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                  StrDateCannotBeEarlier, new string[] { FirstDateDescription, SecondDateDescription }));
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            StrDateCannotBeEarlier, new string[] { FirstDateDescription, SecondDateDescription }));
 
                     if (AResultColumn != null)
                     {
@@ -587,8 +603,8 @@ namespace Ict.Common.Verification
         /// returned that contains details about the problem, with a message that uses
         /// <paramref name="AFirstDateDescription" /> and <paramref name="ASecondDateDescription" />.</returns>
         public static TVerificationResult FirstGreaterThanSecondDate(DateTime? ADate1,
-                                                                     DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
-                                                                     object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+            DateTime? ADate2, string AFirstDateDescription, string ASecondDateDescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue;
             String FirstDateDescription = THelper.NiceValueDescription(AFirstDateDescription);
@@ -610,8 +626,8 @@ namespace Ict.Common.Verification
                 if (ADate1 != new DateTime(0001, 1, 1))
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
-                                                          ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                                  StrDateCannotBeEarlierOrEqual, new string[] { FirstDateDescription, SecondDateDescription }));
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                            StrDateCannotBeEarlierOrEqual, new string[] { FirstDateDescription, SecondDateDescription }));
 
                     if (AResultColumn != null)
                     {
@@ -646,8 +662,8 @@ namespace Ict.Common.Verification
             String Description = THelper.NiceValueDescription(ADescription);
 
             return new TVerificationResult(AResultContext,
-                                           ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                                                                   StrMustBeDate, new string[] { Description }));
+                ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                    StrMustBeDate, new string[] { Description }));
         }
 
         /// <summary>
@@ -664,14 +680,14 @@ namespace Ict.Common.Verification
         private static TVerificationResult GetUnspecificDateRangeCheckVerificationResult(
             DateTime? ALowerDateRangeEnd, DateTime? AUpperDateRangeEnd, String ADescription, object AResultContext)
         {
-            return new TVerificationResult(AResultContext, 
-                ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_DATENOTINDATERANGE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine + StrDateNotInRange, 
+            return new TVerificationResult(AResultContext,
+                ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_DATENOTINDATERANGE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                    StrDateNotInRange,
                     new string[] { ADescription,
                                    StringHelper.DateToLocalizedString(ALowerDateRangeEnd.Value),
-                                   StringHelper.DateToLocalizedString(AUpperDateRangeEnd.Value)
-                                 }));
+                                   StringHelper.DateToLocalizedString(AUpperDateRangeEnd.Value) }));
         }
-        
+
         #endregion
     }
 }
