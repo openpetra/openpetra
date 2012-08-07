@@ -35,35 +35,35 @@ using Ict.Common.IO;
 
 namespace Ict.Common.Controls
 {
-	/// <summary>
-	/// Displays Tasks within Task Groups in the OpenPetra Main Menu.
-	/// </summary>
-	public partial class TLstTasks : UserControl
-	{
+    /// <summary>
+    /// Displays Tasks within Task Groups in the OpenPetra Main Menu.
+    /// </summary>
+    public partial class TLstTasks : UserControl
+    {
         private static string FUserId;
         private static CheckAccessPermissionDelegate FHasAccessPermission;
-        private Dictionary<string, TUcoTaskGroup> FGroups = new Dictionary<string, TUcoTaskGroup>();
+        private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
         private TUcoSingleTask FSelectedTask = null;
-		private TaskAppearance FTaskAppearance;
-		private bool FSingleClickExecution = false;
-		private int FMaxTaskWidth;
+        private TaskAppearance FTaskAppearance;
+        private bool FSingleClickExecution = false;
+        private int FMaxTaskWidth;
         private TExtStatusBarHelp FStatusbar = null;
-		
+
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
         static private Form FLastOpenedScreen = null;
 
         #region Constructors
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
-		public TLstTasks()
-		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
-			InitializeComponent();
-		}
+        public TLstTasks()
+        {
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent();
+        }
 
         /// <summary>
         /// Constructor. Generates several Groups of Tasks from an xml document.
@@ -72,14 +72,14 @@ namespace Ict.Common.Controls
         public TLstTasks(XmlNode ATaskGroups)
         {
             this.SuspendLayout();
-            
+
             this.Name = "lstTasks" + ATaskGroups.Name;
-            this.AutoScroll = true;            
+            this.AutoScroll = true;
 //            this.HorizontalScroll.Enabled = true;
             this.Resize += new EventHandler(ListResize);
 
             XmlNode TaskGroupNode = ATaskGroups.FirstChild;
-            
+
             while (TaskGroupNode != null)
             {
                 if (TaskGroupNode.Name == "SearchBoxes")
@@ -88,23 +88,23 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                	TUcoTaskGroup TaskGroup = new TUcoTaskGroup();
-                	TaskGroup.GroupTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
-                	TaskGroup.Name = TaskGroupNode.Name;
-            		
+                    TUcoTaskGroup TaskGroup = new TUcoTaskGroup();
+                    TaskGroup.GroupTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
+                    TaskGroup.Name = TaskGroupNode.Name;
+
                     Groups.Add(TaskGroup.Name, TaskGroup);
-                    
+
                     if (TaskGroupNode.FirstChild == null)
                     {
                         // duplicate group node into task; otherwise you would not notice the error in the yml file?
                         TUcoSingleTask SingleTask = new TUcoSingleTask();
                         SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
                         SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskGroupNode,
-                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description")) : "";
+                            "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description")) : "";
                         SingleTask.Name = TaskGroupNode.Name;
                         SingleTask.TaskGroup = TaskGroup;
                         SingleTask.Tag = TaskGroupNode;
-                        
+
                         if (!FHasAccessPermission(TaskGroupNode, FUserId))
                         {
                             SingleTask.Enabled = false;
@@ -118,10 +118,10 @@ namespace Ict.Common.Controls
 
                         while (TaskNode != null)
                         {
-	                        TUcoSingleTask SingleTask = new TUcoSingleTask();
-	                        SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskNode);
-	                        SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
-	                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
+                            TUcoSingleTask SingleTask = new TUcoSingleTask();
+                            SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskNode);
+                            SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
+                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
                             SingleTask.Name = TaskNode.Name;
                             SingleTask.TaskGroup = TaskGroup;
                             SingleTask.Tag = TaskNode;
@@ -133,38 +133,38 @@ namespace Ict.Common.Controls
 
                             TaskGroup.Add(SingleTask.Name, SingleTask);
                             TaskNode = TaskNode.NextSibling;
-                        }                    	
+                        }
                     }
-                    
-                    // Add TaskGroup to this UserControls' Controls
-	                TaskGroup.Dock = DockStyle.Top;
-	                TaskGroup.Margin = new Padding(3);
-	                TaskGroup.AutoSize = true;
-	                TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-	                
-	                TaskGroup.TaskClicked += new EventHandler(SingleTask_ExecuteTask);
-	                TaskGroup.TaskSelected += new EventHandler(SingleTask_TaskSelected);
 
-	                this.Controls.Add(TaskGroup);
-	                
-	                // Make sure Task Groups are shown in correct order and not in reverse order.
-	                // (This is needed because we 'stack them up' with 'TaskGroup.Dock = DockStyle.Top')      
-	                TaskGroup.BringToFront();
-	                
-	                // Select (highlight) first Task in the first Group
-                    if (Groups.Count == 1) 
+                    // Add TaskGroup to this UserControls' Controls
+                    TaskGroup.Dock = DockStyle.Top;
+                    TaskGroup.Margin = new Padding(3);
+                    TaskGroup.AutoSize = true;
+                    TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+
+                    TaskGroup.TaskClicked += new EventHandler(SingleTask_ExecuteTask);
+                    TaskGroup.TaskSelected += new EventHandler(SingleTask_TaskSelected);
+
+                    this.Controls.Add(TaskGroup);
+
+                    // Make sure Task Groups are shown in correct order and not in reverse order.
+                    // (This is needed because we 'stack them up' with 'TaskGroup.Dock = DockStyle.Top')
+                    TaskGroup.BringToFront();
+
+                    // Select (highlight) first Task in the first Group
+                    if (Groups.Count == 1)
                     {
-                        TaskGroup.SelectFirstTask();    
-                    }	                
+                        TaskGroup.SelectFirstTask();
+                    }
                 }
-                
+
                 TaskGroupNode = TaskGroupNode.NextSibling;
             }
-            
+
             this.ResumeLayout();
         }
-        
-        #endregion        
+
+        #endregion
 
         #region Delegates
 
@@ -176,18 +176,18 @@ namespace Ict.Common.Controls
         #endregion
 
         #region Properties
-        
+
         /// <summary>
         /// Groups that are to be shown in the Task List.
         /// </summary>
-        public Dictionary<string, TUcoTaskGroup> Groups
+        public Dictionary <string, TUcoTaskGroup>Groups
         {
-        	get
-        	{
-        		return FGroups;
-        	}        	
+            get
+            {
+                return FGroups;
+            }
         }
-        
+
         /// <summary>
         /// Appearance of the Task (Large Tile, ListEntry).
         /// </summary>
@@ -197,21 +197,21 @@ namespace Ict.Common.Controls
             {
                 return FTaskAppearance;
             }
-            
+
             set
             {
-                if (FTaskAppearance != value) 
+                if (FTaskAppearance != value)
                 {
                     FTaskAppearance = value;
-                    
-                    foreach (var Group in Groups) 
+
+                    foreach (var Group in Groups)
                     {
-                    	Group.Value.TaskAppearance = FTaskAppearance;	
-                    }                   
+                        Group.Value.TaskAppearance = FTaskAppearance;
+                    }
                 }
             }
-        }       
-    	
+        }
+
         /// <summary>
         /// Execution of the Task with a single click of the mouse?
         /// </summary>
@@ -221,41 +221,41 @@ namespace Ict.Common.Controls
             {
                 return FSingleClickExecution;
             }
-            
+
             set
             {
                 if (FSingleClickExecution != value)
                 {
                     FSingleClickExecution = value;
-                    
-                    foreach (var Group in Groups) 
+
+                    foreach (var Group in Groups)
                     {
-                    	Group.Value.SingleClickExecution = FSingleClickExecution;	
-                    }                   
+                        Group.Value.SingleClickExecution = FSingleClickExecution;
+                    }
                 }
             }
-       }
+        }
 
         /// <summary>
-		/// Maximum Task Width.
-		/// </summary>
+        /// Maximum Task Width.
+        /// </summary>
         public int MaxTaskWidth
         {
             get
             {
                 return FMaxTaskWidth;
             }
-            
+
             set
             {
-                if (FMaxTaskWidth != value) 
+                if (FMaxTaskWidth != value)
                 {
                     FMaxTaskWidth = value;
-                    
-                    foreach (var Group in Groups) 
+
+                    foreach (var Group in Groups)
                     {
-                    	Group.Value.MaxTaskWidth = value;                	                	
-                    }                                    
+                        Group.Value.MaxTaskWidth = value;
+                    }
                 }
             }
         }
@@ -270,7 +270,7 @@ namespace Ict.Common.Controls
                 return FLastOpenedScreen;
             }
         }
-        
+
         /// <summary>
         /// Sets the Status Bar Text so that error messages can be displayed.
         /// </summary>
@@ -280,26 +280,26 @@ namespace Ict.Common.Controls
             {
                 FStatusbar = value;
             }
-        }    
+        }
 
-        #endregion        
-       
+        #endregion
+
         #region Events
-        
+
         /// <summary>
         /// Fired when a Task is clicked by the user.
         /// </summary>
         public event EventHandler TaskClicked;
-        
+
         /// <summary>
         /// Fired when a Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
         /// </summary>
         public event EventHandler TaskSelected;
-        
+
         #endregion
-        
+
         #region Public Methods
-        
+
         /// <summary>
         /// Initialise the permissions callback function for the current user.
         /// </summary>
@@ -500,20 +500,20 @@ namespace Ict.Common.Controls
             }
 
             return "";
-        }        
-        
+        }
+
         #endregion
-        
+
         #region Private Methods
-        
+
         void ListResize(object sender, EventArgs e)
         {
-			foreach (var Group in Groups) 
-			{
-				Group.Value.MaximumSize = new System.Drawing.Size(this.Width, 0);
-			}
+            foreach (var Group in Groups)
+            {
+                Group.Value.MaximumSize = new System.Drawing.Size(this.Width, 0);
+            }
         }
-        
+
         private void WriteToStatusBar(string s)
         {
             if (FStatusbar != null)
@@ -525,37 +525,37 @@ namespace Ict.Common.Controls
                 // TODO: does this work? which is the current statusbar?
                 TLogging.Log(s, TLoggingType.ToStatusBar);
             }
-        }        
-        
+        }
+
 //		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
 //		{
 //            // Set a fixed width for the control.
 //            // ADD AN EXTRA HEIGHT VALIDATION TO AVOID INITIALIZATION PROBLEMS
 //            // BITWISE 'AND' OPERATION: IF ZERO THEN HEIGHT IS NOT INVOLVED IN THIS OPERATION
-//            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)                  
+//            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)
 //            {
-//    		    if (width < MaxTaskWidth) 
-//    		    {               
+//                  if (width < MaxTaskWidth)
+//                  {
 ////TLogging.Log("SetBoundsCore: Before setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
 //                    base.SetBoundsCore(x, y, MaxTaskWidth, height, specified);
-////TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());	                    
+////TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
 //                }
 //		    }
 //            else if ((specified&BoundsSpecified.Height) == 0)
 //            {
 //                base.SetBoundsCore(x, y, width, this.Height, specified);
-//            }                
+//            }
 //		    else
 //		    {
 //                return;
 //		    }
-//TLogging.Log("SetBoundsCore: TLstTask " + Name + "'s size: " + Size.ToString());	    
+//TLogging.Log("SetBoundsCore: TLstTask " + Name + "'s size: " + Size.ToString());
 //		}
-        
+
         #endregion
-        
+
         #region Event Handling
-        
+
         void SingleTask_ExecuteTask(object sender, EventArgs e)
         {
             Cursor = Cursors.WaitCursor;
@@ -572,40 +572,42 @@ namespace Ict.Common.Controls
 
             Cursor = Cursors.Default;
         }
-        
+
         void SingleTask_TaskSelected(object sender, EventArgs e)
         {
             FSelectedTask = ((TUcoSingleTask)sender);
 
-            foreach(Control TaskGroups in this.Controls)
+            foreach (Control TaskGroups in this.Controls)
             {
-                foreach(Control TaskGroup in TaskGroups.Controls)
+                foreach (Control TaskGroup in TaskGroups.Controls)
                 {
-                    foreach(TUcoSingleTask Task in TaskGroup.Controls)
+                    foreach (TUcoSingleTask Task in TaskGroup.Controls)
                     {
-                        if (Task != sender) 
-                        {                        	
-                            Task.DeselectTask();        
+                        if (Task != sender)
+                        {
+                            Task.DeselectTask();
                         }
                     }
-                }                
+                }
             }
         }
-        
+
         void FireTaskClicked()
         {
-            if (TaskClicked != null) {
+            if (TaskClicked != null)
+            {
                 TaskClicked(this, null);
             }
-        }        
+        }
 
         void FireTaskSelected(object sender, EventArgs e)
         {
-            if (TaskSelected != null) {
+            if (TaskSelected != null)
+            {
                 TaskSelected(sender, null);
             }
         }
-        
+
         #endregion
-	}
+    }
 }

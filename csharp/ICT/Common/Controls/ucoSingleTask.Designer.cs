@@ -29,21 +29,24 @@ namespace Ict.Common.Controls
         /// Designer variable used to keep track of non-visual components.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        
+
         /// <summary>
         /// Disposes resources used by the form.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing) {
-                if (components != null) {
+            if (disposing)
+            {
+                if (components != null)
+                {
                     components.Dispose();
                 }
             }
+
             base.Dispose(disposing);
         }
-        
+
         /// <summary>
         /// This method is required for Windows Forms designer support.
         /// Do not change the method contents inside the source code editor. The Forms designer might
@@ -58,16 +61,17 @@ namespace Ict.Common.Controls
             this.pnlIconSpacer = new System.Windows.Forms.Panel();
             this.pnlBackground.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // pnlBackground
-            // 
+            //
             this.pnlBackground.BackColor = System.Drawing.Color.Transparent;
             this.pnlBackground.BorderColor = System.Drawing.Color.Transparent;
             this.pnlBackground.Controls.Add(this.lblTaskDescription);
             this.pnlBackground.Controls.Add(this.llbTaskTitle);
             this.pnlBackground.Controls.Add(this.pnlIconSpacer);
             this.pnlBackground.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlBackground.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pnlBackground.Font =
+                new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pnlBackground.GradientDirection = System.Drawing.Drawing2D.LinearGradientMode.Vertical;
             this.pnlBackground.GradientEndColor = System.Drawing.Color.Transparent;
             this.pnlBackground.GradientStartColor = System.Drawing.Color.Transparent;
@@ -81,13 +85,14 @@ namespace Ict.Common.Controls
             this.pnlBackground.TabIndex = 0;
             this.pnlBackground.Click += new System.EventHandler(this.TaskClick);
             this.pnlBackground.DoubleClick += new System.EventHandler(this.DoubleClickAnywhere);
-            // 
+            //
             // lblTaskDescription
-            // 
+            //
             this.lblTaskDescription.AutoEllipsis = true;
             this.lblTaskDescription.BackColor = System.Drawing.Color.Transparent;
             this.lblTaskDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblTaskDescription.Font = new System.Drawing.Font("Verdana", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTaskDescription.Font =
+                new System.Drawing.Font("Verdana", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTaskDescription.ForeColor = System.Drawing.SystemColors.GrayText;
             this.lblTaskDescription.Location = new System.Drawing.Point(46, 20);
             this.lblTaskDescription.Name = "lblTaskDescription";
@@ -99,9 +104,9 @@ namespace Ict.Common.Controls
             this.lblTaskDescription.DoubleClick += new System.EventHandler(this.DoubleClickAnywhere);
             this.lblTaskDescription.MouseEnter += new System.EventHandler(this.TaskMouseEnter);
             this.lblTaskDescription.MouseLeave += new System.EventHandler(this.TaskMouseLeave);
-            // 
+            //
             // llbTaskTitle
-            // 
+            //
             this.llbTaskTitle.ActiveLinkColor = System.Drawing.Color.Orange;
             this.llbTaskTitle.AutoEllipsis = true;
             this.llbTaskTitle.BackColor = System.Drawing.Color.Transparent;
@@ -120,9 +125,9 @@ namespace Ict.Common.Controls
             this.llbTaskTitle.DoubleClick += new System.EventHandler(this.DoubleClickAnywhere);
             this.llbTaskTitle.MouseEnter += new System.EventHandler(this.TaskTitleMouseEnter);
             this.llbTaskTitle.MouseLeave += new System.EventHandler(this.TaskTitleMouseLeave);
-            // 
+            //
             // pnlIconSpacer
-            // 
+            //
             this.pnlIconSpacer.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlIconSpacer.Location = new System.Drawing.Point(2, 2);
             this.pnlIconSpacer.Name = "pnlIconSpacer";
@@ -130,9 +135,9 @@ namespace Ict.Common.Controls
             this.pnlIconSpacer.TabIndex = 4;
             this.pnlIconSpacer.Click += new System.EventHandler(this.TaskClick);
             this.pnlIconSpacer.DoubleClick += new System.EventHandler(this.DoubleClickAnywhere);
-            // 
+            //
             // ucoSingleTask
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pnlBackground);
@@ -142,6 +147,7 @@ namespace Ict.Common.Controls
             this.pnlBackground.ResumeLayout(false);
             this.ResumeLayout(false);
         }
+
         private System.Windows.Forms.Panel pnlIconSpacer;
         private Owf.Controls.A1Panel pnlBackground;
         private System.Windows.Forms.Label lblTaskDescription;

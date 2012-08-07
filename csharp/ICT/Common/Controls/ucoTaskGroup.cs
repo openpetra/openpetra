@@ -29,60 +29,60 @@ using System.Windows.Forms;
 
 namespace Ict.Common.Controls
 {
-	/// <summary>
-	/// Groups Tasks.
-	/// </summary>
-	public partial class TUcoTaskGroup : UserControl
-	{
-        private Dictionary<string, TUcoSingleTask> FTasks = new Dictionary<string, TUcoSingleTask>();
-		private TaskAppearance FTaskAppearance;
-		private bool FSingleClickExecution = false;
-		private int FMaxTaskWidth;
-		private TUcoSingleTask FirstTaskInGroup = null;
+    /// <summary>
+    /// Groups Tasks.
+    /// </summary>
+    public partial class TUcoTaskGroup : UserControl
+    {
+        private Dictionary <string, TUcoSingleTask>FTasks = new Dictionary <string, TUcoSingleTask>();
+        private TaskAppearance FTaskAppearance;
+        private bool FSingleClickExecution = false;
+        private int FMaxTaskWidth;
+        private TUcoSingleTask FirstTaskInGroup = null;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public TUcoTaskGroup()
-		{
-			//
-			// The InitializeComponent() call is required for Windows Forms designer support.
-			//
-			InitializeComponent();
-			flpTaskGroup.Resize += new EventHandler(flpTaskGroup_Resize);
+        {
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent();
+            flpTaskGroup.Resize += new EventHandler(flpTaskGroup_Resize);
         }
 
         #region Properties
-        
-		/// <summary>
-		/// Holds the Tasks that are to be displayed in the Task Group.
-		/// </summary>
-        private Dictionary<string, TUcoSingleTask> Tasks
+
+        /// <summary>
+        /// Holds the Tasks that are to be displayed in the Task Group.
+        /// </summary>
+        private Dictionary <string, TUcoSingleTask>Tasks
         {
-        	get
-        	{
-        		return FTasks;
-        	}
+            get
+            {
+                return FTasks;
+            }
         }
 
-		/// <summary>
-		/// Sets the Group Title.
-		/// </summary>
-		public string GroupTitle
-		{
-			get
-			{
-				return nlnGroupTitle.Caption;
-			}
-			
-			set
-			{
-				nlnGroupTitle.Caption = value;
-				flpTaskGroup.Name = value;  // for debugging only...
-			}
-		}
+        /// <summary>
+        /// Sets the Group Title.
+        /// </summary>
+        public string GroupTitle
+        {
+            get
+            {
+                return nlnGroupTitle.Caption;
+            }
 
-		/// <summary>
+            set
+            {
+                nlnGroupTitle.Caption = value;
+                flpTaskGroup.Name = value;                  // for debugging only...
+            }
+        }
+
+        /// <summary>
         /// Appearance of the Task (Large Tile, ListEntry).
         /// </summary>
         public TaskAppearance TaskAppearance
@@ -91,18 +91,18 @@ namespace Ict.Common.Controls
             {
                 return FTaskAppearance;
             }
-            
+
             set
             {
                 FTaskAppearance = value;
-                
-                foreach (var Task in Tasks) 
-                {               	
-                	Task.Value.TaskAppearance = FTaskAppearance;                	                	
+
+                foreach (var Task in Tasks)
+                {
+                    Task.Value.TaskAppearance = FTaskAppearance;
                 }
             }
         }
-        
+
         /// <summary>
         /// Execution of the Task with a single click of the mouse?
         /// </summary>
@@ -112,54 +112,54 @@ namespace Ict.Common.Controls
             {
                 return FSingleClickExecution;
             }
-            
+
             set
             {
                 if (FSingleClickExecution != value)
                 {
-                    FSingleClickExecution = value;                 
+                    FSingleClickExecution = value;
                 }
-                    
-                foreach (var Task in Tasks) 
-                {               	
-                	Task.Value.SingleClickAnywhereMeansTaskClicked = FSingleClickExecution;
+
+                foreach (var Task in Tasks)
+                {
+                    Task.Value.SingleClickAnywhereMeansTaskClicked = FSingleClickExecution;
                 }
             }
-       }
-        
-		/// <summary>
-		/// Maximum Task Width.
-		/// </summary>        
+        }
+
+        /// <summary>
+        /// Maximum Task Width.
+        /// </summary>
         public int MaxTaskWidth
         {
             get
             {
                 return FMaxTaskWidth;
             }
-            
+
             set
             {
-                if (FMaxTaskWidth != value) 
+                if (FMaxTaskWidth != value)
                 {
-                FMaxTaskWidth = value;
-                    
-                    foreach (var Task in Tasks) 
+                    FMaxTaskWidth = value;
+
+                    foreach (var Task in Tasks)
                     {
-                    	Task.Value.MaxTaskWidth = value;                	                	
-                    }                                   
+                        Task.Value.MaxTaskWidth = value;
+                    }
                 }
             }
         }
-        
+
         #endregion
-        
+
         #region Events
-        
+
         /// <summary>
         /// Fired when a Task is clicked by the user.
         /// </summary>
         public event EventHandler TaskClicked;
-        
+
         /// <summary>
         /// Fired when a Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
         /// </summary>
@@ -168,105 +168,107 @@ namespace Ict.Common.Controls
         #endregion
 
         #region Public Methods
-        
+
         /// <summary>
         /// Adds a Task to the Task Group.
         /// </summary>
         /// <param name="ATaskname">Name of the Task to be added.</param>
         /// <param name="ATask">Instance of the Task to be added.</param>
-		public void Add(string ATaskname, TUcoSingleTask ATask)
-		{
-			FTasks.Add(ATaskname, ATask);
-		
-            //	Add Task to this UserControls' Controls			
-			ATask.Margin = new Padding(5);
-            flpTaskGroup.Controls.Add(ATask);
-           
-			ATask.TaskClicked += new EventHandler(FireTaskClicked);
-			ATask.TaskSelected += new EventHandler(FireTaskSelected);
-			
-			if (FTasks.Count == 1) 
-			{
-			    FirstTaskInGroup = ATask;
-			}
-		}
+        public void Add(string ATaskname, TUcoSingleTask ATask)
+        {
+            FTasks.Add(ATaskname, ATask);
 
-        
+            //	Add Task to this UserControls' Controls
+            ATask.Margin = new Padding(5);
+            flpTaskGroup.Controls.Add(ATask);
+
+            ATask.TaskClicked += new EventHandler(FireTaskClicked);
+            ATask.TaskSelected += new EventHandler(FireTaskSelected);
+
+            if (FTasks.Count == 1)
+            {
+                FirstTaskInGroup = ATask;
+            }
+        }
+
         /// <summary>
         /// Removes all Tasks from the Task Group.
         /// </summary>
-		public void Clear()
-		{
-			FTasks.Clear();
-			
-			flpTaskGroup.Controls.Clear();
-			FirstTaskInGroup = null;
-		}
+        public void Clear()
+        {
+            FTasks.Clear();
 
-		/// <summary>
-		/// Selects (highlights) the task that was first added to a TaskGroup.
-		/// </summary>
-		public void SelectFirstTask()
-		{
-		    if (FTasks.Count > 0) 
-		    {
-		        FirstTaskInGroup.SelectTask();
-		    }
-		}
-		
-		#endregion
-		
-		#region Private Methods
-		
+            flpTaskGroup.Controls.Clear();
+            FirstTaskInGroup = null;
+        }
+
+        /// <summary>
+        /// Selects (highlights) the task that was first added to a TaskGroup.
+        /// </summary>
+        public void SelectFirstTask()
+        {
+            if (FTasks.Count > 0)
+            {
+                FirstTaskInGroup.SelectTask();
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
         private void FireTaskClicked(object sender, EventArgs e)
         {
-            if (TaskClicked != null) {
+            if (TaskClicked != null)
+            {
                 TaskClicked(sender, null);
             }
         }
 
         private void FireTaskSelected(object sender, EventArgs e)
         {
-            if (TaskSelected != null) {
+            if (TaskSelected != null)
+            {
                 TaskSelected(sender, null);
             }
         }
-		
-		private void TUcoTaskGroupResize(object sender, EventArgs e)
-		{
-		    string ControlsList = "\r\n" + flpTaskGroup.Name + "\r\n";
-		    
-		    // Cause the FlowLayoutPanel to resize as well (stangely this doesn't happen automatically!)
-		    if (this.Width < MaxTaskWidth) 
-		    {
+
+        private void TUcoTaskGroupResize(object sender, EventArgs e)
+        {
+            string ControlsList = "\r\n" + flpTaskGroup.Name + "\r\n";
+
+            // Cause the FlowLayoutPanel to resize as well (stangely this doesn't happen automatically!)
+            if (this.Width < MaxTaskWidth)
+            {
 //                this.Width = MaxTaskWidth;
-		    }
-		    else
-		    {
-		        flpTaskGroup.MaximumSize = new System.Drawing.Size(this.Width, 0);
-		    }
+            }
+            else
+            {
+                flpTaskGroup.MaximumSize = new System.Drawing.Size(this.Width, 0);
+            }
 
 //TLogging.Log("TUcoTaskGroupResize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
 //TLogging.Log("TUcoTaskGroupResize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
-		    
+
 //			TLogging.Log("flpTaskGroup '" + flpTaskGroup.Name + "' FTasks.Count: " + FTasks.Count.ToString());
 //TLogging.Log("flpTaskGroup '" + flpTaskGroup.Name + "' Controls.Count: " + flpTaskGroup.Controls.Count.ToString());
 
-            foreach (Control SingleControl in flpTaskGroup.Controls) 
+            foreach (Control SingleControl in flpTaskGroup.Controls)
             {
-                ControlsList += SingleControl.Name + "; X: " + SingleControl.Location.X.ToString() + "; Y: " + SingleControl.Location.Y.ToString() + "; Size: " + SingleControl.Size.ToString() + "\r\n";
+                ControlsList += SingleControl.Name + "; X: " + SingleControl.Location.X.ToString() + "; Y: " + SingleControl.Location.Y.ToString() +
+                                "; Size: " + SingleControl.Size.ToString() + "\r\n";
             }
-            
-//TLogging.Log(ControlsList + "\r\n" + "\r\n");
-		}
 
-        #endregion		
-        
-		#region Event Handlers
-		
+//TLogging.Log(ControlsList + "\r\n" + "\r\n");
+        }
+
+        #endregion
+
+        #region Event Handlers
+
         /// <summary>
-        /// We need to manually re-size the UserControl on the Resize event of the FlowLayoutPanel. 
-        /// The reason for that is that when the FlowLayoutPanel is in a UserControl, it doesn't re-size 
+        /// We need to manually re-size the UserControl on the Resize event of the FlowLayoutPanel.
+        /// The reason for that is that when the FlowLayoutPanel is in a UserControl, it doesn't re-size
         /// the UserControl and, consequently, we can't expect it to re-size the UserControl.
         /// If we don't manually re-size the UserControl, the TUcoTaskGroup UserControl doesn't 'shrink'
         /// back in height if the height that was needed to display a FlowLayoutPanel is reduced
@@ -276,13 +278,14 @@ namespace Ict.Common.Controls
         /// <param name="e">Set by WinForms. Ignored.</param>
         void flpTaskGroup_Resize(object sender, EventArgs e)
         {
-            this.Height = flpTaskGroup.Height + nlnGroupTitle.Height;      
+            this.Height = flpTaskGroup.Height + nlnGroupTitle.Height;
 
-            if (flpTaskGroup.Width < MaxTaskWidth) 
+            if (flpTaskGroup.Width < MaxTaskWidth)
             {
                 flpTaskGroup.Width = MaxTaskWidth;
 //                this.Width = MaxTaskWidth;
-            }            
+            }
+
 //TLogging.Log("flpTaskGroup_Resize: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
 //TLogging.Log("flpTaskGroup_Resize: flpTaskGroup " + Name + "'s size: " + flpTaskGroup.Size.ToString());
         }
@@ -293,22 +296,22 @@ namespace Ict.Common.Controls
 //            // Set a fixed width for the control.
 //            // ADD AN EXTRA HEIGHT VALIDATION TO AVOID INITIALIZATION PROBLEMS
 //            // BITWISE 'AND' OPERATION: IF ZERO THEN HEIGHT IS NOT INVOLVED IN THIS OPERATION
-//            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)                  
+//            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)
 //            {
-//    		    if (width < MaxTaskWidth) 
-//    		    {               
+//                  if (width < MaxTaskWidth)
+//                  {
 //TLogging.Log("SetBoundsCore: Before setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
 //                    base.SetBoundsCore(x, y, MaxTaskWidth, height, specified);
-//TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());	                    
+//TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
 //                }
 //		    }
 //		    else
 //		    {
 //                return;
 //		    }
-//TLogging.Log("SetBoundsCore: ucoTaskGroup " + Name + "'s size: " + Size.ToString());	    
+//TLogging.Log("SetBoundsCore: ucoTaskGroup " + Name + "'s size: " + Size.ToString());
 //		}
-        
-		#endregion		
-	}
+
+        #endregion
+    }
 }

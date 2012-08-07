@@ -38,11 +38,11 @@ namespace Ict.Common.Controls
     {
         /// <summary>Display the Task as a Tile (incl. Task Description)</summary>
         staLargeTile,
-        
+
         /// <summary>Display the Task as a Liste Entry (excl. Task Description)</summary>
         staListEntry
     }
-    
+
     /// <summary>
     /// Represents an individual Task (of many) in a Task List.
     /// </summary>
@@ -55,7 +55,7 @@ namespace Ict.Common.Controls
         int FMaxTaskHeight;
         TUcoTaskGroup FTaskGroup;
         TaskAppearance FSingleTaskAppearance = TaskAppearance.staLargeTile;
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -65,7 +65,7 @@ namespace Ict.Common.Controls
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            
+
             FMaxTaskWidth = this.Width;
             FMaxTaskHeight = this.Height;
         }
@@ -81,13 +81,13 @@ namespace Ict.Common.Controls
             {
                 return FTaskGroup;
             }
-            
+
             set
             {
                 FTaskGroup = value;
             }
         }
-        
+
         /// <summary>
         /// Title of the Task. (Shown as a LinkLabel.)
         /// </summary>
@@ -97,13 +97,13 @@ namespace Ict.Common.Controls
             {
                 return llbTaskTitle.Text;
             }
-            
+
             set
             {
                 llbTaskTitle.Text = value;
             }
         }
-        
+
         /// <summary>
         /// Description of the Task. (Shown under the TaskTitle LinkLabel - but only when the Control is in staLargeTile appearance).
         /// </summary>
@@ -113,7 +113,7 @@ namespace Ict.Common.Controls
             {
                 return lblTaskDescription.Text;
             }
-            
+
             set
             {
                 lblTaskDescription.Text = value;
@@ -129,11 +129,11 @@ namespace Ict.Common.Controls
             {
                 return FSingleTaskAppearance;
             }
-            
+
             set
             {
                 FSingleTaskAppearance = value;
-                
+
                 UpdateTaskAppearance();
                 UpdateLayout();
             }
@@ -148,22 +148,23 @@ namespace Ict.Common.Controls
             {
                 return FMaxTaskWidth;
             }
-            
+
             set
             {
                 FMaxTaskWidth = value;
-                
+
                 Width = value;
+
                 if (Width == 0)
                 {
                     TLogging.Log(Name + ": Width got set programmatically to 0!");
                 }
-                
+
                 UpdateTaskAppearance();
                 UpdateLayout();
             }
         }
-        
+
         /// <summary>
         /// Maximum Task Height.
         /// </summary>
@@ -173,13 +174,13 @@ namespace Ict.Common.Controls
             {
                 return FMaxTaskHeight;
             }
-            
+
             set
             {
                 FMaxTaskHeight = value;
             }
         }
-        
+
         /// <summary>
         /// Icon to be displayed left of the Task Title LinkLabel.
         /// </summary>
@@ -189,7 +190,7 @@ namespace Ict.Common.Controls
             {
                 return pnlBackground.Image;
             }
-            
+
             set
             {
                 pnlBackground.Image = value;
@@ -205,7 +206,7 @@ namespace Ict.Common.Controls
                 }
             }
         }
-        
+
         /// <summary>
         /// Indent Task Title LinkLabel if no Task Image is displayed?
         /// </summary>
@@ -215,11 +216,11 @@ namespace Ict.Common.Controls
             {
                 return FTaskIndentedIfNoTaskImage;
             }
-            
+
             set
             {
                 FTaskIndentedIfNoTaskImage = value;
-                
+
                 if (!FTaskIndentedIfNoTaskImage)
                 {
                     pnlIconSpacer.Visible = pnlBackground.Image != null;
@@ -230,7 +231,7 @@ namespace Ict.Common.Controls
                 }
             }
         }
-        
+
         /// <summary>
         /// Set to true if a single click anywhere in the Control should cause a
         /// <see cref="TaskClick" /> Event to be fired.
@@ -241,13 +242,13 @@ namespace Ict.Common.Controls
             {
                 return FSingleClickAnywhereMeansTaskClicked;
             }
-            
+
             set
             {
                 FSingleClickAnywhereMeansTaskClicked = value;
             }
         }
-        
+
         /// <summary>
         /// Required Size.
         /// </summary>
@@ -257,8 +258,8 @@ namespace Ict.Common.Controls
             {
                 int RequiredWidth;
                 int RequiredHeight;
-                
-                if(FSingleTaskAppearance == TaskAppearance.staLargeTile)
+
+                if (FSingleTaskAppearance == TaskAppearance.staLargeTile)
                 {
                     RequiredWidth = pnlIconSpacer.Width + GetTitleLength().Width + 8;
                     RequiredHeight = 54;
@@ -268,64 +269,64 @@ namespace Ict.Common.Controls
                     RequiredWidth = pnlIconSpacer.Width + GetTitleLength().Width + 5;
                     RequiredHeight = 24;
                 }
-                
+
                 if (RequiredWidth > FMaxTaskWidth)
                 {
                     RequiredWidth = FMaxTaskWidth;
                 }
-                
-                return new Size (RequiredWidth, RequiredHeight);
+
+                return new Size(RequiredWidth, RequiredHeight);
             }
         }
-        
+
         #endregion
-        
+
         #region Event Handlers
 
         /// <summary>
         /// Fired when the Task is clicked by the user.
         /// </summary>
         public event EventHandler TaskClicked;
-        
+
         /// <summary>
         /// Fired when the Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
         /// </summary>
         public event EventHandler TaskSelected;
-                
+
         #endregion
-        
+
         #region Public Methods
-        
+
         /// <summary>
         /// Selects (highlights) the Task.
         /// </summary>
         public void SelectTask()
         {
-            pnlBackground.BorderColor = System.Drawing.Color.FromArgb(125,162,206);
+            pnlBackground.BorderColor = System.Drawing.Color.FromArgb(125, 162, 206);
 
-            pnlBackground.GradientStartColor = System.Drawing.Color.FromArgb(220,235,252);
-            pnlBackground.GradientEndColor = System.Drawing.Color.FromArgb(193,219,252);
-            
+            pnlBackground.GradientStartColor = System.Drawing.Color.FromArgb(220, 235, 252);
+            pnlBackground.GradientEndColor = System.Drawing.Color.FromArgb(193, 219, 252);
+
             FTaskSelected = false;
         }
-        
+
         /// <summary>
         /// Deselectes (removes highlighting) of the Task.
         /// </summary>
         public void DeselectTask()
         {
             pnlBackground.BorderColor = System.Drawing.Color.Transparent;
-            
+
             pnlBackground.GradientStartColor = System.Drawing.Color.Transparent;
             pnlBackground.GradientEndColor = System.Drawing.Color.Transparent;
-            
+
             FTaskSelected = false;
         }
-        
+
         #endregion
-        
+
         #region Private Methods
-        
+
         void LlbTaskTitleLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             FireTaskClicked();
@@ -333,52 +334,53 @@ namespace Ict.Common.Controls
 
         void FireTaskClicked()
         {
-            if (TaskClicked != null) {
+            if (TaskClicked != null)
+            {
                 TaskClicked(this, null);
             }
         }
-        
+
         void TaskClick(object sender, EventArgs e)
         {
             SelectTask();
 
             FTaskSelected = true;
-            
+
             if (TaskSelected != null)
             {
                 TaskSelected(this, null);
             }
-            
-            if(FSingleClickAnywhereMeansTaskClicked)
+
+            if (FSingleClickAnywhereMeansTaskClicked)
             {
-                if((sender == lblTaskDescription)
-                   || (sender == pnlIconSpacer)
-                   || (sender == pnlBackground))
+                if ((sender == lblTaskDescription)
+                    || (sender == pnlIconSpacer)
+                    || (sender == pnlBackground))
                 {
                     FireTaskClicked();
                 }
             }
         }
-        
+
         void TaskTitleMouseEnter(object sender, EventArgs e)
         {
             llbTaskTitle.LinkColor = System.Drawing.Color.DarkBlue;
-            
+
             TaskMouseEnter(sender, e);
         }
-        
+
         void TaskTitleMouseLeave(object sender, EventArgs e)
         {
             llbTaskTitle.LinkColor = System.Drawing.Color.Black;
-            
+
             TaskMouseLeave(sender, e);
         }
-        
+
         void TaskMouseEnter(object sender, EventArgs e)
         {
-            pnlBackground.BorderColor = System.Drawing.Color.FromArgb(184,214,152);
+            pnlBackground.BorderColor = System.Drawing.Color.FromArgb(184, 214, 152);
         }
-        
+
         void TaskMouseLeave(object sender, EventArgs e)
         {
             if (!FTaskSelected)
@@ -386,16 +388,16 @@ namespace Ict.Common.Controls
                 pnlBackground.BorderColor = System.Drawing.Color.Transparent;
             }
         }
-        
+
         void UpdateTaskAppearance()
         {
-            if (FSingleTaskAppearance == TaskAppearance.staLargeTile) 
+            if (FSingleTaskAppearance == TaskAppearance.staLargeTile)
             {
                 // In LargeTile appearance the items should all have the same width
                 lblTaskDescription.Visible = true;
                 llbTaskTitle.Font = new Font(llbTaskTitle.Font.FontFamily, 9f, FontStyle.Regular);
                 Size = new Size(MaxTaskWidth, MaxTaskHeight);
-            } 
+            }
             else
             {
                 // In ListEntry appearance the items should only be as wide as they need
@@ -404,39 +406,39 @@ namespace Ict.Common.Controls
                 Size = RequiredSize;
             }
         }
-                
+
         private void UpdateLayout()
         {
-            if(FSingleTaskAppearance == TaskAppearance.staLargeTile)
+            if (FSingleTaskAppearance == TaskAppearance.staLargeTile)
             {
-                pnlBackground.ImageLocation = new Point(8,11);
-                
+                pnlBackground.ImageLocation = new Point(8, 11);
+
                 pnlIconSpacer.Width = pnlBackground.Image.Width + 12;
                 pnlIconSpacer.Height = pnlBackground.Image.Height + 12;
-                
-                llbTaskTitle.Padding = new Padding(0,2,0,0);
+
+                llbTaskTitle.Padding = new Padding(0, 2, 0, 0);
             }
             else
             {
-                pnlBackground.ImageLocation = new Point(5,4);
-                
+                pnlBackground.ImageLocation = new Point(5, 4);
+
                 pnlIconSpacer.Width = pnlBackground.Image.Width + 5;
                 pnlIconSpacer.Height = pnlBackground.Image.Height + 8;
-                
-                llbTaskTitle.Padding = new Padding(0,3,0,0);
+
+                llbTaskTitle.Padding = new Padding(0, 3, 0, 0);
             }
         }
-        
+
         private Size GetTitleLength()
         {
             return TextRenderer.MeasureText(llbTaskTitle.Text, llbTaskTitle.Font);
         }
-        
+
         void DoubleClickAnywhere(object sender, EventArgs e)
         {
             FireTaskClicked();
         }
-        
+
         #endregion
     }
 }

@@ -49,16 +49,16 @@ namespace Ict.Common.Controls
         /// This is the content panel which will host the task lists
         /// </summary>
         private TDashboard FDashboard;
-       
+
         /// <summary>
         /// This is the currently displayed Task List
         /// </summary>
-		private TLstTasks FCurrentTaskList = null;
-		
-		private int FMaxTaskWidth;
+        private TLstTasks FCurrentTaskList = null;
+
+        private int FMaxTaskWidth;
         private TExtStatusBarHelp FStatusbar = null;
 
-		        
+
         static System.Drawing.Bitmap UpArrow = null;
         static System.Drawing.Bitmap DownArrow = null;
 
@@ -160,34 +160,34 @@ namespace Ict.Common.Controls
                 ModuleNode = ModuleNode.PreviousSibling;
             }
         }
-        
+
         #region Properties
-        
-		/// <summary>
-		/// Maximum Task Width
-		/// </summary>        
+
+        /// <summary>
+        /// Maximum Task Width
+        /// </summary>
         public int MaxTaskWidth
         {
             get
             {
                 return FMaxTaskWidth;
             }
-            
+
             set
             {
-                if (FMaxTaskWidth != value) 
+                if (FMaxTaskWidth != value)
                 {
                     FMaxTaskWidth = value;
-                    
-                    FCurrentTaskList.MaxTaskWidth = FMaxTaskWidth;                   
+
+                    FCurrentTaskList.MaxTaskWidth = FMaxTaskWidth;
                 }
             }
         }
-        
+
         #endregion
-        
+
         #region Public Methods
-        
+
         /// <summary>
         /// set the statusbar so that error messages can be displayed
         /// </summary>
@@ -198,7 +198,7 @@ namespace Ict.Common.Controls
                 FStatusbar = value;
             }
         }
-        
+
         /// <summary>
         /// make sure that the content panel is populated with the contents of the first link;
         /// this might be called when selecting a folder
@@ -225,11 +225,11 @@ namespace Ict.Common.Controls
                 FDashboard.ShowTaskList(null);
             }
         }
-        
+
         #endregion
-        
+
         #region Private Methods
-        
+
         private void CollapseModuleMenu(object sender, EventArgs e)
         {
             Button btnModuleCollapse;
@@ -271,7 +271,7 @@ namespace Ict.Common.Controls
             if (tag.GetType() == typeof(TLstTasks))
             {
                 FCurrentTaskList = (TLstTasks)tag;
-//TLogging.Log("LinkClicked for existing " + FCurrentTaskList.Name);                
+//TLogging.Log("LinkClicked for existing " + FCurrentTaskList.Name);
             }
             else
             {
@@ -282,8 +282,8 @@ namespace Ict.Common.Controls
 
             FCurrentTaskList.Statusbar = FStatusbar;
             FCurrentTaskList.Dock = DockStyle.Fill;
-            
-            FDashboard.ShowTaskList(FCurrentTaskList);            
+
+            FDashboard.ShowTaskList(FCurrentTaskList);
 //            Invalidate();
         }
 

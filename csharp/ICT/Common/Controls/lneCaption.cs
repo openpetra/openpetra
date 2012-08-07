@@ -30,137 +30,138 @@ using System.Windows.Forms;
 
 namespace Ict.Common.Controls
 {
-	/// <summary>
-	/// Draws a line with a left-aligned (optional) text (=caption).
-	/// </summary>
-	public class TLneCaption : System.Windows.Forms.UserControl
-	{
-		private System.ComponentModel.Container FComponents = null;
-		
-		/// <summary>
-		/// The colour of the line.
-		/// </summary>
-		private readonly System.Drawing.Color LINECOLOUR = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(224)))), ((int)(((byte)(251)))));
-		
-		/// <summary>
-		/// Caption (optional)
-		/// </summary>
-		private string FCaption = "";
+    /// <summary>
+    /// Draws a line with a left-aligned (optional) text (=caption).
+    /// </summary>
+    public class TLneCaption : System.Windows.Forms.UserControl
+    {
+        private System.ComponentModel.Container FComponents = null;
 
-    	/// <summary>
-    	/// Constructor.
-    	/// </summary>
-    	public TLneCaption()
-		{
-			InitializeComponent();
-		}
+        /// <summary>
+        /// The colour of the line.
+        /// </summary>
+        private readonly System.Drawing.Color LINECOLOUR =
+            System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(224)))), ((int)(((byte)(251)))));
 
-		#region Component Designer generated code
-		
-		/// <summary> 
-		/// Required method for Designer support - do not modify 
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
-			// 
-			// TLneCaption
-			// 
-			this.Name = "TLneCaption";
-			this.Size = new System.Drawing.Size(200, this.Font.Height);
-		}
-		
-		#endregion
+        /// <summary>
+        /// Caption (optional)
+        /// </summary>
+        private string FCaption = "";
 
-		/// <summary>
-		/// Caption (optional).
-		/// </summary>
-		public string Caption
-		{
-			get 
-			{ 
-			    return FCaption; 
-			}
-			
-			set 
-			{
-				FCaption = value; 
-				this.Invalidate();
-			}
-		}
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public TLneCaption()
+        {
+            InitializeComponent();
+        }
 
-		/// <summary> 
-		/// Cleanup of resources.
-		/// </summary>
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				if(FComponents != null)
-				{
-					FComponents.Dispose();
-				}
-			}
-			
-			base.Dispose(disposing);
-		}
+        #region Component Designer generated code
 
-		/// <summary>
-		/// Fired on resizing of the Control.
-		/// </summary>
-		/// <param name="e">Provided by WinForms.</param>
-		protected override void OnResize(System.EventArgs e)
-		{
-			base.OnResize(e);
-			
-			this.Height = this.Font.Height + 2;
-			this.Invalidate();
-		}
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            //
+            // TLneCaption
+            //
+            this.Name = "TLneCaption";
+            this.Size = new System.Drawing.Size(200, this.Font.Height);
+        }
 
-		/// <summary>
-		/// Fired on Font change.
-		/// </summary>
-		/// <param name="e">Provided by WinForms.</param>
-		protected override void OnFontChanged(System.EventArgs e)
-		{
-			this.OnResize(e);
-			base.OnFontChanged(e);
-		}
-		
-		/// <summary>
-		/// Fired on paiting of the Control. The main work of this Control occurs in here!
-		/// </summary>
-		/// <param name="e">Provided by WinForms.</param>
-		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
-		{
-			base.OnPaint(e);
+        #endregion
 
-			int VerticalPos = Convert.ToInt32( Math.Ceiling( (double)Size.Height / 2 ) ) - 1;
-			
-			SizeF CaptionSize = e.Graphics.MeasureString(Caption, this.Font, this.Width, StringFormat.GenericDefault);
-			int CaptionLen = Convert.ToInt32(CaptionSize.Width);
+        /// <summary>
+        /// Caption (optional).
+        /// </summary>
+        public string Caption
+        {
+            get
+            {
+                return FCaption;
+            }
 
-			int Remainder;
+            set
+            {
+                FCaption = value;
+                this.Invalidate();
+            }
+        }
 
-			if( Caption == "" ) 
-			{
-				Remainder = -1;
-			}
-			else
-			{
-    			Remainder = -1 + CaptionLen;
-			}
+        /// <summary>
+        /// Cleanup of resources.
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (FComponents != null)
+                {
+                    FComponents.Dispose();
+                }
+            }
 
-			e.Graphics.DrawLines(new Pen(LINECOLOUR, 1),
-				new Point[] { new Point(0, VerticalPos + 1), new Point(0, VerticalPos), new Point(-1, VerticalPos) });
+            base.Dispose(disposing);
+        }
 
-			e.Graphics.DrawLines(new Pen(LINECOLOUR, 1),
-				new Point[] { new Point(Remainder, VerticalPos), new Point(this.Width, VerticalPos) });
+        /// <summary>
+        /// Fired on resizing of the Control.
+        /// </summary>
+        /// <param name="e">Provided by WinForms.</param>
+        protected override void OnResize(System.EventArgs e)
+        {
+            base.OnResize(e);
 
-			if( Caption != "" ) 
-			{
-				e.Graphics.DrawString(Caption, this.Font, new SolidBrush(this.ForeColor), -2, -1);
-			}
-		}
-	}
+            this.Height = this.Font.Height + 2;
+            this.Invalidate();
+        }
+
+        /// <summary>
+        /// Fired on Font change.
+        /// </summary>
+        /// <param name="e">Provided by WinForms.</param>
+        protected override void OnFontChanged(System.EventArgs e)
+        {
+            this.OnResize(e);
+            base.OnFontChanged(e);
+        }
+
+        /// <summary>
+        /// Fired on paiting of the Control. The main work of this Control occurs in here!
+        /// </summary>
+        /// <param name="e">Provided by WinForms.</param>
+        protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            int VerticalPos = Convert.ToInt32(Math.Ceiling((double)Size.Height / 2)) - 1;
+
+            SizeF CaptionSize = e.Graphics.MeasureString(Caption, this.Font, this.Width, StringFormat.GenericDefault);
+            int CaptionLen = Convert.ToInt32(CaptionSize.Width);
+
+            int Remainder;
+
+            if (Caption == "")
+            {
+                Remainder = -1;
+            }
+            else
+            {
+                Remainder = -1 + CaptionLen;
+            }
+
+            e.Graphics.DrawLines(new Pen(LINECOLOUR, 1),
+                new Point[] { new Point(0, VerticalPos + 1), new Point(0, VerticalPos), new Point(-1, VerticalPos) });
+
+            e.Graphics.DrawLines(new Pen(LINECOLOUR, 1),
+                new Point[] { new Point(Remainder, VerticalPos), new Point(this.Width, VerticalPos) });
+
+            if (Caption != "")
+            {
+                e.Graphics.DrawString(Caption, this.Font, new SolidBrush(this.ForeColor), -2, -1);
+            }
+        }
+    }
 }

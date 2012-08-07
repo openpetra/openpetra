@@ -38,9 +38,9 @@ namespace Ict.Common.Controls
         private TDashboard FDashboard;
         private TExtStatusBarHelp FStatusbar = null;
         private bool FMovingSplitter = false;       // avoid recursion of events on Mono
-        
+
         #region Public Static
-        
+
         /// <summary>
         /// this is the path to the resource directory of the icons.
         /// this is public and static so that the TPnlAccordion can access it too.
@@ -60,7 +60,7 @@ namespace Ict.Common.Controls
         }
 
         #endregion
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -89,16 +89,16 @@ namespace Ict.Common.Controls
         }
 
         #region Delegates
-        
+
         /// <summary>
         /// this function checks if the user has access to the navigation node
         /// </summary>
         public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
 
         #endregion
-        
+
         #region Properties
-        
+
         /// <summary>
         /// set the dashboard so that the task lists can be displayed in the right place
         /// </summary>
@@ -122,7 +122,7 @@ namespace Ict.Common.Controls
         }
 
         #endregion
-        
+
         #region Public Methods
 
         /// <summary>
@@ -194,11 +194,11 @@ namespace Ict.Common.Controls
                 Index++;
             }
         }
-        
+
         #endregion
-        
+
         #region Private Methods
-        
+
         private TPnlAccordion GetOrCreatePanel(XmlNode AFolderNode)
         {
             string pnlName = "pnl" + AFolderNode.Name;
@@ -224,9 +224,9 @@ namespace Ict.Common.Controls
         }
 
         #endregion
-        
+
         #region Event Handling
-        
+
         private void FolderCheckedChanged(object sender, EventArgs e)
         {
             TRbtNavigationButton rbtFolder = (TRbtNavigationButton)sender;
@@ -260,7 +260,7 @@ namespace Ict.Common.Controls
         {
             // TODO: hide lowest folder radio button, add it to panel pnlMoreButtons
         }
-        
+
         #endregion
     }
 }
