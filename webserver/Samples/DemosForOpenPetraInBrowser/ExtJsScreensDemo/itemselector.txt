@@ -1,0 +1,72 @@
+	<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.1.0-gpl/examples/ux/form/MultiSelect.js"></script>
+	<script type="text/javascript" charset="utf-8" src="http://cdn.sencha.io/ext-4.1.0-gpl/examples/ux/form/ItemSelector.js"></script>
+    <link rel="stylesheet" type="text/css" href="http://cdn.sencha.io/ext-4.1.0-gpl/examples/ux/css/ItemSelector.css" />
+
+    
+Ext.require([
+    'Ext.grid.*',
+    'Ext.data.*',
+    'Ext.util.*',
+    'Ext.state.*',
+    'Ext.ux.form.ItemSelector'
+]);
+
+Ext.define('Ext.ux.form.override.MultiSelect', {
+    override : 'Ext.ux.form.MultiSelect',
+
+    setupItems : function() {
+        var me = this;
+        me.boundList = Ext.create('Ext.view.BoundList', {
+            deferInitialRefresh : false,
+            multiSelect : true,
+            store : me.store,
+            displayField : me.displayField,
+            disabled : me.disabled
+        });
+        me.boundList.getSelectionModel().on('selectionchange', me.onSelectChange, me);
+        //START OVERRIDE
+        this.selectedPanel = new Ext.panel.Panel({
+            bodyStyle : 'border: 0;',
+            layout : 'fit',
+            title : me.title,
+            tbar : me.tbar,
+            items : me.boundList
+        });
+
+        return {
+            xtype : 'container',
+            layout : 'fit',
+            items : this.selectedPanel
+        };
+    }
+});
+
+Ext.define('Ext.ux.form.override.ItemSelector', {
+    override : 'Ext.ux.form.ItemSelector',
+
+    fromTitle : 'Available',
+    toTitle : 'Selected',
+
+    setupItems : function() {
+        var items = this.callParent();
+
+        this.fromField.selectedPanel.setTitle(this.fromTitle);
+        this.toField.selectedPanel.setTitle(this.toTitle);
+
+        return items;
+    }
+})
+
+
+                                                 {
+                                                    xtype: 'itemselector',
+                                                    name: 'modulePermissions',
+                                                    id: 'modulePermissions',
+                                                    anchor: '100%',
+                                                    fieldLabel: 'Module Permissions',
+                                                    store: storeModulePermissions,
+                                                    buttons: ['add', 'remove'],
+                                                    displayField: 'text',
+                                                    valueField: 'value',
+                                                    msgTarget: 'side'                                                 
+                                                 }
