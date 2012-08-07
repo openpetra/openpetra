@@ -1,3 +1,4 @@
+Owf.Controls=${dir.3rdParty}/A1Panel/Owf.Controls.A1Panel.dll
 DevAge*=${dir.3rdParty}/DevAge/SourceGrid.dll
 SourceGrid*=${dir.3rdParty}/DevAge/SourceGrid.dll
 OfficeOpenXml*=${dir.3rdParty}/EPPlus/EPPlus.dll

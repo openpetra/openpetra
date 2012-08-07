@@ -1,0 +1,611 @@
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       christiank (original, different implementation by timotheusp)
+//
+// Copyright 2004-2012 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
+using System.Xml;
+
+using Ict.Common;
+using Ict.Common.IO;
+
+namespace Ict.Common.Controls
+{
+	/// <summary>
+	/// Displays Tasks within Task Groups in the OpenPetra Main Menu.
+	/// </summary>
+	public partial class TLstTasks : UserControl
+	{
+        private static string FUserId;
+        private static CheckAccessPermissionDelegate FHasAccessPermission;
+        private Dictionary<string, TUcoTaskGroup> FGroups = new Dictionary<string, TUcoTaskGroup>();
+        private TUcoSingleTask FSelectedTask = null;
+		private TaskAppearance FTaskAppearance;
+		private bool FSingleClickExecution = false;
+		private int FMaxTaskWidth;
+        private TExtStatusBarHelp FStatusbar = null;
+		
+        static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
+        static private Form FLastOpenedScreen = null;
+
+        #region Constructors
+        
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+		public TLstTasks()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+		}
+
+        /// <summary>
+        /// Constructor. Generates several Groups of Tasks from an xml document.
+        /// </summary>
+        /// <param name="ATaskGroups"></param>
+        public TLstTasks(XmlNode ATaskGroups)
+        {
+            this.SuspendLayout();
+            
+            this.Name = "lstTasks" + ATaskGroups.Name;
+            this.AutoScroll = true;            
+//            this.HorizontalScroll.Enabled = true;
+            this.Resize += new EventHandler(ListResize);
+
+            XmlNode TaskGroupNode = ATaskGroups.FirstChild;
+            
+            while (TaskGroupNode != null)
+            {
+                if (TaskGroupNode.Name == "SearchBoxes")
+                {
+                    // TODO Search boxes
+                }
+                else
+                {
+                	TUcoTaskGroup TaskGroup = new TUcoTaskGroup();
+                	TaskGroup.GroupTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
+                	TaskGroup.Name = TaskGroupNode.Name;
+            		
+                    Groups.Add(TaskGroup.Name, TaskGroup);
+                    
+                    if (TaskGroupNode.FirstChild == null)
+                    {
+                        // duplicate group node into task; otherwise you would not notice the error in the yml file?
+                        TUcoSingleTask SingleTask = new TUcoSingleTask();
+                        SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
+                        SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskGroupNode,
+                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskGroupNode, "Description")) : "";
+                        SingleTask.Name = TaskGroupNode.Name;
+                        SingleTask.TaskGroup = TaskGroup;
+                        SingleTask.Tag = TaskGroupNode;
+                        
+                        if (!FHasAccessPermission(TaskGroupNode, FUserId))
+                        {
+                            SingleTask.Enabled = false;
+                        }
+
+                        TaskGroup.Add(SingleTask.Name, SingleTask);
+                    }
+                    else
+                    {
+                        XmlNode TaskNode = TaskGroupNode.FirstChild;
+
+                        while (TaskNode != null)
+                        {
+	                        TUcoSingleTask SingleTask = new TUcoSingleTask();
+	                        SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskNode);
+	                        SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
+	                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
+                            SingleTask.Name = TaskNode.Name;
+                            SingleTask.TaskGroup = TaskGroup;
+                            SingleTask.Tag = TaskNode;
+
+                            if (!FHasAccessPermission(TaskNode, FUserId))
+                            {
+                                SingleTask.Enabled = false;
+                            }
+
+                            TaskGroup.Add(SingleTask.Name, SingleTask);
+                            TaskNode = TaskNode.NextSibling;
+                        }                    	
+                    }
+                    
+                    // Add TaskGroup to this UserControls' Controls
+	                TaskGroup.Dock = DockStyle.Top;
+	                TaskGroup.Margin = new Padding(3);
+	                TaskGroup.AutoSize = true;
+	                TaskGroup.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+	                
+	                TaskGroup.TaskClicked += new EventHandler(SingleTask_ExecuteTask);
+	                TaskGroup.TaskSelected += new EventHandler(SingleTask_TaskSelected);
+
+	                this.Controls.Add(TaskGroup);
+	                
+	                // Make sure Task Groups are shown in correct order and not in reverse order.
+	                // (This is needed because we 'stack them up' with 'TaskGroup.Dock = DockStyle.Top')      
+	                TaskGroup.BringToFront();
+	                
+	                // Select (highlight) first Task in the first Group
+                    if (Groups.Count == 1) 
+                    {
+                        TaskGroup.SelectFirstTask();    
+                    }	                
+                }
+                
+                TaskGroupNode = TaskGroupNode.NextSibling;
+            }
+            
+            this.ResumeLayout();
+        }
+        
+        #endregion        
+
+        #region Delegates
+
+        /// <summary>
+        /// this function checks if the user has access to the navigation node
+        /// </summary>
+        public delegate bool CheckAccessPermissionDelegate(XmlNode ANode, string AUserId);
+
+        #endregion
+
+        #region Properties
+        
+        /// <summary>
+        /// Groups that are to be shown in the Task List.
+        /// </summary>
+        public Dictionary<string, TUcoTaskGroup> Groups
+        {
+        	get
+        	{
+        		return FGroups;
+        	}        	
+        }
+        
+        /// <summary>
+        /// Appearance of the Task (Large Tile, ListEntry).
+        /// </summary>
+        public TaskAppearance TaskAppearance
+        {
+            get
+            {
+                return FTaskAppearance;
+            }
+            
+            set
+            {
+                if (FTaskAppearance != value) 
+                {
+                    FTaskAppearance = value;
+                    
+                    foreach (var Group in Groups) 
+                    {
+                    	Group.Value.TaskAppearance = FTaskAppearance;	
+                    }                   
+                }
+            }
+        }       
+    	
+        /// <summary>
+        /// Execution of the Task with a single click of the mouse?
+        /// </summary>
+        public bool SingleClickExecution
+        {
+            get
+            {
+                return FSingleClickExecution;
+            }
+            
+            set
+            {
+                if (FSingleClickExecution != value)
+                {
+                    FSingleClickExecution = value;
+                    
+                    foreach (var Group in Groups) 
+                    {
+                    	Group.Value.SingleClickExecution = FSingleClickExecution;	
+                    }                   
+                }
+            }
+       }
+
+        /// <summary>
+		/// Maximum Task Width.
+		/// </summary>
+        public int MaxTaskWidth
+        {
+            get
+            {
+                return FMaxTaskWidth;
+            }
+            
+            set
+            {
+                if (FMaxTaskWidth != value) 
+                {
+                    FMaxTaskWidth = value;
+                    
+                    foreach (var Group in Groups) 
+                    {
+                    	Group.Value.MaxTaskWidth = value;                	                	
+                    }                                    
+                }
+            }
+        }
+
+        /// <summary>
+        /// The object of the last opened screen - useful for testing.
+        /// </summary>
+        static public Form LastOpenedScreen
+        {
+            get
+            {
+                return FLastOpenedScreen;
+            }
+        }
+        
+        /// <summary>
+        /// Sets the Status Bar Text so that error messages can be displayed.
+        /// </summary>
+        public TExtStatusBarHelp Statusbar
+        {
+            set
+            {
+                FStatusbar = value;
+            }
+        }    
+
+        #endregion        
+       
+        #region Events
+        
+        /// <summary>
+        /// Fired when a Task is clicked by the user.
+        /// </summary>
+        public event EventHandler TaskClicked;
+        
+        /// <summary>
+        /// Fired when a Task is selected by the user (in a region of the Control where a TaskClick isn't fired).
+        /// </summary>
+        public event EventHandler TaskSelected;
+        
+        #endregion
+        
+        #region Public Methods
+        
+        /// <summary>
+        /// Initialise the permissions callback function for the current user.
+        /// </summary>
+        /// <param name="AUserId"></param>
+        /// <param name="AHasAccessPermission"></param>
+        public static void Init(string AUserId, CheckAccessPermissionDelegate AHasAccessPermission)
+        {
+            FUserId = AUserId;
+            FHasAccessPermission = AHasAccessPermission;
+        }
+
+        /// <summary>
+        /// Execute action from the navigation tree.
+        /// </summary>
+        /// <returns>The error or status message.</returns>
+        public static string ExecuteAction(XmlNode node, Form AParentWindow)
+        {
+            if (!FHasAccessPermission(node, FUserId))
+            {
+                return Catalog.GetString("Sorry, you don't have enough permissions to do this");
+            }
+
+            string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
+
+            if (strNamespace.Length == 0)
+            {
+                return "There is no namespace for " + node.Name;
+            }
+
+            if (!FGUIAssemblies.Keys.Contains(strNamespace))
+            {
+                // work around dlls containing several namespaces, eg Ict.Petra.Client.MFinance.Gui contains AR as well
+                string DllName = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar + strNamespace;
+
+                if (!System.IO.File.Exists(DllName + ".dll"))
+                {
+                    DllName = DllName.Substring(0, DllName.LastIndexOf("."));
+                }
+
+                try
+                {
+                    FGUIAssemblies.Add(strNamespace, Assembly.LoadFrom(DllName + ".dll"));
+                }
+                catch (Exception exp)
+                {
+                    return "error loading assembly " + strNamespace + ".dll: " + exp.Message;
+                }
+            }
+
+            Assembly asm = FGUIAssemblies[strNamespace];
+            string actionClick = TYml2Xml.GetAttribute(node, "ActionClick");
+            string actionOpenScreen = TYml2Xml.GetAttribute(node, "ActionOpenScreen");
+
+            if (actionClick.Contains("."))
+            {
+                string className = actionClick.Substring(0, actionClick.IndexOf("."));
+                string methodName = actionClick.Substring(actionClick.IndexOf(".") + 1);
+                System.Type classType = asm.GetType(strNamespace + "." + className);
+
+                if (classType == null)
+                {
+                    return "cannot find class " + strNamespace + "." + className + " for " + node.Name;
+                }
+
+                MethodInfo method = classType.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+
+                if (method != null)
+                {
+                    List <object>parameters = new List <object>();
+                    parameters.Add(AParentWindow);
+
+                    // Check the parameters, if we have such an attribute
+                    foreach (ParameterInfo param in method.GetParameters())
+                    {
+                        // ignore the first letter, A, eg. in ALedgerNumber
+                        if (TYml2Xml.HasAttributeRecursive(node, param.Name.Substring(1)))
+                        {
+                            Object obj = TYml2Xml.GetAttributeRecursive(node, param.Name.Substring(1));
+
+                            if (param.ParameterType == typeof(Int32))
+                            {
+                                obj = Convert.ToInt32(obj);
+                            }
+                            else if (param.ParameterType == typeof(Int64))
+                            {
+                                obj = Convert.ToInt64(obj);
+                            }
+                            else if (param.ParameterType == typeof(bool))
+                            {
+                                obj = Convert.ToBoolean(obj);
+                            }
+                            else if (param.ParameterType == typeof(string))
+                            {
+                                // leave it as string
+                            }
+                            else if (param.ParameterType.IsEnum)
+                            {
+                                obj = Enum.Parse(param.ParameterType, obj.ToString(), true);
+                            }
+                            else
+                            {
+                                // to avoid that Icon is set etc, clear obj
+                                obj = null;
+                            }
+
+                            if (obj != null)
+                            {
+                                parameters.Add(obj);
+                            }
+                        }
+                    }
+
+                    method.Invoke(null, parameters.ToArray());
+                }
+                else
+                {
+                    return "cannot find method " + className + "." + methodName + " for " + node.Name;
+                }
+            }
+            else if (actionOpenScreen.Length > 0)
+            {
+                string className = actionOpenScreen;
+
+                System.Type classType = asm.GetType(strNamespace + "." + className);
+
+                if (classType == null)
+                {
+                    return "cannot find class " + strNamespace + "." + className + " for " + node.Name;
+                }
+
+                // TODO: check if user has permissions for this screen?
+                // needs to be implemented as a static function of the screen, GetRequiredPermission returns the permission that is needed (eg PTNRUSER)
+                // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
+                // delegate as a static function that is available from everywhere?
+
+                System.Object screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+
+                // check for properties and according attributes; this works for the LedgerNumber at the moment
+                foreach (PropertyInfo prop in classType.GetProperties())
+                {
+                    if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
+                    {
+                        Object obj = TYml2Xml.GetAttributeRecursive(node, prop.Name);
+
+                        if (prop.PropertyType == typeof(Int32))
+                        {
+                            obj = Convert.ToInt32(obj);
+                        }
+                        else if (prop.PropertyType == typeof(Int64))
+                        {
+                            obj = Convert.ToInt64(obj);
+                        }
+                        else if (prop.PropertyType == typeof(bool))
+                        {
+                            obj = Convert.ToBoolean(obj);
+                        }
+                        else if (prop.PropertyType == typeof(string))
+                        {
+                            // leave it as string
+                        }
+                        else if (prop.PropertyType.IsEnum)
+                        {
+                            obj = Enum.Parse(prop.PropertyType, obj.ToString(), true);
+                        }
+                        else
+                        {
+                            // to avoid that Icon is set etc, clear obj
+                            obj = null;
+                        }
+
+                        if (obj != null)
+                        {
+                            prop.SetValue(screen, obj, null);
+                        }
+                    }
+                }
+
+                MethodInfo method = classType.GetMethod("Show", BindingFlags.Public | BindingFlags.Instance, null, CallingConventions.Any,
+                    new Type[] { }, null);
+
+                if (method != null)
+                {
+                    method.Invoke(screen, null);
+                    FLastOpenedScreen = (Form)screen;
+                }
+                else
+                {
+                    return "cannot find method " + className + ".Show for " + node.Name;
+                }
+            }
+            else if (actionClick.Length == 0)
+            {
+                return "No action defined for " + node.Name;
+            }
+            else
+            {
+                return "Invalid action " + actionClick + " defined for " + node.Name;
+            }
+
+            return "";
+        }        
+        
+        #endregion
+        
+        #region Private Methods
+        
+        void ListResize(object sender, EventArgs e)
+        {
+			foreach (var Group in Groups) 
+			{
+				Group.Value.MaximumSize = new System.Drawing.Size(this.Width, 0);
+			}
+        }
+        
+        private void WriteToStatusBar(string s)
+        {
+            if (FStatusbar != null)
+            {
+                FStatusbar.ShowMessage(s);
+            }
+            else
+            {
+                // TODO: does this work? which is the current statusbar?
+                TLogging.Log(s, TLoggingType.ToStatusBar);
+            }
+        }        
+        
+//		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+//		{
+//            // Set a fixed width for the control.
+//            // ADD AN EXTRA HEIGHT VALIDATION TO AVOID INITIALIZATION PROBLEMS
+//            // BITWISE 'AND' OPERATION: IF ZERO THEN HEIGHT IS NOT INVOLVED IN THIS OPERATION
+//            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)                  
+//            {
+//    		    if (width < MaxTaskWidth) 
+//    		    {               
+////TLogging.Log("SetBoundsCore: Before setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
+//                    base.SetBoundsCore(x, y, MaxTaskWidth, height, specified);
+////TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());	                    
+//                }
+//		    }
+//            else if ((specified&BoundsSpecified.Height) == 0)
+//            {
+//                base.SetBoundsCore(x, y, width, this.Height, specified);
+//            }                
+//		    else
+//		    {
+//                return;
+//		    }
+//TLogging.Log("SetBoundsCore: TLstTask " + Name + "'s size: " + Size.ToString());	    
+//		}
+        
+        #endregion
+        
+        #region Event Handling
+        
+        void SingleTask_ExecuteTask(object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+
+            Control parentForm = Parent;
+
+            while (parentForm != null && !(parentForm is Form))
+            {
+                parentForm = parentForm.Parent;
+            }
+
+            string message = ExecuteAction((XmlNode)((TUcoSingleTask)sender).Tag, (Form)parentForm);
+            WriteToStatusBar(message);
+
+            Cursor = Cursors.Default;
+        }
+        
+        void SingleTask_TaskSelected(object sender, EventArgs e)
+        {
+            FSelectedTask = ((TUcoSingleTask)sender);
+
+            foreach(Control TaskGroups in this.Controls)
+            {
+                foreach(Control TaskGroup in TaskGroups.Controls)
+                {
+                    foreach(TUcoSingleTask Task in TaskGroup.Controls)
+                    {
+                        if (Task != sender) 
+                        {                        	
+                            Task.DeselectTask();        
+                        }
+                    }
+                }                
+            }
+        }
+        
+        void FireTaskClicked()
+        {
+            if (TaskClicked != null) {
+                TaskClicked(this, null);
+            }
+        }        
+
+        void FireTaskSelected(object sender, EventArgs e)
+        {
+            if (TaskSelected != null) {
+                TaskSelected(sender, null);
+            }
+        }
+        
+        #endregion
+	}
+}
