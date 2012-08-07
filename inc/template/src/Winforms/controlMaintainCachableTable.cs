@@ -651,7 +651,7 @@ namespace {#NAMESPACE}
     
 {#IFDEF MASTERTABLE}
 
-    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
+    private void GetDataFromControls({#MASTERTABLETYPE}Row ARow, Control AControl=null)
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
@@ -668,7 +668,7 @@ namespace {#NAMESPACE}
     }
 {#ENDIFN MASTERTABLE}
 {#IFDEF SAVEDETAILS}
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow, bool AIsNewRow = false)
+    private void GetDetailsFromControls({#DETAILTABLE}Row ARow, bool AIsNewRow = false, Control AControl=null)
     {
         if (ARow != null && !grdDetails.Sorting)
         {
@@ -684,6 +684,13 @@ namespace {#NAMESPACE}
             }
         }
     }
+{#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
+
+    private void ControlUpdateDataHandler(object sender, EventArgs e)
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow, false, (Control)sender);
+    }
+{#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 
 #region Implement interface functions

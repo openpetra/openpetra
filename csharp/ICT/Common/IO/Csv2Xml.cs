@@ -147,7 +147,7 @@ namespace Ict.Common.IO
         /// this makes use of the EPPlus library
         /// http://epplus.codeplex.com/
         /// </summary>
-        private static void Xml2ExcelWorksheet(XmlDocument ADoc, ExcelWorksheet AWorksheet)
+        private static void Xml2ExcelWorksheet(XmlDocument ADoc, ExcelWorksheet AWorksheet, bool AWithHashInCaption = true)
         {
             Int32 rowCounter = 1;
             Int16 colCounter = 1;
@@ -159,7 +159,15 @@ namespace Ict.Common.IO
 
             foreach (string attrName in AllAttributes)
             {
-                AWorksheet.Cells[rowCounter, colCounter].Value = "#" + attrName;
+                if (AWithHashInCaption)
+                {
+                    AWorksheet.Cells[rowCounter, colCounter].Value = "#" + attrName;
+                }
+                else
+                {
+                    AWorksheet.Cells[rowCounter, colCounter].Value = attrName;
+                }
+
                 colCounter++;
             }
 
@@ -207,10 +215,7 @@ namespace Ict.Common.IO
         /// this makes use of the EPPlus library
         /// http://epplus.codeplex.com/
         /// </summary>
-        /// <param name="ADoc"></param>
-        /// <param name="AStream"></param>
-        /// <returns></returns>
-        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream)
+        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream, bool AWithHashInCaption = true)
         {
             try
             {
@@ -218,7 +223,7 @@ namespace Ict.Common.IO
 
                 ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
 
-                Xml2ExcelWorksheet(ADoc, worksheet);
+                Xml2ExcelWorksheet(ADoc, worksheet, AWithHashInCaption);
 
                 pck.SaveAs(AStream);
 
@@ -239,10 +244,7 @@ namespace Ict.Common.IO
         ///
         /// this overload stores several worksheets
         /// </summary>
-        /// <param name="ADocs"></param>
-        /// <param name="AStream"></param>
-        /// <returns></returns>
-        public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream)
+        public static bool Xml2ExcelStream(SortedList <string, XmlDocument>ADocs, MemoryStream AStream, bool AWithHashInCaption = true)
         {
             try
             {
@@ -252,7 +254,7 @@ namespace Ict.Common.IO
                 {
                     ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add(WorksheetTitle);
 
-                    Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet);
+                    Xml2ExcelWorksheet(ADocs[WorksheetTitle], worksheet, AWithHashInCaption);
                 }
 
                 pck.SaveAs(AStream);

@@ -537,7 +537,7 @@ namespace {#NAMESPACE}
 {#IFDEF MASTERTABLE}
 
 	/// get the data from the controls and store in the currently selected detail row
-    public void GetDataFromControls({#MASTERTABLETYPE}Row ARow)
+    public void GetDataFromControls({#MASTERTABLETYPE}Row ARow, Control AControl=null)
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
@@ -557,7 +557,7 @@ namespace {#NAMESPACE}
     
 {#IFDEF SAVEDETAILS}
 
-    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, bool AIsNewRow = false)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, bool AIsNewRow = false, Control AControl=null)
     {
         if (ARow != null && !pnlDetailsProtected && !grdDetails.Sorting)
         {
@@ -573,6 +573,13 @@ namespace {#NAMESPACE}
             }
         }
     }
+{#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
+
+    private void ControlUpdateDataHandler(object sender, EventArgs e)
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow, false, (Control)sender);
+    }
+{#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 
     /// <summary>

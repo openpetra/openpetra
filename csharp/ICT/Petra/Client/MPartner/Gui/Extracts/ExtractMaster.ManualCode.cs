@@ -629,6 +629,46 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Add subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddSubscription(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.AddSubscription(sender, e);
+        }
+
+        /// <summary>
+        /// Delete subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteSubscription(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.DeleteSubscription(sender, e);
+        }
+
+        /// <summary>
+        /// Change subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeSubscription(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.ChangeSubscription(sender, e);
+        }
+
+        /// <summary>
+        /// Update Solicitation Flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateSolicitationFlag(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.UpdateSolicitationFlag(sender, e);
+        }
+
+        /// <summary>
         /// Update Receipt Frequency for Partners in selected extract
         /// </summary>
         /// <param name="sender"></param>

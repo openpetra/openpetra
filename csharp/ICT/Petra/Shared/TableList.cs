@@ -64,7 +64,6 @@ namespace Ict.Petra.Shared
             list.Add("s_patch_log");
             list.Add("s_reports_to_archive");
             list.Add("s_system_status");
-            list.Add("s_system_status_log");
             list.Add("s_user_defaults");
             list.Add("s_system_defaults");
             list.Add("s_error_log");
@@ -163,8 +162,6 @@ namespace Ict.Petra.Shared
             list.Add("pt_skill_category");
             list.Add("pt_skill_level");
             list.Add("pt_driver_status");
-            list.Add("pt_personal_data_labels");
-            list.Add("pt_office_specific_data_labels");
             list.Add("p_data_label_lookup_category");
             list.Add("p_data_label");
             list.Add("p_data_label_use");

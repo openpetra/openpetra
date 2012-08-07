@@ -231,7 +231,7 @@ namespace {#NAMESPACE}
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLE}Row ARow, Control AControl=null)
     {
         if (ARow != null && !grdDetails.Sorting)
         {
@@ -240,6 +240,13 @@ namespace {#NAMESPACE}
             ARow.EndEdit();
         }
     }
+{#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
+
+    private void ControlUpdateDataHandler(object sender, EventArgs e)
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow, (Control)sender);
+    }
+{#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 
 #region Implement interface functions

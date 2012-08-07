@@ -1072,6 +1072,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     TTable table = DataSetTables[FCodeStorage.GetAttribute("DetailTable")];
 
+                    if (table == null)
+                    {
+                        throw new Exception("invalid DetailTable, does not exist: " + FCodeStorage.GetAttribute("DetailTable"));
+                    }
+
                     FTemplate.SetCodelet("SHAREDVALIDATIONNAMESPACEMODULE",
                         String.Format("Ict.Petra.Shared.{0}.Validation",
                             TTable.GetNamespace(table.strGroup)));

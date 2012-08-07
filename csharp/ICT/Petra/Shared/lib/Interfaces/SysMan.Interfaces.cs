@@ -247,8 +247,8 @@ namespace Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.WebConnectors
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector)</summary>
         System.Boolean LoadLanguageAndCultureFromUserDefaults();
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector)</summary>
-        System.Boolean GetLanguageAndCulture(out System.String ALanguageCode,
-                                             out System.String ACultureCode);
+        System.Boolean GetLanguageAndCulture(ref System.String ALanguageCode,
+                                             ref System.String ACultureCode);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintenanceWebConnector)</summary>
         System.Boolean SetUserPassword(System.String AUsername,
                                        System.String APassword);

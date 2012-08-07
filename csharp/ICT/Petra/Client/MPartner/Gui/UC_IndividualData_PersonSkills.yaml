@@ -25,12 +25,11 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PmPersonSkill
-            Columns: [SkillCategoryCode, SkillLevel, YearsOfExperience, YearsOfExperienceAsOf]
+            Columns: [SkillCategoryCode, SkillLevel, DescriptionEnglish]
             CustomColumns:
                 SkillCategoryCode: {Label=Skill}
                 SkillLevel: {Label=Level}
-                YearsOfExperience: {Label=Years Of Experience}
-                YearsOfExperienceAsOf: {Label=as of, Type=DateTime}
+                DescriptionEnglish: {Label=Description}
             ActionFocusRow: FocusedRowChanged
             SortOrder: SkillCategoryCode ASC
             

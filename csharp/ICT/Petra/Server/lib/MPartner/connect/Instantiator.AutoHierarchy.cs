@@ -2733,7 +2733,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                          System.String AMailingCode,
                                          out TVerificationResultCollection AVerificationResults)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "AddContact", ";LONG?;DATETIME;STRING;STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "AddContact", ";LIST[LONG];DATETIME;STRING;STRING;STRING;STRING;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.AddContact(APartnerKeys, AContactDate, AMethodOfContact, AComment, AModuleID, AMailingCode, out AVerificationResults);
         }
 
@@ -2745,7 +2745,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                                  System.String AModuleID,
                                                  System.String AMailingCode)
         {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "FindContacts", ";STRING;NULLABLE;STRING;STRING;STRING;STRING;");
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector), "FindContacts", ";STRING;NULLABLE[DATETIME];STRING;STRING;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TContactsWebConnector.FindContacts(AContactor, AContactDate, ACommentContains, AMethodOfContact, AModuleID, AMailingCode);
         }
 
@@ -2760,6 +2760,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         /// generated method from connector
         public MExtractMasterTable GetAllExtractHeaders()
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders();
         }
 
@@ -2769,6 +2770,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                                         String AUserCreated,
                                                         String AUserModified)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";STRING;BOOL;STRING;STRING;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AAllUsers, AUserCreated, AUserModified);
         }
 
@@ -2783,6 +2785,7 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
                                                         System.Nullable<DateTime>ADateModifiedFrom,
                                                         System.Nullable<DateTime>ADateModifiedTo)
         {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "GetAllExtractHeaders", ";STRING;STRING;BOOL;STRING;STRING;NULLABLE[DATETIME];NULLABLE[DATETIME];NULLABLE[DATETIME];NULLABLE[DATETIME];");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.GetAllExtractHeaders(AExtractNameFilter, AExtractDescFilter, AAllUsers, AUserCreated, AUserModified, ADateCreatedFrom, ADateCreatedTo, ADateModifiedFrom, ADateModifiedTo);
         }
 
@@ -2853,6 +2856,41 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SaveExtract", ";INT;MEXTRACTTABLE;TVERIFICATIONRESULTCOLLECTION;");
             return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SaveExtract(AExtractId, ref AExtractTable, out AVerificationResult);
+        }
+
+        /// generated method from connector
+        public Boolean SubscriptionExists(Int64 APartnerKey,
+                                          String APublicationCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "SubscriptionExists", ";LONG;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.SubscriptionExists(APartnerKey, APublicationCode);
+        }
+
+        /// generated method from connector
+        public Boolean AddSubscription(System.Int32 AExtractId,
+                                       ref PSubscriptionTable ATable,
+                                       out PPartnerTable AExistingSubscriptionPartners,
+                                       out System.Int32 ASubscriptionsAdded)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "AddSubscription", ";INT;PSUBSCRIPTIONTABLE;PPARTNERTABLE;INT;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.AddSubscription(AExtractId, ref ATable, out AExistingSubscriptionPartners, out ASubscriptionsAdded);
+        }
+
+        /// generated method from connector
+        public Boolean DeleteSubscription(System.Int32 AExtractId,
+                                          Int64 APartnerKey,
+                                          String APublicationCode)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "DeleteSubscription", ";INT;LONG;STRING;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.DeleteSubscription(AExtractId, APartnerKey, APublicationCode);
+        }
+
+        /// generated method from connector
+        public Boolean UpdateSolicitationFlag(System.Int32 AExtractId,
+                                              Boolean ANoSolicitations)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector), "UpdateSolicitationFlag", ";INT;BOOL;");
+            return Ict.Petra.Server.MPartner.Partner.WebConnectors.TExtractMasterWebConnector.UpdateSolicitationFlag(AExtractId, ANoSolicitations);
         }
 
         /// generated method from connector

@@ -43,6 +43,9 @@ namespace Ict.Petra.Client.App.PetraClient
 {
     public partial class TFrmMainWindowNew
     {
+        private const string VIEWTASKS_TILES = "Tiles";
+        private const string VIEWTASKS_LIST = "List";
+
         private void InitializeManualCode()
         {
             LoadNavigationUI();
@@ -222,6 +225,19 @@ namespace Ict.Petra.Client.App.PetraClient
             lstFolders.Dashboard = this.dsbContent;
             lstFolders.Statusbar = this.stbMain;
             lstFolders.SelectFirstAvailableFolder();
+
+            SetTaskTileSize(TUserDefaults.GetInt16Default(TUserDefaults.MAINMENU_VIEWOPTIONS_TILESIZE, 2));
+
+            SetTasksSingleClickExecution(TUserDefaults.GetBooleanDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_SINGLECLICKEXECUTION, false));
+
+            if (TUserDefaults.GetStringDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_TILES) == VIEWTASKS_TILES)
+            {
+                ViewTasksAsTiles(this, null);
+            }
+            else
+            {
+                ViewTasksAsList(this, null);
+            }
         }
 
         private void ExitManualCode()
@@ -248,6 +264,86 @@ namespace Ict.Petra.Client.App.PetraClient
 
             this.Hide();
             TFrmMainWindow.MainForm.Show();
+        }
+
+        private void ViewTasksAsTiles(object sender, EventArgs e)
+        {
+            dsbContent.TaskAppearance = TaskAppearance.staLargeTile;
+
+            mniViewTasksTiles.Checked = true;
+            mniViewTasksList.Checked = false;
+
+            TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_TILES);
+        }
+
+        private void ViewTasksAsList(object sender, EventArgs e)
+        {
+            dsbContent.TaskAppearance = TaskAppearance.staListEntry;
+
+            mniViewTasksList.Checked = true;
+            mniViewTasksTiles.Checked = false;
+
+            TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_LIST);
+        }
+
+        private void ViewTaskSizeChange(object sender, EventArgs e)
+        {
+            if (sender == mniViewTaskSizeLarge)
+            {
+                SetTaskTileSize(1);
+            }
+            else if (sender == mniViewTaskSizeMedium)
+            {
+                SetTaskTileSize(2);
+            }
+            else
+            {
+                SetTaskTileSize(3);
+            }
+        }
+
+        private void ViewTasksSingleClickExecution(object sender, EventArgs e)
+        {
+            SetTasksSingleClickExecution(!mniViewTasksSingleClickExecution.Checked);
+        }
+
+        private void SetTasksSingleClickExecution(bool ASingleClick)
+        {
+            dsbContent.SingleClickExecution = ASingleClick;
+
+            mniViewTasksSingleClickExecution.Checked = ASingleClick;
+
+            TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_SINGLECLICKEXECUTION, ASingleClick);
+        }
+
+        private void SetTaskTileSize(int ATaskTileSize)
+        {
+            if (ATaskTileSize == 1)
+            {
+                dsbContent.MaxTaskWidth = 340;
+
+                mniViewTaskSizeLarge.Checked = true;
+                mniViewTaskSizeMedium.Checked = false;
+                mniViewTaskSizeSmall.Checked = false;
+            }
+            else if (ATaskTileSize == 2)
+            {
+                dsbContent.MaxTaskWidth = 280;
+
+                mniViewTaskSizeMedium.Checked = true;
+                mniViewTaskSizeLarge.Checked = false;
+                mniViewTaskSizeSmall.Checked = false;
+            }
+            else
+            {
+                dsbContent.MaxTaskWidth = 210;
+
+                mniViewTaskSizeSmall.Checked = true;
+                mniViewTaskSizeLarge.Checked = false;
+                mniViewTaskSizeMedium.Checked = false;
+            }
+
+            TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_TILESIZE, ATaskTileSize);
         }
 
         private bool CanCloseManual()
