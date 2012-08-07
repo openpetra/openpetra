@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         private static string FExportTrace;
         private static String FExportFilePath;
         private static List<String> FZipFileNames = new List<String>();
-
+        private const String FIntranetEmailRecipient = "tim.ingham@om.org";
 
         private class PartnerDetails
         {
@@ -673,7 +673,64 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             FZipFileNames.Add(FExportFilePath + AFilename);
         }
 
-        /// <summary>
+        private static void DeleteTemporaryFiles()
+        {
+            foreach (String FullPath in FZipFileNames)
+            {
+                File.Delete(FullPath);
+            }
+            FZipFileNames.Clear();
+
+            File.Delete(FExportFilePath + "data.zip");
+        }
+
+        private static bool EncryptUsingPublicKey(
+            String AFileName,
+            String AEncryptedFileName
+            )
+        {
+            //
+            // I'll shell out and call GPG, using a command line like this:
+            // gpg -r tim.ingham@om.org -e data.zip
+            //
+
+            File.Delete(FExportFilePath + "data.zip.gpg");
+            System.Diagnostics.Process ShellProcess = new System.Diagnostics.Process();
+            ShellProcess.EnableRaisingEvents = false;
+            ShellProcess.StartInfo.Arguments = "-r " + FIntranetEmailRecipient + " -e " + FExportFilePath + "data.zip";
+            ShellProcess.StartInfo.FileName = "GPG.EXE";
+            bool ExecOK = ShellProcess.Start();
+            if (ExecOK)
+            {
+                ShellProcess.WaitForExit(10000);
+                int ExecCode = ShellProcess.ExitCode;
+                switch (ExecCode)
+                {
+                    case 0:
+                        FExportTrace += "\r\nEncrypted to data.zip.gpg.";
+                        break;
+                    case 1:
+                        FExportTrace += "\r\nERROR in GPG encryption Process.";
+                        ExecOK = false;
+                        break;
+                    case 2:
+                        FExportTrace += "\r\nERROR in GPG Command line.";
+                        ExecOK = false;
+                        break;
+                    default:
+                        FExportTrace += String.Format("\r\nUnknown ERROR code {0} in GPG Process.", ExecCode);
+                        ExecOK = false;
+                        break;
+                }
+            }
+            else
+            {
+                FExportTrace += "\r\nERROR: Can't start GPG encryption Process.";
+            }
+            return ExecOK;
+        }
+
+       /// <summary>
         /// 
         /// </summary>
         /// <param name="AExportDonationData"></param>
@@ -720,34 +777,47 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 ExportMetadata(AOptionalMetadata, APswd);
                 AddZipFile("metadata.csv");
 
-                MemoryStream ZippedStream = TFileHelper.Streams.Compression.DeflateFilesIntoMemoryStream(FZipFileNames.ToArray(), false, APswd);
+                MemoryStream ZippedStream = TFileHelper.Streams.Compression.DeflateFilesIntoMemoryStream(FZipFileNames.ToArray(), false, "");
                 TFileHelper.Streams.FileHandling.SaveStreamToFile(ZippedStream, FExportFilePath + "data.zip");
                 FExportTrace += "Files compressed to data.zip.";
-
-                TSmtpSender SendMail = new TSmtpSender();
-                String SenderAddress = ReplyToEmail;
-                String DestinationAddress = TAppSettingsManager.GetValue("IntranetServerEmail");
-
-                MailMessage msg = new MailMessage(SenderAddress,
-                    DestinationAddress,
-                    "Data from OpenPetra",
-                    "Here is the latest data from my field.");
-
-                msg.Attachments.Add(new Attachment(FExportFilePath + "data.zip"));
-
-                if (SendMail.SendMessage(ref msg))
+                if (EncryptUsingPublicKey("data.zip", "data.zip.gpg"))
                 {
-                    FExportTrace += ("\r\nEmail sent to " + msg.To[0].Address);
+
+                    TSmtpSender SendMail = new TSmtpSender();
+                    String SenderAddress = ReplyToEmail;
+                    String DestinationAddress = TAppSettingsManager.GetValue("IntranetServerEmail");
+
+                    MailMessage msg = new MailMessage(SenderAddress,
+                        DestinationAddress,
+                        "Data from OpenPetra",
+                        "Here is the latest data from my field.");
+
+                    msg.Attachments.Add(new Attachment(FExportFilePath + "data.zip.gpg"));
+
+                    if (SendMail.SendMessage(ref msg))
+                    {
+                        FExportTrace += ("\r\nEmail sent to " + msg.To[0].Address);
+                    }
                 }
+                else
+                {
+                    FExportTrace += "\r\nEmail cannot be sent.";
+                }
+            }
+            catch (Exception e)
+            {
+                FExportTrace += ("\r\nException: " + e.Message);
             }
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+                DeleteTemporaryFiles();
                 DonorList.Clear();
                 RecipientList.Clear();  // These lists are static so they'll stick around for ever,
-                FZipFileNames.Clear();   // but I don't need to keep the data which is taking up memory.
+                                        // but I don't need to keep the data which is taking up memory.
             }
             return FExportTrace;
         }
+
     }
 }

@@ -156,20 +156,16 @@ namespace Ict.Petra.Server.App.Core.Security
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-#if DEBUGMODE
                         if (TLogging.DL >= 7)
                         {
                             Console.WriteLine("TUserManager.LoadUser: committed own transaction.");
                         }
-#endif
                     }
 
-#if DEBUGMODE
                     if (TLogging.DL >= 8)
                     {
                         Console.WriteLine("Exception occured while loading a s_user record: " + Exp.ToString());
                     }
-#endif
                     throw;
                 }
 

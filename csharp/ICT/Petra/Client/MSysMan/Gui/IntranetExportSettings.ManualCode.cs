@@ -65,9 +65,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary></summary>
         public int DonationDays
         {
             get
@@ -76,6 +74,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
         }
 
+        /// <summary></summary>
         public string ReplyToEmail
         {
             get
