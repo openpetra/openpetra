@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,8 +108,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 Units.DefaultView.Sort = PUnitTable.GetPartnerKeyDBName();
             }
 
-            HTMLText = HTMLText.Replace("#COUNTRY", ((PUnitRow)Units.DefaultView[Units.DefaultView.Find(
-                                                                                     AApplicant.RegistrationOffice)].Row).UnitName);
+            HTMLText = HTMLText.Replace("#COUNTRY",
+                ((PUnitRow)Units.Rows.Find(AApplicant.RegistrationOffice)).UnitName);
 
             HTMLText = HTMLText.Replace("#REGISTRATIONKEY", AApplicant.PartnerKey.ToString());
 
@@ -189,8 +189,10 @@ namespace Ict.Petra.Server.MConference.Applications
                     tssize = tssize.Substring(0, tssize.IndexOf("(") - 1);
                 }
 
+                int indexAttendee = AMainDS.PcAttendee.DefaultView.Find(AApplicant.PartnerKey);
+
                 PcAttendeeRow AttendeeRow =
-                    (PcAttendeeRow)AMainDS.PcAttendee.DefaultView[AMainDS.PcAttendee.DefaultView.Find(AApplicant.PartnerKey)].Row;
+                    (PcAttendeeRow)AMainDS.PcAttendee.DefaultView[indexAttendee].Row;
 
                 // TShirt only for applicants who have registered before the TShirt deadline
                 if (TConferenceFreeTShirt.AcceptedBeforeTShirtDeadLine(AttendeeRow, AApplicant))
@@ -293,22 +295,24 @@ namespace Ict.Petra.Server.MConference.Applications
                         AttendeeRow.BadgePrint = DatePrinted;
                         CountPrinted++;
                     }
-                }
 
-                const Int32 MAXPRINTALLBADGES = 500;
+                    const Int32 MAXPRINTBADGES = 200;
 
-                if ((CountPrinted > MAXPRINTALLBADGES) && ADoNotReprint
-                    && ((ASelectedRegistrationOffice == -1) || (ASelectedRole == null) || (ASelectedRole.Length == 0)))
-                {
-                    TLogging.Log(
-                        String.Format("PrintBadges: if more than {0} badges, print only per role and registration office", MAXPRINTALLBADGES));
-                    return string.Empty;
+                    // print maximum MAXPRINTBADGES badges at the time, otherwise the server is out of memory
+                    if (!AReprintPrinted)
+                    {
+                        if (CountPrinted > MAXPRINTBADGES)
+                        {
+                            break;
+                        }
+                    }
                 }
 
                 TFormLettersTools.CloseDocument(ref ResultDocument);
 
                 if (ResultDocument.Length == 0)
                 {
+                    TLogging.Log("there are no batches to be printed");
                     return String.Empty;
                 }
 
@@ -320,6 +324,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 {
                     // store modified date printed for badges
                     TVerificationResultCollection VerificationResult;
+
+                    MainDS.ThrowAwayAfterSubmitChanges = true;
+
                     ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
                 }
 
@@ -329,7 +336,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log("Exception while printing badges: " + e.Message);
                 TLogging.Log(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -354,6 +361,13 @@ namespace Ict.Petra.Server.MConference.Applications
                     -1,
                     null,
                     false);
+
+                int indexAttendee = MainDS.PcAttendee.DefaultView.Find(APartnerKey);
+
+                if (indexAttendee == -1)
+                {
+                    TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
+                }
 
                 string ResultDocument = string.Empty;
 
@@ -387,7 +401,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log("Exception while reprinting badge: " + e.Message);
                 TLogging.Log(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -587,7 +601,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log("Exception while printing badge labels: " + e.Message);
                 TLogging.Log(e.StackTrace);
-                throw e;
+                throw;
             }
         }
     }

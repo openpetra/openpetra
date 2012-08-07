@@ -48,6 +48,7 @@ using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MPartner.Gui.Extracts;
 using Ict.Petra.Client.MPersonnel.Gui;
 using Ict.Petra.Client.MFinance.Gui;
 using Ict.Petra.Client.MSysMan.Gui;
@@ -320,8 +321,9 @@ namespace Ict.Petra.Client.App.PetraClient
         /// </summary>
         public static void StartUp()
         {
-            string UsersLanguageCode;
-            string UsersCultureCode;
+            // for the moment default to english, because translations are not fully supported, and the layout does not adjust
+            string UsersLanguageCode = "en-EN";
+            string UsersCultureCode = CultureInfo.CurrentCulture.Name;
 
             try
             {
@@ -486,7 +488,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 try
                 {
                     // Set Application Help language to the User's preferred language
-                    TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(out UsersLanguageCode, out UsersCultureCode);
+                    TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(ref UsersLanguageCode, ref UsersCultureCode);
 
                     if (UsersLanguageCode != String.Empty)
                     {
@@ -642,6 +644,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenConferenceFindScreen = @TConferenceFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
+            TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
 
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;

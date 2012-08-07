@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,10 +78,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// <param name="ALanguageCode"></param>
         /// <param name="ACultureCode"></param>
         [RequireModulePermission("NONE")]
-        public static bool GetLanguageAndCulture(out string ALanguageCode, out string ACultureCode)
+        public static bool GetLanguageAndCulture(ref string ALanguageCode, ref string ACultureCode)
         {
-            ALanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UILANGUAGE);
-            ACultureCode = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UICULTURE);
+            ALanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UILANGUAGE, ALanguageCode);
+            ACultureCode = TUserDefaults.GetStringDefault(MSysManConstants.USERDEFAULT_UICULTURE, ACultureCode);
 
             return true;
         }

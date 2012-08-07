@@ -38,7 +38,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
     public static partial class TSharedFinanceValidation_GLSetup
     {
         /// <summary>
-        /// Validates the Setup Countries screen data.
+        /// Validates the Daily Exchange Rates screen data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
@@ -46,7 +46,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
-        public static void ValidateAnalysisTypesSetupManual(object AContext, AAnalysisTypeRow ARow,
+        public static void ValidateDailyExchangeRates(object AContext, ADailyExchangeRateRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -58,16 +58,29 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return;
             }
 
-            // 'Description' must not be empty
-            ValidationColumn = ARow.Table.Columns[AAnalysisTypeTable.ColumnAnalysisTypeDescriptionId];
+            // RateOfExchange must be positive (definitely not zero because we can invert it)
+            ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnRateOfExchangeId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.AnalysisTypeDescription,
+                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.RateOfExchange,
                     ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // Date must not be empty
+            ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnDateEffectiveFromId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.DateEffectiveFrom,
+                    ValidationControlsData.ValidationControlLabel,
+                    true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }

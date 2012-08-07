@@ -451,22 +451,17 @@
     <Table sqltable="pt_position"/>
     <Table sqltable="pt_special_applicant"/>
     <Table sqltable="pt_leadership_rating"/>
-    <Table sqltable="pt_party_type"/>
     <Table sqltable="pm_short_term_application"/>
     <Table sqltable="pm_year_program_application"/>
-    <Table sqltable="pt_app_form_types"/>
-    <Table sqltable="pm_application_forms"/>
 
     <Table sqltable="um_unit_structure"/>
     <Table sqltable="um_unit_ability"/>
     <Table sqltable="um_unit_language"/>
-    <Table sqltable="um_unit_vision"/>
     <Table sqltable="um_unit_cost"/>
     <Table sqltable="um_job"/>
     <Table sqltable="um_job_requirement"/>
     <Table sqltable="um_job_language"/>
     <Table sqltable="um_job_qualification"/>
-    <Table sqltable="um_job_vision"/>
     <Table sqltable="pc_building"/>
     <Table sqltable="pc_room"/>
   </DataSet>
@@ -479,6 +474,14 @@
     </Table>
     <Table sqltable="m_extract_type"/>	
     <Table sqltable="m_extract_parameter"/>	
+  </DataSet>   
+
+  <DataSet name="ContactTDS">
+    <Table sqltable="p_method_of_contact"/>
+    <Table sqltable="p_partner_contact"/>
+    <Table sqltable="p_partner_contact_attribute"/>
+    <Table sqltable="p_contact_attribute"/>
+    <Table sqltable="p_contact_attribute_detail"/>
   </DataSet>   
   
 </PetraDataSets>

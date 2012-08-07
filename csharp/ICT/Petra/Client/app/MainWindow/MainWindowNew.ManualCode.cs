@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -353,6 +353,11 @@ namespace Ict.Petra.Client.App.PetraClient
             string FirstNonClosableFormKey;
 
             return TFormsList.GFormsList.CanCloseAll(out NonClosableForms, out FirstNonClosableFormKey);
+        }
+
+        private void HelpImproveTranslations(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Documentation_for_Translators");
         }
     }
 }

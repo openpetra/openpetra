@@ -735,6 +735,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.UNIT:
                             PUnitAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+                            UmUnitStructureAccess.LoadViaPUnitChildUnitKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
                             break;
 
                         case TPartnerClass.VENUE:
@@ -838,24 +839,24 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     // Add this partner key to the list of recently used partners.
                     TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, false, TLastPartnerUse.lpuMailroomPartner);
                 }
-                catch (EPartnerLocationNotExistantException Exp)
+                catch (EPartnerLocationNotExistantException)
                 {
                     // don't log this exception  this is thrown on purpose here and the Client deals with it.
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw Exp;
+                    throw;
                 }
-                catch (ESecurityPartnerAccessDeniedException Exp)
+                catch (ESecurityPartnerAccessDeniedException)
                 {
                     // don't log this exception  this is thrown on purpose here and the Client deals with it.
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw Exp;
+                    throw;
                 }
                 catch (Exception Exp)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     TLogging.Log("TPartnerEditUIConnector.LoadData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                     TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                    throw Exp;
+                    throw;
                 }
             }
             finally
@@ -2186,7 +2187,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TLogging.Log(e.Message);
                     TLogging.Log(e.StackTrace);
 
-                    throw e;
+                    throw;
                 }
             }
             else

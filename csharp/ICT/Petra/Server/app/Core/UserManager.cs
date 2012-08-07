@@ -170,7 +170,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         Console.WriteLine("Exception occured while loading a s_user record: " + Exp.ToString());
                     }
 #endif
-                    throw Exp;
+                    throw;
                 }
 
                 if (NewTransaction)

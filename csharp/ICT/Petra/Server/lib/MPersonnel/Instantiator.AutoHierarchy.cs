@@ -486,6 +486,20 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.WebConnectors
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "GetOrCreateUmJobKey", ";LONG;STRING;STRING;");
             return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.GetOrCreateUmJobKey(AUnitKey, APositionName, APositionScope);
         }
+
+        /// generated method from connector
+        public ArrayList GetUnitHeirarchy()
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "GetUnitHeirarchy", ";");
+            return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.GetUnitHeirarchy();
+        }
+
+        /// generated method from connector
+        public System.Boolean SaveUnitHierarchy(ArrayList Nodes)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector), "SaveUnitHierarchy", ";ARRAYLIST;");
+            return Ict.Petra.Server.MPersonnel.WebConnectors.TPersonnelWebConnector.SaveUnitHierarchy(Nodes);
+        }
     }
 }
 

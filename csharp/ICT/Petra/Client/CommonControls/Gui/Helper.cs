@@ -24,7 +24,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace Ict.Common.Controls
+namespace Ict.Petra.Client.CommonControls
 {
     /// <summary>
     /// Contains Extension Methods that add functionality to Controls.
@@ -56,6 +56,7 @@ namespace Ict.Common.Controls
             ControlSoughtFor = AControl.Parent;
 
             if ((AControl is UserControl)
+                && (!(AControl is TtxtAutoPopulatedButtonLabel))
                 && AIfControlIsUserControlReturnThis)
             {
                 return AControl;

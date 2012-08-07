@@ -29,6 +29,9 @@ if(AControl.Name == "{#CONTROLNAME}")
 }
 
 {##GETDATAFORCOLUMNTHATCANBENULL}
+if((AControl == null)
+  || (AControl.Name == "{#CONTROLNAME}"))
+{
 {#IFDEF CANBENULL}
 {#IFDEF NOTDEFAULTTABLE}
 {#GETROWVALUEORNULL}
@@ -40,6 +43,7 @@ if(AControl.Name == "{#CONTROLNAME}")
 {#IFNDEF CANBENULL}
 {#ROW}.{#COLUMNNAME} = {#CONTROLVALUE};
 {#ENDIFN CANBENULL}
+}
 
 {##SETROWVALUEORNULL}
 if ({#NOTDEFAULTTABLE} == null || (({#NOTDEFAULTTABLE}.Rows.Count > 0) && ({#NOTDEFAULTTABLE}[0].Is{#COLUMNNAME}Null())))
@@ -108,3 +112,13 @@ else
 {
     {#ROW}.{#COLUMNNAME} = {#CONTROLVALUE};
 }
+
+{##GETSELECTEDDETAILROW}
+DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+
+if (SelectedGridRow.Length >= 1)
+{
+    return ({#DETAILTABLETYPE}Row)SelectedGridRow[0].Row;
+}
+
+return null;

@@ -91,17 +91,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FApplicationDS = new ApplicationTDS();
             FApplicationDS.InitVars();
-            
+
             // the following lines are just dummy code to remove compiler warnings as those members are never used
             if (FTabSetup == null)
             {
-            	FTabSetup = null;
+                FTabSetup = null;
             }
+
             if (FTabPageEvent == null)
             {
-            	FTabPageEvent = null;
+                FTabPageEvent = null;
             }
-            
+
             ucoEvent.PetraUtilsObject = FPetraUtilsObject;
             ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
             ucoTravel.PetraUtilsObject = FPetraUtilsObject;
@@ -162,14 +163,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             foreach (DataRow ApplicationRow in FMainDS.PmShortTermApplication.Rows)
             {
-                EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
-
-                if (((EventApplicationRow.ApplicationKey != AApplicationKey)
-                     || (EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey))
-                    && !EventApplicationRow.IsStConfirmedOptionNull()
-                    && (EventApplicationRow.StConfirmedOption == AEventKey))
+                if (ApplicationRow.RowState != DataRowState.Deleted)
                 {
-                    return true;
+                    EventApplicationRow = (PmShortTermApplicationRow)ApplicationRow;
+
+                    if (((EventApplicationRow.ApplicationKey != AApplicationKey)
+                         || (EventApplicationRow.RegistrationOffice != ARegistrationOfficeKey))
+                        && !EventApplicationRow.IsStConfirmedOptionNull()
+                        && (EventApplicationRow.StConfirmedOption == AEventKey))
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -235,13 +239,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return ReturnValue;
         }
-
-//        private void ValidateDataDetailsManual(PmGeneralApplicationRow ARow)
-//        {
-//            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-//
-//            //TODO
-//        }
 
         private void ShowData(PmGeneralApplicationRow AGeneralAppRow, PmShortTermApplicationRow AEventAppRow)
         {

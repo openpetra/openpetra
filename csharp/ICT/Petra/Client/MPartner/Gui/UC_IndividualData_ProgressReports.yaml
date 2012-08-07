@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui
     DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.IndividualDataTDS
     DetailTable: PmPersonEvaluation
-    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: controlMaintainTable
     Actions:
@@ -20,8 +20,8 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnDelete]
-        btnNew: {Action=actNew}
-        btnDelete: {Action=actDelete}
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             TableName: PmPersonEvaluation
@@ -44,7 +44,7 @@ RootNode:
                 
         txtEvaluator: {Label=Reporter, DataField=PmPersonEvaluation.Evaluator, Width=150, Validation=true}
         dtpEvaluationDate: {Label=Report Date, DataField=PmPersonEvaluation.EvaluationDate, Validation=true}
-        dtpNextEvalDate: {Label=Next Report Date, DataField=PmPersonEvaluation.NextEvaluationDate, Validation=true}
+        dtpNextEvalDate: {Label=Next Report Date, DataField=PmPersonEvaluation.NextEvaluationDate, Validation=Pair(dtpEvaluationDate)}
         cmbEvaluationType: 
             Label: Report Type 
             DataField: PmPersonEvaluation.EvaluationType

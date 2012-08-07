@@ -59,11 +59,6 @@
             Ext.getCmp('TabPanelApplication').setActiveTab(0);
         }
 
-        function SetActiveMedicalIncident(panelId)
-        {
-            Ext.getCmp('MedicalPanel').setActiveTab(panelId);
-        }
-
         function SetDateFormat(format)
         {
             Ext.getCmp('DateOfArrival').format = format;
@@ -71,7 +66,32 @@
             Ext.getCmp('GenAppDate').format = format;
             Ext.getCmp('DateOfBirth').format = format;
         }
-</script>        
+
+        function SetActiveMedicalIncident(panelId)
+        {
+            var myTabPanel = Ext.getCmp('MedicalPanel');
+            var tabs = myTabPanel.find( 'title', 'incident ' + (panelId + 1));
+            myTabPanel.setActiveTab( tabs[ 0 ] );
+        }
+
+        var MedicalIncidentToDelete = -1;
+        
+        function ReallyDeleteMedicalIncident(btn)
+        {
+            if (btn == 'yes')
+            {
+                tab = document.getElementById('TabMedicalIncident' + MedicalIncidentToDelete);
+                tab.parentNode.removeChild(tab);
+            }
+        }
+
+        function DeleteMedicalIncident(RowId)
+        {
+            MedicalIncidentToDelete = RowId;
+            Ext.MessageBox.confirm('Confirm', 'Are you sure you want to delete this incident?', ReallyDeleteMedicalIncident);
+        }
+
+</script>
 </head>
 <body>
     <form runat="server">
@@ -86,8 +106,11 @@
             <StartButton Text="OpenPetra" IconCls="start-button" />
 
             <Modules>
-                <ext:DesktopModule ModuleID="DesktopModule2" WindowID="winApplications" AutoRun="true">
+                <ext:DesktopModule ModuleID="DesktopModule2" WindowID="winApplications" AutoRun="false">
                     <Launcher ID="Launcher2" runat="server" Text="Applications" Icon="Lorry" />
+                </ext:DesktopModule>
+                <ext:DesktopModule ModuleID="DesktopModule3" WindowID="winHeadsets" AutoRun="false">
+                    <Launcher ID="Launcher4" runat="server" Text="Headsets" Icon="Lorry" />
                 </ext:DesktopModule>
                 <ext:DesktopModule ModuleID="ChangePassword" WindowID="winChangePassword" AutoRun="false">
                     <Launcher ID="Launcher3" runat="server" Text="Change Password"/>
@@ -96,6 +119,7 @@
             
             <Shortcuts>
                 <ext:DesktopShortcut ModuleID="DesktopModule2" Text="Applications" IconCls="shortcut-icon icon-grid48" />
+                <ext:DesktopShortcut ModuleID="DesktopModule3" Text="Headsets" IconCls="shortcut-icon icon-grid48" />
                 <ext:DesktopShortcut ModuleID="ChangePassword" Text="Change Password" IconCls="shortcut-icon icon-grid48" />
             </Shortcuts>
             
@@ -611,6 +635,19 @@
         </ext:DesktopWindow>
 
         <ext:DesktopWindow 
+            ID="winHeadsets" 
+            runat="server" 
+            Title="Manage headsets" 
+            Width="600"
+            Height="608"
+            PageX="200" 
+            PageY="100"
+            Maximized="true"
+            Layout="Border">
+            <AutoLoad Url="Headsets.aspx" Mode="IFrame" ShowMask="true" />
+        </ext:DesktopWindow>
+
+        <ext:DesktopWindow 
             ID="winManualRegistration" 
             runat="server" 
             Title="Manual Registration" 
@@ -801,11 +838,39 @@
                               </Content>
                             </ext:Panel>
                             <ext:Panel ID="TabBoundaries" runat="server" Title="Boundaries" AutoScroll="true">
-                              <Items>
-                                <ext:DateField ID="dtpRebukesReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MM-yyyy" width="230"/>
-                                <ext:Button ID="btnRebukesReport" runat="server" Text="Print Rebukes Report">
+                              <Content>
+                                <table>
+                                <tr>
+                                <td><ext:DateField ID="dtpRebukesReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MM-yyyy" width="230"/></td>
+                                <td><ext:Button ID="btnRebukesReport" runat="server" Text="Print Rebukes Report">
                                     <DirectEvents>
                                         <Click OnEvent="PrintRebukesReport"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                                </td>
+                                </tr>
+                                <tr><td>
+                                <ext:Button ID="btnFilterByRebukes" runat="server" Text="Filter for all participants with rebukes">
+                                    <DirectEvents>
+                                        <Click OnEvent="FilterByRebukes"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                                </td><td>
+                                <ext:Button ID="btnResetFilterByRebukes" runat="server" Text="Reset Filter">
+                                    <DirectEvents>
+                                        <Click OnEvent="ClearFilterByRebukes"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                                </td></tr>
+                                </table>
+                              </Content>
+                            </ext:Panel>
+                            <ext:Panel ID="TabMedical" runat="server" Title="Medical" AutoScroll="true">
+                              <Items>
+                                <ext:DateField ID="dtpMedicalReportForDate" runat="server" FieldLabel="Print for Date" Format="dd-MM-yyyy" width="230"/>
+                                <ext:Button ID="btnMedicalReport" runat="server" Text="Print Medical Report">
+                                    <DirectEvents>
+                                        <Click OnEvent="PrintMedicalReport"/>
                                     </DirectEvents>
                                 </ext:Button>
                               </Items>
@@ -881,7 +946,7 @@
                                 </table>
                               </Content>
                             </ext:Panel>
-                            <ext:Panel ID="Groups" runat="server" Title="Groups" AutoScroll="true">
+                            <ext:Panel ID="TabTopGroups" runat="server" Title="Groups" AutoScroll="true">
                               <Content>
                                 <table>
                                 <tr>
@@ -902,7 +967,7 @@
                                 </table>
                               </Content>
                             </ext:Panel>
-                            <ext:Panel ID="TODO" runat="server" Title="TODO" AutoScroll="true">
+                            <ext:Panel ID="TabTODO" runat="server" Title="TODO" AutoScroll="true">
                               <Content>
                                 <table>
                                 <tr>
@@ -1022,6 +1087,11 @@
                                 <ext:Button ID="btnReprintBadge" runat="server" Text="Reprint Badge" Icon="Printer">
                                     <DirectEvents>
                                         <Click OnEvent="ReprintBadge" IsUpload="true"/>
+                                    </DirectEvents>
+                                </ext:Button>
+                                <ext:Button ID="btnPrintMedicalReport" runat="server" Text="Print Report" Icon="Printer">
+                                    <DirectEvents>
+                                        <Click OnEvent="PrintMedicalReportForParticipant" IsUpload="true"/>
                                     </DirectEvents>
                                 </ext:Button>
                             </Items>

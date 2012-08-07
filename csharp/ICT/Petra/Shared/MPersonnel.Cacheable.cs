@@ -129,11 +129,6 @@ namespace Ict.Petra.Shared
         LeadershipRatingList,
 
         /// <summary>
-        /// Contains the codes indicating whether groups should be together and for how long
-        /// </summary>
-        PartyTypeList,
-
-        /// <summary>
         /// Contains the codes that indicate the type of passport a person holds
         /// </summary>
         PassportTypeList,
@@ -162,21 +157,6 @@ namespace Ict.Petra.Shared
         /// Contains the levels to which a skill is possessed, e.g. beginner or accomplished
         /// </summary>
         SkillLevelList,
-
-        /// <summary>
-        /// Contains the item(s) of value a person may possess which need to be accounted for various purposes, e.g. customs, or insurance
-        /// </summary>
-        ValuableItemList,
-
-        /// <summary>
-        /// Contains the areas a person may have vision for, e.g. children's work or a particular country
-        /// </summary>
-        VisionAreaList,
-
-        /// <summary>
-        /// Contains the levels  to which a vision is possessed, e.g. a possibility, do nothing else
-        /// </summary>
-        VisionLevelList,
 
         /// <summary>
         /// Describes the importance of the country and target choices

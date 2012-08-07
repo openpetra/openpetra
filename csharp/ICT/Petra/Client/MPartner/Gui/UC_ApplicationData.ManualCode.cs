@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             bool ReturnValue = true;
 
-            ReturnValue = ucoApplications.ValidateAllData(AProcessAnyDataValidationErrors, true, AValidateSpecificControl);
+            ReturnValue = ucoApplications.ValidateAllData(true, AProcessAnyDataValidationErrors, AValidateSpecificControl);
 
             return ReturnValue;
         }

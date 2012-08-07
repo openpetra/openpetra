@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -139,19 +139,24 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPreviouslySelectedDetailRow.DocumentId), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
-                int rowIndex = CurrentRowIndex();
+                int newCurrentRowPos = grdDetails.SelectedRowIndex();
                 FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
+                //FPetraUtilsObject.SetChangedFlag();
+
+                // temporarily reset selected row to avoid interference with validation
+//                FPreviouslySelectedDetailRow = null;
+//                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+//                grdDetails.SelectRowInGrid(rowIndex, true);
+//                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+//                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+//                ShowDetails(FPreviouslySelectedDetailRow);
+
+//                DoRecalculateScreenParts();
+
+                //TODO: move to template
+                InvokeFocusedRowChanged(newCurrentRowPos);
 
                 DoRecalculateScreenParts();
-
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    pnlDetails.Visible = false;
-                }
             }
         }
 
@@ -197,44 +202,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void AdjustAfterResizing()
         {
-        }
-
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
         }
 
         /// <summary>
@@ -324,7 +291,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPersonnelValidation_Personnel.ValidatePersonalDocumentManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
         }
     }
 }

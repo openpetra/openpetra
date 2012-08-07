@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       alanp
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,35 +37,34 @@ using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
-    public partial class TFrmValuableItemSetup
+    public partial class TFrmOrganisationContactSetup
     {
         private void RunOnceOnActivationManual()
         {
             chkDetailDeletableFlag.Enabled = false;
         }
 
-        private void NewRowManual(ref PtValuableItemRow ARow)
+        private void NewRowManual(ref PtContactRow ARow)
         {
             string newName = Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.PtValuableItem.Rows.Find(new object[] { newName }) != null)
+            while (FMainDS.PtContact.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
             {
-                while (FMainDS.PtValuableItem.Rows.Find(new object[] { newName + countNewDetail.ToString() }) != null)
-                {
-                    countNewDetail++;
-                }
-
-                newName += countNewDetail.ToString();
+                countNewDetail++;
             }
 
-            ARow.ValuableItemName = newName;
-            ARow.ValuableItemDescr = String.Empty;
+            newName += countNewDetail.ToString();
+            ARow.ContactName = newName;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPtValuableItem();
+            CreateNewPtContact();
+        }
+
+        private void GetDetailDataFromControlsManual(PtContactRow ARow)
+        {
         }
 
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)
@@ -82,11 +81,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
         }
 
-        private void ValidateDataDetailsManual(PtValuableItemRow ARow)
+        private void ValidateDataDetailsManual(PtContactRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedValidation_CacheableDataTables.ValidateValuableItem(this, ARow, ref VerificationResultCollection,
+            TSharedValidation_CacheableDataTables.ValidateOrganisationContact(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
     }

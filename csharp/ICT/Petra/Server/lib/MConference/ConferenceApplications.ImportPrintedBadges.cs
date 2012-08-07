@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 TLogging.Log("Importing PrintedBadges: " + ex.Message);
                 TLogging.Log(ex.ToString());
-                throw ex;
+                throw;
             }
 
             return true;

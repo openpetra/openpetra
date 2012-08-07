@@ -47,4 +47,10 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out String AEventName,
         out String AOutreachCode,
         Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Extract Find screen</summary>
+    public delegate bool TDelegateOpenExtractFindScreen(out int AExtractId,
+        out String AExtractName,
+        out String AExtractDesc,
+        Form AParentForm);
 }

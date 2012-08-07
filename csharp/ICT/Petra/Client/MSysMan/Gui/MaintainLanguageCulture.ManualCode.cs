@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Data;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Threading;
+using System.IO;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
@@ -64,12 +65,28 @@ namespace Ict.Petra.Client.MSysMan.Gui
             cmbCulture.ValueMember = "Value";
             cmbCulture.DataSource = CultureTable.DefaultView;
 
-            // TODO: load languages from names of language sub directories
-            cmbLanguage.SetDataSourceStringList("en-GB,es-ES,da-DK,de-DE");
+            // load languages from names of language sub directories
+            string[] LanguageDirectories = Directory.GetDirectories(TAppSettingsManager.ApplicationDirectory);
 
-            string LanguageCode;
-            string CultureCode;
-            TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(out LanguageCode, out CultureCode);
+            string LanguagesAvailable = "en-EN";
+
+            foreach (String directory in LanguageDirectories)
+            {
+                if (File.Exists(directory + Path.DirectorySeparatorChar + "OpenPetra.resources.dll"))
+                {
+                    LanguagesAvailable = StringHelper.AddCSV(
+                        LanguagesAvailable,
+                        directory.Substring(
+                            directory.LastIndexOf(Path.DirectorySeparatorChar) + 1));
+                }
+            }
+
+            cmbLanguage.SetDataSourceStringList(LanguagesAvailable);
+
+            // for the moment default to english, because translations are not fully supported, and the layout does not adjust
+            string LanguageCode = "en-EN";
+            string CultureCode = CultureInfo.CurrentCulture.Name;
+            TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(ref LanguageCode, ref CultureCode);
 
             cmbCulture.SetSelectedString(CultureCode);
             cmbLanguage.SetSelectedString(LanguageCode);
@@ -102,12 +119,24 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             TRemote.MSysMan.Maintenance.WebConnectors.LoadLanguageAndCultureFromUserDefaults();
 
-            string LanguageCode;
-            string CultureCode;
-            TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(out LanguageCode, out CultureCode);
+            // for the moment default to english, because translations are not fully supported, and the layout does not adjust
+            string LanguageCode = "en-EN";
+            string CultureCode = CultureInfo.CurrentCulture.Name;
+            TRemote.MSysMan.Maintenance.WebConnectors.GetLanguageAndCulture(ref LanguageCode, ref CultureCode);
 
             // set local settings for client
             Catalog.Init(LanguageCode, CultureCode);
+        }
+
+        /// <summary>
+        /// Event is fired when the Launchpad Translation Platform LinkLabel is 'clicked'.
+        /// </summary>
+        /// <param name="ASender">The Launchpad Translation Platform LinkLabel.</param>
+        /// <param name="e">Not evaluated.</param>
+        /// <returns>void</returns>
+        private void LaunchpadLinkClicked(object ASender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://translations.launchpad.net/openpetraorg/trunk/+pots/template1");
         }
     }
 }

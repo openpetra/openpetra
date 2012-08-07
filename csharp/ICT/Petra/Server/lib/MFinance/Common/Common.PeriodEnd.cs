@@ -456,10 +456,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 accountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(intLedgerNumber, transaction);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw exception;
+                throw;
             }
         }
 
@@ -538,10 +538,10 @@ namespace Ict.Petra.Server.MFinance.Common
                         out verificationResults);
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw exception;
+                    throw;
                 }
             }
         }
@@ -623,10 +623,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 DBAccess.GDBAccessObj.CommitTransaction();
                 return PostingDS;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw exception;
+                throw;
             }
         }
 

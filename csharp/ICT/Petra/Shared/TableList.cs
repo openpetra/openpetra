@@ -64,7 +64,6 @@ namespace Ict.Petra.Shared
             list.Add("s_patch_log");
             list.Add("s_reports_to_archive");
             list.Add("s_system_status");
-            list.Add("s_system_status_log");
             list.Add("s_user_defaults");
             list.Add("s_system_defaults");
             list.Add("s_error_log");
@@ -151,14 +150,11 @@ namespace Ict.Petra.Shared
             list.Add("pt_arrival_point");
             list.Add("pt_outreach_preference_level");
             list.Add("pt_congress_code");
-            list.Add("pt_party_type");
             list.Add("pt_travel_type");
-            list.Add("pt_app_form_types");
             list.Add("pm_document_category");
             list.Add("pm_document_type");
             list.Add("pt_passport_type");
             list.Add("pt_language_level");
-            list.Add("pt_valuable_item");
             list.Add("pt_ability_area");
             list.Add("pt_ability_level");
             list.Add("pt_qualification_area");
@@ -166,14 +162,10 @@ namespace Ict.Petra.Shared
             list.Add("pt_skill_category");
             list.Add("pt_skill_level");
             list.Add("pt_driver_status");
-            list.Add("pt_personal_data_labels");
-            list.Add("pt_office_specific_data_labels");
             list.Add("p_data_label_lookup_category");
             list.Add("p_data_label");
             list.Add("p_data_label_use");
             list.Add("p_data_label_lookup");
-            list.Add("pt_vision_area");
-            list.Add("pt_vision_level");
             list.Add("pm_commitment_status");
             list.Add("pt_position");
             list.Add("pt_assignment_type");
@@ -238,7 +230,6 @@ namespace Ict.Petra.Shared
             list.Add("pm_application_status_history");
             list.Add("pm_short_term_application");
             list.Add("pm_year_program_application");
-            list.Add("pm_application_forms");
             list.Add("pm_document");
             list.Add("pm_passport_details");
             list.Add("pm_person_language");
@@ -248,10 +239,8 @@ namespace Ict.Petra.Shared
             list.Add("pm_person_skill");
             list.Add("pm_formal_education");
             list.Add("pm_personal_data");
-            list.Add("pm_pers_office_specific_data");
             list.Add("p_data_label_value_partner");
             list.Add("p_data_label_value_application");
-            list.Add("pm_interview");
             list.Add("pm_person_evaluation");
             list.Add("pm_person_absence");
             list.Add("pm_special_need");
@@ -261,11 +250,9 @@ namespace Ict.Petra.Shared
             list.Add("um_job_requirement");
             list.Add("um_job_language");
             list.Add("um_job_qualification");
-            list.Add("um_job_vision");
             list.Add("pm_job_assignment");
             list.Add("um_unit_ability");
             list.Add("um_unit_language");
-            list.Add("um_unit_vision");
             list.Add("um_unit_cost");
             list.Add("um_unit_evaluation");
             list.Add("pc_conference");
@@ -361,7 +348,6 @@ namespace Ict.Petra.Shared
             list.Add("p_partner_contact_file");
             list.Add("pm_document_file");
             list.Add("pm_application_file");
-            list.Add("pm_application_forms_file");
             list.Add("s_volume_partner_group");
             list.Add("s_default_file_volume");
             list.Add("s_volume_partner_group_partner");

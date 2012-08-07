@@ -107,19 +107,6 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
 
-            // 'Start of Commitment' must be defined
-            ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnStartOfCommitmentId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.StartOfCommitment,
-                    ValidationControlsData.ValidationControlLabel, true, AContext, ValidationColumn,
-                    ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-
             // 'End of Commitment' must be later than 'Start of Commitment'
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnEndOfCommitmentId];
 
@@ -725,6 +712,19 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
+            // 'Next Evaluation Date' must be later than 'Evaluation Date'
+            ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnNextEvaluationDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.NextEvaluationDate, ARow.EvaluationDate,
+                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
             // 'Report Type' must have a value
             ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnEvaluationTypeId];
 
@@ -733,6 +733,52 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.EvaluationType,
                     ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the personal (miscellaneous) data of a Person.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePersonalDataManual(object AContext, PmPersonalDataRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // 'Believer since year' must have a sensible value
+            ValidationColumn = ARow.Table.Columns[PmPersonalDataTable.ColumnBelieverSinceYearId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = null;
+
+                if (!ARow.IsBelieverSinceYearNull()
+                    && (ARow.BelieverSinceYear > DateTime.Today.Year))
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR,
+                                new string[] { ValidationControlsData.ValidationControlLabel })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+                else if (!ARow.IsBelieverSinceYearNull()
+                         && (ARow.BelieverSinceYear < 1850))
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_UNREALISTICDATE_ERROR,
+                                new string[] { ValidationControlsData.ValidationControlLabel })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);

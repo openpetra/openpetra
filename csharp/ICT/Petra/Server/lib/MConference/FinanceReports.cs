@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,6 +56,11 @@ namespace Ict.Petra.Server.MConference.Applications
         {
             CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
 
+            DateTime LatestFreeCancelledDate = DateTime.ParseExact(TAppSettingsManager.GetValue(
+                    "ConferenceTool.LatestFreeCancelledDate"), "yyyy/MM/dd", null);
+            DateTime LatestFreeCancelledDate50 = DateTime.ParseExact(TAppSettingsManager.GetValue(
+                    "ConferenceTool.LatestFreeCancelledDate50"), "yyyy/MM/dd", null);
+
             try
             {
                 ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
@@ -102,11 +107,16 @@ namespace Ict.Petra.Server.MConference.Applications
                         continue;
                     }
 
+                    if (appRow.IsGenAppSendFldAcceptDateNull())
+                    {
+                        // ignore partners that have never been accepted.
+                        continue;
+                    }
+
+                    string pay50Percent = string.Empty;
+
                     if (applicant.GenApplicationStatus.StartsWith("C") || applicant.GenApplicationStatus.StartsWith("R"))
                     {
-                        DateTime LatestFreeCancelledDate = DateTime.ParseExact(TAppSettingsManager.GetValue(
-                                "ConferenceTool.LatestFreeCancelledDate"), "yyyy/MM/dd", null);
-
                         DateCancelled = appRow.GenAppCancelled;
 
                         if (!appRow.GenAppCancelled.HasValue)
@@ -116,6 +126,10 @@ namespace Ict.Petra.Server.MConference.Applications
                         else if (appRow.GenAppCancelled.Value <= LatestFreeCancelledDate)
                         {
                             continue;
+                        }
+                        else if (appRow.GenAppCancelled.Value <= LatestFreeCancelledDate50)
+                        {
+                            pay50Percent = "X";
                         }
                     }
                     else if (applicant.GenApplicationStatus != "A")
@@ -154,23 +168,27 @@ namespace Ict.Petra.Server.MConference.Applications
                         participantValues = StringHelper.AddCSV(participantValues, "N/A");
                     }
 
+                    DateTime ArrivalDate = DateTime.ParseExact(TAppSettingsManager.GetValue(
+                            "ConferenceTool.DefaultArrivalDate"), "yyyy/MM/dd", null);
+
+                    if (shorttermRow.Arrival.HasValue)
+                    {
+                        ArrivalDate = shorttermRow.Arrival.Value;
+                    }
+
                     if (DateCancelled.HasValue)
                     {
                         participantValues = StringHelper.AddCSV(participantValues, DateCancelled.Value.ToString("dd-MMM-yyyy") + " C");
                     }
-                    else if (shorttermRow.Arrival.HasValue)
-                    {
-                        participantValues = StringHelper.AddCSV(participantValues, shorttermRow.Arrival.Value.ToString("dd-MMM-yyyy"));
-                    }
                     else
                     {
-                        participantValues = StringHelper.AddCSV(participantValues, "N/A");
+                        participantValues = StringHelper.AddCSV(participantValues, ArrivalDate.ToString("dd-MMM-yyyy"));
                     }
 
-                    if (applicant.DateOfBirth.HasValue && shorttermRow.Arrival.HasValue)
+                    if (applicant.DateOfBirth.HasValue)
                     {
                         participantValues = StringHelper.AddCSV(participantValues,
-                            (TApplicationManagement.CalculateAge(applicant.DateOfBirth, shorttermRow.Arrival.Value) >=
+                            (TApplicationManagement.CalculateAge(applicant.DateOfBirth, ArrivalDate) >=
                              TAppSettingsManager.GetInt32("ConferenceTool.OldieIncreasedTaxes")) ? "X" : string.Empty);
                     }
                     else
@@ -185,6 +203,7 @@ namespace Ict.Petra.Server.MConference.Applications
                         (rawDataObject.Contains(
                              "CancelledByFinanceOffice") && rawDataObject["CancelledByFinanceOffice"].ToString().ToLower() ==
                          "true") ? "X" : string.Empty);
+                    participantValues = StringHelper.AddCSV(participantValues, pay50Percent);
 
                     roles[applicant.StCongressCode].Add(participantValues);
                 }
@@ -196,8 +215,16 @@ namespace Ict.Petra.Server.MConference.Applications
                     "html");
 
                 PPartnerTable regOffices = TApplicationManagement.GetRegistrationOffices();
-                string RegistrationOfficeName =
-                    ((PPartnerRow)regOffices.DefaultView[regOffices.DefaultView.Find(ASelectedRegistrationOffice)].Row).PartnerShortName;
+                string RegistrationOfficeName = ASelectedRegistrationOffice.ToString();
+
+                try
+                {
+                    RegistrationOfficeName =
+                        ((PPartnerRow)regOffices.DefaultView[regOffices.DefaultView.Find(ASelectedRegistrationOffice)].Row).PartnerShortName;
+                }
+                catch (Exception)
+                {
+                }
 
                 string ResultDocument = TFormLettersTools.PrintReport(TemplateFilename, roles, RegistrationOfficeName, false);
 
@@ -215,7 +242,7 @@ namespace Ict.Petra.Server.MConference.Applications
             catch (Exception ex)
             {
                 TLogging.Log(ex.ToString());
-                throw ex;
+                throw;
             }
             finally
             {

@@ -122,7 +122,7 @@ namespace Ict.Common.IO
                 TLogging.Log(ex.ToString() + " " + ex.Message);
                 TLogging.Log(ex.StackTrace);
 
-                throw ex;
+                throw;
             }
         }
     }

@@ -90,6 +90,7 @@ namespace {#NAMESPACE}
     /// automatically generated, create a new record of {#DETAILTABLE} and display on the edit screen
     public bool CreateNew{#DETAILTABLE}()
     {
+        int previousGridRow = grdDetails.Selection.ActivePosition.Row;
 {#IFNDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
         // we create the table locally, no dataset
         {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped(true);
@@ -105,6 +106,14 @@ namespace {#NAMESPACE}
         grdDetails.DataSource = FMainDS.{#DETAILTABLE}.DefaultView;
         grdDetails.Refresh();
         SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+        int currentGridRow = grdDetails.Selection.ActivePosition.Row;
+        if (currentGridRow == previousGridRow)
+        {
+            // The grid must be sorted so the new row is displayed where the old one was.  We will not have received a RowChanged event.
+            // We need to enforce showing the new details.
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+            ShowDetails(FPreviouslySelectedDetailRow);
+        }
 
         return true;
     }
@@ -196,7 +205,7 @@ namespace {#NAMESPACE}
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
     private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
     {
-        if(e.Row != FCurrentRow)
+        if(e.Row != FCurrentRow && !grdDetails.Sorting)
         {       
 {#IFDEF SAVEDETAILS}
             // Transfer data from Controls into the DataTable
@@ -210,9 +219,8 @@ namespace {#NAMESPACE}
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             ShowDetails(FPreviouslySelectedDetailRow);
             pnlDetails.Enabled = true;
-            
-            FCurrentRow = e.Row;
         }
+        FCurrentRow = e.Row;
     }
 {#ENDIF SHOWDETAILS}
     
@@ -223,15 +231,22 @@ namespace {#NAMESPACE}
         GetDetailsFromControls(FPreviouslySelectedDetailRow);
     }
 
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow)
+    private void GetDetailsFromControls({#DETAILTABLE}Row ARow, Control AControl=null)
     {
-        if (ARow != null)
+        if (ARow != null && !grdDetails.Sorting)
         {
             ARow.BeginEdit();
             {#SAVEDETAILS}
             ARow.EndEdit();
         }
     }
+{#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
+
+    private void ControlUpdateDataHandler(object sender, EventArgs e)
+    {
+        GetDetailsFromControls(FPreviouslySelectedDetailRow, (Control)sender);
+    }
+{#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 
 #region Implement interface functions

@@ -122,7 +122,7 @@ namespace Tests.IctCommonRemoting.Client
             catch (Exception exp)
             {
                 TLogging.Log(exp.ToString() + Environment.NewLine + exp.StackTrace, TLoggingType.ToLogfile);
-                throw exp;
+                throw;
             }
         }
     }

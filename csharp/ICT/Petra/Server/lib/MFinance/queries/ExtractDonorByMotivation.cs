@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MFinance.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="ASQLParameterList"></param>
-        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref TSelfExpandingArrayList ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
             bool ReceiptLetterFrequencySet;
             string ReceiptLetterFrequency;

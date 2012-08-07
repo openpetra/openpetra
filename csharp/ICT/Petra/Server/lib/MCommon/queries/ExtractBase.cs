@@ -54,18 +54,35 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <returns></returns>
         protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults)
         {
+            int ExtractId;
+
+            return CalculateExtractInternal(AParameters, ASqlStmt, AResults, out ExtractId);
+        }
+
+        /// <summary>
+        /// calculate an extract from a report: all partners of a given type (or selection of multiple types)
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="ASqlStmt"></param>
+        /// <param name="AResults"></param>
+        /// <param name="AExtractId"></param>
+        /// <returns></returns>
+        protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults, out int AExtractId)
+        {
+            AExtractId = -1;
+
             // get the partner keys from the database
             try
             {
                 Boolean ReturnValue = false;
                 Boolean NewTransaction;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                TSelfExpandingArrayList SqlParameterList = new TSelfExpandingArrayList();
+                List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
                 bool AddressFilterAdded;
 
                 if (FSpecialTreatment)
                 {
-                    ReturnValue = RunSpecialTreatment(AParameters, Transaction);
+                    ReturnValue = RunSpecialTreatment(AParameters, Transaction, out AExtractId);
                 }
                 else
                 {
@@ -78,7 +95,7 @@ namespace Ict.Petra.Server.MCommon.queries
                     // now run the database query
                     TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
                     DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(ASqlStmt, "partners", Transaction,
-                        ConvertParameterArrayList(SqlParameterList));
+                        SqlParameterList.ToArray());
 
                     if (NewTransaction)
                     {
@@ -95,13 +112,12 @@ namespace Ict.Petra.Server.MCommon.queries
                     TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
                     TVerificationResultCollection VerificationResult;
-                    int NewExtractID;
 
                     // create an extract with the given name in the parameters
                     ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                         AParameters.Get("param_extract_name").ToString(),
                         AParameters.Get("param_extract_description").ToString(),
-                        out NewExtractID,
+                        out AExtractId,
                         out VerificationResult,
                         partnerkeys,
                         0,
@@ -136,7 +152,7 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <param name="AOdbcParameterList"></param>
         /// <returns>true if address tables and fields were added</returns>
         protected bool AddAddressFilter(TParameterList AParameters, ref string ASqlStmt,
-            ref TSelfExpandingArrayList AOdbcParameterList)
+            ref List <OdbcParameter>AOdbcParameterList)
         {
             string WhereClause = "";
             string TableNames = "";
@@ -437,32 +453,15 @@ namespace Ict.Petra.Server.MCommon.queries
         }
 
         /// <summary>
-        /// convert array list to array of type OdbcParameter
-        /// </summary>
-        /// <param name="AOdbcParameterList"></param>
-        /// <returns></returns>
-        protected OdbcParameter[] ConvertParameterArrayList(TSelfExpandingArrayList AOdbcParameterList)
-        {
-            OdbcParameter[] parameterArray = new OdbcParameter[AOdbcParameterList.Count];
-            int Index = 0;
-
-            foreach (object tempObject in AOdbcParameterList)
-            {
-                parameterArray[Index] = (OdbcParameter)tempObject;
-                Index++;
-            }
-
-            return parameterArray;
-        }
-
-        /// <summary>
         /// This method needs to be implemented by extracts that can't follow the default processing with just
         /// one query.
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        protected virtual bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction)
+        /// <param name="AExtractId"></param>
+        protected virtual bool RunSpecialTreatment(TParameterList AParameters, TDBTransaction ATransaction, out int AExtractId)
         {
+            AExtractId = -1;
             return true;
         }
 
@@ -472,6 +471,6 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="ASqlParameterList"></param>
-        protected abstract void RetrieveParameters (TParameterList AParameters, ref string ASqlStmt, ref TSelfExpandingArrayList ASqlParameterList);
+        protected abstract void RetrieveParameters (TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASqlParameterList);
     }
 }

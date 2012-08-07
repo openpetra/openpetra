@@ -145,6 +145,10 @@ namespace Ict.Common.IO
                 cmbDateFormat.Items.Insert(0, regionalDateString);
             }
 
+            cmbDateFormat.SelectedIndex = cmbDateFormat.Items.IndexOf(regionalDateString);
+
+            cmbNumberFormat.SelectedIndex = cmbNumberFormat.Items.IndexOf(myCulture.NumberFormat.NumberDecimalSeparator);
+
             UpdateRadioButtons();
         }
 

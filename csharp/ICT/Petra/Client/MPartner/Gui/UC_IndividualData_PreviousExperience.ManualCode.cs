@@ -131,8 +131,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // temporarily reset selected row to avoid interference with validation
                 FPreviouslySelectedDetailRow = null;
+                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
                 grdDetails.SelectRowInGrid(rowIndex, true);
+                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
 
                 DoRecalculateScreenParts();
 
@@ -295,7 +298,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPersonnelValidation_Personnel.ValidatePreviousExperienceManual(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
         }
     }
 }

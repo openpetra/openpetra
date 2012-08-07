@@ -275,6 +275,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPreviouslySelectedDetailRow = null;
                     grdDetails.SelectRowInGrid(rowIndex, true);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    ShowDetails(FPreviouslySelectedDetailRow);
                 }
             }
             // delete single selected record from extract
@@ -311,6 +312,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     FPreviouslySelectedDetailRow = null;
                     grdDetails.SelectRowInGrid(rowIndex, true);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                    ShowDetails(FPreviouslySelectedDetailRow);
                 }
             }
 
@@ -338,13 +340,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void RefreshExtractList(String AExtractNameFilter, Boolean AAllUsers,
             String ACreatedByUser, String AModifiedByUser)
         {
-            this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
+            // only react here if screen is initialized
+            if (FPetraUtilsObject != null)
+            {
+                this.LoadData(AExtractNameFilter, AAllUsers, ACreatedByUser, AModifiedByUser);
 
-            // data can have changed completely, so easiest for now is to select first row
-            grdDetails.SelectRowInGrid(1, true);
+                // data can have changed completely, so easiest for now is to select first row
+                grdDetails.SelectRowInGrid(1, true);
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                ShowDetails(FPreviouslySelectedDetailRow);
 
-            // enable/disable buttons
-            UpdateButtonStatus();
+                // enable/disable buttons
+                UpdateButtonStatus();
+            }
         }
 
         /// <summary>
@@ -358,6 +366,330 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), GetSelectedDetailRow().ExtractId);
+            }
+        }
+
+        /// <summary>
+        /// Add subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void AddSubscription(System.Object sender, EventArgs e)
+        {
+            PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
+            PSubscriptionRow SubscriptionRow = SubscriptionTable.NewRowTyped();
+            PPartnerTable PartnersWithExistingSubs = new PPartnerTable();
+            int SubscriptionsAdded;
+            String MessageText;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Add Subscription"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractAddSubscriptionDialog dialog = new TFrmUpdateExtractAddSubscriptionDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(ref SubscriptionRow);
+                    SubscriptionTable.Rows.Add(SubscriptionRow);
+
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.AddSubscription
+                            (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs, out SubscriptionsAdded))
+                    {
+                        MessageText =
+                            String.Format(Catalog.GetString(
+                                    "Subscription {0} successfully added for {1} out of {2} Partner(s) in Extract {3}."),
+                                SubscriptionRow.PublicationCode,
+                                SubscriptionsAdded, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
+
+                        if (PartnersWithExistingSubs.Rows.Count > 0)
+                        {
+                            MessageText += "\r\n\r\n" +
+                                           String.Format(Catalog.GetString(
+                                    "See the following Dialog for the {0} Partner(s) that were already subscribed for this Publication. The Subscription was not added for those Partners."),
+                                PartnersWithExistingSubs.Rows.Count);
+                        }
+
+                        MessageBox.Show(MessageText,
+                            Catalog.GetString("Add Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
+                        if (PartnersWithExistingSubs.Rows.Count > 0)
+                        {
+                            TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
+                            partnerDialog.SetExplanation("These partners already have a Subscription for " + SubscriptionRow.PublicationCode,
+                                "The Subscription was not added to the following Partners:");
+                            partnerDialog.SetPartnerList(PartnersWithExistingSubs);
+                            partnerDialog.ShowDialog();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while adding Subscription for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Add Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Delete subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DeleteSubscription(System.Object sender, EventArgs e)
+        {
+            String PublicationCode;
+            Boolean DeleteAllSubscriptions = false;
+            Boolean DeleteThisSubscription = false;
+            Boolean AllDeletionsSucceeded = true;
+            int CountDeleted = 0;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Delete Subscription"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractDeleteSubscriptionDialog dialog = new TFrmUpdateExtractDeleteSubscriptionDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out PublicationCode);
+
+                    ExtractTDSMExtractTable ExtractTable;
+
+                    // retrieve all partners of extract from server
+                    ExtractTable = TRemote.MPartner.Partner.WebConnectors.GetExtractRowsWithPartnerData(GetSelectedDetailRow().ExtractId);
+
+                    foreach (ExtractTDSMExtractRow Row in ExtractTable.Rows)
+                    {
+                        if (TRemote.MPartner.Partner.WebConnectors.SubscriptionExists
+                                (Row.PartnerKey, PublicationCode))
+                        {
+                            DeleteThisSubscription = false;
+
+                            if (!DeleteAllSubscriptions)
+                            {
+                                TFrmExtendedMessageBox.TResult Result;
+                                TFrmExtendedMessageBox ExtMsgBox = new TFrmExtendedMessageBox(this.FindForm());
+                                Result = ExtMsgBox.ShowDialog(Catalog.GetString("You have chosen to delete the subscription of ") +
+                                    PublicationCode + "\r\n" +
+                                    Catalog.GetString("for Partner ") +
+                                    Row.PartnerShortName + " (" + Row.PartnerKey + ")\r\n\r\n" +
+                                    Catalog.GetString("Do you really want to delete it?"),
+                                    Catalog.GetString("Delete Subscription"),
+                                    "",
+                                    TFrmExtendedMessageBox.TButtons.embbYesYesToAllNoCancel,
+                                    TFrmExtendedMessageBox.TIcon.embiQuestion);
+
+                                switch (Result)
+                                {
+                                    case TFrmExtendedMessageBox.TResult.embrYesToAll:
+                                        DeleteAllSubscriptions = true;
+                                        break;
+
+                                    case TFrmExtendedMessageBox.TResult.embrYes:
+                                        DeleteThisSubscription = true;
+                                        break;
+
+                                    case TFrmExtendedMessageBox.TResult.embrNo:
+                                        DeleteThisSubscription = false;
+                                        break;
+
+                                    case TFrmExtendedMessageBox.TResult.embrCancel:
+                                        MessageBox.Show(Catalog.GetString("Further deletion of Subscriptions cancelled"),
+                                        Catalog.GetString("Delete Subscription"),
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
+                                        return;
+
+                                    default:
+                                        break;
+                                }
+                            }
+
+                            if (DeleteAllSubscriptions
+                                || DeleteThisSubscription)
+                            {
+                                if (!TRemote.MPartner.Partner.WebConnectors.DeleteSubscription
+                                        (GetSelectedDetailRow().ExtractId, Row.PartnerKey, PublicationCode))
+                                {
+                                    MessageBox.Show(Catalog.GetString("Error while deleting Subscription ") +
+                                        PublicationCode + Catalog.GetString(" for Partner ") +
+                                        Row.PartnerShortName + " (" + Row.PartnerKey + ")",
+                                        Catalog.GetString("Delete Subscription"),
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Error);
+                                    AllDeletionsSucceeded = false;
+                                }
+                                else
+                                {
+                                    CountDeleted++;
+                                }
+                            }
+                        }
+                    }
+
+                    if (AllDeletionsSucceeded)
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("Subscription {0} successfully deleted for {1} Partners in Extract {2}"),
+                                PublicationCode, CountDeleted, GetSelectedDetailRow().ExtractName),
+                            Catalog.GetString("Delete Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString(
+                                    "Error while deleting Subscription {0} for some Partners in Extract {1}. Subscription deleted for {2} Partners."),
+                                PublicationCode, GetSelectedDetailRow().ExtractName, CountDeleted),
+                            Catalog.GetString("Delete Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Change subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ChangeSubscription(System.Object sender, EventArgs e)
+        {
+            //TODO
+        }
+
+        /// <summary>
+        /// Update 'No Solicitations' flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateSolicitationFlag(System.Object sender, EventArgs e)
+        {
+            bool NoSolicitations;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Update 'No Solicitations' Flag"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractSolicitationFlagDialog dialog = new TFrmUpdateExtractSolicitationFlagDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out NoSolicitations);
+
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.UpdateSolicitationFlag
+                            (GetSelectedDetailRow().ExtractId, NoSolicitations))
+                    {
+                        MessageBox.Show(Catalog.GetString("'No Solicitations' flag successfully updated for all Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update 'No Solicitations' Flag"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while updating 'No Solicitations' flag for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update 'No Solicitations' Flag"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update Receipt Frequency for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateReceiptFrequency(System.Object sender, EventArgs e)
+        {
+            bool UpdateReceiptLetterFrequency;
+            String ReceiptLetterFrequency;
+            bool UpdateReceiptEachGift;
+            bool ReceiptEachGift;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Update Receipt Frequency"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractReceiptFrequencyDialog dialog = new TFrmUpdateExtractReceiptFrequencyDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out UpdateReceiptLetterFrequency, out ReceiptLetterFrequency,
+                        out UpdateReceiptEachGift, out ReceiptEachGift);
+
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.UpdateReceiptFrequency
+                            (GetSelectedDetailRow().ExtractId, UpdateReceiptLetterFrequency,
+                            ReceiptLetterFrequency, UpdateReceiptEachGift, ReceiptEachGift))
+                    {
+                        MessageBox.Show(Catalog.GetString("Receipt Frequency successfully updated for all Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Receipt Frequency"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while updating Receipt Frequency for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Receipt Frequency"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update Email Gift Statement flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
+        {
+            bool EmailGiftStatement;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Update Email Gift Statement"))
+                && (GetSelectedDetailRow() != null))
+            {
+                TFrmUpdateExtractEmailGiftStatementDialog dialog = new TFrmUpdateExtractEmailGiftStatementDialog(this.FindForm());
+                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    dialog.GetReturnedParameters(out EmailGiftStatement);
+
+                    // perform update of extract data on server side
+                    if (TRemote.MPartner.Partner.WebConnectors.UpdateEmailGiftStatement
+                            (GetSelectedDetailRow().ExtractId, EmailGiftStatement))
+                    {
+                        MessageBox.Show(Catalog.GetString("Email Gift Statement successfully updated for all Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Email Gift Statement"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Error while updating Email Gift Statement for Partners in Extract ") +
+                            GetSelectedDetailRow().ExtractName,
+                            Catalog.GetString("Update Email Gift Statement"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                    }
+                }
             }
         }
 

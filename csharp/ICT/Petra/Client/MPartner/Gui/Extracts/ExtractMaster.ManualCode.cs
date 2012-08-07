@@ -329,13 +329,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        private void ShowDataManual()
-        {
-        }
-
-        /// <summary>
         /// Open screen to maintain contents of an extract
         /// </summary>
         /// <param name="sender"></param>
@@ -497,6 +490,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Create Manual Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateFamilyMembersExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.FamilyMembersExtract(FindForm());
+        }
+
+        /// <summary>
+        /// Create Manual Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreateFamilyExtractForPersons(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.FamilyExtractForPersons(FindForm());
+        }
+
+        /// <summary>
         /// Create Partner By Conference Extract
         /// </summary>
         /// <param name="sender"></param>
@@ -613,6 +626,66 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             frm.CalledFromExtracts = true;
             frm.Show();
+        }
+
+        /// <summary>
+        /// Add subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddSubscription(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.AddSubscription(sender, e);
+        }
+
+        /// <summary>
+        /// Delete subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteSubscription(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.DeleteSubscription(sender, e);
+        }
+
+        /// <summary>
+        /// Change subscription for Partners in selected Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ChangeSubscription(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.ChangeSubscription(sender, e);
+        }
+
+        /// <summary>
+        /// Update Solicitation Flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateSolicitationFlag(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.UpdateSolicitationFlag(sender, e);
+        }
+
+        /// <summary>
+        /// Update Receipt Frequency for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateReceiptFrequency(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.UpdateReceiptFrequency(sender, e);
+        }
+
+        /// <summary>
+        /// Update Email Gift Statement flag for Partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.UpdateEmailGiftStatement(sender, e);
         }
 
         #endregion

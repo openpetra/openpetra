@@ -280,7 +280,7 @@ namespace Tests.Reporting
                     System.Console.WriteLine(e.StackTrace);
                 }
 
-                throw e;
+                throw;
             }
         }
 

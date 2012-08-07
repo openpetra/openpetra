@@ -79,17 +79,52 @@ namespace Ict.Common.DB
         /// </summary>
         private static TDataBase MGDBAccessObj = null;
 
+        /// <summary>
+        /// delegate for setting the database object for this current session
+        /// </summary>
+        public delegate void DBAccessObjectSetter(TDataBase ADatabaseForUser);
+        /// <summary>
+        /// delegate for getting the database object for this current session
+        /// </summary>
+        public delegate TDataBase DBAccessObjectGetter();
+
+        private static DBAccessObjectSetter MGDBAccessObjDelegateSet = null;
+        private static DBAccessObjectGetter MGDBAccessObjDelegateGet = null;
+
+        /// we cannot have a reference to System.Web for Session here, so we use a delegate
+        public static void SetFunctionForRetrievingCurrentObjectFromWebSession(
+            DBAccessObjectSetter setter,
+            DBAccessObjectGetter getter)
+        {
+            MGDBAccessObjDelegateSet = setter;
+            MGDBAccessObjDelegateGet = getter;
+        }
+
         /// <summary>Global Object in which the Application can store a reference to an Instance of
         /// <see cref="TDataBase" /></summary>
         public static TDataBase GDBAccessObj
         {
             set
             {
-                MGDBAccessObj = value;
+                if (MGDBAccessObjDelegateSet == null)
+                {
+                    MGDBAccessObj = value;
+                }
+                else
+                {
+                    MGDBAccessObjDelegateSet(value);
+                }
             }
             get
             {
-                return MGDBAccessObj;
+                if (MGDBAccessObjDelegateGet == null)
+                {
+                    return MGDBAccessObj;
+                }
+                else
+                {
+                    return MGDBAccessObjDelegateGet();
+                }
             }
         }
     }
@@ -1400,7 +1435,7 @@ namespace Ict.Common.DB
                     catch (Exception e2)
                     {
                         TLogging.Log("Another Exception while trying to establish the connection: " + e2.Message);
-                        throw e2;
+                        throw;
                     }
 
                     return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);

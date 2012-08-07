@@ -1,0 +1,24 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Delete Subscriptions
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    FormType: dialog
+    Template: window
+    WindowWidth: 600
+    WindowHeight: 200
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [lblExtractNameAndExplanation]
+                Row1: [Empty]
+                Row2: [cmbPublicationCode]
+                
+        lblExtractNameAndExplanation:
+            
+        Empty:
+
+        cmbPublicationCode: {Label=Publication Code, List=PublicationInfoList}

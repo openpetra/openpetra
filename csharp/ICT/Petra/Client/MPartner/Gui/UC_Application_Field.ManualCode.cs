@@ -95,13 +95,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             // the following lines are just dummy code to remove compiler warnings as those members are never used
             if (FTabSetup == null)
             {
-            	FTabSetup = null;
+                FTabSetup = null;
             }
+
             if (FTabPageEvent == null)
             {
-            	FTabPageEvent = null;
+                FTabPageEvent = null;
             }
-            
+
             ucoField.PetraUtilsObject = FPetraUtilsObject;
             ucoApplicant.PetraUtilsObject = FPetraUtilsObject;
 
@@ -197,13 +198,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GetDataFromControlsManual(PmGeneralApplicationRow ARow)
         {
-        }
-
-        private void ValidateDataDetailsManual(PmGeneralApplicationRow ARow)
-        {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            //TODO
         }
 
         private void ShowData(PmGeneralApplicationRow AGeneralAppRow, PmYearProgramApplicationRow AFieldAppRow)

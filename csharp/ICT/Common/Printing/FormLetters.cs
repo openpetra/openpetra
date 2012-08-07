@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Drawing.Printing;
 using Ict.Common.IO;
@@ -36,6 +37,11 @@ namespace Ict.Common.Printing
     /// </summary>
     public class TFormLettersTools
     {
+        /// <summary>
+        /// define the first row in the details to apply to the whole group
+        /// </summary>
+        public static string HEADERGROUP = "HEADERGROUP:";
+
         /// <summary>
         /// for form letter files, we need to check if there is a template specific for the country or form.
         /// Otherwise the next best fitting template is used
@@ -622,9 +628,19 @@ namespace Ict.Common.Printing
 
                     if (GroupTopNode != null)
                     {
-                        ConditionalPageBreak(groupTopHeight + detailHeight * 3);
+                        ConditionalPageBreak(groupTopHeight + detailHeight);
 
                         string GroupTopText = GroupTopNode.InnerXml;
+
+                        if (AData[group][0].StartsWith(HEADERGROUP))
+                        {
+                            StringCollection Values = StringHelper.GetCSVList(AData[group][0].Substring(HEADERGROUP.Length), ",");
+
+                            for (int CountCSVValue = Values.Count; CountCSVValue > 0; CountCSVValue--)
+                            {
+                                GroupTopText = GroupTopText.Replace("#VALUE" + CountCSVValue.ToString(), Values[CountCSVValue - 1]);
+                            }
+                        }
 
                         ResultDocument += Environment.NewLine +
                                           String.Format("<div style='position:absolute, left:{0}{2}, top:{1}{2}'>",
@@ -640,27 +656,31 @@ namespace Ict.Common.Printing
                     {
                         foreach (string line in AData[group])
                         {
+                            if (line.StartsWith(HEADERGROUP))
+                            {
+                                continue;
+                            }
+
                             string DetailText = DetailNode.InnerXml;
 
-                            string CSVLine = line;
-                            int CountCSVValue = 1;
+                            StringCollection Values = StringHelper.GetCSVList(line, ",");
 
-                            while (CSVLine.Length > 0)
+                            for (int CountCSVValue = Values.Count; CountCSVValue > 0; CountCSVValue--)
                             {
-                                string value = StringHelper.GetNextCSV(ref CSVLine);
-                                DetailText = DetailText.Replace("#VALUE" + CountCSVValue.ToString(), value);
+                                DetailText = DetailText.Replace("#VALUE" + CountCSVValue.ToString(), Values[CountCSVValue - 1]);
+                            }
 
+                            for (int CountCSVValue = 1; CountCSVValue <= Values.Count; CountCSVValue++)
+                            {
                                 if (Total.Count < CountCSVValue)
                                 {
                                     Total.Add(0);
                                 }
 
-                                if (value.Length > 0)
+                                if (Values[CountCSVValue - 1].Length > 0)
                                 {
                                     Total[CountCSVValue - 1]++;
                                 }
-
-                                CountCSVValue++;
                             }
 
                             ConditionalPageBreak(detailHeight);
@@ -683,7 +703,7 @@ namespace Ict.Common.Printing
                         GroupBottomText = GroupBottomText.Replace("#TOTALPERGROUP", AData[group].Count.ToString());
                         TotalOverall += AData[group].Count;
 
-                        for (int TotalCount = 0; TotalCount < Total.Count; TotalCount++)
+                        for (int TotalCount = Total.Count - 1; TotalCount >= 0; TotalCount--)
                         {
                             GroupBottomText = GroupBottomText.Replace("#TOTAL" + (TotalCount + 1).ToString(), Total[TotalCount].ToString());
                         }
@@ -890,7 +910,7 @@ namespace Ict.Common.Printing
             {
                 TLogging.Log("Exception while writing PDF: " + e.Message);
                 TLogging.Log(e.StackTrace);
-                throw e;
+                throw;
             }
 
             return filename;

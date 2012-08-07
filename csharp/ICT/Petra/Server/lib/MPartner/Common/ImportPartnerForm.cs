@@ -469,10 +469,17 @@ namespace Ict.Petra.Server.MPartner.Import
         /// <summary>
         /// method for importing data entered on the web form
         /// </summary>
-        /// <param name="AFormID"></param>
-        /// <param name="AJSONFormData"></param>
         /// <returns></returns>
         public static string DataImportFromForm(string AFormID, string AJSONFormData)
+        {
+            return DataImportFromForm(AFormID, AJSONFormData, true);
+        }
+
+        /// <summary>
+        /// method for importing data entered on the web form
+        /// </summary>
+        /// <returns></returns>
+        public static string DataImportFromForm(string AFormID, string AJSONFormData, bool ASendApplicationReceivedEmail)
         {
             if (AFormID == "TestPrintingEmail")
             {
@@ -599,7 +606,7 @@ namespace Ict.Petra.Server.MPartner.Import
                             photosPath +
                             Path.DirectorySeparatorChar +
                             NewPersonPartnerKey +
-                            Path.GetExtension(imageTmpPath).ToLower());
+                            Path.GetExtension(imageTmpPath).ToLower(), true);
                     }
                 }
                 catch (Exception e)
@@ -610,32 +617,40 @@ namespace Ict.Petra.Server.MPartner.Import
                     return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                 }
 
-                string pdfIdentifier;
-                string pdfFilename = GeneratePDF(NewPersonPartnerKey, data.registrationcountrycode, data, out pdfIdentifier);
-                try
+                if (ASendApplicationReceivedEmail)
                 {
-                    if (SendEmail(NewPersonPartnerKey, data.registrationcountrycode, data, pdfFilename))
+                    string pdfIdentifier;
+                    string pdfFilename = GeneratePDF(NewPersonPartnerKey, data.registrationcountrycode, data, out pdfIdentifier);
+                    try
                     {
-                        if (File.Exists(imageTmpPath))
+                        if (SendEmail(NewPersonPartnerKey, data.registrationcountrycode, data, pdfFilename))
                         {
-                            // only delete the temp image after successful application. otherwise we have a problem with resending the application, because the tmp image is gone
-                            File.Delete(imageTmpPath);
-                        }
+                            if (File.Exists(imageTmpPath))
+                            {
+                                // only delete the temp image after successful application. otherwise we have a problem with resending the application, because the tmp image is gone
+                                File.Delete(imageTmpPath);
+                            }
 
-                        // return id of the PDF pdfIdentifier
-                        string result = "{\"success\":true,\"data\":{\"pdfPath\":\"downloadPDF.aspx?pdf-id=" + pdfIdentifier + "\"}}";
-                        return result;
+                            // return id of the PDF pdfIdentifier
+                            string result = "{\"success\":true,\"data\":{\"pdfPath\":\"downloadPDF.aspx?pdf-id=" + pdfIdentifier + "\"}}";
+                            return result;
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    TLogging.Log(e.Message);
-                    TLogging.Log(e.StackTrace);
+                    catch (Exception e)
+                    {
+                        TLogging.Log(e.Message);
+                        TLogging.Log(e.StackTrace);
+                    }
                 }
 
                 string message2 = String.Format(Catalog.GetString("We were not able to send the email to {0}"), data.email);
                 string result2 = "{\"failure\":true, \"data\":{\"result\":\"" + message2 + "\"}}";
-                TLogging.Log(result2);
+
+                if (ASendApplicationReceivedEmail)
+                {
+                    TLogging.Log(result2);
+                }
+
                 return result2;
             }
             else

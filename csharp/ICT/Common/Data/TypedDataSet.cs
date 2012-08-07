@@ -415,7 +415,7 @@ namespace Ict.Common.Data
             {
                 TLogging.Log("PROBLEM: " + e.Message, TLoggingType.ToLogfile);
                 TLogging.Log("PROBLEM: " + e.StackTrace, TLoggingType.ToLogfile);
-                throw e;
+                throw;
             }
         }
 
