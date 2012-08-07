@@ -331,26 +331,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             foreach (ARecurringGiftDetailRow gdr in FMainDS.ARecurringGiftDetail.Rows)
             {
-                if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
-                {
-                    if (gdr.GiftTransactionNumber == GiftNumber)
-                    {
-                        if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
-                        {
-                            sum += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
-                            sumBatch += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
-                        }
-                        else
-                        {
-                            sum += gdr.GiftAmount;
-                            sumBatch += gdr.GiftAmount;
-                        }
-                    }
-                    else
-                    {
-                        sumBatch += gdr.GiftAmount;
-                    }
-                }
+				if (gdr.RowState != DataRowState.Deleted)
+				{
+	            	if ((gdr.BatchNumber == FBatchNumber) && (gdr.LedgerNumber == FLedgerNumber))
+	                {
+	                    if (gdr.GiftTransactionNumber == GiftNumber)
+	                    {
+	                        if (FPreviouslySelectedDetailRow.DetailNumber == gdr.DetailNumber)
+	                        {
+	                            sum += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
+	                            sumBatch += Convert.ToDecimal(txtDetailGiftAmount.NumberValueDecimal);
+	                        }
+	                        else
+	                        {
+	                            sum += gdr.GiftAmount;
+	                            sumBatch += gdr.GiftAmount;
+	                        }
+	                    }
+	                    else
+	                    {
+	                        sumBatch += gdr.GiftAmount;
+	                    }
+	                }
+				}
             }
 
             txtGiftTotal.NumberValueDecimal = sum;
@@ -553,16 +556,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
+	            grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
-                grdDetails.Refresh();
-                SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
 
-                //Idiosyncratic behaviour of the screen requires the following
-//	            if (grdDetails.Rows.Count == 2)
-//	            {
-//	                cmbDetailMotivationGroupCode.SetSelectedString("GIFT");
-//	                cmbDetailMotivationDetailCode.SetSelectedString("SUPPORT");
-//	            }
+                int newRowIndex = FMainDS.ARecurringGiftDetail.Rows.Count - 1;
+
+                SelectDetailRowByDataTableIndex(newRowIndex);
+	            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
+	
+	            GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
+	
+	            //Need to redo this just in case the sorting is not on primary key
+	            SelectDetailRowByDataTableIndex(newRowIndex);
             }
         }
 
@@ -583,9 +591,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
+                grdDetails.DataSource = null;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
-                grdDetails.Refresh();
-                SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
+
+				int newRowIndex = FMainDS.ARecurringGiftDetail.Rows.Count - 1;
+
+                SelectDetailRowByDataTableIndex(newRowIndex);
+
+	            InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+                
+	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+	            ShowDetails(FPreviouslySelectedDetailRow);
+	
+	            GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
+	
+	            //Need to redo this just in case the sorting is not on primary key
+	            SelectDetailRowByDataTableIndex(newRowIndex);
+
                 RetrieveMotivationDetailAccountCode();
                 txtGiftTotal.Focus();
             }
