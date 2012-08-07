@@ -17,6 +17,7 @@ RootNode:
         actViewTasksTiles: {ActionClick=ViewTasksAsTiles}
         actViewTasksList: {ActionClick=ViewTasksAsList}
         actViewTaskSizeChange: {ActionClick=ViewTaskSizeChange}
+        actViewTasksSingleClickExecution: {ActionClick=ViewTasksSingleClickExecution}
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
     Controls:
         pnlContent:
@@ -43,6 +44,8 @@ RootNode:
                     mniViewTaskSizeLarge: {Label=Large, Action=actViewTaskSizeChange}
                     mniViewTaskSizeMedium: {Label=Medium, Action=actViewTaskSizeChange}
                     mniViewTaskSizeSmall: {Label=Small, Action=actViewTaskSizeChange}
+                mniSeparator: {Label=-}
+                mniViewTasksSingleClickExecution: {Label=Single-click to open an item}
         mniHelp: 
             Label: &Help
             Order: AlwaysLast

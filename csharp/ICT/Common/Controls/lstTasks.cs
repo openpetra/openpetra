@@ -45,6 +45,7 @@ namespace Ict.Common.Controls
         private Dictionary<string, TUcoTaskGroup> FGroups = new Dictionary<string, TUcoTaskGroup>();
         private TUcoSingleTask FSelectedTask = null;
 		private TaskAppearance FTaskAppearance;
+		private bool FSingleClickExecution = false;
 		private int FMaxTaskWidth;
         private TExtStatusBarHelp FStatusbar = null;
 		
@@ -209,9 +210,33 @@ namespace Ict.Common.Controls
                     }                   
                 }
             }
-        }
-        
-		/// <summary>
+        }       
+    	
+        /// <summary>
+        /// Execution of the Task with a single click of the mouse?
+        /// </summary>
+        public bool SingleClickExecution
+        {
+            get
+            {
+                return FSingleClickExecution;
+            }
+            
+            set
+            {
+                if (FSingleClickExecution != value)
+                {
+                    FSingleClickExecution = value;
+                    
+                    foreach (var Group in Groups) 
+                    {
+                    	Group.Value.SingleClickExecution = FSingleClickExecution;	
+                    }                   
+                }
+            }
+       }
+
+        /// <summary>
 		/// Maximum Task Width.
 		/// </summary>
         public int MaxTaskWidth

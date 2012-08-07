@@ -36,6 +36,7 @@ namespace Ict.Common.Controls
     {
     	private int FMaxTaskWidth;
     	private TaskAppearance FTaskAppearance = TaskAppearance.staLargeTile;
+    	private bool FSingleClickExecution = false;
     	private Dictionary<string, TLstTasks> FTaskLists = new Dictionary<string, TLstTasks>();
 
         /// <summary>
@@ -98,7 +99,31 @@ namespace Ict.Common.Controls
             }
         }
     	
-        #endregion
+        /// <summary>
+        /// Execution of the Task with a single click of the mouse?
+        /// </summary>
+        public bool SingleClickExecution
+        {
+            get
+            {
+                return FSingleClickExecution;
+            }
+            
+            set
+            {
+                if (FSingleClickExecution != value)
+                {
+                    FSingleClickExecution = value;
+                    
+                    if (this.Controls.Count > 0) 
+                    {
+                        ((TLstTasks)this.Controls[0]).SingleClickExecution = FSingleClickExecution;
+                    }                    
+                }
+            }
+       }
+    	
+       #endregion
 
         #region Public Methods
         

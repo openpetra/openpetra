@@ -36,6 +36,7 @@ namespace Ict.Common.Controls
 	{
         private Dictionary<string, TUcoSingleTask> FTasks = new Dictionary<string, TUcoSingleTask>();
 		private TaskAppearance FTaskAppearance;
+		private bool FSingleClickExecution = false;
 		private int FMaxTaskWidth;
 		private TUcoSingleTask FirstTaskInGroup = null;
 
@@ -101,6 +102,30 @@ namespace Ict.Common.Controls
                 }
             }
         }
+        
+        /// <summary>
+        /// Execution of the Task with a single click of the mouse?
+        /// </summary>
+        public bool SingleClickExecution
+        {
+            get
+            {
+                return FSingleClickExecution;
+            }
+            
+            set
+            {
+                if (FSingleClickExecution != value)
+                {
+                    FSingleClickExecution = value;                 
+                }
+                    
+                foreach (var Task in Tasks) 
+                {               	
+                	Task.Value.SingleClickAnywhereMeansTaskClicked = FSingleClickExecution;
+                }
+            }
+       }
         
 		/// <summary>
 		/// Maximum Task Width.

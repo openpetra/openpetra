@@ -228,6 +228,8 @@ namespace Ict.Petra.Client.App.PetraClient
             
 			SetTaskTileSize(TUserDefaults.GetInt16Default(TUserDefaults.MAINMENU_VIEWOPTIONS_TILESIZE, 2));	
 
+			SetTasksSingleClickExecution(TUserDefaults.GetBooleanDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_SINGLECLICKEXECUTION, false));
+			
 			if (TUserDefaults.GetStringDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_VIEWTASKS, VIEWTASKS_TILES) == VIEWTASKS_TILES) 
 			{
 				ViewTasksAsTiles(this, null);
@@ -235,7 +237,7 @@ namespace Ict.Petra.Client.App.PetraClient
 			else
 			{
 				ViewTasksAsList(this, null);
-			}            
+			}
         }
 
         private void ExitManualCode()
@@ -301,6 +303,20 @@ namespace Ict.Petra.Client.App.PetraClient
 			}
 		}
 
+		private void ViewTasksSingleClickExecution(object sender, EventArgs e)
+		{
+		    SetTasksSingleClickExecution(!mniViewTasksSingleClickExecution.Checked);
+		}
+		
+		private void SetTasksSingleClickExecution(bool ASingleClick)
+		{
+            dsbContent.SingleClickExecution = ASingleClick;
+
+            mniViewTasksSingleClickExecution.Checked = ASingleClick;    
+			
+			TUserDefaults.SetDefault(TUserDefaults.MAINMENU_VIEWOPTIONS_SINGLECLICKEXECUTION, ASingleClick);		    
+		}
+		
 		private void SetTaskTileSize(int ATaskTileSize)
 		{
 			if (ATaskTileSize == 1) 
