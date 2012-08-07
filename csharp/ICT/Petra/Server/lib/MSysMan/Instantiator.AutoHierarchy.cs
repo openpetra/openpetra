@@ -1159,15 +1159,15 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
                 return RemoteObject.LoadLanguageAndCultureFromUserDefaults();
             }
             /// generated method from interface
-            public System.Boolean GetLanguageAndCulture(out System.String ALanguageCode,
-                                                        out System.String ACultureCode)
+            public System.Boolean GetLanguageAndCulture(ref System.String ALanguageCode,
+                                                        ref System.String ACultureCode)
             {
                 if (RemoteObject == null)
                 {
                     InitRemoteObject();
                 }
 
-                return RemoteObject.GetLanguageAndCulture(out ALanguageCode,out ACultureCode);
+                return RemoteObject.GetLanguageAndCulture(ref ALanguageCode,ref ACultureCode);
             }
             /// generated method from interface
             public System.Boolean SetUserPassword(System.String AUsername,

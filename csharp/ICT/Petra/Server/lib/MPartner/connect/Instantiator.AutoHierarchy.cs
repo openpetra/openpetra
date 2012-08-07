@@ -2329,6 +2329,24 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 return RemoteObject.GetAllExtractHeaders(AExtractNameFilter,AAllUsers,AUserCreated,AUserModified);
             }
             /// generated method from interface
+            public MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter,
+                                                            String AExtractDescFilter,
+                                                            Boolean AAllUsers,
+                                                            String AUserCreated,
+                                                            String AUserModified,
+                                                            System.Nullable<DateTime>ADateCreatedFrom,
+                                                            System.Nullable<DateTime>ADateCreatedTo,
+                                                            System.Nullable<DateTime>ADateModifiedFrom,
+                                                            System.Nullable<DateTime>ADateModifiedTo)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetAllExtractHeaders(AExtractNameFilter,AExtractDescFilter,AAllUsers,AUserCreated,AUserModified,ADateCreatedFrom,ADateCreatedTo,ADateModifiedFrom,ADateModifiedTo);
+            }
+            /// generated method from interface
             public Boolean ExtractExists(String AExtractName)
             {
                 if (RemoteObject == null)
@@ -2349,6 +2367,32 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 }
 
                 return RemoteObject.CreateEmptyExtract(ref AExtractId,AExtractName,AExtractDescription);
+            }
+            /// generated method from interface
+            public Boolean CreateFamilyMembersExtract(System.Int32 ABaseExtractId,
+                                                      ref System.Int32 AExtractId,
+                                                      String AExtractName,
+                                                      String AExtractDescription)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.CreateFamilyMembersExtract(ABaseExtractId,ref AExtractId,AExtractName,AExtractDescription);
+            }
+            /// generated method from interface
+            public Boolean CreateFamilyExtractForPersons(System.Int32 ABaseExtractId,
+                                                         ref System.Int32 AExtractId,
+                                                         String AExtractName,
+                                                         String AExtractDescription)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.CreateFamilyExtractForPersons(ABaseExtractId,ref AExtractId,AExtractName,AExtractDescription);
             }
             /// generated method from interface
             public Boolean PurgeExtracts(System.Int32 ANumberOfDays,
@@ -2394,6 +2438,78 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner
                 }
 
                 return RemoteObject.SaveExtract(AExtractId,ref AExtractTable,out AVerificationResult);
+            }
+            /// generated method from interface
+            public Boolean SubscriptionExists(Int64 APartnerKey,
+                                              String APublicationCode)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SubscriptionExists(APartnerKey,APublicationCode);
+            }
+            /// generated method from interface
+            public Boolean AddSubscription(System.Int32 AExtractId,
+                                           ref PSubscriptionTable ATable,
+                                           out PPartnerTable AExistingSubscriptionPartners,
+                                           out System.Int32 ASubscriptionsAdded)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.AddSubscription(AExtractId,ref ATable,out AExistingSubscriptionPartners,out ASubscriptionsAdded);
+            }
+            /// generated method from interface
+            public Boolean DeleteSubscription(System.Int32 AExtractId,
+                                              Int64 APartnerKey,
+                                              String APublicationCode)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.DeleteSubscription(AExtractId,APartnerKey,APublicationCode);
+            }
+            /// generated method from interface
+            public Boolean UpdateSolicitationFlag(System.Int32 AExtractId,
+                                                  Boolean ANoSolicitations)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.UpdateSolicitationFlag(AExtractId,ANoSolicitations);
+            }
+            /// generated method from interface
+            public Boolean UpdateEmailGiftStatement(System.Int32 AExtractId,
+                                                    Boolean AEmailGiftStatement)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.UpdateEmailGiftStatement(AExtractId,AEmailGiftStatement);
+            }
+            /// generated method from interface
+            public Boolean UpdateReceiptFrequency(System.Int32 AExtractId,
+                                                  Boolean AUpdateReceiptLetterFrequency,
+                                                  String AReceiptLetterFrequency,
+                                                  Boolean AUpdateReceiptEachGift,
+                                                  Boolean AReceiptEachGift)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.UpdateReceiptFrequency(AExtractId,AUpdateReceiptLetterFrequency,AReceiptLetterFrequency,AUpdateReceiptEachGift,AReceiptEachGift);
             }
             /// generated method from interface
             public System.Boolean AddRecentlyUsedPartner(Int64 APartnerKey,

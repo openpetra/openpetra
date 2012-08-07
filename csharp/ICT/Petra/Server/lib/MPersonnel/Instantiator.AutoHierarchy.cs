@@ -242,6 +242,26 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator
 
                 return RemoteObject.GetOrCreateUmJobKey(AUnitKey,APositionName,APositionScope);
             }
+            /// generated method from interface
+            public ArrayList GetUnitHeirarchy()
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.GetUnitHeirarchy();
+            }
+            /// generated method from interface
+            public System.Boolean SaveUnitHierarchy(ArrayList Nodes)
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.SaveUnitHierarchy(Nodes);
+            }
         }
 
         /// <summary>The 'WebConnectors' subnamespace contains further subnamespaces.</summary>
