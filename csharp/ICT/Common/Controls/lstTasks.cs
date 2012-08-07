@@ -43,7 +43,6 @@ namespace Ict.Common.Controls
         private static string FUserId;
         private static CheckAccessPermissionDelegate FHasAccessPermission;
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
-        private TUcoSingleTask FSelectedTask = null;
         private TaskAppearance FTaskAppearance;
         private bool FSingleClickExecution = false;
         private int FMaxTaskWidth;
@@ -575,8 +574,6 @@ namespace Ict.Common.Controls
 
         void SingleTask_TaskSelected(object sender, EventArgs e)
         {
-            FSelectedTask = ((TUcoSingleTask)sender);
-
             foreach (Control TaskGroups in this.Controls)
             {
                 foreach (Control TaskGroup in TaskGroups.Controls)
