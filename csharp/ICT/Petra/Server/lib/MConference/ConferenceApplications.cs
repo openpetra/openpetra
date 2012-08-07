@@ -56,6 +56,8 @@ namespace Ict.Petra.Server.MConference.Applications
     /// </summary>
     public class TApplicationManagement
     {
+        private static Int32 MINIMUM_OFFICES_TO_BECOME_ORGANIZER = 3;
+
         /// <summary>
         /// use the permissions of the user to get all offices that this user has permissions for
         /// </summary>
@@ -93,6 +95,18 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
             }
 
+            // the organizer has access to all attendees
+            if (AllowedRegistrationOffices.Count > MINIMUM_OFFICES_TO_BECOME_ORGANIZER)
+            {
+                AllowedRegistrationOffices = new List <long>();
+
+                foreach (DataRow officeRow in offices.Rows)
+                {
+                    Int64 RegistrationOffice = Convert.ToInt64(officeRow[0]);
+                    AllowedRegistrationOffices.Add(RegistrationOffice);
+                }
+            }
+
             return AllowedRegistrationOffices;
         }
 
@@ -117,7 +131,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
             }
 
-            return AllowedRegistrationOffices.Count > 3;
+            return AllowedRegistrationOffices.Count > MINIMUM_OFFICES_TO_BECOME_ORGANIZER;
         }
 
         /// <summary>
@@ -288,6 +302,33 @@ namespace Ict.Petra.Server.MConference.Applications
             }
         }
 
+        /// <summary>
+        /// load one specific application from the database
+        /// </summary>
+        public static ConferenceApplicationTDS LoadApplicationFromDB(
+            string AEventCode,
+            Int64 APartnerKey)
+        {
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            try
+            {
+                ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+
+                LoadApplicationsFromDB(ref MainDS, AEventCode, new Nullable <long>(), null, APartnerKey, transaction);
+
+                return MainDS;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+        }
+
         private static bool LoadApplicationsFromDB(
             ref ConferenceApplicationTDS AMainDS,
             string AEventCode,
@@ -387,6 +428,10 @@ namespace Ict.Petra.Server.MConference.Applications
 
             AMainDS.Merge(MainDS);
 
+            AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
+                                                              PDataLabelValuePartnerTable.GetPartnerKeyDBName();
+            AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
+
             return true;
         }
 
@@ -414,10 +459,6 @@ namespace Ict.Petra.Server.MConference.Applications
                 AEventCode, ARegisteringOffice,
                 ARole, new Nullable <Int64>(),
                 ATransaction);
-
-            AMainDS.PDataLabelValuePartner.DefaultView.Sort = PDataLabelValuePartnerTable.GetDataLabelKeyDBName() + "," +
-                                                              PDataLabelValuePartnerTable.GetPartnerKeyDBName();
-            AMainDS.PDataLabel.DefaultView.Sort = PDataLabelTable.GetTextDBName();
 
             DataView PersonView = AMainDS.PPerson.DefaultView;
 
@@ -466,19 +507,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 // only allow the medical team to read and write
                 if (UserInfo.GUserInfo.IsInModule("MEDICAL"))
                 {
-                    Int32 IndexLabelMedical = AMainDS.PDataLabel.DefaultView.Find("MedicalNotes");
-
-                    if (IndexLabelMedical != -1)
-                    {
-                        Int32 MedicalLabelID = ((PDataLabelRow)AMainDS.PDataLabel.DefaultView[IndexLabelMedical].Row).Key;
-
-                        int IndexLabel = AMainDS.PDataLabelValuePartner.DefaultView.Find(new object[] { MedicalLabelID, newRow.PartnerKey });
-
-                        if (IndexLabel != -1)
-                        {
-                            newRow.MedicalNotes = ((PDataLabelValuePartnerRow)AMainDS.PDataLabelValuePartner.DefaultView[IndexLabel].Row).ValueChar;
-                        }
-                    }
+                    newRow.MedicalNotes = TMedicalLogs.GetMedicalLogs(AMainDS, newRow.PartnerKey);
                 }
 
                 Int32 IndexLabelRebuke = AMainDS.PDataLabel.DefaultView.Find("Rebukes");
@@ -580,7 +609,8 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <returns></returns>
         public static PPartnerTable GetRegistrationOffices()
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             PPartnerTable result = new PPartnerTable();
 
@@ -618,7 +648,10 @@ namespace Ict.Petra.Server.MConference.Applications
             }
             finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             result.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName();
@@ -815,8 +848,11 @@ namespace Ict.Petra.Server.MConference.Applications
 
         private static void InsertDataIntoConferenceApplicationTDS(ConferenceApplicationTDSApplicationGridRow AChangedRow,
             ref ConferenceApplicationTDS AMainDS,
-            string AEventCode, TDBTransaction ATransaction)
+            string AEventCode, TDBTransaction ATransaction,
+            out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = new TVerificationResultCollection();
+
             if (AChangedRow.RowState == DataRowState.Modified)
             {
                 if (ATransaction != null)
@@ -933,6 +969,19 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
                     else if (AChangedRow.GenApplicationStatus == "I")
                     {
+                        if (GeneralApplication.GenApplicationStatus != "H")
+                        {
+                            AVerificationResult.Add(new TVerificationResult("Saving application",
+                                    "Cannot set Application Status from " +
+                                    GeneralApplication.GenApplicationStatus +
+                                    "to Ignored, please use status Cancelled",
+                                    "Application status problem",
+                                    TResultSeverity.Resv_Critical, new Guid()));
+                            throw new Exception("Cannot set Application Status from " +
+                                GeneralApplication.GenApplicationStatus +
+                                "to Ignored, please use status Cancelled");
+                        }
+
                         // drop all other applications of this person, that are on hold.
                         // data has been loaded above already.
                         DataView DuplicateView = new DataView(AMainDS.PmGeneralApplication);
@@ -987,6 +1036,10 @@ namespace Ict.Petra.Server.MConference.Applications
                             AMainDS.PDataLabelValuePartner.Rows.Add(newLabel);
                         }
                     }
+                    else
+                    {
+                        TLogging.Log("we are missing data label for MedicalNotes");
+                    }
                 }
 
                 // only allow the boundaries team to modify rebukes
@@ -1014,6 +1067,10 @@ namespace Ict.Petra.Server.MConference.Applications
                             AMainDS.PDataLabelValuePartner.Rows.Add(newLabel);
                         }
                     }
+                    else
+                    {
+                        TLogging.Log("we are missing data label for Boundaries");
+                    }
                 }
             }
         }
@@ -1025,11 +1082,13 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <returns></returns>
         public static TSubmitChangesResult SaveApplications(ref ConferenceApplicationTDS AMainDS)
         {
+            TVerificationResultCollection VerificationResult;
+
             try
             {
                 foreach (ConferenceApplicationTDSApplicationGridRow row in AMainDS.ApplicationGrid.Rows)
                 {
-                    InsertDataIntoConferenceApplicationTDS(row, ref AMainDS, string.Empty, null);
+                    InsertDataIntoConferenceApplicationTDS(row, ref AMainDS, string.Empty, null, out VerificationResult);
                 }
             }
             catch (Exception e)
@@ -1040,7 +1099,6 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
 
-            TVerificationResultCollection VerificationResult;
             TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(AMainDS, out VerificationResult);
 
             // this takes 6 seconds!
@@ -1053,15 +1111,19 @@ namespace Ict.Petra.Server.MConference.Applications
         /// store the selected application to the database
         /// </summary>
         /// <returns></returns>
-        public static TSubmitChangesResult SaveApplication(string AEventCode, ConferenceApplicationTDSApplicationGridRow ARow)
+        public static TSubmitChangesResult SaveApplication(string AEventCode,
+            ConferenceApplicationTDSApplicationGridRow ARow,
+            out TVerificationResultCollection AVerificationResult)
         {
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            AVerificationResult = new TVerificationResultCollection();
+
             try
             {
-                InsertDataIntoConferenceApplicationTDS(ARow, ref MainDS, AEventCode, Transaction);
+                InsertDataIntoConferenceApplicationTDS(ARow, ref MainDS, AEventCode, Transaction, out AVerificationResult);
             }
             catch (Exception e)
             {
@@ -1074,8 +1136,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
 
             ARow.AcceptChanges();
 

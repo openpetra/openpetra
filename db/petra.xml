@@ -15605,7 +15605,7 @@
                 columnlabel="Language Level"
                 help="Numeric representation of level of language."
                 notnull="yes"
-                initial="0"/>
+                initial="99"/>
     <tablefield name="pm_comment_c"
                 type="varchar"
                 descr=""

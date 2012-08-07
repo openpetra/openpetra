@@ -206,6 +206,15 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public const String PETRA_DISPLAYMODULEBACKGRDPICTURE = "DisplayPicture";
 
+        /// <summary>todoComment</summary>
+        public const String MAINMENU_VIEWOPTIONS_VIEWTASKS = "viewoptions_viewtasks";
+
+        /// <summary>todoComment</summary>
+        public const String MAINMENU_VIEWOPTIONS_TILESIZE = "viewoptions_tilesize";
+
+        /// <summary>todoComment</summary>
+        public const String MAINMENU_VIEWOPTIONS_SINGLECLICKEXECUTION = "viewoptions_singleclickexecution";
+
         /*------------------------------------------------------------------------------
          *  Partner User Default Constants
          * -------------------------------------------------------------------------------*/
