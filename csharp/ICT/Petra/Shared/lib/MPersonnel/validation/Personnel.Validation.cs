@@ -756,29 +756,16 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
-            // 'Believer since year' must have a sensible value
+            // 'Believer since year' must have a sensible value (must not be below 1850 and must not lie in the future)
             ValidationColumn = ARow.Table.Columns[PmPersonalDataTable.ColumnBelieverSinceYearId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = null;
-
-                if (!ARow.IsBelieverSinceYearNull()
-                    && (ARow.BelieverSinceYear > DateTime.Today.Year))
-                {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_FUTUREDATE_ERROR,
-                                new string[] { ValidationControlsData.ValidationControlLabel })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-                else if (!ARow.IsBelieverSinceYearNull()
-                         && (ARow.BelieverSinceYear < 1850))
-                {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_UNREALISTICDATE_ERROR,
-                                new string[] { ValidationControlsData.ValidationControlLabel })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
-                }
+                VerificationResult = TDateChecks.IsDateBetweenDates(
+                    new DateTime(ARow.BelieverSinceYear, 12, 31), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
+                    ValidationControlsData.ValidationControlLabel,
+                    TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);

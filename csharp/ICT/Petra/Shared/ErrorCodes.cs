@@ -101,8 +101,8 @@ namespace Ict.Petra.Shared
         public const String ERR_CONCURRENTCHANGES = "GEN.00006E";
 
         /// <summary>Value must not be future date (show error).</summary>
-        [ErrCodeAttribute("Value may not be future date.",
-             ErrorMessageText = "'{0}' may not be future date",
+        [ErrCodeAttribute("Value may not be a future date.",
+             ErrorMessageText = "'{0}' may not be a future date",
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_FUTUREDATE_ERROR = "GEN.00008V";
 
@@ -111,12 +111,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Values '{0}' and '{1}' must not be the same",
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUESIDENTICAL_ERROR = "GEN.00009V";
-
-        /// <summary>Date must have a sensible value (e.g. not too far in the past).</summary>
-        [ErrCodeAttribute("Date must have a sensible value.",
-             ErrorMessageText = "'{0}' is not a possible value in this case",
-             ErrorMessageTitle = "Invalid Data Entered")]
-        public const String ERR_UNREALISTICDATE_ERROR = "GEN.00010V";
+       
         #endregion
 
         #region Partner Module-specific error codes

@@ -143,6 +143,7 @@ namespace Ict.Common.Controls
 //TLogging.Log("Found TaskList '" + ATaskList.Name + "' - bringing it to front.");
                     ExistingTaskList.MaxTaskWidth = FMaxTaskWidth;
                     ExistingTaskList.TaskAppearance = FTaskAppearance;
+                    ExistingTaskList.SingleClickExecution = FSingleClickExecution;
                     ExistingTaskList.BringToFront();
                 }
                 else
@@ -151,6 +152,7 @@ namespace Ict.Common.Controls
                     this.Controls.Add(ATaskList);
                     ATaskList.MaxTaskWidth = FMaxTaskWidth;
                     ATaskList.TaskAppearance = FTaskAppearance;
+                    ATaskList.SingleClickExecution = FSingleClickExecution;
                     ATaskList.BringToFront();
 
                     FTaskLists.Add(ATaskList.Name, ATaskList);

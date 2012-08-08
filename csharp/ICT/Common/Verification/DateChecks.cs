@@ -30,6 +30,24 @@ using System.Windows.Forms;
 namespace Ict.Common.Verification
 {
     /// <summary>
+    /// Type of Date-between Checks.
+    /// </summary>
+    public enum TDateBetweenDatesCheckType
+    {
+        /// <summary>Unspecific check.</summary>
+        dbdctUnspecific,
+
+        /// <summary>Value must not be a future date.</summary>
+        dbdctNoFutureDate,
+
+        /// <summary>Value must not be a past date.</summary>
+        dbdctNoPastDate,
+
+        /// <summary>Value represents and unrealistic date in that circumstance (e.g. birth date below 1850).</summary>
+        dbdctUnrealisticDate
+    }
+
+    /// <summary>
     /// Class for date verifications that are needed both on Server and Client side.
     /// </summary>
     /// <remarks>None of the data verifications in here must access the database
@@ -47,6 +65,9 @@ namespace Ict.Common.Verification
         private static readonly string StrDateCannotBeEarlier = Catalog.GetString("{0} cannot be earlier than {1}.");
         private static readonly string StrDateCannotBeEarlierOrEqual = Catalog.GetString("{0} cannot be earlier than or equal to {1}.");
         private static readonly string StrMustBeDate = Catalog.GetString("{0} must be a date.");
+        private static readonly string StrDateNotInRange = Catalog.GetString(
+            "{0} is not allowed as it does not lie within the required date range. It must lie between {1} and {2}.");
+        private static readonly string StrDateNotSensible = "{0} is not a possible value in this case.";
 
         #endregion
 
@@ -264,6 +285,122 @@ namespace Ict.Common.Verification
 
         #endregion
 
+
+        #region IsDateBetweenDates
+
+        /// <summary>
+        /// Checks whether the date is within a specified date range. Null values are accepted.
+        /// </summary>
+        /// <remarks>This Method is capable of returning varying<see cref="TVerificationResult" /> objects! The objects
+        /// returned are determined by the values specified for <paramref name="ALowerRangeCheckType" /> and
+        ///  <paramref name="AUpperRangeCheckType" />!</remarks>
+        /// <param name="ADate">Date to check.</param>
+        /// <param name="ALowerDateRangeEnd">Lower end of the valid Date Range.</param>
+        /// <param name="AUpperDateRangeEnd">Upper end of the valid Date Range.</param>
+        /// <param name="ADescription">Name of the date value.</param>
+        /// <param name="ALowerRangeCheckType">Type of Date Check: lower end of the valid Date Range (defaults to <see cref="TDateBetweenDatesCheckType.dbdctUnspecific" />).</param>
+        /// <param name="AUpperRangeCheckType">Type of Date Check: upper end of the valid Date Range (defaults to <see cref="TDateBetweenDatesCheckType.dbdctUnspecific" />).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if the date <paramref name="ADate" /> is between the lower and the upper end of the Date Range specified
+        /// (lower and upper end dates are included), otherwise a verification result with a message that uses
+        /// <paramref name="ADescription" />.
+        /// </returns>
+        public static TVerificationResult IsDateBetweenDates(DateTime? ADate, DateTime? ALowerDateRangeEnd, DateTime? AUpperDateRangeEnd,
+            String ADescription,
+            TDateBetweenDatesCheckType ALowerRangeCheckType = TDateBetweenDatesCheckType.dbdctUnspecific,
+            TDateBetweenDatesCheckType AUpperRangeCheckType = TDateBetweenDatesCheckType.dbdctUnspecific,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
+            DateTime LowerDateRangeEndDate = TSaveConvert.ObjectToDate(ALowerDateRangeEnd);
+            DateTime UpperDateRangeEndDate = TSaveConvert.ObjectToDate(AUpperDateRangeEnd);
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if ((!ADate.HasValue)
+                || (!ALowerDateRangeEnd.HasValue)
+                || (!AUpperDateRangeEnd.HasValue))
+            {
+                return null;
+            }
+
+            // Check
+            if ((TheDate < LowerDateRangeEndDate)
+                || (TheDate > UpperDateRangeEndDate))
+            {
+                if ((ALowerRangeCheckType == TDateBetweenDatesCheckType.dbdctUnspecific)
+                    && (AUpperRangeCheckType == TDateBetweenDatesCheckType.dbdctUnspecific))
+                {
+                    ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate,
+                        UpperDateRangeEndDate,
+                        Description,
+                        AResultContext);
+                }
+                else if (TheDate < LowerDateRangeEndDate)
+                {
+                    if (ALowerRangeCheckType == TDateBetweenDatesCheckType.dbdctNoPastDate)
+                    {
+                        ReturnValue = new TVerificationResult(AResultContext,
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered +
+                                Environment.NewLine +
+                                StrDateMayNotBePastDate, new string[] { Description }));
+                    }
+                    else if (ALowerRangeCheckType == TDateBetweenDatesCheckType.dbdctUnrealisticDate)
+                    {
+                        ReturnValue = new TVerificationResult(AResultContext,
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_UNREALISTICDATE_ERROR, CommonResourcestrings.StrInvalidDateEntered +
+                                Environment.NewLine +
+                                StrDateNotSensible, new string[] { Description }));
+                    }
+                    else
+                    {
+                        ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate,
+                            UpperDateRangeEndDate,
+                            Description,
+                            AResultContext);
+                    }
+                }
+                else if (TheDate > UpperDateRangeEndDate)
+                {
+                    if (AUpperRangeCheckType == TDateBetweenDatesCheckType.dbdctNoFutureDate)
+                    {
+                        ReturnValue = new TVerificationResult(AResultContext,
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
+                                Environment.NewLine +
+                                StrDateMayNotBeFutureDate, new string[] { Description }));
+                    }
+                    else if (AUpperRangeCheckType == TDateBetweenDatesCheckType.dbdctUnrealisticDate)
+                    {
+                        ReturnValue = new TVerificationResult(AResultContext,
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_UNREALISTICDATE_ERROR, CommonResourcestrings.StrInvalidDateEntered +
+                                Environment.NewLine +
+                                StrDateNotSensible, new string[] { Description }));
+                    }
+                    else
+                    {
+                        ReturnValue = GetUnspecificDateRangeCheckVerificationResult(LowerDateRangeEndDate,
+                            UpperDateRangeEndDate,
+                            Description,
+                            AResultContext);
+                    }
+                }
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+            else
+            {
+                ReturnValue = null;
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
 
         #region FirstLesser...ThanSecondDate
 
@@ -527,6 +664,26 @@ namespace Ict.Common.Verification
             return new TVerificationResult(AResultContext,
                 ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
                     StrMustBeDate, new string[] { Description }));
+        }
+
+        /// <summary>
+        /// This is called in case a date range check fails, in order to generate a 'unspecific' (in this context!)
+        /// <see cref="TVerificationResult" />.
+        /// </summary>
+        /// <param name="ALowerDateRangeEnd">Lower end of the valid Date Range.</param>
+        /// <param name="AUpperDateRangeEnd">Upper end of the valid Date Range.</param>
+        /// <param name="ADescription">Name of the date value.</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <returns>A Verification Result with the error message.</returns>
+        private static TVerificationResult GetUnspecificDateRangeCheckVerificationResult(
+            DateTime? ALowerDateRangeEnd, DateTime? AUpperDateRangeEnd, String ADescription, object AResultContext)
+        {
+            return new TVerificationResult(AResultContext,
+                ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_DATENOTINDATERANGE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                    StrDateNotInRange,
+                    new string[] { ADescription,
+                                   StringHelper.DateToLocalizedString(ALowerDateRangeEnd.Value),
+                                   StringHelper.DateToLocalizedString(AUpperDateRangeEnd.Value) }));
         }
 
         #endregion
