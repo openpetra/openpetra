@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -485,7 +485,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 Thread.Sleep(500);
             }
 
-            ReturnValue = FReportingGenerator.Success;
+            ReturnValue = FReportingGenerator.GetSuccess();
 
             if (ReturnValue)
             {
@@ -524,15 +524,15 @@ namespace Ict.Petra.Client.MReporting.Logic
                     case TAsyncExecProgressState.Aeps_Finished:
                         this.Duration = DateTime.Now - startTime;
 
-                        if (FReportingGenerator.Success == true)
+                        if (FReportingGenerator.GetSuccess() == true)
                         {
-                            this.Parameters.LoadFromDataTable(FReportingGenerator.Parameter);
-                            this.Results.LoadFromDataTable(FReportingGenerator.Result);
+                            this.Parameters.LoadFromDataTable(FReportingGenerator.GetParameter());
+                            this.Results.LoadFromDataTable(FReportingGenerator.GetResult());
                             this.Results.SetMaxDisplayColumns(this.Parameters.Get("MaxDisplayColumns").ToInt());
                         }
                         else
                         {
-                            TLogging.Log(FReportingGenerator.ErrorMessage);
+                            TLogging.Log(FReportingGenerator.GetErrorMessage());
                         }
 
                         // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer

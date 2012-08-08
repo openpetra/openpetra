@@ -68,34 +68,18 @@ namespace Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors
             get;
         }
 
-        /// <summary>auto generated from Connector property (Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
-        DataTable Result
-        {
-            get;
-        }
-
-        /// <summary>auto generated from Connector property (Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
-        DataTable Parameter
-        {
-            get;
-        }
-
-        /// <summary>auto generated from Connector property (Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
-        Boolean Success
-        {
-            get;
-        }
-
-        /// <summary>auto generated from Connector property (Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
-        String ErrorMessage
-        {
-            get;
-        }
-
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
         void Start(System.Data.DataTable AParameters);
         /// <summary> auto generated from Connector method(Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
         void Cancel();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
+        DataTable GetResult();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
+        DataTable GetParameter();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
+        Boolean GetSuccess();
+        /// <summary> auto generated from Connector method(Ict.Petra.Server.MReporting.LogicConnectors.TReportGeneratorLogicConnector)</summary>
+        String GetErrorMessage();
     }
 
 }

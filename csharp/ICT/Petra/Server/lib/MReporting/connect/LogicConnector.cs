@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,7 +61,9 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
         {
             get
             {
-                return FAsyncExecProgress;
+                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAsynchronousExecutionProgress),
+                    FAsyncExecProgress);
             }
         }
 
@@ -153,45 +155,33 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
         /// <summary>
         /// get the result of the report calculation
         /// </summary>
-        public DataTable Result
+        public DataTable GetResult()
         {
-            get
-            {
-                return FResultList.ToDataTable(FParameterList);
-            }
+            return FResultList.ToDataTable(FParameterList);
         }
 
         /// <summary>
         /// get the environment variables after report calculation
         /// </summary>
-        public DataTable Parameter
+        public DataTable GetParameter()
         {
-            get
-            {
-                return FParameterList.ToDataTable();
-            }
+            return FParameterList.ToDataTable();
         }
 
         /// <summary>
         /// see if the report calculation finished successfully
         /// </summary>
-        public Boolean Success
+        public Boolean GetSuccess()
         {
-            get
-            {
-                return FSuccess;
-            }
+            return FSuccess;
         }
 
         /// <summary>
         /// error message that happened during report calculation
         /// </summary>
-        public String ErrorMessage
+        public String GetErrorMessage()
         {
-            get
-            {
-                return FErrorMessage;
-            }
+            return FErrorMessage;
         }
 
         /// <summary>

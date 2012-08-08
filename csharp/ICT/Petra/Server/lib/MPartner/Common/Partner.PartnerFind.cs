@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,13 +58,11 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         Thread FFindThread;
 
         /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
+        public TAsynchronousExecutionProgress AsyncExecProgress
         {
             get
             {
-                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(IAsynchronousExecutionProgress),
-                    FAsyncExecProgress);;
+                return FAsyncExecProgress;
             }
         }
 

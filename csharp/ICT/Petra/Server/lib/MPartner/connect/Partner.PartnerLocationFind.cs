@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timh
+//       timh, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,13 +59,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             get
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("TPartnerLocationSearchUIConnector: AsyncExecProgress reqeusted.");
-                }
-#endif
-                return FAsyncExecProgress;
+                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAsynchronousExecutionProgress),
+                    FAsyncExecProgress);
             }
         }
 

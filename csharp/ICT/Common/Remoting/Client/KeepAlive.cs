@@ -155,11 +155,7 @@ namespace Ict.Common.Remoting.Client
         /// <returns>void</returns>
         public static void UnRegister(MarshalByRefObject ARemotedObject)
         {
-            String ObjectName;
-            String ObjectHashCode;
-
-            ObjectName = "";
-            ObjectHashCode = "";
+            String ObjectHashCode = string.Empty;
 
             if (ARemotedObject != null)
             {
@@ -167,7 +163,6 @@ namespace Ict.Common.Remoting.Client
                 try
                 {
                     ObjectHashCode = ARemotedObject.GetHashCode().ToString();
-                    ObjectName = ARemotedObject.ToString();
                 }
                 catch (System.Runtime.Remoting.RemotingException)
                 {

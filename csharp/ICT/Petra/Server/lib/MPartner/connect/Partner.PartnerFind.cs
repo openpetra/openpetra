@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,7 +80,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             get
             {
-                return FPartnerFind.AsyncExecProgress;
+                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAsynchronousExecutionProgress),
+                    FPartnerFind.AsyncExecProgress);
             }
         }
 

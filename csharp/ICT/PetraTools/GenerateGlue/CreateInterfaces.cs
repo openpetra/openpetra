@@ -184,7 +184,12 @@ public class CreateInterfaces : AutoGenerationWriter
 
             foreach (PropertyDeclaration p in CSParser.GetProperties(t))
             {
-                TLogging.Log("Warning: We do not support properties in UIConnectors anymore: " + t.Name + "." + p.Name);
+                if (!p.GetRegion.Block.ToString().Contains("TCreateRemotableObject"))
+                {
+                    TLogging.Log("Warning: properties in UIConnectors must use the class TCreateRemotableObject: " +
+                        AServerNamespace + "." + t.Name + "." + p.Name);
+                }
+
                 bool AttributeNoRemoting = false;
 
                 foreach (AttributeSection attrSection in p.Attributes)
