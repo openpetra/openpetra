@@ -72,7 +72,7 @@ namespace Ict.Common.IO
 
                     using (ZipOutputStream ZipStream = new ZipOutputStream(ZippedStream))
                     {
-                        ZipStream.SetLevel(9);       // 0 - store only to 9 - means best compression
+                        ZipStream.SetLevel(5);       // 0 - store only to 9 - means best compression
                         if (AZipPassword != "")
                         {
                             ZipStream.Password = AZipPassword;
@@ -86,12 +86,13 @@ namespace Ict.Common.IO
                                 Int32 LastSlashPos = Math.Max(FileKnownAs.LastIndexOf("/"), FileKnownAs.LastIndexOf(@"\"));
                                 FileKnownAs = FileKnownAs.Substring(LastSlashPos + 1);
                             }
+                            FileStream fs = File.OpenRead(FileToBeZipped);
+
                             ZippedFile = new ZipEntry(FileKnownAs);
+                            ZippedFile.Size = fs.Length;
                             ZipStream.PutNextEntry(ZippedFile);
 
-                            using (FileStream fs = File.OpenRead(FileToBeZipped)) {
-                                StreamUtils.Copy(fs, ZipStream, buffer);
-                            }
+                            StreamUtils.Copy(fs, ZipStream, buffer);
 
 //MessageBox.Show("1:" + ZippedStream.Length.ToString());
                         }

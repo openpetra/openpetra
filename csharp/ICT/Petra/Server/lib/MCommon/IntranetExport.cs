@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         private static string FExportTrace;
         private static String FExportFilePath;
         private static List<String> FZipFileNames = new List<String>();
-        private const String FIntranetEmailRecipient = "tim.ingham@om.org";
+        private static String FIntranetEmailRecipient;
 
         private class PartnerDetails
         {
@@ -780,15 +780,16 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 MemoryStream ZippedStream = TFileHelper.Streams.Compression.DeflateFilesIntoMemoryStream(FZipFileNames.ToArray(), false, "");
                 TFileHelper.Streams.FileHandling.SaveStreamToFile(ZippedStream, FExportFilePath + "data.zip");
                 FExportTrace += "Files compressed to data.zip.";
+                FIntranetEmailRecipient = TAppSettingsManager.GetValue("IntranetServerEmail");
+
                 if (EncryptUsingPublicKey("data.zip", "data.zip.gpg"))
                 {
 
                     TSmtpSender SendMail = new TSmtpSender();
                     String SenderAddress = ReplyToEmail;
-                    String DestinationAddress = TAppSettingsManager.GetValue("IntranetServerEmail");
 
                     MailMessage msg = new MailMessage(SenderAddress,
-                        DestinationAddress,
+                        FIntranetEmailRecipient,
                         "Data from OpenPetra",
                         "Here is the latest data from my field.");
 
