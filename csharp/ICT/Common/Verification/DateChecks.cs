@@ -669,13 +669,11 @@ namespace Ict.Common.Verification
         /// <summary>
         /// This is called in case a date range check fails, in order to generate a 'unspecific' (in this context!)
         /// <see cref="TVerificationResult" />.
+        /// </summary>
         /// <param name="ALowerDateRangeEnd">Lower end of the valid Date Range.</param>
         /// <param name="AUpperDateRangeEnd">Upper end of the valid Date Range.</param>
         /// <param name="ADescription">Name of the date value.</param>
         /// <param name="AResultContext">Context of verification (can be null).</param>
-        /// <returns>Null if the date <paramref name="ADate" /> is between the lower and the upper end of the Date Range specified
-        /// (lower and upper end dates are included), otherwise a verification result with a message that uses
-        /// <paramref name="ADescription" />.
         /// <returns>A Verification Result with the error message.</returns>
         private static TVerificationResult GetUnspecificDateRangeCheckVerificationResult(
             DateTime? ALowerDateRangeEnd, DateTime? AUpperDateRangeEnd, String ADescription, object AResultContext)
