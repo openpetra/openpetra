@@ -126,11 +126,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator
     /// <summary>auto generated class </summary>
     public class TMCommon : TConfigurableMBRObject, IMCommonNamespace
     {
-        private TCacheableNamespaceRemote FCacheableSubNamespace;
-        private TUIConnectorsNamespaceRemote FUIConnectorsSubNamespace;
-        private TWebConnectorsNamespaceRemote FWebConnectorsSubNamespace;
-        private TDataReaderNamespaceRemote FDataReaderSubNamespace;
-
         /// <summary>Constructor</summary>
         public TMCommon()
         {
@@ -142,392 +137,45 @@ namespace Ict.Petra.Server.MCommon.Instantiator
             return null; // make sure that the TMCommon object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TCacheableNamespaceRemote: ICacheableNamespace
-        {
-            private ICacheableNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TCacheableNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ICacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ICacheableNamespace));
-            }
-
-            /// generated method from interface
-            public System.Data.DataTable GetCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
-                                                           System.String AHashCode,
-                                                           out System.Type AType)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,out AType);
-            }
-            /// generated method from interface
-            public void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.RefreshCacheableTable(ACacheableTable);
-            }
-            /// generated method from interface
-            public void RefreshCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
-                                              out System.Data.DataTable ADataTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.RefreshCacheableTable(ACacheableTable,out ADataTable);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableCommonTablesEnum ACacheableTable,
-                                                                          ref TTypedDataTable ASubmitTable,
-                                                                          out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,out AVerificationResult);
-            }
-        }
-
         /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
         public ICacheableNamespace Cacheable
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MCommon.Cacheable' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MCommon.Cacheable' sub-namespace
-                //
-
-                // accessing TCacheableNamespace the first time? > instantiate the object
-                if (FCacheableSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TCacheableNamespace");
-                    TCacheableNamespace ObjectToRemote = new TCacheableNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FCacheableSubNamespace = new TCacheableNamespaceRemote(ObjectURI);
-                }
-
-                return FCacheableSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TUIConnectorsNamespaceRemote: IUIConnectorsNamespace
-        {
-            private IUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IUIConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
-                                                                                              TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.OfficeSpecificDataLabels(APartnerKey,AOfficeSpecificDataLabelUse);
-            }
-            /// generated method from interface
-            public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
-                                                                                              TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
-                                                                                              ref OfficeSpecificDataLabelsTDS ADataSet,
-                                                                                              TDBTransaction AReadTransaction)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.OfficeSpecificDataLabels(APartnerKey,AOfficeSpecificDataLabelUse,ref ADataSet,AReadTransaction);
-            }
-            /// generated method from interface
-            public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
-                                                                                              Int32 AApplicationKey,
-                                                                                              Int64 ARegistrationOffice,
-                                                                                              TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.OfficeSpecificDataLabels(APartnerKey,AApplicationKey,ARegistrationOffice,AOfficeSpecificDataLabelUse);
-            }
-            /// generated method from interface
-            public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
-                                                                                              Int32 AApplicationKey,
-                                                                                              Int64 ARegistrationOffice,
-                                                                                              TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse,
-                                                                                              ref OfficeSpecificDataLabelsTDS ADataSet,
-                                                                                              TDBTransaction AReadTransaction)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.OfficeSpecificDataLabels(APartnerKey,AApplicationKey,ARegistrationOffice,AOfficeSpecificDataLabelUse,ref ADataSet,AReadTransaction);
-            }
-            /// generated method from interface
-            public IPartnerUIConnectorsFieldOfService FieldOfService(Int64 APartnerKey)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.FieldOfService(APartnerKey);
-            }
-            /// generated method from interface
-            public IPartnerUIConnectorsFieldOfService FieldOfService(Int64 APartnerKey,
-                                                                     ref FieldOfServiceTDS ADataSet)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.FieldOfService(APartnerKey,ref ADataSet);
+                return (ICacheableNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ICacheableNamespace),
+                        new TCacheableNamespace());
             }
         }
-
         /// <summary>The 'UIConnectors' subnamespace contains further subnamespaces.</summary>
         public IUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MCommon.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MCommon.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TUIConnectorsNamespace");
-                    TUIConnectorsNamespace ObjectToRemote = new TUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FUIConnectorsSubNamespace = new TUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TWebConnectorsNamespaceRemote: IWebConnectorsNamespace
-        {
-            private IWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public System.Boolean GetCurrentState(out System.String ACaption,
-                                                  out System.String AStatusMessage,
-                                                  out System.Int32 APercentageDone,
-                                                  out System.Boolean AJobFinished)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetCurrentState(out ACaption,out AStatusMessage,out APercentageDone,out AJobFinished);
-            }
-            /// generated method from interface
-            public System.Boolean CancelJob()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CancelJob();
-            }
-            /// generated method from interface
-            public Int64 GetNextSequence(TSequenceNames ASequence)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetNextSequence(ASequence);
+                return (IUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IUIConnectorsNamespace),
+                        new TUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'WebConnectors' subnamespace contains further subnamespaces.</summary>
         public IWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MCommon.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MCommon.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TWebConnectorsNamespace");
-                    TWebConnectorsNamespace ObjectToRemote = new TWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FWebConnectorsSubNamespace = new TWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FWebConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TDataReaderNamespaceRemote: IDataReaderNamespace
-        {
-            private IDataReaderNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TDataReaderNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IDataReaderNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IDataReaderNamespace));
-            }
-
-            /// generated method from interface
-            public System.Boolean GetData(System.String ATablename,
-                                          TSearchCriteria[] ASearchCriteria,
-                                          out Ict.Common.Data.TTypedDataTable AResultTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetData(ATablename,ASearchCriteria,out AResultTable);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveData(System.String ATablename,
-                                                 ref TTypedDataTable ASubmitTable,
-                                                 out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveData(ATablename,ref ASubmitTable,out AVerificationResult);
+                return (IWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IWebConnectorsNamespace),
+                        new TWebConnectorsNamespace());
             }
         }
-
         /// <summary>The 'DataReader' subnamespace contains further subnamespaces.</summary>
         public IDataReaderNamespace DataReader
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MCommon.DataReader' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MCommon.DataReader' sub-namespace
-                //
-
-                // accessing TDataReaderNamespace the first time? > instantiate the object
-                if (FDataReaderSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TDataReaderNamespace");
-                    TDataReaderNamespace ObjectToRemote = new TDataReaderNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FDataReaderSubNamespace = new TDataReaderNamespaceRemote(ObjectURI);
-                }
-
-                return FDataReaderSubNamespace;
+                return (IDataReaderNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IDataReaderNamespace),
+                        new TDataReaderNamespace());
             }
-
         }
     }
 }
@@ -540,7 +188,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator.Cacheable
     /// <summary>auto generated class </summary>
     public class TCacheableNamespace : TConfigurableMBRObject, ICacheableNamespace
     {
-
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
@@ -650,7 +297,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
     /// <summary>auto generated class </summary>
     public class TUIConnectorsNamespace : TConfigurableMBRObject, IUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TUIConnectorsNamespace()
         {
@@ -666,7 +312,9 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
         public IDataElementsUIConnectorsOfficeSpecificDataLabels OfficeSpecificDataLabels(Int64 APartnerKey,
                                                                                           TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
-            return new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
+            return (IDataElementsUIConnectorsOfficeSpecificDataLabels) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IDataElementsUIConnectorsOfficeSpecificDataLabels),
+                    new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse));
         }
 
         /// generated method from interface
@@ -687,7 +335,9 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
                                                                                           Int64 ARegistrationOffice,
                                                                                           TOfficeSpecificDataLabelUseEnum AOfficeSpecificDataLabelUse)
         {
-            return new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AApplicationKey, ARegistrationOffice, AOfficeSpecificDataLabelUse);
+            return (IDataElementsUIConnectorsOfficeSpecificDataLabels) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IDataElementsUIConnectorsOfficeSpecificDataLabels),
+                    new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AApplicationKey, ARegistrationOffice, AOfficeSpecificDataLabelUse));
         }
 
         /// generated method from interface
@@ -710,7 +360,9 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
         /// generated method from interface
         public IPartnerUIConnectorsFieldOfService FieldOfService(Int64 APartnerKey)
         {
-            return new TFieldOfServiceUIConnector(APartnerKey);
+            return (IPartnerUIConnectorsFieldOfService) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IPartnerUIConnectorsFieldOfService),
+                    new TFieldOfServiceUIConnector(APartnerKey));
         }
 
         /// generated method from interface
@@ -733,7 +385,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
     /// <summary>auto generated class </summary>
     public class TWebConnectorsNamespace : TConfigurableMBRObject, IWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TWebConnectorsNamespace()
         {
@@ -779,7 +430,6 @@ namespace Ict.Petra.Server.MCommon.Instantiator.DataReader
     /// <summary>auto generated class </summary>
     public class TDataReaderNamespace : TConfigurableMBRObject, IDataReaderNamespace
     {
-
         /// <summary>Constructor</summary>
         public TDataReaderNamespace()
         {

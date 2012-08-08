@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -132,7 +132,14 @@ namespace Ict.Common.Remoting.Client
         /// <param name="ARemotedObject"></param>
         public static void Register(IInterface ARemotedObject)
         {
-            Register((MarshalByRefObject)ARemotedObject);
+            if (ARemotedObject is MarshalByRefObject)
+            {
+                Register((MarshalByRefObject)ARemotedObject);
+            }
+            else
+            {
+                TLogging.Log("KeepAlive Register: " + ARemotedObject.GetType().ToString() + " is not a MarshalByRefObject");
+            }
         }
 
         /// <summary>

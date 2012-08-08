@@ -137,28 +137,31 @@ class CreateInstantiators : AutoGenerationWriter
         {
             // simple: no need to call GetData
 
-            String createObject = "return new T" + m.Name + ATypeConnector + "(";
+            ProcessTemplate snippet = ATemplate.GetSnippet("GETREMOTEABLEUICONNECTOROBJECT");
+            snippet.SetCodelet("UICONNECTORCLASS", m.Name + ATypeConnector);
+            snippet.SetCodelet("INTERFACENAME", CreateInterfaces.TypeToString(m.TypeReference, ""));
+
+            String parameters = string.Empty;
             firstParameter = true;
 
             foreach (ParameterDeclarationExpression p in m.Parameters)
             {
                 if (!firstParameter)
                 {
-                    createObject += ", ";
+                    parameters += ", ";
                 }
 
                 firstParameter = false;
-                createObject += p.ParameterName;
+                parameters += p.ParameterName;
             }
 
-            createObject += ");";
+            snippet.SetCodelet("PARAMETERS", parameters);
 
-            ProcessTemplate snippet = new ProcessTemplate();
-            snippet.FTemplateCode = createObject;
             return snippet;
         }
         else
         {
+            TLogging.Log("TODO: uiconnector with ref or out parameter: " + m.Name + ATypeConnector);
             ProcessTemplate snippet = ATemplate.GetSnippet("CALLPROCEDUREWITHGETDATA");
 
             // the first parameters are for the constructor
@@ -208,7 +211,7 @@ class CreateInstantiators : AutoGenerationWriter
                 }
             }
 
-            getData += ");";
+            getData += ");"; // test2
             snippet.SetCodelet("GETDATA", getData);
             return snippet;
         }
@@ -393,7 +396,8 @@ class CreateInstantiators : AutoGenerationWriter
             string propertyForwarder = "/// property forwarder" + Environment.NewLine;
             propertyForwarder += "public " + p.TypeReference.ToString() + " " + p.Name + Environment.NewLine;
             propertyForwarder += "{" + Environment.NewLine;
-            propertyForwarder += "    get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject." + p.Name + "; }" + Environment.NewLine;
+            propertyForwarder += "    get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject." + p.Name + "; }" +
+                                 Environment.NewLine;
             propertyForwarder += "}" + Environment.NewLine;
 
             targetSnippet.AddToCodelet("CALLFORWARDINGMETHODS", propertyForwarder);
@@ -526,25 +530,6 @@ class CreateInstantiators : AutoGenerationWriter
         }
 
         remotableClassSnippet.SetCodelet("LOCALCLASSNAME", LocalClassname);
-
-        remotableClassSnippet.SetCodelet("SUBNAMESPACEDEFINITIONS", "");
-
-        foreach (TNamespace sn in children)
-        {
-            ProcessTemplate snippetDefinition = ATemplate.GetSnippet("SUBNAMESPACEDEFINITION");
-
-            if (HighestLevel)
-            {
-                snippetDefinition.SetCodelet("NAMESPACENAME", sn.Name);
-            }
-            else
-            {
-                snippetDefinition.SetCodelet("NAMESPACENAME", Namespace + sn.Name);
-            }
-
-            remotableClassSnippet.InsertSnippet("SUBNAMESPACEDEFINITIONS",
-                snippetDefinition);
-        }
 
         if (children.Count == 0)
         {

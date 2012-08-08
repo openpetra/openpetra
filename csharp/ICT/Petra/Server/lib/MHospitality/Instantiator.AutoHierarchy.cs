@@ -109,8 +109,6 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
     /// <summary>auto generated class </summary>
     public class TMHospitality : TConfigurableMBRObject, IMHospitalityNamespace
     {
-        private TUIConnectorsNamespaceRemote FUIConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TMHospitality()
         {
@@ -122,58 +120,15 @@ namespace Ict.Petra.Server.MHospitality.Instantiator
             return null; // make sure that the TMHospitality object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TUIConnectorsNamespaceRemote: IUIConnectorsNamespace
-        {
-            private IUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'UIConnectors' subnamespace contains further subnamespaces.</summary>
         public IUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MHospitality.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MHospitality.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TUIConnectorsNamespace");
-                    TUIConnectorsNamespace ObjectToRemote = new TUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FUIConnectorsSubNamespace = new TUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FUIConnectorsSubNamespace;
+                return (IUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IUIConnectorsNamespace),
+                        new TUIConnectorsNamespace());
             }
-
         }
     }
 }
@@ -186,7 +141,6 @@ namespace Ict.Petra.Server.MHospitality.Instantiator.UIConnectors
     /// <summary>auto generated class </summary>
     public class TUIConnectorsNamespace : TConfigurableMBRObject, IUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TUIConnectorsNamespace()
         {

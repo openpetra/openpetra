@@ -94,8 +94,6 @@ public class {#LOCALCLASSNAME} : TConfigurableMBRObject, I{#NAMESPACE}Namespace
 public class {#LOCALCLASSNAME} : I{#NAMESPACE}Namespace
 {#ENDIFN HIGHESTLEVEL}
 {
-    {#SUBNAMESPACEDEFINITIONS}
-
     /// <summary>Constructor</summary>
     public {#LOCALCLASSNAME}()
     {
@@ -112,63 +110,16 @@ public class {#LOCALCLASSNAME} : I{#NAMESPACE}Namespace
     {#SUBNAMESPACESREMOTABLECLASS}
 }
 
-{##SUBNAMESPACEDEFINITION}
-private T{#NAMESPACENAME}NamespaceRemote F{#NAMESPACENAME}SubNamespace;
-
 {##SUBNAMESPACE}
-/// <summary>serializable, which means that this object is executed on the client side</summary>
-[Serializable]
-public class T{#NAMESPACENAME}NamespaceRemote: I{#NAMESPACENAME}Namespace
-{
-    private I{#NAMESPACENAME}Namespace RemoteObject = null;
-    private string FObjectURI;
-
-    /// <summary>constructor. get remote object</summary>
-    public T{#NAMESPACENAME}NamespaceRemote(string AObjectURI)
-    {
-        FObjectURI = AObjectURI;
-    }
-
-    private void InitRemoteObject()
-    {
-        RemoteObject = (I{#NAMESPACENAME}Namespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(I{#NAMESPACENAME}Namespace));
-    }
-    
-    {#CALLFORWARDINGMETHODS}
-}
-
 /// <summary>The '{#NAMESPACENAME}' subnamespace contains further subnamespaces.</summary>
 public I{#NAMESPACENAME}Namespace {#OBJECTNAME}
 {
     get
     {
-        //
-        // Creates or passes a reference to an instantiator of sub-namespaces that
-        // reside in the '{#NAMESPACE}.{#OBJECTNAME}' sub-namespace.
-        // A call to this function is done everytime a Client uses an object of this
-        // sub-namespace - this is fully transparent to the Client.
-        //
-        // @return A reference to an instantiator of sub-namespaces that reside in
-        //         the '{#NAMESPACE}.{#OBJECTNAME}' sub-namespace
-        //
-
-        // accessing T{#OBJECTNAME}Namespace the first time? > instantiate the object
-        if (F{#NAMESPACENAME}SubNamespace == null)
-        {
-            // need to calculate the URI for this object and pass it to the new namespace object
-            string ObjectURI = TConfigurableMBRObject.BuildRandomURI("T{#NAMESPACENAME}Namespace");
-            T{#NAMESPACENAME}Namespace ObjectToRemote = new T{#NAMESPACENAME}Namespace();
-
-            // we need to add the service in the main domain
-            DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-            
-            F{#NAMESPACENAME}SubNamespace = new T{#NAMESPACENAME}NamespaceRemote(ObjectURI);
-        }
-
-        return F{#NAMESPACENAME}SubNamespace;
+        return (I{#NAMESPACENAME}Namespace) TCreateRemotableObject.CreateRemotableObject(
+                typeof(I{#NAMESPACENAME}Namespace), 
+                new T{#NAMESPACENAME}Namespace());
     }
-
 }
 
 {##NAMESPACE}
@@ -219,3 +170,8 @@ TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPA
 {#CALLPROCEDUREINTERNAL}
 {#GETDATA}
 return ReturnValue;
+
+{##GETREMOTEABLEUICONNECTOROBJECT}
+return ({#INTERFACENAME}) TCreateRemotableObject.CreateRemotableObject(
+        typeof({#INTERFACENAME}), 
+        new T{#UICONNECTORCLASS}({#PARAMETERS}));

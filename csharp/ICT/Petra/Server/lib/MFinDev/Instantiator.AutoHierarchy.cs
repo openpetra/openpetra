@@ -106,7 +106,6 @@ namespace Ict.Petra.Server.MFinDev.Instantiator
     /// <summary>auto generated class </summary>
     public class TMFinDev : TConfigurableMBRObject, IMFinDevNamespace
     {
-
         /// <summary>Constructor</summary>
         public TMFinDev()
         {

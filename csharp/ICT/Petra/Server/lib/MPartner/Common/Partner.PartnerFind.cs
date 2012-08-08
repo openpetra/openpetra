@@ -62,13 +62,9 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         {
             get
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress requested.");
-                }
-#endif
-                return FAsyncExecProgress;
+                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAsynchronousExecutionProgress),
+                    FAsyncExecProgress);;
             }
         }
 

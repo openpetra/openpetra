@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -835,7 +836,7 @@ namespace Ict.Petra.Server.MCommon
     /// as well as on the Server side.
     ///
     /// </summary>
-    public class TAsynchronousExecutionProgress : MarshalByRefObject, IAsynchronousExecutionProgress
+    public class TAsynchronousExecutionProgress : TConfigurableMBRObject, IAsynchronousExecutionProgress
     {
         /// <summary>Property value.</summary>
         private String FProgressInformation;

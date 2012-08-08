@@ -184,6 +184,7 @@ public class CreateInterfaces : AutoGenerationWriter
 
             foreach (PropertyDeclaration p in CSParser.GetProperties(t))
             {
+                TLogging.Log("Warning: We do not support properties in UIConnectors anymore: " + t.Name + "." + p.Name);
                 bool AttributeNoRemoting = false;
 
                 foreach (AttributeSection attrSection in p.Attributes)

@@ -167,14 +167,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
     /// <summary>auto generated class </summary>
     public class TMSysMan : TConfigurableMBRObject, IMSysManNamespace
     {
-        private TApplicationNamespaceRemote FApplicationSubNamespace;
-        private TMaintenanceNamespaceRemote FMaintenanceSubNamespace;
-        private TTableMaintenanceNamespaceRemote FTableMaintenanceSubNamespace;
-        private TImportExportNamespaceRemote FImportExportSubNamespace;
-        private TPrintManagementNamespaceRemote FPrintManagementSubNamespace;
-        private TSecurityNamespaceRemote FSecuritySubNamespace;
-        private TCacheableNamespaceRemote FCacheableSubNamespace;
-
         /// <summary>Constructor</summary>
         public TMSysMan()
         {
@@ -186,476 +178,75 @@ namespace Ict.Petra.Server.MSysMan.Instantiator
             return null; // make sure that the TMSysMan object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TApplicationNamespaceRemote: IApplicationNamespace
-        {
-            private IApplicationNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TApplicationNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IApplicationNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IApplicationNamespace));
-            }
-
-            /// property forwarder
-            public IApplicationUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
-            }
-            /// property forwarder
-            public IApplicationServerLookupsNamespace ServerLookups
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.ServerLookups; }
-            }
-        }
-
         /// <summary>The 'Application' subnamespace contains further subnamespaces.</summary>
         public IApplicationNamespace Application
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.Application' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.Application' sub-namespace
-                //
-
-                // accessing TApplicationNamespace the first time? > instantiate the object
-                if (FApplicationSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TApplicationNamespace");
-                    TApplicationNamespace ObjectToRemote = new TApplicationNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FApplicationSubNamespace = new TApplicationNamespaceRemote(ObjectURI);
-                }
-
-                return FApplicationSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TMaintenanceNamespaceRemote: IMaintenanceNamespace
-        {
-            private IMaintenanceNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TMaintenanceNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IMaintenanceNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMaintenanceNamespace));
-            }
-
-            /// property forwarder
-            public IMaintenanceSystemDefaultsNamespace SystemDefaults
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.SystemDefaults; }
-            }
-            /// property forwarder
-            public IMaintenanceUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
-            }
-            /// property forwarder
-            public IMaintenanceUserDefaultsNamespace UserDefaults
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UserDefaults; }
-            }
-            /// property forwarder
-            public IMaintenanceWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (IApplicationNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IApplicationNamespace),
+                        new TApplicationNamespace());
             }
         }
-
         /// <summary>The 'Maintenance' subnamespace contains further subnamespaces.</summary>
         public IMaintenanceNamespace Maintenance
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.Maintenance' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.Maintenance' sub-namespace
-                //
-
-                // accessing TMaintenanceNamespace the first time? > instantiate the object
-                if (FMaintenanceSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMaintenanceNamespace");
-                    TMaintenanceNamespace ObjectToRemote = new TMaintenanceNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FMaintenanceSubNamespace = new TMaintenanceNamespaceRemote(ObjectURI);
-                }
-
-                return FMaintenanceSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TTableMaintenanceNamespaceRemote: ITableMaintenanceNamespace
-        {
-            private ITableMaintenanceNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TTableMaintenanceNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ITableMaintenanceNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ITableMaintenanceNamespace));
-            }
-
-            /// property forwarder
-            public ITableMaintenanceUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
+                return (IMaintenanceNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IMaintenanceNamespace),
+                        new TMaintenanceNamespace());
             }
         }
-
         /// <summary>The 'TableMaintenance' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceNamespace TableMaintenance
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.TableMaintenance' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.TableMaintenance' sub-namespace
-                //
-
-                // accessing TTableMaintenanceNamespace the first time? > instantiate the object
-                if (FTableMaintenanceSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TTableMaintenanceNamespace");
-                    TTableMaintenanceNamespace ObjectToRemote = new TTableMaintenanceNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FTableMaintenanceSubNamespace = new TTableMaintenanceNamespaceRemote(ObjectURI);
-                }
-
-                return FTableMaintenanceSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TImportExportNamespaceRemote: IImportExportNamespace
-        {
-            private IImportExportNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TImportExportNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IImportExportNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IImportExportNamespace));
-            }
-
-            /// property forwarder
-            public IImportExportWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (ITableMaintenanceNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ITableMaintenanceNamespace),
+                        new TTableMaintenanceNamespace());
             }
         }
-
         /// <summary>The 'ImportExport' subnamespace contains further subnamespaces.</summary>
         public IImportExportNamespace ImportExport
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.ImportExport' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.ImportExport' sub-namespace
-                //
-
-                // accessing TImportExportNamespace the first time? > instantiate the object
-                if (FImportExportSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TImportExportNamespace");
-                    TImportExportNamespace ObjectToRemote = new TImportExportNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FImportExportSubNamespace = new TImportExportNamespaceRemote(ObjectURI);
-                }
-
-                return FImportExportSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TPrintManagementNamespaceRemote: IPrintManagementNamespace
-        {
-            private IPrintManagementNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TPrintManagementNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IPrintManagementNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPrintManagementNamespace));
-            }
-
-            /// property forwarder
-            public IPrintManagementUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
+                return (IImportExportNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IImportExportNamespace),
+                        new TImportExportNamespace());
             }
         }
-
         /// <summary>The 'PrintManagement' subnamespace contains further subnamespaces.</summary>
         public IPrintManagementNamespace PrintManagement
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.PrintManagement' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.PrintManagement' sub-namespace
-                //
-
-                // accessing TPrintManagementNamespace the first time? > instantiate the object
-                if (FPrintManagementSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPrintManagementNamespace");
-                    TPrintManagementNamespace ObjectToRemote = new TPrintManagementNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FPrintManagementSubNamespace = new TPrintManagementNamespaceRemote(ObjectURI);
-                }
-
-                return FPrintManagementSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TSecurityNamespaceRemote: ISecurityNamespace
-        {
-            private ISecurityNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TSecurityNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ISecurityNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISecurityNamespace));
-            }
-
-            /// property forwarder
-            public ISecurityUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
-            }
-            /// property forwarder
-            public ISecurityUserManagerNamespace UserManager
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UserManager; }
+                return (IPrintManagementNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IPrintManagementNamespace),
+                        new TPrintManagementNamespace());
             }
         }
-
         /// <summary>The 'Security' subnamespace contains further subnamespaces.</summary>
         public ISecurityNamespace Security
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.Security' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.Security' sub-namespace
-                //
-
-                // accessing TSecurityNamespace the first time? > instantiate the object
-                if (FSecuritySubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSecurityNamespace");
-                    TSecurityNamespace ObjectToRemote = new TSecurityNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FSecuritySubNamespace = new TSecurityNamespaceRemote(ObjectURI);
-                }
-
-                return FSecuritySubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TCacheableNamespaceRemote: ICacheableNamespace
-        {
-            private ICacheableNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TCacheableNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ICacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ICacheableNamespace));
-            }
-
-            /// generated method from interface
-            public System.Data.DataTable GetCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
-                                                           System.String AHashCode,
-                                                           out System.Type AType)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,out AType);
-            }
-            /// generated method from interface
-            public void RefreshCacheableTable(TCacheableSysManTablesEnum ACacheableTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.RefreshCacheableTable(ACacheableTable);
-            }
-            /// generated method from interface
-            public void RefreshCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
-                                              out System.Data.DataTable ADataTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.RefreshCacheableTable(ACacheableTable,out ADataTable);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableSysManTablesEnum ACacheableTable,
-                                                                          ref TTypedDataTable ASubmitTable,
-                                                                          out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,out AVerificationResult);
+                return (ISecurityNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ISecurityNamespace),
+                        new TSecurityNamespace());
             }
         }
-
         /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
         public ICacheableNamespace Cacheable
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MSysMan.Cacheable' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MSysMan.Cacheable' sub-namespace
-                //
-
-                // accessing TCacheableNamespace the first time? > instantiate the object
-                if (FCacheableSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TCacheableNamespace");
-                    TCacheableNamespace ObjectToRemote = new TCacheableNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FCacheableSubNamespace = new TCacheableNamespaceRemote(ObjectURI);
-                }
-
-                return FCacheableSubNamespace;
+                return (ICacheableNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ICacheableNamespace),
+                        new TCacheableNamespace());
             }
-
         }
     }
 }
@@ -668,9 +259,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
     /// <summary>auto generated class </summary>
     public class TApplicationNamespace : TConfigurableMBRObject, IApplicationNamespace
     {
-        private TApplicationUIConnectorsNamespaceRemote FApplicationUIConnectorsSubNamespace;
-        private TApplicationServerLookupsNamespaceRemote FApplicationServerLookupsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TApplicationNamespace()
         {
@@ -682,131 +270,25 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application
             return null; // make sure that the TApplicationNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TApplicationUIConnectorsNamespaceRemote: IApplicationUIConnectorsNamespace
-        {
-            private IApplicationUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TApplicationUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IApplicationUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IApplicationUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'ApplicationUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IApplicationUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Application.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Application.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FApplicationUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TApplicationUIConnectorsNamespace");
-                    TApplicationUIConnectorsNamespace ObjectToRemote = new TApplicationUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FApplicationUIConnectorsSubNamespace = new TApplicationUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FApplicationUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TApplicationServerLookupsNamespaceRemote: IApplicationServerLookupsNamespace
-        {
-            private IApplicationServerLookupsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TApplicationServerLookupsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IApplicationServerLookupsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IApplicationServerLookupsNamespace));
-            }
-
-            /// generated method from interface
-            public System.Boolean GetDBVersion(out System.String APetraDBVersion)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetDBVersion(out APetraDBVersion);
-            }
-            /// generated method from interface
-            public System.Boolean GetInstalledPatches(out Ict.Petra.Shared.MSysMan.Data.SPatchLogTable APatchLogDT)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetInstalledPatches(out APatchLogDT);
+                return (IApplicationUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IApplicationUIConnectorsNamespace),
+                        new TApplicationUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'ApplicationServerLookups' subnamespace contains further subnamespaces.</summary>
         public IApplicationServerLookupsNamespace ServerLookups
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Application.ServerLookups' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Application.ServerLookups' sub-namespace
-                //
-
-                // accessing TServerLookupsNamespace the first time? > instantiate the object
-                if (FApplicationServerLookupsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TApplicationServerLookupsNamespace");
-                    TApplicationServerLookupsNamespace ObjectToRemote = new TApplicationServerLookupsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FApplicationServerLookupsSubNamespace = new TApplicationServerLookupsNamespaceRemote(ObjectURI);
-                }
-
-                return FApplicationServerLookupsSubNamespace;
+                return (IApplicationServerLookupsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IApplicationServerLookupsNamespace),
+                        new TApplicationServerLookupsNamespace());
             }
-
         }
     }
 }
@@ -819,7 +301,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.UIConnectors
     /// <summary>auto generated class </summary>
     public class TApplicationUIConnectorsNamespace : TConfigurableMBRObject, IApplicationUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TApplicationUIConnectorsNamespace()
         {
@@ -842,7 +323,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Application.ServerLookups
     /// <summary>auto generated class </summary>
     public class TApplicationServerLookupsNamespace : TConfigurableMBRObject, IApplicationServerLookupsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TApplicationServerLookupsNamespace()
         {
@@ -880,11 +360,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
     /// <summary>auto generated class </summary>
     public class TMaintenanceNamespace : TConfigurableMBRObject, IMaintenanceNamespace
     {
-        private TMaintenanceSystemDefaultsNamespaceRemote FMaintenanceSystemDefaultsSubNamespace;
-        private TMaintenanceUIConnectorsNamespaceRemote FMaintenanceUIConnectorsSubNamespace;
-        private TMaintenanceUserDefaultsNamespaceRemote FMaintenanceUserDefaultsSubNamespace;
-        private TMaintenanceWebConnectorsNamespaceRemote FMaintenanceWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TMaintenanceNamespace()
         {
@@ -896,393 +371,45 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance
             return null; // make sure that the TMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TMaintenanceSystemDefaultsNamespaceRemote: IMaintenanceSystemDefaultsNamespace
-        {
-            private IMaintenanceSystemDefaultsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TMaintenanceSystemDefaultsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IMaintenanceSystemDefaultsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMaintenanceSystemDefaultsNamespace));
-            }
-
-            /// generated method from interface
-            public Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable GetSystemDefaults()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetSystemDefaults();
-            }
-            /// generated method from interface
-            public System.Boolean SaveSystemDefaults(Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable ASystemDefaultsDataTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveSystemDefaults(ASystemDefaultsDataTable);
-            }
-            /// generated method from interface
-            public void ReloadSystemDefaultsTable()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.ReloadSystemDefaultsTable();
-            }
-        }
-
         /// <summary>The 'MaintenanceSystemDefaults' subnamespace contains further subnamespaces.</summary>
         public IMaintenanceSystemDefaultsNamespace SystemDefaults
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Maintenance.SystemDefaults' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Maintenance.SystemDefaults' sub-namespace
-                //
-
-                // accessing TSystemDefaultsNamespace the first time? > instantiate the object
-                if (FMaintenanceSystemDefaultsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMaintenanceSystemDefaultsNamespace");
-                    TMaintenanceSystemDefaultsNamespace ObjectToRemote = new TMaintenanceSystemDefaultsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FMaintenanceSystemDefaultsSubNamespace = new TMaintenanceSystemDefaultsNamespaceRemote(ObjectURI);
-                }
-
-                return FMaintenanceSystemDefaultsSubNamespace;
+                return (IMaintenanceSystemDefaultsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IMaintenanceSystemDefaultsNamespace),
+                        new TMaintenanceSystemDefaultsNamespace());
             }
-
         }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TMaintenanceUIConnectorsNamespaceRemote: IMaintenanceUIConnectorsNamespace
-        {
-            private IMaintenanceUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TMaintenanceUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IMaintenanceUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMaintenanceUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'MaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IMaintenanceUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Maintenance.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Maintenance.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FMaintenanceUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMaintenanceUIConnectorsNamespace");
-                    TMaintenanceUIConnectorsNamespace ObjectToRemote = new TMaintenanceUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FMaintenanceUIConnectorsSubNamespace = new TMaintenanceUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FMaintenanceUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TMaintenanceUserDefaultsNamespaceRemote: IMaintenanceUserDefaultsNamespace
-        {
-            private IMaintenanceUserDefaultsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TMaintenanceUserDefaultsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IMaintenanceUserDefaultsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMaintenanceUserDefaultsNamespace));
-            }
-
-            /// generated method from interface
-            public void GetUserDefaults(System.String AUserName,
-                                        out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.GetUserDefaults(AUserName,out AUserDefaultsDataTable);
-            }
-            /// generated method from interface
-            public System.Boolean SaveUserDefaults(System.String AUserName,
-                                                   ref Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable,
-                                                   out Ict.Common.Verification.TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveUserDefaults(AUserName,ref AUserDefaultsDataTable,out AVerificationResult);
-            }
-            /// generated method from interface
-            public void ReloadUserDefaults(System.String AUserName,
-                                           out Ict.Petra.Shared.MSysMan.Data.SUserDefaultsTable AUserDefaultsDataTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.ReloadUserDefaults(AUserName,out AUserDefaultsDataTable);
+                return (IMaintenanceUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IMaintenanceUIConnectorsNamespace),
+                        new TMaintenanceUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'MaintenanceUserDefaults' subnamespace contains further subnamespaces.</summary>
         public IMaintenanceUserDefaultsNamespace UserDefaults
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Maintenance.UserDefaults' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Maintenance.UserDefaults' sub-namespace
-                //
-
-                // accessing TUserDefaultsNamespace the first time? > instantiate the object
-                if (FMaintenanceUserDefaultsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMaintenanceUserDefaultsNamespace");
-                    TMaintenanceUserDefaultsNamespace ObjectToRemote = new TMaintenanceUserDefaultsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FMaintenanceUserDefaultsSubNamespace = new TMaintenanceUserDefaultsNamespaceRemote(ObjectURI);
-                }
-
-                return FMaintenanceUserDefaultsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TMaintenanceWebConnectorsNamespaceRemote: IMaintenanceWebConnectorsNamespace
-        {
-            private IMaintenanceWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TMaintenanceWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IMaintenanceWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMaintenanceWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public System.Boolean SetLanguageAndCulture(System.String ALanguageCode,
-                                                        System.String ACultureCode)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SetLanguageAndCulture(ALanguageCode,ACultureCode);
-            }
-            /// generated method from interface
-            public System.Boolean LoadLanguageAndCultureFromUserDefaults()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadLanguageAndCultureFromUserDefaults();
-            }
-            /// generated method from interface
-            public System.Boolean GetLanguageAndCulture(ref System.String ALanguageCode,
-                                                        ref System.String ACultureCode)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetLanguageAndCulture(ref ALanguageCode,ref ACultureCode);
-            }
-            /// generated method from interface
-            public System.Boolean SetUserPassword(System.String AUsername,
-                                                  System.String APassword)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SetUserPassword(AUsername,APassword);
-            }
-            /// generated method from interface
-            public System.Boolean CheckPasswordQuality(System.String APassword,
-                                                       out TVerificationResultCollection AVerification)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CheckPasswordQuality(APassword,out AVerification);
-            }
-            /// generated method from interface
-            public System.Boolean SetUserPassword(System.String AUsername,
-                                                  System.String APassword,
-                                                  System.String AOldPassword,
-                                                  out TVerificationResultCollection AVerification)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SetUserPassword(AUsername,APassword,AOldPassword,out AVerification);
-            }
-            /// generated method from interface
-            public System.Boolean CreateUser(System.String AUsername,
-                                             System.String APassword,
-                                             System.String AModulePermissions)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateUser(AUsername,APassword,AModulePermissions);
-            }
-            /// generated method from interface
-            public System.Boolean GetAuthenticationFunctionality(out System.Boolean ACanCreateUser,
-                                                                 out System.Boolean ACanChangePassword,
-                                                                 out System.Boolean ACanChangePermissions)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetAuthenticationFunctionality(out ACanCreateUser,out ACanChangePassword,out ACanChangePermissions);
-            }
-            /// generated method from interface
-            public MaintainUsersTDS LoadUsersAndModulePermissions()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadUsersAndModulePermissions();
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS,
-                                                  out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveSUser(ref ASubmitDS,out AVerificationResult);
+                return (IMaintenanceUserDefaultsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IMaintenanceUserDefaultsNamespace),
+                        new TMaintenanceUserDefaultsNamespace());
             }
         }
-
         /// <summary>The 'MaintenanceWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IMaintenanceWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Maintenance.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Maintenance.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FMaintenanceWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMaintenanceWebConnectorsNamespace");
-                    TMaintenanceWebConnectorsNamespace ObjectToRemote = new TMaintenanceWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FMaintenanceWebConnectorsSubNamespace = new TMaintenanceWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FMaintenanceWebConnectorsSubNamespace;
+                return (IMaintenanceWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IMaintenanceWebConnectorsNamespace),
+                        new TMaintenanceWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -1295,7 +422,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
     /// <summary>auto generated class </summary>
     public class TMaintenanceSystemDefaultsNamespace : TConfigurableMBRObject, IMaintenanceSystemDefaultsNamespace
     {
-
         #region ManualCode
         private TSystemDefaults FSystemDefaultsManager;
         #endregion ManualCode
@@ -1347,7 +473,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UIConnectors
     /// <summary>auto generated class </summary>
     public class TMaintenanceUIConnectorsNamespace : TConfigurableMBRObject, IMaintenanceUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TMaintenanceUIConnectorsNamespace()
         {
@@ -1370,7 +495,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.UserDefaults
     /// <summary>auto generated class </summary>
     public class TMaintenanceUserDefaultsNamespace : TConfigurableMBRObject, IMaintenanceUserDefaultsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TMaintenanceUserDefaultsNamespace()
         {
@@ -1420,7 +544,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
     /// <summary>auto generated class </summary>
     public class TMaintenanceWebConnectorsNamespace : TConfigurableMBRObject, IMaintenanceWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TMaintenanceWebConnectorsNamespace()
         {
@@ -1524,8 +647,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceNamespace : TConfigurableMBRObject, ITableMaintenanceNamespace
     {
-        private TTableMaintenanceUIConnectorsNamespaceRemote FTableMaintenanceUIConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TTableMaintenanceNamespace()
         {
@@ -1537,79 +658,15 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance
             return null; // make sure that the TTableMaintenanceNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TTableMaintenanceUIConnectorsNamespaceRemote: ITableMaintenanceUIConnectorsNamespace
-        {
-            private ITableMaintenanceUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TTableMaintenanceUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ITableMaintenanceUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ITableMaintenanceUIConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public ISysManUIConnectorsTableMaintenance SysManTableMaintenance()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SysManTableMaintenance();
-            }
-            /// generated method from interface
-            public ISysManUIConnectorsTableMaintenance SysManTableMaintenance(ref DataTable ADataSet,
-                                                                              System.String ATableName)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SysManTableMaintenance(ref ADataSet,ATableName);
-            }
-        }
-
         /// <summary>The 'TableMaintenanceUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ITableMaintenanceUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'TableMaintenance.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'TableMaintenance.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FTableMaintenanceUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TTableMaintenanceUIConnectorsNamespace");
-                    TTableMaintenanceUIConnectorsNamespace ObjectToRemote = new TTableMaintenanceUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FTableMaintenanceUIConnectorsSubNamespace = new TTableMaintenanceUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FTableMaintenanceUIConnectorsSubNamespace;
+                return (ITableMaintenanceUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ITableMaintenanceUIConnectorsNamespace),
+                        new TTableMaintenanceUIConnectorsNamespace());
             }
-
         }
     }
 }
@@ -1622,7 +679,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
     /// <summary>auto generated class </summary>
     public class TTableMaintenanceUIConnectorsNamespace : TConfigurableMBRObject, ITableMaintenanceUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TTableMaintenanceUIConnectorsNamespace()
         {
@@ -1637,7 +693,9 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
         /// generated method from interface
         public ISysManUIConnectorsTableMaintenance SysManTableMaintenance()
         {
-            return new TSysManTableMaintenanceUIConnector();
+            return (ISysManUIConnectorsTableMaintenance) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(ISysManUIConnectorsTableMaintenance),
+                    new TSysManTableMaintenanceUIConnector());
         }
 
         /// generated method from interface
@@ -1660,8 +718,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport
     /// <summary>auto generated class </summary>
     public class TImportExportNamespace : TConfigurableMBRObject, IImportExportNamespace
     {
-        private TImportExportWebConnectorsNamespaceRemote FImportExportWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TImportExportNamespace()
         {
@@ -1673,89 +729,15 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TImportExportWebConnectorsNamespaceRemote: IImportExportWebConnectorsNamespace
-        {
-            private IImportExportWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TImportExportWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IImportExportWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IImportExportWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public System.String ExportAllTables()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ExportAllTables();
-            }
-            /// generated method from interface
-            public System.Boolean ResetDatabase(System.String AZippedNewDatabaseData)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ResetDatabase(AZippedNewDatabaseData);
-            }
-            /// generated method from interface
-            public System.Boolean SaveTDS(SampleDataConstructorTDS dataTDS,
-                                          out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveTDS(dataTDS,out AVerificationResult);
-            }
-        }
-
         /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'ImportExport.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'ImportExport.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FImportExportWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TImportExportWebConnectorsNamespace");
-                    TImportExportWebConnectorsNamespace ObjectToRemote = new TImportExportWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FImportExportWebConnectorsSubNamespace = new TImportExportWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FImportExportWebConnectorsSubNamespace;
+                return (IImportExportWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IImportExportWebConnectorsNamespace),
+                        new TImportExportWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -1768,7 +750,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.ImportExport.WebConnectors
     /// <summary>auto generated class </summary>
     public class TImportExportWebConnectorsNamespace : TConfigurableMBRObject, IImportExportWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TImportExportWebConnectorsNamespace()
         {
@@ -1812,8 +793,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.PrintManagement
     /// <summary>auto generated class </summary>
     public class TPrintManagementNamespace : TConfigurableMBRObject, IPrintManagementNamespace
     {
-        private TPrintManagementUIConnectorsNamespaceRemote FPrintManagementUIConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TPrintManagementNamespace()
         {
@@ -1825,58 +804,15 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.PrintManagement
             return null; // make sure that the TPrintManagementNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TPrintManagementUIConnectorsNamespaceRemote: IPrintManagementUIConnectorsNamespace
-        {
-            private IPrintManagementUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TPrintManagementUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IPrintManagementUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPrintManagementUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'PrintManagementUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPrintManagementUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'PrintManagement.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'PrintManagement.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FPrintManagementUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPrintManagementUIConnectorsNamespace");
-                    TPrintManagementUIConnectorsNamespace ObjectToRemote = new TPrintManagementUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FPrintManagementUIConnectorsSubNamespace = new TPrintManagementUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FPrintManagementUIConnectorsSubNamespace;
+                return (IPrintManagementUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IPrintManagementUIConnectorsNamespace),
+                        new TPrintManagementUIConnectorsNamespace());
             }
-
         }
     }
 }
@@ -1889,7 +825,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.PrintManagement.UIConnectors
     /// <summary>auto generated class </summary>
     public class TPrintManagementUIConnectorsNamespace : TConfigurableMBRObject, IPrintManagementUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TPrintManagementUIConnectorsNamespace()
         {
@@ -1912,9 +847,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security
     /// <summary>auto generated class </summary>
     public class TSecurityNamespace : TConfigurableMBRObject, ISecurityNamespace
     {
-        private TSecurityUIConnectorsNamespaceRemote FSecurityUIConnectorsSubNamespace;
-        private TSecurityUserManagerNamespaceRemote FSecurityUserManagerSubNamespace;
-
         /// <summary>Constructor</summary>
         public TSecurityNamespace()
         {
@@ -1926,131 +858,25 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security
             return null; // make sure that the TSecurityNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TSecurityUIConnectorsNamespaceRemote: ISecurityUIConnectorsNamespace
-        {
-            private ISecurityUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TSecurityUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ISecurityUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISecurityUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'SecurityUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ISecurityUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Security.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Security.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FSecurityUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSecurityUIConnectorsNamespace");
-                    TSecurityUIConnectorsNamespace ObjectToRemote = new TSecurityUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FSecurityUIConnectorsSubNamespace = new TSecurityUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FSecurityUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TSecurityUserManagerNamespaceRemote: ISecurityUserManagerNamespace
-        {
-            private ISecurityUserManagerNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TSecurityUserManagerNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ISecurityUserManagerNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISecurityUserManagerNamespace));
-            }
-
-            /// generated method from interface
-            public Ict.Petra.Shared.Security.TPetraPrincipal ReloadCachedUserInfo()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ReloadCachedUserInfo();
-            }
-            /// generated method from interface
-            public void SignalReloadCachedUserInfo(System.String AUserID)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.SignalReloadCachedUserInfo(AUserID);
+                return (ISecurityUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ISecurityUIConnectorsNamespace),
+                        new TSecurityUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'SecurityUserManager' subnamespace contains further subnamespaces.</summary>
         public ISecurityUserManagerNamespace UserManager
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Security.UserManager' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Security.UserManager' sub-namespace
-                //
-
-                // accessing TUserManagerNamespace the first time? > instantiate the object
-                if (FSecurityUserManagerSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSecurityUserManagerNamespace");
-                    TSecurityUserManagerNamespace ObjectToRemote = new TSecurityUserManagerNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FSecurityUserManagerSubNamespace = new TSecurityUserManagerNamespaceRemote(ObjectURI);
-                }
-
-                return FSecurityUserManagerSubNamespace;
+                return (ISecurityUserManagerNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ISecurityUserManagerNamespace),
+                        new TSecurityUserManagerNamespace());
             }
-
         }
     }
 }
@@ -2063,7 +889,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UIConnectors
     /// <summary>auto generated class </summary>
     public class TSecurityUIConnectorsNamespace : TConfigurableMBRObject, ISecurityUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TSecurityUIConnectorsNamespace()
         {
@@ -2086,7 +911,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Security.UserManager
     /// <summary>auto generated class </summary>
     public class TSecurityUserManagerNamespace : TConfigurableMBRObject, ISecurityUserManagerNamespace
     {
-
         /// <summary>Constructor</summary>
         public TSecurityUserManagerNamespace()
         {
@@ -2124,7 +948,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Cacheable
     /// <summary>auto generated class </summary>
     public class TCacheableNamespace : TConfigurableMBRObject, ICacheableNamespace
     {
-
 		#region ManualCode
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
         private Ict.Petra.Server.MSysMan.Cacheable.TCacheable FCachePopulator;

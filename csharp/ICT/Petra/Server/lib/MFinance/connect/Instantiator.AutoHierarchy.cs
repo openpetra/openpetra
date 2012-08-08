@@ -196,18 +196,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator
     /// <summary>auto generated class </summary>
     public class TMFinance : TConfigurableMBRObject, IMFinanceNamespace
     {
-        private TAPNamespaceRemote FAPSubNamespace;
-        private TARNamespaceRemote FARSubNamespace;
-        private TBudgetNamespaceRemote FBudgetSubNamespace;
-        private TCacheableNamespaceRemote FCacheableSubNamespace;
-        private TImportExportNamespaceRemote FImportExportSubNamespace;
-        private TGiftNamespaceRemote FGiftSubNamespace;
-        private TGLNamespaceRemote FGLSubNamespace;
-        private TICHNamespaceRemote FICHSubNamespace;
-        private TPeriodEndNamespaceRemote FPeriodEndSubNamespace;
-        private TReportingNamespaceRemote FReportingSubNamespace;
-        private TSetupNamespaceRemote FSetupSubNamespace;
-
         /// <summary>Constructor</summary>
         public TMFinance()
         {
@@ -219,757 +207,115 @@ namespace Ict.Petra.Server.MFinance.Instantiator
             return null; // make sure that the TMFinance object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TAPNamespaceRemote: IAPNamespace
-        {
-            private IAPNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TAPNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IAPNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IAPNamespace));
-            }
-
-            /// property forwarder
-            public IAPUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
-            }
-            /// property forwarder
-            public IAPWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
-            }
-        }
-
         /// <summary>The 'AP' subnamespace contains further subnamespaces.</summary>
         public IAPNamespace AP
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.AP' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.AP' sub-namespace
-                //
-
-                // accessing TAPNamespace the first time? > instantiate the object
-                if (FAPSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TAPNamespace");
-                    TAPNamespace ObjectToRemote = new TAPNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FAPSubNamespace = new TAPNamespaceRemote(ObjectURI);
-                }
-
-                return FAPSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TARNamespaceRemote: IARNamespace
-        {
-            private IARNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TARNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IARNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IARNamespace));
-            }
-
-            /// property forwarder
-            public IARWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (IAPNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IAPNamespace),
+                        new TAPNamespace());
             }
         }
-
         /// <summary>The 'AR' subnamespace contains further subnamespaces.</summary>
         public IARNamespace AR
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.AR' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.AR' sub-namespace
-                //
-
-                // accessing TARNamespace the first time? > instantiate the object
-                if (FARSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TARNamespace");
-                    TARNamespace ObjectToRemote = new TARNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FARSubNamespace = new TARNamespaceRemote(ObjectURI);
-                }
-
-                return FARSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TBudgetNamespaceRemote: IBudgetNamespace
-        {
-            private IBudgetNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TBudgetNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IBudgetNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IBudgetNamespace));
-            }
-
-            /// property forwarder
-            public IBudgetUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
-            }
-            /// property forwarder
-            public IBudgetWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (IARNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IARNamespace),
+                        new TARNamespace());
             }
         }
-
         /// <summary>The 'Budget' subnamespace contains further subnamespaces.</summary>
         public IBudgetNamespace Budget
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.Budget' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.Budget' sub-namespace
-                //
-
-                // accessing TBudgetNamespace the first time? > instantiate the object
-                if (FBudgetSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TBudgetNamespace");
-                    TBudgetNamespace ObjectToRemote = new TBudgetNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FBudgetSubNamespace = new TBudgetNamespaceRemote(ObjectURI);
-                }
-
-                return FBudgetSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TCacheableNamespaceRemote: ICacheableNamespace
-        {
-            private ICacheableNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TCacheableNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ICacheableNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ICacheableNamespace));
-            }
-
-            /// generated method from interface
-            public System.Data.DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
-                                                           System.String AHashCode,
-                                                           out System.Type AType)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,out AType);
-            }
-            /// generated method from interface
-            public System.Data.DataTable GetCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
-                                                           System.String AHashCode,
-                                                           System.Int32 ALedgerNumber,
-                                                           out System.Type AType)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetCacheableTable(ACacheableTable,AHashCode,ALedgerNumber,out AType);
-            }
-            /// generated method from interface
-            public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.RefreshCacheableTable(ACacheableTable);
-            }
-            /// generated method from interface
-            public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
-                                              out System.Data.DataTable ADataTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.RefreshCacheableTable(ACacheableTable,out ADataTable);
-            }
-            /// generated method from interface
-            public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
-                                              System.Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.RefreshCacheableTable(ACacheableTable,ALedgerNumber);
-            }
-            /// generated method from interface
-            public void RefreshCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
-                                              System.Int32 ALedgerNumber,
-                                              out System.Data.DataTable ADataTable)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.RefreshCacheableTable(ACacheableTable,ALedgerNumber,out ADataTable);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
-                                                                          ref TTypedDataTable ASubmitTable,
-                                                                          System.Int32 ALedgerNumber,
-                                                                          out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,ALedgerNumber,out AVerificationResult);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
-                                                                          ref TTypedDataTable ASubmitTable,
-                                                                          out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveChangedStandardCacheableTable(ACacheableTable,ref ASubmitTable,out AVerificationResult);
+                return (IBudgetNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IBudgetNamespace),
+                        new TBudgetNamespace());
             }
         }
-
         /// <summary>The 'Cacheable' subnamespace contains further subnamespaces.</summary>
         public ICacheableNamespace Cacheable
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.Cacheable' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.Cacheable' sub-namespace
-                //
-
-                // accessing TCacheableNamespace the first time? > instantiate the object
-                if (FCacheableSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TCacheableNamespace");
-                    TCacheableNamespace ObjectToRemote = new TCacheableNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FCacheableSubNamespace = new TCacheableNamespaceRemote(ObjectURI);
-                }
-
-                return FCacheableSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TImportExportNamespaceRemote: IImportExportNamespace
-        {
-            private IImportExportNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TImportExportNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IImportExportNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IImportExportNamespace));
-            }
-
-            /// property forwarder
-            public IImportExportWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (ICacheableNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ICacheableNamespace),
+                        new TCacheableNamespace());
             }
         }
-
         /// <summary>The 'ImportExport' subnamespace contains further subnamespaces.</summary>
         public IImportExportNamespace ImportExport
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.ImportExport' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.ImportExport' sub-namespace
-                //
-
-                // accessing TImportExportNamespace the first time? > instantiate the object
-                if (FImportExportSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TImportExportNamespace");
-                    TImportExportNamespace ObjectToRemote = new TImportExportNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FImportExportSubNamespace = new TImportExportNamespaceRemote(ObjectURI);
-                }
-
-                return FImportExportSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TGiftNamespaceRemote: IGiftNamespace
-        {
-            private IGiftNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TGiftNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IGiftNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IGiftNamespace));
-            }
-
-            /// property forwarder
-            public IGiftUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
-            }
-            /// property forwarder
-            public IGiftWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (IImportExportNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IImportExportNamespace),
+                        new TImportExportNamespace());
             }
         }
-
         /// <summary>The 'Gift' subnamespace contains further subnamespaces.</summary>
         public IGiftNamespace Gift
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.Gift' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.Gift' sub-namespace
-                //
-
-                // accessing TGiftNamespace the first time? > instantiate the object
-                if (FGiftSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TGiftNamespace");
-                    TGiftNamespace ObjectToRemote = new TGiftNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FGiftSubNamespace = new TGiftNamespaceRemote(ObjectURI);
-                }
-
-                return FGiftSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TGLNamespaceRemote: IGLNamespace
-        {
-            private IGLNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TGLNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IGLNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IGLNamespace));
-            }
-
-            /// property forwarder
-            public IGLUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
-            }
-            /// property forwarder
-            public IGLWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (IGiftNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IGiftNamespace),
+                        new TGiftNamespace());
             }
         }
-
         /// <summary>The 'GL' subnamespace contains further subnamespaces.</summary>
         public IGLNamespace GL
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.GL' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.GL' sub-namespace
-                //
-
-                // accessing TGLNamespace the first time? > instantiate the object
-                if (FGLSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TGLNamespace");
-                    TGLNamespace ObjectToRemote = new TGLNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FGLSubNamespace = new TGLNamespaceRemote(ObjectURI);
-                }
-
-                return FGLSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TICHNamespaceRemote: IICHNamespace
-        {
-            private IICHNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TICHNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IICHNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IICHNamespace));
-            }
-
-            /// property forwarder
-            public IICHWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (IGLNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IGLNamespace),
+                        new TGLNamespace());
             }
         }
-
         /// <summary>The 'ICH' subnamespace contains further subnamespaces.</summary>
         public IICHNamespace ICH
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.ICH' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.ICH' sub-namespace
-                //
-
-                // accessing TICHNamespace the first time? > instantiate the object
-                if (FICHSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TICHNamespace");
-                    TICHNamespace ObjectToRemote = new TICHNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FICHSubNamespace = new TICHNamespaceRemote(ObjectURI);
-                }
-
-                return FICHSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TPeriodEndNamespaceRemote: IPeriodEndNamespace
-        {
-            private IPeriodEndNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TPeriodEndNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IPeriodEndNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPeriodEndNamespace));
-            }
-
-            /// property forwarder
-            public IPeriodEndUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
+                return (IICHNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IICHNamespace),
+                        new TICHNamespace());
             }
         }
-
         /// <summary>The 'PeriodEnd' subnamespace contains further subnamespaces.</summary>
         public IPeriodEndNamespace PeriodEnd
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.PeriodEnd' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.PeriodEnd' sub-namespace
-                //
-
-                // accessing TPeriodEndNamespace the first time? > instantiate the object
-                if (FPeriodEndSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPeriodEndNamespace");
-                    TPeriodEndNamespace ObjectToRemote = new TPeriodEndNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FPeriodEndSubNamespace = new TPeriodEndNamespaceRemote(ObjectURI);
-                }
-
-                return FPeriodEndSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TReportingNamespaceRemote: IReportingNamespace
-        {
-            private IReportingNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TReportingNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IReportingNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IReportingNamespace));
-            }
-
-            /// property forwarder
-            public IReportingUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
+                return (IPeriodEndNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IPeriodEndNamespace),
+                        new TPeriodEndNamespace());
             }
         }
-
         /// <summary>The 'Reporting' subnamespace contains further subnamespaces.</summary>
         public IReportingNamespace Reporting
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.Reporting' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.Reporting' sub-namespace
-                //
-
-                // accessing TReportingNamespace the first time? > instantiate the object
-                if (FReportingSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TReportingNamespace");
-                    TReportingNamespace ObjectToRemote = new TReportingNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FReportingSubNamespace = new TReportingNamespaceRemote(ObjectURI);
-                }
-
-                return FReportingSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TSetupNamespaceRemote: ISetupNamespace
-        {
-            private ISetupNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TSetupNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ISetupNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISetupNamespace));
-            }
-
-            /// property forwarder
-            public ISetupUIConnectorsNamespace UIConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.UIConnectors; }
-            }
-            /// property forwarder
-            public ISetupWebConnectorsNamespace WebConnectors
-            {
-                get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject.WebConnectors; }
+                return (IReportingNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IReportingNamespace),
+                        new TReportingNamespace());
             }
         }
-
         /// <summary>The 'Setup' subnamespace contains further subnamespaces.</summary>
         public ISetupNamespace Setup
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MFinance.Setup' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MFinance.Setup' sub-namespace
-                //
-
-                // accessing TSetupNamespace the first time? > instantiate the object
-                if (FSetupSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSetupNamespace");
-                    TSetupNamespace ObjectToRemote = new TSetupNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FSetupSubNamespace = new TSetupNamespaceRemote(ObjectURI);
-                }
-
-                return FSetupSubNamespace;
+                return (ISetupNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ISetupNamespace),
+                        new TSetupNamespace());
             }
-
         }
     }
 }
@@ -982,9 +328,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
     /// <summary>auto generated class </summary>
     public class TAPNamespace : TConfigurableMBRObject, IAPNamespace
     {
-        private TAPUIConnectorsNamespaceRemote FAPUIConnectorsSubNamespace;
-        private TAPWebConnectorsNamespaceRemote FAPWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TAPNamespace()
         {
@@ -996,311 +339,25 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP
             return null; // make sure that the TAPNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TAPUIConnectorsNamespaceRemote: IAPUIConnectorsNamespace
-        {
-            private IAPUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TAPUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IAPUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IAPUIConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public IAPUIConnectorsFind Find()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.Find();
-            }
-            /// generated method from interface
-            public IAPUIConnectorsSupplierEdit SupplierEdit()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SupplierEdit();
-            }
-            /// generated method from interface
-            public IAPUIConnectorsSupplierEdit SupplierEdit(ref AccountsPayableTDS ADataSet,
-                                                            Int64 APartnerKey)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SupplierEdit(ref ADataSet,APartnerKey);
-            }
-        }
-
         /// <summary>The 'APUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IAPUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'AP.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'AP.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FAPUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TAPUIConnectorsNamespace");
-                    TAPUIConnectorsNamespace ObjectToRemote = new TAPUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FAPUIConnectorsSubNamespace = new TAPUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FAPUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TAPWebConnectorsNamespaceRemote: IAPWebConnectorsNamespace
-        {
-            private IAPWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TAPWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IAPWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IAPWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetLedgerInfo(ALedgerNumber);
-            }
-            /// generated method from interface
-            public AccountsPayableTDS LoadAApSupplier(Int32 ALedgerNumber,
-                                                      Int64 APartnerKey)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadAApSupplier(ALedgerNumber,APartnerKey);
-            }
-            /// generated method from interface
-            public AccountsPayableTDS LoadAApDocument(Int32 ALedgerNumber,
-                                                      Int32 AApDocumentId)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadAApDocument(ALedgerNumber,AApDocumentId);
-            }
-            /// generated method from interface
-            public AccountsPayableTDS CreateAApDocument(Int32 ALedgerNumber,
-                                                        Int64 APartnerKey,
-                                                        System.Boolean ACreditNoteOrInvoice)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateAApDocument(ALedgerNumber,APartnerKey,ACreditNoteOrInvoice);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
-                                                        out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveAApDocument(ref AInspectDS,out AVerificationResult);
-            }
-            /// generated method from interface
-            public AccountsPayableTDS CreateAApDocumentDetail(Int32 ALedgerNumber,
-                                                              Int32 AApDocumentId,
-                                                              System.String AApSupplier_DefaultExpAccount,
-                                                              System.String AApSupplier_DefaultCostCentre,
-                                                              System.Decimal AAmount,
-                                                              Int32 ALastDetailNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateAApDocumentDetail(ALedgerNumber,AApDocumentId,AApSupplier_DefaultExpAccount,AApSupplier_DefaultCostCentre,AAmount,ALastDetailNumber);
-            }
-            /// generated method from interface
-            public AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
-                                                      Int64 ASupplierKey,
-                                                      System.String ADocumentStatus,
-                                                      System.Boolean IsCreditNoteNotInvoice,
-                                                      System.Boolean AHideAgedTransactions)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.FindAApDocument(ALedgerNumber,ASupplierKey,ADocumentStatus,IsCreditNoteNotInvoice,AHideAgedTransactions);
-            }
-            /// generated method from interface
-            public String CheckAccountsAndCostCentres(Int32 ALedgerNumber,
-                                                      List<String>AccountCodesCostCentres)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CheckAccountsAndCostCentres(ALedgerNumber,AccountCodesCostCentres);
-            }
-            /// generated method from interface
-            public System.Boolean DeleteAPDocuments(Int32 ALedgerNumber,
-                                                    List<Int32>ADeleteTheseDocs,
-                                                    out TVerificationResultCollection AVerifications)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.DeleteAPDocuments(ALedgerNumber,ADeleteTheseDocs,out AVerifications);
-            }
-            /// generated method from interface
-            public System.Boolean PostAPDocuments(Int32 ALedgerNumber,
-                                                  List<Int32>AAPDocumentIds,
-                                                  DateTime APostingDate,
-                                                  Boolean Reversal,
-                                                  out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.PostAPDocuments(ALedgerNumber,AAPDocumentIds,APostingDate,Reversal,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Boolean CreatePaymentTableEntries(ref AccountsPayableTDS ADataset,
-                                                            Int32 ALedgerNumber,
-                                                            List<Int32>ADocumentsToPay)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreatePaymentTableEntries(ref ADataset,ALedgerNumber,ADocumentsToPay);
-            }
-            /// generated method from interface
-            public System.Boolean PostAPPayments(ref AccountsPayableTDS MainDS,
-                                                 DateTime APostingDate,
-                                                 out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.PostAPPayments(ref MainDS,APostingDate,out AVerificationResult);
-            }
-            /// generated method from interface
-            public AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber,
-                                                    Int32 APaymentNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadAPPayment(ALedgerNumber,APaymentNumber);
-            }
-            /// generated method from interface
-            public System.Boolean ReversePayment(Int32 ALedgerNumber,
-                                                 Int32 APaymentNumber,
-                                                 DateTime APostingDate,
-                                                 out TVerificationResultCollection AVerifications)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ReversePayment(ALedgerNumber,APaymentNumber,APostingDate,out AVerifications);
+                return (IAPUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IAPUIConnectorsNamespace),
+                        new TAPUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'APWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IAPWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'AP.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'AP.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FAPWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TAPWebConnectorsNamespace");
-                    TAPWebConnectorsNamespace ObjectToRemote = new TAPWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FAPWebConnectorsSubNamespace = new TAPWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FAPWebConnectorsSubNamespace;
+                return (IAPWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IAPWebConnectorsNamespace),
+                        new TAPWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -1313,7 +370,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
     /// <summary>auto generated class </summary>
     public class TAPUIConnectorsNamespace : TConfigurableMBRObject, IAPUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TAPUIConnectorsNamespace()
         {
@@ -1328,13 +384,17 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
         /// generated method from interface
         public IAPUIConnectorsFind Find()
         {
-            return new TFindUIConnector();
+            return (IAPUIConnectorsFind) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAPUIConnectorsFind),
+                    new TFindUIConnector());
         }
 
         /// generated method from interface
         public IAPUIConnectorsSupplierEdit SupplierEdit()
         {
-            return new TSupplierEditUIConnector();
+            return (IAPUIConnectorsSupplierEdit) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAPUIConnectorsSupplierEdit),
+                    new TSupplierEditUIConnector());
         }
 
         /// generated method from interface
@@ -1357,7 +417,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
     /// <summary>auto generated class </summary>
     public class TAPWebConnectorsNamespace : TConfigurableMBRObject, IAPWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TAPWebConnectorsNamespace()
         {
@@ -1506,8 +565,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
     /// <summary>auto generated class </summary>
     public class TARNamespace : TConfigurableMBRObject, IARNamespace
     {
-        private TARWebConnectorsNamespaceRemote FARWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TARNamespace()
         {
@@ -1519,58 +576,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR
             return null; // make sure that the TARNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TARWebConnectorsNamespaceRemote: IARWebConnectorsNamespace
-        {
-            private IARWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TARWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IARWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IARWebConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'ARWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IARWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'AR.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'AR.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FARWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TARWebConnectorsNamespace");
-                    TARWebConnectorsNamespace ObjectToRemote = new TARWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FARWebConnectorsSubNamespace = new TARWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FARWebConnectorsSubNamespace;
+                return (IARWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IARWebConnectorsNamespace),
+                        new TARWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -1583,7 +597,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AR.WebConnectors
     /// <summary>auto generated class </summary>
     public class TARWebConnectorsNamespace : TConfigurableMBRObject, IARWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TARWebConnectorsNamespace()
         {
@@ -1606,9 +619,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
     /// <summary>auto generated class </summary>
     public class TBudgetNamespace : TConfigurableMBRObject, IBudgetNamespace
     {
-        private TBudgetUIConnectorsNamespaceRemote FBudgetUIConnectorsSubNamespace;
-        private TBudgetWebConnectorsNamespaceRemote FBudgetWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TBudgetNamespace()
         {
@@ -1620,249 +630,25 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget
             return null; // make sure that the TBudgetNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TBudgetUIConnectorsNamespaceRemote: IBudgetUIConnectorsNamespace
-        {
-            private IBudgetUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TBudgetUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IBudgetUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IBudgetUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'BudgetUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IBudgetUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Budget.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Budget.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FBudgetUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TBudgetUIConnectorsNamespace");
-                    TBudgetUIConnectorsNamespace ObjectToRemote = new TBudgetUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FBudgetUIConnectorsSubNamespace = new TBudgetUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FBudgetUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TBudgetWebConnectorsNamespaceRemote: IBudgetWebConnectorsNamespace
-        {
-            private IBudgetWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TBudgetWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IBudgetWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IBudgetWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public BudgetTDS LoadBudgetForAutoGenerate(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadBudgetForAutoGenerate(ALedgerNumber);
-            }
-            /// generated method from interface
-            public System.Boolean GenBudgetForNextYear(System.Int32 ALedgerNumber,
-                                                       System.Int32 ABudgetSeq,
-                                                       System.String AForecastType)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GenBudgetForNextYear(ALedgerNumber,ABudgetSeq,AForecastType);
-            }
-            /// generated method from interface
-            public System.Boolean LoadBudgetForConsolidate(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadBudgetForConsolidate(ALedgerNumber);
-            }
-            /// generated method from interface
-            public System.Boolean ConsolidateBudgets(Int32 ALedgerNumber,
-                                                     System.Boolean AConsolidateAll,
-                                                     out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ConsolidateBudgets(ALedgerNumber,AConsolidateAll,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Decimal GetBudgetValue(ref DataTable APeriodDataTable,
-                                                 System.Int32 AGLMSequence,
-                                                 System.Int32 APeriodNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetBudgetValue(ref APeriodDataTable,AGLMSequence,APeriodNumber);
-            }
-            /// generated method from interface
-            public BudgetTDS LoadBudget(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadBudget(ALedgerNumber);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
-                                                   out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveBudget(ref AInspectDS,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Int32 ImportBudgets(Int32 ALedgerNumber,
-                                              Int32 ACurrentBudgetYear,
-                                              System.String ACSVFileName,
-                                              System.String[] AFdlgSeparator,
-                                              ref BudgetTDS AImportDS,
-                                              out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ImportBudgets(ALedgerNumber,ACurrentBudgetYear,ACSVFileName,AFdlgSeparator,ref AImportDS,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Int32 GetGLMSequenceForBudget(System.Int32 ALedgerNumber,
-                                                        System.String AAccountCode,
-                                                        System.String ACostCentreCode,
-                                                        System.Int32 AYear)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetGLMSequenceForBudget(ALedgerNumber,AAccountCode,ACostCentreCode,AYear);
-            }
-            /// generated method from interface
-            public System.Decimal GetActual(System.Int32 ALedgerNumber,
-                                            System.Int32 AGLMSeqThisYear,
-                                            System.Int32 AGLMSeqNextYear,
-                                            System.Int32 APeriodNumber,
-                                            System.Int32 ANumberAccountingPeriods,
-                                            System.Int32 ACurrentFinancialYear,
-                                            System.Int32 AThisYear,
-                                            System.Boolean AYTD,
-                                            System.String ACurrencySelect)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetActual(ALedgerNumber,AGLMSeqThisYear,AGLMSeqNextYear,APeriodNumber,ANumberAccountingPeriods,ACurrentFinancialYear,AThisYear,AYTD,ACurrencySelect);
-            }
-            /// generated method from interface
-            public System.Decimal GetBudget(System.Int32 AGLMSeqThisYear,
-                                            System.Int32 AGLMSeqNextYear,
-                                            System.Int32 APeriodNumber,
-                                            System.Int32 ANumberAccountingPeriods,
-                                            System.Boolean AYTD,
-                                            System.String ACurrencySelect)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetBudget(AGLMSeqThisYear,AGLMSeqNextYear,APeriodNumber,ANumberAccountingPeriods,AYTD,ACurrencySelect);
+                return (IBudgetUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IBudgetUIConnectorsNamespace),
+                        new TBudgetUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'BudgetWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IBudgetWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Budget.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Budget.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FBudgetWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TBudgetWebConnectorsNamespace");
-                    TBudgetWebConnectorsNamespace ObjectToRemote = new TBudgetWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FBudgetWebConnectorsSubNamespace = new TBudgetWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FBudgetWebConnectorsSubNamespace;
+                return (IBudgetWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IBudgetWebConnectorsNamespace),
+                        new TBudgetWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -1875,7 +661,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.UIConnectors
     /// <summary>auto generated class </summary>
     public class TBudgetUIConnectorsNamespace : TConfigurableMBRObject, IBudgetUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TBudgetUIConnectorsNamespace()
         {
@@ -1898,7 +683,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Budget.WebConnectors
     /// <summary>auto generated class </summary>
     public class TBudgetWebConnectorsNamespace : TConfigurableMBRObject, IBudgetWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TBudgetWebConnectorsNamespace()
         {
@@ -2025,7 +809,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Cacheable
     /// <summary>auto generated class </summary>
     public class TCacheableNamespace : TConfigurableMBRObject, ICacheableNamespace
     {
-
         #region ManualCode
 
         /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
@@ -2219,8 +1002,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
     /// <summary>auto generated class </summary>
     public class TImportExportNamespace : TConfigurableMBRObject, IImportExportNamespace
     {
-        private TImportExportWebConnectorsNamespaceRemote FImportExportWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TImportExportNamespace()
         {
@@ -2232,140 +1013,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport
             return null; // make sure that the TImportExportNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TImportExportWebConnectorsNamespaceRemote: IImportExportWebConnectorsNamespace
-        {
-            private IImportExportWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TImportExportWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IImportExportWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IImportExportWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
-                                                              out Int32 AFirstStatementKey,
-                                                              out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.StoreNewBankStatement(AStatementAndTransactionsDS,out AFirstStatementKey,out AVerificationResult);
-            }
-            /// generated method from interface
-            public AEpStatementTable GetImportedBankStatements(Int32 ALedgerNumber,
-                                                               DateTime AStartDate)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetImportedBankStatements(ALedgerNumber,AStartDate);
-            }
-            /// generated method from interface
-            public System.Boolean DropBankStatement(Int32 AEpStatementKey)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.DropBankStatement(AEpStatementKey);
-            }
-            /// generated method from interface
-            public BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey,
-                                                                        Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetBankStatementTransactionsAndMatches(AStatementKey,ALedgerNumber);
-            }
-            /// generated method from interface
-            public System.Boolean CommitMatches(BankImportTDS AMainDS)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CommitMatches(AMainDS);
-            }
-            /// generated method from interface
-            public Int32 CreateGiftBatch(BankImportTDS AMainDS,
-                                         Int32 ALedgerNumber,
-                                         Int32 AStatementKey,
-                                         Int32 AGiftBatchNumber,
-                                         out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateGiftBatch(AMainDS,ALedgerNumber,AStatementKey,AGiftBatchNumber,out AVerificationResult);
-            }
-            /// generated method from interface
-            public Int32 CreateGLBatch(BankImportTDS AMainDS,
-                                       Int32 ALedgerNumber,
-                                       Int32 AStatementKey,
-                                       Int32 AGLBatchNumber,
-                                       out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateGLBatch(AMainDS,ALedgerNumber,AStatementKey,AGLBatchNumber,out AVerificationResult);
-            }
-        }
-
         /// <summary>The 'ImportExportWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IImportExportWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'ImportExport.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'ImportExport.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FImportExportWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TImportExportWebConnectorsNamespace");
-                    TImportExportWebConnectorsNamespace ObjectToRemote = new TImportExportWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FImportExportWebConnectorsSubNamespace = new TImportExportWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FImportExportWebConnectorsSubNamespace;
+                return (IImportExportWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IImportExportWebConnectorsNamespace),
+                        new TImportExportWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -2378,7 +1034,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ImportExport.WebConnectors
     /// <summary>auto generated class </summary>
     public class TImportExportWebConnectorsNamespace : TConfigurableMBRObject, IImportExportWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TImportExportWebConnectorsNamespace()
         {
@@ -2461,9 +1116,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
     /// <summary>auto generated class </summary>
     public class TGiftNamespace : TConfigurableMBRObject, IGiftNamespace
     {
-        private TGiftUIConnectorsNamespaceRemote FGiftUIConnectorsSubNamespace;
-        private TGiftWebConnectorsNamespaceRemote FGiftWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TGiftNamespace()
         {
@@ -2475,459 +1127,25 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift
             return null; // make sure that the TGiftNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TGiftUIConnectorsNamespaceRemote: IGiftUIConnectorsNamespace
-        {
-            private IGiftUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TGiftUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IGiftUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IGiftUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'GiftUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IGiftUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Gift.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Gift.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FGiftUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TGiftUIConnectorsNamespace");
-                    TGiftUIConnectorsNamespace ObjectToRemote = new TGiftUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FGiftUIConnectorsSubNamespace = new TGiftUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FGiftUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TGiftWebConnectorsNamespaceRemote: IGiftWebConnectorsNamespace
-        {
-            private IGiftWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TGiftWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IGiftWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IGiftWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public Int32 FieldChangeAdjustment(Int32 ALedgerNumber,
-                                               Int64 ARecipientKey,
-                                               DateTime AStartDate,
-                                               DateTime AEndDate,
-                                               Int64 AOldField,
-                                               DateTime ADateCorrection,
-                                               System.Boolean AWithReceipt)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.FieldChangeAdjustment(ALedgerNumber,ARecipientKey,AStartDate,AEndDate,AOldField,ADateCorrection,AWithReceipt);
-            }
-            /// generated method from interface
-            public System.Boolean GiftRevertAdjust(Hashtable requestParams,
-                                                   out TVerificationResultCollection AMessages)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GiftRevertAdjust(requestParams,out AMessages);
-            }
-            /// generated method from interface
-            public NewDonorTDS GetDonorsOfWorker(Int64 AWorkerPartnerKey,
-                                                 Int32 ALedgerNumber,
-                                                 System.Boolean ADropForeignAddresses,
-                                                 System.Boolean ADropPartnersWithNoMailing)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetDonorsOfWorker(AWorkerPartnerKey,ALedgerNumber,ADropForeignAddresses,ADropPartnersWithNoMailing);
-            }
-            /// generated method from interface
-            public Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
-                                                       ref String motivationGroup,
-                                                       ref String motivationDetail)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetMotivationGroupAndDetail(partnerKey,ref motivationGroup,ref motivationDetail);
-            }
-            /// generated method from interface
-            public NewDonorTDS GetNewDonorSubscriptions(System.String APublicationCode,
-                                                        DateTime ASubscriptionStartFrom,
-                                                        DateTime ASubscriptionStartUntil,
-                                                        System.String AExtractName,
-                                                        System.Boolean ADropForeignAddresses)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetNewDonorSubscriptions(APublicationCode,ASubscriptionStartFrom,ASubscriptionStartUntil,AExtractName,ADropForeignAddresses);
-            }
-            /// generated method from interface
-            public StringCollection PrepareNewDonorLetters(ref NewDonorTDS AMainDS,
-                                                           System.String AHTMLTemplate)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.PrepareNewDonorLetters(ref AMainDS,AHTMLTemplate);
-            }
-            /// generated method from interface
-            public System.String CreateAnnualGiftReceipts(Int32 ALedgerNumber,
-                                                          DateTime AStartDate,
-                                                          DateTime AEndDate,
-                                                          System.String AHTMLTemplate)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateAnnualGiftReceipts(ALedgerNumber,AStartDate,AEndDate,AHTMLTemplate);
-            }
-            /// generated method from interface
-            public GiftBatchTDS LoadMotivationDetails(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadMotivationDetails(ALedgerNumber);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
-                                                              out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveMotivationDetails(ref AInspectDS,out AVerificationResult);
-            }
-            /// generated method from interface
-            public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber,
-                                                 DateTime ADateEffective,
-                                                 System.String ABatchDescription)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateAGiftBatch(ALedgerNumber,ADateEffective,ABatchDescription);
-            }
-            /// generated method from interface
-            public GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateAGiftBatch(ALedgerNumber);
-            }
-            /// generated method from interface
-            public GiftBatchTDS CreateARecurringGiftBatch(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateARecurringGiftBatch(ALedgerNumber);
-            }
-            /// generated method from interface
-            public Boolean SubmitRecurringGiftBatch(Hashtable requestParams,
-                                                    out TVerificationResultCollection AMessages)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SubmitRecurringGiftBatch(requestParams,out AMessages);
-            }
-            /// generated method from interface
-            public DataTable GetAvailableGiftYears(Int32 ALedgerNumber,
-                                                   out String ADisplayMember,
-                                                   out String AValueMember)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetAvailableGiftYears(ALedgerNumber,out ADisplayMember,out AValueMember);
-            }
-            /// generated method from interface
-            public GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber,
-                                               System.String ABatchStatus,
-                                               Int32 AYear,
-                                               Int32 APeriod)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadAGiftBatch(ALedgerNumber,ABatchStatus,AYear,APeriod);
-            }
-            /// generated method from interface
-            public GiftBatchTDS LoadARecurringGiftBatch(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadARecurringGiftBatch(ALedgerNumber);
-            }
-            /// generated method from interface
-            public GiftBatchTDS LoadTransactions(Int32 ALedgerNumber,
-                                                 Int32 ABatchNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadTransactions(ALedgerNumber,ABatchNumber);
-            }
-            /// generated method from interface
-            public GiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber,
-                                                          Int32 ABatchNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadRecurringTransactions(ALedgerNumber,ABatchNumber);
-            }
-            /// generated method from interface
-            public GiftBatchTDS LoadDonorRecipientHistory(Hashtable requestParams,
-                                                          out TVerificationResultCollection AMessages)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadDonorRecipientHistory(requestParams,out AMessages);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveGiftBatchTDS(ref GiftBatchTDS AInspectDS,
-                                                         out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveGiftBatchTDS(ref AInspectDS,out AVerificationResult);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
-                                                                  out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveRecurringGiftBatchTDS(ref AInspectDS,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Decimal CalculateAdminFee(GiftBatchTDS MainDS,
-                                                    Int32 ALedgerNumber,
-                                                    System.String AFeeCode,
-                                                    System.Decimal AGiftAmount,
-                                                    out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CalculateAdminFee(MainDS,ALedgerNumber,AFeeCode,AGiftAmount,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Boolean PostGiftBatch(Int32 ALedgerNumber,
-                                                Int32 ABatchNumber,
-                                                out TVerificationResultCollection AVerifications)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.PostGiftBatch(ALedgerNumber,ABatchNumber,out AVerifications);
-            }
-            /// generated method from interface
-            public System.Boolean PostGiftBatches(Int32 ALedgerNumber,
-                                                  List<Int32>ABatchNumbers,
-                                                  out TVerificationResultCollection AVerifications)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.PostGiftBatches(ALedgerNumber,ABatchNumbers,out AVerifications);
-            }
-            /// generated method from interface
-            public Int32 ExportAllGiftBatchData(Hashtable requestParams,
-                                                out String exportString,
-                                                out TVerificationResultCollection AMessages)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ExportAllGiftBatchData(requestParams,out exportString,out AMessages);
-            }
-            /// generated method from interface
-            public System.Boolean ImportGiftBatches(Hashtable requestParams,
-                                                    String importString,
-                                                    out TVerificationResultCollection AMessages)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ImportGiftBatches(requestParams,importString,out AMessages);
-            }
-            /// generated method from interface
-            public PPartnerTable LoadPartnerData(System.Int64 PartnerKey)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadPartnerData(PartnerKey);
-            }
-            /// generated method from interface
-            public System.String IdentifyPartnerCostCentre(Int32 ALedgerNumber,
-                                                           Int64 AFieldNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.IdentifyPartnerCostCentre(ALedgerNumber,AFieldNumber);
-            }
-            /// generated method from interface
-            public Int64 GetRecipientLedgerNumber(Int64 partnerKey)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetRecipientLedgerNumber(partnerKey);
-            }
-            /// generated method from interface
-            public PUnitTable LoadKeyMinistry(Int64 partnerKey,
-                                              out Int64 fieldNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadKeyMinistry(partnerKey,out fieldNumber);
+                return (IGiftUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IGiftUIConnectorsNamespace),
+                        new TGiftUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'GiftWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IGiftWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Gift.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Gift.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FGiftWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TGiftWebConnectorsNamespace");
-                    TGiftWebConnectorsNamespace ObjectToRemote = new TGiftWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FGiftWebConnectorsSubNamespace = new TGiftWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FGiftWebConnectorsSubNamespace;
+                return (IGiftWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IGiftWebConnectorsNamespace),
+                        new TGiftWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -2940,7 +1158,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.UIConnectors
     /// <summary>auto generated class </summary>
     public class TGiftUIConnectorsNamespace : TConfigurableMBRObject, IGiftUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TGiftUIConnectorsNamespace()
         {
@@ -2963,7 +1180,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Gift.WebConnectors
     /// <summary>auto generated class </summary>
     public class TGiftWebConnectorsNamespace : TConfigurableMBRObject, IGiftWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TGiftWebConnectorsNamespace()
         {
@@ -3243,9 +1459,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
     /// <summary>auto generated class </summary>
     public class TGLNamespace : TConfigurableMBRObject, IGLNamespace
     {
-        private TGLUIConnectorsNamespaceRemote FGLUIConnectorsSubNamespace;
-        private TGLWebConnectorsNamespaceRemote FGLWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TGLNamespace()
         {
@@ -3257,430 +1470,25 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL
             return null; // make sure that the TGLNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TGLUIConnectorsNamespaceRemote: IGLUIConnectorsNamespace
-        {
-            private IGLUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TGLUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IGLUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IGLUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'GLUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IGLUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'GL.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'GL.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FGLUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TGLUIConnectorsNamespace");
-                    TGLUIConnectorsNamespace ObjectToRemote = new TGLUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FGLUIConnectorsSubNamespace = new TGLUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FGLUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TGLWebConnectorsNamespaceRemote: IGLWebConnectorsNamespace
-        {
-            private IGLWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TGLWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IGLWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IGLWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public System.Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
-                                                        out DateTime AStartDate,
-                                                        out DateTime AEndDate)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetCurrentPeriodDates(ALedgerNumber,out AStartDate,out AEndDate);
-            }
-            /// generated method from interface
-            public System.Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
-                                                              out DateTime AStartDateCurrentPeriod,
-                                                              out DateTime AEndDateLastForwardingPeriod)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetCurrentPostingRangeDates(ALedgerNumber,out AStartDateCurrentPeriod,out AEndDateLastForwardingPeriod);
-            }
-            /// generated method from interface
-            public System.Boolean GetRealPeriod(System.Int32 ALedgerNumber,
-                                                System.Int32 ADiffPeriod,
-                                                System.Int32 AYear,
-                                                System.Int32 APeriod,
-                                                out System.Int32 ARealPeriod,
-                                                out System.Int32 ARealYear)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetRealPeriod(ALedgerNumber,ADiffPeriod,AYear,APeriod,out ARealPeriod,out ARealYear);
-            }
-            /// generated method from interface
-            public System.DateTime GetPeriodStartDate(System.Int32 ALedgerNumber,
-                                                      System.Int32 AYear,
-                                                      System.Int32 ADiffPeriod,
-                                                      System.Int32 APeriod)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetPeriodStartDate(ALedgerNumber,AYear,ADiffPeriod,APeriod);
-            }
-            /// generated method from interface
-            public System.DateTime GetPeriodEndDate(Int32 ALedgerNumber,
-                                                    System.Int32 AYear,
-                                                    System.Int32 ADiffPeriod,
-                                                    System.Int32 APeriod)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetPeriodEndDate(ALedgerNumber,AYear,ADiffPeriod,APeriod);
-            }
-            /// generated method from interface
-            public System.Boolean GetPeriodDates(Int32 ALedgerNumber,
-                                                 Int32 AYearNumber,
-                                                 Int32 ADiffPeriod,
-                                                 Int32 APeriodNumber,
-                                                 out DateTime AStartDatePeriod,
-                                                 out DateTime AEndDatePeriod)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetPeriodDates(ALedgerNumber,AYearNumber,ADiffPeriod,APeriodNumber,out AStartDatePeriod,out AEndDatePeriod);
-            }
-            /// generated method from interface
-            public DataTable GetAvailableGLYears(Int32 ALedgerNumber,
-                                                 System.Int32 ADiffPeriod,
-                                                 System.Boolean AIncludeNextYear,
-                                                 out String ADisplayMember,
-                                                 out String AValueMember)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetAvailableGLYears(ALedgerNumber,ADiffPeriod,AIncludeNextYear,out ADisplayMember,out AValueMember);
-            }
-            /// generated method from interface
-            public System.Boolean TPeriodMonthEnd(System.Int32 ALedgerNum,
-                                                  System.Boolean AIsInInfoMode,
-                                                  out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.TPeriodMonthEnd(ALedgerNum,AIsInInfoMode,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Boolean TPeriodYearEnd(System.Int32 ALedgerNum,
-                                                 System.Boolean AIsInInfoMode,
-                                                 out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.TPeriodYearEnd(ALedgerNum,AIsInInfoMode,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Boolean Revaluate(System.Int32 ALedgerNum,
-                                            System.Int32 AAccoutingPeriod,
-                                            System.String[] AForeignCurrency,
-                                            System.Decimal[] ANewExchangeRate,
-                                            out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.Revaluate(ALedgerNum,AAccoutingPeriod,AForeignCurrency,ANewExchangeRate,out AVerificationResult);
-            }
-            /// generated method from interface
-            public GLBatchTDS CreateABatch(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateABatch(ALedgerNumber);
-            }
-            /// generated method from interface
-            public GLBatchTDS LoadABatch(Int32 ALedgerNumber,
-                                         TFinanceBatchFilterEnum AFilterBatchStatus,
-                                         System.Int32 AYear,
-                                         System.Int32 APeriod)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadABatch(ALedgerNumber,AFilterBatchStatus,AYear,APeriod);
-            }
-            /// generated method from interface
-            public GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber,
-                                                   Int32 ABatchNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadABatchAndContent(ALedgerNumber,ABatchNumber);
-            }
-            /// generated method from interface
-            public GLBatchTDS LoadAJournal(Int32 ALedgerNumber,
-                                           Int32 ABatchNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadAJournal(ALedgerNumber,ABatchNumber);
-            }
-            /// generated method from interface
-            public GLBatchTDS LoadATransaction(Int32 ALedgerNumber,
-                                               Int32 ABatchNumber,
-                                               Int32 AJournalNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadATransaction(ALedgerNumber,ABatchNumber,AJournalNumber);
-            }
-            /// generated method from interface
-            public GLBatchTDS LoadATransAnalAttrib(Int32 ALedgerNumber,
-                                                   Int32 ABatchNumber,
-                                                   Int32 AJournalNumber,
-                                                   Int32 ATransactionNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadATransAnalAttrib(ALedgerNumber,ABatchNumber,AJournalNumber,ATransactionNumber);
-            }
-            /// generated method from interface
-            public GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadAAnalysisAttributes(ALedgerNumber);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveGLBatchTDS(ref GLBatchTDS AInspectDS,
-                                                       out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveGLBatchTDS(ref AInspectDS,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Boolean PostGLBatch(Int32 ALedgerNumber,
-                                              Int32 ABatchNumber,
-                                              out TVerificationResultCollection AVerifications)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.PostGLBatch(ALedgerNumber,ABatchNumber,out AVerifications);
-            }
-            /// generated method from interface
-            public List<TVariant> TestPostGLBatch(Int32 ALedgerNumber,
-                                                  Int32 ABatchNumber,
-                                                  out TVerificationResultCollection AVerifications)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.TestPostGLBatch(ALedgerNumber,ABatchNumber,out AVerifications);
-            }
-            /// generated method from interface
-            public System.String GetStandardCostCentre(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetStandardCostCentre(ALedgerNumber);
-            }
-            /// generated method from interface
-            public System.Decimal GetDailyExchangeRate(System.String ACurrencyFrom,
-                                                       System.String ACurrencyTo,
-                                                       DateTime ADateEffective)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetDailyExchangeRate(ACurrencyFrom,ACurrencyTo,ADateEffective);
-            }
-            /// generated method from interface
-            public System.Decimal GetCorporateExchangeRate(System.String ACurrencyFrom,
-                                                           System.String ACurrencyTo,
-                                                           DateTime AStartDate,
-                                                           DateTime AEndDate)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetCorporateExchangeRate(ACurrencyFrom,ACurrencyTo,AStartDate,AEndDate);
-            }
-            /// generated method from interface
-            public System.Boolean CancelGLBatch(out GLBatchTDS AMainDS,
-                                                Int32 ALedgerNumber,
-                                                Int32 ABatchNumber,
-                                                out TVerificationResultCollection AVerifications)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CancelGLBatch(out AMainDS,ALedgerNumber,ABatchNumber,out AVerifications);
-            }
-            /// generated method from interface
-            public System.Boolean ExportAllGLBatchData(ref ArrayList batches,
-                                                       Hashtable requestParams,
-                                                       out String exportString)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ExportAllGLBatchData(ref batches,requestParams,out exportString);
-            }
-            /// generated method from interface
-            public System.Boolean ImportGLBatches(Hashtable requestParams,
-                                                  String importString,
-                                                  out TVerificationResultCollection AMessages)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ImportGLBatches(requestParams,importString,out AMessages);
+                return (IGLUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IGLUIConnectorsNamespace),
+                        new TGLUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'GLWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IGLWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'GL.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'GL.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FGLWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TGLWebConnectorsNamespace");
-                    TGLWebConnectorsNamespace ObjectToRemote = new TGLWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FGLWebConnectorsSubNamespace = new TGLWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FGLWebConnectorsSubNamespace;
+                return (IGLWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IGLWebConnectorsNamespace),
+                        new TGLWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -3693,7 +1501,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.UIConnectors
     /// <summary>auto generated class </summary>
     public class TGLUIConnectorsNamespace : TConfigurableMBRObject, IGLUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TGLUIConnectorsNamespace()
         {
@@ -3716,7 +1523,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.GL.WebConnectors
     /// <summary>auto generated class </summary>
     public class TGLWebConnectorsNamespace : TConfigurableMBRObject, IGLWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TGLWebConnectorsNamespace()
         {
@@ -3979,8 +1785,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
     /// <summary>auto generated class </summary>
     public class TICHNamespace : TConfigurableMBRObject, IICHNamespace
     {
-        private TICHWebConnectorsNamespaceRemote FICHWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TICHNamespace()
         {
@@ -3992,82 +1796,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH
             return null; // make sure that the TICHNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TICHWebConnectorsNamespaceRemote: IICHWebConnectorsNamespace
-        {
-            private IICHWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TICHWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IICHWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IICHWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public System.Boolean PerformStewardshipCalculation(System.Int32 ALedgerNumber,
-                                                                System.Int32 APeriodNumber,
-                                                                out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.PerformStewardshipCalculation(ALedgerNumber,APeriodNumber,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.Boolean GenerateICHStewardshipBatch(System.Int32 ALedgerNumber,
-                                                              System.Int32 APeriodNumber,
-                                                              ref TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GenerateICHStewardshipBatch(ALedgerNumber,APeriodNumber,ref AVerificationResult);
-            }
-        }
-
         /// <summary>The 'ICHWebConnectors' subnamespace contains further subnamespaces.</summary>
         public IICHWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'ICH.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'ICH.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FICHWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TICHWebConnectorsNamespace");
-                    TICHWebConnectorsNamespace ObjectToRemote = new TICHWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FICHWebConnectorsSubNamespace = new TICHWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FICHWebConnectorsSubNamespace;
+                return (IICHWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IICHWebConnectorsNamespace),
+                        new TICHWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -4080,7 +1817,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.ICH.WebConnectors
     /// <summary>auto generated class </summary>
     public class TICHWebConnectorsNamespace : TConfigurableMBRObject, IICHWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TICHWebConnectorsNamespace()
         {
@@ -4120,8 +1856,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
     /// <summary>auto generated class </summary>
     public class TPeriodEndNamespace : TConfigurableMBRObject, IPeriodEndNamespace
     {
-        private TPeriodEndUIConnectorsNamespaceRemote FPeriodEndUIConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TPeriodEndNamespace()
         {
@@ -4133,58 +1867,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd
             return null; // make sure that the TPeriodEndNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TPeriodEndUIConnectorsNamespaceRemote: IPeriodEndUIConnectorsNamespace
-        {
-            private IPeriodEndUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TPeriodEndUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IPeriodEndUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IPeriodEndUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'PeriodEndUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IPeriodEndUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'PeriodEnd.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'PeriodEnd.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FPeriodEndUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TPeriodEndUIConnectorsNamespace");
-                    TPeriodEndUIConnectorsNamespace ObjectToRemote = new TPeriodEndUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FPeriodEndUIConnectorsSubNamespace = new TPeriodEndUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FPeriodEndUIConnectorsSubNamespace;
+                return (IPeriodEndUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IPeriodEndUIConnectorsNamespace),
+                        new TPeriodEndUIConnectorsNamespace());
             }
-
         }
     }
 }
@@ -4197,7 +1888,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.PeriodEnd.UIConnectors
     /// <summary>auto generated class </summary>
     public class TPeriodEndUIConnectorsNamespace : TConfigurableMBRObject, IPeriodEndUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TPeriodEndUIConnectorsNamespace()
         {
@@ -4220,8 +1910,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
     /// <summary>auto generated class </summary>
     public class TReportingNamespace : TConfigurableMBRObject, IReportingNamespace
     {
-        private TReportingUIConnectorsNamespaceRemote FReportingUIConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TReportingNamespace()
         {
@@ -4233,89 +1921,15 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting
             return null; // make sure that the TReportingNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TReportingUIConnectorsNamespaceRemote: IReportingUIConnectorsNamespace
-        {
-            private IReportingUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TReportingUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (IReportingUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IReportingUIConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public void SelectLedger(System.Int32 ALedgerNr)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                RemoteObject.SelectLedger(ALedgerNr);
-            }
-            /// generated method from interface
-            public System.Data.DataTable GetReceivingFields(out System.String ADisplayMember,
-                                                            out System.String AValueMember)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetReceivingFields(out ADisplayMember,out AValueMember);
-            }
-            /// generated method from interface
-            public System.String GetReportingCostCentres(String ASummaryCostCentreCode)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetReportingCostCentres(ASummaryCostCentreCode);
-            }
-        }
-
         /// <summary>The 'ReportingUIConnectors' subnamespace contains further subnamespaces.</summary>
         public IReportingUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Reporting.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Reporting.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FReportingUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TReportingUIConnectorsNamespace");
-                    TReportingUIConnectorsNamespace ObjectToRemote = new TReportingUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FReportingUIConnectorsSubNamespace = new TReportingUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FReportingUIConnectorsSubNamespace;
+                return (IReportingUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(IReportingUIConnectorsNamespace),
+                        new TReportingUIConnectorsNamespace());
             }
-
         }
     }
 }
@@ -4328,7 +1942,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Reporting.UIConnectors
     /// <summary>auto generated class </summary>
     public class TReportingUIConnectorsNamespace : TConfigurableMBRObject, IReportingUIConnectorsNamespace
     {
-
         #region ManualCode
 
         /// <summary>holds reference to the Reporting UIConnector object (only once instantiated)</summary>
@@ -4383,9 +1996,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
     /// <summary>auto generated class </summary>
     public class TSetupNamespace : TConfigurableMBRObject, ISetupNamespace
     {
-        private TSetupUIConnectorsNamespaceRemote FSetupUIConnectorsSubNamespace;
-        private TSetupWebConnectorsNamespaceRemote FSetupWebConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TSetupNamespace()
         {
@@ -4397,273 +2007,25 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup
             return null; // make sure that the TSetupNamespace object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TSetupUIConnectorsNamespaceRemote: ISetupUIConnectorsNamespace
-        {
-            private ISetupUIConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TSetupUIConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ISetupUIConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISetupUIConnectorsNamespace));
-            }
-
-        }
-
         /// <summary>The 'SetupUIConnectors' subnamespace contains further subnamespaces.</summary>
         public ISetupUIConnectorsNamespace UIConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Setup.UIConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Setup.UIConnectors' sub-namespace
-                //
-
-                // accessing TUIConnectorsNamespace the first time? > instantiate the object
-                if (FSetupUIConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSetupUIConnectorsNamespace");
-                    TSetupUIConnectorsNamespace ObjectToRemote = new TSetupUIConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FSetupUIConnectorsSubNamespace = new TSetupUIConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FSetupUIConnectorsSubNamespace;
-            }
-
-        }
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TSetupWebConnectorsNamespaceRemote: ISetupWebConnectorsNamespace
-        {
-            private ISetupWebConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TSetupWebConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ISetupWebConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ISetupWebConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public GLSetupTDS LoadAccountHierarchies(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadAccountHierarchies(ALedgerNumber);
-            }
-            /// generated method from interface
-            public GLSetupTDS LoadCostCentreHierarchy(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadCostCentreHierarchy(ALedgerNumber);
-            }
-            /// generated method from interface
-            public TSubmitChangesResult SaveGLSetupTDS(Int32 ALedgerNumber,
-                                                       ref GLSetupTDS AInspectDS,
-                                                       out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.SaveGLSetupTDS(ALedgerNumber,ref AInspectDS,out AVerificationResult);
-            }
-            /// generated method from interface
-            public System.String ExportAccountHierarchy(Int32 ALedgerNumber,
-                                                        System.String AAccountHierarchyName)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ExportAccountHierarchy(ALedgerNumber,AAccountHierarchyName);
-            }
-            /// generated method from interface
-            public System.String ExportCostCentreHierarchy(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ExportCostCentreHierarchy(ALedgerNumber);
-            }
-            /// generated method from interface
-            public System.Boolean ImportAccountHierarchy(Int32 ALedgerNumber,
-                                                         System.String AHierarchyName,
-                                                         System.String AXmlAccountHierarchy)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ImportAccountHierarchy(ALedgerNumber,AHierarchyName,AXmlAccountHierarchy);
-            }
-            /// generated method from interface
-            public System.Boolean ImportCostCentreHierarchy(Int32 ALedgerNumber,
-                                                            System.String AXmlHierarchy)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ImportCostCentreHierarchy(ALedgerNumber,AXmlHierarchy);
-            }
-            /// generated method from interface
-            public System.Boolean ImportNewLedger(Int32 ALedgerNumber,
-                                                  System.String AXmlLedgerDetails,
-                                                  System.String AXmlAccountHierarchy,
-                                                  System.String AXmlCostCentreHierarchy,
-                                                  System.String AXmlMotivationDetails)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ImportNewLedger(ALedgerNumber,AXmlLedgerDetails,AXmlAccountHierarchy,AXmlCostCentreHierarchy,AXmlMotivationDetails);
-            }
-            /// generated method from interface
-            public System.Boolean CanDeleteAccount(Int32 ALedgerNumber,
-                                                   System.String AAccountCode)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CanDeleteAccount(ALedgerNumber,AAccountCode);
-            }
-            /// generated method from interface
-            public System.Boolean CreateNewLedger(Int32 ANewLedgerNumber,
-                                                  String ALedgerName,
-                                                  String ACountryCode,
-                                                  String ABaseCurrency,
-                                                  String AIntlCurrency,
-                                                  DateTime ACalendarStartDate,
-                                                  Int32 ANumberOfPeriods,
-                                                  Int32 ACurrentPeriod,
-                                                  Int32 ANumberOfFwdPostingPeriods,
-                                                  out TVerificationResultCollection AVerificationResult)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CreateNewLedger(ANewLedgerNumber,ALedgerName,ACountryCode,ABaseCurrency,AIntlCurrency,ACalendarStartDate,ANumberOfPeriods,ACurrentPeriod,ANumberOfFwdPostingPeriods,out AVerificationResult);
-            }
-            /// generated method from interface
-            public ALedgerTable GetAvailableLedgers()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.GetAvailableLedgers();
-            }
-            /// generated method from interface
-            public AFreeformAnalysisTable LoadAFreeformAnalysis(Int32 ALedgerNumber)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.LoadAFreeformAnalysis(ALedgerNumber);
-            }
-            /// generated method from interface
-            public System.Int32 CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber,
-                                                             String ATypeCode,
-                                                             String AAnalysisValue)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CheckDeleteAFreeformAnalysis(ALedgerNumber,ATypeCode,AAnalysisValue);
-            }
-            /// generated method from interface
-            public System.Int32 CheckDeleteAAnalysisType(String ATypeCode)
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.CheckDeleteAAnalysisType(ATypeCode);
+                return (ISetupUIConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ISetupUIConnectorsNamespace),
+                        new TSetupUIConnectorsNamespace());
             }
         }
-
         /// <summary>The 'SetupWebConnectors' subnamespace contains further subnamespaces.</summary>
         public ISetupWebConnectorsNamespace WebConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'Setup.WebConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'Setup.WebConnectors' sub-namespace
-                //
-
-                // accessing TWebConnectorsNamespace the first time? > instantiate the object
-                if (FSetupWebConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TSetupWebConnectorsNamespace");
-                    TSetupWebConnectorsNamespace ObjectToRemote = new TSetupWebConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FSetupWebConnectorsSubNamespace = new TSetupWebConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FSetupWebConnectorsSubNamespace;
+                return (ISetupWebConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ISetupWebConnectorsNamespace),
+                        new TSetupWebConnectorsNamespace());
             }
-
         }
     }
 }
@@ -4676,7 +2038,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.UIConnectors
     /// <summary>auto generated class </summary>
     public class TSetupUIConnectorsNamespace : TConfigurableMBRObject, ISetupUIConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TSetupUIConnectorsNamespace()
         {
@@ -4699,7 +2060,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.Setup.WebConnectors
     /// <summary>auto generated class </summary>
     public class TSetupWebConnectorsNamespace : TConfigurableMBRObject, ISetupWebConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TSetupWebConnectorsNamespace()
         {

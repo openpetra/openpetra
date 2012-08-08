@@ -109,8 +109,6 @@ namespace Ict.Petra.Server.MReporting.Instantiator
     /// <summary>auto generated class </summary>
     public class TMReporting : TConfigurableMBRObject, IMReportingNamespace
     {
-        private TLogicConnectorsNamespaceRemote FLogicConnectorsSubNamespace;
-
         /// <summary>Constructor</summary>
         public TMReporting()
         {
@@ -122,68 +120,15 @@ namespace Ict.Petra.Server.MReporting.Instantiator
             return null; // make sure that the TMReporting object exists until this AppDomain is unloaded!
         }
 
-        /// <summary>serializable, which means that this object is executed on the client side</summary>
-        [Serializable]
-        public class TLogicConnectorsNamespaceRemote: ILogicConnectorsNamespace
-        {
-            private ILogicConnectorsNamespace RemoteObject = null;
-            private string FObjectURI;
-
-            /// <summary>constructor. get remote object</summary>
-            public TLogicConnectorsNamespaceRemote(string AObjectURI)
-            {
-                FObjectURI = AObjectURI;
-            }
-
-            private void InitRemoteObject()
-            {
-                RemoteObject = (ILogicConnectorsNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(ILogicConnectorsNamespace));
-            }
-
-            /// generated method from interface
-            public IReportGeneratorLogicConnector ReportGenerator()
-            {
-                if (RemoteObject == null)
-                {
-                    InitRemoteObject();
-                }
-
-                return RemoteObject.ReportGenerator();
-            }
-        }
-
         /// <summary>The 'LogicConnectors' subnamespace contains further subnamespaces.</summary>
         public ILogicConnectorsNamespace LogicConnectors
         {
             get
             {
-                //
-                // Creates or passes a reference to an instantiator of sub-namespaces that
-                // reside in the 'MReporting.LogicConnectors' sub-namespace.
-                // A call to this function is done everytime a Client uses an object of this
-                // sub-namespace - this is fully transparent to the Client.
-                //
-                // @return A reference to an instantiator of sub-namespaces that reside in
-                //         the 'MReporting.LogicConnectors' sub-namespace
-                //
-
-                // accessing TLogicConnectorsNamespace the first time? > instantiate the object
-                if (FLogicConnectorsSubNamespace == null)
-                {
-                    // need to calculate the URI for this object and pass it to the new namespace object
-                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TLogicConnectorsNamespace");
-                    TLogicConnectorsNamespace ObjectToRemote = new TLogicConnectorsNamespace();
-
-                    // we need to add the service in the main domain
-                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
-                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
-
-                    FLogicConnectorsSubNamespace = new TLogicConnectorsNamespaceRemote(ObjectURI);
-                }
-
-                return FLogicConnectorsSubNamespace;
+                return (ILogicConnectorsNamespace) TCreateRemotableObject.CreateRemotableObject(
+                        typeof(ILogicConnectorsNamespace),
+                        new TLogicConnectorsNamespace());
             }
-
         }
     }
 }
@@ -196,7 +141,6 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
     /// <summary>auto generated class </summary>
     public class TLogicConnectorsNamespace : TConfigurableMBRObject, ILogicConnectorsNamespace
     {
-
         /// <summary>Constructor</summary>
         public TLogicConnectorsNamespace()
         {
@@ -211,7 +155,9 @@ namespace Ict.Petra.Server.MReporting.Instantiator.LogicConnectors
         /// generated method from interface
         public IReportGeneratorLogicConnector ReportGenerator()
         {
-            return new TReportGeneratorLogicConnector();
+            return (IReportGeneratorLogicConnector) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IReportGeneratorLogicConnector),
+                    new TReportGeneratorLogicConnector());
         }
     }
 }
