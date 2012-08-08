@@ -155,3 +155,4 @@ INSERT INTO p_banking_details(p_banking_details_key_i, p_banking_type_i, p_accou
 INSERT INTO p_partner_banking_details(p_partner_key_n, p_banking_details_key_i) VALUES(43005001, 1);
 -- increase sequence
 SELECT nextval('seq_bank_details');
+SELECT nextval('seq_bank_details');

@@ -510,6 +510,17 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
+            if (ATableName == "p_person")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "p_family_id_i");
+
+                if ((val == "") || (val.Length == 0) || (val == "\\N"))
+                {
+                    // p_family_id_i is now NOT NULL, but for merged partners, it is reset in Petra 2.x
+                    SetValue(AColumnNames, ref ANewRow, "p_family_id_i", "-1");
+                }
+            }
+
             // pm_personal_data: move values from the p_person table for believer info
             if (ATableName == "pm_personal_data")
             {

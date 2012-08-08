@@ -96,7 +96,7 @@ namespace Tests.Common.Printing
 
             pdfPrinter.SavePDF("test.pdf");
 
-            MessageBox.Show("Please check test.pdf in the Debug directory!");
+            System.Diagnostics.Process.Start(Path.GetFullPath("test.pdf"));
         }
 
         void TbbPrintPDFToScreenClick(object sender, EventArgs e)

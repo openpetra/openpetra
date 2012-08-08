@@ -364,7 +364,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             {
                 BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv.Row;
 
-                Result += Convert.ToDecimal(detailrow.GiftTransactionAmount);
+                Result += detailrow.GiftTransactionAmount;
             }
 
             return Result;
@@ -433,13 +433,19 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
                     if (GiftDetailsWithAmount.Length == 1)
                     {
-                        // found exactly one match
-                        newMatchFound = true;
-                        MarkTransactionMatched(AMainDS,
-                            GiftDetailByGiftTransactionNumberMatchStatus,
-                            transaction,
-                            (BankImportTDSAGiftDetailRow)GiftDetailsWithAmount[0].Row,
-                            false);
+                        decimal sumGift = SumAmounts(GiftDetailByGiftTransactionNumber, ASelectedGiftBatch,
+                            ((BankImportTDSAGiftDetailRow)GiftDetailsWithAmount[0].Row).GiftTransactionNumber);
+
+                        if (sumGift == transaction.TransactionAmount)
+                        {
+                            // found exactly one match
+                            newMatchFound = true;
+                            MarkTransactionMatched(AMainDS,
+                                GiftDetailByGiftTransactionNumberMatchStatus,
+                                transaction,
+                                (BankImportTDSAGiftDetailRow)GiftDetailsWithAmount[0].Row,
+                                false);
+                        }
                     }
                     else if (GiftDetailsWithAmount.Length > 1)
                     {
@@ -451,6 +457,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                         foreach (DataRowView rv2 in GiftDetailsWithAmount)
                         {
                             BankImportTDSAGiftDetailRow detailrow = (BankImportTDSAGiftDetailRow)rv2.Row;
+
+                            decimal sumGift = SumAmounts(GiftDetailByGiftTransactionNumber, ASelectedGiftBatch,
+                                detailrow.GiftTransactionNumber);
+
+                            if (sumGift != transaction.TransactionAmount)
+                            {
+                                continue;
+                            }
 
                             int count = MatchingWords(detailrow.RecipientDescription, transaction.Description);
 
@@ -489,9 +503,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
                                 if ((matchingGiftDetail == null) || (detailrow.GiftTransactionNumber != matchingGiftDetail.GiftTransactionNumber))
                                 {
-                                    if ((SumAmounts(GiftDetailByGiftTransactionNumber, ASelectedGiftBatch,
-                                             detailrow.GiftTransactionNumber) == Convert.ToDecimal(transaction.TransactionAmount))
-                                        || (Convert.ToDecimal(detailrow.GiftTransactionAmount) == Convert.ToDecimal(transaction.TransactionAmount)))
+                                    decimal sumGift = SumAmounts(GiftDetailByGiftTransactionNumber, ASelectedGiftBatch,
+                                        detailrow.GiftTransactionNumber);
+
+                                    if (sumGift == transaction.TransactionAmount)
                                     {
                                         if ((matchingGiftDetail != null)
                                             && (matchingGiftDetail.GiftTransactionNumber != detailrow.GiftTransactionNumber))
@@ -513,7 +528,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                                     GiftDetailByGiftTransactionNumberMatchStatus,
                                     transaction,
                                     matchingGiftDetail,
-                                    Convert.ToDecimal(matchingGiftDetail.GiftTransactionAmount) != Convert.ToDecimal(transaction.TransactionAmount));
+                                    matchingGiftDetail.GiftTransactionAmount != transaction.TransactionAmount);
                             }
                         }
                     }
@@ -547,13 +562,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                             int matchNumber = MatchingWords(detailrow.DonorShortName, stmtRow.AccountName) +
                                               MatchingWords(detailrow.RecipientDescription, stmtRow.Description);
 
-                            if ((matchNumber > BestMatchNumber)
-                                && ((SumAmounts(GiftDetailByGiftTransactionNumber, ASelectedGiftBatch,
-                                         detailrow.GiftTransactionNumber) == Convert.ToDecimal(stmtRow.TransactionAmount))
-                                    || (Convert.ToDecimal(detailrow.GiftTransactionAmount) == Convert.ToDecimal(stmtRow.TransactionAmount))))
+                            if (matchNumber > BestMatchNumber)
                             {
-                                BestMatchNumber = matchNumber;
-                                BestMatch = detailrow;
+                                if (SumAmounts(GiftDetailByGiftTransactionNumber, ASelectedGiftBatch,
+                                        detailrow.GiftTransactionNumber) == stmtRow.TransactionAmount)
+                                {
+                                    BestMatchNumber = matchNumber;
+                                    BestMatch = detailrow;
+                                }
+                                else if (detailrow.GiftTransactionAmount == stmtRow.TransactionAmount)
+                                {
+                                    TLogging.Log("TODO: split gift " + " " + detailrow.GiftTransactionAmount.ToString() +
+                                        " " + SumAmounts(GiftDetailByGiftTransactionNumber, ASelectedGiftBatch,
+                                            detailrow.GiftTransactionNumber).ToString());
+                                }
                             }
                         }
 
@@ -564,7 +586,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                                 GiftDetailByGiftTransactionNumberMatchStatus,
                                 stmtRow,
                                 BestMatch,
-                                Convert.ToDecimal(BestMatch.GiftTransactionAmount) != Convert.ToDecimal(stmtRow.TransactionAmount));
+                                BestMatch.GiftTransactionAmount != stmtRow.TransactionAmount);
                         }
                     }
                 }
