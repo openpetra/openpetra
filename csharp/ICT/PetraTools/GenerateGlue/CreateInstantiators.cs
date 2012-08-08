@@ -161,7 +161,6 @@ class CreateInstantiators : AutoGenerationWriter
         }
         else
         {
-            TLogging.Log("TODO: uiconnector with ref or out parameter: " + m.Name + ATypeConnector);
             ProcessTemplate snippet = ATemplate.GetSnippet("CALLPROCEDUREWITHGETDATA");
 
             // the first parameters are for the constructor
@@ -169,6 +168,7 @@ class CreateInstantiators : AutoGenerationWriter
             // and all the following parameters are for GetData
 
             snippet.SetCodelet("CONNECTORTYPE", m.Name + ATypeConnector);
+            snippet.SetCodelet("INTERFACENAME", CreateInterfaces.TypeToString(m.TypeReference, ""));
 
             String createObject = "T" + m.Name + ATypeConnector + " ReturnValue = new T" + m.Name +
                                   ATypeConnector + "(";

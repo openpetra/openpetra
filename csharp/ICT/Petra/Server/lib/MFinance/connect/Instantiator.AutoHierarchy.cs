@@ -404,7 +404,9 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.UIConnectors
             TSupplierEditUIConnector ReturnValue = new TSupplierEditUIConnector();
 
             ADataSet = ReturnValue.GetData(APartnerKey);
-            return ReturnValue;
+            return (IAPUIConnectorsSupplierEdit) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAPUIConnectorsSupplierEdit),
+                    ReturnValue);
         }
     }
 }

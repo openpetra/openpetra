@@ -705,7 +705,9 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.TableMaintenance.UIConnectors
             TSysManTableMaintenanceUIConnector ReturnValue = new TSysManTableMaintenanceUIConnector();
 
             ADataSet = ReturnValue.GetData(ATableName);
-            return ReturnValue;
+            return (ISysManUIConnectorsTableMaintenance) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(ISysManUIConnectorsTableMaintenance),
+                    ReturnValue);
         }
     }
 }

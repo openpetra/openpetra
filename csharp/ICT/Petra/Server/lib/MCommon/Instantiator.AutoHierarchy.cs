@@ -326,7 +326,9 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
 
             ADataSet = ReturnValue.GetData(AReadTransaction);
-            return ReturnValue;
+            return (IDataElementsUIConnectorsOfficeSpecificDataLabels) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IDataElementsUIConnectorsOfficeSpecificDataLabels),
+                    ReturnValue);
         }
 
         /// generated method from interface
@@ -354,7 +356,9 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
                AOfficeSpecificDataLabelUse);
 
             ADataSet = ReturnValue.GetData(AReadTransaction);
-            return ReturnValue;
+            return (IDataElementsUIConnectorsOfficeSpecificDataLabels) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IDataElementsUIConnectorsOfficeSpecificDataLabels),
+                    ReturnValue);
         }
 
         /// generated method from interface
@@ -372,7 +376,9 @@ namespace Ict.Petra.Server.MCommon.Instantiator.UIConnectors
             TFieldOfServiceUIConnector ReturnValue = new TFieldOfServiceUIConnector(APartnerKey);
 
             ADataSet = ReturnValue.GetData();
-            return ReturnValue;
+            return (IPartnerUIConnectorsFieldOfService) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IPartnerUIConnectorsFieldOfService),
+                    ReturnValue);
         }
     }
 }

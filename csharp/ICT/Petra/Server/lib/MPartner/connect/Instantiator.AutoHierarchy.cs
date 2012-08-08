@@ -1018,7 +1018,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.DataElements.UIConnecto
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
 
             AOfficeSpecificDataLabelsDataSet = ReturnValue.GetData();
-            return ReturnValue;
+            return (Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels),
+                    ReturnValue);
         }
     }
 }
@@ -1238,7 +1240,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector(APartnerKey);
 
             ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
-            return ReturnValue;
+            return (IPartnerUIConnectorsPartnerEdit) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IPartnerUIConnectorsPartnerEdit),
+                    ReturnValue);
         }
 
         /// generated method from interface
@@ -1262,7 +1266,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector(APartnerKey, ASiteKey, ALocationKey);
 
             ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
-            return ReturnValue;
+            return (IPartnerUIConnectorsPartnerEdit) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IPartnerUIConnectorsPartnerEdit),
+                    ReturnValue);
         }
 
         /// generated method from interface
@@ -1281,7 +1287,9 @@ namespace Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
             TPartnerEditUIConnector ReturnValue = new TPartnerEditUIConnector();
 
             ADataSet = ReturnValue.GetData(ADelayedDataLoading, ATabPage);
-            return ReturnValue;
+            return (IPartnerUIConnectorsPartnerEdit) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IPartnerUIConnectorsPartnerEdit),
+                    ReturnValue);
         }
 
         /// generated method from interface

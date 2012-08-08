@@ -169,7 +169,9 @@ TModuleAccessManager.CheckUserPermissionsForMethod(typeof({#CONNECTORWITHNAMESPA
 {##CALLPROCEDUREWITHGETDATA}
 {#CALLPROCEDUREINTERNAL}
 {#GETDATA}
-return ReturnValue;
+return ({#INTERFACENAME}) TCreateRemotableObject.CreateRemotableObject(
+        typeof({#INTERFACENAME}), 
+        ReturnValue);
 
 {##GETREMOTEABLEUICONNECTOROBJECT}
 return ({#INTERFACENAME}) TCreateRemotableObject.CreateRemotableObject(

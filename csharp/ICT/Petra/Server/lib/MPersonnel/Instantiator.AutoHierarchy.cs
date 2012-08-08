@@ -492,7 +492,9 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.Applicati
                AOfficeSpecificDataLabelUse);
 
             AOfficeSpecificDataLabelsDataSet = ReturnValue.GetData();
-            return ReturnValue;
+            return (Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels),
+                    ReturnValue);
         }
     }
 }
@@ -615,7 +617,9 @@ namespace Ict.Petra.Server.MPersonnel.Instantiator.Person.DataElements.UIConnect
             TOfficeSpecificDataLabelsUIConnector ReturnValue = new TOfficeSpecificDataLabelsUIConnector(APartnerKey, AOfficeSpecificDataLabelUse);
 
             AOfficeSpecificDataLabelsDataSet = ReturnValue.GetData();
-            return ReturnValue;
+            return (Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels) TCreateRemotableObject.CreateRemotableObject(
+                    typeof(Ict.Petra.Shared.Interfaces.MCommon.UIConnectors.IDataElementsUIConnectorsOfficeSpecificDataLabels),
+                    ReturnValue);
         }
     }
 }
