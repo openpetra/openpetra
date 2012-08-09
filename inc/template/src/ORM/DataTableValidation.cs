@@ -47,6 +47,12 @@ public class {#TABLENAME}Validation
         TValidationControlsData ValidationControlsData;
         TVerificationResult VerificationResult;
 
+        // Don't validate deleted DataRows
+        if (ARow.RowState == DataRowState.Deleted)
+        {
+            return;
+        }
+        
         {#VALIDATECOLUMNS}
 {#ENDIF VALIDATECOLUMNS}
 {#IFNDEF VALIDATECOLUMNS}
@@ -80,10 +86,13 @@ public class {#TABLENAME}Validation
 
         for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
         {
-            Validate("{#TABLENAME}Validation " +
-                " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                ({#TABLENAME}Row)ASubmitTable.Rows[Counter], ref AVerificationResult,
-                AValidationControlsDict);
+            if (ASubmitTable.Rows[Counter].RowState != DataRowState.Deleted)
+            {
+                Validate("{#TABLENAME}Validation " +
+                    " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
+                    ({#TABLENAME}Row)ASubmitTable.Rows[Counter], ref AVerificationResult,
+                    AValidationControlsDict);
+            }
         }
     }
 }
