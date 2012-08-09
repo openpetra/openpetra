@@ -198,6 +198,16 @@ namespace Ict.Common.Remoting.Server
 
         private static Assembly CreateAssembly(Type AInterfaceToImplement)
         {
+            string AssemblyName = TAppSettingsManager.ApplicationDirectory +
+                                  Path.DirectorySeparatorChar + "Temp.Remoting." + AInterfaceToImplement + "." +
+                                  DomainManagerBase.GClientID.ToString() + ".dll";
+
+            if (File.Exists(AssemblyName))
+            {
+                // it seems we cannot reuse assemblies. gives an error about missing dependancies?
+                // return Assembly.Load(AssemblyName);
+            }
+
             CSharpCodeProvider csc = new CSharpCodeProvider(
                 new Dictionary <string, string>() {
                     { "CompilerVersion", "v4.0" }
@@ -205,7 +215,7 @@ namespace Ict.Common.Remoting.Server
             CompilerParameters parameters = new CompilerParameters();
 
             parameters.GenerateInMemory = false;
-            parameters.OutputAssembly = "Temp.Remoting." + AInterfaceToImplement + ".dll";
+            parameters.OutputAssembly = AssemblyName;
             parameters.ReferencedAssemblies.Add("System.dll");
             parameters.ReferencedAssemblies.Add("System.Data.dll");
             parameters.ReferencedAssemblies.Add("System.Xml.dll");
@@ -257,6 +267,17 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         public static object CreateRemotableObject(Type AInterfaceToImplement, ICrossDomainService ObjectToRemote)
         {
+            if ((AssembliesForInterface.Count == 0) && (DomainManagerBase.GClientID == 0))
+            {
+                // delete all generated files
+                string[] dllnames = Directory.GetFiles(TAppSettingsManager.ApplicationDirectory, "Temp.Remoting.*.dll");
+
+                foreach (string dllName in dllnames)
+                {
+                    File.Delete(dllName);
+                }
+            }
+
             if (!AssembliesForInterface.ContainsKey(AInterfaceToImplement.ToString()))
             {
                 AssembliesForInterface.Add(AInterfaceToImplement.ToString(),
