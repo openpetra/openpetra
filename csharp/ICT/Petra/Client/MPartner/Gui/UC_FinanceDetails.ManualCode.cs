@@ -33,6 +33,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -94,6 +95,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void NewRowManual(ref PBankingDetailsRow ARow)
         {
+            ARow.BankingDetailsKey = (FMainDS.PBankingDetails.Rows.Count + 1) * -1;
+            ARow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
+            ARow.BankKey = 0;
+
+            PPartnerBankingDetailsRow partnerBankingDetails = FMainDS.PPartnerBankingDetails.NewRowTyped();
+            partnerBankingDetails.BankingDetailsKey = ARow.BankingDetailsKey;
+            partnerBankingDetails.PartnerKey = FMainDS.PPartner[0].PartnerKey;
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -189,6 +197,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (FMainDS.PBankingDetails == null)
                 {
                     FMainDS.Tables.Add(new PBankingDetailsTable());
+                    FMainDS.Tables.Add(new PPartnerBankingDetailsTable());
                     FMainDS.InitVars();
                 }
 
