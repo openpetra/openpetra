@@ -58,6 +58,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'International Access Code' must have a value
             ValidationColumn = ARow.Table.Columns[PCountryTable.ColumnInternatAccessCodeId];
 
@@ -132,6 +138,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
             bool bFoundNegativeValue = false;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'NumberOfYears' cannot be negative
             ValidationColumn = ARow.Table.Columns[AFrequencyTable.ColumnNumberOfYearsId];
@@ -254,6 +266,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'AcquisitionDescription' must have a value
             ValidationColumn = ARow.Table.Columns[PAcquisitionTable.ColumnAcquisitionDescriptionId];
 
@@ -283,6 +301,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtMaritalStatusTable.ColumnAssignableDateId];
@@ -317,6 +341,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'UnssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtMaritalStatusTable.ColumnAssignableDateId];
 
@@ -349,6 +379,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // If the 'DataType' is 'lookup' then categoryCode cannot be empty string (which would indicate no entries in the DataLabelCategory DB table)
             VerificationResult = null;
@@ -390,6 +426,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtApplicationTypeTable.ColumnUnassignableDateId];
 
@@ -422,6 +464,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtApplicantStatusTable.ColumnUnassignableDateId];
@@ -456,6 +504,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtLeadershipRatingTable.ColumnUnassignableDateId];
 
@@ -488,6 +542,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtCongressCodeTable.ColumnUnassignableDateId];
@@ -522,6 +582,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtArrivalPointTable.ColumnUnassignableDateId];
 
@@ -554,6 +620,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtAbilityAreaTable.ColumnUnassignableDateId];
@@ -588,6 +660,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtAbilityLevelTable.ColumnUnassignableDateId];
 
@@ -621,6 +699,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtQualificationAreaTable.ColumnQualificationDateId];
 
@@ -654,6 +738,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtQualificationLevelTable.ColumnUnassignableDateId];
 
@@ -687,6 +777,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtDriverStatusTable.ColumnUnassignableDateId];
 
@@ -720,6 +816,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtPositionTable.ColumnUnassignableDateId];
 
@@ -753,6 +855,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtAssignmentTypeTable.ColumnUnassignableDateId];
 
@@ -786,6 +894,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtLeavingCodeTable.ColumnUnassignableDateId];
 
@@ -819,6 +933,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtLanguageLevelTable.ColumnUnassignableDateId];
 
@@ -852,6 +972,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtPassportTypeTable.ColumnUnassignableDateId];
 
@@ -885,6 +1011,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PmDocumentTypeTable.ColumnUnassignableDateId];
 
@@ -918,6 +1050,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PmDocumentCategoryTable.ColumnUnassignableDateId];
 
@@ -951,6 +1089,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtSkillCategoryTable.ColumnUnassignableDateId];
 
@@ -984,6 +1128,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtSkillLevelTable.ColumnUnassignableDateId];
 
@@ -1017,6 +1167,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtOutreachPreferenceLevelTable.ColumnUnassignableDateId];
 
@@ -1050,6 +1206,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+            
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtContactTable.ColumnUnassignableDateId];
 

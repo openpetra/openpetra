@@ -56,6 +56,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return true;
+            }
+
             // 'Exchange Rate' must be greater than 0
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnExchangeRateToBaseId];
             ValidationContext = ARow.BatchNumber;
