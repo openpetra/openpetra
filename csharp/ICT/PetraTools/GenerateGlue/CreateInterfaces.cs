@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -680,6 +680,21 @@ public class CreateInterfaces : AutoGenerationWriter
         }
     }
 
+    private void AddNamespacesFromYmlFile(String AOutputPath, string AModuleName)
+    {
+        TYml2Xml reader = new TYml2Xml(AOutputPath + Path.DirectorySeparatorChar + "InterfacesUsingNamespaces.yml");
+        XmlDocument doc = reader.ParseYML2XML();
+
+        XmlNode RootNode = doc.DocumentElement.FirstChild;
+
+        StringCollection usingNamespaces = TYml2Xml.GetElements(RootNode, AModuleName);
+
+        foreach (string s in usingNamespaces)
+        {
+            WriteLine("using " + s.Trim() + ";");
+        }
+    }
+
     /// <summary>
     /// use CSParser to parse the Server files
     /// </summary>
@@ -688,7 +703,7 @@ public class CreateInterfaces : AutoGenerationWriter
     /// <param name="AXmlFileName"></param>
     private void WriteInterfaces(TNamespace tn, String AOutputPath, String AXmlFileName)
     {
-        String OutputFile = AOutputPath + Path.DirectorySeparatorChar + tn.Name + ".Interfaces.cs";
+        String OutputFile = AOutputPath + Path.DirectorySeparatorChar + tn.Name + ".Interfaces-generated.cs";
 
         // open file
         Console.WriteLine("working on file " + OutputFile);
@@ -721,6 +736,8 @@ public class CreateInterfaces : AutoGenerationWriter
         {
             CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
         }
+
+        AddNamespacesFromYmlFile(AOutputPath, tn.Name);
 
         // get all csharp files that might hold implementations of remotable classes
         List <CSParser>CSFiles = null;

@@ -52,6 +52,12 @@ namespace Ict.Tools.DBXML
         {
         }
 
+        /// <summary>
+        /// if this is set to true, primary key fields with NULL will be allowed.
+        /// otherwise the DumpPetra2x does not work.
+        /// </summary>
+        public bool SupportPetra2xLegacyStandard = false;
+
         private bool FDoValidation;
 
         /// <summary>
@@ -281,9 +287,18 @@ namespace Ict.Tools.DBXML
                 {
                     if (!table.GetField(primKeyField).bNotNull)
                     {
-                        throw new Exception(String.Format(
-                                "Primary Key field '{0}' of DB Table '{1}' is not marked as NOT NULL in petra.xml, but this is mandatory!",
-                                table.GetField(primKeyField).strName, table.strName));
+                        if (!SupportPetra2xLegacyStandard)
+                        {
+                            throw new Exception(String.Format(
+                                    "Primary Key field '{0}' of DB Table '{1}' is not marked as NOT NULL in petra.xml, but this is mandatory!",
+                                    table.GetField(primKeyField).strName, table.strName));
+                        }
+                        else
+                        {
+                            TLogging.Log(String.Format(
+                                    "Warning: Primary Key field '{0}' of DB Table '{1}' is not marked as NOT NULL in petra.xml, but this is mandatory!",
+                                    table.GetField(primKeyField).strName, table.strName));
+                        }
                     }
 
                     table.GetField(primKeyField).bPartOfPrimKey = true;

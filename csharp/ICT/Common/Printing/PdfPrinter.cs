@@ -108,11 +108,11 @@ namespace Ict.Common.Printing
             FXCenter.Alignment = XStringAlignment.Center;
         }
 
+        private SortedList <string, XFont>FXFontCache = new SortedList <string, XFont>();
+
         private XFont GetXFont(eFont AFont)
         {
-            XFont ReturnValue;
-
-            ReturnValue = FXDefaultFont;
+            XFont ReturnValue = FXDefaultFont;
 
             switch (AFont)
             {
@@ -137,13 +137,17 @@ namespace Ict.Common.Printing
                     break;
             }
 
-            if (CurrentRelativeFontSize != 0)
+            Font gFont = GetFont(AFont);
+
+            string id = ReturnValue.FontFamily.Name + gFont.SizeInPoints.ToString() + gFont.Style.ToString();
+
+            if (!FXFontCache.ContainsKey(id))
             {
-                // TODO it seems negative values have no effect?
-                Font gFont = GetFont(AFont);
                 XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode, PdfFontEmbedding.Always);
-                ReturnValue = new XFont(gFont.FontFamily, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, options);
+                FXFontCache.Add(id, new XFont(ReturnValue.FontFamily.Name, Point(gFont.SizeInPoints /*+XFONTSIZE*/), ReturnValue.Style, options));
             }
+
+            ReturnValue = FXFontCache[id];
 
             return ReturnValue;
         }
