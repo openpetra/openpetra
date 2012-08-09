@@ -616,12 +616,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             Boolean ResultValue = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
             ResultValue = PSubscriptionAccess.Exists(APublicationCode, APartnerKey, Transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
 
             return ResultValue;
         }
-        
+
         /// <summary>
         /// add subscription for all partners in a given extract
         /// </summary>
@@ -631,7 +632,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ASubscriptionsAdded">number of subscriptions added</param>
         /// <returns>true if deletion was successful</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static Boolean AddSubscription(int AExtractId, ref PSubscriptionTable ATable, 
+        public static Boolean AddSubscription(int AExtractId, ref PSubscriptionTable ATable,
             out PPartnerTable AExistingSubscriptionPartners, out int ASubscriptionsAdded)
         {
             Boolean ResultValue = true;
@@ -642,10 +643,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PPartnerTable PartnerTable;
             PPartnerRow PartnerRow;
             TVerificationResultCollection VerificationResultCollection;
-            
+
             // only use first row in table (as rows can't be serialized as parameters)
             SubscriptionRowTemplate = (PSubscriptionRow)ATable.Rows[0];
-            
+
             AExistingSubscriptionPartners = new PPartnerTable();
             ASubscriptionsAdded = 0;
 
@@ -654,7 +655,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             try
             {
                 ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
-                
+
                 // query all rows of given extract
                 foreach (MExtractRow ExtractRow in ExtractTable.Rows)
                 {
@@ -670,13 +671,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         SubscriptionRow = SubscriptionTable.NewRowTyped();
                         DataUtilities.CopyAllColumnValues(SubscriptionRowTemplate, SubscriptionRow);
-                        SubscriptionRow.PartnerKey = ExtractRow.PartnerKey;                        
+                        SubscriptionRow.PartnerKey = ExtractRow.PartnerKey;
                         SubscriptionTable.Rows.Add(SubscriptionRow);
                         ASubscriptionsAdded++;
                     }
-                    
                 }
-                
+
                 // now submit changes to the database
                 if (PSubscriptionAccess.SubmitChanges(SubscriptionTable, Transaction, out VerificationResultCollection))
                 {
@@ -698,7 +698,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ResultValue;
         }
-        
+
         /// <summary>
         /// delete subscription for a partner in a given extract
         /// </summary>
@@ -719,8 +719,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 // Use a direct sql statement rather than db access classes to improve performance as otherwise
                 // we would need an extra query for each row of an extract to update data
                 SqlStmt = "DELETE FROM pub_" + PSubscriptionTable.GetTableDBName() +
-                            " WHERE " + PSubscriptionTable.GetPublicationCodeDBName() + " = '" + APublicationCode + "'" +
-                            " AND " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString();
+                          " WHERE " + PSubscriptionTable.GetPublicationCodeDBName() + " = '" + APublicationCode + "'" +
+                          " AND " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString();
 
                 DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
 
@@ -783,7 +783,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ResultValue;
         }
-        
+
         /// <summary>
         /// update email gift statement flag for all partners in given extract
         /// </summary>

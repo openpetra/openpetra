@@ -293,7 +293,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.cmbPSubscriptionReasonSubsCancelledCode.Enabled = false;
             }
         }
-        
+
         private void EditIssues(System.Object sender, EventArgs e)
         {
             /* if anwered OK to question below, the Issuesgroupbox screenparts are enabled. */
