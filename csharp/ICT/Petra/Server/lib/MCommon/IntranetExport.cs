@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
     /// </summary>
     public class TIntranetExportWebConnector
     {
-        private const string ExportDateFormat = "yyyy/mm/dd";
+        private const string ExportDateFormat = "yyyy/MM/dd";
         private const string ExportVersion = "1.1.7";        // 1.1.7 is Petra's version - perhaps I should use a different one?
         private static TDBTransaction FTransaction;
         private static string FExportTrace;
@@ -388,7 +388,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                     GetAdminFees(Batch.LedgerNumber, 
                         Convert.ToInt32(Row["BatchNumber"]), Convert.ToInt32(Row["TransactionNumber"]), Convert.ToInt32(Row["DetailNumber"]), 
                         out GIFFee, out ICTFee, out OtherFee);
-                    sw2.WriteLine(String.Format("{0:D10},{1:D10},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},\"{12},{13},{14},{15}\",{16},{17},{18},\"{19}\",\"{20}\",\"{21}\",\"{22}\",\"{23}\",\"{24}\"",
+                    sw2.WriteLine(String.Format("{0:D10},{1:D10},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},\"{12},{13},{14},{15}\",{16:D10},{17:D10},{18},\"{19}\",\"{20}\",\"{21}\",\"{22}\",\"{23}\",\"{24}\"",
                         Row["DonorKey"],            //  0
                         RecipientKey,               //  1
                         Row["TransactionAmount"],   //  2
@@ -523,8 +523,8 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             StreamWriter sw = File.CreateText(FExportFilePath + "field.csv");
             sw.WriteLine("key,value");
             sw.WriteLine("time_zone," + TimeZone);
-            sw.WriteLine("postal_address, \"" + PostalAddress + "\"");
-            sw.WriteLine("street_address, \"" + StreetAddress + "\"");
+            sw.WriteLine("postal_address,\"" + PostalAddress + "\"");
+            sw.WriteLine("street_address,\"" + StreetAddress + "\"");
             sw.WriteLine("email," + Row["Email"]);
             sw.WriteLine("fax," + IntlPrefix + Row["Fax"]);
             sw.WriteLine("website," + Row["Website"]);
@@ -677,7 +677,12 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         {
             foreach (String FullPath in FZipFileNames)
             {
-                File.Delete(FullPath);
+                try
+                {
+                    File.Delete(FullPath);
+                }
+                catch (Exception)
+                { } // If I can't delete this file, I'll not worry just now (although it might become a problem later!)
             }
             FZipFileNames.Clear();
 
@@ -799,6 +804,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                     {
                         FExportTrace += ("\r\nEmail sent to " + msg.To[0].Address);
                     }
+                    msg.Dispose(); // If I don't call this, the attached files are still locked!
                 }
                 else
                 {
