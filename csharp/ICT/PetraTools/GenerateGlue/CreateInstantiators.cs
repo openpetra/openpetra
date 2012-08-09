@@ -54,461 +54,6 @@ class CreateInstantiators : AutoGenerationWriter
         return loaderClassSnippet;
     }
 
-    private ProcessTemplate CreateModuleAccessPermissionCheck(ProcessTemplate ATemplate, string AConnectorClassWithNamespace, MethodDeclaration m)
-    {
-        if (m.Attributes != null)
-        {
-            foreach (AttributeSection attrSection in m.Attributes)
-            {
-                foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-                {
-                    if (attr.Name == "RequireModulePermission")
-                    {
-                        ProcessTemplate snippet = ATemplate.GetSnippet("CHECKUSERMODULEPERMISSIONS");
-                        snippet.SetCodelet("METHODNAME", m.Name);
-                        snippet.SetCodelet("CONNECTORWITHNAMESPACE", AConnectorClassWithNamespace);
-                        snippet.SetCodelet("LEDGERNUMBER", "");
-
-                        string ParameterTypes = ";";
-
-                        foreach (ParameterDeclarationExpression p in m.Parameters)
-                        {
-                            if (p.ParameterName == "ALedgerNumber")
-                            {
-                                snippet.SetCodelet("LEDGERNUMBER", ", ALedgerNumber");
-                            }
-
-                            string ParameterType = p.TypeReference.Type.Replace("&", "").Replace("System.", String.Empty);
-
-                            if (ParameterType == "List")
-                            {
-                                ParameterType = ParameterType.Replace("List", "List[" + p.TypeReference.GenericTypes[0].ToString() + "]");
-                            }
-
-                            if (ParameterType.Contains("."))
-                            {
-                                ParameterType = ParameterType.Substring(ParameterType.LastIndexOf(".") + 1);
-                            }
-
-                            if (p.TypeReference.Type == "System.Nullable")
-                            {
-                                ParameterType = ParameterType.Replace("Nullable", "Nullable[" + p.TypeReference.GenericTypes[0].ToString() + "]");
-                            }
-
-                            if (p.TypeReference.IsArrayType)
-                            {
-                                ParameterType += ".ARRAY";
-                            }
-
-                            ParameterType = ParameterType.Replace("Boolean", "bool");
-                            ParameterType = ParameterType.Replace("Int32", "int");
-                            ParameterType = ParameterType.Replace("Int64", "long");
-
-                            ParameterTypes += ParameterType + ";";
-                        }
-
-                        ParameterTypes = ParameterTypes.ToUpper();
-                        snippet.SetCodelet("PARAMETERTYPES", ParameterTypes);
-                        return snippet;
-                    }
-                }
-            }
-        }
-
-        TLogging.Log("Warning !!! Missing module access permissions for " + AConnectorClassWithNamespace + "::" + m.Name);
-
-        return new ProcessTemplate();
-    }
-
-    private ProcessTemplate CreateInstanceOfConnector(ProcessTemplate ATemplate, MethodDeclaration m, string ATypeConnector)
-    {
-        bool outHasBeenFound = false;
-        bool firstParameter;
-
-        foreach (ParameterDeclarationExpression p in m.Parameters)
-        {
-            if ((p.ParamModifier & (ParameterModifiers.Out | ParameterModifiers.Ref)) != 0)
-            {
-                outHasBeenFound = true;
-            }
-        }
-
-        if (!outHasBeenFound)
-        {
-            // simple: no need to call GetData
-
-            ProcessTemplate snippet = ATemplate.GetSnippet("GETREMOTEABLEUICONNECTOROBJECT");
-            snippet.SetCodelet("UICONNECTORCLASS", m.Name + ATypeConnector);
-            snippet.SetCodelet("INTERFACENAME", CreateInterfaces.TypeToString(m.TypeReference, ""));
-
-            String parameters = string.Empty;
-            firstParameter = true;
-
-            foreach (ParameterDeclarationExpression p in m.Parameters)
-            {
-                if (!firstParameter)
-                {
-                    parameters += ", ";
-                }
-
-                firstParameter = false;
-                parameters += p.ParameterName;
-            }
-
-            snippet.SetCodelet("PARAMETERS", parameters);
-
-            return snippet;
-        }
-        else
-        {
-            ProcessTemplate snippet = ATemplate.GetSnippet("CALLPROCEDUREWITHGETDATA");
-
-            // the first parameters are for the constructor
-            // then the out parameter is for the dataset,
-            // and all the following parameters are for GetData
-
-            snippet.SetCodelet("CONNECTORTYPE", m.Name + ATypeConnector);
-            snippet.SetCodelet("INTERFACENAME", CreateInterfaces.TypeToString(m.TypeReference, ""));
-
-            String createObject = "T" + m.Name + ATypeConnector + " ReturnValue = new T" + m.Name +
-                                  ATypeConnector + "(";
-            StringCollection parameters = new StringCollection();
-
-            foreach (ParameterDeclarationExpression p in m.Parameters)
-            {
-                if ((p.ParamModifier & (ParameterModifiers.Out | ParameterModifiers.Ref)) != 0)
-                {
-                    break;
-                }
-
-                parameters.Add(p.ParameterName);
-            }
-
-            snippet.SetCodelet("CALLPROCEDUREINTERNAL", WriteLineMethodCallToString(createObject, parameters));
-
-            // find the out parameter, and use the following parameters as parameters for GetData
-            String getData = "";
-            outHasBeenFound = false;
-            firstParameter = true;
-
-            foreach (ParameterDeclarationExpression p in m.Parameters)
-            {
-                if (outHasBeenFound)
-                {
-                    if (!firstParameter)
-                    {
-                        getData += ", ";
-                    }
-
-                    firstParameter = false;
-                    getData += p.ParameterName;
-                }
-
-                if ((p.ParamModifier & (ParameterModifiers.Out | ParameterModifiers.Ref)) != 0)
-                {
-                    getData += p.ParameterName + " = ReturnValue.GetData(";
-                    outHasBeenFound = true;
-                }
-            }
-
-            getData += ");"; // test2
-            snippet.SetCodelet("GETDATA", getData);
-            return snippet;
-        }
-    }
-
-    private ProcessTemplate ImplementInterface(ProcessTemplate ATemplate, String AFullNamespace, String AInterfaceName)
-    {
-        // e.g. FullNamespace: Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
-        // e.g. InterfaceNamespace: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
-        string InterfaceNamespace = AFullNamespace.Replace("Server.", "Shared.Interfaces.").Replace("Instantiator.", "");
-
-        // try to implement the methods defined in the interface
-        TypeDeclaration t = CSParser.FindInterface(CSFiles, InterfaceNamespace, AInterfaceName);
-
-        if (t == null)
-        {
-            return new ProcessTemplate();
-        }
-
-        ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
-        interfacesSnippet.SetCodelet("METHOD", "");
-
-        foreach (MethodDeclaration m in CSParser.GetMethods(t))
-        {
-            string MethodName = m.Name;
-
-            if (MethodName.Equals("InitializeLifetimeService")
-                || MethodName.Equals("GetLifetimeService")
-                || MethodName.Equals("CreateObjRef")
-                || MethodName.Equals("GetType")
-                || MethodName.Equals("ToString")
-                || MethodName.Equals("Equals")
-                || MethodName.Equals("GetHashCode"))
-            {
-                continue;
-            }
-
-            String returnType = CreateInterfaces.TypeToString(m.TypeReference, "");
-
-            int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
-            String formattedMethod = "public " + returnType + " " + MethodName + "(";
-
-            bool firstParameter = true;
-
-            foreach (ParameterDeclarationExpression p in m.Parameters)
-            {
-                AddParameter(ref formattedMethod, ref firstParameter, align, p.ParameterName, p.ParamModifier,
-                    CreateInterfaces.TypeToString(p.TypeReference, ""));
-            }
-
-            formattedMethod += ")";
-
-            ProcessTemplate ProcedureSnippet = ATemplate.GetSnippet("GENERATEDMETHODFROMINTERFACE");
-            ProcedureSnippet.SetCodelet("PROCEDUREHEADER", formattedMethod);
-
-            // TODO: there is a manual exception for TReportingUIConnectorsNamespace: better do a generic way
-            if (AInterfaceName.EndsWith("UIConnectorsNamespace")
-                && (AInterfaceName != "IReportingUIConnectorsNamespace"))
-            {
-                ProcedureSnippet.InsertSnippet("CALLPROCEDURE", CreateInstanceOfConnector(ATemplate, m, "UIConnector"));
-            }
-            else if (AInterfaceName.EndsWith("LogicConnectorsNamespace"))
-            {
-                ProcedureSnippet.InsertSnippet("CALLPROCEDURE", CreateInstanceOfConnector(ATemplate, m, "LogicConnector"));
-            }
-            else if (AInterfaceName.EndsWith("WebConnectorsNamespace"))
-            {
-                // don't create instance of connector, since we use static functions
-                // should never get here, already called CreateStaticCallConnector
-            }
-
-            // what about them?
-            //     || AInterfaceName.EndsWith("LogicConnectorsNamespace")
-            //     || AInterfaceName.EndsWith("ServerLookupsNamespace")
-            //    || AInterfaceName.EndsWith("CacheableNamespace")
-
-            // might be implemented with manual code
-            if (!ProcedureSnippet.FCodelets.Contains("CALLPROCEDURE"))
-            {
-                ProcedureSnippet.SetCodelet("CALLPROCEDURE", "");
-            }
-
-            interfacesSnippet.InsertSnippet("METHOD", ProcedureSnippet);
-        }
-
-        return interfacesSnippet;
-    }
-
-    private void ImplementInterfaceForwarding(ProcessTemplate ATemplate, ProcessTemplate targetSnippet, String AFullNamespace, String AInterfaceName)
-    {
-        // e.g. FullNamespace: Ict.Petra.Server.MPartner.Instantiator.Partner.UIConnectors
-        // e.g. InterfaceNamespace: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors
-        string InterfaceNamespace = AFullNamespace.Replace("Server.", "Shared.Interfaces.").Replace(".Instantiator", "").Replace("Instantiator", "");
-
-        targetSnippet.AddToCodelet("CALLFORWARDINGMETHODS", string.Empty);
-
-        // try to implement the methods defined in the interface
-        TypeDeclaration t = CSParser.FindInterface(CSFiles, InterfaceNamespace, AInterfaceName);
-
-        if (t == null)
-        {
-            //eg. Ict.Petra.Shared.Interfaces.MFinance.AP.IUIConnectorsNamespace becomes Ict.Petra.Shared.Interfaces.MFinance.AP.IAPUIConnectorsNamespace
-            //eg. Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements UIConnector becomes IPartnerDataElementsUIConnector
-            string interfacename =
-                "I" + InterfaceNamespace.Substring(
-                    InterfaceNamespace.IndexOf(".", "Ict.Petra.Shared.Interfaces.".Length)).Replace(".", string.Empty) +
-                AInterfaceName.Substring(1);
-            t = CSParser.FindInterface(CSFiles, InterfaceNamespace, interfacename);
-        }
-
-        if (t == null)
-        {
-            TLogging.Log("cannot find interface " + InterfaceNamespace + "." + AInterfaceName);
-            return;
-        }
-
-        foreach (MethodDeclaration m in CSParser.GetMethods(t))
-        {
-            string MethodName = m.Name;
-
-            if (MethodName.Equals("InitializeLifetimeService")
-                || MethodName.Equals("GetLifetimeService")
-                || MethodName.Equals("CreateObjRef")
-                || MethodName.Equals("GetType")
-                || MethodName.Equals("ToString")
-                || MethodName.Equals("Equals")
-                || MethodName.Equals("GetHashCode"))
-            {
-                continue;
-            }
-
-            String returnType = CreateInterfaces.TypeToString(m.TypeReference, "");
-
-            int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
-            String formattedMethodHead = "public " + returnType + " " + MethodName + "(";
-
-            string formattedMethodCall = string.Empty;
-
-            if (returnType != "void")
-            {
-                formattedMethodCall += "return ";
-            }
-
-            formattedMethodCall += "RemoteObject." + MethodName + "(";
-
-            bool firstParameter = true;
-
-            foreach (ParameterDeclarationExpression p in m.Parameters)
-            {
-                if (!firstParameter)
-                {
-                    formattedMethodCall += ",";
-                }
-
-                if ((ParameterModifiers.Ref & p.ParamModifier) > 0)
-                {
-                    formattedMethodCall += "ref ";
-                }
-                else if ((ParameterModifiers.Out & p.ParamModifier) > 0)
-                {
-                    formattedMethodCall += "out ";
-                }
-
-                formattedMethodCall += p.ParameterName;
-
-                AddParameter(ref formattedMethodHead, ref firstParameter, align, p.ParameterName, p.ParamModifier,
-                    CreateInterfaces.TypeToString(p.TypeReference, ""));
-            }
-
-            formattedMethodHead += ")";
-            formattedMethodCall += ");";
-
-            ProcessTemplate methodSnippet = ATemplate.GetSnippet("CALLFORWARDINGMETHOD");
-            methodSnippet.SetCodelet("METHODHEAD", formattedMethodHead);
-            methodSnippet.SetCodelet("METHODCALL", formattedMethodCall);
-
-            targetSnippet.InsertSnippet("CALLFORWARDINGMETHODS", methodSnippet);
-        }
-
-        foreach (PropertyDeclaration p in CSParser.GetProperties(t))
-        {
-            string propertyForwarder = "/// property forwarder" + Environment.NewLine;
-            propertyForwarder += "public " + p.TypeReference.ToString() + " " + p.Name + Environment.NewLine;
-            propertyForwarder += "{" + Environment.NewLine;
-            propertyForwarder += "    get { if (RemoteObject == null) { InitRemoteObject(); } return RemoteObject." + p.Name + "; }" +
-                                 Environment.NewLine;
-            propertyForwarder += "}" + Environment.NewLine;
-
-            targetSnippet.AddToCodelet("CALLFORWARDINGMETHODS", propertyForwarder);
-        }
-    }
-
-    ProcessTemplate ImplementStaticCallConnector(ProcessTemplate ATemplate, string AFullNamespace)
-    {
-        // e.g. FullNamespace: Ict.Petra.Server.MFinance.Instantiator.AccountsPayable.WebConnectors
-        // e.g. ConnectorNamespace: Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors
-        string ConnectorNamespace = AFullNamespace.Replace("Instantiator.", "");
-
-        List <CSParser>CSFiles = null;
-        string module = AFullNamespace.Split('.')[3];
-
-        if (Directory.Exists(CSParser.ICTPath + "/Petra/Server/lib/" + module))
-        {
-            // any class in the module can contain a webconnector
-            CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Server/lib/" + module,
-                SearchOption.AllDirectories);
-        }
-        else
-        {
-            CSFiles = new List <CSParser>();
-        }
-
-        ProcessTemplate interfacesSnippet = ATemplate.GetSnippet("INTERFACEMETHODS");
-        interfacesSnippet.SetCodelet("METHOD", "");
-
-        List <TypeDeclaration>ConnectorClasses = CSParser.GetClassesInNamespace(CSFiles, ConnectorNamespace);
-
-        foreach (TypeDeclaration connectorClass in ConnectorClasses)
-        {
-            foreach (MethodDeclaration m in CSParser.GetMethods(connectorClass))
-            {
-                bool AttributeNoRemoting = false;
-
-                foreach (AttributeSection attrSection in m.Attributes)
-                {
-                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-                    {
-                        if (attr.Name == "NoRemoting")
-                        {
-                            AttributeNoRemoting = true;
-                        }
-                    }
-                }
-
-                if (AttributeNoRemoting)
-                {
-                    continue;
-                }
-
-                string MethodName = m.Name;
-
-                String returnType = CreateInterfaces.TypeToString(m.TypeReference, "");
-
-                if ((m.Modifier & Modifiers.Public) == 0)
-                {
-                    continue;
-                }
-
-                int align = (returnType + " " + MethodName).Length + 1 + ("public ").Length;
-                String formattedMethod = "public " + returnType + " " + MethodName + "(";
-                bool firstParameter = true;
-                string actualParameters = "";
-
-                foreach (ParameterDeclarationExpression p in m.Parameters)
-                {
-                    if (!firstParameter)
-                    {
-                        actualParameters += ", ";
-                    }
-
-                    if ((p.ParamModifier & ParameterModifiers.Out) > 0)
-                    {
-                        actualParameters += "out ";
-                    }
-
-                    if ((p.ParamModifier & ParameterModifiers.Ref) > 0)
-                    {
-                        actualParameters += "ref ";
-                    }
-
-                    actualParameters += p.ParameterName;
-                    AddParameter(ref formattedMethod, ref firstParameter, align, p.ParameterName, p.ParamModifier,
-                        CreateInterfaces.TypeToString(p.TypeReference, ""));
-                }
-
-                formattedMethod += ")";
-
-                ProcessTemplate ProcedureSnippet = ATemplate.GetSnippet("GENERATEDMETHODFROMCONNECTOR");
-                ProcedureSnippet.SetCodelet("PROCEDUREHEADER", formattedMethod);
-
-                // eg: return Ict.Petra.Server.MFinance.AccountsPayable.WebConnectors.TTransactionEditWebConnector.GetDocument(ALedgerNumber, AAPNumber);
-                ProcedureSnippet.InsertSnippet("CHECKUSERMODULEPERMISSIONS",
-                    CreateModuleAccessPermissionCheck(
-                        ATemplate,
-                        ConnectorNamespace + "." + connectorClass.Name,
-                        m));
-                ProcedureSnippet.SetCodelet("CALLPROCEDURE", "return " + ConnectorNamespace + "." +
-                    connectorClass.Name + "." +
-                    MethodName + "(" + actualParameters + ");");
-
-                interfacesSnippet.InsertSnippet("METHOD", ProcedureSnippet);
-            }
-        }
-
-        return interfacesSnippet;
-    }
-
     private ProcessTemplate WriteRemotableClass(ProcessTemplate ATemplate,
         String FullNamespace,
         String Classname,
@@ -516,9 +61,12 @@ class CreateInstantiators : AutoGenerationWriter
         Boolean HighestLevel,
         List <TNamespace>children)
     {
-        ProcessTemplate remotableClassSnippet = ATemplate.GetSnippet("REMOTABLECLASS");
+        if (children.Count == 0)
+        {
+            return new ProcessTemplate();
+        }
 
-        remotableClassSnippet.SetCodelet("HIGHESTLEVEL", "true");
+        ProcessTemplate remotableClassSnippet = ATemplate.GetSnippet("REMOTABLECLASS");
 
         remotableClassSnippet.SetCodelet("NAMESPACE", Namespace);
 
@@ -530,19 +78,6 @@ class CreateInstantiators : AutoGenerationWriter
         }
 
         remotableClassSnippet.SetCodelet("LOCALCLASSNAME", LocalClassname);
-
-        if (children.Count == 0)
-        {
-            if (Namespace.EndsWith("WebConnectors"))
-            {
-                remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS", ImplementStaticCallConnector(ATemplate, FullNamespace));
-            }
-            else
-            {
-                remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS",
-                    ImplementInterface(ATemplate, FullNamespace, "I" + Namespace + "Namespace"));
-            }
-        }
 
         foreach (TNamespace sn in children)
         {
@@ -561,9 +96,6 @@ class CreateInstantiators : AutoGenerationWriter
 
             subNamespaceSnippet.SetCodelet("NAMESPACE", Namespace);
 
-            // for all methods of the subnamespace, insert a forwarding method
-            ImplementInterfaceForwarding(ATemplate, subNamespaceSnippet, FullNamespace, "I" + sn.Name + "Namespace");
-
             remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS", subNamespaceSnippet);
         }
 
@@ -575,13 +107,11 @@ class CreateInstantiators : AutoGenerationWriter
         ProcessTemplate namespaceTemplate = ATemplate.GetSnippet("NAMESPACE");
 
         namespaceTemplate.SetCodelet("NAMESPACENAME", NamespaceName);
-
         namespaceTemplate.InsertSnippet("REMOTABLECLASS", WriteRemotableClass(ATemplate, NamespaceName,
                 ClassName,
                 ClassName,
                 false,
                 sn.Children));
-
         namespaceTemplate.SetCodelet("SUBNAMESPACES1", "");
 
         foreach (TNamespace sn2 in sn.Children)
@@ -595,14 +125,14 @@ class CreateInstantiators : AutoGenerationWriter
     private void CreateAutoHierarchy(TNamespace tn, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
-                            Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy.cs";
+                            Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy-generated.cs";
 
         if (Directory.Exists(AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
                 Path.DirectorySeparatorChar + "connect"))
         {
             OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
                          Path.DirectorySeparatorChar + "connect" +
-                         Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy.cs";
+                         Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy-generated.cs";
         }
 
         Console.WriteLine("working on " + OutputFile);
@@ -621,39 +151,11 @@ class CreateInstantiators : AutoGenerationWriter
 
         ProcessTemplate headerSnippet = Template.GetSnippet("HEADER");
 
+        headerSnippet.SetCodelet("TOPLEVELMODULE", tn.Name);
+
         WriteLine(headerSnippet.FinishWriting(true));
 
         WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + ';');
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name + ';');
-        }
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
-        }
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            WriteLine("using Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name + ';');
-        }
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name, sn.Name, sn, sn.Children);
-        }
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            WriteLine("using Ict.Petra.Server.M" + tn.Name + "." + sn.Name + ';');
-        }
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Server.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
-        }
 
         WriteLine();
 
@@ -683,17 +185,10 @@ class CreateInstantiators : AutoGenerationWriter
         Close();
     }
 
-    private List <CSParser>CSFiles = null;
     public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
-        // get the appropriate cs file
-        CSFiles = CSParser.GetCSFilesForDirectory(CSParser.ICTPath + "/Petra/Shared/lib/Interfaces",
-            SearchOption.TopDirectoryOnly);
-
         foreach (TNamespace tn in ANamespaces)
         {
-            // for testing:
-//        if (tn.Name != "Reporting") continue;
             CreateAutoHierarchy(tn, AOutputPath, AXmlFileName, ATemplateDir);
         }
     }

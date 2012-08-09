@@ -80,7 +80,7 @@ NamespaceHierarchy:
     Conference: {Description=Conference Module}
         Cacheable: {Description=Cacheable DataTables}
         WebConnectors: {Description=Web Connectors}
-    FinDev: {Description=Financial Development Module}
+    #FinDev: {Description=Financial Development Module}
     Reporting: {Description="Reporting Module ('Virtual' Module)"}
         LogicConnectors: {Description=Logic Connectors}
     SysMan: {Description=System Manager Module}

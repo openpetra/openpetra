@@ -618,7 +618,6 @@ public class CreateInterfaces : AutoGenerationWriter
         List <CSParser>ACSFiles)
     {
         WriteLine();
-        StartBlock("namespace " + ParentNamespace);
 
         WriteInterface(ParentNamespace,
             ParentInterfaceName,
@@ -637,8 +636,6 @@ public class CreateInterfaces : AutoGenerationWriter
                 InterfaceName,
                 tn, sn, children, InterfaceNames, ACSFiles);
         }
-
-        EndBlock();
 
         foreach (TNamespace child in children)
         {
@@ -671,13 +668,14 @@ public class CreateInterfaces : AutoGenerationWriter
         }
 
         EndBlock();
-        EndBlock();
 
         // parse Instantiator source code
         foreach (TNamespace sn in tn.Children)
         {
             WriteNamespace("Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, tn, sn, sn.Children, AInterfaceNames, ACSFiles);
         }
+
+        EndBlock();
     }
 
     private void AddNamespacesFromYmlFile(String AOutputPath, string AModuleName)
@@ -726,16 +724,6 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine("using Ict.Common;");
         WriteLine("using Ict.Common.Verification;");
         WriteLine("using Ict.Common.Remoting.Shared;");
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name + ';');
-        }
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
-        }
 
         AddNamespacesFromYmlFile(AOutputPath, tn.Name);
 
