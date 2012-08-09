@@ -133,13 +133,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
             else
             {
                 DataRow Row = tbl.NewRowTyped(true);
-//              tbl.ImportRow(Row);
                 ((SSystemDefaultsRow)Row).DefaultCode = AValue;
                 ((SSystemDefaultsRow)Row).DefaultDescription = "Created in OpenPetra";
                 ((SSystemDefaultsRow)Row).DefaultValue = AValue;
                 SSystemDefaultsAccess.InsertRow(SSystemDefaultsTable.TableId, ref Row, Transaction, UserName);
             }
-//         SSystemDefaultsAccess.SubmitChanges();
+            DBAccess.GDBAccessObj.CommitTransaction();
            return true;
         }
     }

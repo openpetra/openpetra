@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             if (OkToClose)
             {
-                //   TSystemDefaults.SetSystemDefault("IntranetExportSettings", String.Format ("{0},{1},{2}", FPswd, FGiftDays, FExtra));
+                TSystemDefaults.SetSystemDefault("IntranetExportSettings", String.Format ("{0},{1},{2}", FPswd, FGiftDays, FExtra));
                 Close();
             }
         }
