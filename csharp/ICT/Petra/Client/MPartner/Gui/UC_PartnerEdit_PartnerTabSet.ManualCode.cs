@@ -879,6 +879,28 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgFinanceDetails)
+                {
+                    // see PreInitUserControl below
+                }
+            }
+        }
+
+        /// <summary>
+        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *before*
+        /// InitUserControl() gets called.
+        /// </summary>
+        partial void PreInitUserControl(UserControl AUserControl)
+        {
+            if (AUserControl is TUC_FinanceDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFinanceDetails;
+
+                FUcoFinanceDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
+
+                FUcoFinanceDetails.SpecialInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
             }
         }
 
