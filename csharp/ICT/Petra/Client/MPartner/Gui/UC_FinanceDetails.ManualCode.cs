@@ -2,11 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
-//       thomasw
-//       joachimm
+//       joachimm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,10 +44,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-//        private PtAbilityAreaTable FBankingDetailsDT;
-        private PtAbilityLevelTable FAbilityLevelDT;
-
-        #region Properties
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
@@ -65,14 +59,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        #endregion
-
-        #region Events
-
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-
-        #endregion
 
         /// <summary>
         /// todoComment
@@ -82,8 +70,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
-
- //           FBankingDetailsDT = (PtAbilityAreaTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityAreaList);
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
@@ -108,24 +94,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void NewRowManual(ref PBankingDetailsRow ARow)
         {
-            string newName;
-            Int32 countNewDetail = 0;
-
-            ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-            /*
- //           newName = FBankingDetailsDT[0].BankingDetailsKey;
-
-            if (FMainDS.PBankingDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
-            {
-                while (FMainDS.PBankingDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
-                {
-                    countNewDetail++;
-  //                  newName = FBankingDetailsDT[countNewDetail].BankingDetailsKey;
-                }
-            }
-
-            ARow.BankingDetailsKey = newName;
-            */
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -184,7 +152,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             DoRecalculateScreenParts();
         }
 
-
         /// <summary>
         /// Gets the data from all controls on this UserControl.
         /// The data is stored in the DataTables/DataColumns to which the Controls
@@ -209,7 +176,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Loads Person Ability Data from Petra Server into FMainDS, if not already loaded.
+        /// Loads PBankingDetails Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>
         private Boolean LoadDataOnDemand()
@@ -228,8 +195,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (TClientSettings.DelayedDataLoading
                     && (FMainDS.PBankingDetails.Rows.Count == 0))
                 {
-//                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiPersonalAbilities));
-                      FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails(TIndividualDataItemEnum.idiBankingDetails));
+                    FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails(FMainDS.PPartner[0].PartnerKey));
 
                     // Make DataRows unchanged
                     if (FMainDS.PBankingDetails.Rows.Count > 0)
