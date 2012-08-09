@@ -794,7 +794,11 @@ namespace Ict.Common.Printing
 
                     if (TXMLParser.HasAttribute(curNode, "size"))
                     {
+                        CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
                         FPrinter.CurrentRelativeFontSize += (float)TXMLParser.GetDecimalAttribute(curNode, "size");
+
+                        Catalog.SetCulture(OrigCulture);
                     }
 
                     if (TXMLParser.HasAttribute(curNode, "face"))

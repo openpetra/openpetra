@@ -1382,7 +1382,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                                                                             giftDetail.MotivationGroupCode,
                                                                                             giftDetail.MotivationDetailCode });
 
+                if (motivationRow == null)
+                {
+                    AVerifications.Add(
+                        new TVerificationResult(
+                            "Posting Gift Batch",
+                            String.Format("Invalid motivation detail {0}/{1} in gift {2}",
+                                giftDetail.MotivationGroupCode,
+                                giftDetail.MotivationDetailCode,
+                                giftDetail.GiftTransactionNumber),
+                            TResultSeverity.Resv_Critical));
+                    return null;
+                }
+
                 PPartnerRow RecipientPartner = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
+
+                giftDetail.RecipientLedgerNumber = 0;
 
                 // make sure the correct costcentres and accounts are used
                 if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
@@ -1396,7 +1411,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.RecipientLedgerNumber = GetRecipientLedgerNumber(MainDS, giftDetail.RecipientKey);
                 }
 
-                giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
+                if (giftDetail.RecipientLedgerNumber != 0)
+                {
+                    giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
+                }
+                else
+                {
+                    giftDetail.CostCentreCode = motivationRow.CostCentreCode;
+                }
 
                 // set column giftdetail.AccountCode motivation
                 giftDetail.AccountCode = motivationRow.AccountCode;
