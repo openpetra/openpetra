@@ -632,7 +632,7 @@ namespace Ict.Common.Data
         /// <summary>
         /// Removes any DataRow from the Destination DataTable that isn't found in the Source DataTable.
         /// </summary>
-        /// <remarks><para><em>Both DataTables must have the same Primary Key for this Method to work!</em></para>
+        /// <remarks><para><em>Both DataTables <em>must have the same Primary Key</em> for this Method to work!</em></para>
         /// <para>A possible use for this Method is the removing of DataRows from a DataTable that is held on
         /// the Client side when the DataTable is re-loaded from the DB and the reloaded DataTable may contains less rows.
         /// Performing a DataSet.Merge operation (DataTable reloaded from the DB merged into client-side DataSet)
@@ -640,7 +640,10 @@ namespace Ict.Common.Data
         /// but calling this Method after the DataSet.Merge does that.</para></remarks>
         /// <param name="ASourceDT">Source DataTable.</param>
         /// <param name="ADestinationDT">Destination DataTable.</param>
-        public static void RemoveRowsNotPresentInDT(DataTable ASourceDT, DataTable ADestinationDT)
+        /// <param name="ADontAttemptToProcessDTsWithoutPKs">Set this to true to not attemt to process DataTables that don't have Primary Keys.
+        /// If this Argument is set to true, no Exception is thrown and the Method simply doesn't do any work, as it would need Primary Keys for  
+        /// performing its work (default=false).</param>
+        public static void RemoveRowsNotPresentInDT(DataTable ASourceDT, DataTable ADestinationDT, bool ADontAttemptToProcessDTsWithoutPKs = false)
         {
             DataRow FoundRow;
 
@@ -649,12 +652,26 @@ namespace Ict.Common.Data
 
             if (ASourceDT.PrimaryKey.Length == 0)
             {
-                throw new ArgumentException("DataTable specified with ASourceDT must have a Primary Key specified");
+                if (ADontAttemptToProcessDTsWithoutPKs) 
+                {
+                    return;                    
+                }
+                else
+                {
+                    throw new ArgumentException("DataTable specified with ASourceDT must have a Primary Key specified");    
+                }
             }
 
             if (PrimaryKeyArr.Length == 0)
             {
-                throw new ArgumentException("DataTable specified with ADestinationDT must have a Primary Key specified");
+                if (ADontAttemptToProcessDTsWithoutPKs) 
+                {
+                    return;                    
+                }
+                else
+                {
+                    throw new ArgumentException("DataTable specified with ADestinationDT must have a Primary Key specified");
+                }
             }
 
             for (int Counter = 0; Counter < ADestinationDT.Rows.Count; Counter++)
