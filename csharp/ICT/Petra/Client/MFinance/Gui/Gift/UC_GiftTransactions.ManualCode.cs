@@ -109,6 +109,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FinRecipientKeyChanging = true;
             FPetraUtilsObject.SuppressChangeDetection = true;
 
+			GiftBatchTDSAGiftDetailRow giftDetailRow = GetGiftDetailRow(FPreviouslySelectedDetailRow.GiftTransactionNumber, FPreviouslySelectedDetailRow.DetailNumber);
+            //giftDetailRow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            giftDetailRow.RecipientDescription = APartnerShortName;  //txtDetailRecipientKey.LabelText;
+
             try
             {
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
@@ -407,6 +411,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private AGiftRow GetGiftRow(Int32 AGiftTransactionNumber)
         {
             return (AGiftRow)FMainDS.AGift.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, AGiftTransactionNumber });
+        }
+
+        /// <summary>
+        /// get the details of the current gift
+        /// </summary>
+        /// <returns></returns>
+        private GiftBatchTDSAGiftDetailRow GetGiftDetailRow(Int32 AGiftTransactionNumber, Int32 AGiftDetailNumber)
+        {
+            return (GiftBatchTDSAGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, AGiftTransactionNumber, AGiftDetailNumber});
         }
 
         /// <summary>
@@ -780,6 +793,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtBatchTotal.NumberValueDecimal = 0;
                 ClearControls();
             }
+            else
+            {
+				AGiftDetailRow ARow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows[0];
+                cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
+                cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
+            }
 
             if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
             {
@@ -820,6 +839,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 txtDetailCostCentreCode.Text = string.Empty;
             }
+
+            //TODO: keymin needs more adjustment to clear for each new row
+            if (cmbMinistry.Count == 0)
+            {
+            	cmbMinistry.SelectedIndex = -1;
+            }
+            
+//            if (ARow.IsMotivationGroupCodeNull())
+//			{
+//				cmbDetailMotivationGroupCode.SelectedIndex = -1;
+//				cmbDetailMotivationDetailCode.SelectedIndex = -1;
+//            }
+//            else
+//            {
+//            	cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
+//            	cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
+//            }
 
             UpdateControlsProtection(ARow);
 
@@ -868,6 +904,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 cmbDetailReceiptLetterCode.SetSelectedString(giftRow.ReceiptLetterCode);
             }
+            
+            
+            
         }
 
         /// <summary>
@@ -953,6 +992,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
             giftRow.DateEntered = dtpDateEntered.Date.Value;
+            
+			GiftBatchTDSAGiftDetailRow giftDetailRow = GetGiftDetailRow(ARow.GiftTransactionNumber, ARow.DetailNumber);
+            giftDetailRow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            giftDetailRow.RecipientDescription = txtDetailRecipientKey.LabelText;
+            
+            
+            
 //
             //            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
             //            {
@@ -967,6 +1013,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //            }
 
             //  join by hand
+//            if (cmbDetailMotivationGroupCode.SelectedIndex == -1)
+//            {
+//            	ARow.SetMotivationGroupCodeNull();
+//            	ARow.SetMotivationDetailCodeNull();
+//            }
+//            else
+//            {
+//            	ARow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
+//            	ARow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
+//            }
+
             if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
             {
                 giftRow.SetMethodOfGivingCodeNull();
