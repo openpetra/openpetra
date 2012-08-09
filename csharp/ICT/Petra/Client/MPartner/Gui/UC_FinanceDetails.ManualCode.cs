@@ -79,6 +79,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void SpecialInitUserControl(PartnerEditTDS AMainDS)
         {
+#ifdef todo        
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
@@ -94,6 +95,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnDelete.Enabled = false;
                 pnlDetails.Visible = false;
             }
+#endif
         }
 
         /// <summary>
@@ -103,16 +105,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+#ifdef todo
             this.CreateNewPBankingDetails();
+#endif
         }
 
         private void NewRowManual(ref PBankingDetailsRow ARow)
         {
+#ifdef todo
             string newName;
             Int32 countNewDetail = 0;
 
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-            /*
+            
  //           newName = FBankingDetailsDT[0].BankingDetailsKey;
 
             if (FMainDS.PBankingDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
@@ -123,13 +128,14 @@ namespace Ict.Petra.Client.MPartner.Gui
   //                  newName = FBankingDetailsDT[countNewDetail].BankingDetailsKey;
                 }
             }
-
+            //BankingDetailsKey PrimaryKey von PreBankingDetails
             ARow.BankingDetailsKey = newName;
-            */
+#endif
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
         {
+#ifdef todo
             if (FPreviouslySelectedDetailRow == null)
             {
                 return;
@@ -161,17 +167,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlDetails.Visible = false;
                 }
             }
+#endif
         }
 
         private void DoRecalculateScreenParts()
         {
+#ifdef todo
             OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
                     ScreenPart = TScreenPartEnum.spCounters
                 });
+#endif
         }
 
         private void ShowDetailsManual(PBankingDetailsRow ARow)
         {
+#ifdef todo
             if (ARow != null)
             {
                 btnDelete.Enabled = true;
@@ -182,6 +192,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
+#endif
         }
 
 
@@ -192,11 +203,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls2()
         {
+#ifdef todo
             // Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
             if (grdDetails.Rows.Count > 1)
             {
                 GetDataFromControls();
             }
+#endif
         }
 
         /// <summary>
@@ -214,6 +227,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>true if successful, otherwise false.</returns>
         private Boolean LoadDataOnDemand()
         {
+#ifdef todo
             Boolean ReturnValue;
 
             try
@@ -258,16 +272,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 throw;
             }
-
+#endif
             return ReturnValue;
         }
 
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
         {
+#ifdef todo
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
             }
+#endif
         }
 
         /// <summary>
@@ -276,6 +292,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
+#ifdef todo
             NewRow(this, null);
         }
 
@@ -285,10 +302,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
+#ifdef todo
             if (e.Row != -1)
             {
                 this.DeleteRow(this, null);
             }
+#endif
         }
     }
 }
