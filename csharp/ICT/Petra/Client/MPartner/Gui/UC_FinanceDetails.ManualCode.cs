@@ -4,6 +4,7 @@
 // @Authors:
 //       christiank
 //       thomasw
+//       joachimm
 //
 // Copyright 2004-2010 by OM International
 //
@@ -45,7 +46,7 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-        private PtAbilityAreaTable FAbilityAreaNameDT;
+//        private PtAbilityAreaTable FBankingDetailsDT;
         private PtAbilityLevelTable FAbilityLevelDT;
 
         #region Properties
@@ -76,13 +77,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void SpecialInitUserControl(IndividualDataTDS AMainDS)
+        public void SpecialInitUserControl(PartnerEditTDS AMainDS)
         {
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
 
-            FAbilityAreaNameDT = (PtAbilityAreaTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityAreaList);
+ //           FBankingDetailsDT = (PtAbilityAreaTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityAreaList);
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
@@ -102,27 +103,29 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            this.CreateNewPmPersonAbility();
+            this.CreateNewPBankingDetails();
         }
 
-        private void NewRowManual(ref PmPersonAbilityRow ARow)
+        private void NewRowManual(ref PBankingDetailsRow ARow)
         {
             string newName;
             Int32 countNewDetail = 0;
 
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-            newName = FAbilityAreaNameDT[0].AbilityAreaName;
+            /*
+ //           newName = FBankingDetailsDT[0].BankingDetailsKey;
 
-            if (FMainDS.PmPersonAbility.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
+            if (FMainDS.PBankingDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
             {
-                while (FMainDS.PmPersonAbility.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
+                while (FMainDS.PBankingDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
                 {
                     countNewDetail++;
-                    newName = FAbilityAreaNameDT[countNewDetail].AbilityAreaName;
+  //                  newName = FBankingDetailsDT[countNewDetail].BankingDetailsKey;
                 }
             }
 
-            ARow.AbilityAreaName = newName;
+            ARow.BankingDetailsKey = newName;
+            */
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
@@ -134,7 +137,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "You have choosen to delete this record ({0}).\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.AbilityAreaName), Catalog.GetString("Confirm Delete"),
+                        FPreviouslySelectedDetailRow.BankingDetailsKey), Catalog.GetString("Confirm Delete"),
                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 int rowIndex = grdDetails.SelectedRowIndex();
@@ -167,7 +170,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 });
         }
 
-        private void ShowDetailsManual(PmPersonAbilityRow ARow)
+        private void ShowDetailsManual(PBankingDetailsRow ARow)
         {
             if (ARow != null)
             {
@@ -181,28 +184,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             DoRecalculateScreenParts();
         }
 
-        private void ShowAbilityLevelExplanation(System.Object sender, EventArgs e)
-        {
-            PtLanguageLevelRow LangLevelDR;
-
-            if (FAbilityLevelDT == null)
-            {
-                FAbilityLevelDT = (PtAbilityLevelTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
-                    TCacheablePersonTablesEnum.LanguageLevelList);
-            }
-
-            LangLevelDR = (PtLanguageLevelRow)FAbilityLevelDT.Rows.Find(new object[] { Convert.ToInt32(cmbAbilityLevel.cmbCombobox.SelectedValue) });
-
-            if (LangLevelDR != null)
-            {
-                MessageBox.Show(LangLevelDR.LanguageLevelDescr.Trim() + ":" + Environment.NewLine + LangLevelDR.LanguageComment,
-                    Catalog.GetString("Ability Level Explanation"));
-            }
-            else
-            {
-                MessageBox.Show(String.Format(Catalog.GetString("There is no explanation available for Ability Level {0}."), cmbAbilityLevel.Text));
-            }
-        }
 
         /// <summary>
         /// Gets the data from all controls on this UserControl.
@@ -238,28 +219,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             try
             {
                 // Make sure that Typed DataTables are already there at Client side
-                if (FMainDS.PmPersonAbility == null)
+                if (FMainDS.PBankingDetails == null)
                 {
-                    FMainDS.Tables.Add(new PmPersonAbilityTable());
+                    FMainDS.Tables.Add(new PBankingDetailsTable());
                     FMainDS.InitVars();
                 }
 
                 if (TClientSettings.DelayedDataLoading
-                    && (FMainDS.PmPersonAbility.Rows.Count == 0))
+                    && (FMainDS.PBankingDetails.Rows.Count == 0))
                 {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiPersonalAbilities));
+//                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiPersonalAbilities));
+                      FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails(TIndividualDataItemEnum.idiBankingDetails));
 
                     // Make DataRows unchanged
-                    if (FMainDS.PmPersonAbility.Rows.Count > 0)
+                    if (FMainDS.PBankingDetails.Rows.Count > 0)
                     {
-                        if (FMainDS.PmPersonAbility.Rows[0].RowState != DataRowState.Added)
+                        if (FMainDS.PBankingDetails.Rows[0].RowState != DataRowState.Added)
                         {
-                            FMainDS.PmPersonAbility.AcceptChanges();
+                            FMainDS.PBankingDetails.AcceptChanges();
                         }
                     }
                 }
 
-                if (FMainDS.PmPersonAbility.Rows.Count != 0)
+                if (FMainDS.PBankingDetails.Rows.Count != 0)
                 {
                     ReturnValue = true;
                 }
