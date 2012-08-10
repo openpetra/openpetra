@@ -898,7 +898,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FCodeStorage = ACodeStorage;
             TControlGenerator.FCodeStorage = ACodeStorage;
             FTemplate = new ProcessTemplate(ATemplateFile);
-
+            
             // load default header with license and copyright
             string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
             FTemplate.AddToCodelet("GPLFILEHEADER",
@@ -1000,7 +1000,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 FTemplate.SetCodelet("DATASETTYPE", String.Empty);
             }
-
+            
 //    FTemplate.SetCodelet("MANAGEDDATASETORTYPE", "true");
 
             XmlNode UsingNamespacesNode = TYml2Xml.GetChild(FCodeStorage.FRootNode, "UsingNamespaces");
@@ -1068,6 +1068,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (FCodeStorage.HasAttribute("DetailTable"))
             {
+                string detailTable;
+                
                 if ((DataSetTables != null) && DataSetTables.ContainsKey(FCodeStorage.GetAttribute("DetailTable")))
                 {
                     TTable table = DataSetTables[FCodeStorage.GetAttribute("DetailTable")];
@@ -1081,19 +1083,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         String.Format("Ict.Petra.Shared.{0}.Validation",
                             TTable.GetNamespace(table.strGroup)));
 
-                    FTemplate.AddToCodelet("DETAILTABLE", table.strVariableNameInDataset);
+                    detailTable = table.strVariableNameInDataset;
+                    FTemplate.AddToCodelet("DETAILTABLE", detailTable);
                     FTemplate.AddToCodelet("DETAILTABLETYPE", table.strDotNetName);
                 }
                 else
                 {
-                    FTemplate.AddToCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
-                    FTemplate.AddToCodelet("DETAILTABLETYPE", FCodeStorage.GetAttribute("DetailTable"));
+                    detailTable = FCodeStorage.GetAttribute("DetailTable");
+                    FTemplate.AddToCodelet("DETAILTABLE", detailTable);
+                    FTemplate.AddToCodelet("DETAILTABLETYPE", detailTable);
 
-                    TTable table = TDataBinding.FPetraXMLStore.GetTable(FCodeStorage.GetAttribute("DetailTable"));
+                    TTable table = TDataBinding.FPetraXMLStore.GetTable(detailTable);
                     FTemplate.SetCodelet("SHAREDVALIDATIONNAMESPACEMODULE",
                         String.Format("Ict.Petra.Shared.{0}.Validation",
                             TTable.GetNamespace(table.strGroup)));
                 }
+
+                if ((FTemplate.FSnippets.Contains("INLINETYPEDDATASET"))
+                     && (!FCodeStorage.HasAttribute("DatasetType")))
+                {
+                    ProcessTemplate inlineTypedDataSetSnippet = FTemplate.GetSnippet("INLINETYPEDDATASET");
+                    inlineTypedDataSetSnippet.SetCodelet("DETAILTABLE", detailTable);
+                    
+                    FTemplate.InsertSnippet("INLINETYPEDDATASET", inlineTypedDataSetSnippet);                
+                }                       
             }
             else
             {
