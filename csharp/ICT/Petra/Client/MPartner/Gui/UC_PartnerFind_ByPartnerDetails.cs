@@ -119,6 +119,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event System.EventHandler PartnerInfoPaneExpanded;
 
+        /// <summary>todoComment</summary>
+        public event System.EventHandler EnableAcceptButton;
+
+        /// <summary>todoComment</summary>
+        public event System.EventHandler DisableAcceptButton;
+        
         private void OnPartnerInfoPaneCollapsed()
         {
             if (PartnerInfoPaneCollapsed != null)
@@ -148,6 +154,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (SearchOperationStateChange != null)
             {
                 SearchOperationStateChange(new TSearchOperationStateChangeEventArgs(ASearchOperationIsRunning));
+            }
+        }
+
+        private void OnEnableAcceptButton()
+        {
+            if (EnableAcceptButton != null)
+            {
+                EnableAcceptButton(this, new EventArgs());
+            }
+        }
+
+        private void OnDisableAcceptButton()
+        {
+            if (DisableAcceptButton != null)
+            {
+                DisableAcceptButton(this, new EventArgs());
             }
         }
 
@@ -196,7 +218,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             set
             {
-                FRunningInsideModalForm = value;
+                FRunningInsideModalForm = value;               
             }
         }
 
@@ -1192,7 +1214,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdResult.SendToBack();
 
             OnPartnerAvailable(false);
-// TODO            btnAccept.Enabled = false;
+            OnDisableAcceptButton();
 
             ucoPartnerFindCriteria.Focus();
 
@@ -1582,6 +1604,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                      MPartnerResourcestrings.StrPartnerFindSearchTarget2Text +
                                                      MPartnerResourcestrings.StrNoRecordsFound2Text;
 
+                                OnDisableAcceptButton();
                                 OnPartnerAvailable(false);
 
                                 // StatusBar update
@@ -1747,11 +1770,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Scroll grid to first line (the grid might have been scrolled before to another position)
                     grdResult.ShowCell(new Position(1, 1), true);
 
-                    // TODO btnAccept.Enabled = true;
+                    OnEnableAcceptButton();
                 }
                 else
                 {
-                    // TODO btnAccept.Enabled = false;
+                    OnDisableAcceptButton();
                 }
             }
             catch (Exception exp)
