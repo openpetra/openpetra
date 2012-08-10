@@ -92,6 +92,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool FPartnerInfoPaneOpen = false;
         private bool FPartnerTasksPaneOpen = false;
         private TUC_PartnerInfo FPartnerInfoUC;
+        
+        private Boolean FRunningInsideModalForm;
+        
         /// <summary>
         /// event for when the search result changes, and more or less partners match the search criteria
         /// </summary>
@@ -181,6 +184,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Whether this UserControl is running inside a Modal Form, or not.
+        /// </summary>
+        public bool RunnningInsideModalForm
+        {
+            get
+            {
+                return FRunningInsideModalForm;
+            }
+            
+            set
+            {
+                FRunningInsideModalForm = value;
+            }
+        }
+        
         /// <summary>
         /// constructor
         /// </summary>
@@ -363,7 +382,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdResult_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
         {
-            if (TPartnerFindScreen.URunAsModalForm == true)
+            if (FRunningInsideModalForm == true)
             {
                 BtnAccept_Click(this, null);
             }
@@ -375,7 +394,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdResult_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-            if (TPartnerFindScreen.URunAsModalForm == true)
+            if (FRunningInsideModalForm == true)
             {
                 BtnAccept_Click(this, null);
             }

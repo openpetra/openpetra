@@ -841,7 +841,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             int Counter1;
             int Counter2;
 
-            if (!TPartnerFindScreen.URunAsModalForm)
+            if (!FRunAsModalForm)
             {
                 /*
                  * The non-Modal ContextMenu contains all MenuItems from the 'Maintain' Menu
@@ -914,7 +914,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
 // TODO SetupMaintainMenu
 #if TODO
-            if (TPartnerFindScreen.URunAsModalForm)
+            if (FRunAsModalForm)
             {
                 /*
                  * Hide the menu items that are in "HiddenItems"
@@ -969,7 +969,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
 // TODO SetupFileMenu
 #if TODO
-            if (TPartnerFindScreen.URunAsModalForm)
+            if (FRunAsModalForm)
             {
                 /*
                  * Hide the menu items that are in "HiddenItems"
@@ -1167,9 +1167,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             RestoreSplitterSettings();
 #endif
 
-            TPartnerFindScreen.URunAsModalForm = this.Modal;
+            FRunAsModalForm = this.Modal;
+            ucoFindByPartnerDetails.RunnningInsideModalForm = FRunAsModalForm;
+            
 #if TODO
-            if (!TPartnerFindScreen.URunAsModalForm)
+            if (!FRunAsModalForm)
             {
                 pnlModalButtons.Visible = false;
 
