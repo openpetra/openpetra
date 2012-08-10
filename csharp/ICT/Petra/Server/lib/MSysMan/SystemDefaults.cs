@@ -138,8 +138,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
                 ((SSystemDefaultsRow)Row).DefaultValue = AValue;
                 SSystemDefaultsAccess.InsertRow(SSystemDefaultsTable.TableId, ref Row, Transaction, UserName);
             }
+
             DBAccess.GDBAccessObj.CommitTransaction();
-           return true;
+            return true;
         }
     }
 }

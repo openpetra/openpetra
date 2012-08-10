@@ -630,7 +630,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                       || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVADMIN))))
                                 {
                                     throw new ESecurityScreenAccessDeniedException(
-                                        // Some users won't have access to edit partners that are foundations. Foundations are a special type of organisation. 
+                                        // Some users won't have access to edit partners that are foundations. Foundations are a special type of organisation.
                                         // They usually are important donors, and they should not be approached by any user in the
                                         // office, but only by the person that has been assigned to do that job
                                         Catalog.GetString(

@@ -825,8 +825,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </remarks>
         private void SetupGridContextMenu()
         {
-// TODO SetupGridContextMenu            
-#if TODO            
+// TODO SetupGridContextMenu
+#if TODO
             int Counter1;
             int Counter2;
 
@@ -1144,11 +1144,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FRunAsModalForm = this.Modal;
             ucoFindByPartnerDetails.RunnningInsideModalForm = FRunAsModalForm;
-            
+
             SetupGridContextMenu();
             SetupFileMenu();
-            SetupMaintainMenu();            
-            
+            SetupMaintainMenu();
+
 #if TODO
             if (!FRunAsModalForm)
             {

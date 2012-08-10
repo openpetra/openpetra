@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             Boolean ExportDonationData = chkDonationData.Checked;
             Boolean ExportFieldData = chkFieldData.Checked;
             Boolean ExportPersonData = chkPersonData.Checked;
+
             TUserDefaults.SetDefault("IntranetExportDonations", ExportDonationData);
             TUserDefaults.SetDefault("IntranetExportField", ExportFieldData);
             TUserDefaults.SetDefault("IntranetExportPerson", ExportPersonData);
@@ -90,6 +91,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void BtnMotivations_Click(Object Sender, EventArgs e)
         {
             TFrmIntranetExportMotivations MotivationScreen = new TFrmIntranetExportMotivations(this);
+
             MotivationScreen.ShowDialog();
         }
     }

@@ -665,7 +665,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtAbilityLevelTable.ColumnUnassignableDateId];
 
@@ -704,7 +704,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtQualificationAreaTable.ColumnQualificationDateId];
 
@@ -743,7 +743,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtQualificationLevelTable.ColumnUnassignableDateId];
 
@@ -782,7 +782,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtDriverStatusTable.ColumnUnassignableDateId];
 
@@ -821,7 +821,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtPositionTable.ColumnUnassignableDateId];
 
@@ -860,7 +860,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtAssignmentTypeTable.ColumnUnassignableDateId];
 
@@ -899,7 +899,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtLeavingCodeTable.ColumnUnassignableDateId];
 
@@ -938,7 +938,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtLanguageLevelTable.ColumnUnassignableDateId];
 
@@ -977,7 +977,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtPassportTypeTable.ColumnUnassignableDateId];
 
@@ -1016,7 +1016,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PmDocumentTypeTable.ColumnUnassignableDateId];
 
@@ -1055,7 +1055,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PmDocumentCategoryTable.ColumnUnassignableDateId];
 
@@ -1094,7 +1094,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtSkillCategoryTable.ColumnUnassignableDateId];
 
@@ -1133,7 +1133,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtSkillLevelTable.ColumnUnassignableDateId];
 
@@ -1172,7 +1172,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtOutreachPreferenceLevelTable.ColumnUnassignableDateId];
 
@@ -1211,7 +1211,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
             {
                 return;
             }
-            
+
             // 'AssignableDate' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PtContactTable.ColumnUnassignableDateId];
 

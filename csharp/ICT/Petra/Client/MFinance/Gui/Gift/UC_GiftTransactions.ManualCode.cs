@@ -937,6 +937,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+
             if (giftRow != null)
             {
                 giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);

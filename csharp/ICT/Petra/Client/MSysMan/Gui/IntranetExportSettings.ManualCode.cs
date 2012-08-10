@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private int FGiftDays;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string Password
         {
@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public string OptionalMetadata
         {
@@ -87,13 +87,16 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void InitializeManualCode()
         {
             string MySettings = TSystemDefaults.GetSystemDefault("IntranetExportSettings", "pswd,45,");
-            string []Setting = MySettings.Split(',');
+
+            string[] Setting = MySettings.Split(',');
+
             if (Setting.Length > 2)
             {
                 FPswd = Setting[0];
                 FGiftDays = Convert.ToInt32(Setting[1]);
                 FExtra = Setting[2];
             }
+
             FReplyToEmail = TUserDefaults.GetStringDefault("ReplyToEmail");
         }
 
@@ -110,6 +113,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 FGiftDays = txtDonationDays.NumberValueInt.Value;
             }
+
             FExtra = txtOptionalMetadata.Text;
 
             Boolean OkToClose = true;
@@ -156,13 +160,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     MessageBox.Show(PswdError, Catalog.GetString("Password Change"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
                     OkToClose = false;
                 }
-
-
             }
 
             if (OkToClose)
             {
-                TSystemDefaults.SetSystemDefault("IntranetExportSettings", String.Format ("{0},{1},{2}", FPswd, FGiftDays, FExtra));
+                TSystemDefaults.SetSystemDefault("IntranetExportSettings", String.Format("{0},{1},{2}", FPswd, FGiftDays, FExtra));
                 Close();
             }
         }

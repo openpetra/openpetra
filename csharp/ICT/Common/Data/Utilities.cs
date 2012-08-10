@@ -641,7 +641,7 @@ namespace Ict.Common.Data
         /// <param name="ASourceDT">Source DataTable.</param>
         /// <param name="ADestinationDT">Destination DataTable.</param>
         /// <param name="ADontAttemptToProcessDTsWithoutPKs">Set this to true to not attemt to process DataTables that don't have Primary Keys.
-        /// If this Argument is set to true, no Exception is thrown and the Method simply doesn't do any work, as it would need Primary Keys for  
+        /// If this Argument is set to true, no Exception is thrown and the Method simply doesn't do any work, as it would need Primary Keys for
         /// performing its work (default=false).</param>
         public static void RemoveRowsNotPresentInDT(DataTable ASourceDT, DataTable ADestinationDT, bool ADontAttemptToProcessDTsWithoutPKs = false)
         {
@@ -652,21 +652,21 @@ namespace Ict.Common.Data
 
             if (ASourceDT.PrimaryKey.Length == 0)
             {
-                if (ADontAttemptToProcessDTsWithoutPKs) 
+                if (ADontAttemptToProcessDTsWithoutPKs)
                 {
-                    return;                    
+                    return;
                 }
                 else
                 {
-                    throw new ArgumentException("DataTable specified with ASourceDT must have a Primary Key specified");    
+                    throw new ArgumentException("DataTable specified with ASourceDT must have a Primary Key specified");
                 }
             }
 
             if (PrimaryKeyArr.Length == 0)
             {
-                if (ADontAttemptToProcessDTsWithoutPKs) 
+                if (ADontAttemptToProcessDTsWithoutPKs)
                 {
-                    return;                    
+                    return;
                 }
                 else
                 {

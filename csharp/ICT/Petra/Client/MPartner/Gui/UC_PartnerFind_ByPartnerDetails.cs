@@ -92,9 +92,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool FPartnerInfoPaneOpen = false;
         private bool FPartnerTasksPaneOpen = false;
         private TUC_PartnerInfo FPartnerInfoUC;
-        
+
         private Boolean FRunningInsideModalForm;
-        
+
         /// <summary>
         /// event for when the search result changes, and more or less partners match the search criteria
         /// </summary>
@@ -193,13 +193,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return FRunningInsideModalForm;
             }
-            
+
             set
             {
                 FRunningInsideModalForm = value;
             }
         }
-        
+
         /// <summary>
         /// constructor
         /// </summary>

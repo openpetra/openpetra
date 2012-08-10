@@ -94,11 +94,12 @@ namespace Ict.Petra.Client.App.Core
             {
                 ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
             }
+
             return ReturnValue;
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AKey">Name of new or existing System Default</param>
         /// <param name="AValue">String Value</param>

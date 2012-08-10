@@ -441,9 +441,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // reverse it again?
             if (TRemote.MFinance.AP.WebConnectors.WasThisPaymentReversed(ALedgerNumber, APaymentNumber))
             {
-                MessageBox.Show(Catalog.GetString("Cannot reverse Payment - there is already a matching reverse transaction."), Catalog.GetString("Reverse Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString("Cannot reverse Payment - there is already a matching reverse transaction."),
+                    Catalog.GetString("Reverse Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             //
             // Ask the user to confirm reversal of this payment
             //
@@ -475,7 +477,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
             {
-                MessageBox.Show(Catalog.GetString("Reversal was cancelled."), Catalog.GetString("Reverse Payment"), 
+                MessageBox.Show(Catalog.GetString("Reversal was cancelled."), Catalog.GetString("Reverse Payment"),
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

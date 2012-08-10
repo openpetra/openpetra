@@ -73,6 +73,7 @@ namespace Ict.Common.IO
                     using (ZipOutputStream ZipStream = new ZipOutputStream(ZippedStream))
                     {
                         ZipStream.SetLevel(5);       // 0 - store only to 9 - means best compression
+
                         if (AZipPassword != "")
                         {
                             ZipStream.Password = AZipPassword;
@@ -81,11 +82,13 @@ namespace Ict.Common.IO
                         foreach (string FileToBeZipped in AFilePaths)
                         {
                             String FileKnownAs = FileToBeZipped;
+
                             if (!APreservePath)
                             {
                                 Int32 LastSlashPos = Math.Max(FileKnownAs.LastIndexOf("/"), FileKnownAs.LastIndexOf(@"\"));
                                 FileKnownAs = FileKnownAs.Substring(LastSlashPos + 1);
                             }
+
                             FileStream fs = File.OpenRead(FileToBeZipped);
 
                             ZippedFile = new ZipEntry(FileKnownAs);

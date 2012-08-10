@@ -56,28 +56,37 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 FRowIdx = RowIdx;
                 FDescr = Descr;
             }
+
             public String Descr
             {
-                get { return FDescr; }
+                get
+                {
+                    return FDescr;
+                }
             }
             public Int32 RowIdx
             {
-                get { return FRowIdx; }
+                get
+                {
+                    return FRowIdx;
+                }
             }
-
         }
         private void RunOnceOnActivationManual()
         {
             FExportSettingsChanged = false;
+
             /* load available ledgers into listbox */
             DataTable LedgerTable;
 
             TRemote.MFinance.Cacheable.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out LedgerTable);
+
             foreach (DataRow Row in LedgerTable.Rows)
             {
                 String LedgerDescr = String.Format("{0}: {1}", Row["LedgerNumber"], Row["LedgerName"]);
                 cmbLedger.Items.Add(LedgerDescr);
             }
+
             cmbLedger.SelectedIndex = 0;
             EnableAddRemoveButtons(null, null);
         }
@@ -116,6 +125,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void OnLedgerChange(Object Sender, EventArgs e)
         {
             String LedgerDescr = (string)cmbLedger.Items[cmbLedger.SelectedIndex];
+
             FLedgerNumber = Convert.ToInt32(LedgerDescr.Substring(0, LedgerDescr.IndexOf(':')));
 
             //
@@ -130,15 +140,17 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             Int32 YPosDo = lstDoExport.TopIndex;
             Int32 YPosDont = lstDontExport.TopIndex;
+
             lstDoExport.Items.Clear();
             lstDontExport.Items.Clear();
             lstDoExport.BeginUpdate();
             lstDontExport.BeginUpdate();
 
-            for (Int32 RowIdx = 0; RowIdx < FMainDS.AMotivationDetail.Rows.Count; RowIdx++ )
+            for (Int32 RowIdx = 0; RowIdx < FMainDS.AMotivationDetail.Rows.Count; RowIdx++)
             {
                 AMotivationDetailRow Row = FMainDS.AMotivationDetail[RowIdx];
                 RowItemDescr RowDescr = new RowItemDescr(RowIdx, String.Format("[{0}] {1}", Row.MotivationDetailCode, Row.MotivationDetailDesc));
+
                 if (Row.ExportToIntranet)
                 {
                     lstDoExport.Items.Add(RowDescr);
@@ -148,6 +160,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     lstDontExport.Items.Add(RowDescr);
                 }
             }
+
             lstDoExport.TopIndex = YPosDo;
             lstDontExport.TopIndex = YPosDont;
             lstDoExport.EndUpdate();
@@ -164,11 +177,13 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void AddSelected(Object Sender, EventArgs e)
         {
             ListBox.SelectedIndexCollection Selections = lstDontExport.SelectedIndices;
+
             foreach (Int32 SelNum in Selections)
             {
                 Int32 RowNum = ((RowItemDescr)(lstDontExport.Items[SelNum])).RowIdx;
                 FMainDS.AMotivationDetail[RowNum].ExportToIntranet = true;
             }
+
             LoadLists();
             FExportSettingsChanged = true;
         }
@@ -176,15 +191,17 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void RemoveSelected(Object Sender, EventArgs e)
         {
             ListBox.SelectedIndexCollection Selections = lstDoExport.SelectedIndices;
+
             foreach (Int32 SelNum in Selections)
             {
                 Int32 RowNum = ((RowItemDescr)(lstDoExport.Items[SelNum])).RowIdx;
                 FMainDS.AMotivationDetail[RowNum].ExportToIntranet = false;
             }
+
             LoadLists();
             FExportSettingsChanged = true;
         }
-        
+
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             SaveAllChangedRows();

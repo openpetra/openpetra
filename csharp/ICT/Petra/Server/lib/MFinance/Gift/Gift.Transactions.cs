@@ -60,14 +60,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective, string ABatchDescription)
-        
         {
             bool success = false;
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             try
             {
-
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
@@ -86,7 +84,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 }
             }
-
             finally
             {
                 if (success)

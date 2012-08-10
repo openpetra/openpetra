@@ -468,41 +468,41 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /* Method is not used. (Compiles OK, but no-one seems to want it!)
-         * 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ASupplierKey"></param>
-        /// <param name="ADocumentStatus"></param>
-        /// <param name="IsCreditNoteNotInvoice"></param>
-        /// <param name="AHideAgedTransactions"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber, Int64 ASupplierKey,
-            string ADocumentStatus,
-            bool IsCreditNoteNotInvoice,
-            bool AHideAgedTransactions)
-        {
-            // create the DataSet that will later be passed to the Client
-            AccountsPayableTDS MainDS = new AccountsPayableTDS();
-
-            AApSupplierAccess.LoadByPrimaryKey(MainDS, ASupplierKey, null);
-
-            // TODO: filters for document status
-            AccountsPayableTDSAApDocumentRow DocumentTemplate = MainDS.AApDocument.NewRowTyped(false);
-            DocumentTemplate.LedgerNumber = ALedgerNumber;
-            DocumentTemplate.PartnerKey = ASupplierKey;
-            AApDocumentAccess.LoadUsingTemplate(MainDS, DocumentTemplate, null);
-
-            foreach (AccountsPayableTDSAApDocumentRow Row in MainDS.AApDocument.Rows)
-            {
-                SetOutstandingAmount(Row, ALedgerNumber, MainDS.AApDocumentPayment);
-            }
-
-            return MainDS;
-        }
-*/
+         *
+         * /// <summary>
+         * ///
+         * /// </summary>
+         * /// <param name="ALedgerNumber"></param>
+         * /// <param name="ASupplierKey"></param>
+         * /// <param name="ADocumentStatus"></param>
+         * /// <param name="IsCreditNoteNotInvoice"></param>
+         * /// <param name="AHideAgedTransactions"></param>
+         * /// <returns></returns>
+         * [RequireModulePermission("FINANCE-1")]
+         * public static AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber, Int64 ASupplierKey,
+         *  string ADocumentStatus,
+         *  bool IsCreditNoteNotInvoice,
+         *  bool AHideAgedTransactions)
+         * {
+         *  // create the DataSet that will later be passed to the Client
+         *  AccountsPayableTDS MainDS = new AccountsPayableTDS();
+         *
+         *  AApSupplierAccess.LoadByPrimaryKey(MainDS, ASupplierKey, null);
+         *
+         *  // TODO: filters for document status
+         *  AccountsPayableTDSAApDocumentRow DocumentTemplate = MainDS.AApDocument.NewRowTyped(false);
+         *  DocumentTemplate.LedgerNumber = ALedgerNumber;
+         *  DocumentTemplate.PartnerKey = ASupplierKey;
+         *  AApDocumentAccess.LoadUsingTemplate(MainDS, DocumentTemplate, null);
+         *
+         *  foreach (AccountsPayableTDSAApDocumentRow Row in MainDS.AApDocument.Rows)
+         *  {
+         *      SetOutstandingAmount(Row, ALedgerNumber, MainDS.AApDocumentPayment);
+         *  }
+         *
+         *  return MainDS;
+         * }
+         */
 
         private static bool DocumentBalanceOK(AccountsPayableTDS AMainDS, int AApDocumentId, TDBTransaction ATransaction)
         {
@@ -1760,9 +1760,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             return MainDs;
         }
 
-
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APaymentNumber"></param>
