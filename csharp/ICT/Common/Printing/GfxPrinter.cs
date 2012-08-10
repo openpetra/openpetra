@@ -75,6 +75,9 @@ namespace Ict.Common.Printing
         /// todoComment
         public System.Drawing.Font FHeadingFont;
 
+        /// fonts for printing barcodes, using Code 128
+        public System.Drawing.Font FBarCodeFont;
+
         /// todoComment
         public System.Drawing.Font FSmallPrintFont;
 
@@ -114,6 +117,10 @@ namespace Ict.Common.Printing
             FDefaultFont = new System.Drawing.Font("Arial", 8);
             FDefaultBoldFont = new System.Drawing.Font("Arial", 8, FontStyle.Bold);
             FHeadingFont = new System.Drawing.Font("Arial", 10, FontStyle.Bold);
+
+            // using GPL Font Code 128 from Grand Zebu http://grandzebu.net/
+            FBarCodeFont = new System.Drawing.Font("Code 128", 35, FontStyle.Regular);
+
             FBiggestLastUsedFont = FDefaultFont;
             FRight = new StringFormat(StringFormat.GenericDefault);
             FRight.Alignment = StringAlignment.Far;
@@ -185,6 +192,8 @@ namespace Ict.Common.Printing
             }
         }
 
+        private SortedList <string, Font>FFontCache = new SortedList <string, Font>();
+
         /// <summary>
         /// get the font that is associated with the enum value.
         /// this way we do not need to create a new font each time
@@ -210,6 +219,10 @@ namespace Ict.Common.Printing
                     ReturnValue = FHeadingFont;
                     break;
 
+                case eFont.eBarCodeFont:
+                    ReturnValue = FBarCodeFont;
+                    break;
+
                 case eFont.eSmallPrintFont:
                     ReturnValue = FSmallPrintFont;
                     break;
@@ -224,7 +237,14 @@ namespace Ict.Common.Printing
                     FontSize = 0.5f;
                 }
 
-                ReturnValue = new Font(ReturnValue.FontFamily, FontSize, ReturnValue.Style);
+                string id = ReturnValue.FontFamily.ToString() + FontSize.ToString() + ReturnValue.Style.ToString();
+
+                if (!FFontCache.ContainsKey(id))
+                {
+                    FFontCache.Add(id, new Font(ReturnValue.FontFamily, FontSize, ReturnValue.Style));
+                }
+
+                ReturnValue = FFontCache[id];
             }
 
             return ReturnValue;

@@ -18,6 +18,7 @@ RootNode:
                    
         txtBelieverSinceYear: {Width=50, Format=Integer}
             Label: Year
+            Validation: true
         txtBelieverSinceComment:
             Width: 340
             Height: 165

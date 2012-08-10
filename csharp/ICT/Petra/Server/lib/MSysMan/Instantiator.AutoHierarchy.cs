@@ -969,9 +969,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
         private DateTime FStartTime;
 #endif
 
-        #region ManualCode
-        private TSystemDefaults FSystemDefaultsManager;
-        #endregion ManualCode
         /// <summary>Constructor</summary>
         public TMaintenanceSystemDefaultsNamespace()
         {
@@ -983,9 +980,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
 
             FStartTime = DateTime.Now;
 #endif
-            #region ManualCode
-            FSystemDefaultsManager = new TSystemDefaults();
-            #endregion ManualCode
         }
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
@@ -1044,18 +1038,11 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
         }
 
         /// generated method from interface
-        public System.Boolean SaveSystemDefaults(Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable ASystemDefaultsDataTable)
+        public System.Boolean SetSystemDefault(String AKey,
+                                               String AValue)
         {
             #region ManualCode
-            return FSystemDefaultsManager.SaveSystemDefaults(ASystemDefaultsDataTable);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public void ReloadSystemDefaultsTable()
-        {
-            #region ManualCode
-            FSystemDefaultsManager.ReloadSystemDefaultsTable();
+            return TSystemDefaults.SetSystemDefault(AKey, AValue);
             #endregion ManualCode
         }
     }
@@ -1317,11 +1304,11 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.WebConnectors
         }
 
         /// generated method from connector
-        public System.Boolean GetLanguageAndCulture(out System.String ALanguageCode,
-                                                    out System.String ACultureCode)
+        public System.Boolean GetLanguageAndCulture(ref System.String ALanguageCode,
+                                                    ref System.String ACultureCode)
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector), "GetLanguageAndCulture", ";STRING;STRING;");
-            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.GetLanguageAndCulture(out ALanguageCode, out ACultureCode);
+            return Ict.Petra.Server.MSysMan.Maintenance.WebConnectors.TMaintainLanguageSettingsWebConnector.GetLanguageAndCulture(ref ALanguageCode, ref ACultureCode);
         }
 
         /// generated method from connector

@@ -101,8 +101,8 @@ namespace Ict.Petra.Shared
         public const String ERR_CONCURRENTCHANGES = "GEN.00006E";
 
         /// <summary>Value must not be future date (show error).</summary>
-        [ErrCodeAttribute("Value may not be future date.",
-             ErrorMessageText = "'{0}' may not be future date",
+        [ErrCodeAttribute("Value may not be a future date.",
+             ErrorMessageText = "'{0}' may not be a future date",
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_FUTUREDATE_ERROR = "GEN.00008V";
 

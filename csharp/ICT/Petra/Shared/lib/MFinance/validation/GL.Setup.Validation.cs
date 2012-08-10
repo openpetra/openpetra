@@ -53,8 +53,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
-            if (ARow.RowState == DataRowState.Deleted)  // Don't even begin to look at
-            {                                           // this row if it's been deleted.
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
                 return;
             }
 

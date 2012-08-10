@@ -28,6 +28,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Server.MCommon.DataReader;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
@@ -40,8 +41,10 @@ using Ict.Petra.Server.MPartner.Subscriptions.Cacheable;
 using Ict.Petra.Server.MPersonnel.Person.Cacheable;
 using Ict.Petra.Server.MPersonnel.Unit.Cacheable;
 using Ict.Petra.Server.MSysMan.Cacheable;
+using Ict.Petra.Server.MPartner;
 
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Server.MCommon.WebConnectors;
 
 namespace Ict.Petra.Server.CallForwarding
 {
@@ -74,6 +77,7 @@ namespace Ict.Petra.Server.CallForwarding
 
             TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
+            TIntranetExportWebConnector.GetLocationRowDelegate = @ServerCalculations.DetermineBestAddress;
 
             // Set up Delegates for retrieval of cacheable tables when called from Shared directories on server side
             CachePopulatorCommon = new Ict.Petra.Server.MCommon.Cacheable.TCacheable();

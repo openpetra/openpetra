@@ -772,6 +772,19 @@ namespace Ict.Petra.Server.MCommon.Instantiator.WebConnectors
         }
 
         /// generated method from connector
+        public String ExportToFile(Boolean AExportDonationData,
+                                   Boolean AExportFieldData,
+                                   Boolean AExportPersonData,
+                                   String APswd,
+                                   Int32 ADaySpan,
+                                   String AOptionalMetadata,
+                                   String ReplyToEmail)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector), "ExportToFile", ";BOOL;BOOL;BOOL;STRING;INT;STRING;STRING;");
+            return Ict.Petra.Server.MCommon.WebConnectors.TIntranetExportWebConnector.ExportToFile(AExportDonationData, AExportFieldData, AExportPersonData, APswd, ADaySpan, AOptionalMetadata, ReplyToEmail);
+        }
+
+        /// generated method from connector
         public System.Boolean GetCurrentState(out System.String ACaption,
                                               out System.String AStatusMessage,
                                               out System.Int32 APercentageDone,

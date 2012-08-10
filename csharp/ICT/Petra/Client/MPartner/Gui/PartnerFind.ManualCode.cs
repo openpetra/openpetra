@@ -115,9 +115,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             FFormSetupFinished = false;
 
             ArrangeMenuItemsAndToolBarButtons();
-            SetupGridContextMenu();
-            SetupFileMenu();
-            SetupMaintainMenu();
+            
+            CancelButton = btnCancel;
 
             tbbEditPartner.Enabled = false;
             mniFileEditPartner.Enabled = false;
@@ -147,16 +146,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoFindByPartnerDetails_SearchOperationStateChange);
             ucoFindByPartnerDetails.PartnerInfoPaneCollapsed += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneCollapsed);
             ucoFindByPartnerDetails.PartnerInfoPaneExpanded += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneExpanded);
-
+            ucoFindByPartnerDetails.EnableAcceptButton += new EventHandler(ucoFindByPartnerDetails_EnableAcceptButton);
+            ucoFindByPartnerDetails.DisableAcceptButton += new EventHandler(ucoFindByPartnerDetails_DisableAcceptButton);
+            
             ucoFindByPartnerDetails.SetupPartnerInfoPane();
-        }
-
-        /// <summary>
-        /// Run only once on first Activation of Form
-        /// </summary>
-        public void RunOnceOnActivationManual()
-        {
-            FRunAsModalForm = this.Modal;
         }
 
         void ucoFindByPartnerDetails_SearchOperationStateChange(TSearchOperationStateChangeEventArgs e)
@@ -841,7 +834,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             int Counter1;
             int Counter2;
 
-            if (!TPartnerFindScreen.URunAsModalForm)
+            if (!FRunAsModalForm)
             {
                 /*
                  * The non-Modal ContextMenu contains all MenuItems from the 'Maintain' Menu
@@ -849,12 +842,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Copy over all MenuItems  including their Events (using CloneMenu()) and
                 // Icons
-                for (Counter1 = 0; Counter1 <= mniMaintain.MenuItems.Count - 1; Counter1 += 1)
+                for (Counter1 = 0; Counter1 <= mniMaintain.DropDownItems.Count - 1; Counter1 += 1)
                 {
-                    mnuPartnerFindContext.MenuItems.Add(mniMaintain.MenuItems[Counter1].CloneMenu());
-                    this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter1],
-                        this.XPMenuItemExtender.GetMenuGlyph(mniMaintain.MenuItems[Counter1]));
-                    this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter1], true);
+                    mnuPartnerFindContext.DropDownItems.Add(mniMaintain.DropDownItems[Counter1].CloneMenu());
+// TODO                    this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter1],
+// TODO                        this.XPMenuItemExtender.GetMenuGlyph(mniMaintain.MenuItems[Counter1]));
+// TODO                    this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter1], true);
                 }
 
                 AddCopyContextMenuEntries(mnuPartnerFindContext);
@@ -872,28 +865,28 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Edit Partner...
                 mnuPartnerFindContext.MenuItems.Add(mniFileEditPartner.CloneMenu());
-                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
-                    this.XPMenuItemExtender.GetMenuGlyph(mniFileEditPartner));
-                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
+// TODO                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
+// TODO                    this.XPMenuItemExtender.GetMenuGlyph(mniFileEditPartner));
+// TODO                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
                 Counter2++;
 
                 // Separator
                 mnuPartnerFindContext.MenuItems.Add("-");
-                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
+// TODO                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
                 Counter2++;
 
                 // Donor History
                 mnuPartnerFindContext.MenuItems.Add(mniMaintainDonorHistory.CloneMenu());
-                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
-                    this.XPMenuItemExtender.GetMenuGlyph(mniMaintainDonorHistory));
-                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
+// TODO                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
+// TODO                    this.XPMenuItemExtender.GetMenuGlyph(mniMaintainDonorHistory));
+// TODO                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
                 Counter2++;
 
                 // Recipient History
                 mnuPartnerFindContext.MenuItems.Add(mniMaintainRecipientHistory.CloneMenu());
-                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
-                    this.XPMenuItemExtender.GetMenuGlyph(mniMaintainRecipientHistory));
-                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
+// TODO                this.XPMenuItemExtender.SetMenuGlyph(mnuPartnerFindContext.MenuItems[Counter2],
+// TODO                    this.XPMenuItemExtender.GetMenuGlyph(mniMaintainRecipientHistory));
+// TODO                this.XPMenuItemExtender.SetNewStyleActive(mnuPartnerFindContext.MenuItems[Counter2], true);
                 AddCopyContextMenuEntries(mnuPartnerFindContext);
             }
 #endif
@@ -912,14 +905,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </remarks>
         private void SetupMaintainMenu()
         {
-// TODO SetupMaintainMenu
-#if TODO
-            if (TPartnerFindScreen.URunAsModalForm)
+            if (FRunAsModalForm)
             {
-                /*
-                 * Hide the menu items that are in "HiddenItems"
-                 */
-
+                // Hide the menu items that are in "HiddenItems"
                 ArrayList HiddenItems = new ArrayList();
                 HiddenItems.Add("mniMaintainAddresses");
                 HiddenItems.Add("mniMaintainPartnerDetails");
@@ -932,26 +920,25 @@ namespace Ict.Petra.Client.MPartner.Gui
                 HiddenItems.Add("mniMaintainInterests");
                 HiddenItems.Add("mniMaintainReminders");
                 HiddenItems.Add("mniMaintainNotes");
-                HiddenItems.Add("mniMaintainOfficeSpecific");
+                HiddenItems.Add("mniMaintainLocalPartnerData");
                 HiddenItems.Add("mniMaintainWorkerField");
                 HiddenItems.Add("mniMaintainPersonnelData");
                 HiddenItems.Add("mniMaintainFinanceDetails");
-                HiddenItems.Add("mniMaintainSeparator1");
-                HiddenItems.Add("mniMaintainSeparator2");
+                HiddenItems.Add("mniSeparator0");
+                HiddenItems.Add("mniSeparator1");
 
-                for (int Counter = 0; Counter < mniMaintain.MenuItems.Count; ++Counter)
+                for (int Counter = 0; Counter < mniMaintain.DropDownItems.Count; ++Counter)
                 {
-                    if (HiddenItems.Contains(mniMaintain.MenuItems[Counter].Name))
+                    if (HiddenItems.Contains(mniMaintain.DropDownItems[Counter].Name))
                     {
-                        mniMaintain.MenuItems[Counter].Visible = false;
+                        mniMaintain.DropDownItems[Counter].Visible = false;
                     }
                     else
                     {
-                        mniMaintain.MenuItems[Counter].Visible = true;
+                        mniMaintain.DropDownItems[Counter].Visible = true;
                     }
                 }
             }
-#endif
         }
 
         /// <summary>
@@ -967,39 +954,31 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </remarks>
         private void SetupFileMenu()
         {
-// TODO SetupFileMenu
-#if TODO
-            if (TPartnerFindScreen.URunAsModalForm)
+            if (FRunAsModalForm)
             {
-                /*
-                 * Hide the menu items that are in "HiddenItems"
-                 */
-
+                // Hide the menu items that are in "HiddenItems"
                 ArrayList HiddenItems = new ArrayList();
-                HiddenItems.Add("mniFileSearch");
-                HiddenItems.Add("mniFileSeparator1");
                 HiddenItems.Add("mniFileWorkWithLastPartner");
                 HiddenItems.Add("mniFileRecentPartners");
-                HiddenItems.Add("mniFileSeparator2");
+                HiddenItems.Add("mniFileSeparator1");
                 HiddenItems.Add("mniFileNewPartner");
                 HiddenItems.Add("mniFileMergePartners");
                 HiddenItems.Add("mniFileDeletePartner");
                 HiddenItems.Add("mniFilePrintPartner");
-                HiddenItems.Add("mniFileSeparator5");
+                HiddenItems.Add("mniFileSeparator4");
 
-                for (int Counter = 0; Counter < mniFile.MenuItems.Count; ++Counter)
+                for (int Counter = 0; Counter < mniFile.DropDownItems.Count; ++Counter)
                 {
-                    if (HiddenItems.Contains(mniFile.MenuItems[Counter].Name))
+                    if (HiddenItems.Contains(mniFile.DropDownItems[Counter].Name))
                     {
-                        mniFile.MenuItems[Counter].Visible = false;
+                        mniFile.DropDownItems[Counter].Visible = false;
                     }
                     else
                     {
-                        mniFile.MenuItems[Counter].Visible = true;
+                        mniFile.DropDownItems[Counter].Visible = true;
                     }
                 }
             }
-#endif
         }
 
         /// <summary>
@@ -1167,9 +1146,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             RestoreSplitterSettings();
 #endif
 
-            TPartnerFindScreen.URunAsModalForm = this.Modal;
-#if TODO
-            if (!TPartnerFindScreen.URunAsModalForm)
+            FRunAsModalForm = this.Modal;
+            ucoFindByPartnerDetails.RunnningInsideModalForm = FRunAsModalForm;
+
+            SetupGridContextMenu();
+            SetupFileMenu();
+            SetupMaintainMenu();
+
+
+            if (!FRunAsModalForm)
             {
                 pnlModalButtons.Visible = false;
 
@@ -1178,12 +1163,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                //                pnlModalButtons.BringToFront();
+                pnlModalButtons.BringToFront();
                 //tabPartnerFindMethods
-                // TODO? stbMain.SendToBack();
-                pnlModalButtons.Visible = true;
+                stbMain.Visible = false;
+                pnlModalButtons.Visible = true;                
             }
-
+#if TODO
             // Menu temporarily shown so we can test implemented 4GL calls from menus
             // TODO 1 oChristianK cModal : Menu needs to be hidden as soon 4GL can make nonmodal calls to this Form!
             // self.Menu:=nil;
@@ -1232,6 +1217,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             mniViewPartnerInfo.Checked = false;
         }
 
+        void ucoFindByPartnerDetails_EnableAcceptButton(object sender, EventArgs e)
+        {
+            btnAccept.Enabled = true;
+        }
+        
+        void ucoFindByPartnerDetails_DisableAcceptButton(object sender, EventArgs e)
+        {
+            btnAccept.Enabled = false;
+        }        
+        
         private void BtnFullyLoadData_Click(System.Object sender, System.EventArgs e)
         {
             // FullLoadDataSet;
