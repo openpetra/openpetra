@@ -43,7 +43,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Gui.GL;
-using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
 using Ict.Common.Conversion;
 using Ict.Petra.Client.MReporting.Gui;

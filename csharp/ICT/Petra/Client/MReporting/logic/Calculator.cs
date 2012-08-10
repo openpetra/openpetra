@@ -22,7 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors;
+using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MReporting;
 using System.Collections.Specialized;
 using System.Collections;

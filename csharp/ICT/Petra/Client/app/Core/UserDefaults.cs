@@ -29,7 +29,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.UserDefaults;
+using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared;
 

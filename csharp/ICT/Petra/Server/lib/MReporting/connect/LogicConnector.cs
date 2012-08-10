@@ -26,7 +26,7 @@ using System.Data;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors;
+using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;

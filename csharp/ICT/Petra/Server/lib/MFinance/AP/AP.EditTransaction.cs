@@ -42,7 +42,7 @@ using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MCommon.WebConnectors;

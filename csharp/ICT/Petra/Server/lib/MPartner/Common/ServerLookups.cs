@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,7 +39,7 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.Security;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
 {

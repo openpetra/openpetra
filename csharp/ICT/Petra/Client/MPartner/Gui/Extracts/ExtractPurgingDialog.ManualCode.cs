@@ -38,7 +38,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.Interfaces.MPartner.Extracts.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.CommonControls;
 

@@ -39,7 +39,7 @@ using Ict.Petra.Client.MReporting.Gui.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
 using System.Collections.Specialized;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {

@@ -35,7 +35,7 @@ using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;

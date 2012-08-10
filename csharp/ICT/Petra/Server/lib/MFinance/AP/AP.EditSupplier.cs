@@ -33,7 +33,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
-using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, markusm
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,8 +28,7 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Common.Controls;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using DevAge.Drawing;
 using DevAge.ComponentModel;
 using DevAge.ComponentModel.Converter;

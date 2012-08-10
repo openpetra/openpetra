@@ -32,7 +32,7 @@ using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.Reporting.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Server.MFinance.Reporting
 {
