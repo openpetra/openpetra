@@ -284,9 +284,8 @@ namespace {#NAMESPACE}
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             if (myDataView.Count > 0)
             {
-                grdDetails.Selection.ResetSelection(false);
-                grdDetails.Selection.SelectRow(1, true);
-                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+	            InvokeFocusedRowChanged(1);
                 pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             }
         }
@@ -612,9 +611,12 @@ namespace {#NAMESPACE}
 				deletionPerformed = true;
 {#ENDIFN DELETEROWMANUAL}				
 			
-				FPetraUtilsObject.SetChangedFlag();
-				//Select and call the event that doesn't occur automatically
-				InvokeFocusedRowChanged(rowIndexToDelete);
+				if (deletionPerformed)
+				{
+					FPetraUtilsObject.SetChangedFlag();
+					//Select and call the event that doesn't occur automatically
+					InvokeFocusedRowChanged(rowIndexToDelete);
+				}
 			}
 		}
 

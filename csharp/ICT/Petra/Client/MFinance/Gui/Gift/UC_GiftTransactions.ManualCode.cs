@@ -85,8 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //add textxhanged event handler to Motivation group code
             this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
             this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
-
-
+            
             //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
             //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
 
@@ -115,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
+            	strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
                 if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
@@ -195,11 +194,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FInKeyMinistryChanging = true;
+
             try
             {
-                Int64 rcp = cmbMinistry.GetSelectedInt64();
-
-                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
+	            if (cmbMinistry.Count == 0)
+	            {
+	                cmbMinistry.SelectedIndex = -1;
+	            }
+	            else
+	            {
+	                Int64 rcp = cmbMinistry.GetSelectedInt64();
+	
+	                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
+	            }
             }
             finally
             {
@@ -420,6 +427,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private GiftBatchTDSAGiftDetailRow GetGiftDetailRow(Int32 AGiftTransactionNumber, Int32 AGiftDetailNumber)
         {
             return (GiftBatchTDSAGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, AGiftTransactionNumber, AGiftDetailNumber});
+        }
+
+
+        private bool DeleteRowManual(ref GiftBatchTDSAGiftDetailRow ARowToDelete, out string ACompletionMessage)
+        {
+        	ACompletionMessage = string.Empty;
+        	
+        		
+        	return true;
         }
 
         /// <summary>
@@ -821,7 +837,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
+//			if (cmbMinistry.Count == 0)
+//            {
+//            	cmbMinistry.SelectedIndex = -1;
+//            	cmbMinistry.Text = string.Empty;
+//            	cmbMinistry.SetSelectedString("", -1);
+//            }
+
+			TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
 
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             dtpDateEntered.Date = giftRow.DateEntered;
@@ -840,12 +863,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailCostCentreCode.Text = string.Empty;
             }
 
-            //TODO: keymin needs more adjustment to clear for each new row
-            if (cmbMinistry.Count == 0)
-            {
-            	cmbMinistry.SelectedIndex = -1;
-            }
-            
 //            if (ARow.IsMotivationGroupCodeNull())
 //			{
 //				cmbDetailMotivationGroupCode.SelectedIndex = -1;
@@ -869,7 +886,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // this is a special case - normally these lines would be produced by the generator
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
 
-            if (giftRow.IsMethodOfGivingCodeNull())
+             if (cmbMinistry.Count == 0)
+            {
+            	cmbMinistry.SelectedIndex = -1;
+            	cmbMinistry.Text = string.Empty;
+            }
+ 
+             if (giftRow.IsMethodOfGivingCodeNull())
             {
                 cmbDetailMethodOfGivingCode.SelectedIndex = -1;
             }
@@ -997,33 +1020,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             giftDetailRow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);
             giftDetailRow.RecipientDescription = txtDetailRecipientKey.LabelText;
             
-            
-            
-//
-            //            foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
-            //            {
-            //                if (giftDetail.BatchNumber.Equals(FBatchNumber)
-            //                    && giftDetail.GiftTransactionNumber.Equals(ARow.GiftTransactionNumber))
-            //                {
-            //                    giftDetail.DateEntered = giftRow.DateEntered;
-            //                    giftDetail.DonorKey = giftRow.DonorKey;
-            //                    // this does not work
-            //                    //giftDetail.DonorName = txtDetailDonorKey.LabelText;
-            //                }
-            //            }
-
-            //  join by hand
-//            if (cmbDetailMotivationGroupCode.SelectedIndex == -1)
-//            {
-//            	ARow.SetMotivationGroupCodeNull();
-//            	ARow.SetMotivationDetailCodeNull();
-//            }
-//            else
-//            {
-//            	ARow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
-//            	ARow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
-//            }
-
             if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
             {
                 giftRow.SetMethodOfGivingCodeNull();
@@ -1059,6 +1055,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
             }
+           
         }
 
         /// Select a special gift detail number from outside

@@ -580,9 +580,12 @@ namespace {#NAMESPACE}
 				deletionPerformed = true;
 {#ENDIFN DELETEROWMANUAL}				
 			
-				FPetraUtilsObject.SetChangedFlag();
-				//Select and call the event that doesn't occur automatically
-				InvokeFocusedRowChanged(rowIndexToDelete);
+				if (deletionPerformed)
+				{
+					FPetraUtilsObject.SetChangedFlag();
+					//Select and call the event that doesn't occur automatically
+					InvokeFocusedRowChanged(rowIndexToDelete);
+				}
 			}
 		}
 
