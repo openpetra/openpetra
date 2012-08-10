@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -106,8 +106,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
             if (FExportSettingsChanged)
             {
                 TVerificationResultCollection AVerificationResult;
-                TSubmitChangesResult SubmitOK =
-                    TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref FMainDS, out AVerificationResult);
+//              TSubmitChangesResult SubmitOK =
+                TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref FMainDS, out AVerificationResult);
 
                 FExportSettingsChanged = false;
             }

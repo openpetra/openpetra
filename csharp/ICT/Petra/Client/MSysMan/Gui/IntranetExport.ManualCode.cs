@@ -40,18 +40,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
     {
         private TFrmIntranetExportSettings FSettingsPage;
         private DateTime FGiftsSince;
-        private Int32 FLedgerNumber;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Int32 LedgerNumber
-        {
-            set
-            {
-                FLedgerNumber = value;
-            }
-        }
 
         private void InitializeManualCode()
         {
