@@ -2,11 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
-//       thomasw
-//       joachimm
+//       joachimm, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,6 +33,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -46,10 +45,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-//        private PtAbilityAreaTable FBankingDetailsDT;
-        private PtAbilityLevelTable FAbilityLevelDT;
-
-        #region Properties
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
@@ -65,26 +60,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        #endregion
-
-        #region Events
-
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-
-        #endregion
 
         /// <summary>
         /// todoComment
         /// </summary>
         public void SpecialInitUserControl(PartnerEditTDS AMainDS)
         {
-#ifdef todo        
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
-
- //           FBankingDetailsDT = (PtAbilityAreaTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.AbilityAreaList);
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
@@ -95,7 +81,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnDelete.Enabled = false;
                 pnlDetails.Visible = false;
             }
-#endif
         }
 
         /// <summary>
@@ -105,37 +90,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-#ifdef todo
             this.CreateNewPBankingDetails();
-#endif
         }
 
         private void NewRowManual(ref PBankingDetailsRow ARow)
         {
-#ifdef todo
-            string newName;
-            Int32 countNewDetail = 0;
+            ARow.BankingDetailsKey = (FMainDS.PBankingDetails.Rows.Count + 1) * -1;
+            ARow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
+            ARow.BankKey = 0;
 
-            ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-            
- //           newName = FBankingDetailsDT[0].BankingDetailsKey;
-
-            if (FMainDS.PBankingDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
-            {
-                while (FMainDS.PBankingDetails.Rows.Find(new object[] { ARow.PartnerKey, newName }) != null)
-                {
-                    countNewDetail++;
-  //                  newName = FBankingDetailsDT[countNewDetail].BankingDetailsKey;
-                }
-            }
-            //BankingDetailsKey PrimaryKey von PreBankingDetails
-            ARow.BankingDetailsKey = newName;
-#endif
+            PPartnerBankingDetailsRow partnerBankingDetails = FMainDS.PPartnerBankingDetails.NewRowTyped();
+            partnerBankingDetails.BankingDetailsKey = ARow.BankingDetailsKey;
+            partnerBankingDetails.PartnerKey = FMainDS.PPartner[0].PartnerKey;
         }
 
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-#ifdef todo
             if (FPreviouslySelectedDetailRow == null)
             {
                 return;
@@ -167,21 +137,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlDetails.Visible = false;
                 }
             }
-#endif
         }
 
         private void DoRecalculateScreenParts()
         {
-#ifdef todo
             OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
                     ScreenPart = TScreenPartEnum.spCounters
                 });
-#endif
         }
 
         private void ShowDetailsManual(PBankingDetailsRow ARow)
         {
-#ifdef todo
             if (ARow != null)
             {
                 btnDelete.Enabled = true;
@@ -192,9 +158,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
-#endif
         }
-
 
         /// <summary>
         /// Gets the data from all controls on this UserControl.
@@ -203,13 +167,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void GetDataFromControls2()
         {
-#ifdef todo
             // Get data out of the Controls only if there is at least one row of data (Note: Column Headers count as one row)
             if (grdDetails.Rows.Count > 1)
             {
                 GetDataFromControls();
             }
-#endif
         }
 
         /// <summary>
@@ -222,12 +184,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Loads Person Ability Data from Petra Server into FMainDS, if not already loaded.
+        /// Loads PBankingDetails Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>
         private Boolean LoadDataOnDemand()
         {
-#ifdef todo
             Boolean ReturnValue;
 
             try
@@ -236,14 +197,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (FMainDS.PBankingDetails == null)
                 {
                     FMainDS.Tables.Add(new PBankingDetailsTable());
+                    FMainDS.Tables.Add(new PPartnerBankingDetailsTable());
                     FMainDS.InitVars();
                 }
 
                 if (TClientSettings.DelayedDataLoading
                     && (FMainDS.PBankingDetails.Rows.Count == 0))
                 {
-//                    FMainDS.Merge(FPartnerEditUIConnector.GetDataPersonnelIndividualData(TIndividualDataItemEnum.idiPersonalAbilities));
-                      FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails(TIndividualDataItemEnum.idiBankingDetails));
+                    FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails(FMainDS.PPartner[0].PartnerKey));
 
                     // Make DataRows unchanged
                     if (FMainDS.PBankingDetails.Rows.Count > 0)
@@ -272,18 +233,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 throw;
             }
-#endif
+
             return ReturnValue;
         }
 
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
         {
-#ifdef todo
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
             }
-#endif
         }
 
         /// <summary>
@@ -292,7 +251,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-#ifdef todo
             NewRow(this, null);
         }
 
@@ -302,12 +260,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
-#ifdef todo
             if (e.Row != -1)
             {
                 this.DeleteRow(this, null);
             }
-#endif
         }
     }
 }

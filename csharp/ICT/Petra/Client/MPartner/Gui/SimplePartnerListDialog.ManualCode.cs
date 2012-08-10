@@ -45,8 +45,8 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// manual methods for the generated window
     public partial class TFrmSimplePartnerListDialog : System.Windows.Forms.Form
     {
-    //    private PartnerEditTDS FMainDS;
-        
+        //    private PartnerEditTDS FMainDS;
+
         /// <summary>
         /// set the explanation text in the dialog
         /// </summary>
@@ -73,21 +73,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             myDataView.AllowNew = false;
             grdPartners.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
         }
-        
+
         private void InitializeManualCode()
         {
             // show this dialog in center of screen
             this.StartPosition = FormStartPosition.CenterScreen;
 
             // only need ok button for this dialog
-            btnCancel.Visible = false;            
+            btnCancel.Visible = false;
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Needs to be set to false because it got set to true in ancestor Form!
             e.Cancel = false;
-            
+
             // Need to call the following method in the Base Form to remove this Form from the Open Forms List
             FPetraUtilsObject.HasChanges = false; // this has to be set as otherwise the following call won't work
             FPetraUtilsObject.TFrmPetra_Closing(this, null);
@@ -98,11 +98,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }
-
     }
-    
+
     // in addition derive class from IFrmPetraEdit so TFrmPetraEditUtils can be created
-    public partial class TFrmSimplePartnerListDialog: Ict.Petra.Client.CommonForms.IFrmPetraEdit
+    public partial class TFrmSimplePartnerListDialog : Ict.Petra.Client.CommonForms.IFrmPetraEdit
     {
         /// <summary>
         /// save the changes on the screen
@@ -113,7 +112,5 @@ namespace Ict.Petra.Client.MPartner.Gui
             // method needs to be provided here for interface but will never be called
             return false;
         }
-        
     }
-    
 }

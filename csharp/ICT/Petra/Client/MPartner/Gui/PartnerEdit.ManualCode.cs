@@ -1224,7 +1224,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                      AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter][
                                         PPartnerLocationTable.GetPartnerKeyDBName()].ToString() + "(); RowError: " +
                                                      AInspectDS.Tables[PPartnerLocationTable.GetTableName()].Rows[TmpRowCounter].RowError.ToString()
-                                                     + "\r\n";
+                                                     +
+                                                     "\r\n";
                                 }
 
                                 MessageBox.Show(TmpDebugString, "DEBUG: PLocation / PPartnerLocation local contents  [#2]");

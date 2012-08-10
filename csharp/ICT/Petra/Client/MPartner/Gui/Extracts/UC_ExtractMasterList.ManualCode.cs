@@ -397,14 +397,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     if (TRemote.MPartner.Partner.WebConnectors.AddSubscription
                             (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs, out SubscriptionsAdded))
                     {
-                        MessageText = String.Format(Catalog.GetString("Subscription {0} successfully added for {1} out of {2} Partner(s) in Extract {3}."), SubscriptionRow.PublicationCode, SubscriptionsAdded, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
+                        MessageText =
+                            String.Format(Catalog.GetString(
+                                    "Subscription {0} successfully added for {1} out of {2} Partner(s) in Extract {3}."),
+                                SubscriptionRow.PublicationCode,
+                                SubscriptionsAdded, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
 
                         if (PartnersWithExistingSubs.Rows.Count > 0)
                         {
-                            MessageText += "\r\n\r\n" + 
-                                String.Format(Catalog.GetString("See the following Dialog for the {0} Partner(s) that were already subscribed for this Publication. The Subscription was not added for those Partners."), PartnersWithExistingSubs.Rows.Count);
+                            MessageText += "\r\n\r\n" +
+                                           String.Format(Catalog.GetString(
+                                    "See the following Dialog for the {0} Partner(s) that were already subscribed for this Publication. The Subscription was not added for those Partners."),
+                                PartnersWithExistingSubs.Rows.Count);
                         }
-                        
+
                         MessageBox.Show(MessageText,
                             Catalog.GetString("Add Subscription"),
                             MessageBoxButtons.OK,
@@ -414,7 +420,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         {
                             TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
                             partnerDialog.SetExplanation("These partners already have a Subscription for " + SubscriptionRow.PublicationCode,
-                                                         "The Subscription was not added to the following Partners:");
+                                "The Subscription was not added to the following Partners:");
                             partnerDialog.SetPartnerList(PartnersWithExistingSubs);
                             partnerDialog.ShowDialog();
                         }
@@ -430,7 +436,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
-        
+
         /// <summary>
         /// Delete subscription for Partners in selected Extract
         /// </summary>
@@ -455,7 +461,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     dialog.GetReturnedParameters(out PublicationCode);
 
                     ExtractTDSMExtractTable ExtractTable;
-        
+
                     // retrieve all partners of extract from server
                     ExtractTable = TRemote.MPartner.Partner.WebConnectors.GetExtractRowsWithPartnerData(GetSelectedDetailRow().ExtractId);
 
@@ -465,21 +471,21 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 (Row.PartnerKey, PublicationCode))
                         {
                             DeleteThisSubscription = false;
-                            
+
                             if (!DeleteAllSubscriptions)
                             {
                                 TFrmExtendedMessageBox.TResult Result;
                                 TFrmExtendedMessageBox ExtMsgBox = new TFrmExtendedMessageBox(this.FindForm());
-                                Result = ExtMsgBox.ShowDialog(Catalog.GetString("You have chosen to delete the subscription of ") 
-                                                     + PublicationCode + "\r\n"
-                                                     + Catalog.GetString("for Partner ")
-                                                     + Row.PartnerShortName + " (" + Row.PartnerKey + ")\r\n\r\n"
-                                                     + Catalog.GetString("Do you really want to delete it?"),
-                                                     Catalog.GetString("Delete Subscription"),
-                                                     "", 
-                                                     TFrmExtendedMessageBox.TButtons.embbYesYesToAllNoCancel, 
-                                                     TFrmExtendedMessageBox.TIcon.embiQuestion);
-                                
+                                Result = ExtMsgBox.ShowDialog(Catalog.GetString("You have chosen to delete the subscription of ") +
+                                    PublicationCode + "\r\n" +
+                                    Catalog.GetString("for Partner ") +
+                                    Row.PartnerShortName + " (" + Row.PartnerKey + ")\r\n\r\n" +
+                                    Catalog.GetString("Do you really want to delete it?"),
+                                    Catalog.GetString("Delete Subscription"),
+                                    "",
+                                    TFrmExtendedMessageBox.TButtons.embbYesYesToAllNoCancel,
+                                    TFrmExtendedMessageBox.TIcon.embiQuestion);
+
                                 switch (Result)
                                 {
                                     case TFrmExtendedMessageBox.TResult.embrYesToAll:
@@ -496,25 +502,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                                     case TFrmExtendedMessageBox.TResult.embrCancel:
                                         MessageBox.Show(Catalog.GetString("Further deletion of Subscriptions cancelled"),
-                                            Catalog.GetString("Delete Subscription"),
-                                            MessageBoxButtons.OK,
-                                            MessageBoxIcon.Information);
+                                        Catalog.GetString("Delete Subscription"),
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
                                         return;
-                                        
+
                                     default:
                                         break;
                                 }
                             }
-                            
-                            if (   DeleteAllSubscriptions
+
+                            if (DeleteAllSubscriptions
                                 || DeleteThisSubscription)
                             {
                                 if (!TRemote.MPartner.Partner.WebConnectors.DeleteSubscription
-                                    (GetSelectedDetailRow().ExtractId, Row.PartnerKey, PublicationCode))
+                                        (GetSelectedDetailRow().ExtractId, Row.PartnerKey, PublicationCode))
                                 {
-                                    MessageBox.Show(Catalog.GetString("Error while deleting Subscription ") 
-                                                    + PublicationCode + Catalog.GetString(" for Partner ") 
-                                                    + Row.PartnerShortName + " (" + Row.PartnerKey + ")",
+                                    MessageBox.Show(Catalog.GetString("Error while deleting Subscription ") +
+                                        PublicationCode + Catalog.GetString(" for Partner ") +
+                                        Row.PartnerShortName + " (" + Row.PartnerKey + ")",
                                         Catalog.GetString("Delete Subscription"),
                                         MessageBoxButtons.OK,
                                         MessageBoxIcon.Error);
@@ -525,23 +531,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                     CountDeleted++;
                                 }
                             }
-                               
                         }
-                        
                     }
-                    
+
                     if (AllDeletionsSucceeded)
                     {
-                        MessageBox.Show(String.Format(Catalog.GetString("Subscription {0} successfully deleted for {1} Partners in Extract {2}"), 
-                                                      PublicationCode, CountDeleted, GetSelectedDetailRow().ExtractName),
+                        MessageBox.Show(String.Format(Catalog.GetString("Subscription {0} successfully deleted for {1} Partners in Extract {2}"),
+                                PublicationCode, CountDeleted, GetSelectedDetailRow().ExtractName),
                             Catalog.GetString("Delete Subscription"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show(String.Format(Catalog.GetString("Error while deleting Subscription {0} for some Partners in Extract {1}. Subscription deleted for {2} Partners."), 
-                                                      PublicationCode, GetSelectedDetailRow().ExtractName, CountDeleted),
+                        MessageBox.Show(String.Format(Catalog.GetString(
+                                    "Error while deleting Subscription {0} for some Partners in Extract {1}. Subscription deleted for {2} Partners."),
+                                PublicationCode, GetSelectedDetailRow().ExtractName, CountDeleted),
                             Catalog.GetString("Delete Subscription"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
@@ -549,7 +554,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
-        
+
         /// <summary>
         /// Change subscription for Partners in selected Extract
         /// </summary>
@@ -559,7 +564,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             //TODO
         }
-        
+
         /// <summary>
         /// Update 'No Solicitations' flag for Partners in selected extract
         /// </summary>
@@ -600,7 +605,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
             }
         }
-        
+
         /// <summary>
         /// Update Receipt Frequency for Partners in selected extract
         /// </summary>

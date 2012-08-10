@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -94,6 +94,11 @@ namespace Ict.Petra.Shared.MPartner
         /// page for notes about the partner
         /// </summary>
         petpNotes,
+
+        /// <summary>
+        /// page for bank accounts and other finance details of the partner
+        /// </summary>
+        petpFinanceDetails,
 
         /// <summary>
         /// page for individual data about the partner (Personnel Module)

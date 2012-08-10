@@ -37,7 +37,7 @@ RootNode:
                 Row0: [grpAccountDetail]
             
         grpAccountDetail: {Label=AccountDetail, Strech=horizontally}
-            Controls: [txtAccountName, txtBankAccountNumber, txtIban]
+            Controls: [txtAccountName, txtBankAccountNumber, txtIban, txtBankKey]
     
         txtAccountName:
             Label: Account Name       
@@ -45,3 +45,4 @@ RootNode:
             Label: Bank Account Number
         txtIban:
             Label: IBAN
+        txtBankKey: {Label=Bank, Type=PartnerKey, PartnerClass=BANK}
