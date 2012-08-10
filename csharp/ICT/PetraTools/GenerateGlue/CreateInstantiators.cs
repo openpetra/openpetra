@@ -41,11 +41,11 @@ namespace GenerateSharedCode
 /// <summary>
 /// this class generates the instantiators for remoting
 /// it uses the file ICT/Petra/Definitions/NamespaceHierarchy.xml
-/// it also uses the compiled dll file Petra/Shared/_bin/Server_Client/Debug/Ict.Petra.Shared.Interfaces.dll
-/// to pick up the end points (basically from Petra\Shared\lib\Interfaces\*.EndPoints.cs
 /// </summary>
 class CreateInstantiators : AutoGenerationWriter
 {
+    private string FTemplateDir = string.Empty;
+
     private ProcessTemplate WriteLoaderClass(ProcessTemplate ATemplate, String module)
     {
         ProcessTemplate loaderClassSnippet = ATemplate.GetSnippet("LOADERCLASS");
@@ -59,7 +59,8 @@ class CreateInstantiators : AutoGenerationWriter
         String Classname,
         String Namespace,
         Boolean HighestLevel,
-        List <TNamespace>children)
+        List <TNamespace>children,
+        SortedList <string, TypeDeclaration>connectors)
     {
         if (children.Count == 0)
         {
@@ -81,48 +82,34 @@ class CreateInstantiators : AutoGenerationWriter
 
         foreach (TNamespace sn in children)
         {
-            ProcessTemplate subNamespaceSnippet = ATemplate.GetSnippet("SUBNAMESPACE");
+            ProcessTemplate subNamespaceSnippet = ATemplate.GetSnippet("SUBNAMESPACEPROPERTY");
+
+            string NamespaceName = Namespace + sn.Name;
 
             if (HighestLevel)
             {
-                subNamespaceSnippet.SetCodelet("NAMESPACENAME", sn.Name);
-                subNamespaceSnippet.SetCodelet("OBJECTNAME", sn.Name);
-            }
-            else
-            {
-                subNamespaceSnippet.SetCodelet("NAMESPACENAME", Namespace + sn.Name);
-                subNamespaceSnippet.SetCodelet("OBJECTNAME", sn.Name);
+                NamespaceName = sn.Name;
             }
 
+            subNamespaceSnippet.SetCodelet("OBJECTNAME", sn.Name);
+            subNamespaceSnippet.SetCodelet("NAMESPACENAME", NamespaceName);
             subNamespaceSnippet.SetCodelet("NAMESPACE", Namespace);
 
-            remotableClassSnippet.InsertSnippet("SUBNAMESPACESREMOTABLECLASS", subNamespaceSnippet);
+            remotableClassSnippet.InsertSnippet("SUBNAMESPACEPROPERTIES", subNamespaceSnippet);
+
+            remotableClassSnippet.InsertSnippet("CLIENTOBJECTFOREACHPROPERTY",
+                TCreateClientRemotingClass.AddClientRemotingClass(
+                    FTemplateDir,
+                    "T" + NamespaceName + "NamespaceRemote",
+                    "I" + NamespaceName + "Namespace",
+                    TCollectConnectorInterfaces.FindTypesInNamespace(connectors, FullNamespace + "." + sn.Name)
+                    ));
         }
 
         return remotableClassSnippet;
     }
 
-    private ProcessTemplate WriteNamespace(ProcessTemplate ATemplate, String NamespaceName, String ClassName, TNamespace sn)
-    {
-        ProcessTemplate namespaceTemplate = ATemplate.GetSnippet("NAMESPACE");
-
-        namespaceTemplate.SetCodelet("NAMESPACENAME", NamespaceName);
-        namespaceTemplate.InsertSnippet("REMOTABLECLASS", WriteRemotableClass(ATemplate, NamespaceName,
-                ClassName,
-                ClassName,
-                false,
-                sn.Children));
-        namespaceTemplate.SetCodelet("SUBNAMESPACES1", "");
-
-        foreach (TNamespace sn2 in sn.Children)
-        {
-            namespaceTemplate.InsertSnippet("SUBNAMESPACES1", WriteNamespace(ATemplate, NamespaceName + "." + sn2.Name, ClassName + sn2.Name, sn2));
-        }
-
-        return namespaceTemplate;
-    }
-
-    private void CreateAutoHierarchy(TNamespace tn, String AOutputPath, String AXmlFileName, String ATemplateDir)
+    private void CreateAutoHierarchy(TNamespace tn, String AOutputPath, String AXmlFileName)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
                             Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy-generated.cs";
@@ -137,7 +124,9 @@ class CreateInstantiators : AutoGenerationWriter
 
         Console.WriteLine("working on " + OutputFile);
 
-        ProcessTemplate Template = new ProcessTemplate(ATemplateDir + Path.DirectorySeparatorChar +
+        SortedList <string, TypeDeclaration>connectors = TCollectConnectorInterfaces.GetConnectors(tn.Name);
+
+        ProcessTemplate Template = new ProcessTemplate(FTemplateDir + Path.DirectorySeparatorChar +
             "ClientServerGlue" + Path.DirectorySeparatorChar +
             "Instantiator.cs");
 
@@ -147,7 +136,7 @@ class CreateInstantiators : AutoGenerationWriter
         WriteLine("//");
 
         // load default header with license and copyright
-        WriteLine(ProcessTemplate.LoadEmptyFileComment(ATemplateDir));
+        WriteLine(ProcessTemplate.LoadEmptyFileComment(FTemplateDir));
 
         ProcessTemplate headerSnippet = Template.GetSnippet("HEADER");
 
@@ -157,29 +146,40 @@ class CreateInstantiators : AutoGenerationWriter
 
         WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + ';');
 
+        string InterfacePath = Path.GetFullPath(AOutputPath).Replace(Path.DirectorySeparatorChar, '/');
+        InterfacePath = InterfacePath.Substring(0, InterfacePath.IndexOf("csharp/ICT/Petra")) + "csharp/ICT/Petra/Shared/lib/Interfaces";
+        WriteLine(CreateInterfaces.AddNamespacesFromYmlFile(InterfacePath, tn.Name));
+
         WriteLine();
 
         ProcessTemplate topLevelNamespaceSnippet = Template.GetSnippet("TOPLEVELNAMESPACE");
         topLevelNamespaceSnippet.SetCodelet("TOPLEVELMODULE", tn.Name);
         topLevelNamespaceSnippet.InsertSnippet("LOADERCLASS", WriteLoaderClass(Template, tn.Name));
-        topLevelNamespaceSnippet.InsertSnippet("REMOTABLECLASS",
+        topLevelNamespaceSnippet.InsertSnippet("MAINREMOTABLECLASS",
             WriteRemotableClass(
                 Template,
-                "Ict.Petra.Server.M" + tn.Name + ".Instantiator",
+                "Ict.Petra.Shared.M" + tn.Name,
                 "TM" + tn.Name,
                 "M" + tn.Name,
                 true,
-                tn.Children));
+                tn.Children,
+                connectors));
 
-        topLevelNamespaceSnippet.SetCodelet("SUBNAMESPACES", "");
+        topLevelNamespaceSnippet.SetCodelet("SUBNAMESPACEREMOTABLECLASSES", "");
 
         foreach (TNamespace sn in tn.Children)
         {
-            topLevelNamespaceSnippet.InsertSnippet("SUBNAMESPACES",
-                WriteNamespace(Template, "Ict.Petra.Server.M" + tn.Name + ".Instantiator." + sn.Name, sn.Name, sn));
+            topLevelNamespaceSnippet.InsertSnippet("SUBNAMESPACEREMOTABLECLASSES",
+                WriteRemotableClass(
+                    Template,
+                    "Ict.Petra.Shared.M" + tn.Name + "." + sn.Name,
+                    sn.Name,
+                    sn.Name,
+                    false,
+                    sn.Children,
+                    connectors));
         }
 
-        // need to use WriteLine to keep all the manual code!
         WriteLine(topLevelNamespaceSnippet.FinishWriting(true));
 
         Close();
@@ -187,9 +187,11 @@ class CreateInstantiators : AutoGenerationWriter
 
     public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
+        FTemplateDir = ATemplateDir;
+
         foreach (TNamespace tn in ANamespaces)
         {
-            CreateAutoHierarchy(tn, AOutputPath, AXmlFileName, ATemplateDir);
+            CreateAutoHierarchy(tn, AOutputPath, AXmlFileName);
         }
     }
 }

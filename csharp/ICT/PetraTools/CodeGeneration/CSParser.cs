@@ -361,6 +361,23 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
+        /// get the first interface that this class implements
+        /// </summary>
+        /// <returns></returns>
+        public static string GetImplementedInterface(TypeDeclaration AClass)
+        {
+            foreach (TypeReference t in AClass.BaseTypes)
+            {
+                if (t.Type.StartsWith("I"))
+                {
+                    return t.Type;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
         /// get all constructors of the class
         /// </summary>
         /// <returns></returns>
@@ -527,7 +544,10 @@ namespace Ict.Tools.CodeGeneration
 
                 foreach (string filename in Directory.GetFiles(dir, "*.cs", option))
                 {
-                    CSFiles.Add(new CSParser(filename));
+                    if (!filename.EndsWith("-generated.cs"))
+                    {
+                        CSFiles.Add(new CSParser(filename));
+                    }
                 }
 
                 _CSFilesPerDir.Add(dirfull, CSFiles);

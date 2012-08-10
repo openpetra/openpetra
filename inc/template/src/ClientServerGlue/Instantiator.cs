@@ -14,17 +14,19 @@ using System;
 using System.Runtime.Remoting;
 using System.Threading;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Client;
 
 {##TOPLEVELNAMESPACE}
 namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.Instantiator
 {
     {#LOADERCLASS}
 
-    {#REMOTABLECLASS}
+    {#MAINREMOTABLECLASS}
 
-    {#SUBNAMESPACES}
+    {#SUBNAMESPACEREMOTABLECLASSES}
 }
 
 {##LOADERCLASS}
@@ -66,11 +68,6 @@ public class TM{#MODULE}NamespaceLoader : TConfigurableMBRObject
     }
 }
 
-{##NAMESPACE}
-{#REMOTABLECLASS}
-
-{#SUBNAMESPACES1}
-
 {##REMOTABLECLASS}
 /// <summary>
 /// REMOTEABLE CLASS. {#NAMESPACE} Namespace.
@@ -89,10 +86,12 @@ public class {#LOCALCLASSNAME} : TConfigurableMBRObject, I{#NAMESPACE}Namespace
         return null;
     }
 
-    {#SUBNAMESPACESREMOTABLECLASS}
+    {#SUBNAMESPACEPROPERTIES}
+    
+    {#CLIENTOBJECTFOREACHPROPERTY}
 }
 
-{##SUBNAMESPACE}
+{##SUBNAMESPACEPROPERTY}
 /// <summary>The '{#NAMESPACENAME}' subnamespace contains further subnamespaces.</summary>
 public I{#NAMESPACENAME}Namespace {#OBJECTNAME}
 {

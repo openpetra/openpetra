@@ -3,10 +3,10 @@
 # those using clauses used to be in ManualCode sections in the interface files
 #
 InterfacesUsingNamespaces:
-    Common: [Ict.Common.DB,Ict.Common.Data,Ict.Petra.Shared,Ict.Petra.Shared.MCommon,Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MPartner.Partner.Data]
-    Conference: [Ict.Common.Data, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference]
-    Finance: [Ict.Common.Data, Ict.Petra.Shared.MFinance, Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.AP.Data, Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Gift.Data, Ict.Petra.Shared.MPartner.Partner.Data, System.Collections.Specialized]
-    Partner: [Ict.Common.Data, Ict.Petra.Shared, Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPersonnel.Person, Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MCommon, Ict.Petra.Shared.MCommon.Data, System.Collections.Specialized]
-    Personnel: [Ict.Common.Data, Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Person]
-    SysMan: [Ict.Common.Data, System.Xml, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan]
+    Common: [Ict.Petra.Shared,Ict.Petra.Shared.MCommon,Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MPartner.Partner.Data]
+    Conference: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference]
+    Finance: [Ict.Petra.Shared.MFinance, Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.AP.Data, Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Gift.Data, Ict.Petra.Shared.MPartner.Partner.Data]
+    Partner: [Ict.Petra.Shared, Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPersonnel.Person, Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MCommon, Ict.Petra.Shared.MCommon.Data]
+    Personnel: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Person]
+    SysMan: [Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan]
     

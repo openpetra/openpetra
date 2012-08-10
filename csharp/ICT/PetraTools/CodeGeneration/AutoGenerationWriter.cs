@@ -313,7 +313,7 @@ namespace Ict.Tools.CodeGeneration
         /// <param name="AParamName"></param>
         /// <param name="AParamModifier"></param>
         /// <param name="AParamTypeName"></param>
-        public void AddParameter(ref string MethodDeclaration, ref bool firstParameter, int align,
+        public static void AddParameter(ref string MethodDeclaration, ref bool firstParameter, int align,
             string AParamName, ParameterModifiers AParamModifier, string AParamTypeName)
         {
             if (!firstParameter)
@@ -339,6 +339,99 @@ namespace Ict.Tools.CodeGeneration
             StrParameter += parameterType + (parameterType.EndsWith(">") ? "" : " ") + AParamName;
 
             MethodDeclaration += StrParameter;
+        }
+
+        /// <summary>
+        /// format the actual parameters, and the parameter definition of a method
+        /// </summary>
+        public static void FormatParameters(List <ParameterDeclarationExpression>AMethodParameters,
+            out string AActualParameters, out string AParameterDefinition)
+        {
+            int MethodDeclarationLength = 10;
+            bool firstParameter = true;
+
+            AActualParameters = string.Empty;
+            AParameterDefinition = string.Empty;
+
+            foreach (ParameterDeclarationExpression p in AMethodParameters)
+            {
+                AutoGenerationWriter.AddParameter(ref AParameterDefinition,
+                    ref firstParameter,
+                    MethodDeclarationLength,
+                    p.ParameterName,
+                    p.ParamModifier,
+                    p.TypeReference.Type);
+
+                if (AActualParameters.Length > 0)
+                {
+                    AActualParameters += ", ";
+                }
+
+                if ((ParameterModifiers.Ref & p.ParamModifier) > 0)
+                {
+                    AActualParameters += "ref ";
+                }
+                else if ((ParameterModifiers.Out & p.ParamModifier) > 0)
+                {
+                    AActualParameters += "out ";
+                }
+
+                AActualParameters += p.ParameterName;
+            }
+        }
+
+        /// <summary>
+        /// format a type name to a string.
+        /// reduce the length of the type name if the namespace is unique.
+        /// </summary>
+        /// <param name="ATypeRef"></param>
+        /// <param name="ANamespace"></param>
+        /// <returns></returns>
+        public static string TypeToString(TypeReference ATypeRef, string ANamespace)
+        {
+            string TypeAsString = ATypeRef.Type;
+
+            if (ATypeRef.GenericTypes.Count > 0)
+            {
+                TypeAsString += "<";
+
+                foreach (TypeReference tr in ATypeRef.GenericTypes)
+                {
+                    if (!TypeAsString.EndsWith("<"))
+                    {
+                        TypeAsString += ", ";
+                    }
+
+                    TypeAsString += tr.Type;
+                }
+
+                TypeAsString += ">";
+            }
+
+            if (ATypeRef.IsArrayType)
+            {
+                TypeAsString += "[]";
+            }
+
+            if (TypeAsString == "System.Void")
+            {
+                TypeAsString = "void";
+            }
+
+            // ReturnType sometimes has a very long name;
+            // shorten it for readability
+            // test whether the namespace is contained in the current namespace
+            if (TypeAsString.IndexOf(".") != -1)
+            {
+                String returnTypeNS = TypeAsString.Substring(0, TypeAsString.LastIndexOf("."));
+
+                if (ANamespace.IndexOf(returnTypeNS) == 0)
+                {
+                    TypeAsString = TypeAsString.Substring(TypeAsString.LastIndexOf(".") + 1);
+                }
+            }
+
+            return TypeAsString;
         }
 
         /// <summary>

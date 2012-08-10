@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,6 +45,8 @@ namespace Ict.Tools.GenerateGlue
             TCmdOpts cmd = new TCmdOpts();
 
             new TAppSettingsManager(false);
+
+            TLogging.DebugLevel = TAppSettingsManager.GetInt32("debuglevel", 0);
 
             String YmlFileName, OutputDir;
 
