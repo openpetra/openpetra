@@ -969,9 +969,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
         private DateTime FStartTime;
 #endif
 
-        #region ManualCode
-        private TSystemDefaults FSystemDefaultsManager;
-        #endregion ManualCode
         /// <summary>Constructor</summary>
         public TMaintenanceSystemDefaultsNamespace()
         {
@@ -983,9 +980,6 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
 
             FStartTime = DateTime.Now;
 #endif
-            #region ManualCode
-            FSystemDefaultsManager = new TSystemDefaults();
-            #endregion ManualCode
         }
 
         // NOTE AutoGeneration: This destructor is only needed for debugging...
