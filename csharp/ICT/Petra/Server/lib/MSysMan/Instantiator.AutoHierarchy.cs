@@ -1044,18 +1044,11 @@ namespace Ict.Petra.Server.MSysMan.Instantiator.Maintenance.SystemDefaults
         }
 
         /// generated method from interface
-        public System.Boolean SaveSystemDefaults(Ict.Petra.Shared.MSysMan.Data.SSystemDefaultsTable ASystemDefaultsDataTable)
+        public System.Boolean SetSystemDefault(String AKey,
+                                               String AValue)
         {
             #region ManualCode
-            return FSystemDefaultsManager.SaveSystemDefaults(ASystemDefaultsDataTable);
-            #endregion ManualCode
-        }
-
-        /// generated method from interface
-        public void ReloadSystemDefaultsTable()
-        {
-            #region ManualCode
-            FSystemDefaultsManager.ReloadSystemDefaultsTable();
+            return TSystemDefaults.SetSystemDefault(AKey, AValue);
             #endregion ManualCode
         }
     }

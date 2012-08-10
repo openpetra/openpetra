@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       christiank
+//       Tim Ingham
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +27,9 @@ using System.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core;
+using Ict.Common;
+using Ict.Common.DB;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance
 {
@@ -38,12 +42,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>
         /// Returns the value of the specified System Default.
         /// </summary>
-        /// <param name="ASystemDefaultName">The System Default for which the value should be
-        /// returned</param>
-        /// <param name="ADefault">The value that should be returned if the System Default was
-        /// not found</param>
-        /// <returns>The value of the System Default, or the value of the ADefault
-        /// parameter if the specified System Default was not found
+        /// <param name="ASystemDefaultName">System Default Key</param>
+        /// <param name="ADefault">Default to use if not found</param>
+        /// <returns>Value of System Default, or ADefault
         /// </returns>
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
@@ -62,10 +63,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>
         /// Returns the value of the specified System Default.
         /// </summary>
-        /// <param name="ASystemDefaultName">The System Default for which the value should be
-        /// returned</param>
-        /// <returns>The value of the System Default, or SYSDEFAULT_NOT_FOUND if the
-        /// specified System Default was not found
+        /// <param name="ASystemDefaultName">System Default Key</param>
+        /// <returns>Value of System Default, or SYSDEFAULT_NOT_FOUND
         /// </returns>
         public static String GetSystemDefault(String ASystemDefaultName)
         {
@@ -91,64 +90,56 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </returns>
         public static SSystemDefaultsTable GetSystemDefaults()
         {
-            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaults called.'); $ENDIF
+            SSystemDefaultsTable Ret;
 
-            return TSystemDefaultsCache.GSystemDefaultsCache.GetSystemDefaultsTable();
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
 
-            // $IFDEF DEBUGMODE Console.WriteLine('SystemDefault "LocalisedCountyLabel": ' + GSystemDefaultsCache.GetSystemDefault('LocalisedCountyLabel'));$ENDIF
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+                Ret = SSystemDefaultsAccess.LoadAll(ReadTransaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            return Ret;
         }
 
         /// <summary>
-        /// Reloads the cached SystemDefaults with the current DB table contents. Also
-        /// generates ClientTasks for all current Clients except itself that tells
-        /// Clients to refresh their SystemDefaults cache by reloading the SystemDefaults
-        /// from the PetraServer.
-        ///
+        /// Add or modify a System Default
         /// </summary>
-        /// <param name="ASystemDefaultsDataTable">The reloaded System Defaults Typed DataTable.
-        /// </param>
-        /// <returns>void</returns>
-        public void ReloadSystemDefaultsTable(ref SSystemDefaultsTable ASystemDefaultsDataTable)
+        /// <param name="AKey"></param>
+        /// <param name="AValue"></param>
+        /// <returns>true if the System Default was saved successfully</returns>
+        public static Boolean SetSystemDefault(String AKey, String AValue)
         {
-            ReloadSystemDefaultsTable();
-            ASystemDefaultsDataTable = GetSystemDefaults();
-        }
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
+            String UserName = UserInfo.GUserInfo.UserID;
 
-        /// <summary>
-        /// Reloads the cached SystemDefaults with the current DB table contents. Also
-        /// generates ClientTasks for all current Clients except itself that tells
-        /// Clients to refresh their SystemDefaults cache by reloading the SystemDefaults
-        /// from the PetraServer.
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public void ReloadSystemDefaultsTable()
-        {
-            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called.'); $ENDIF
-            TSystemDefaultsCache.GSystemDefaultsCache.ReloadSystemDefaultsTable();
-
-            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable: calling DomainManager.ClientTaskAddToOtherClient...'); $ENDIF
-            Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(-1,
-                SharedConstants.CLIENTTASKGROUP_SYSTEMDEFAULTSREFRESH,
-                "",
-                1);
-        }
-
-        /// <summary>
-        /// Saves the System Defaults.
-        ///
-        /// @comment Currently always returns false because the function in
-        /// Ict.Common.ServerSettings needs to be rewritten!
-        ///
-        /// </summary>
-        /// <param name="ASystemDefaultsDataTable">The Typed DataTable that contains changed and/or
-        /// added System Defaults.</param>
-        /// <returns>true if the System Defaults could be saved successfully, otherwise
-        /// false.
-        /// </returns>
-        public Boolean SaveSystemDefaults(SSystemDefaultsTable ASystemDefaultsDataTable)
-        {
-            return TSystemDefaultsCache.GSystemDefaultsCache.SaveSystemDefaults(ASystemDefaultsDataTable);
+            if (tbl.Rows.Count > 0) // I already have this. (I expect this is the case usually!)
+            {
+                DataRow Row = tbl[0];
+                ((SSystemDefaultsRow)Row).DefaultValue = AValue;
+                SSystemDefaultsAccess.UpdateRow(SSystemDefaultsTable.TableId, true, ref Row, Transaction, UserName);
+            }
+            else
+            {
+                DataRow Row = tbl.NewRowTyped(true);
+                ((SSystemDefaultsRow)Row).DefaultCode = AValue;
+                ((SSystemDefaultsRow)Row).DefaultDescription = "Created in OpenPetra";
+                ((SSystemDefaultsRow)Row).DefaultValue = AValue;
+                SSystemDefaultsAccess.InsertRow(SSystemDefaultsTable.TableId, ref Row, Transaction, UserName);
+            }
+            DBAccess.GDBAccessObj.CommitTransaction();
+           return true;
         }
     }
 }

@@ -55,44 +55,52 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
     public partial class TTransactionWebConnector
     {
         /// <summary>
-        /// create a new batch with a consecutive batch number in the ledger,
+        /// Create a new batch with a consecutive batch number in the ledger,
         /// and immediately store the batch and the new number in the database
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective, string ABatchDescription)
+        
         {
+            bool success = false;
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-
-            TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
-            MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
-
-            TVerificationResultCollection VerificationResult;
-            bool success = false;
-
-            if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out VerificationResult))
+            try
             {
-                if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult))
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+
+                TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
+                MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
+
+                TVerificationResultCollection VerificationResult;
+
+                if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out VerificationResult))
                 {
-                    success = true;
+                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult))
+                    {
+                        success = true;
+                    }
                 }
             }
 
-            if (success)
+            finally
             {
-                MainDS.AGiftBatch.AcceptChanges();
-                DBAccess.GDBAccessObj.CommitTransaction();
-                return MainDS;
+                if (success)
+                {
+                    MainDS.AGiftBatch.AcceptChanges();
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    throw new Exception("Error in CreateAGiftBatch");
+                }
             }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw new Exception("Error in CreateAGiftBatch");
-            }
+            return MainDS;
         }
 
         /// <summary>
@@ -1646,12 +1654,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if ((familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(partnerKey)) != null)
             {
-                return familyRow.FieldKey;
+                if (familyRow.IsFieldKeyNull())
+                {
+                    return 0;
+                }
+                else
+                {
+                    return familyRow.FieldKey;
+                }
             }
 
             if ((personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(partnerKey)) != null)
             {
-                return personRow.FieldKey;
+                if (personRow.IsFieldKeyNull())
+                {
+                    return 0;
+                }
+                else
+                {
+                    return personRow.FieldKey;
+                }
             }
 
             if (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)

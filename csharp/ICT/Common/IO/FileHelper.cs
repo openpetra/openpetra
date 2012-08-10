@@ -49,17 +49,19 @@ namespace Ict.Common.IO
                 /// </summary>
                 /// <param name="AFilePath">Filename (including Path) to read from.</param>
                 /// <returns>A MemoryStream with the Zip-compressed contents of the file specified in <paramref name="AFilePath" />.</returns>
-                public static MemoryStream InflateFileIntoMemoryStream(string AFilePath)
+                public static MemoryStream DeflateFileIntoMemoryStream(string AFilePath)
                 {
-                    return InflateFilesIntoMemoryStream(new string[] { AFilePath });
+                    return DeflateFilesIntoMemoryStream(new string[] { AFilePath }, true, "");
                 }
 
                 /// <summary>
                 /// Loads a any number of files, Zip-compresses them in memory into one Zip archive and returns it as a MemoryStream.
                 /// </summary>
                 /// <param name="AFilePaths">Array of Filenames (including Paths) to read from.</param>
+                /// <param name="APreservePath">true to create a folder structure in the ZIP</param>
+                /// <param name="AZipPassword">empty for no password</param>
                 /// <returns>A MemoryStream with the Zip-compressed contents of all the files specified in <paramref name="AFilePaths" />.</returns>
-                public static MemoryStream InflateFilesIntoMemoryStream(string[] AFilePaths)
+                public static MemoryStream DeflateFilesIntoMemoryStream(string[] AFilePaths, Boolean APreservePath, String AZipPassword)
                 {
                     MemoryStream ZippedStream = new MemoryStream();
                     MemoryStream OutputStream = new MemoryStream();
@@ -70,16 +72,27 @@ namespace Ict.Common.IO
 
                     using (ZipOutputStream ZipStream = new ZipOutputStream(ZippedStream))
                     {
-                        ZipStream.SetLevel(9);       // 0 - store only to 9 - means best compression
+                        ZipStream.SetLevel(5);       // 0 - store only to 9 - means best compression
+                        if (AZipPassword != "")
+                        {
+                            ZipStream.Password = AZipPassword;
+                        }
 
                         foreach (string FileToBeZipped in AFilePaths)
                         {
-                            ZippedFile = new ZipEntry(FileToBeZipped);
+                            String FileKnownAs = FileToBeZipped;
+                            if (!APreservePath)
+                            {
+                                Int32 LastSlashPos = Math.Max(FileKnownAs.LastIndexOf("/"), FileKnownAs.LastIndexOf(@"\"));
+                                FileKnownAs = FileKnownAs.Substring(LastSlashPos + 1);
+                            }
+                            FileStream fs = File.OpenRead(FileToBeZipped);
+
+                            ZippedFile = new ZipEntry(FileKnownAs);
+                            ZippedFile.Size = fs.Length;
                             ZipStream.PutNextEntry(ZippedFile);
 
-                            using (FileStream fs = File.OpenRead(FileToBeZipped)) {
-                                StreamUtils.Copy(fs, ZipStream, buffer);
-                            }
+                            StreamUtils.Copy(fs, ZipStream, buffer);
 
 //MessageBox.Show("1:" + ZippedStream.Length.ToString());
                         }
@@ -103,7 +116,7 @@ namespace Ict.Common.IO
                 /// </summary>
                 /// <param name="AZippedStream">Stream containing files that are Zip-compressed.</param>
                 /// <returns>A MemoryStream with the uncompressed contents of the Stream specified in <paramref name="AZippedStream" />.</returns>
-                public static MemoryStream DeflateFilesFromStream(Stream AZippedStream)
+                public static MemoryStream InflateFilesFromStream(Stream AZippedStream)
                 {
                     MemoryStream UnzippedStream = new MemoryStream();
                     Int32 size = 0;

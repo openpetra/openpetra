@@ -432,15 +432,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     String.Format(Catalog.GetString(
                             "This Payment cannot be reversed automatically because the total amount of the referenced documents ({0:n2} {1}) differs from the amount in the payment ({2:n2} {3})."),
                         PaidDocumentsTotal, TempDS.AApSupplier[0].CurrencyCode, TempDS.AApPayment[0].Amount, TempDS.AApSupplier[0].CurrencyCode);
-                MessageBox.Show(ErrorMsg, "Reverse Payment", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ErrorMsg, Catalog.GetString("Reverse Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            // TODO: Ideally find out if this payment was already reversed,
+            // Find out if this payment was already reversed,
             // because if it was, perhaps the user doesn't really want to
             // reverse it again?
-
-
+            if (TRemote.MFinance.AP.WebConnectors.WasThisPaymentReversed(ALedgerNumber, APaymentNumber))
+            {
+                MessageBox.Show(Catalog.GetString("Cannot reverse Payment - there is already a matching reverse transaction."), Catalog.GetString("Reverse Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             //
             // Ask the user to confirm reversal of this payment
             //
@@ -458,7 +461,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             PaymentMsg += ("\r\n\r\n" + String.Format("Total payment {0:n2} {1}", TempDS.AApPayment[0].Amount, TempDS.AApSupplier[0].CurrencyCode));
-            DialogResult YesNo = MessageBox.Show(PaymentMsg, "Reverse Payment", MessageBoxButtons.YesNo);
+            DialogResult YesNo = MessageBox.Show(PaymentMsg, Catalog.GetString("Reverse Payment"), MessageBoxButtons.YesNo);
 
             if (YesNo == DialogResult.No)
             {
@@ -472,8 +475,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
             {
-                MessageBox.Show(Catalog.GetString("reversal was cancelled."), Catalog.GetString(
-                        "Cancel"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString("Reversal was cancelled."), Catalog.GetString("Reverse Payment"), 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -483,7 +486,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (TRemote.MFinance.AP.WebConnectors.ReversePayment(ALedgerNumber, APaymentNumber, PostingDate, out Verifications))
             {
                 // TODO: print reports on successfully posted batch
-                MessageBox.Show(Catalog.GetString("The AP payment has been reversed."));
+                MessageBox.Show(Catalog.GetString("The AP payment has been reversed."), Catalog.GetString("Reverse Payment"));
                 Form Opener = FPetraUtilsObject.GetCallerForm();
 
                 if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))

@@ -995,17 +995,6 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         }
 
         /// generated method from connector
-        public AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber,
-                                                  Int64 ASupplierKey,
-                                                  System.String ADocumentStatus,
-                                                  System.Boolean IsCreditNoteNotInvoice,
-                                                  System.Boolean AHideAgedTransactions)
-        {
-            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "FindAApDocument", ";INT;LONG;STRING;BOOL;BOOL;", ALedgerNumber);
-            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.FindAApDocument(ALedgerNumber, ASupplierKey, ADocumentStatus, IsCreditNoteNotInvoice, AHideAgedTransactions);
-        }
-
-        /// generated method from connector
         public String CheckAccountsAndCostCentres(Int32 ALedgerNumber,
                                                   List<String>AccountCodesCostCentres)
         {
@@ -1057,6 +1046,14 @@ namespace Ict.Petra.Server.MFinance.Instantiator.AP.WebConnectors
         {
             TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "LoadAPPayment", ";INT;INT;", ALedgerNumber);
             return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.LoadAPPayment(ALedgerNumber, APaymentNumber);
+        }
+
+        /// generated method from connector
+        public System.Boolean WasThisPaymentReversed(Int32 ALedgerNumber,
+                                                     Int32 APaymentNumber)
+        {
+            TModuleAccessManager.CheckUserPermissionsForMethod(typeof(Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector), "WasThisPaymentReversed", ";INT;INT;", ALedgerNumber);
+            return Ict.Petra.Server.MFinance.AP.WebConnectors.TTransactionWebConnector.WasThisPaymentReversed(ALedgerNumber, APaymentNumber);
         }
 
         /// generated method from connector
