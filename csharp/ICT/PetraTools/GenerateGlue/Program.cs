@@ -110,6 +110,8 @@ namespace Ict.Tools.GenerateGlue
                 interfaces.CreateFiles(namespaces, OutputDir + "/Shared/lib/Interfaces", YmlFileName);
                 CreateInstantiators instantiators = new CreateInstantiators();
                 instantiators.CreateFiles(namespaces, OutputDir + "/Server/lib", YmlFileName, cmd.GetOptValue("TemplateDir"));
+                TCreateConnectors connectors = new TCreateConnectors();
+                connectors.CreateFiles(namespaces, OutputDir + "/Server/lib", YmlFileName, cmd.GetOptValue("TemplateDir"));
             }
             catch (Exception e)
             {
