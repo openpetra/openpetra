@@ -523,6 +523,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// <summary>
         /// get the local partner data
         /// </summary>
+        [NoRemoting]
         public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey, out Boolean ALabelsAvailable,
             Boolean ACountOnly, TDBTransaction AReadTransaction)
         {
