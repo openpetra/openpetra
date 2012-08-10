@@ -53,17 +53,6 @@ using Ict.Petra.Client.MCommon;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-class CloneToolStripLabel:ToolStripLabel 
-{ 
-    public CloneToolStripLabel( string text ) : base(text) 
-    { 
-    } 
-    public CloneToolStripLabel CloneMenu() 
-    { 
-         return ( CloneToolStripLabel )this.MemberwiseClone(); 
-    } 
- }
- 
     /// Partner Find screen.
     ///
     /// @Comment Main features:
