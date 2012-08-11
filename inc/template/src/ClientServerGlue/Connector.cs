@@ -17,6 +17,8 @@ using System.Threading;
 using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using Ict.Common;
+using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
@@ -47,6 +49,8 @@ public class {#LOCALCLASSNAME} : TConfigurableMBRObject, I{#NAMESPACE}Namespace
     }
 
     {#REMOTEDMETHODS}
+    
+    {#CLIENTOBJECTFOREACHUICONNECTOR}
 }
 
 {##CHECKUSERMODULEPERMISSIONS}
@@ -58,4 +62,14 @@ public {#RETURNTYPE} {#METHODNAME}({#PARAMETERDEFINITION})
 {
     {#CHECKUSERMODULEPERMISSIONS}
     {#RETURN}{#WEBCONNECTORCLASS}.{#METHODNAME}({#ACTUALPARAMETERS});
+}
+
+{##UICONNECTORMETHOD}
+/// forward the method call
+public {#UICONNECTORINTERFACE} {#METHODNAME}({#PARAMETERDEFINITION})
+{
+    return ({#UICONNECTORINTERFACE}) TCreateRemotableObject.CreateRemotableObject(
+            typeof({#UICONNECTORINTERFACE}),
+            typeof({#UICONNECTORCLIENTREMOTINGCLASS}),
+            new {#UICONNECTORCLASS}({#ACTUALPARAMETERS}));
 }

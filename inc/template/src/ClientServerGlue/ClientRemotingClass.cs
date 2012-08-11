@@ -22,6 +22,7 @@ public class {#CLASSNAME}: {#INTERFACE}
 {
     private {#INTERFACE} RemoteObject = null;
     private string FObjectURI;
+    /// constructor
     public {#CLASSNAME}(string AObjectURI)
     { 
         FObjectURI = AObjectURI;

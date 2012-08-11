@@ -73,19 +73,26 @@ class TCreateClientRemotingClass : AutoGenerationWriter
         {
             if (t.Name.EndsWith("UIConnector"))
             {
-                InsertUIConnectors(snippet, t);
+                if (AInterfaceName.EndsWith("Namespace"))
+                {
+                    InsertConstructors(snippet, t);
+                }
+                else
+                {
+                    InsertMethods(snippet, t);
+                }
             }
 
             if (t.Name.EndsWith("WebConnector"))
             {
-                InsertWebConnectors(snippet, t);
+                InsertMethods(snippet, t);
             }
         }
 
         return snippet;
     }
 
-    private static void InsertUIConnectors(ProcessTemplate template, TypeDeclaration t)
+    private static void InsertConstructors(ProcessTemplate template, TypeDeclaration t)
     {
         // foreach constructor create a method
         List <ConstructorDeclaration>constructors = CSParser.GetConstructors(t);
@@ -117,28 +124,14 @@ class TCreateClientRemotingClass : AutoGenerationWriter
         }
     }
 
-    private static void InsertWebConnectors(ProcessTemplate template, TypeDeclaration t)
+    private static void InsertMethods(ProcessTemplate template, TypeDeclaration t)
     {
         // foreach public method create a method
         foreach (MethodDeclaration m in CSParser.GetMethods(t))
         {
             string MethodName = m.Name;
 
-            bool AttributeNoRemoting = false;
-
-            foreach (AttributeSection attrSection in m.Attributes)
-            {
-                foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-                {
-                    if (attr.Name == "NoRemoting")
-                    {
-                        AttributeNoRemoting = true;
-                    }
-                }
-            }
-
-            if (((m.Modifier & Modifiers.Public) == 0)
-                || AttributeNoRemoting)
+            if (TCollectConnectorInterfaces.IgnoreMethod(m.Attributes, m.Modifier))
             {
                 continue;
             }

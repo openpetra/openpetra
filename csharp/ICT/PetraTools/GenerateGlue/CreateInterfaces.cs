@@ -136,23 +136,13 @@ public class CreateInterfaces : AutoGenerationWriter
                         AServerNamespace + "." + t.Name + "." + p.Name);
                 }
 
-                bool AttributeNoRemoting = false;
-
-                foreach (AttributeSection attrSection in p.Attributes)
+                if (TCollectConnectorInterfaces.IgnoreMethod(p.Attributes, p.Modifier))
                 {
-                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-                    {
-                        if (attr.Name == "NoRemoting")
-                        {
-                            AttributeNoRemoting = true;
-                        }
-                    }
+                    continue;
                 }
 
                 // don't write namespace hierarchy here
-                if ((p.TypeReference.Type.IndexOf("Namespace") == -1)
-                    && ((p.Modifier & Modifiers.Public) != 0)
-                    && !AttributeNoRemoting)
+                if (p.TypeReference.Type.IndexOf("Namespace") == -1)
                 {
                     String returnType = TypeToString(p.TypeReference, AInterfaceNamespace);
 
@@ -178,28 +168,7 @@ public class CreateInterfaces : AutoGenerationWriter
             {
                 string MethodName = m.Name;
 
-                bool AttributeNoRemoting = false;
-
-                foreach (AttributeSection attrSection in m.Attributes)
-                {
-                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-                    {
-                        if (attr.Name == "NoRemoting")
-                        {
-                            AttributeNoRemoting = true;
-                        }
-                    }
-                }
-
-                if (MethodName.Equals("InitializeLifetimeService")
-                    || MethodName.Equals("GetLifetimeService")
-                    || MethodName.Equals("CreateObjRef")
-                    || MethodName.Equals("GetType")
-                    || MethodName.Equals("ToString")
-                    || MethodName.Equals("Equals")
-                    || MethodName.Equals("GetHashCode")
-                    || ((m.Modifier & Modifiers.Public) == 0)
-                    || AttributeNoRemoting)
+                if (TCollectConnectorInterfaces.IgnoreMethod(m.Attributes, m.Modifier))
                 {
                     continue;
                 }

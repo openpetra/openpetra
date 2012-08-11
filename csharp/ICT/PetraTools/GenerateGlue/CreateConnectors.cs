@@ -44,6 +44,8 @@ namespace GenerateSharedCode
 /// </summary>
 class TCreateConnectors
 {
+    private string FTemplateDir = string.Empty;
+
     private ProcessTemplate CreateModuleAccessPermissionCheck(ProcessTemplate ATemplate, string AConnectorClassWithNamespace, MethodDeclaration m)
     {
         if (m.Attributes != null)
@@ -112,7 +114,7 @@ class TCreateConnectors
 
     List <string>UsingConnectorNamespaces = null;
 
-    void ImplementStaticCallConnector(
+    void ImplementWebConnector(
         SortedList <string, TypeDeclaration>connectors,
         ProcessTemplate ATemplate, string AFullNamespace)
     {
@@ -124,29 +126,13 @@ class TCreateConnectors
         ConnectorNamespace = ConnectorNamespace.
                              Replace("Ict.Petra.Shared.", "Ict.Petra.Server.");
 
+        ATemplate.SetCodelet("CLIENTOBJECTFOREACHUICONNECTOR", string.Empty);
+
         foreach (TypeDeclaration connectorClass in ConnectorClasses)
         {
             foreach (MethodDeclaration m in CSParser.GetMethods(connectorClass))
             {
-                if ((m.Modifier & Modifiers.Public) == 0)
-                {
-                    continue;
-                }
-
-                bool AttributeNoRemoting = false;
-
-                foreach (AttributeSection attrSection in m.Attributes)
-                {
-                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-                    {
-                        if (attr.Name == "NoRemoting")
-                        {
-                            AttributeNoRemoting = true;
-                        }
-                    }
-                }
-
-                if (AttributeNoRemoting)
+                if (TCollectConnectorInterfaces.IgnoreMethod(m.Attributes, m.Modifier))
                 {
                     continue;
                 }
@@ -177,6 +163,71 @@ class TCreateConnectors
 
                 ATemplate.InsertSnippet("REMOTEDMETHODS", snippet);
             }
+        }
+    }
+
+    void ImplementUIConnector(
+        SortedList <string, TypeDeclaration>connectors,
+        ProcessTemplate ATemplate, string AFullNamespace)
+    {
+        string ConnectorNamespace = AFullNamespace.
+                                    Replace("Instantiator.", string.Empty);
+
+        List <TypeDeclaration>ConnectorClasses = TCollectConnectorInterfaces.FindTypesInNamespace(connectors, ConnectorNamespace);
+
+        ConnectorNamespace = ConnectorNamespace.
+                             Replace("Ict.Petra.Shared.", "Ict.Petra.Server.");
+
+        ATemplate.SetCodelet("CLIENTOBJECTFOREACHUICONNECTOR", string.Empty);
+
+        foreach (TypeDeclaration connectorClass in ConnectorClasses)
+        {
+            foreach (ConstructorDeclaration m in CSParser.GetConstructors(connectorClass))
+            {
+                if (TCollectConnectorInterfaces.IgnoreMethod(m.Attributes, m.Modifier))
+                {
+                    continue;
+                }
+
+                ProcessTemplate snippet = ATemplate.GetSnippet("UICONNECTORMETHOD");
+
+                string ParameterDefinition = string.Empty;
+                string ActualParameters = string.Empty;
+
+                AutoGenerationWriter.FormatParameters(m.Parameters, out ActualParameters, out ParameterDefinition);
+
+                string methodname = m.Name.Substring(1);
+
+                if (methodname.EndsWith("UIConnector"))
+                {
+                    methodname = methodname.Substring(0, methodname.LastIndexOf("UIConnector"));
+                }
+
+                snippet.SetCodelet("METHODNAME", methodname);
+                snippet.SetCodelet("PARAMETERDEFINITION", ParameterDefinition);
+                snippet.SetCodelet("ACTUALPARAMETERS", ActualParameters);
+                snippet.SetCodelet("UICONNECTORINTERFACE", CSParser.GetImplementedInterface(connectorClass));
+                snippet.SetCodelet("UICONNECTORCLIENTREMOTINGCLASS", connectorClass.Name + "Remote");
+                snippet.SetCodelet("UICONNECTORCLASS", connectorClass.Name);
+
+                if (!UsingConnectorNamespaces.Contains(ConnectorNamespace))
+                {
+                    UsingConnectorNamespaces.Add(ConnectorNamespace);
+                }
+
+                ATemplate.InsertSnippet("REMOTEDMETHODS", snippet);
+            }
+
+            List <TypeDeclaration>tempList = new List <TypeDeclaration>();
+            tempList.Add(connectorClass);
+
+            ATemplate.InsertSnippet("CLIENTOBJECTFOREACHUICONNECTOR",
+                TCreateClientRemotingClass.AddClientRemotingClass(
+                    FTemplateDir,
+                    connectorClass.Name + "Remote",
+                    CSParser.GetImplementedInterface(connectorClass),
+                    tempList
+                    ));
         }
     }
 
@@ -215,11 +266,11 @@ class TCreateConnectors
 
         if (Namespace.EndsWith("WebConnectors"))
         {
-            ImplementStaticCallConnector(connectors, connectorClassSnippet, FullNamespace);
+            ImplementWebConnector(connectors, connectorClassSnippet, FullNamespace);
         }
         else
         {
-            // TODO ImplementUIConnector(connectors, connectorClassSnippet, FullNamespace, "I" + Namespace + "Namespace"));
+            ImplementUIConnector(connectors, connectorClassSnippet, FullNamespace);
         }
 
         ATemplate.InsertSnippet("CONNECTORCLASSES", connectorClassSnippet);
@@ -283,6 +334,8 @@ class TCreateConnectors
 
     public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
     {
+        FTemplateDir = ATemplateDir;
+
         foreach (TNamespace tn in ANamespaces)
         {
             CreateConnectors(tn, AOutputPath, AXmlFileName, ATemplateDir);

@@ -171,6 +171,30 @@ public class TCollectConnectorInterfaces
         return Result;
     }
 
+    /// <summary>
+    /// do we want this method to be available to the client?
+    /// </summary>
+    public static bool IgnoreMethod(List <AttributeSection>AAttributes, Modifiers AModifier)
+    {
+        if ((AModifier & Modifiers.Public) == 0)
+        {
+            return true;
+        }
+
+        foreach (AttributeSection attrSection in AAttributes)
+        {
+            foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
+            {
+                if (attr.Name == "NoRemoting")
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private static SortedList <string,
                                SortedList <string, TypeDeclaration>>ConnectorsByModule = new SortedList <string, SortedList <string, TypeDeclaration>>();
 
