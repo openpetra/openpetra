@@ -33,6 +33,7 @@ using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -894,7 +895,6 @@ namespace Ict.Petra.Server.MCommon
                 FProgressState = value;
             }
         }
-
         /// <summary>Can be used by the 'Instantiator' to pass a result to the 'Listener'</summary>
         public object Result
         {
@@ -960,6 +960,139 @@ namespace Ict.Petra.Server.MCommon
             }
         }
     }
+
+    /// object that will be serialized to the client.
+    /// it opens a new channel for each new object.
+    /// this is needed for cross domain marshalling.
+    [Serializable]
+    public class TAsynchronousExecutionProgressRemote : IAsynchronousExecutionProgress
+    {
+        private IAsynchronousExecutionProgress RemoteObject = null;
+        private string FObjectURI;
+        /// constructor
+        public TAsynchronousExecutionProgressRemote(string AObjectURI)
+        {
+            FObjectURI = AObjectURI;
+        }
+
+        private void InitRemoteObject()
+        {
+            RemoteObject = (IAsynchronousExecutionProgress)
+                           TConnector.TheConnector.GetRemoteObject(FObjectURI,
+                typeof(IAsynchronousExecutionProgress));
+        }
+
+        /// forward the property
+        public TAsyncExecProgressState ProgressState
+        {
+            get
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ProgressState;
+            }
+            set
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.ProgressState = value;
+            }
+        }
+        /// forward the property
+        public string ProgressInformation
+        {
+            get
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ProgressInformation;
+            }
+            set
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.ProgressInformation = value;
+            }
+        }
+        /// forward the property
+        public Int16 ProgressPercentage
+        {
+            get
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.ProgressPercentage;
+            }
+            set
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.ProgressPercentage = value;
+            }
+        }
+        /// forward the property
+        public object Result
+        {
+            get
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                return RemoteObject.Result;
+            }
+            set
+            {
+                if (RemoteObject == null)
+                {
+                    InitRemoteObject();
+                }
+
+                RemoteObject.Result = value;
+            }
+        }
+        /// forward the method call
+        public void ProgressCombinedInfo(out TAsyncExecProgressState ProgressState, out Int16 ProgressPercentage, out String ProgressInformation)
+        {
+            if (RemoteObject == null)
+            {
+                InitRemoteObject();
+            }
+
+            RemoteObject.ProgressCombinedInfo(out ProgressState, out ProgressPercentage, out ProgressInformation);
+        }
+
+        /// forward the method call
+        public void Cancel()
+        {
+            if (RemoteObject == null)
+            {
+                InitRemoteObject();
+            }
+
+            RemoteObject.Cancel();
+        }
+    }
+
     #endregion
 
     #region TDynamicSearchHelper

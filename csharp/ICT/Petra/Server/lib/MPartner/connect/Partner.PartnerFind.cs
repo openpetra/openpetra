@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.PartnerFind;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Server.MPartner.DataAggregates;
+using Ict.Petra.Server.MCommon;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
@@ -81,6 +82,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
                     typeof(IAsynchronousExecutionProgress),
+                    typeof(TAsynchronousExecutionProgressRemote),
                     FPartnerFind.AsyncExecProgress);
             }
         }

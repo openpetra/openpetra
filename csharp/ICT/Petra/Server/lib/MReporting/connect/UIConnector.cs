@@ -34,12 +34,12 @@ using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
 
-namespace Ict.Petra.Server.MReporting.LogicConnectors
+namespace Ict.Petra.Server.MReporting.UIConnectors
 {
     /// <summary>
     /// the connector for the report generation
     /// </summary>
-    public class TReportGeneratorLogicConnector : TConfigurableMBRObject, IReportGeneratorLogicConnector
+    public class TReportGeneratorUIConnector : TConfigurableMBRObject, IReportingUIConnectorsReportGenerator
     {
         private TAsynchronousExecutionProgress FAsyncExecProgress;
         private TRptDataCalculator FDatacalculator;
@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
         private Boolean FSuccess;
 
         /// constructor needed for the interface
-        public TReportGeneratorLogicConnector()
+        public TReportGeneratorUIConnector()
         {
         }
 
@@ -63,6 +63,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
             {
                 return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
                     typeof(IAsynchronousExecutionProgress),
+                    typeof(TAsynchronousExecutionProgressRemote),
                     FAsyncExecProgress);
             }
         }

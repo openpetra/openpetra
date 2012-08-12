@@ -34,7 +34,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
 
-namespace Ict.Petra.Server.MFinance.Reporting
+namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
 {
     ///<summary>
     /// This UIConnector provides data for the finance reporting screens

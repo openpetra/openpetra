@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     /// Performs server-side lookups for the Client in the MCommon DataReader sub-namespace.
     ///
     /// </summary>
-    public class TPartnerDataReader
+    public class TPartnerDataReaderWebConnector
     {
         /// <summary>
         /// return unit table which contains conferences that match a given search string

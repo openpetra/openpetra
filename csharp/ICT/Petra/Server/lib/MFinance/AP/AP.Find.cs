@@ -92,6 +92,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
                     typeof(IAsynchronousExecutionProgress),
+                    typeof(TAsynchronousExecutionProgressRemote),
                     FAsyncExecProgress);
             }
         }
