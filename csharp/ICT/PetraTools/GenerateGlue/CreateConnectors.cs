@@ -256,9 +256,12 @@ class TCreateConnectors
 
         ProcessTemplate connectorClassSnippet = ATemplate.GetSnippet("CONNECTORCLASS");
 
-        connectorClassSnippet.SetCodelet("NAMESPACE", Namespace);
+        string NamespaceInModule = FullNamespace.Substring(
+            FullNamespace.IndexOf('.', "Ict.Petra.Shared.M".Length) + 1).Replace(".", string.Empty);
 
-        String LocalClassname = LocalClassname = "T" + Classname + "Namespace";
+        connectorClassSnippet.SetCodelet("NAMESPACE", NamespaceInModule);
+
+        String LocalClassname = "T" + NamespaceInModule + "Namespace";
 
         connectorClassSnippet.SetCodelet("LOCALCLASSNAME", LocalClassname);
 

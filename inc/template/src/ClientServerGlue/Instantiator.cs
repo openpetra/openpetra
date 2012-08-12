@@ -13,6 +13,10 @@
 using System;
 using System.Runtime.Remoting;
 using System.Threading;
+using System.Data;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
@@ -90,6 +94,8 @@ public class {#LOCALCLASSNAME} : TConfigurableMBRObject, I{#NAMESPACE}Namespace
     
     {#CLIENTOBJECTFOREACHPROPERTY}
 }
+
+{#SUBNAMESPACEREMOTABLECLASSES}
 
 {##SUBNAMESPACEPROPERTY}
 /// <summary>The '{#NAMESPACENAME}' subnamespace contains further subnamespaces.</summary>

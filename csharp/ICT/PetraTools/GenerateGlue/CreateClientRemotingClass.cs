@@ -52,7 +52,9 @@ class TCreateClientRemotingClass : AutoGenerationWriter
         string ATemplateDir,
         string AClientObjectClass,
         string AInterfaceName,
-        List <TypeDeclaration>ATypeImplemented)
+        List <TypeDeclaration>ATypeImplemented,
+        string AFullNamespace = "",
+        List <TNamespace>AChildrenNamespaces = null)
     {
         if (ClientRemotingClassTemplate == null)
         {
@@ -69,23 +71,34 @@ class TCreateClientRemotingClass : AutoGenerationWriter
         // try to implement the properties and methods defined in the interface
         snippet.SetCodelet("METHODSANDPROPERTIES", string.Empty);
 
-        foreach (TypeDeclaration t in ATypeImplemented)
-        {
-            if (t.Name.EndsWith("UIConnector"))
-            {
-                if (AInterfaceName.EndsWith("Namespace"))
-                {
-                    InsertConstructors(snippet, t);
-                }
-                else
-                {
-                    InsertMethods(snippet, t);
-                }
-            }
+        // problem mit Partner.Extracts.UIConnectors; MCommon.UIConnectors tut
 
-            if (t.Name.EndsWith("WebConnector"))
+        if (AChildrenNamespaces != null)
+        {
+            // accessors for subnamespaces
+            InsertSubnamespaces(snippet, AFullNamespace, AChildrenNamespaces);
+        }
+        else
+        {
+            foreach (TypeDeclaration t in ATypeImplemented)
             {
-                InsertMethods(snippet, t);
+                if (t.UserData.ToString().EndsWith("UIConnectors"))
+                {
+                    if (AInterfaceName.EndsWith("Namespace"))
+                    {
+                        InsertConstructors(snippet, t);
+                    }
+                    else
+                    {
+                        // never gets here???
+                        InsertMethodsAndProperties(snippet, t);
+                    }
+                }
+
+                if (t.UserData.ToString().EndsWith("WebConnectors"))
+                {
+                    InsertMethodsAndProperties(snippet, t);
+                }
             }
         }
 
@@ -124,7 +137,7 @@ class TCreateClientRemotingClass : AutoGenerationWriter
         }
     }
 
-    private static void InsertMethods(ProcessTemplate template, TypeDeclaration t)
+    private static void InsertMethodsAndProperties(ProcessTemplate template, TypeDeclaration t)
     {
         // foreach public method create a method
         foreach (MethodDeclaration m in CSParser.GetMethods(t))
@@ -138,8 +151,10 @@ class TCreateClientRemotingClass : AutoGenerationWriter
 
             ProcessTemplate methodSnippet = ClientRemotingClassTemplate.GetSnippet("METHOD");
 
+            string returntype = AutoGenerationWriter.TypeToString(m.TypeReference, string.Empty);
+
             methodSnippet.SetCodelet("METHODNAME", m.Name);
-            methodSnippet.SetCodelet("RETURNTYPE", AutoGenerationWriter.TypeToString(m.TypeReference, string.Empty));
+            methodSnippet.SetCodelet("RETURNTYPE", returntype);
 
             string ParameterDefinition = string.Empty;
             string ActualParameters = string.Empty;
@@ -148,9 +163,62 @@ class TCreateClientRemotingClass : AutoGenerationWriter
 
             methodSnippet.SetCodelet("PARAMETERDEFINITION", ParameterDefinition);
             methodSnippet.SetCodelet("ACTUALPARAMETERS", ActualParameters);
-            methodSnippet.SetCodelet("RETURN", "return ");
+
+            if (returntype != "void")
+            {
+                methodSnippet.SetCodelet("RETURN", "return ");
+            }
+            else
+            {
+                methodSnippet.SetCodelet("RETURN", string.Empty);
+            }
 
             template.InsertSnippet("METHODSANDPROPERTIES", methodSnippet);
+        }
+
+        // foreach public method create a method
+        foreach (PropertyDeclaration p in CSParser.GetProperties(t))
+        {
+            if (TCollectConnectorInterfaces.IgnoreMethod(p.Attributes, p.Modifier))
+            {
+                continue;
+            }
+
+            ProcessTemplate propertySnippet = ClientRemotingClassTemplate.GetSnippet("PROPERTY");
+
+            propertySnippet.SetCodelet("NAME", p.Name);
+            propertySnippet.SetCodelet("TYPE", AutoGenerationWriter.TypeToString(p.TypeReference, string.Empty));
+
+            if (p.HasGetRegion)
+            {
+                propertySnippet.SetCodelet("GETTER", "yes");
+            }
+
+            if (p.HasSetRegion)
+            {
+                propertySnippet.SetCodelet("SETTER", "yes");
+            }
+
+            template.InsertSnippet("METHODSANDPROPERTIES", propertySnippet);
+        }
+    }
+
+    private static void InsertSubnamespaces(ProcessTemplate template, string AFullNamespace, List <TNamespace>ASubNamespaces)
+    {
+        foreach (TNamespace t in ASubNamespaces)
+        {
+            ProcessTemplate propertySnippet = ClientRemotingClassTemplate.GetSnippet("PROPERTY");
+
+            propertySnippet.SetCodelet("NAME", t.Name);
+
+            string NamespaceInModule = AFullNamespace.Substring(
+                AFullNamespace.IndexOf('.', "Ict.Petra.Shared.M".Length) + 1).Replace(".", string.Empty);
+
+            propertySnippet.SetCodelet("TYPE", "I" + NamespaceInModule + t.Name + "Namespace");
+
+            propertySnippet.SetCodelet("GETTER", "yes");
+
+            template.InsertSnippet("METHODSANDPROPERTIES", propertySnippet);
         }
     }
 }

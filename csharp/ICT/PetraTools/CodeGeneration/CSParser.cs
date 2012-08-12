@@ -185,7 +185,9 @@ namespace Ict.Tools.CodeGeneration
 
                         if (td.Type == ClassType.Class)
                         {
-                            result.Add((TypeDeclaration)node);
+                            TypeDeclaration t = (TypeDeclaration)node;
+                            t.UserData = nd.Name;
+                            result.Add(t);
                         }
                     }
                 }

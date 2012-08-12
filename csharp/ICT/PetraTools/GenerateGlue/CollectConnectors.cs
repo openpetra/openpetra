@@ -43,7 +43,8 @@ public class TCollectConnectorInterfaces
 {
     /// <summary>
     /// this will return a SortedList, the key is the interface name,
-    /// and the value is the type definition of the class that implements that interface
+    /// and the value is the type definition of the class that implements that interface;
+    /// connectors are identified namespace ending with Connectors
     /// </summary>
     private static SortedList <string, TypeDeclaration>GetConnectors(List <CSParser>ACSFiles)
     {
@@ -53,56 +54,50 @@ public class TCollectConnectorInterfaces
         {
             foreach (TypeDeclaration t in CSFile.GetClasses())
             {
-                if (t.Name.EndsWith("Connector"))
+                if (t.UserData.ToString().EndsWith("Connectors"))
                 {
-                    bool hasInterface = false;
+                    string Interface = CSParser.GetImplementedInterface(t);
 
-                    foreach (TypeReference ti in t.BaseTypes)
+                    if (Interface.Length > 0)
                     {
-                        if (ti.Type.StartsWith("I"))
+                        string ServerNamespace = t.UserData.ToString();
+                        string ServerNamespaceWithClassName = ServerNamespace + "." + t.Name;
+                        string SharedNamespace = ServerNamespaceWithClassName.
+                                                 Replace("Ict.Petra.Server.", "Ict.Petra.Shared.");
+
+                        string key = ServerNamespaceWithClassName + ":" + Interface;
+
+                        if (Result.ContainsKey(ServerNamespaceWithClassName))
                         {
-                            hasInterface = true;
+                            // there is already the other part of the partial class
 
-                            string ServerNamespaceWithClassName =
-                                CSFile.GetFullClassNameWithNamespace(t).
-                                Replace("Ict.Petra.Server.", "Ict.Petra.Shared.");
+                            TypeDeclaration partialType = Result[ServerNamespaceWithClassName];
 
-                            string key = ServerNamespaceWithClassName + ":" + ti.Type;
+                            Result.Remove(ServerNamespaceWithClassName);
 
-                            if (Result.ContainsKey(ServerNamespaceWithClassName))
+                            foreach (INode child in partialType.Children)
                             {
-                                // there is already the other part of the partial class
-
-                                TypeDeclaration partialType = Result[ServerNamespaceWithClassName];
-
-                                Result.Remove(ServerNamespaceWithClassName);
-
-                                foreach (INode child in partialType.Children)
-                                {
-                                    t.AddChild(child);
-                                }
-                            }
-
-                            Result.Add(key, t);
-
-                            if (TLogging.DebugLevel > 1)
-                            {
-                                TLogging.Log(key);
+                                t.AddChild(child);
                             }
                         }
-                    }
 
+                        Result.Add(key, t);
+
+                        if (TLogging.DebugLevel > 1)
+                        {
+                            // TLogging.Log("adding new Connector " + key);
+                        }
+                    }
                     // either a webconnector, or a partial class
-                    if (!hasInterface)
+                    else
                     {
                         // web connectors don't derive from an interface, because the methods are static
 
-                        string ServerNamespaceWithClassName = CSFile.GetFullClassNameWithNamespace(t);
-                        string SharedNamespace = ServerNamespaceWithClassName.
-                                                 Substring(0, ServerNamespaceWithClassName.LastIndexOf(".")).
+                        string ServerNamespace = t.UserData.ToString();
+                        string SharedNamespace = ServerNamespace.
                                                  Replace("Ict.Petra.Server.", "Ict.Petra.Shared.");
 
-                        string key = SharedNamespace + "." + t.Name;
+                        string key = ServerNamespace + "." + t.Name;
 
                         if (Result.ContainsKey(key))
                         {
@@ -143,7 +138,7 @@ public class TCollectConnectorInterfaces
 
                         if (TLogging.DebugLevel > 1)
                         {
-                            TLogging.Log(key);
+                            // TLogging.Log("adding new Connector " + key);
                         }
                     }
                 }
@@ -158,14 +153,23 @@ public class TCollectConnectorInterfaces
     /// </summary>
     public static List <TypeDeclaration>FindTypesInNamespace(SortedList <string, TypeDeclaration>AConnectors, string ANamespace)
     {
+        ANamespace = ANamespace.Replace("Ict.Petra.Shared.", "Ict.Petra.Server.");
+
         List <TypeDeclaration>Result = new List <TypeDeclaration>();
 
+//        TLogging.Log("implementing " + ANamespace);
         foreach (string key in AConnectors.Keys)
         {
             if (key.StartsWith(ANamespace))
             {
+//                TLogging.Log("   " + AConnectors[key]);
                 Result.Add(AConnectors[key]);
             }
+        }
+
+        if (Result.Count == 0)
+        {
+//            TLogging.Log("not found for " + ANamespace);
         }
 
         return Result;
@@ -200,7 +204,6 @@ public class TCollectConnectorInterfaces
 
     /// <summary>
     /// main function to collect the connectors from the code.
-    /// connectors are identified by the class name ending with Connector
     /// </summary>
     public static SortedList <string, TypeDeclaration>GetConnectors(string AModuleName)
     {

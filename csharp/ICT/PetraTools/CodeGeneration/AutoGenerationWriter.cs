@@ -336,7 +336,7 @@ namespace Ict.Tools.CodeGeneration
                 StrParameter += "out ";
             }
 
-            StrParameter += parameterType + (parameterType.EndsWith(">") ? "" : " ") + AParamName;
+            StrParameter += parameterType + " " + AParamName;
 
             MethodDeclaration += StrParameter;
         }
@@ -360,7 +360,7 @@ namespace Ict.Tools.CodeGeneration
                     MethodDeclarationLength,
                     p.ParameterName,
                     p.ParamModifier,
-                    p.TypeReference.Type);
+                    p.TypeReference.ToString());
 
                 if (AActualParameters.Length > 0)
                 {

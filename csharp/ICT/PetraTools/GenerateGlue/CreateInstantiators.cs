@@ -62,12 +62,17 @@ class CreateInstantiators : AutoGenerationWriter
         List <TNamespace>children,
         SortedList <string, TypeDeclaration>connectors)
     {
-        if (children.Count == 0)
+        TLogging.Log("writeremotableclass: " + Classname + " " + FullNamespace + " " + Namespace + " " +
+            children.Count.ToString() + " " + HighestLevel.ToString());
+
+        if ((children.Count == 0) && !HighestLevel)
         {
             return new ProcessTemplate();
         }
 
         ProcessTemplate remotableClassSnippet = ATemplate.GetSnippet("REMOTABLECLASS");
+
+        remotableClassSnippet.SetCodelet("SUBNAMESPACEREMOTABLECLASSES", string.Empty);
 
         remotableClassSnippet.SetCodelet("NAMESPACE", Namespace);
 
@@ -79,6 +84,8 @@ class CreateInstantiators : AutoGenerationWriter
         }
 
         remotableClassSnippet.SetCodelet("LOCALCLASSNAME", LocalClassname);
+        remotableClassSnippet.SetCodelet("CLIENTOBJECTFOREACHPROPERTY", string.Empty);
+        remotableClassSnippet.SetCodelet("SUBNAMESPACEPROPERTIES", string.Empty);
 
         foreach (TNamespace sn in children)
         {
@@ -97,13 +104,45 @@ class CreateInstantiators : AutoGenerationWriter
 
             remotableClassSnippet.InsertSnippet("SUBNAMESPACEPROPERTIES", subNamespaceSnippet);
 
-            remotableClassSnippet.InsertSnippet("CLIENTOBJECTFOREACHPROPERTY",
-                TCreateClientRemotingClass.AddClientRemotingClass(
-                    FTemplateDir,
-                    "T" + NamespaceName + "NamespaceRemote",
-                    "I" + NamespaceName + "Namespace",
-                    TCollectConnectorInterfaces.FindTypesInNamespace(connectors, FullNamespace + "." + sn.Name)
-                    ));
+//            TLogging.Log("child " + NamespaceName  + " " + sn.Children.Count.ToString() + "children");
+
+            if (sn.Children.Count > 0)
+            {
+                // properties for each sub namespace
+                foreach (TNamespace subnamespace in sn.Children)
+                {
+                    TLogging.Log("subnamepace " + sn.Name + " " + subnamespace.Name + " " + FullNamespace + " " + Classname);
+
+                    ATemplate.InsertSnippet("SUBNAMESPACEREMOTABLECLASSES",
+                        WriteRemotableClass(ATemplate,
+                            FullNamespace + "." + sn.Name + "." + subnamespace.Name,
+                            Classname + subnamespace.Name,
+                            Namespace + subnamespace.Name,
+                            true,
+                            subnamespace.Children,
+                            connectors));
+                }
+
+                remotableClassSnippet.InsertSnippet("CLIENTOBJECTFOREACHPROPERTY",
+                    TCreateClientRemotingClass.AddClientRemotingClass(
+                        FTemplateDir,
+                        "T" + NamespaceName + "NamespaceRemote",
+                        "I" + NamespaceName + "Namespace",
+                        new List <TypeDeclaration>(),
+                        FullNamespace + "." + sn.Name,
+                        sn.Children
+                        ));
+            }
+            else
+            {
+                remotableClassSnippet.InsertSnippet("CLIENTOBJECTFOREACHPROPERTY",
+                    TCreateClientRemotingClass.AddClientRemotingClass(
+                        FTemplateDir,
+                        "T" + NamespaceName + "NamespaceRemote",
+                        "I" + NamespaceName + "Namespace",
+                        TCollectConnectorInterfaces.FindTypesInNamespace(connectors, FullNamespace + "." + sn.Name)
+                        ));
+            }
         }
 
         return remotableClassSnippet;
@@ -164,7 +203,6 @@ class CreateInstantiators : AutoGenerationWriter
                 true,
                 tn.Children,
                 connectors));
-
         topLevelNamespaceSnippet.SetCodelet("SUBNAMESPACEREMOTABLECLASSES", "");
 
         foreach (TNamespace sn in tn.Children)
