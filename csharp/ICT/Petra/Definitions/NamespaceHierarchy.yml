@@ -76,13 +76,12 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
     Hospitality: {Description=Hospitality Module}
-        UIConnectors: {Description=User Interface Connectors}
     Conference: {Description=Conference Module}
         Cacheable: {Description=Cacheable DataTables}
         WebConnectors: {Description=Web Connectors}
-    #FinDev: {Description=Financial Development Module}
+    FinDev: {Description=Financial Development Module}
     Reporting: {Description="Reporting Module ('Virtual' Module)"}
-        LogicConnectors: {Description=Logic Connectors}
+        UIConnectors: {Description=UI Connectors}
     SysMan: {Description=System Manager Module}
         Application: {Description=Application Sub-System}
             UIConnectors: {Description=User Interface Connectors}
