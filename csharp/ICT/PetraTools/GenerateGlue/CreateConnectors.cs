@@ -149,11 +149,15 @@ class TCreateConnectors
                         ATemplate,
                         connectorClass.Name,
                         m));
-                snippet.SetCodelet("RETURN", "return ");
+
+                string returntype = CreateInterfaces.TypeToString(m.TypeReference, "");
+
+                snippet.SetCodelet("RETURN", returntype != "void" ? "return " : string.Empty);
+
                 snippet.SetCodelet("METHODNAME", m.Name);
                 snippet.SetCodelet("ACTUALPARAMETERS", ActualParameters);
                 snippet.SetCodelet("PARAMETERDEFINITION", ParameterDefinition);
-                snippet.SetCodelet("RETURNTYPE", CreateInterfaces.TypeToString(m.TypeReference, ""));
+                snippet.SetCodelet("RETURNTYPE", returntype);
                 snippet.SetCodelet("WEBCONNECTORCLASS", connectorClass.Name);
 
                 if (!UsingConnectorNamespaces.Contains(ConnectorNamespace))

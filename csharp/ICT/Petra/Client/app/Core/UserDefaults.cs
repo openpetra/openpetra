@@ -313,7 +313,8 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public static void InitUserDefaults()
         {
-            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID, out UUserDefaultsDataTable);
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);
             UUserDefaults.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
         }
@@ -505,7 +506,8 @@ namespace Ict.Petra.Client.App.Core
 
             // TODO 1 : ReaderWriterLock
             // reload user defaults from server
-            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID, out TempUserDefaultsDataTable);
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                out TempUserDefaultsDataTable);
 
             // merge the current table with the one requested from the server so that client changes are not lost
             UserDefaultsDS = new DataSet();
@@ -526,7 +528,8 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void ReloadCachedUserDefaultsOnServer()
         {
-            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.ReloadUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID, out UUserDefaultsDataTable);
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.ReloadUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);
             UUserDefaults.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
         }

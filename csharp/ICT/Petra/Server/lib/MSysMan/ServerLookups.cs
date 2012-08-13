@@ -28,6 +28,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
 {

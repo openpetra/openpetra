@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 {

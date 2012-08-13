@@ -27,7 +27,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.MSysMan.Maintenance;
+using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 {
@@ -49,8 +49,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UILANGUAGE, ALanguageCode, false);
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UICULTURE, ACultureCode, false);
 
-            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
-            TUserDefaults.SaveUserDefaultsFromServerSide(ref VerificationResult);
+            TVerificationResultCollection VerificationResult;
+            TUserDefaults.SaveUserDefaultsFromServerSide(out VerificationResult);
             return true;
         }
 

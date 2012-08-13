@@ -285,7 +285,9 @@ namespace Ict.Petra.Client.App.Core
                 ArrayList APartnerClasses,
                 out Dictionary <long, string>ARecentlyUsedPartners)
             {
-                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetRecentlyUsedPartners(AMaxPartnersCount, APartnerClasses, out ARecentlyUsedPartners);
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetRecentlyUsedPartners(AMaxPartnersCount,
+                    APartnerClasses,
+                    out ARecentlyUsedPartners);
             }
 
             /// <summary>

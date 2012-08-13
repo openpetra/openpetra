@@ -23,9 +23,11 @@
 //
 using System;
 using System.Data;
+using Ict.Common;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
 {
@@ -112,7 +114,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// </param>
         /// <returns>void</returns>
         [NoRemoting]
-        public void ReloadSystemDefaultsTable(ref SSystemDefaultsTable ASystemDefaultsDataTable)
+        public static void ReloadSystemDefaultsTable(ref SSystemDefaultsTable ASystemDefaultsDataTable)
         {
             ReloadSystemDefaultsTable();
             ASystemDefaultsDataTable = GetSystemDefaults();
@@ -127,7 +129,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// </summary>
         /// <returns>void</returns>
         [RequireModulePermission("NONE")]
-        public void ReloadSystemDefaultsTable()
+        public static void ReloadSystemDefaultsTable()
         {
             // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called.'); $ENDIF
             TSystemDefaultsCache.GSystemDefaultsCache.ReloadSystemDefaultsTable();
@@ -152,7 +154,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// false.
         /// </returns>
         [RequireModulePermission("NONE")]
-        public Boolean SaveSystemDefaults(SSystemDefaultsTable ASystemDefaultsDataTable)
+        public static Boolean SaveSystemDefaults(SSystemDefaultsTable ASystemDefaultsDataTable)
         {
             return TSystemDefaultsCache.GSystemDefaultsCache.SaveSystemDefaults(ASystemDefaultsDataTable);
         }

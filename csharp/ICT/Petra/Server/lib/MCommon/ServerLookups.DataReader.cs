@@ -44,7 +44,7 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
-
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 {

@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 {
@@ -481,18 +482,21 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         ///
         /// </summary>
         /// <param name="AUserName">User name for which the User Defaults should be read.</param>
-        /// <param name="AMergeChangesToServerSideCache">Set to true if the UserDefaults were
-        /// (re)loaded for the current user and the internal cache needs to be updated</param>
         /// <param name="AUserDefaultsDataTable">Typed DataTable that contains the User
         /// Defaults.
         /// </param>
-        /// <returns>void</returns>
         [RequireModulePermission("NONE")]
         public static void ReloadUserDefaults(String AUserName, out SUserDefaultsTable AUserDefaultsDataTable)
         {
             ReloadUserDefaults(AUserName, true, out AUserDefaultsDataTable);
         }
 
+        /// <summary>
+        /// overload
+        /// </summary>
+        /// <param name="AUserName"></param>
+        /// <param name="AMergeChangesToServerSideCache"></param>
+        /// <param name="AUserDefaultsDataTable"></param>
         [NoRemoting]
         public static void ReloadUserDefaults(String AUserName, Boolean AMergeChangesToServerSideCache, out SUserDefaultsTable AUserDefaultsDataTable)
         {
@@ -999,7 +1003,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// </returns>
         [NoRemoting]
         public static Boolean SaveUserDefaultsFromServerSide(
-            out TVerificationResultCollection AVerificationResult, 
+            out TVerificationResultCollection AVerificationResult,
             Boolean ASendUpdateInfoToClient = true)
         {
             Boolean ReturnValue;

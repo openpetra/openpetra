@@ -22,11 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
-
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
     /// because it is needed before the appdomain is loaded and therefore cannot be in MSysMan;
     /// and it is needed here to make it available to the client via MSysMan remotely
     /// </remarks>
-    public class TUserManager
+    public class TUserManagerWebConnector
     {
         /// <summary>
         /// use Server.App.Core.Security.TUserManager.LoadUser
