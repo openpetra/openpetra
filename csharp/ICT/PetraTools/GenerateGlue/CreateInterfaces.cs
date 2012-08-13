@@ -636,7 +636,12 @@ public class CreateInterfaces : AutoGenerationWriter
     {
         foreach (TNamespace tn in ANamespaces)
         {
-            WriteInterfaces(tn, AOutputPath, AXmlFileName);
+            string module = TAppSettingsManager.GetValue("module", "all");
+
+            if ((module == "all") || (tn.Name == module))
+            {
+                WriteInterfaces(tn, AOutputPath, AXmlFileName);
+            }
         }
     }
 }

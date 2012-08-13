@@ -261,10 +261,6 @@ class TCreateConnectors
 
         connectorClassSnippet.SetCodelet("NAMESPACE", NamespaceInModule);
 
-        String LocalClassname = "T" + NamespaceInModule + "Namespace";
-
-        connectorClassSnippet.SetCodelet("LOCALCLASSNAME", LocalClassname);
-
         connectorClassSnippet.SetCodelet("REMOTEDMETHODS", string.Empty);
 
         if (Namespace.EndsWith("WebConnectors"))
@@ -341,7 +337,12 @@ class TCreateConnectors
 
         foreach (TNamespace tn in ANamespaces)
         {
-            CreateConnectors(tn, AOutputPath, AXmlFileName, ATemplateDir);
+            string module = TAppSettingsManager.GetValue("module", "all");
+
+            if ((module == "all") || (tn.Name == module))
+            {
+                CreateConnectors(tn, AOutputPath, AXmlFileName, ATemplateDir);
+            }
         }
     }
 }

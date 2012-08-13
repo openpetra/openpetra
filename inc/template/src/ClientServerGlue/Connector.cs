@@ -31,22 +31,21 @@ namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.Instantiator
     {#CONNECTORCLASSES}
 }
 
-
 {##CONNECTORCLASS}
 /// <summary>
 /// REMOTEABLE CLASS. Connector
 /// </summary>
-public class {#LOCALCLASSNAME} : TConfigurableMBRObject, I{#NAMESPACE}Namespace
+public class T{#NAMESPACE}Namespace : TConfigurableMBRObject, I{#NAMESPACE}Namespace
 {
     /// <summary>Constructor</summary>
-    public {#LOCALCLASSNAME}()
+    public T{#NAMESPACE}Namespace()
     {
     }
 
     /// NOTE AutoGeneration: This function is all-important!!!
     public override object InitializeLifetimeService()
     {
-        return null; // make sure that the {#LOCALCLASSNAME} object exists until this AppDomain is unloaded!
+        return null; // make sure that the T{#NAMESPACE}Namespace object exists until this AppDomain is unloaded!
     }
 
     {#REMOTEDMETHODS}
