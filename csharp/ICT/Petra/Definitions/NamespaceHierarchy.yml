@@ -4,6 +4,7 @@ NamespaceHierarchy:
         UIConnectors: {Description = User Interface Connectors}
         WebConnectors: {Description = Web Connectors}
         DataReader: {Description="Simple Data Connector for reading data; checks for permissions; returns typed tables"}
+            WebConnectors:
     Partner: {Description=Partner Module}
         Extracts: {Description=Extracts Sub-System}
             UIConnectors: {Description=User Interface Connectors}
@@ -20,6 +21,7 @@ NamespaceHierarchy:
             DataElements: {Description=DataElements}
                 UIConnectors: {Description=User Interface Connectors}
             ServerLookups:
+                WebConnectors:
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description=Web Connectors}
         PartnerMerge: {Description=Partner Merge Sub-System}
@@ -85,12 +87,12 @@ NamespaceHierarchy:
     SysMan: {Description=System Manager Module}
         Application: {Description=Application Sub-System}
             UIConnectors: {Description=User Interface Connectors}
-            ServerLookups: {Description=ServerLookups}
+            WebConnectors:
         Maintenance: {Description=Maintenance Sub-System}
             SystemDefaults:
-            UIConnectors:
+                WebConnectors:
             UserDefaults:
-            WebConnectors:
+                WebConnectors:
         TableMaintenance: {Description=Table Maintenance Sub-System}
             UIConnectors: {Description=User Interface Connectors}
         ImportExport: {Description=Import and Export Sub-System}
@@ -100,4 +102,5 @@ NamespaceHierarchy:
         Security: {Description=Security Sub-System}
             UIConnectors: {Description=User Interface Connectors}
             UserManager:
+                WebConnectors:
         Cacheable: {Description=Cacheable DataTables}

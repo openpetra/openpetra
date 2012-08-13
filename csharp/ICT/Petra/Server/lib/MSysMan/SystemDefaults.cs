@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,7 +27,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core;
 
-namespace Ict.Petra.Server.MSysMan.Maintenance
+namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
 {
     /// <summary>
     /// Reads and saves a DataTable for the System Defaults.
@@ -45,6 +45,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <returns>The value of the System Default, or the value of the ADefault
         /// parameter if the specified System Default was not found
         /// </returns>
+        [NoRemoting]
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
             String ReturnValue = ADefault;
@@ -67,6 +68,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <returns>The value of the System Default, or SYSDEFAULT_NOT_FOUND if the
         /// specified System Default was not found
         /// </returns>
+        [NoRemoting]
         public static String GetSystemDefault(String ASystemDefaultName)
         {
             String ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
@@ -89,6 +91,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <returns>System Defaults Typed DataTable.
         /// </returns>
+        [RequireModulePermission("NONE")]
         public static SSystemDefaultsTable GetSystemDefaults()
         {
             // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.GetSystemDefaults called.'); $ENDIF
@@ -108,6 +111,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="ASystemDefaultsDataTable">The reloaded System Defaults Typed DataTable.
         /// </param>
         /// <returns>void</returns>
+        [NoRemoting]
         public void ReloadSystemDefaultsTable(ref SSystemDefaultsTable ASystemDefaultsDataTable)
         {
             ReloadSystemDefaultsTable();
@@ -122,6 +126,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         ///
         /// </summary>
         /// <returns>void</returns>
+        [RequireModulePermission("NONE")]
         public void ReloadSystemDefaultsTable()
         {
             // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.ReloadSystemDefaultsTable called.'); $ENDIF
@@ -146,6 +151,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <returns>true if the System Defaults could be saved successfully, otherwise
         /// false.
         /// </returns>
+        [RequireModulePermission("NONE")]
         public Boolean SaveSystemDefaults(SSystemDefaultsTable ASystemDefaultsDataTable)
         {
             return TSystemDefaultsCache.GSystemDefaultsCache.SaveSystemDefaults(ASystemDefaultsDataTable);

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,7 +46,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 
 
-namespace Ict.Petra.Server.MCommon.DataReader
+namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 {
     /// <summary>
     /// Performs server-side lookups for the Client in the MCommon DataReader sub-namespace.
@@ -62,6 +62,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
         /// <param name="ASearchCriteria">a set of search criteria</param>
         /// <param name="AResultTable">returns typed datatable</param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
             // TODO: check access permissions for the current user
@@ -203,6 +204,7 @@ namespace Ict.Petra.Server.MCommon.DataReader
         /// <param name="ASubmitTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static TSubmitChangesResult SaveData(string ATablename,
             ref TTypedDataTable ASubmitTable,
             out TVerificationResultCollection AVerificationResult)

@@ -30,7 +30,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 
-namespace Ict.Petra.Server.MCommon.DataReader
+namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 {
     public partial class TCommonDataReader
     {

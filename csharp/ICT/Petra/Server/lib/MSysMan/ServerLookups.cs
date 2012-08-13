@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, berndr
+//       christiank, berndr, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,7 @@ using Ict.Common.DB;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 
-namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
+namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
 {
     /// <summary>
     /// Performs server-side lookups for the Client in the MSysMan.ServerLookups
@@ -37,45 +37,12 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
     /// </summary>
     public class TSysManServerLookups
     {
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public TSysManServerLookups() : base()
-        {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
-            FStartTime = DateTime.Now;
-        }
-
-#if DEBUGMODE
-        /// <summary>
-        /// destructor
-        /// </summary>
-        ~TSysManServerLookups()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-        }
-#endif
-
-
-
         /// <summary>
         /// Retrieves the current database version
         /// </summary>
         /// <param name="APetraDBVersion">Current database version</param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static System.Boolean GetDBVersion(out System.String APetraDBVersion)
         {
             TDBTransaction ReadTransaction;
@@ -133,6 +100,7 @@ namespace Ict.Petra.Server.MSysMan.Application.ServerLookups
         /// </summary>
         /// <param name="APatchLogDT">The installed patches</param>
         /// <returns></returns>
+        [RequireModulePermission("NONE")]
         public static System.Boolean GetInstalledPatches(out Ict.Petra.Shared.MSysMan.Data.SPatchLogTable APatchLogDT)
         {
             SPatchLogTable TmpTable = new SPatchLogTable();

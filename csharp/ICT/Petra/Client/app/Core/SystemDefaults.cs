@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.App.Core
                         USystemDefaultsDT.Rows.Clear();
                     }
 
-                    USystemDefaultsDT = TRemote.MSysMan.Maintenance.SystemDefaults.GetSystemDefaults();
+                    USystemDefaultsDT = TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefaults();
                     UTableCached = true;
                 }
                 finally
@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void ReloadCachedSystemDefaultsOnServer()
         {
-            TRemote.MSysMan.Maintenance.SystemDefaults.ReloadSystemDefaultsTable();
+            TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.ReloadSystemDefaultsTable();
             UTableCached = false;
         }
 

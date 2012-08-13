@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.App.Core
 
             try
             {
-                Ict.Petra.Shared.UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.ReloadCachedUserInfo();
+                Ict.Petra.Shared.UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.WebConnectors.ReloadCachedUserInfo();
             }
             catch (EDBConnectionNotAvailableException Exp)
             {
@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void SignalReloadCachedUserInfo(String AUserID)
         {
-            TRemote.MSysMan.Security.UserManager.SignalReloadCachedUserInfo(AUserID);
+            TRemote.MSysMan.Security.UserManager.WebConnectors.SignalReloadCachedUserInfo(AUserID);
         }
     }
 }
