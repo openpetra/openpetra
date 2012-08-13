@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
     ///          However, Server Objects that derive from these objects and that
     ///          are also UIConnectors are feasible.
     ///</summary>
-    public class TFinanceReportingUIConnector : IReportingUIConnector
+    public class TFinanceReportingUIConnector : TConfigurableMBRObject, IReportingUIConnector
     {
         /// constructor
         public TFinanceReportingUIConnector()

@@ -396,7 +396,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (GLDataset != null)
             {
                 TVerificationResultCollection AVerifications;
-                bool blnReturnValue = (TTransactionWebConnector.SaveGLBatchTDS(
+                bool blnReturnValue = (TGLTransactionWebConnector.SaveGLBatchTDS(
                                            ref GLDataset, out AVerifications) == TSubmitChangesResult.scrOK);
 
                 if (blnReturnValue)
@@ -404,7 +404,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     //blnVerificationCollectionContainsData = true;
                 }
 
-                blnReturnValue = (GL.WebConnectors.TTransactionWebConnector.PostGLBatch(
+                blnReturnValue = (TGLTransactionWebConnector.PostGLBatch(
                                       batch.LedgerNumber, batch.BatchNumber, out AVerifications));
             }
         }

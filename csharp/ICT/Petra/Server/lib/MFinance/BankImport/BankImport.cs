@@ -49,6 +49,7 @@ using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.ImportExport;
 using Ict.Petra.Server.App.Core;
 
@@ -474,7 +475,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            GiftBatchTDS GiftDS = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.CreateAGiftBatch(
+            GiftBatchTDS GiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(
                 ALedgerNumber,
                 BatchDateEffective,
                 String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
@@ -565,7 +566,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             // do not overwrite the parameter, because there might be the hint for a different gift batch date
             TVerificationResultCollection VerificationResultSubmitChanges;
 
-            TSubmitChangesResult result = Ict.Petra.Server.MFinance.Gift.WebConnectors.TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS,
+            TSubmitChangesResult result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS,
                 out VerificationResultSubmitChanges);
 
             if (result == TSubmitChangesResult.scrOK)
@@ -625,7 +626,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            GLBatchTDS GLDS = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+            GLBatchTDS GLDS = TGLTransactionWebConnector.CreateABatch(ALedgerNumber);
 
             ABatchRow glbatchRow = GLDS.ABatch[0];
             glbatchRow.BatchPeriod = BatchPeriod;
@@ -699,7 +700,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                     trans.JournalNumber = gljournalRow.JournalNumber;
                     trans.TransactionNumber = gljournalRow.LastTransactionNumber + 1;
                     trans.AccountCode = stmt.BankAccountCode;
-                    trans.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+                    trans.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
                     trans.Reference = match.Reference;
                     trans.Narrative = match.Narrative;
                     trans.TransactionDate = transactionRow.DateEffective;
@@ -732,7 +733,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             TVerificationResultCollection VerificationResult;
 
-            TSubmitChangesResult result = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDS,
+            TSubmitChangesResult result = TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDS,
                 out VerificationResult);
 
             if (result == TSubmitChangesResult.scrOK)

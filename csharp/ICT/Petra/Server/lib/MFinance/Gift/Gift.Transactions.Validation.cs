@@ -33,7 +33,7 @@ using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
-    public partial class TTransactionWebConnector
+    public partial class TGiftTransactionWebConnector
     {
         //
         // Put Methods for the validation of Gift Transactions in this code file.

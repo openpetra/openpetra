@@ -35,6 +35,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -103,7 +104,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 // TODO? TSystemDefaultsCache.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
             }
 
-            NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+            NewRow.BankCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
             NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
             MainDS.AGiftBatch.Rows.Add(NewRow);
             return NewRow;
@@ -156,7 +157,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 // TODO? TSystemDefaultsCache.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
             }
 
-            NewRow.BankCostCentre = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+            NewRow.BankCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
             NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
             MainDS.ARecurringGiftBatch.Rows.Add(NewRow);
             return NewRow;
