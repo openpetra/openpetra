@@ -310,14 +310,8 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                     subModule = subModule.NextSibling;
                 }
 
-//                SharedTemplate.FinishWriting(ASharedPath +
-//                    Path.DirectorySeparatorChar + "lib" +
-//                    Path.DirectorySeparatorChar + "M" + module.Name +
-//                    Path.DirectorySeparatorChar + "Cacheable.cs",
-//                    ".cs", true);
-
                 SharedTemplate.FinishWriting(ASharedPath +
-                    Path.DirectorySeparatorChar + "M" + module.Name + ".Cacheable.cs",
+                    Path.DirectorySeparatorChar + "M" + module.Name + ".Cacheable-generated.cs",
                     ".cs", true);
 
                 module = module.NextSibling;
