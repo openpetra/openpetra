@@ -14,6 +14,8 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MCommon;
+{#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
 {
@@ -107,7 +109,7 @@ namespace {#NAMESPACE}
             {
                 Boolean NewTransaction;
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 try
@@ -221,6 +223,7 @@ namespace {#NAMESPACE}
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+                AfterSaving(ACacheableTable);
             }
 
             if (AVerificationResult.Count > 0)
@@ -232,7 +235,9 @@ namespace {#NAMESPACE}
 
             return SubmissionResult;
         }
-        
+
+        partial void AfterSaving(TCacheable{#SUBMODULE}TablesEnum ACacheableTable);            
+
 #region Data Validation
 
     {#DATAVALIDATION}    
@@ -440,6 +445,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     {
         //FCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
         GetCacheableTable(ACacheableTable, String.Empty, true, ALedgerNumber, out TmpType);
+        AfterSaving(ACacheableTable);
     }
 
     if (AVerificationResult.Count > 0)
@@ -454,7 +460,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
 
 #region Data Validation
 
-    {#DATAVALIDATION}    
+{#DATAVALIDATION}
 
 #endregion Data Validation
 
@@ -491,18 +497,6 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     break;
 }
 
-{##GETCALCULATEDLISTFROMDB}
-
-private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction, string ATableName)
-{
-}
-
-{##GETCALCULATEDLISTLEDGERFROMDB}
-
-private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
-{
-}
-
 {##SAVETABLE}
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     if (ASubmitTable.Rows.Count > 0) 
@@ -523,5 +517,5 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     break;
     
 {##DATAVALIDATION}
-    partial void Validate{#ENUMNAME}Manual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
+partial void Validate{#ENUMNAME}Manual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
 
