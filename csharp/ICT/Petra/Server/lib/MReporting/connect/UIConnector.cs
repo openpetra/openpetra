@@ -30,6 +30,7 @@ using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;
+using Ict.Petra.Server.MReporting.Calculator;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
