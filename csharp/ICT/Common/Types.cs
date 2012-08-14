@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,6 +90,15 @@ namespace Ict.Common
         /// Windows NT and later
         /// </summary>
         eosWinNTOrLater,
+
+        /// WinXP
+        eosWinXP,
+
+        /// WinVista
+        eosWinVista,
+
+        /// Win7
+        eosWin7,
 
         /// <summary>
         /// unknown and unsupported
@@ -321,6 +330,15 @@ namespace Ict.Common
 
                     break;
 
+                case TExecutingOSEnum.eosWinXP:
+                    return "Windows XP / Server 2003";
+
+                case TExecutingOSEnum.eosWinVista:
+                    return "Windows Vista";
+
+                case TExecutingOSEnum.eosWin7:
+                    return "Windows 7 / Server 2008";
+
                 case TExecutingOSEnum.eosWinNTOrLater:
 
                     if (ALongDescription)
@@ -329,7 +347,7 @@ namespace Ict.Common
                     }
                     else
                     {
-                        ReturnValue = "WindowsNT/XP";
+                        ReturnValue = "WindowsNT/XP/Win7/2008";
                     }
 
                     break;

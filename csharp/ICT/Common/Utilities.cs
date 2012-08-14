@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,32 +53,38 @@ namespace Ict.Common
         /// <returns>A value of the TExecutingOS enumeration.</returns>
         public static TExecutingOSEnum DetermineExecutingOS()
         {
-            TExecutingOSEnum ReturnValue;
-
-            System.Int32 PlatformIdentifier;
-            PlatformIdentifier = (Int32)Environment.OSVersion.Platform;
+            System.Int32 PlatformIdentifier = (Int32)Environment.OSVersion.Platform;
+            Version OSVersion = Environment.OSVersion.Version;
 
             switch (PlatformIdentifier)
             {
                 case 4:
                 case 128:
-                    ReturnValue = TExecutingOSEnum.eosLinux;
-                    break;
+                    return TExecutingOSEnum.eosLinux;
 
                 case (int)PlatformID.Win32Windows:
-                    ReturnValue = TExecutingOSEnum.eosWin98ToWinME;
-                    break;
+                    return TExecutingOSEnum.eosWin98ToWinME;
 
                 case (int)PlatformID.Win32NT:
-                    ReturnValue = TExecutingOSEnum.eosWinNTOrLater;
-                    break;
+
+                    if (OSVersion.Major == 5)
+                    {
+                        return TExecutingOSEnum.eosWinXP;
+                    }
+                    else if ((OSVersion.Major == 6) && (OSVersion.Minor == 0))
+                    {
+                        return TExecutingOSEnum.eosWinVista;
+                    }
+                    else if ((OSVersion.Major == 6) && (OSVersion.Minor == 1))
+                    {
+                        return TExecutingOSEnum.eosWin7;
+                    }
+
+                    return TExecutingOSEnum.eosWinNTOrLater;
 
                 default:
-                    ReturnValue = TExecutingOSEnum.oesUnsupportedPlatform;
-                    break;
+                    return TExecutingOSEnum.oesUnsupportedPlatform;
             }
-
-            return ReturnValue;
         }
 
         /// <summary>
