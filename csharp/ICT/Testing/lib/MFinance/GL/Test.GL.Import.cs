@@ -79,7 +79,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // Console.WriteLine(strContent);
             TVerificationResultCollection verificationResult;
 
-            bool importSuccess = TTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult);
+            bool importSuccess = TGLTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult);
 
             if (verificationResult.HasCriticalErrors)
             {

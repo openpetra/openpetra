@@ -100,7 +100,7 @@ namespace Ict.Testing.SampleDataConstructor
 
             TVerificationResultCollection VerificationResult;
 
-            if (!TTransactionWebConnector.PostGiftBatches(FLedgerNumber, GiftBatchesToPost, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatches(FLedgerNumber, GiftBatchesToPost, out VerificationResult))
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 return false;

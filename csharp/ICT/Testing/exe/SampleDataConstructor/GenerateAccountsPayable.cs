@@ -168,7 +168,7 @@ namespace Ict.Testing.SampleDataConstructor
 
             TVerificationResultCollection VerificationResult;
 
-            if (!TTransactionWebConnector.PostAPDocuments(FLedgerNumber, DocumentIdsToPost, PeriodEndDate, false, out VerificationResult))
+            if (!TAPTransactionWebConnector.PostAPDocuments(FLedgerNumber, DocumentIdsToPost, PeriodEndDate, false, out VerificationResult))
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 return false;
