@@ -142,8 +142,6 @@ class TCreateClientRemotingClass : AutoGenerationWriter
         // foreach public method create a method
         foreach (MethodDeclaration m in CSParser.GetMethods(t))
         {
-            string MethodName = m.Name;
-
             if (TCollectConnectorInterfaces.IgnoreMethod(m.Attributes, m.Modifier))
             {
                 continue;

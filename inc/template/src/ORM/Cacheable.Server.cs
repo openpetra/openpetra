@@ -94,6 +94,7 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         /// The CacheableTablesManager will notify other Clients that they need to
         /// retrieve this Cacheable DataTable anew from the PetraServer the next time
         /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="AType">The Type of the DataTable (useful in case it's a
         /// Typed DataTable)</param>
         /// <returns>)

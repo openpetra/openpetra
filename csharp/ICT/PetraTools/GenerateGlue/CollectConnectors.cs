@@ -62,9 +62,6 @@ public class TCollectConnectorInterfaces
                     {
                         string ServerNamespace = t.UserData.ToString();
                         string ServerNamespaceWithClassName = ServerNamespace + "." + t.Name;
-                        string SharedNamespace = ServerNamespaceWithClassName.
-                                                 Replace("Ict.Petra.Server.", "Ict.Petra.Shared.");
-
                         string key = ServerNamespaceWithClassName + ":" + Interface;
 
                         if (Result.ContainsKey(ServerNamespaceWithClassName))
@@ -94,9 +91,6 @@ public class TCollectConnectorInterfaces
                         // web connectors don't derive from an interface, because the methods are static
 
                         string ServerNamespace = t.UserData.ToString();
-                        string SharedNamespace = ServerNamespace.
-                                                 Replace("Ict.Petra.Server.", "Ict.Petra.Shared.");
-
                         string key = ServerNamespace + "." + t.Name;
 
                         if (Result.ContainsKey(key))
