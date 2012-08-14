@@ -754,7 +754,11 @@ namespace Ict.Petra.Shared
                     TmpDT = ACacheableTable.Copy();
                     TmpDT.TableName = ACacheableTableName;
                     UDataCacheDataSet.Merge(TmpDT);
-                    DataUtilities.RemoveRowsNotPresentInDT(TmpDT, UDataCacheDataSet.Tables[ACacheableTableName]);
+
+                    // Remove rows from the cached DT that are no longer present in the DB Table (DataSet.Merge doesn't do this!).
+                    // Note: The Cacheable DataTable must have a Primary Key for this Method to be able to perform this!
+                    DataUtilities.RemoveRowsNotPresentInDT(TmpDT, UDataCacheDataSet.Tables[ACacheableTableName], true);
+
                     ContentsEntryDR.DataUpToDate = true;
 #if DEBUGMODE
                     if (TLogging.DL >= 7)

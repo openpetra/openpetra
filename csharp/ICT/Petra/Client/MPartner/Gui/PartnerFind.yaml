@@ -69,6 +69,8 @@ RootNode:
         actViewPartnerInfo: {Label=Partner &Info Panel, ActionClick=MniView_Click, Image: FindAddress.ico}
         
         actToolsOptions: {Label=&Options..., ActionClick=MniTools_Click, Image: FindOptions.ico}
+        
+        actAccept: {ActionClick=BtnAccept_Click}
     Controls:
         pnlMain: 
             Dock: Fill
@@ -84,11 +86,17 @@ RootNode:
             Dock: Fill
         tpgFindBankDetails: {Label=Find by Bank Details}
         pnlModalButtons:
-            Dock: Fill
-            Controls: [btnHelp, btnCancel, btnFullyLoadData, btnAccept]
+            ControlsOrientation: horizontal
+            Dock: Bottom
+            Controls: [btnHelp, pnlAcceptCancelButtons]
+        pnlAcceptCancelButtons:
+            ControlsOrientation: horizontal
+            Controls: [btnAccept, btnCancel]
+            Align: right
+# btnFullyLoadData,             
         btnHelp: {Label=&Help}
-        btnFullyLoadData: {Label=Fully load Data}
-        btnAccept: {Label=&Accept}
+#        btnFullyLoadData: {Label=Fully load Data}
+        btnAccept: {Label=&Accept, Enabled=false}
         btnCancel: {Label=&Cancel}
     #todo: popup menu for address grid
     Menu:

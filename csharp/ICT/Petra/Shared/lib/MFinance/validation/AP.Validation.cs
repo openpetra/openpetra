@@ -53,6 +53,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'Detail Amount' must be positive or 0
             ValidationColumn = ARow.Table.Columns[AApDocumentDetailTable.ColumnAmountId];
 

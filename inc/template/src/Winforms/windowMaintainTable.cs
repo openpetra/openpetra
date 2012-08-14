@@ -16,6 +16,7 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -36,12 +37,12 @@ namespace {#NAMESPACE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
-
-    private class FMainDS
-    {
-        public static {#DETAILTABLE}Table {#DETAILTABLE};
-    }
-
+{#IFDEF DATASETTYPE}
+    private {#DATASETTYPE} FMainDS;
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
+    {#INLINETYPEDDATASET}
+{#ENDIFN DATASETTYPE} 
 {#IFDEF SHOWDETAILS}
     private int FCurrentRow;
 
@@ -76,8 +77,14 @@ namespace {#NAMESPACE}
       {#ASSIGNFONTATTRIBUTES}
       
       FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
+{#IFDEF DATASETTYPE}
+      FMainDS = new {#DATASETTYPE}();
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
+      FMainDS = new TLocalMainTDS();
+{#ENDIFN DATASETTYPE}      
       {#INITUSERCONTROLS}
-      FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
+
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.WebConnectors.GetData({#DETAILTABLE}Table.GetTableDBName(), ASearchCriteria, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
@@ -965,3 +972,4 @@ namespace {#NAMESPACE}
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
+{#INCLUDE inline_typed_dataset.cs}

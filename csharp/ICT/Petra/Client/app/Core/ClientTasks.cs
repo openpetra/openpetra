@@ -65,12 +65,6 @@ namespace Ict.Petra.Client.App.Core
                     }
                 }
 
-                if (FClientTaskDataRow["TaskGroup"].ToString() == SharedConstants.CLIENTTASKGROUP_SYSTEMDEFAULTSREFRESH)
-                {
-                    // $IFDEF DEBUGMODE MessageBox.Show(CLIENTTASKGROUP_SYSTEMDEFAULTSREFRESH + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + ')', 'Client #' + UClientID.ToString + ' received a ClientTask.'); $ENDIF
-                    TSystemDefaults.ReloadCachedSystemDefaults();
-                }
-
                 if (FClientTaskDataRow["TaskGroup"].ToString() == SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH)
                 {
                     // $IFDEF DEBUGMODE MessageBox.Show(CLIENTTASKGROUP_USERDEFAULTSREFRESH + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + ')', 'Client #' + UClientID.ToString + ' received a ClientTask.'); $ENDIF

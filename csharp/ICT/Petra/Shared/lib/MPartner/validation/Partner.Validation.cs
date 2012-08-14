@@ -67,6 +67,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'BIC' (Bank Identifier Code) must be valid
             ValidationColumn = ARow.Table.Columns[PBankTable.ColumnBicId];
 
@@ -136,6 +142,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
             TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'PartnerStatus' must not be set to MERGED
             ValidationColumn = ARow.Table.Columns[PPartnerTable.ColumnStatusCodeId];
 
@@ -176,6 +188,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
             TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'SubscriptionStatus' must not be null or empty
             ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnSubscriptionStatusId];
 
@@ -215,6 +233,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'Partner' must have a valid partner key and must not be 0
             ValidationColumn = ARow.Table.Columns[PPartnerRelationshipTable.ColumnPartnerKeyId];
@@ -456,6 +480,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'MailingDate' must not be empty
             ValidationColumn = ARow.Table.Columns[PMailingTable.ColumnMailingDateId];

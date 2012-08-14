@@ -317,6 +317,8 @@
           overwrite="false"/>
 <property name="ClearingHouse.EmailAddress" value="ich@example.org"
           overwrite="false"/>
+<property name="intranet.email" value="intranet@example.org"
+          overwrite="false"/>
 
 <!-- Set correct .NET platform -->
 <property name="NETframework-version" value ="4.0" overwrite="false" />

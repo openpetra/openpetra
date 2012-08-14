@@ -423,9 +423,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             if (SavedOk)
             {
-                foreach (Int64 Child in ChangedParents.Keys)
+                if (ReassignEvent != null)
                 {
-                    ReassignEvent(Child, ChangedParents[Child]);
+                    foreach (Int64 Child in ChangedParents.Keys)
+                    {
+                        ReassignEvent(Child, ChangedParents[Child]);
+                    }
                 }
 
                 FStatus = "";

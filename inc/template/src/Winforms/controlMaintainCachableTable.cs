@@ -47,11 +47,8 @@ namespace {#NAMESPACE}
     private {#DATASETTYPE} FMainDS;
 {#ENDIF DATASETTYPE}
 {#IFNDEF DATASETTYPE}
-    private class FMainDS 
-    {
-        public static {#DETAILTABLE}Table {#DETAILTABLE};
-    }
-{#ENDIFN DATASETTYPE} 
+    {#INLINETYPEDDATASET}
+{#ENDIFN DATASETTYPE}
 {#IFDEF SHOWDETAILS}
 
     private int FCurrentRow;
@@ -100,10 +97,13 @@ namespace {#NAMESPACE}
       {#INITUSERCONTROLS}
       Type DataTableType;
       
-      // Load Data
+      // Load Data     
+{#IFDEF DATASETTYPE}
+      FMainDS = new {#DATASETTYPE}();
+{#ENDIF DATASETTYPE}
 {#IFNDEF DATASETTYPE}
-      FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
-{#ENDIFN DATASETTYPE}      
+      FMainDS = new TLocalMainTDS();
+{#ENDIFN DATASETTYPE}
       DataTable CacheDT = TDataCache.{#CACHEABLETABLERETRIEVEMETHOD}({#CACHEABLETABLE}, {#CACHEABLETABLESPECIFICFILTERLOAD}, out DataTableType);
       FMainDS.{#DETAILTABLE}.Merge(CacheDT);    
       
@@ -968,3 +968,4 @@ namespace {#NAMESPACE}
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
+{#INCLUDE inline_typed_dataset.cs}

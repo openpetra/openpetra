@@ -58,6 +58,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'Receiving Field' must be a Partner of Class 'UNIT' and must not be 0
             ValidationColumn = ARow.Table.Columns[PmStaffDataTable.ColumnReceivingFieldId];
 
@@ -150,6 +156,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'From Date' must be defined
             ValidationColumn = ARow.Table.Columns[PmJobAssignmentTable.ColumnFromDateId];
@@ -285,6 +297,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'Passport Number' must have a value
             ValidationColumn = ARow.Table.Columns[PmPassportDetailsTable.ColumnPassportNumberId];
 
@@ -363,6 +381,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             TVerificationResult VerificationResult;
             PmDocumentTypeTable DocTypeTable;
             PmDocumentTypeRow DocTypeRow = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             ValidationColumn = ARow.Table.Columns[PmDocumentTable.ColumnDocCodeId];
 
@@ -466,6 +490,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             PtLanguageLevelTable LanguageLevelTable;
             PtLanguageLevelRow LanguageLevelRow = null;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'Language Level' must not be unassignable
             ValidationColumn = ARow.Table.Columns[PmPersonLanguageTable.ColumnLanguageLevelId];
 
@@ -512,6 +542,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'Skill Category' must not be unassignable
             ValidationColumn = ARow.Table.Columns[PmPersonSkillTable.ColumnSkillCategoryCodeId];
@@ -595,6 +631,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'Start Date' must not be a future date
             ValidationColumn = ARow.Table.Columns[PmPastExperienceTable.ColumnStartDateId];
 
@@ -667,6 +709,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'Evaluator' must have a value
             ValidationColumn = ARow.Table.Columns[PmPersonEvaluationTable.ColumnEvaluatorId];
@@ -756,6 +804,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
 
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
             // 'Believer since year' must have a sensible value (must not be below 1850 and must not lie in the future)
             ValidationColumn = ARow.Table.Columns[PmPersonalDataTable.ColumnBelieverSinceYearId];
 
@@ -789,6 +843,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'Application Type' must have a value
             ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnAppTypeNameId];
@@ -861,6 +921,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'Event' must be a Partner of Class 'UNIT' and must not be 0
             ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnStConfirmedOptionId];
@@ -983,6 +1049,12 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
 
             // 'Available to' must be later than 'Available from' date
             ValidationColumn = ARow.Table.Columns[PmYearProgramApplicationTable.ColumnEndOfCommitmentId];

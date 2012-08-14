@@ -14,6 +14,7 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
@@ -31,11 +32,8 @@ namespace {#NAMESPACE}
     private {#DATASETTYPE} FMainDS;
 {#ENDIF DATASETTYPE}
 {#IFNDEF DATASETTYPE}
-    private class FMainDS
-    {
-        public static {#DETAILTABLE}Table {#DETAILTABLE};
-    }
-{#ENDIFN DATASETTYPE}    
+    {#INLINETYPEDDATASET}
+{#ENDIFN DATASETTYPE}
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
     {
@@ -55,9 +53,11 @@ namespace {#NAMESPACE}
 {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
 {#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
+      FMainDS = new TLocalMainTDS();
+{#ENDIFN DATASETTYPE}
       {#INITUSERCONTROLS}    
 {#IFNDEF DATASETTYPE}      
-      FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
       Ict.Common.Data.TTypedDataTable TypedTable;
       TRemote.MCommon.DataReader.WebConnectors.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
@@ -181,3 +181,4 @@ namespace {#NAMESPACE}
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE inline_typed_dataset.cs}
