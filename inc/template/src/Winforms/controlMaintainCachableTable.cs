@@ -267,10 +267,10 @@ namespace {#NAMESPACE}
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+        pnlDetails.Enabled = false;
 {#IFDEF SHOWDATA}        
         {#SHOWDATA}
 {#ENDIF SHOWDATA}        
-        pnlDetails.Enabled = false;
         if (FMainDS.{#DETAILTABLE} != null)
         {
             DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
@@ -284,9 +284,8 @@ namespace {#NAMESPACE}
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             if (myDataView.Count > 0)
             {
-                grdDetails.Selection.ResetSelection(false);
-                grdDetails.Selection.SelectRow(1, true);
-                FocusedRowChanged(this, new SourceGrid.RowEventArgs(1));
+                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+	            InvokeFocusedRowChanged(1);
                 pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             }
         }
@@ -411,8 +410,8 @@ namespace {#NAMESPACE}
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            {#SHOWDETAILS}
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            {#SHOWDETAILS}
         }
 
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -541,8 +540,8 @@ namespace {#NAMESPACE}
 	
 	            // Display the details of the currently selected Row
 	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-	            ShowDetails(FPreviouslySelectedDetailRow);
 	            pnlDetails.Enabled = true;
+	            ShowDetails(FPreviouslySelectedDetailRow);
 	    	}
 	    	else if (FDetailGridRowsChangedState == 1) //Addition
 	    	{
@@ -561,8 +560,8 @@ namespace {#NAMESPACE}
                 	// Select and display the details of the currently selected Row without causing an event
                     grdDetails.SelectRowInGrid(nextRowToSelect, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                    ShowDetails(FPreviouslySelectedDetailRow);
                     pnlDetails.Enabled = true;
+                    ShowDetails(FPreviouslySelectedDetailRow);
                 }
                 else
                 {
@@ -593,6 +592,14 @@ namespace {#NAMESPACE}
 		}
 
 		int rowIndexToDelete = grdDetails.SelectedRowIndex();
+
+        if (rowIndexToDelete == -1)
+        {
+        	MessageBox.Show(Catalog.GetString("There is no row currently selected in the grid."),
+        	               Catalog.GetString("Delete Row"));
+        	return;
+        }
+
 		{#DETAILTABLETYPE}Row rowToDelete = GetSelectedDetailRow();
 		
 		{#PREDELETEMANUAL}
@@ -612,9 +619,12 @@ namespace {#NAMESPACE}
 				deletionPerformed = true;
 {#ENDIFN DELETEROWMANUAL}				
 			
-				FPetraUtilsObject.SetChangedFlag();
-				//Select and call the event that doesn't occur automatically
-				InvokeFocusedRowChanged(rowIndexToDelete);
+				if (deletionPerformed)
+				{
+					FPetraUtilsObject.SetChangedFlag();
+					//Select and call the event that doesn't occur automatically
+					InvokeFocusedRowChanged(rowIndexToDelete);
+				}
 			}
 		}
 

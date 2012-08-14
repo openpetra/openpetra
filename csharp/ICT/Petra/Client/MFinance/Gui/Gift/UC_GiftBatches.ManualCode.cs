@@ -490,8 +490,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateChangeableStatus()
         {
-            Boolean changeable = (FPreviouslySelectedDetailRow != null) && !ViewMode
-                                 && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (!ViewMode);
+            Boolean changeable = (FPreviouslySelectedDetailRow != null) && (!ViewMode)
+                                 && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             this.btnDelete.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
