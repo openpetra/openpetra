@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FFormSetupFinished = false;
 
             ArrangeMenuItemsAndToolBarButtons();
-            
+
             CancelButton = btnCancel;
 
             tbbEditPartner.Enabled = false;
@@ -147,7 +147,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoFindByPartnerDetails.PartnerInfoPaneExpanded += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneExpanded);
             ucoFindByPartnerDetails.EnableAcceptButton += new EventHandler(ucoFindByPartnerDetails_EnableAcceptButton);
             ucoFindByPartnerDetails.DisableAcceptButton += new EventHandler(ucoFindByPartnerDetails_DisableAcceptButton);
-            
+
             ucoFindByPartnerDetails.SetupPartnerInfoPane();
         }
 
@@ -1152,7 +1152,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             SetupFileMenu();
             SetupMaintainMenu();
 
-
             if (!FRunAsModalForm)
             {
                 pnlModalButtons.Visible = false;
@@ -1165,8 +1164,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlModalButtons.BringToFront();
                 //tabPartnerFindMethods
                 stbMain.Visible = false;
-                pnlModalButtons.Visible = true;                
+                pnlModalButtons.Visible = true;
             }
+
 #if TODO
             // Menu temporarily shown so we can test implemented 4GL calls from menus
             // TODO 1 oChristianK cModal : Menu needs to be hidden as soon 4GL can make nonmodal calls to this Form!
@@ -1220,12 +1220,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             btnAccept.Enabled = true;
         }
-        
+
         void ucoFindByPartnerDetails_DisableAcceptButton(object sender, EventArgs e)
         {
             btnAccept.Enabled = false;
-        }        
-        
+        }
+
         private void BtnFullyLoadData_Click(System.Object sender, System.EventArgs e)
         {
             // FullLoadDataSet;

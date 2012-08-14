@@ -124,7 +124,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public event System.EventHandler DisableAcceptButton;
-        
+
         private void OnPartnerInfoPaneCollapsed()
         {
             if (PartnerInfoPaneCollapsed != null)
@@ -218,7 +218,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             set
             {
-                FRunningInsideModalForm = value;               
+                FRunningInsideModalForm = value;
             }
         }
 
