@@ -487,7 +487,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else //this should never happen
             {
-	        	ADeletionQuestion = String.Format(Catalog.GetString("Gift transaction {1} in Gift Batch No. {2} has no detail rows in the Gift Detail table!"),
+	        	ADeletionQuestion = String.Format(Catalog.GetString("Gift transaction {1} in Gift Batch no. {2} has no detail rows in the Gift Detail table!"),
 	        	                                 ARowToDelete.DetailNumber,
 	        	                                 ARowToDelete.GiftTransactionNumber,
 	        	                                 ARowToDelete.BatchNumber);
@@ -719,8 +719,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewGiftDetail(System.Object sender, EventArgs e)
         {
-            // this is coded manually, to use the correct gift record
-
+			//If grid is empty caLL NewGift() instead
+			if (grdDetails.Rows.Count == 1)
+			{
+				NewGift(sender, e);
+				return;
+			}
+			
+        	// this is coded manually, to use the correct gift record
             // we create the table locally, no dataset
             AGiftDetailRow GiftDetailRow = NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow); // returns AGiftDetailRow
 
