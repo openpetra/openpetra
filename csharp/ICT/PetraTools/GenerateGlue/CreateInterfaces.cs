@@ -87,14 +87,12 @@ public class CreateInterfaces : AutoGenerationWriter
         List <TypeDeclaration>ClassList = new List <TypeDeclaration>();
 
         // find all classes in that server namespace, eg. Ict.Petra.Server.MPartner.Extracts.UIConnectors
-        TLogging.Log("namespace: " + ANamespace);
         List <TypeDeclaration>ConnectorClasses = CSParser.GetClassesInNamespace(ACSFiles, ANamespace);
 
         foreach (TypeDeclaration t in ConnectorClasses)
         {
             if ((t.BaseTypes.Count == 0) && ANamespace.EndsWith("WebConnectors"))
             {
-                TLogging.Log("   webconnector: " + t.Name);
                 ClassList.Add(t);
                 continue;
             }

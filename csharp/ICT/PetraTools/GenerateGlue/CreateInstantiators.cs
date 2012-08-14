@@ -62,13 +62,6 @@ class CreateInstantiators
         List <TNamespace>children,
         SortedList <string, TypeDeclaration>connectors)
     {
-        if (children.Count
-            == 1)
-        {
-            TLogging.Log("writeremotableclass: " + Classname + " " + FullNamespace + " " + Namespace + " " +
-                children.Count.ToString() + " " + HighestLevel.ToString());
-        }
-
         if ((children.Count == 0) && !HighestLevel)
         {
             return new ProcessTemplate();
@@ -79,12 +72,6 @@ class CreateInstantiators
         remotableClassSnippet.SetCodelet("SUBNAMESPACEREMOTABLECLASSES", string.Empty);
 
         remotableClassSnippet.SetCodelet("NAMESPACE", Namespace);
-
-        if (children.Count
-            == 2)
-        {
-            TLogging.Log("classname " + Classname);
-        }
 
         remotableClassSnippet.SetCodelet("CLIENTOBJECTFOREACHPROPERTY", string.Empty);
         remotableClassSnippet.SetCodelet("SUBNAMESPACEPROPERTIES", string.Empty);
@@ -106,15 +93,11 @@ class CreateInstantiators
 
             remotableClassSnippet.InsertSnippet("SUBNAMESPACEPROPERTIES", subNamespaceSnippet);
 
-//            TLogging.Log("child " + NamespaceName  + " " + sn.Children.Count.ToString() + "children");
-
             if (sn.Children.Count > 0)
             {
                 // properties for each sub namespace
                 foreach (TNamespace subnamespace in sn.Children)
                 {
-                    TLogging.Log("subnamepace " + sn.Name + " " + subnamespace.Name + " " + FullNamespace + " " + Classname);
-
                     ATemplate.InsertSnippet("SUBNAMESPACEREMOTABLECLASSES",
                         WriteRemotableClass(ATemplate,
                             FullNamespace + "." + sn.Name + "." + subnamespace.Name,
