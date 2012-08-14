@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from {#XAMLSRCFILE}
+// auto generated with nant generateWinforms from {#XAMLSRCFILE} and template windowSingleTable
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -59,7 +59,7 @@ namespace {#NAMESPACE}
 {#IFNDEF DATASETTYPE}      
       FMainDS.{#DETAILTABLE} = new {#DETAILTABLE}Table();
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
+      TRemote.MCommon.DataReader.WebConnectors.GetData({#DETAILTABLE}Table.GetTableDBName(), null, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
 {#ENDIFN DATASETTYPE}      
       {#INITMANUALCODE}

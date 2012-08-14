@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // reload permissions for user
-                UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.ReloadCachedUserInfo();
+                UserInfo.GUserInfo = TRemote.MSysMan.Security.UserManager.WebConnectors.ReloadCachedUserInfo();
 
                 // reload navigation
                 Form MainWindow = FPetraUtilsObject.GetCallerForm();

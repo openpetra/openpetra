@@ -81,7 +81,7 @@ NamespaceHierarchy:
         PeriodEnd: {Description=Period End Sub-System}
             UIConnectors: {Description=User Interface Connectors}
         Reporting: {Description=Reporting Sub-System}
-            UIConnectors: {Description=User Interface Connectors}
+            WebConnectors:
         Setup: {Description=Setup Sub-System}
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
@@ -98,6 +98,7 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors:
         Maintenance: {Description=Maintenance Sub-System}
+            WebConnectors:
             SystemDefaults:
                 WebConnectors:
             UserDefaults:

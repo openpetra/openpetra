@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             /* load available ledgers into listbox */
             DataTable LedgerTable;
 
-            TRemote.MFinance.Cacheable.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out LedgerTable);
+            TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out LedgerTable);
 
             LedgerTable.Columns.Add("Selection", Type.GetType("System.Boolean"));
 

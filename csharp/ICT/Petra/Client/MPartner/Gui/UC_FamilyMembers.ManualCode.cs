@@ -756,7 +756,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             if (NewPersonKey != -1)
                             {
-                                OtherFamilyKey = TRemote.MPartner.Partner.ServerLookups.GetFamilyKeyForPerson(NewPersonKey);
+                                OtherFamilyKey = TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetFamilyKeyForPerson(NewPersonKey);
 
                                 if (OtherFamilyKey == GetFamilyKey())
                                 {

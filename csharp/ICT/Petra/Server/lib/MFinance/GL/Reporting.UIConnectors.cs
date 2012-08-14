@@ -33,58 +33,22 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
+using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
+namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
     ///<summary>
-    /// This UIConnector provides data for the finance reporting screens
-    ///
-    /// UIConnector Objects are instantiated by the Client's User Interface via the
-    /// Instantiator classes.
-    /// They handle requests for data retrieval and saving of data (including data
-    /// verification).
-    ///
-    /// Their role is to
-    ///   - retrieve (and possibly aggregate) data using Business Objects,
-    ///   - put this data into///one* DataSet that is passed to the Client and make
-    ///     sure that no unnessary data is transferred to the Client,
-    ///   - optionally provide functionality to retrieve additional, different data
-    ///     if requested by the Client (for Client screens that load data initially
-    ///     as well as later, eg. when a certain tab on the screen is clicked),
-    ///   - save data using Business Objects.
-    ///
-    /// @Comment These Objects would usually not be instantiated by other Server
-    ///          Objects, but only by the Client UI via the Instantiator classes.
-    ///          However, Server Objects that derive from these objects and that
-    ///          are also UIConnectors are feasible.
+    /// This WebConnector provides data for the finance reporting screens
     ///</summary>
-    public class TFinanceReportingUIConnector : TConfigurableMBRObject, IReportingUIConnector
+    public class TFinanceReportingWebConnector
     {
-        /// constructor
-        public TFinanceReportingUIConnector()
-        {
-        }
-
-        /// <summary>the currently selected ledger</summary>
-        private System.Int32 FLedgerNr;
-
-        /// <summary>
-        /// initialise the object, select the given ledger
-        /// </summary>
-        /// <param name="ALedgerNr"></param>
-        public void SelectLedger(System.Int32 ALedgerNr)
-        {
-            FLedgerNr = ALedgerNr;
-        }
-
         /// <summary>
         /// get the details of the given ledger
         /// </summary>
-        /// <param name="ANumberAccountingPeriods"></param>
-        /// <param name="ANumberForwardingPeriods"></param>
-        /// <param name="ACurrentPeriod"></param>
-        /// <param name="ACurrentYear"></param>
-        public void GetLedgerPeriodDetails(out int ANumberAccountingPeriods,
+        [RequireModulePermission("FINANE-1")]
+        public static void GetLedgerPeriodDetails(
+            int ALedgerNumber,
+            out int ANumberAccountingPeriods,
             out int ANumberForwardingPeriods,
             out int ACurrentPeriod,
             out int ACurrentYear)
@@ -95,7 +59,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
                 TCacheableFinanceTablesEnum.LedgerDetails,
                 "",
                 false,
-                FLedgerNr,
+                ALedgerNumber,
                 out typeofTable);
 
             if (CachedDataTable.Rows.Count > 0)
@@ -120,10 +84,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
         ///
         /// </summary>
         /// <returns>DataTable</returns>
-        public DataTable GetAvailableFinancialYears(System.Int32 ADiffPeriod, out String ADisplayMember, out String AValueMember)
+        [RequireModulePermission("FINANE-1")]
+        public static DataTable GetAvailableFinancialYears(int ALedgerNumber,
+            System.Int32 ADiffPeriod,
+            out String ADisplayMember,
+            out String AValueMember)
         {
             return Ict.Petra.Server.MFinance.GL.WebConnectors.TAccountingPeriodsWebConnector.GetAvailableGLYears(
-                FLedgerNr,
+                ALedgerNumber,
                 ADiffPeriod,
                 false,
                 out ADisplayMember,
@@ -133,10 +101,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
         /// <summary>
         /// Load all the receiving fields
         /// </summary>
-        /// <param name="ADisplayMember"></param>
-        /// <param name="AValueMember"></param>
         /// <returns>Table with the field keys and the field names</returns>
-        public DataTable GetReceivingFields(out String ADisplayMember, out String AValueMember)
+        [RequireModulePermission("FINANE-1")]
+        public static DataTable GetReceivingFields(int ALedgerNumber, out String ADisplayMember, out String AValueMember)
         {
             DataTable ReturnTable = new DataTable();
             String sql;
@@ -170,7 +137,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
             return ReturnTable;
         }
 
-        private string GetReportingCostCentres(ACostCentreTable ACostCentres, string ASummaryCostCentreCode)
+        private static string GetReportingCostCentres(ACostCentreTable ACostCentres, string ASummaryCostCentreCode)
         {
             ACostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
 
@@ -199,7 +166,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
         /// Get all cost centres that report into the given summary cost centre
         /// </summary>
         /// <returns>a CSV list of the reporting cost centres</returns>
-        public string GetReportingCostCentres(String ASummaryCostCentreCode)
+        [RequireModulePermission("FINANE-1")]
+        public static string GetReportingCostCentres(int ALedgerNumber, String ASummaryCostCentreCode)
         {
             System.Type typeofTable = null;
             TCacheable CachePopulator = new TCacheable();
@@ -207,7 +175,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.UIConnectors
                 TCacheableFinanceTablesEnum.CostCentreList,
                 "",
                 false,
-                FLedgerNr,
+                ALedgerNumber,
                 out typeofTable);
 
             return GetReportingCostCentres(CachedDataTable, ASummaryCostCentreCode);

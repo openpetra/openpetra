@@ -311,7 +311,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             string SelectedCostCentres = clbCostCentres.GetCheckedStringList();
 
             SelectedCostCentres = StringHelper.ConcatCSV(SelectedCostCentres,
-                TRemote.MFinance.Reporting.UIConnectors.GetReportingCostCentres(cmbSummaryCostCentres.GetSelectedString()));
+                TRemote.MFinance.Reporting.WebConnectors.GetReportingCostCentres(FLedgerNumber, cmbSummaryCostCentres.GetSelectedString()));
             clbCostCentres.SetCheckedStringList(SelectedCostCentres);
         }
 
