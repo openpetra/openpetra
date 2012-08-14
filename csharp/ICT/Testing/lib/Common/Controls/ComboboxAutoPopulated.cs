@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -99,6 +99,35 @@ namespace Tests.Common.Controls
             cmb.SelectedIndex = 0;
             Assert.AreEqual(cmb.GetSelectedString(), "FIELD");
             Assert.AreEqual(cmb.GetSelectedDescription(), "Field Gift");
+        }
+
+        /// <summary>
+        /// testing labelled combobox. bug #918, SelectedText is not reset when DataSource is changed
+        /// </summary>
+        [Test]
+        public void TestComboboxResettingDataSourceSelectedText()
+        {
+            TCmbLabelled cmb = new TCmbLabelled();
+
+            cmb.cmbCombobox.SetDataSourceStringList("test1,test2,test3,test4");
+
+            Form TestForm = new Form();
+            TestForm.Controls.Add(cmb);
+
+            TestForm.Show();
+
+            Assert.AreEqual(string.Empty, cmb.cmbCombobox.SelectedText, "initially no text is selected");
+
+            cmb.SetSelectedString("test3");
+            Assert.AreEqual("test3", cmb.cmbCombobox.Text, "test3 should be displayed");
+
+            cmb.cmbCombobox.SetDataSourceStringList("test8,test9,test10");
+            Assert.AreEqual(string.Empty, cmb.cmbCombobox.Text, "after resetting of datasource, no value should be selected");
+
+            cmb.SetSelectedString("test3");
+            cmb.cmbCombobox.DataSource = new DataTable().DefaultView;
+            Assert.AreEqual(-1, cmb.cmbCombobox.SelectedIndex, "after resetting of datasource with dataview, selectedindex should be -1");
+            Assert.AreEqual(string.Empty, cmb.cmbCombobox.Text, "after resetting of datasource to dataview, no value should be selected");
         }
     }
 }
