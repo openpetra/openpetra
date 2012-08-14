@@ -2735,21 +2735,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     switch (AUIConnectorType)
                     {
                         case TUIConnectorType.uictPartnerKey:
-                            FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey,
-                            ref FMainDS,
-                            TClientSettings.DelayedDataLoading,
-                            FInitiallySelectedTabPage);
+                            FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey);
+                            FMainDS = FPartnerEditUIConnector.GetData(TClientSettings.DelayedDataLoading, FInitiallySelectedTabPage);
                             break;
 
                         case TUIConnectorType.uictLocationKey:
 
                             // MessageBox.Show('Passed in FLocationKeyForSelectingPartnerLocation: ' + FLocationKeyForSelectingPartnerLocation.toString);
                             FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey,
-                            FSiteKeyForSelectingPartnerLocation,
-                            FLocationKeyForSelectingPartnerLocation,
-                            ref FMainDS,
-                            TClientSettings.DelayedDataLoading,
-                            FInitiallySelectedTabPage);
+                                FSiteKeyForSelectingPartnerLocation,
+                                FLocationKeyForSelectingPartnerLocation);
+                            FMainDS = FPartnerEditUIConnector.GetData(TClientSettings.DelayedDataLoading, FInitiallySelectedTabPage);
                             break;
 
                         case TUIConnectorType.uictNewPartner:

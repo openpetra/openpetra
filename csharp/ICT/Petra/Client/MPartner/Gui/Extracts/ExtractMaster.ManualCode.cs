@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 ReplaceAddress = false;
 
                 // check if the partner record still exists, otherwise remove from extract
-                if (!TRemote.MPartner.Partner.ServerLookups.VerifyPartner(Row.PartnerKey))
+                if (!TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartner(Row.PartnerKey))
                 {
                     if (!DontShowPartnerRemovePartnerKeyNonExistent)
                     {
@@ -173,7 +173,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
                 else
                 {
-                    AddressExists = TRemote.MPartner.Partner.ServerLookups.VerifyPartnerAtLocation
+                    AddressExists = TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation
                                         (Row.PartnerKey, new TLocationPK(Row.SiteKey, Row.LocationKey), out AddressNeitherCurrentNorMailing);
 
                     if (!AddressExists)
