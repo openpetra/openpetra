@@ -470,6 +470,14 @@ namespace {#NAMESPACE}
 		}
 
 		int rowIndexToDelete = grdDetails.SelectedRowIndex();
+
+        if (rowIndexToDelete == -1)
+        {
+        	MessageBox.Show(Catalog.GetString("There is no row currently selected in the grid."),
+        	               Catalog.GetString("Delete Row"));
+        	return;
+        }
+
 		{#DETAILTABLETYPE}Row rowToDelete = GetSelectedDetailRow();
 		
 		{#PREDELETEMANUAL}
