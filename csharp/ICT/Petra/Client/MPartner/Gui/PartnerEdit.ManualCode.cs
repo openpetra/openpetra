@@ -2743,8 +2743,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             // MessageBox.Show('Passed in FLocationKeyForSelectingPartnerLocation: ' + FLocationKeyForSelectingPartnerLocation.toString);
                             FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey,
-                                FSiteKeyForSelectingPartnerLocation,
-                                FLocationKeyForSelectingPartnerLocation);
+                            FSiteKeyForSelectingPartnerLocation,
+                            FLocationKeyForSelectingPartnerLocation);
                             FMainDS = FPartnerEditUIConnector.GetData(TClientSettings.DelayedDataLoading, FInitiallySelectedTabPage);
                             break;
 
