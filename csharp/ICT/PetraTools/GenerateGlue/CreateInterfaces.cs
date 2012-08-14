@@ -130,15 +130,15 @@ public class CreateInterfaces : AutoGenerationWriter
 
             foreach (PropertyDeclaration p in CSParser.GetProperties(t))
             {
+                if (TCollectConnectorInterfaces.IgnoreMethod(p.Attributes, p.Modifier))
+                {
+                    continue;
+                }
+
                 if (!p.GetRegion.Block.ToString().Contains("TCreateRemotableObject"))
                 {
                     TLogging.Log("Warning: properties in UIConnectors must use the class TCreateRemotableObject: " +
                         AServerNamespace + "." + t.Name + "." + p.Name);
-                }
-
-                if (TCollectConnectorInterfaces.IgnoreMethod(p.Attributes, p.Modifier))
-                {
-                    continue;
                 }
 
                 // don't write namespace hierarchy here
