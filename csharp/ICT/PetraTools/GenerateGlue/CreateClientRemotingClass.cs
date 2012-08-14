@@ -54,7 +54,7 @@ class TCreateClientRemotingClass : AutoGenerationWriter
         string AInterfaceName,
         List <TypeDeclaration>ATypeImplemented,
         string AFullNamespace = "",
-        List <TNamespace>AChildrenNamespaces = null)
+        SortedList <string, TNamespace>AChildrenNamespaces = null)
     {
         if (ClientRemotingClassTemplate == null)
         {
@@ -201,9 +201,11 @@ class TCreateClientRemotingClass : AutoGenerationWriter
         }
     }
 
-    private static void InsertSubnamespaces(ProcessTemplate template, string AFullNamespace, List <TNamespace>ASubNamespaces)
+    private static void InsertSubnamespaces(ProcessTemplate template,
+        string AFullNamespace,
+        SortedList <string, TNamespace>ASubNamespaces)
     {
-        foreach (TNamespace t in ASubNamespaces)
+        foreach (TNamespace t in ASubNamespaces.Values)
         {
             ProcessTemplate propertySnippet = ClientRemotingClassTemplate.GetSnippet("PROPERTY");
 

@@ -366,14 +366,14 @@ public class CreateInterfaces : AutoGenerationWriter
         string AInterfaceName,
         TNamespace tn,
         TNamespace sn,
-        List <TNamespace>children,
+        SortedList <string, TNamespace>children,
         SortedList InterfaceNames,
         List <CSParser>ACSFiles)
     {
         WriteLine("/// <summary>auto generated</summary>");
         StartBlock("public interface " + AInterfaceName + " : IInterface");
 
-        foreach (TNamespace child in children)
+        foreach (TNamespace child in children.Values)
         {
             WriteLine("/// <summary>access to sub namespace</summary>");
             StartBlock("I" + ParentInterfaceName + child.Name + "Namespace " + child.Name);
@@ -482,7 +482,7 @@ public class CreateInterfaces : AutoGenerationWriter
         String ParentInterfaceName,
         TNamespace tn,
         TNamespace sn,
-        List <TNamespace>children,
+        SortedList <string, TNamespace>children,
         SortedList InterfaceNames,
         List <CSParser>ACSFiles)
     {
@@ -506,7 +506,7 @@ public class CreateInterfaces : AutoGenerationWriter
                 tn, sn, children, InterfaceNames, ACSFiles);
         }
 
-        foreach (TNamespace child in children)
+        foreach (TNamespace child in children.Values)
         {
             WriteNamespace(ParentNamespace + "." + child.Name,
                 ParentInterfaceName + child.Name,
@@ -528,7 +528,7 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine("/// <summary>auto generated</summary>");
         StartBlock("public interface IM" + tn.Name + "Namespace : IInterface");
 
-        foreach (TNamespace sn in tn.Children)
+        foreach (TNamespace sn in tn.Children.Values)
         {
             WriteLine("/// <summary>access to sub namespace</summary>");
             StartBlock("I" + sn.Name + "Namespace " + sn.Name);
@@ -539,7 +539,7 @@ public class CreateInterfaces : AutoGenerationWriter
         EndBlock();
 
         // parse Instantiator source code
-        foreach (TNamespace sn in tn.Children)
+        foreach (TNamespace sn in tn.Children.Values)
         {
             WriteNamespace("Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, tn, sn, sn.Children, AInterfaceNames, ACSFiles);
         }
@@ -574,8 +574,7 @@ public class CreateInterfaces : AutoGenerationWriter
     /// </summary>
     /// <param name="tn"></param>
     /// <param name="AOutputPath"></param>
-    /// <param name="AXmlFileName"></param>
-    private void WriteInterfaces(TNamespace tn, String AOutputPath, String AXmlFileName)
+    private void WriteInterfaces(TNamespace tn, String AOutputPath)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + tn.Name + ".Interfaces-generated.cs";
 
@@ -583,9 +582,8 @@ public class CreateInterfaces : AutoGenerationWriter
         Console.WriteLine("working on file " + OutputFile);
 
         OpenFile(OutputFile);
-        WriteLine("// Auto generated with nant generateGlue, based on " +
-            Path.GetFullPath(AXmlFileName).Substring(Path.GetFullPath(AXmlFileName).IndexOf("csharp")));
-        WriteLine("// and the Server c# files (eg. UIConnector implementations)");
+        WriteLine("// Auto generated with nant generateGlue");
+        WriteLine("// based on the Server c# files (eg. UIConnector implementations)");
         WriteLine("// Do not change this file manually.");
         WriteLine("//");
 
@@ -631,16 +629,15 @@ public class CreateInterfaces : AutoGenerationWriter
     /// </summary>
     /// <param name="ANamespaces"></param>
     /// <param name="AOutputPath"></param>
-    /// <param name="AXmlFileName"></param>
-    public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName)
+    public void CreateFiles(TNamespace ANamespaces, String AOutputPath)
     {
-        foreach (TNamespace tn in ANamespaces)
+        foreach (TNamespace tn in ANamespaces.Children.Values)
         {
             string module = TAppSettingsManager.GetValue("module", "all");
 
             if ((module == "all") || (tn.Name == module))
             {
-                WriteInterfaces(tn, AOutputPath, AXmlFileName);
+                WriteInterfaces(tn, AOutputPath);
             }
         }
     }

@@ -239,12 +239,12 @@ class TCreateConnectors
         String FullNamespace,
         String Classname,
         String Namespace,
-        List <TNamespace>children,
+        SortedList <string, TNamespace>children,
         SortedList <string, TypeDeclaration>connectors)
     {
         if (children.Count > 0)
         {
-            foreach (TNamespace sn in children)
+            foreach (TNamespace sn in children.Values)
             {
                 WriteConnectorClass(
                     ATemplate,
@@ -280,7 +280,7 @@ class TCreateConnectors
         return ATemplate;
     }
 
-    private void CreateConnectors(TNamespace tn, String AOutputPath, String AXmlFileName, String ATemplateDir)
+    private void CreateConnectors(TNamespace tn, String AOutputPath, String ATemplateDir)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
                             Path.DirectorySeparatorChar + "Instantiator.Connectors-generated.cs";
@@ -316,7 +316,7 @@ class TCreateConnectors
 
         Template.SetCodelet("CONNECTORCLASSES", string.Empty);
 
-        foreach (TNamespace sn in tn.Children)
+        foreach (TNamespace sn in tn.Children.Values)
         {
             WriteConnectorClass(
                 Template,
@@ -335,17 +335,17 @@ class TCreateConnectors
         Template.FinishWriting(OutputFile, ".cs", true);
     }
 
-    public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
+    public void CreateFiles(TNamespace ANamespaces, String AOutputPath, String ATemplateDir)
     {
         FTemplateDir = ATemplateDir;
 
-        foreach (TNamespace tn in ANamespaces)
+        foreach (TNamespace tn in ANamespaces.Children.Values)
         {
             string module = TAppSettingsManager.GetValue("module", "all");
 
             if ((module == "all") || (tn.Name == module))
             {
-                CreateConnectors(tn, AOutputPath, AXmlFileName, ATemplateDir);
+                CreateConnectors(tn, AOutputPath, ATemplateDir);
             }
         }
     }

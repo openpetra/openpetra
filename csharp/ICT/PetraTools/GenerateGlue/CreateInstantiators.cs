@@ -59,7 +59,7 @@ class CreateInstantiators
         String Classname,
         String Namespace,
         Boolean HighestLevel,
-        List <TNamespace>children,
+        SortedList <string, TNamespace>children,
         SortedList <string, TypeDeclaration>connectors)
     {
         if ((children.Count == 0) && !HighestLevel)
@@ -76,7 +76,7 @@ class CreateInstantiators
         remotableClassSnippet.SetCodelet("CLIENTOBJECTFOREACHPROPERTY", string.Empty);
         remotableClassSnippet.SetCodelet("SUBNAMESPACEPROPERTIES", string.Empty);
 
-        foreach (TNamespace sn in children)
+        foreach (TNamespace sn in children.Values)
         {
             ProcessTemplate subNamespaceSnippet = ATemplate.GetSnippet("SUBNAMESPACEPROPERTY");
 
@@ -96,7 +96,7 @@ class CreateInstantiators
             if (sn.Children.Count > 0)
             {
                 // properties for each sub namespace
-                foreach (TNamespace subnamespace in sn.Children)
+                foreach (TNamespace subnamespace in sn.Children.Values)
                 {
                     ATemplate.InsertSnippet("SUBNAMESPACEREMOTABLECLASSES",
                         WriteRemotableClass(ATemplate,
@@ -133,7 +133,7 @@ class CreateInstantiators
         return remotableClassSnippet;
     }
 
-    private void CreateAutoHierarchy(TNamespace tn, String AOutputPath, String AXmlFileName)
+    private void CreateAutoHierarchy(TNamespace tn, String AOutputPath)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + "M" + tn.Name +
                             Path.DirectorySeparatorChar + "Instantiator.AutoHierarchy-generated.cs";
@@ -179,7 +179,7 @@ class CreateInstantiators
                 tn.Children,
                 connectors));
 
-        foreach (TNamespace sn in tn.Children)
+        foreach (TNamespace sn in tn.Children.Values)
         {
             topLevelNamespaceSnippet.InsertSnippet("SUBNAMESPACEREMOTABLECLASSES",
                 WriteRemotableClass(
@@ -197,17 +197,17 @@ class CreateInstantiators
         Template.FinishWriting(OutputFile, ".cs", true);
     }
 
-    public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName, String ATemplateDir)
+    public void CreateFiles(TNamespace ANamespaces, String AOutputPath, String ATemplateDir)
     {
         FTemplateDir = ATemplateDir;
 
-        foreach (TNamespace tn in ANamespaces)
+        foreach (TNamespace tn in ANamespaces.Children.Values)
         {
             string module = TAppSettingsManager.GetValue("module", "all");
 
             if ((module == "all") || (tn.Name == module))
             {
-                CreateAutoHierarchy(tn, AOutputPath, AXmlFileName);
+                CreateAutoHierarchy(tn, AOutputPath);
             }
         }
     }

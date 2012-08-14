@@ -113,6 +113,15 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
+        /// get all namespaces in the current file
+        /// </summary>
+        /// <returns></returns>
+        public List <NamespaceDeclaration>GetNamespaces()
+        {
+            return CSParser.GetNamespaces(this.cu);
+        }
+
+        /// <summary>
         /// get all the namespaces from the file
         /// </summary>
         /// <returns></returns>
@@ -528,6 +537,7 @@ namespace Ict.Tools.CodeGeneration
         }
 
         private static Hashtable _CSFilesPerDir = new Hashtable();
+        private static SortedList <string, CSParser>FParsedFiles = new SortedList <string, CSParser>();
 
         /// <summary>
         /// Returns CSParser instances for the cs files in the given directory.
@@ -548,7 +558,12 @@ namespace Ict.Tools.CodeGeneration
                 {
                     if (!filename.EndsWith("-generated.cs") || filename.EndsWith("Cacheable-generated.cs"))
                     {
-                        CSFiles.Add(new CSParser(filename));
+                        if (!FParsedFiles.ContainsKey(filename))
+                        {
+                            FParsedFiles.Add(filename, new CSParser(filename));
+                        }
+
+                        CSFiles.Add(FParsedFiles[filename]);
                     }
                 }
 
