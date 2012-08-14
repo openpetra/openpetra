@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,19 +46,19 @@ namespace Ict.Petra.Server.App.Core
     public class TClientAppDomainConnection : TClientAppDomainConnectionBase
     {
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MCOMMON_DLLNAME = "Ict.Petra.Server.lib.MCommon";
+        public const String MCOMMON_DLLNAME = "Ict.Petra.Server.lib.MCommon.connect";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MCOMMON_CLASSNAME = "Ict.Petra.Server.MCommon.Instantiator.TMCommonNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MCONFERENCE_DLLNAME = "Ict.Petra.Server.lib.MConference";
+        public const String MCONFERENCE_DLLNAME = "Ict.Petra.Server.lib.MConference.connect";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MCONFERENCE_CLASSNAME = "Ict.Petra.Server.MConference.Instantiator.TMConferenceNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MSYSMAN_DLLNAME = "Ict.Petra.Server.lib.MSysMan";
+        public const String MSYSMAN_DLLNAME = "Ict.Petra.Server.lib.MSysMan.connect";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MSYSMAN_CLASSNAME = "Ict.Petra.Server.MSysMan.Instantiator.TMSysManNamespaceLoader";
@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.App.Core
         public const String MPARTNER_CLASSNAME = "Ict.Petra.Server.MPartner.Instantiator.TMPartnerNamespaceLoader";
 
         /// <summary>need to leave out '.dll' suffix so that .NET can find the Assembly!</summary>
-        public const String MPERSONNEL_DLLNAME = "Ict.Petra.Server.lib.MPersonnel";
+        public const String MPERSONNEL_DLLNAME = "Ict.Petra.Server.lib.MPersonnel.connect";
 
         /// <summary>need to leave out the last part of the Namespace so that .NET can find the Class!</summary>
         public const String MPERSONNEL_CLASSNAME = "Ict.Petra.Server.MPersonnel.Instantiator.TMPersonnelNamespaceLoader";

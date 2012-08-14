@@ -272,8 +272,15 @@ namespace Ict.Common.Remoting.Server
             // end;
             // $ENDIF
 
+            if (RemoteClass == null)
+            {
+                string msg = "cannot find type " + ARemoteType + " in " + AAssemblyDLLName;
+                TLogging.Log(msg);
+                throw new Exception(msg);
+            }
+
 //			#if DEBUGMODE
-//			Console.WriteLine("Creating Instance of " + RemoteType + " in Client's AppDomain...");
+//			TLogging.Log("Creating Instance of " + RemoteClass.Name + " in Client's AppDomain...");
 //			#endif
 
             object Instantiator = Activator.CreateInstance(RemoteClass,
