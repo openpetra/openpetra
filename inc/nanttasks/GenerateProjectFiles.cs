@@ -465,7 +465,6 @@ namespace Ict.Tools.NAntTasks
 
                             if (filenameWithForwardSlashes.EndsWith("/data/" + Path.GetFileName(filename)))
                             {
-                                Console.WriteLine(filenameWithForwardSlashes);
                                 fileList += GetAdditionalSolutionFile(solutionFolderName,
                                     filenameWithForwardSlashes.Substring(
                                         filenameWithForwardSlashes.IndexOf("csharp/ICT/Petra/Shared/") + "csharp/ICT/Petra/Shared/".Length));
