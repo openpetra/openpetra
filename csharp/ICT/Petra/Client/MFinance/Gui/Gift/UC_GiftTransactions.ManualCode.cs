@@ -50,9 +50,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            if ((FLedgerNumber != -1) && (FBatchNumber != -1))
+        	if ((FLedgerNumber != -1) && (FBatchNumber != -1) && (FBatchNumber == ABatchNumber))
             {
                 GetDataFromControls();
+                return;
             }
 
             FLedgerNumber = ALedgerNumber;
@@ -719,7 +720,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewGiftDetail(System.Object sender, EventArgs e)
         {
-			//If grid is empty caLL NewGift() instead
+			//If grid is empty call NewGift() instead
 			if (grdDetails.Rows.Count == 1)
 			{
 				NewGift(sender, e);
@@ -853,6 +854,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 txtDetailGiftTransactionAmount.CurrencySymbol = batchRow.CurrencyCode;
                 txtBatchStatus.Text = batchRow.BatchStatus;
+                pnlDetails.Enabled = (batchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
             }
 
             if (grdDetails.Rows.Count == 1)

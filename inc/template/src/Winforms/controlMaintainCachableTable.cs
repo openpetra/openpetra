@@ -267,10 +267,10 @@ namespace {#NAMESPACE}
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
+        pnlDetails.Enabled = false;
 {#IFDEF SHOWDATA}        
         {#SHOWDATA}
 {#ENDIF SHOWDATA}        
-        pnlDetails.Enabled = false;
         if (FMainDS.{#DETAILTABLE} != null)
         {
             DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
@@ -410,8 +410,8 @@ namespace {#NAMESPACE}
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            {#SHOWDETAILS}
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            {#SHOWDETAILS}
         }
 
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -540,8 +540,8 @@ namespace {#NAMESPACE}
 	
 	            // Display the details of the currently selected Row
 	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-	            ShowDetails(FPreviouslySelectedDetailRow);
 	            pnlDetails.Enabled = true;
+	            ShowDetails(FPreviouslySelectedDetailRow);
 	    	}
 	    	else if (FDetailGridRowsChangedState == 1) //Addition
 	    	{
@@ -560,8 +560,8 @@ namespace {#NAMESPACE}
                 	// Select and display the details of the currently selected Row without causing an event
                     grdDetails.SelectRowInGrid(nextRowToSelect, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                    ShowDetails(FPreviouslySelectedDetailRow);
                     pnlDetails.Enabled = true;
+                    ShowDetails(FPreviouslySelectedDetailRow);
                 }
                 else
                 {
