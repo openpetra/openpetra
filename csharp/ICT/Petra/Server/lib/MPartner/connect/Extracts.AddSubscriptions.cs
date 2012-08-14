@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       petrih
+//       petrih, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,8 +32,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Extracts;
-using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -84,24 +83,13 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         {
             get
             {
-                IAsynchronousExecutionProgress ReturnValue;
-
-                ReturnValue = FAsyncExecProgress;
-
                 if (FSubmitException == null)
                 {
-                    if (ReturnValue.ProgressPercentage >= MAX_PERCENTAGE_CHECKS)
+                    if (FAsyncExecProgress.ProgressPercentage >= MAX_PERCENTAGE_CHECKS)
                     {
-#if DEBUGMODE
-                        if (TLogging.DL >= 8)
-                        {
-                            Console.WriteLine("TTypedDataAccess.RowCount: " + TTypedDataAccess.RowCount.ToString());
-                        }
-#endif
-
                         if ((FSubmissionDT.Rows.Count > 0) && (TTypedDataAccess.RowCount > 0))
                         {
-                            ReturnValue.ProgressPercentage =
+                            FAsyncExecProgress.ProgressPercentage =
                                 (Int16)(MAX_PERCENTAGE_CHECKS +
                                         Convert.ToInt16(((double)(TTypedDataAccess.RowCount) /
                                                          (double)(FSubmissionDT.Rows.Count)) * (100 - MAX_PERCENTAGE_CHECKS)));
@@ -113,7 +101,10 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     throw FSubmitException;
                 }
 
-                return ReturnValue;
+                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAsynchronousExecutionProgress),
+                    typeof(TAsynchronousExecutionProgressRemote),
+                    FAsyncExecProgress);
             }
         }
 

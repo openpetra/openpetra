@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,9 +27,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading;
 using System.Runtime.Remoting;
-using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Client;
 using Tests.IctCommonRemoting.Service;
 using Tests.IctCommonRemoting.Interface;
 
@@ -38,8 +39,10 @@ namespace Tests.IctCommonRemoting.Service
     /// <summary>
     /// the test service
     /// </summary>
-    public class TMyService : MarshalByRefObject, IMyService
+    public class TMyService : TConfigurableMBRObject, IMyService
     {
+        private TMySubNamespaceRemote FSubNamespace = null;
+
         /// <summary>
         /// print hello world
         /// </summary>
@@ -70,6 +73,79 @@ namespace Tests.IctCommonRemoting.Service
             outDate = date;
             return date;
         }
+
+        /// <summary>
+        /// test
+        /// </summary>
+        public IMySubNamespace SubNamespace
+        {
+            get
+            {
+                if (FSubNamespace == null)
+                {
+                    // need to calculate the URI for this object and pass it to the new namespace object
+                    string ObjectURI = TConfigurableMBRObject.BuildRandomURI("TMySubNamespace");
+                    TMySubNamespace ObjectToRemote = new TMySubNamespace();
+
+                    // we need to add the service in the main domain
+                    DomainManagerBase.UClientManagerCallForwarderRef.AddCrossDomainService(
+                        DomainManagerBase.GClientID.ToString(), ObjectURI, ObjectToRemote);
+
+                    FSubNamespace = new TMySubNamespaceRemote(ObjectURI);
+                }
+
+                return FSubNamespace;
+            }
+        }
+    }
+
+    /// <summary>
+    /// this object is needed because we need another remoted object for sub namespaces
+    /// </summary>
+    public class TMySubNamespace : TConfigurableMBRObject, IMySubNamespace
+    {
+        /// print hello sub world
+        public string HelloSubWorld(string msg)
+        {
+            TLogging.Log(msg);
+            return "HelloSubWorld from the server!!!";
+        }
+    }
+
+    /// <summary>
+    /// serializable, which means that this object is executed on the client side
+    /// </summary>
+    [Serializable]
+    public class TMySubNamespaceRemote : IMySubNamespace
+    {
+        private IMySubNamespace RemoteObject = null;
+        private string FObjectURI;
+
+        /// <summary>
+        /// constructor. get remote object
+        /// </summary>
+        public TMySubNamespaceRemote(string AObjectURI)
+        {
+            FObjectURI = AObjectURI;
+            TLogging.Log(" in appdomain " + Thread.GetDomain().FriendlyName);
+        }
+
+        private void InitRemoteObject()
+        {
+            TLogging.Log("InitRemoteObject in appdomain " + Thread.GetDomain().FriendlyName);
+            RemoteObject = (IMySubNamespace)TConnector.TheConnector.GetRemoteObject(FObjectURI, typeof(IMySubNamespace));
+        }
+
+        /// print hello sub world
+        public string HelloSubWorld(string msg)
+        {
+            if (RemoteObject == null)
+            {
+                InitRemoteObject();
+            }
+
+            return RemoteObject.HelloSubWorld(msg);
+        }
     }
 }
 
@@ -83,8 +159,8 @@ namespace Tests.IctCommonRemoting.Instantiator
     {
         /// <summary>URL at which the remoted object can be reached</summary>
         private String FRemotingURL;
-        /// <summary>holds reference to the TMyService object</summary>
-        private ObjRef FRemotedObject;
+
+        private ICrossDomainService FRemotedObject;
 
         /// <summary>Constructor</summary>
         public TMyServiceNamespaceLoader()
@@ -112,46 +188,23 @@ namespace Tests.IctCommonRemoting.Instantiator
         /// <returns>The URL at which the remoted object can be reached.</returns>
         public String GetRemotingURL()
         {
-            TMyService RemotedObject;
-            DateTime RemotingTime;
-            String RemoteAtURI;
-            String RandomString;
-
-            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-            Byte rndbytespos;
-            Byte[] rndbytes = new Byte[5];
-
-#if DEBUGMODE
             if (TLogging.DL >= 9)
             {
                 Console.WriteLine("TMyServiceNamespaceLoader.GetRemotingURL in AppDomain: " + Thread.GetDomain().FriendlyName);
             }
-#endif
 
-            RandomString = "";
-            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rnd.GetBytes(rndbytes);
-
-            for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
-            {
-                RandomString = RandomString + rndbytes[rndbytespos].ToString();
-            }
-
-            RemotingTime = DateTime.Now;
-            RemotedObject = new TMyService();
-            RemoteAtURI = (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                          (RemotingTime.Second).ToString() + '_' + RandomString.ToString();
-            FRemotedObject = RemotingServices.Marshal(RemotedObject, RemoteAtURI, typeof(IMyService));
-            FRemotingURL = RemoteAtURI; // FRemotedObject.URI;
-
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine("TMyService.URI: " + FRemotedObject.URI);
-            }
-#endif
+            FRemotedObject = new TMyService();
+            FRemotingURL = BuildRandomURI("TMyService");
 
             return FRemotingURL;
+        }
+
+        /// <summary>
+        /// get the object to be remoted
+        /// </summary>
+        public ICrossDomainService GetRemotedObject()
+        {
+            return FRemotedObject;
         }
     }
 }

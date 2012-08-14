@@ -43,7 +43,7 @@ using Ict.Common.Conversion;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 #endregion ManualCode
@@ -90,7 +90,10 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
             get
             {
-                return FAsyncExecProgress;
+                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAsynchronousExecutionProgress),
+                    typeof(TAsynchronousExecutionProgressRemote),
+                    FAsyncExecProgress);
             }
         }
 

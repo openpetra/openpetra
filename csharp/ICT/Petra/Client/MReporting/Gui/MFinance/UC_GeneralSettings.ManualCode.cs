@@ -73,8 +73,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             FLedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
 
-            TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
-
             txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
             int SelectedIndex = cmbPeriodYear.SelectedIndex;

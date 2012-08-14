@@ -36,7 +36,7 @@ using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.Interfaces.MFinance.AP.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP

@@ -319,7 +319,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             // TODO: use cached table for transaction types? use filter to get only appropriate types for subsystem?
             TTypedDataTable Table;
 
-            TRemote.MCommon.DataReader.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
+            TRemote.MCommon.DataReader.WebConnectors.GetData(TTypedDataTable.GetTableNameSQL(ATransactionTypeTable.TableId),
                 new TSearchCriteria[] {
                     new TSearchCriteria(TTypedDataTable.GetColumnNameSQL(ATransactionTypeTable.TableId,
                             ATransactionTypeTable.ColumnLedgerNumberId), ALedgerNumber),

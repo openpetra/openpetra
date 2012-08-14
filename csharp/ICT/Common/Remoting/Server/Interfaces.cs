@@ -159,8 +159,6 @@ namespace Ict.Common.Remoting.Server
         ///
         /// </summary>
         /// <param name="AClientID">ClientID as assigned by the ClientManager</param>
-        /// <param name="ARemotingPort">IP Port on which the .NET Remoting TCP Channel should
-        /// be set up</param>
         /// <param name="AClientServerConnectionType">Tells in which way the Client connected
         /// to the PetraServer</param>
         /// <param name="AClientManagerRef">A reference to the ClientManager object
@@ -177,7 +175,6 @@ namespace Ict.Common.Remoting.Server
         /// ClientTasks.</param>
         /// <returns>void</returns>
         void LoadDomainManagerAssembly(Int32 AClientID,
-            Int16 ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
             object ASystemDefaultsCacheRef,
@@ -188,7 +185,7 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// load the assemblies for the modules
         /// </summary>
-        void LoadAssemblies(IPrincipal AUserInfo, ref Hashtable ARemotingURLs);
+        void LoadAssemblies(string AClientID, IPrincipal AUserInfo, ref Hashtable ARemotingURLs);
 
         /// <summary>
         /// close the database connection

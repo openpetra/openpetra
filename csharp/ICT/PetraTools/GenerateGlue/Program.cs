@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,7 +38,7 @@ namespace Ict.Tools.GenerateGlue
     class Program
     {
         private static String sampleCall =
-            "GenerateSharedCode -ymlfile:..\\..\\..\\Petra\\Definitions\\NamespaceHierarchy.yml -outputdir:..\\..\\..\\Petra\\ -TemplateDir:..\\..\\..\\PetraTools\\Templates\\ClientServerGlue\\";
+            "GenerateSharedCode -outputdir:..\\..\\..\\Petra\\ -TemplateDir:..\\..\\..\\PetraTools\\Templates\\ClientServerGlue\\";
 
         public static void Main(string[] args)
         {
@@ -46,13 +46,11 @@ namespace Ict.Tools.GenerateGlue
 
             new TAppSettingsManager(false);
 
-            String YmlFileName, OutputDir;
+            TLogging.DebugLevel = TAppSettingsManager.GetInt32("debuglevel", 0);
 
-            if (cmd.IsFlagSet("ymlfile"))
-            {
-                YmlFileName = cmd.GetOptValue("ymlfile");
-            }
-            else
+            String OutputDir;
+
+            if (!cmd.IsFlagSet("TemplateDir"))
             {
                 Console.WriteLine("call: " + sampleCall);
                 return;
@@ -78,20 +76,16 @@ namespace Ict.Tools.GenerateGlue
                 return;
             }
 
-            List <TNamespace>namespaces;
+            TNamespace namespaceRoot;
 
             try
             {
-                TYml2Xml ymlParser = new TYml2Xml(YmlFileName);
-                XmlDocument xmlDoc = ymlParser.ParseYML2XML();
+                Console.WriteLine("parsing all cs files for namespaces...");
+                namespaceRoot = TNamespace.ParseFromDirectory(OutputDir + "/Server/lib/");
 
-                // Preferred approach in .NET 2.0:
-                // ->  returns a Strongly Typed List of Type 'TNamespace'.
-                namespaces = TNamespace.ReadFromFile(xmlDoc);
-
-                if (namespaces.Count < 1)
+                if (namespaceRoot.Children.Count < 1)
                 {
-                    Console.WriteLine("problems with reading " + YmlFileName);
+                    Console.WriteLine("problems with parsing namespaces from " + OutputDir + "/Server/lib/");
                     return;
                 }
             }
@@ -105,9 +99,11 @@ namespace Ict.Tools.GenerateGlue
             try
             {
                 CreateInterfaces interfaces = new CreateInterfaces();
-                interfaces.CreateFiles(namespaces, OutputDir + "/Shared/lib/Interfaces", YmlFileName);
+                interfaces.CreateFiles(namespaceRoot, OutputDir + "/Shared/lib/Interfaces");
                 CreateInstantiators instantiators = new CreateInstantiators();
-                instantiators.CreateFiles(namespaces, OutputDir + "/Server/lib", YmlFileName, cmd.GetOptValue("TemplateDir"));
+                instantiators.CreateFiles(namespaceRoot, OutputDir + "/Server/lib", cmd.GetOptValue("TemplateDir"));
+                TCreateConnectors connectors = new TCreateConnectors();
+                connectors.CreateFiles(namespaceRoot, OutputDir + "/Server/lib", cmd.GetOptValue("TemplateDir"));
             }
             catch (Exception e)
             {

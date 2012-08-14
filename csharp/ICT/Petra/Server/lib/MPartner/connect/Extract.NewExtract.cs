@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,8 +28,7 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
-using Ict.Petra.Shared.Interfaces.MPartner.Extracts.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
 {

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,14 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
-
 using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MSysMan.Security
+namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 {
     /// <summary>
     /// The TUserManager class provides access to the security-related information
@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MSysMan.Security
     /// because it is needed before the appdomain is loaded and therefore cannot be in MSysMan;
     /// and it is needed here to make it available to the client via MSysMan remotely
     /// </remarks>
-    public class TUserManager
+    public class TUserManagerWebConnector
     {
         /// <summary>
         /// use Server.App.Core.Security.TUserManager.LoadUser
@@ -52,6 +52,7 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="AUserID"></param>
         /// <param name="APetraPrincipal"></param>
         /// <returns></returns>
+        [NoRemoting]
         public static SUserRow LoadUser(String AUserID, ref TPetraPrincipal APetraPrincipal)
         {
             return Ict.Petra.Server.App.Core.Security.TUserManager.LoadUser(AUserID, out APetraPrincipal);
@@ -63,6 +64,7 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="AUserID"></param>
         /// <param name="APetraIdentity"></param>
         /// <returns></returns>
+        [NoRemoting]
         public static SUserRow LoadUser(String AUserID, ref Ict.Petra.Shared.Security.TPetraIdentity APetraIdentity)
         {
             return Ict.Petra.Server.App.Core.Security.TUserManager.LoadUser(AUserID, out APetraIdentity);
@@ -76,6 +78,7 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="AProcessID"></param>
         /// <param name="ASystemEnabled"></param>
         /// <returns></returns>
+        [NoRemoting]
         public static TPetraPrincipal PerformUserAuthentication(String AUserID, String APassword, ref Int32 AProcessID, ref Boolean ASystemEnabled)
         {
             Server.App.Core.Security.TUserManager UserManager = new Server.App.Core.Security.TUserManager();
@@ -87,7 +90,7 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// variable.
         ///
         /// </summary>
-        /// <returns>void</returns>
+        [RequireModulePermission("NONE")]
         public static TPetraPrincipal ReloadCachedUserInfo()
         {
             return Ict.Petra.Server.App.Core.Security.TUserManager.ReloadCachedUserInfo();
@@ -100,6 +103,7 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="AUserDataTable"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [NoRemoting]
         public static Boolean SaveUser(String AUserID, SUserTable AUserDataTable, ref TVerificationResultCollection AVerificationResult)
         {
             return Ict.Petra.Server.App.Core.Security.TUserManager.SaveUser(AUserID, AUserDataTable, out AVerificationResult);
@@ -112,7 +116,7 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// </summary>
         /// <param name="AUserID">UserID for which the ClientTask should be queued
         /// </param>
-        /// <returns>void</returns>
+        [RequireModulePermission("NONE")]
         public static void SignalReloadCachedUserInfo(String AUserID)
         {
             // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine(this.GetType.FullName + '.SignalReloadCachedUserInfo: calling DomainManager.ClientTaskAddToOtherClient...'); $ENDIF

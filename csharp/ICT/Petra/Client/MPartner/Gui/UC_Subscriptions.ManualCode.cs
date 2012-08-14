@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangb
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,8 +30,7 @@ using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,8 +33,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Extracts;
@@ -58,16 +57,10 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         Thread FFindThread;
 
         /// <summary>Returns reference to the Asynchronous execution control object to the caller</summary>
-        public IAsynchronousExecutionProgress AsyncExecProgress
+        public TAsynchronousExecutionProgress AsyncExecProgress
         {
             get
             {
-#if DEBUGMODE
-                if (TLogging.DL >= 7)
-                {
-                    Console.WriteLine("TPartnerFindUIConnector: AsyncExecProgress requested.");
-                }
-#endif
                 return FAsyncExecProgress;
             }
         }

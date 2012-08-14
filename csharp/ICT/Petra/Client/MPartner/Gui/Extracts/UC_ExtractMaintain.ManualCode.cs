@@ -455,7 +455,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 {
                     TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-                    if (!TRemote.MPartner.Partner.ServerLookups.VerifyPartnerAtLocation(
+                    if (!TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation(
                             SelectedRow.PartnerKey,
                             new TLocationPK(SelectedRow.SiteKey, SelectedRow.LocationKey),
                             out CurrentOrMailingAddress))
@@ -531,7 +531,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             return;
                         }
 
-                        TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(
+                        TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
                             PartnerKey,
                             out PartnerShortName,
                             out PartnerClass);

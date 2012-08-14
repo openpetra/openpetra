@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataTable ledgerTable;
 
             // TODO: use App.Core.Cache, GetCacheableDataTableFromPetraServer???
-            TRemote.MFinance.Cacheable.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out ledgerTable);
+            TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.LedgerNameList, out ledgerTable);
 
             Int32 countLedgersWithPermissions = 0;
             Int32 defaultLedgerNumber = -1;

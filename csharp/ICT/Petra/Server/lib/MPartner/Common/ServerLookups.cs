@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,9 +39,10 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.Security;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.ServerLookups;
+using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
+namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 {
     /// <summary>
     /// Performs server-side lookups for the Client in the MPartner.ServerLookups
@@ -50,40 +51,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
     /// </summary>
     public class TPartnerServerLookups
     {
-        /// <summary>time when this object was instantiated</summary>
-        private DateTime FStartTime;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public TPartnerServerLookups() : base()
-        {
-#if DEBUGMODE
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + " created: Instance hash is " + this.GetHashCode().ToString());
-            }
-#endif
-            FStartTime = DateTime.Now;
-        }
-
-#if DEBUGMODE
-        /// <summary>
-        /// Destructor
-        /// </summary>
-        ~TPartnerServerLookups()
-        {
-            if (TLogging.DL >= 9)
-            {
-                Console.WriteLine(this.GetType().FullName + ": Getting collected after " + (new TimeSpan(
-                                                                                                DateTime.Now.Ticks -
-                                                                                                FStartTime.Ticks)).ToString() + " seconds.");
-            }
-        }
-#endif
-
-
-
         /// <summary>
         /// Gets the ShortName of a Partner.
         ///
@@ -98,6 +65,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// <returns>true if Partner was found in DB (except if AMergedPartners is false
         /// and Partner is MERGED) or PartnerKey is 0, otherwise false
         /// </returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean GetPartnerShortName(Int64 APartnerKey,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
@@ -124,6 +92,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// <param name="APartnerShortName">ShortName for the found Partner</param>
         /// <param name="APartnerClass">Partner Class of the found Partner</param>
         /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean GetPartnerShortName(Int64 APartnerKey, out String APartnerShortName, out TPartnerClass APartnerClass)
         {
             return GetPartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, true);
@@ -147,6 +116,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// an empty array and the found Partner isn't of a PartnerClass that is in the
         /// Set) or PartnerKey is 0, otherwise false
         /// </returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean VerifyPartner(Int64 APartnerKey,
             TPartnerClass[] AValidPartnerClasses,
             out bool APartnerExists,
@@ -202,6 +172,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// <param name="AUserCanAccessPartner">true if the current user has the rights to
         /// access this partner</param>
         /// <returns>true if Partner was found in DB or Partner key = 0, otherwise false</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean VerifyPartner(Int64 APartnerKey,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
@@ -297,6 +268,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
         /// <returns>true if Partner was found in DB or Partner key = 0, otherwise false</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean VerifyPartner(Int64 APartnerKey)
         {
             TDBTransaction ReadTransaction;
@@ -353,6 +325,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// <param name="ALocationKey">Location Key of Partner to be verified</param>
         /// <param name="AAddressNeitherCurrentNorMailing"></param>
         /// <returns>true if Partner was found in DB at given location, otherwise false</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
             TLocationPK ALocationKey, out bool AAddressNeitherCurrentNorMailing)
         {
@@ -427,6 +400,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// populated if that information is available.)</param>
         /// <returns>True if (1) Merged Partner exists and (2) its Status is MERGED,
         /// otherwise false.</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean MergedPartnerDetails(Int64 AMergedPartnerPartnerKey,
             out String AMergedPartnerPartnerShortName,
             out TPartnerClass AMergedPartnerPartnerClass,
@@ -567,6 +541,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// contains the Partner Information that was requested for the Partner.</param>
         /// <returns>True if Partner was found in DB, otherwise false.
         /// </returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerInfo(Int64 APartnerKey,
             TPartnerInfoScopeEnum APartnerInfoScope,
             out PartnerInfoTDS APartnerInfoDS)
@@ -593,6 +568,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// contains the Partner Information that was requested for the Partner.</param>
         /// <returns>True if Partner was found in DB, otherwise false.
         /// </returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerInfo(Int64 APartnerKey, TLocationPK ALocationKey,
             TPartnerInfoScopeEnum APartnerInfoScope,
             out PartnerInfoTDS APartnerInfoDS)
@@ -693,6 +669,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// <param name="AExtractName">The name which identifies the extract</param>
         /// <param name="AExtractDescription">The description of the extract</param>
         /// <returns>true if the extract was found and the description was retrieved</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean GetExtractDescription(String AExtractName, out String AExtractDescription)
         {
             TDBTransaction ReadTransaction;
@@ -769,6 +746,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// <returns>True, if an entry of the partner was found in table p_organisation.
         /// False, if there is no partner with the partner key or the partner is not an organisation</returns>
         /// <exception>ApplicationException if we don't find a partner or if the partner is not an organisation</exception>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean GetPartnerFoundationStatus(Int64 APartnerKey, out Boolean AIsFoundation)
         {
             TDBTransaction ReadTransaction;
@@ -852,6 +830,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// partner class is in APartnerClasses.</param>
         /// <param name="ARecentlyUsedPartners">List of the last used partner names and partner keys</param>
         /// <returns>true if call was successfull</returns>
+        [RequireModulePermission("PTNRUSER")]
         public static Boolean GetRecentlyUsedPartners(int AMaxPartnersCount,
             ArrayList APartnerClasses,
             out Dictionary <long, string>ARecentlyUsedPartners)
@@ -970,6 +949,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups
         /// <returns>Family partner key of the person. A Person must always have a family that it is related to.
         /// False, if there is no partner with the partner key or the partner is not an organisation</returns>
         /// <exception>ApplicationException if we don't find a partner or if the partner is not an organisation</exception>
+        [RequireModulePermission("PTNRUSER")]
         public static Int64 GetFamilyKeyForPerson(Int64 APersonKey)
         {
             TDBTransaction ReadTransaction;

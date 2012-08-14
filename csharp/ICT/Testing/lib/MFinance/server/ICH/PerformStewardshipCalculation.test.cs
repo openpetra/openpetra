@@ -112,7 +112,7 @@ namespace Tests.MFinance.Server.ICH
 
             Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and return a valid batch number");
 
-            if (!TTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
                 Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
@@ -208,7 +208,7 @@ namespace Tests.MFinance.Server.ICH
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
-            Assert.AreEqual(2m, TTransactionWebConnector.CalculateAdminFee(MainDS,
+            Assert.AreEqual(2m, TGiftTransactionWebConnector.CalculateAdminFee(MainDS,
                     FLedgerNumber,
                     "GIF",
                     200m,

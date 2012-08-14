@@ -40,7 +40,7 @@ using Ict.Petra.Server.MReporting.MPersonnel;
 using Ict.Petra.Server.MReporting.MConference;
 using System.IO;
 
-namespace Ict.Petra.Server.MReporting.LogicConnectors
+namespace Ict.Petra.Server.MReporting.Calculator
 {
     /// <summary>
     /// calculate a report

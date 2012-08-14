@@ -190,7 +190,7 @@ namespace Ict.Petra.Client.App.Core
                 DataTable TmpDT;
 
                 // Refresh the Cacheble DataTable on the Serverside and return it
-                TRemote.MPartner.Subscriptions.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
+                TRemote.MPartner.Subscriptions.Cacheable.WebConnectors.RefreshCacheableTable(ACacheableTable, out TmpDT);
                 UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
 
                 // Update the cached DataTable file
@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.App.Core
                 DataTable TmpDT;
 
                 // Refresh the Cacheble DataTable on the Serverside and return it
-                TRemote.MPartner.Mailing.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
+                TRemote.MPartner.Mailing.Cacheable.WebConnectors.RefreshCacheableTable(ACacheableTable, out TmpDT);
                 UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
 
                 // Update the cached DataTable file
@@ -361,7 +361,7 @@ namespace Ict.Petra.Client.App.Core
                 DataTable TmpDT;
 
                 // Refresh the Cacheble DataTable on the Serverside and return it
-                TRemote.MFinance.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
+                TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(ACacheableTable, out TmpDT);
                 UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
 
                 // Update the cached DataTable file
@@ -382,7 +382,7 @@ namespace Ict.Petra.Client.App.Core
                 DataTable TmpDT;
 
                 // Refresh the Cacheble DataTable on the Serverside and return it
-                TRemote.MFinance.Cacheable.RefreshCacheableTable(ACacheableTable, ALedgerNumber, out TmpDT);
+                TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(ACacheableTable, ALedgerNumber, out TmpDT);
                 UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
 
                 // Update the cached DataTable file
@@ -546,7 +546,7 @@ namespace Ict.Petra.Client.App.Core
                 DataTable TmpDT;
 
                 // Refresh the Cacheable DataTable on the Serverside and return it
-                TRemote.MSysMan.Cacheable.RefreshCacheableTable(ACacheableTable, out TmpDT);
+                TRemote.MSysMan.Cacheable.WebConnectors.RefreshCacheableTable(ACacheableTable, out TmpDT);
                 UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
 
                 // Update the cached DataTable file
@@ -714,7 +714,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMCommonTable = (TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MCommon.Cacheable.GetCacheableTable(CacheableMCommonTable,
+                ReturnValue = TRemote.MCommon.Cacheable.WebConnectors.GetCacheableTable(CacheableMCommonTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -725,7 +725,7 @@ namespace Ict.Petra.Client.App.Core
                     ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MConference.Cacheable.GetCacheableTable(CacheableMConferenceTable,
+                ReturnValue = TRemote.MConference.Cacheable.WebConnectors.GetCacheableTable(CacheableMConferenceTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -735,7 +735,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMPartnerPartnerTable = (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPartner.Partner.Cacheable.GetCacheableTable(CacheableMPartnerPartnerTable,
+                ReturnValue = TRemote.MPartner.Partner.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerPartnerTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -746,7 +746,7 @@ namespace Ict.Petra.Client.App.Core
                     ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPartner.Subscriptions.Cacheable.GetCacheableTable(CacheableMPartnerSubscriptionsTable,
+                ReturnValue = TRemote.MPartner.Subscriptions.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerSubscriptionsTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -756,7 +756,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMPartnerMailingTable = (TCacheableMailingTablesEnum)Enum.Parse(typeof(TCacheableMailingTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPartner.Mailing.Cacheable.GetCacheableTable(CacheableMPartnerMailingTable,
+                ReturnValue = TRemote.MPartner.Mailing.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerMailingTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -766,7 +766,9 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MFinance.Cacheable.GetCacheableTable(CacheableMFinanceTable, AHashCode, out ACacheableTableSystemType);
+                ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.GetCacheableTable(CacheableMFinanceTable,
+                    AHashCode,
+                    out ACacheableTableSystemType);
             }
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
             {
@@ -774,7 +776,9 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MSysMan.Cacheable.GetCacheableTable(CacheableMSysManTable, AHashCode, out ACacheableTableSystemType);
+                ReturnValue = TRemote.MSysMan.Cacheable.WebConnectors.GetCacheableTable(CacheableMSysManTable,
+                    AHashCode,
+                    out ACacheableTableSystemType);
             }
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonTablesEnum)), ACacheableTableName) != -1)
             {
@@ -783,7 +787,7 @@ namespace Ict.Petra.Client.App.Core
                     ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPersonnel.Person.DataElements.Cacheable.GetCacheableTable(CacheableMPersonnelPersonTable,
+                ReturnValue = TRemote.MPersonnel.Person.Cacheable.WebConnectors.GetCacheableTable(CacheableMPersonnelPersonTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -794,7 +798,7 @@ namespace Ict.Petra.Client.App.Core
                     ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPersonnel.Units.DataElements.Cacheable.GetCacheableTable(CacheableMPersonnelUnitsTable,
+                ReturnValue = TRemote.MPersonnel.Unit.Cacheable.WebConnectors.GetCacheableTable(CacheableMPersonnelUnitsTable,
                     AHashCode,
                     out ACacheableTableSystemType);
             }
@@ -837,7 +841,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MFinance.Cacheable.GetCacheableTable(CacheableMFinanceTable, AHashCode, Convert.ToInt32(
+                ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.GetCacheableTable(CacheableMFinanceTable, AHashCode, Convert.ToInt32(
                         AFilterCriteria), out ACacheableTableSystemType);
             }
 
@@ -1269,7 +1273,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMCommonTable = (TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MCommon.Cacheable.SaveChangedStandardCacheableTable(CacheableMCommonTable,
+                ReturnValue = TRemote.MCommon.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMCommonTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1279,7 +1283,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMConferenceTable = (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MConference.Cacheable.SaveChangedStandardCacheableTable(CacheableMConferenceTable,
+                ReturnValue = TRemote.MConference.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMConferenceTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1290,7 +1294,7 @@ namespace Ict.Petra.Client.App.Core
                     ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MFinance.Cacheable.SaveChangedStandardCacheableTable(CacheableMFinanceTable,
+                ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMFinanceTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1300,7 +1304,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMPartnerMailingTable = (TCacheableMailingTablesEnum)Enum.Parse(typeof(TCacheableMailingTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPartner.Mailing.Cacheable.SaveChangedStandardCacheableTable(CacheableMPartnerMailingTable,
+                ReturnValue = TRemote.MPartner.Mailing.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMPartnerMailingTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1310,7 +1314,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMPartnerPartnerTable = (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPartner.Partner.Cacheable.SaveChangedStandardCacheableTable(CacheableMPartnerPartnerTable,
+                ReturnValue = TRemote.MPartner.Partner.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMPartnerPartnerTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1321,7 +1325,8 @@ namespace Ict.Petra.Client.App.Core
                     ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPartner.Subscriptions.Cacheable.SaveChangedStandardCacheableTable(CacheableMPartnerSubscriptionsTable,
+                ReturnValue = TRemote.MPartner.Subscriptions.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(
+                    CacheableMPartnerSubscriptionsTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1331,7 +1336,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMPersonnelPersonTable = (TCacheablePersonTablesEnum)Enum.Parse(typeof(TCacheablePersonTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPersonnel.Person.DataElements.Cacheable.SaveChangedStandardCacheableTable(CacheableMPersonnelPersonTable,
+                ReturnValue = TRemote.MPersonnel.Person.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMPersonnelPersonTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1341,7 +1346,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMPersonnelUnitTable = (TCacheableUnitTablesEnum)Enum.Parse(typeof(TCacheableUnitTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MPersonnel.Units.DataElements.Cacheable.SaveChangedStandardCacheableTable(CacheableMPersonnelUnitTable,
+                ReturnValue = TRemote.MPersonnel.Unit.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMPersonnelUnitTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1351,7 +1356,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MSysMan.Cacheable.SaveChangedStandardCacheableTable(CacheableMSysManTable,
+                ReturnValue = TRemote.MSysMan.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMSysManTable,
                     ref AChangedCacheableDT,
                     out AVerificationResult);
             }
@@ -1396,7 +1401,7 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
-                ReturnValue = TRemote.MFinance.Cacheable.SaveChangedStandardCacheableTable(CacheableMFinanceTable,
+                ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.SaveChangedStandardCacheableTable(CacheableMFinanceTable,
                     ref AChangedCacheableDT,
                     (int)AFilterCriteria,
                     out AVerificationResult);

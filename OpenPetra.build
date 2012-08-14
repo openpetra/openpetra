@@ -171,9 +171,9 @@ useful parameters
 
 <target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
     <call target="generateTools"/>
-    <call target="generateGlue"/>
     <call target="generateWinforms"/>
     <call target="generateORM"/>
+    <call target="generateGlue"/>
     <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
     <call target="generateNamespaceMap"/>
     <call target="generateProjectFiles"/>

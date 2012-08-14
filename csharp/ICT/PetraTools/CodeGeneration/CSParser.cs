@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -113,6 +113,15 @@ namespace Ict.Tools.CodeGeneration
         }
 
         /// <summary>
+        /// get all namespaces in the current file
+        /// </summary>
+        /// <returns></returns>
+        public List <NamespaceDeclaration>GetNamespaces()
+        {
+            return CSParser.GetNamespaces(this.cu);
+        }
+
+        /// <summary>
         /// get all the namespaces from the file
         /// </summary>
         /// <returns></returns>
@@ -185,7 +194,9 @@ namespace Ict.Tools.CodeGeneration
 
                         if (td.Type == ClassType.Class)
                         {
-                            result.Add((TypeDeclaration)node);
+                            TypeDeclaration t = (TypeDeclaration)node;
+                            t.UserData = nd.Name;
+                            result.Add(t);
                         }
                     }
                 }
@@ -204,7 +215,7 @@ namespace Ict.Tools.CodeGeneration
 
             foreach (NamespaceDeclaration nnode in namespaces)
             {
-                if ((ANamespace.Length == 0) || (nnode.Name == ANamespace))
+                if ((ANamespace.Length == 0) || (nnode.Name.StartsWith(ANamespace)))
                 {
                     foreach (object child in nnode.Children)
                     {
@@ -219,16 +230,16 @@ namespace Ict.Tools.CodeGeneration
 
                                 if (td.Type == AClassType)
                                 {
-                                    ANamespace = nnode.Name;
-
                                     if (td.Name == ATypeName)
                                     {
+                                        ANamespace = nnode.Name;
                                         return td;
                                     }
 
                                     // if the AInterfaceName contains the namespace
                                     if (ATypeName == nnode.Name + "." + td.Name)
                                     {
+                                        ANamespace = nnode.Name;
                                         return td;
                                     }
                                 }
@@ -358,6 +369,23 @@ namespace Ict.Tools.CodeGeneration
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// get the first interface that this class implements
+        /// </summary>
+        /// <returns></returns>
+        public static string GetImplementedInterface(TypeDeclaration AClass)
+        {
+            foreach (TypeReference t in AClass.BaseTypes)
+            {
+                if (t.Type.StartsWith("I"))
+                {
+                    return t.Type;
+                }
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -509,6 +537,7 @@ namespace Ict.Tools.CodeGeneration
         }
 
         private static Hashtable _CSFilesPerDir = new Hashtable();
+        private static SortedList <string, CSParser>FParsedFiles = new SortedList <string, CSParser>();
 
         /// <summary>
         /// Returns CSParser instances for the cs files in the given directory.
@@ -527,7 +556,15 @@ namespace Ict.Tools.CodeGeneration
 
                 foreach (string filename in Directory.GetFiles(dir, "*.cs", option))
                 {
-                    CSFiles.Add(new CSParser(filename));
+                    if (!filename.EndsWith("-generated.cs") || filename.EndsWith("Cacheable-generated.cs"))
+                    {
+                        if (!FParsedFiles.ContainsKey(filename))
+                        {
+                            FParsedFiles.Add(filename, new CSParser(filename));
+                        }
+
+                        CSFiles.Add(FParsedFiles[filename]);
+                    }
                 }
 
                 _CSFilesPerDir.Add(dirfull, CSFiles);

@@ -6,7 +6,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: windowEditUIConnector 
-    UIConnectorType: Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors.IPartnerUIConnectorsPartnerEdit
+    UIConnectorType: Ict.Petra.Shared.Interfaces.MPartner.IPartnerUIConnectorsPartnerEdit
     UIConnectorCreate: TRemote.MPartner.Partner.UIConnectors.PartnerEdit
     MasterTable: PPartner
     WindowWidth: 800

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,6 +38,7 @@ namespace Ict.Testing.IctCommonRemoting.Server
     class Server
     {
         static private TServerManager TheServerManager;
+        static private TCrossDomainMarshaller TheCrossDomainMarshaller;
 
         /// <summary>
         /// Starts the Test Server.
@@ -47,7 +48,7 @@ namespace Ict.Testing.IctCommonRemoting.Server
         {
             try
             {
-                new TLogging("TestServer.log");
+                new TAppSettingsManager("../../etc/Server.config");
 
                 TheServerManager = new TServerManager();
 
@@ -107,7 +108,7 @@ namespace Ict.Testing.IctCommonRemoting.Server
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
 
                 Hashtable ChannelProperties = new Hashtable();
-                ChannelProperties.Add("port", "9000");
+                ChannelProperties.Add("port", TSrvSetting.IPBasePort);
 
                 TcpChannel Channel = new TcpChannel(ChannelProperties, null, TCPSink);
                 ChannelServices.RegisterChannel(Channel, false);
@@ -116,6 +117,11 @@ namespace Ict.Testing.IctCommonRemoting.Server
                     "Servermanager", WellKnownObjectMode.Singleton);
                 RemotingConfiguration.RegisterWellKnownServiceType(typeof(Ict.Common.Remoting.Server.TClientManager),
                     "Clientmanager", WellKnownObjectMode.Singleton);
+
+                TheCrossDomainMarshaller = new TCrossDomainMarshaller();
+                RemotingServices.Marshal(TheCrossDomainMarshaller, TClientManager.CROSSDOMAINURL);
+
+                // register the services, independent of the appdomain which is per client
             }
             catch (RemotingException rex)
             {

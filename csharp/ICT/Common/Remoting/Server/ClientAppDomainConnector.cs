@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.Security.Principal;
 using System.Collections;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Shared;
 using System.Reflection;
 using System.Runtime.Remoting;
 using System.Threading;
@@ -150,8 +151,6 @@ namespace Ict.Common.Remoting.Server
         ///
         /// </summary>
         /// <param name="AClientID">ClientID as assigned by the ClientManager</param>
-        /// <param name="ARemotingPort">IP Port on which the .NET Remoting TCP Channel should
-        /// be set up</param>
         /// <param name="AClientServerConnectionType">Tells in which way the Client connected
         /// to the PetraServer</param>
         /// <param name="AClientManagerRef">A reference to the ClientManager object
@@ -167,16 +166,16 @@ namespace Ict.Common.Remoting.Server
         /// <param name="ARemotingURLPollClientTasks">The .NET Remoting URL of the
         /// TPollClientTasks Class which the Client needs to calls to retrieve
         /// ClientTasks.</param>
-        /// <returns>void</returns>
+        /// <param name="ARemotedPollClientTasksObject"></param>
         public void LoadDomainManagerAssembly(Int32 AClientID,
-            Int16 ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
             object ASystemDefaultsCacheRef,
             object ACacheableTablesManagerRef,
             IPrincipal AUserInfo,
             TSrvSetting AServerSettings,
-            out String ARemotingURLPollClientTasks)
+            out String ARemotingURLPollClientTasks,
+            out ICrossDomainService ARemotedPollClientTasksObject)
         {
             // Console.WriteLine('TRemoteLoader.LoadDomainManagerAssembly in AppDomain: ' + AppDomain.CurrentDomain.ToString);
 
@@ -197,7 +196,6 @@ namespace Ict.Common.Remoting.Server
             FRemoteClientDomainManagerObject = Activator.CreateInstance(FRemoteClientDomainManagerClass,
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.CreateInstance), null,
                 new Object[] { AClientID.ToString(),
-                               ARemotingPort.ToString(),
                                AClientServerConnectionType,
                                AClientManagerRef,
                                ASystemDefaultsCacheRef,
@@ -218,6 +216,10 @@ namespace Ict.Common.Remoting.Server
             ARemotingURLPollClientTasks =
                 Convert.ToString(FRemoteClientDomainManagerClass.InvokeMember("GetPollClientTasksURL",
                         (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null));
+
+            ARemotedPollClientTasksObject =
+                (ICrossDomainService)FRemoteClientDomainManagerClass.InvokeMember("GetRemotedPollClientTasksObject",
+                    (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null);
 
             // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''GetPollClientTasksURL'' in Client''s AppDomain! Returned value: ' + ARemotingURLPollClientTasks); $ENDIF
             // Establish (separate) DataBase connection for the AppDomain
@@ -240,8 +242,13 @@ namespace Ict.Common.Remoting.Server
         /// <param name="APetraModuleInstantiatorRemotingURL">The .NET Remoting URL which the
         /// Client needs to make calls to the Instantiator Object.
         /// </param>
+        /// <param name="ARemoteObject">the remote object</param>
         /// <returns>void</returns>
-        public void LoadPetraModuleAssembly(string AAssemblyDLLName, String ARemoteType, out String APetraModuleInstantiatorRemotingURL)
+        public void LoadPetraModuleAssembly(
+            string AAssemblyDLLName,
+            String ARemoteType,
+            out String APetraModuleInstantiatorRemotingURL,
+            out ICrossDomainService ARemoteObject)
         {
             // Console.WriteLine('TRemoteLoader.LoadPetraModuleAssembly in AppDomain: ' + AppDomain.CurrentDomain.ToString);
             #region Load Petra Module DLL into AppDomain of Client, create instance of Instantiator Object
@@ -265,11 +272,18 @@ namespace Ict.Common.Remoting.Server
             // end;
             // $ENDIF
 
+            if (RemoteClass == null)
+            {
+                string msg = "cannot find type " + ARemoteType + " in " + AAssemblyDLLName;
+                TLogging.Log(msg);
+                throw new Exception(msg);
+            }
+
 //			#if DEBUGMODE
-//			Console.WriteLine("Creating Instance of " + RemoteType + " in Client's AppDomain...");
+//			TLogging.Log("Creating Instance of " + RemoteClass.Name + " in Client's AppDomain...");
 //			#endif
 
-            object RemoteObject = Activator.CreateInstance(RemoteClass,
+            object Instantiator = Activator.CreateInstance(RemoteClass,
                 (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                 null,
                 null,
@@ -287,7 +301,11 @@ namespace Ict.Common.Remoting.Server
 //			#endif
             APetraModuleInstantiatorRemotingURL =
                 Convert.ToString(RemoteClass.InvokeMember("GetRemotingURL", (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
-                        null, RemoteObject, null, null));
+                        null, Instantiator, null, null));
+
+            ARemoteObject = (ICrossDomainService)
+                            RemoteClass.InvokeMember("GetRemotedObject", (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
+                null, Instantiator, null, null);
 
             // $IFDEF DEBUGMODE Console.WriteLine('Successfully invoked Member ''GetRemotingURL'' in Client''s AppDomain! Returned value: ' + APetraModuleInstantiatorRemotingURL); $ENDIF
         }
@@ -513,8 +531,6 @@ namespace Ict.Common.Remoting.Server
         ///
         /// </summary>
         /// <param name="AClientID">ClientID as assigned by the ClientManager</param>
-        /// <param name="ARemotingPort">IP Port on which the .NET Remoting TCP Channel should
-        /// be set up</param>
         /// <param name="AClientServerConnectionType">Tells in which way the Client connected
         /// to the PetraServer</param>
         /// <param name="AClientManagerRef">A reference to the ClientManager object
@@ -531,7 +547,6 @@ namespace Ict.Common.Remoting.Server
         /// ClientTasks.</param>
         /// <returns>void</returns>
         public void LoadDomainManagerAssembly(Int32 AClientID,
-            Int16 ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
             object ASystemDefaultsCacheRef,
@@ -539,15 +554,20 @@ namespace Ict.Common.Remoting.Server
             IPrincipal AUserInfo,
             out String ARemotingURLPollClientTasks)
         {
+            ICrossDomainService RemoteObject;
+
             FRemoteLoader.LoadDomainManagerAssembly(AClientID,
-                ARemotingPort,
                 AClientServerConnectionType,
                 AClientManagerRef,
                 ASystemDefaultsCacheRef,
                 ACacheableTablesManagerRef,
                 AUserInfo,
                 TSrvSetting.ServerSettings,
-                out ARemotingURLPollClientTasks);
+                out ARemotingURLPollClientTasks,
+                out RemoteObject);
+
+            // register the remote url at the CrossDomainMarshaller
+            TCrossDomainMarshaller.AddService(AClientID.ToString(), ARemotingURLPollClientTasks, RemoteObject);
 
             // Load the CallForwinding DLL into the Client's AppDomain
             FRemoteLoader.LoadCallForwardingAssembly();
@@ -568,7 +588,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// Load Petra Module DLLs into Clients AppDomain, initialise them and remote an Instantiator Object
-        public virtual void LoadAssemblies(IPrincipal AUserInfo, ref Hashtable ARemotingURLs)
+        public virtual void LoadAssemblies(string AClientID, IPrincipal AUserInfo, ref Hashtable ARemotingURLs)
         {
         }
 
@@ -578,15 +598,27 @@ namespace Ict.Common.Remoting.Server
         /// Instantiator Object.
         ///
         /// </summary>
+        /// <param name="AClientID"></param>
         /// <param name="AAssemblyDLLName">name of the dll that contains ARemoteType</param>
         /// <param name="ARemoteType">name of the class that should be loaded</param>
         /// <param name="APetraModuleInstantiatorRemotingURL">The .NET Remoting URL which the
         /// Client needs to make calls to the Instantiator Object.
         /// </param>
-        /// <returns>void</returns>
-        public void LoadPetraModuleAssembly(String AAssemblyDLLName, string ARemoteType, out String APetraModuleInstantiatorRemotingURL)
+        public void LoadPetraModuleAssembly(String AClientID,
+            String AAssemblyDLLName,
+            string ARemoteType,
+            out String APetraModuleInstantiatorRemotingURL)
         {
-            FRemoteLoader.LoadPetraModuleAssembly(AAssemblyDLLName, ARemoteType, out APetraModuleInstantiatorRemotingURL);
+            ICrossDomainService RemoteObject;
+
+            FRemoteLoader.LoadPetraModuleAssembly(
+                AAssemblyDLLName,
+                ARemoteType,
+                out APetraModuleInstantiatorRemotingURL,
+                out RemoteObject);
+
+            // register the remote url at the CrossDomainMarshaller
+            TCrossDomainMarshaller.AddService(AClientID, APetraModuleInstantiatorRemotingURL, RemoteObject);
 
             if (TLogging.DL >= 10)
             {

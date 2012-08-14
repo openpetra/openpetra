@@ -59,7 +59,7 @@ namespace Tests.IctCommonRemoting.Server
         /// <returns>void</returns>
         public TServerManager() : base()
         {
-            TRemoteLoader.CLIENTDOMAIN_DLLNAME = "Tests-exe.Remoting.IctCommonRemoting.Server";
+            TRemoteLoader.CLIENTDOMAIN_DLLNAME = "Ict.Testing.IctCommonRemoting.Server";
             TRemoteLoader.CLIENTDOMAIN_CLASSNAME = "Tests.IctCommonRemoting.Server.TClientDomainManager";
             TClientAppDomainConnectionBase.ClientAppDomainConnectionType = typeof(TClientAppDomainConnection);
 

@@ -27,7 +27,7 @@ using Ict.Common.DB;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MCommon.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Server.App.Core.Security;
 using System.Data;
 

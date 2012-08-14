@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -37,10 +37,13 @@ namespace Ict.Testing.IctCommonRemoting.Client
     {
         static void Main(string[] args)
         {
+            new TLogging("../../log/TestRemotingClient.log");
+
             try
             {
-                new TLogging("TestRemotingClient.log");
-                new TAppSettingsManager(false);
+                new TAppSettingsManager("../../etc/Client.config");
+
+                TLogging.DebugLevel = Convert.ToInt32(TAppSettingsManager.GetValue("Client.DebugLevel", "0"));
 
                 // initialize the client
                 TConnectionManagementBase.ConnectorType = typeof(TConnector);
@@ -48,12 +51,18 @@ namespace Ict.Testing.IctCommonRemoting.Client
 
                 TClientInfo.InitializeUnit();
 
+                Catalog.Init("en-GB", "en-GB");
+
                 string error;
                 ConnectToTestServer("DEMO", "DEMO", out error);
 
                 while (true)
                 {
                     TLogging.Log(TRemote.MyService.HelloWorld("Hello World"));
+                    IMySubNamespace test = TRemote.MyService.SubNamespace;
+                    TLogging.Log("before call function");
+                    TLogging.Log(test.GetType().ToString());
+                    TLogging.Log(test.HelloSubWorld("Hello SubWorld"));
 
                     Console.WriteLine("Press ENTER to say Hello World again... ");
                     Console.WriteLine("Press CTRL-C to exit ...");
@@ -62,7 +71,7 @@ namespace Ict.Testing.IctCommonRemoting.Client
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                TLogging.Log(e.ToString());
                 Console.ReadLine();
             }
         }

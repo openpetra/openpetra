@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FLedgerNumber = value;
 
                 Ict.Common.Data.TTypedDataTable TypedTable;
-                TRemote.MCommon.DataReader.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
+                TRemote.MCommon.DataReader.WebConnectors.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
                 FMainDS.AAnalysisType.Merge(TypedTable);
 
                 ucoValues.LedgerNumber = value;

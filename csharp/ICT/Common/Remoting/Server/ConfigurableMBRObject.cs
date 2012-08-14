@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,8 +23,16 @@
 //
 using System;
 using System.Configuration;
+using System.Security.Cryptography;
+using System.Runtime.Remoting;
 using System.Runtime.Remoting.Lifetime;
+using System.Runtime.Remoting.Proxies;
+using System.Runtime.Remoting.Messaging;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Serialization;
+using System.Security.Permissions;
 using Ict.Common;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Common.Remoting.Server
 {
@@ -36,8 +44,47 @@ namespace Ict.Common.Remoting.Server
     /// &lt;add key="Ict.Petra.Server.MPartner.Partner.UIConnectors.TPartnerEditUIConnector_Lifetime" value="4000" /&gt;
     /// This sets the lifetime of this object to four seconds.
     /// </example>
-    public class TConfigurableMBRObject : MarshalByRefObject
+    public class TConfigurableMBRObject : MarshalByRefObject, ICrossDomainService
     {
+        /// <summary>
+        /// a proxy
+        /// </summary>
+        class Proxy : RealProxy
+        {
+            string uri;
+
+            [PermissionSet(SecurityAction.LinkDemand)]
+            public Proxy(MarshalByRefObject obj)
+            {
+                this.uri = RemotingServices.Marshal(obj).URI;
+            }
+
+            [SecurityPermissionAttribute(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)]
+            public override IMessage Invoke(IMessage msg)
+            {
+                msg.Properties["__Uri"] = this.uri;
+                return ChannelServices.SyncDispatchMessage(msg);
+            }
+        }
+
+        Proxy proxy;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TConfigurableMBRObject()
+        {
+            this.proxy = new Proxy(this);
+        }
+
+        /// <summary>
+        /// marshal a message across domains
+        /// </summary>
+        public IMessage Marshal(IMessage msg)
+        {
+            return this.proxy.Invoke(msg);
+        }
+
         /// <summary>
         /// Overrides the InitializeLifetimeService function of objects that would normally derive from MarshalByRefObject (such objects must not have a InitializeLifetimeService function then)
         /// </summary>
@@ -80,6 +127,28 @@ namespace Ict.Common.Remoting.Server
 
                 return tmp;
             }
+        }
+
+        /// <summary>
+        /// build random URI for a service
+        /// </summary>
+        public static string BuildRandomURI(string Prefix)
+        {
+            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
+            Byte rndbytespos;
+            Byte[] rndbytes = new Byte[5];
+            String RandomString = string.Empty;
+            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
+            rnd.GetBytes(rndbytes);
+
+            for (rndbytespos = 1; rndbytespos <= 4; rndbytespos += 1)
+            {
+                RandomString = RandomString + rndbytes[rndbytespos].ToString();
+            }
+
+            DateTime RemotingTime = DateTime.Now;
+            return (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
+                   (RemotingTime.Second).ToString() + '_' + Prefix + '_' + RandomString.ToString();
         }
     }
 }

@@ -86,7 +86,7 @@ namespace {#NAMESPACE}
       {#INITUSERCONTROLS}
 
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), ASearchCriteria, out TypedTable);
+      TRemote.MCommon.DataReader.WebConnectors.GetData({#DETAILTABLE}Table.GetTableDBName(), ASearchCriteria, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -756,7 +756,7 @@ namespace {#NAMESPACE}
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MCommon.DataReader.SaveData({#DETAILTABLE}Table.GetTableDBName(), ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TRemote.MCommon.DataReader.WebConnectors.SaveData({#DETAILTABLE}Table.GetTableDBName(), ref SubmitDT, out VerificationResult);
                 }
                 catch (ESecurityDBTableAccessDeniedException Exp)
                 {

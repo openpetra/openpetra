@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -132,7 +132,14 @@ namespace Ict.Common.Remoting.Client
         /// <param name="ARemotedObject"></param>
         public static void Register(IInterface ARemotedObject)
         {
-            Register((MarshalByRefObject)ARemotedObject);
+            if (ARemotedObject is MarshalByRefObject)
+            {
+                Register((MarshalByRefObject)ARemotedObject);
+            }
+            else
+            {
+                TLogging.Log("KeepAlive Register: " + ARemotedObject.GetType().ToString() + " is not a MarshalByRefObject");
+            }
         }
 
         /// <summary>
@@ -148,19 +155,7 @@ namespace Ict.Common.Remoting.Client
         /// <returns>void</returns>
         public static void UnRegister(MarshalByRefObject ARemotedObject)
         {
-            String ObjectName;
-            String ObjectHashCode;
-
-            ObjectName = "";
-            ObjectHashCode = "";
-#if DEBUGMODE
-            if (ARemotedObject == null)
-            {
-                TLogging.Log("TEnsureKeepAlive.UnRegister: Object cannot be unregistered because it is nil!", TLoggingType.ToLogfile);
-                throw new System.ArgumentException(
-                    "ARemotedObject must not be nil. You must have Registered an Object that was nil, or the Object must has become nil since Registering it");
-            }
-#endif
+            String ObjectHashCode = string.Empty;
 
             if (ARemotedObject != null)
             {
@@ -168,27 +163,20 @@ namespace Ict.Common.Remoting.Client
                 try
                 {
                     ObjectHashCode = ARemotedObject.GetHashCode().ToString();
-                    ObjectName = ARemotedObject.ToString();
                 }
                 catch (System.Runtime.Remoting.RemotingException)
                 {
                     // ignore this Exception: it is thrown if one tries to UnRegister a remoted object that was already UnRegistered and doesn't exist anymore on the PetraServer
-#if DEBUGMODE
-                    MessageBox.Show(
-                        "Message from TEnsureKeepAlive.UnRegister Method:\r\nAn attempt was made to UnRegister an Object that was already UnRegistered\r\nand doesn't exist anymore on the PetraServer!",
-                        "DEVELOPER DEBUGGING INFORMATION");
-#endif
+                    if (TLogging.DebugLevel > 1)
+                    {
+                        MessageBox.Show(
+                            "Message from TEnsureKeepAlive.UnRegister Method:\r\nAn attempt was made to UnRegister an Object that was already UnRegistered\r\nand doesn't exist anymore on the PetraServer!",
+                            "DEVELOPER DEBUGGING INFORMATION");
+                    }
                 }
-#if DEBUGMODE
-                catch (Exception Exp)
-                {
-                    TLogging.Log("TEnsureKeepAlive.UnRegister: Exception: " + Exp.ToString(), TLoggingType.ToLogfile);
-                }
-#else
                 catch (Exception)
                 {
                 }
-#endif
 
                 if (ObjectHashCode != "")
                 {
@@ -200,42 +188,15 @@ namespace Ict.Common.Remoting.Client
                             {
                                 // Remove remoted Object to the SortedList
                                 UKeepAliveObjects.Remove(ObjectHashCode);
-
-                                // $IFDEF DEBUGMODE TLogging.Log('TEnsureKeepAlive.UnRegister: Removed Object ''' + ObjectName + '''', [ToLogFile]); $ENDIF
-                            }
-                            else
-                            {
-                                if (ObjectName != "")
-                                {
-#if DEBUGMODE
-                                    TLogging.Log(
-                                        "TEnsureKeepAlive.UnRegister: Object '" + ObjectName +
-                                        "' cannot be unregistered because it is not Registered!",
-                                        TLoggingType.ToLogfile);
-#endif
-                                }
-                                else
-                                {
-#if DEBUGMODE
-                                    TLogging.Log("TEnsureKeepAlive.UnRegister: Object cannot be unregistered because it is not Registered!",
-                                        TLoggingType.ToLogfile);
-#endif
-                                }
                             }
                         }
                     }
                     finally
                     {
-                        // $IFDEF DEBUGMODE TLogging.Log('TEnsureKeepAlive.UnRegister: Finally Clause.', [ToLogFile]); $ENDIF
                         Monitor.PulseAll(UKeepAliveObjects.SyncRoot);
                         Monitor.Exit(UKeepAliveObjects.SyncRoot);
                     }
                 }
-            }
-            else
-            {
-                // if the code is not compiled with DEBUGMODE, we don't care about UnRegistering an Object that was nil...
-                TLogging.Log("TEnsureKeepAlive.UnRegister: Object cannot be unregistered because it is nil!", TLoggingType.ToLogfile);
             }
         }
 
@@ -245,7 +206,14 @@ namespace Ict.Common.Remoting.Client
         /// <param name="ARemotedObject"></param>
         public static void UnRegister(IInterface ARemotedObject)
         {
-            UnRegister((MarshalByRefObject)ARemotedObject);
+            if (ARemotedObject is MarshalByRefObject)
+            {
+                UnRegister((MarshalByRefObject)ARemotedObject);
+            }
+            else
+            {
+                TLogging.Log("KeepAlive UnRegister: " + ARemotedObject.GetType().ToString() + " is not a MarshalByRefObject");
+            }
         }
 
         /// <summary>
@@ -292,18 +260,9 @@ namespace Ict.Common.Remoting.Client
 
                                     // TLogging.Log("KeepAliveThread: Kept Object " + ObjectEnum.Value.ToString() + " alive", TLoggingType.ToLogfile);
                                 }
-#if DEBUGMODE
-                                catch (Exception Exp)
-                                {
-                                    TLogging.Log(
-                                        "KeepAliveThread: " + ObjectEnum.Key.ToString() + " Could not contact OpenPetra Server!\r\n" + Exp.ToString(),
-                                        TLoggingType.ToLogfile);
-                                }
-#else
                                 catch (Exception)
                                 {
                                 }
-#endif
                             }
                         }
                     }

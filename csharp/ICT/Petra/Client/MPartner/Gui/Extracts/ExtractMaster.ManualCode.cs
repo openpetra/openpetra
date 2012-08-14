@@ -34,11 +34,9 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MPartner.Mailing.WebConnectors;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
@@ -157,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 ReplaceAddress = false;
 
                 // check if the partner record still exists, otherwise remove from extract
-                if (!TRemote.MPartner.Partner.ServerLookups.VerifyPartner(Row.PartnerKey))
+                if (!TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartner(Row.PartnerKey))
                 {
                     if (!DontShowPartnerRemovePartnerKeyNonExistent)
                     {
@@ -175,7 +173,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
                 else
                 {
-                    AddressExists = TRemote.MPartner.Partner.ServerLookups.VerifyPartnerAtLocation
+                    AddressExists = TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation
                                         (Row.PartnerKey, new TLocationPK(Row.SiteKey, Row.LocationKey), out AddressNeitherCurrentNorMailing);
 
                     if (!AddressExists)

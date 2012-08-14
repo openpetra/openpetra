@@ -296,7 +296,7 @@ namespace Ict.Petra.Client.App.PetraClient
                     Process PatchProcess = new System.Diagnostics.Process();
                     PatchProcess.EnableRaisingEvents = false;
                     PatchProcess.StartInfo.FileName = TempPath + Path.DirectorySeparatorChar + "Ict.Tools.PatchTool.exe";
-                    PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:\"" + Path.GetFullPath(TClientSettings.ConfigurationFile) +
+                    PatchProcess.StartInfo.Arguments = "-action:patchRemote" + " -C:\"" + Path.GetFullPath(TAppSettingsManager.ConfigFileName) +
                                                        "\" -OpenPetra.Path:\"" + Path.GetFullPath(
                         TClientSettings.Petra_Path_Bin + Path.DirectorySeparatorChar + "..") +
                                                        "\" -OpenPetra.Path.Bin:\"" + Path.GetFullPath(

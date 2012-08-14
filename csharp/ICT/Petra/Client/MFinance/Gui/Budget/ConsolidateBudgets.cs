@@ -47,7 +47,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.Budget.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Budget

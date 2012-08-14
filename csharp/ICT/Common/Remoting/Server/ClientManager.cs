@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -270,7 +270,6 @@ namespace Ict.Common.Remoting.Server
         public static String FormatClientList(Boolean AListDisconnectedClients)
         {
             String ClientLines;
-            String ClientPort;
             ArrayList ClientsArrayList;
             Int16 PaddingFirstColumn;
 
@@ -282,7 +281,7 @@ namespace Ict.Common.Remoting.Server
                     Catalog.GetString("  ID | Client          | Status           | Computer    | IP Address      | Type") +
                     Environment.NewLine +
                     "----+-----------------+------------------+-------------+-----------------+-----" +
-                    Catalog.GetString("     | Connected since | Last activity    | Server Port |                 |");
+                    Catalog.GetString("     | Connected since | Last activity    |             |                 |");
 
                 if (AListDisconnectedClients)
                 {
@@ -294,16 +293,6 @@ namespace Ict.Common.Remoting.Server
 
                 foreach (string[] currentClient in ClientsArrayList)
                 {
-                    if (!AListDisconnectedClients)
-                    {
-                        ClientPort = ValueOrEmpty(currentClient[7]);
-                    }
-                    else
-                    {
-                        // indicate that this Port is no longer used by the disconnected Client
-                        ClientPort = '(' + ValueOrEmpty(currentClient[7]) + ')';
-                    }
-
                     /*
                      * The following code is needed because the header lines go until column
                      * #80 of the Console, and this causes the first Client line to be shifted
@@ -324,10 +313,10 @@ namespace Ict.Common.Remoting.Server
                                   ValueOrEmpty(currentClient[2]).PadRight(16) + " | " +
                                   ValueOrEmpty(currentClient[5]).PadRight(11) + " | " +
                                   ValueOrEmpty(currentClient[6]).PadRight(15) + " | " +
-                                  ValueOrEmpty(currentClient[8]) + Environment.NewLine + "     | " +
+                                  ValueOrEmpty(currentClient[7]) + Environment.NewLine + "     | " +
                                   ValueOrEmpty(currentClient[3]).PadRight(15) + " | " +
                                   ValueOrEmpty(currentClient[4]).PadRight(16) + " | " +
-                                  (ClientPort).PadRight(11) + " | " + Environment.NewLine;
+                                  Environment.NewLine;
 
                     ClientLine++;
                 }
@@ -548,6 +537,14 @@ namespace Ict.Common.Remoting.Server
                 TLogging.Log("ServerDisconnectClient call: " + ACantDisconnectReason, TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// add a service that is offered by the appdomain, for single port remoting
+        /// </summary>
+        public void AddCrossDomainService(string ClientID, string ObjectURI, ICrossDomainService ObjectToRemote)
+        {
+            TCrossDomainMarshaller.AddService(ClientID, ObjectURI, ObjectToRemote);
         }
 
         /// <summary>
@@ -1242,7 +1239,7 @@ namespace Ict.Common.Remoting.Server
                                 // Fill array with Client formatted information
 
                                 //String[] currentClient = (String[])ClientList[ClientCounter];
-                                String[] currentClient = new string[9];
+                                String[] currentClient = new string[8];
 
                                 currentClient[0] = app.FClientID.ToString();
                                 currentClient[1] = app.FClientName;
@@ -1261,16 +1258,7 @@ namespace Ict.Common.Remoting.Server
                                 currentClient[5] = app.FClientComputerName;
                                 currentClient[6] = app.FClientIPAddress;
 
-                                if (app.FAppDomainRemotingPort != 0)
-                                {
-                                    currentClient[7] = app.FAppDomainRemotingPort.ToString();
-                                }
-                                else
-                                {
-                                    currentClient[7] = "N/A";
-                                }
-
-                                currentClient[8] = ClientServerConnectionTypeString;
+                                currentClient[7] = ClientServerConnectionTypeString;
 
                                 ClientList.Add(currentClient);
                             }
@@ -1305,6 +1293,9 @@ namespace Ict.Common.Remoting.Server
             return BuildClientList(AListDisconnectedClients);
         }
 
+        /// name for the cross domain url
+        public static string CROSSDOMAINURL = "services.rem";
+
         /// <summary>
         /// Called by a Client to request connection to the Petra Server.
         ///
@@ -1321,8 +1312,7 @@ namespace Ict.Common.Remoting.Server
         /// <param name="AClientServerConnectionType">Type of the connection (eg. LAN, Remote)</param>
         /// <param name="AClientName">Server-assigned Name of the Client</param>
         /// <param name="AClientID">Server-assigned ID of the Client</param>
-        /// <param name="ARemotingPort">Server-assigned .NET Remoting IP Port to which the
-        /// Client's Remoting calls must be directed</param>
+        /// <param name="ACrossDomainURL">there is only one url now for connecting to the services</param>
         /// <param name="ARemotingURLs">A HashTable containing .NET Remoting URLs of the Petra
         /// Module Root Namespaces (eg. MPartner, MFinance) and other important objects
         /// that need to be called from the Client.</param>
@@ -1341,7 +1331,7 @@ namespace Ict.Common.Remoting.Server
             TClientServerConnectionType AClientServerConnectionType,
             out String AClientName,
             out System.Int32 AClientID,
-            out System.Int16 ARemotingPort,
+            out string ACrossDomainURL,
             out Hashtable ARemotingURLs,
             out TExecutingOSEnum AServerOS,
             out Int32 AProcessID,
@@ -1355,6 +1345,8 @@ namespace Ict.Common.Remoting.Server
             String RemotingURL_PollClientTasks;
             TRunningAppDomain AppDomainEntry;
             String CantDisconnectReason;
+
+            ACrossDomainURL = CROSSDOMAINURL;
 
 #if DEBUGMODE
             if (TLogging.DL >= 10)
@@ -1404,7 +1396,6 @@ namespace Ict.Common.Remoting.Server
                     AClientID = (short)FClientsConnectedTotal;
                     FClientsConnectedTotal++;
                     AClientName = AUserName.ToUpper() + "_" + AClientID.ToString();
-                    ARemotingPort = FindFreeRemotingPort();
                     AServerOS = TSrvSetting.ExecutingOS;
                     LoadInAppDomainName = AClientName + "_Domain";
                     #endregion
@@ -1557,7 +1548,6 @@ namespace Ict.Common.Remoting.Server
                             // The following statement loads the ClientDomain DLL into the Client's
                             // AppDomain, instantiates the main Class and initialises the AppDomain
                             ClientDomainManager.LoadDomainManagerAssembly(AClientID,
-                                ARemotingPort,
                                 AClientServerConnectionType,
                                 FClientManagerCallForwarder,
                                 USystemDefaultsCache,
@@ -1569,7 +1559,7 @@ namespace Ict.Common.Remoting.Server
                         catch (TargetInvocationException exp)
                         {
                             TLogging.Log(
-                                "Error while creating new AppDomain for Client! Port: " + ARemotingPort.ToString() + " Exception: " +
+                                "Error while creating new AppDomain for Client! Exception: " +
                                 exp.ToString() +
                                 "\r\n" + "InnerException: " + exp.InnerException.ToString());
                             throw exp.InnerException;
@@ -1577,7 +1567,7 @@ namespace Ict.Common.Remoting.Server
                         catch (Exception exp)
                         {
                             TLogging.Log(
-                                "Error while creating new AppDomain for Client! Port: " + ARemotingPort.ToString() + " Exception: " + exp.ToString());
+                                "Error while creating new AppDomain for Client! Exception: " + exp.ToString());
                             throw;
                         }
                     }
@@ -1594,7 +1584,7 @@ namespace Ict.Common.Remoting.Server
                         }
                         else
                         {
-                            AppDomainEntry.PassInClientRemotingInfo(RemotingURL_RemotedObject, ARemotingPort, ClientDomainManager);
+                            AppDomainEntry.PassInClientRemotingInfo(RemotingURL_RemotedObject, ClientDomainManager);
                             ServerDisconnectClient(AClientID, out CantDisconnectReason);
                         }
 
@@ -1616,7 +1606,6 @@ namespace Ict.Common.Remoting.Server
                     }
 #endif
                     ((TRunningAppDomain)UClientObjects[(object)AClientID]).PassInClientRemotingInfo(RemotingURL_RemotedObject,
-                        ARemotingPort,
                         ClientDomainManager);
                     ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsConnectingAppDomainSetupOK;
 
@@ -1648,7 +1637,7 @@ namespace Ict.Common.Remoting.Server
                 Monitor.Exit(UConnectClientMonitor);
             }
 
-            ClientDomainManager.LoadAssemblies(AUserInfo, ref ARemotingURLs);
+            ClientDomainManager.LoadAssemblies(AClientID.ToString(), AUserInfo, ref ARemotingURLs);
 
             ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsActive;
             ((TRunningAppDomain)UClientObjects[(object)AClientID]).FClientConnectionFinishedTime = DateTime.Now;
@@ -1828,143 +1817,6 @@ namespace Ict.Common.Remoting.Server
                 Monitor.Exit(AppDomainEntry.DisconnectClientMonitor);
             }
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// Find the lowest unused Port number in the SortedList, thereby re-using the
-        /// Ports of already disconnected clients.
-        ///
-        /// @comment Thread safety: The finding of a free remoting port is not
-        /// thread-save (iteration through a collection is not thread-save!). Therefore
-        /// this function must be called from a piece of code that makes sure that this
-        /// function is called in a way that ensures that the collection cannot change
-        /// while this function is executing (this is ensured in ConnectClient).
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        private System.Int16 FindFreeRemotingPort()
-        {
-            TRunningAppDomain AppDomainEntry;
-            IDictionaryEnumerator ClientEnum;
-            ArrayList ClientPortArray = new ArrayList();
-            Int16 ClientCounter;
-            Int16 PortCounter;
-            Int16 FreeRemotingPort;
-            Int16 PotentiallyFreeRemotingPort;
-            Int16 LowestAvailableRemotingPort;
-
-            FreeRemotingPort = -1;
-            LowestAvailableRemotingPort = (short)(TSrvSetting.IPBasePort + 1);
-            ClientEnum = UClientObjects.GetEnumerator();
-
-            if (UClientObjects.Count != 0)
-            {
-                ClientCounter = 0;
-                try
-                {
-                    if (Monitor.TryEnter(UClientObjects.SyncRoot))
-                    {
-                        /*
-                         * Iterate over all Clients that are currently connected
-                         * Iteration occurs ascending [from client with the lowest ClientID to the client with the highest ClientID]
-                         */
-                        while (ClientEnum.MoveNext())
-                        {
-                            if (((TRunningAppDomain)ClientEnum.Value).AppDomainStatus != TAppDomainStatus.adsStopped)
-                            {
-                                AppDomainEntry = ((TRunningAppDomain)ClientEnum.Value);
-                                ClientPortArray.Add((short)AppDomainEntry.AppDomainRemotingPort);
-                                ClientCounter++;
-                            }
-                        }
-                    }
-                }
-                finally
-                {
-                    Monitor.Exit(UClientObjects.SyncRoot);
-                }
-
-                // Sort array ascending
-                ClientPortArray.Sort();
-
-                if (ClientPortArray.Count != 0)
-                {
-#if DEBUGMODE
-                    if (TLogging.DL >= 4)
-                    {
-                        Console.WriteLine("FindFreeRemotingPort: ClientPortArray:");
-
-                        for (PortCounter = 0; PortCounter <= ClientPortArray.Count - 1; PortCounter += 1)
-                        {
-                            Console.WriteLine(
-                                "  Index: " + PortCounter.ToString() + "; Value: " + ClientPortArray[PortCounter].ToString() + Environment.NewLine);
-                        }
-                    }
-#endif
-
-                    if ((short)ClientPortArray[0] > LowestAvailableRemotingPort)
-                    {
-                        // first entry has an higher Port than the lowest available Port > assign lowest available Port
-                        FreeRemotingPort = LowestAvailableRemotingPort;
-
-                        // $IFDEF DEBUGMODE Console.WriteLine('FindFreeRemotingPort: First entry has an higher Port than the lowest available Port > assign lowest available Port');$ENDIF
-                    }
-                    else
-                    {
-                        // check for an 'hole' in the Port numbers to find a free Port number
-                        for (PortCounter = 0; PortCounter <= ClientPortArray.Count - 1; PortCounter += 1)
-                        {
-                            PotentiallyFreeRemotingPort = (short)((short)ClientPortArray[PortCounter] + 1);
-
-                            // $IFDEF DEBUGMODE Console.WriteLine('FindFreeRemotingPort: ' + PotentiallyFreeRemotingPort.ToString + ' is a potentially free Port');$ENDIF
-                            if (PortCounter != (ClientPortArray.Count - 1))
-                            {
-                                if ((short)ClientPortArray[PortCounter + 1] != PotentiallyFreeRemotingPort)
-                                {
-                                    // there is a gap in the list of Port numbers > use this for the free Port
-                                    FreeRemotingPort = PotentiallyFreeRemotingPort;
-
-                                    // $IFDEF DEBUGMODE Console.WriteLine('FindFreeRemotingPort: there is a gap in the list of Port numbers > use Port ' + FreeRemotingPort.ToString + ' as free Port');$ENDIF
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                // this is the last entry in the list of Port numbers
-                                FreeRemotingPort = PotentiallyFreeRemotingPort;
-
-                                // $IFDEF DEBUGMODE Console.WriteLine('FindFreeRemotingPort: this is the last entry in the list of Port numbers > use Port ' + FreeRemotingPort.ToString + ' as free Port');$ENDIF
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    // there were no entries in UClientObjects > assign lowest available Port number
-                    FreeRemotingPort = LowestAvailableRemotingPort;
-
-                    // $IFDEF DEBUGMODE Console.WriteLine('FindFreeRemotingPort: there were no entries in UClientObjects > assign lowest available Port number');$ENDIF
-                }
-            }
-            else
-            {
-                // there were no entries in ClientPortArray > assign lowest available Port number
-                FreeRemotingPort = LowestAvailableRemotingPort;
-#if DEBUGMODE
-                if (TLogging.DL >= 4)
-                {
-                    Console.WriteLine("FindFreeRemotingPort: there were no entries in ClientPortArray -> assign lowest available Port number");
-                }
-#endif
-            }
-
-#if DEBUGMODE
-            if (TLogging.DL >= 4)
-            {
-                Console.WriteLine("FindFreeRemotingPort: Port number " + FreeRemotingPort.ToString() + " is free.");
-            }
-#endif
-            return FreeRemotingPort;
         }
 
         /// <summary>

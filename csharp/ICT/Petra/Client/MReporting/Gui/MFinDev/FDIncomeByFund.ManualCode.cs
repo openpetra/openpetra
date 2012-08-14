@@ -45,7 +45,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             {
                 FLedgerNumber = value;
 
-                TRemote.MFinance.Reporting.UIConnectors.SelectLedger(FLedgerNumber);
                 TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
                 TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYearQuarter, FLedgerNumber);
 

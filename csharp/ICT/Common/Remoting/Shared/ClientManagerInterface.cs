@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Security.Principal;
+using System.Runtime.Remoting.Messaging;
 using Ict.Common;
 
 namespace Ict.Common.Remoting.Shared
@@ -53,7 +54,7 @@ namespace Ict.Common.Remoting.Shared
             TClientServerConnectionType AClientServerConnectionType,
             out String AClientName,
             out System.Int32 AClientID,
-            out System.Int16 ARemotingPort,
+            out string ACrossDomainURL,
             out Hashtable ARemotingURLs,
             out TExecutingOSEnum AServerOS,
             out Int32 AProcessID,
@@ -81,6 +82,10 @@ namespace Ict.Common.Remoting.Shared
          */
         Boolean DisconnectClient(System.Int32 AClientID, String AReason, out String ACantDisconnectReason);
 
+        /// <summary>
+        /// add a service that is offered by the appdomain, for single port remoting
+        /// </summary>
+        void AddCrossDomainService(string ClientID, string ObjectURI, ICrossDomainService ObjectToRemote);
 
         /**
          * Can be called to queue a ClientTask for a certain Client.
@@ -220,5 +225,16 @@ namespace Ict.Common.Remoting.Shared
         /// </summary>
         /// <returns></returns>
         System.Int32 GCGetApproxMemory();
+    }
+
+    /// <summary>
+    /// this services is available across domains
+    /// </summary>
+    public interface ICrossDomainService
+    {
+        /// <summary>
+        /// marshal a message across domains
+        /// </summary>
+        IMessage Marshal(IMessage msg);
     }
 }
