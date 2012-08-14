@@ -29,6 +29,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared;
 {#USINGNAMESPACES}
 
 {#CONTENT}

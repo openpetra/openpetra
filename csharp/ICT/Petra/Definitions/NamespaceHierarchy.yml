@@ -1,6 +1,7 @@
 NamespaceHierarchy:
     Common: {Description=Common Module}
         Cacheable: {Description=Cacheable DataTables}
+            WebConnectors:
         UIConnectors: {Description = User Interface Connectors}
         WebConnectors: {Description = Web Connectors}
         DataReader: {Description="Simple Data Connector for reading data; checks for permissions; returns typed tables"}
@@ -14,10 +15,12 @@ NamespaceHierarchy:
             WebConnectors: {Description=Web Connectors}
         Mailing: {Description=Mailing Sub-System}
             Cacheable: {Description=Cacheable DataTables}
+                WebConnectors:
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description=Web Connectors}
         Partner: {Description=Partner Sub-System}
             Cacheable: {Description=Cacheable DataTables}
+                WebConnectors:
             DataElements: {Description=DataElements}
                 UIConnectors: {Description=User Interface Connectors}
             ServerLookups:
@@ -28,6 +31,7 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
         Subscriptions: {Description=Subscriptions Sub-System}
             Cacheable: {Description=Cacheable DataTables}
+                WebConnectors:
             UIConnectors: {Description=User Interface Connectors}
         TableMaintenance: {Description=Table Maintenance Sub-System}
             UIConnectors: {Description=User Interface Connectors}
@@ -38,18 +42,21 @@ NamespaceHierarchy:
             DataElements: {Description=DataElements Sub-System}
                 Applications: {Description=Applications}
                     Cacheable: {Description=Cacheable DataTables}
+                        WebConnectors:
                     UIConnectors: {Description=User Interface Connectors}
-                Cacheable: {Description=Cacheable DataTables}
                 UIConnectors: {Description=User Interface Connectors}
                 WebConnectors: {Description=Web Connectors}
             Shepherds: {Description=Shepherds Sub-System}
                 UIConnectors: {Description=User Interface Connectors}            
+            Cacheable: {Description=Cacheable DataTables}
+                WebConnectors:
         TableMaintenance: {Description=Table Maintenance Sub-System}
             UIConnectors: {Description=User Interface Connectors}
-        Units: {Description=Units Sub-System}
+        Unit: {Description=Units Sub-System}
             DataElements: {Description=DataElements Sub-System}
-                Cacheable: {Description=Cacheable DataTables}
                 UIConnectors: {Description=User Interface Connectors}
+            Cacheable: {Description=Cacheable DataTables}
+                WebConnectors:
     Finance: {Description=Finance Module}
         AP: {Description=Accounts Payable Sub-System}
             UIConnectors: {Description=User Interface Connectors}
@@ -60,6 +67,7 @@ NamespaceHierarchy:
             UIConnectors: {Description=User Interface Connectors}
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
         Cacheable: {Description=Cacheable DataTables}
+            WebConnectors:
         ImportExport: {Description=ImportExport Sub-System}
             WebConnectors: {Description="Connectors for Web Services (stateless, simple)"}
         Gift: {Description=Gift Sub-System}
@@ -80,6 +88,7 @@ NamespaceHierarchy:
     Hospitality: {Description=Hospitality Module}
     Conference: {Description=Conference Module}
         Cacheable: {Description=Cacheable DataTables}
+            WebConnectors:
         WebConnectors: {Description=Web Connectors}
     FinDev: {Description=Financial Development Module}
     Reporting: {Description="Reporting Module ('Virtual' Module)"}
@@ -104,3 +113,4 @@ NamespaceHierarchy:
             UserManager:
                 WebConnectors:
         Cacheable: {Description=Cacheable DataTables}
+            WebConnectors:

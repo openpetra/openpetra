@@ -121,6 +121,8 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                                 }
 
                                 DependsOnLedger = true;
+
+                                ServerTemplate.SetCodelet("WITHLEDGER", "true");
                             }
 
                             ProcessTemplate snippetElement = SharedTemplate.GetSnippet("ENUMELEMENT");

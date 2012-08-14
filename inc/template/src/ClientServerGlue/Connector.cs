@@ -24,6 +24,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Shared;
 {#USINGNAMESPACES}
 
 namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.Instantiator
