@@ -506,10 +506,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ACompletionMessage = string.Empty;
 
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
             int selectedDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
-            int batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-            int transNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
 
             try
             {
