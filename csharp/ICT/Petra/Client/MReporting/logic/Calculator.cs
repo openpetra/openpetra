@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MReporting.Logic
 
         /// <summary>how long did it take to calculate the report</summary>
         protected TimeSpan Duration;
-        private IReportGeneratorLogicConnector FReportingGenerator;
+        private IReportingUIConnectorsReportGenerator FReportingGenerator;
         private Boolean FKeepUpProgressCheck;
 
         /// <summary>
@@ -459,7 +459,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             Thread ProgressCheckThread;
 
             ReturnValue = false;
-            FReportingGenerator = TRemote.MReporting.LogicConnectors.ReportGenerator();
+            FReportingGenerator = TRemote.MReporting.UIConnectors.ReportGenerator();
             FKeepUpProgressCheck = true;
 
             // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd

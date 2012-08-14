@@ -645,7 +645,7 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.InternationalPostalTypeList:
-                    TRemote.MCommon.DataReader.GetData(PInternationalPostalTypeTable.GetTableDBName(), null, out TypedTable);
+                    TRemote.MCommon.DataReader.WebConnectors.GetData(PInternationalPostalTypeTable.GetTableDBName(), null, out TypedTable);
 
                     InitialiseUserControl(
                     TypedTable,
