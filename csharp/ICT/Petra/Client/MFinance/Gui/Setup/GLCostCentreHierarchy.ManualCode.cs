@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TFrmGLCostCentreHierarchy
     {
         private Int32 FLedgerNumber;
+        private bool FIAmUpdating;
 
         /// <summary>
         /// Setup the account hierarchy of this ledger
@@ -51,9 +52,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FLedgerNumber = value;
                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
-
                 PopulateTreeView();
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.UnhookControl(pnlDetails, true); // I don't want changes in these values to cause SetChangedFlag - I'll set it myself.
+
+            txtDetailCostCentreCode.TextChanged += new EventHandler(UpdateOnControlChanged);
+            txtDetailCostCentreName.TextChanged += new EventHandler(UpdateOnControlChanged);
+            chkDetailCostCentreActiveFlag.CheckedChanged += new System.EventHandler(UpdateOnControlChanged);
+            cmbDetailCostCentreType.SelectedIndexChanged += new System.EventHandler(UpdateOnControlChanged);
+            FIAmUpdating = false;
         }
 
         /// <summary>
@@ -78,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.trvCostCentres.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewAfterSelect);
         }
 
-        private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, ACostCentreRow ADetailRow)
+        private static String NodeLabel(ACostCentreRow ADetailRow)
         {
             string nodeLabel = ADetailRow.CostCentreCode;
 
@@ -86,8 +97,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 nodeLabel += " (" + ADetailRow.CostCentreName + ")";
             }
+            return nodeLabel;
+        }
 
-            TreeNode newNode = AParentNodes.Add(nodeLabel);
+        private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, ACostCentreRow ADetailRow)
+        {
+
+            TreeNode newNode = AParentNodes.Add(NodeLabel(ADetailRow));
 
             newNode.Tag = ADetailRow;
 
@@ -132,7 +148,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FCurrentNode = e.Node;
 
             // update detail panel
+            FIAmUpdating = true;
             ShowDetails((ACostCentreRow)e.Node.Tag);
+            FIAmUpdating = false;
         }
 
         private void AddNewCostCentre(Object sender, EventArgs e)
@@ -236,7 +254,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private ACostCentreRow GetSelectedDetailRowManual()
         {
-            return (ACostCentreRow)FCurrentNode.Tag;;
+            return (ACostCentreRow)FCurrentNode.Tag;
         }
+
+        private void UpdateOnControlChanged(Object sender, EventArgs e)
+        {
+            if (!FIAmUpdating)
+            {
+                GetDataFromControlsManual();
+                FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
+                FPetraUtilsObject.SetChangedFlag();
+            }
+        }
+
     }
 }
