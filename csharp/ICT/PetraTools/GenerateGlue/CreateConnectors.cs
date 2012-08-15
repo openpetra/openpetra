@@ -75,6 +75,15 @@ class TCreateConnectors
                             if (ParameterType == "List")
                             {
                                 ParameterType = ParameterType.Replace("List", "List[" + p.TypeReference.GenericTypes[0].ToString() + "]");
+                                ParameterType = ParameterType.Replace("System.", String.Empty);
+                            }
+
+                            if (ParameterType == "Dictionary")
+                            {
+                                ParameterType = ParameterType.Replace("Dictionary", "Dictionary[" +
+                                    p.TypeReference.GenericTypes[0].ToString() + "," +
+                                    p.TypeReference.GenericTypes[1].ToString() + "]");
+                                ParameterType = ParameterType.Replace("System.", String.Empty);
                             }
 
                             if (ParameterType.Contains("."))

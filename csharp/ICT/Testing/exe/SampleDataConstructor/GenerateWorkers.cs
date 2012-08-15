@@ -309,7 +309,7 @@ namespace Ict.Testing.SampleDataConstructor
         {
             PLocationRow locationRow = AMainDS.PLocation.NewRowTyped();
 
-            locationRow.SiteKey = DomainManager.GSiteKey;
+            locationRow.SiteKey = 0; // DomainManager.GSiteKey;
             locationRow.LocationKey = (AMainDS.PLocation.Count + 1) * -1;
             locationRow.StreetName = TXMLParser.GetAttribute(ACurrentNode, "Addr2");
             locationRow.PostalCode = TXMLParser.GetAttribute(ACurrentNode, "PostCode");
