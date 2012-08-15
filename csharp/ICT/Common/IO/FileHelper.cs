@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -249,6 +249,25 @@ namespace Ict.Common.IO
             File.Move(AOrigFilename, BackupName);
 
             return BackupName;
+        }
+
+        /// create directory if it does not exist yet
+        /// works around issues on Linux, with symbolic links
+        public static void CreateDirectory(string APath)
+        {
+            if (!Directory.Exists(APath))
+            {
+                // could be a symbolic link on Mono
+                try
+                {
+                    FileAttributes attr = File.GetAttributes(APath);
+                }
+                catch (Exception)
+                {
+                    // directory does not even exist as a symbolic link
+                    Directory.CreateDirectory(APath);
+                }
+            }
         }
     }
 }

@@ -64,7 +64,7 @@
       tofile="${path::combine(dir.bin, 'version.txt')}" 
       overwrite="true"/>
 
-  <mkdir dir="${dir.log}" />
+  <mkdir dir="${dir.log}" failonerror="false"/>
 </target>
 
 <target name="startPetraServer" depends="initConfigFiles" description="Starts a local Petra Server">
