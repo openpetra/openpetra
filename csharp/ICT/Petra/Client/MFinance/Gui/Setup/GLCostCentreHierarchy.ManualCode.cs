@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -126,23 +127,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if ((FCurrentNode != null) && (FCurrentNode != e.Node))
             {
                 ACostCentreRow currentCostCentre = (ACostCentreRow)FCurrentNode.Tag;
-                string oldCode = currentCostCentre.CostCentreCode;
-                GetDetailsFromControls(currentCostCentre);
 
-                // this only works for new rows; old rows have the primary key fields readonly
-                if (currentCostCentre.CostCentreCode != oldCode)
+                if (currentCostCentre.RowState != DataRowState.Deleted) // If this row was removed, I can't look at it..
                 {
-                    // there are no references to this new row yet, apart from children nodes
+                    GetDetailsFromControls(currentCostCentre);
+                    FCurrentNode.Text = NodeLabel(currentCostCentre);
                 }
-
-                string nodeLabel = currentCostCentre.CostCentreCode;
-
-                if (!currentCostCentre.IsCostCentreNameNull())
-                {
-                    nodeLabel += " (" + currentCostCentre.CostCentreName + ")";
-                }
-
-                FCurrentNode.Text = nodeLabel;
             }
 
             FCurrentNode = e.Node;
@@ -196,6 +186,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             trvCostCentres.EndUpdate();
 
             trvCostCentres.SelectedNode = newNode;
+            txtDetailCostCentreCode.Focus();
+            FPetraUtilsObject.SetChangedFlag();
         }
 
         private void ExportHierarchy(object sender, EventArgs e)
@@ -235,9 +227,72 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private bool CheckForInvalidCostCentre(TreeNodeCollection NodeCol)
+        {
+            string newName = Catalog.GetString("NewCostCentre");
+            foreach (TreeNode ChildNode in NodeCol)
+            {
+                if (CheckForInvalidCostCentre (ChildNode.Nodes))
+                {
+                    return true;
+                }
+
+                ACostCentreRow CheckRow = (ACostCentreRow)ChildNode.Tag;
+                if (CheckRow.CostCentreCode.IndexOf(newName) == 0)
+                {
+                    MessageBox.Show(
+                        String.Format(Catalog.GetString("{0} is not a valid cost centre code.\r\nChange the code or remove it completely."), CheckRow.CostCentreCode),
+                        Catalog.GetString("GL Cost Centre Hierarchy"), 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Stop);
+                    trvCostCentres.SelectedNode = ChildNode;
+                    return true;
+                }
+
+                if (CheckRow.CostCentreCode == "")
+                {
+                    MessageBox.Show(
+                        Catalog.GetString("Cost centre code is empty.\r\nSupply a valid cost centre code or also remove the Name to delete this record."),
+                        Catalog.GetString("GL Cost Centre Hierarchy"), 
+                        MessageBoxButtons.OK, 
+                        MessageBoxIcon.Stop);
+                    trvCostCentres.SelectedNode = ChildNode;
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
+            //
+            // I'll look through and check whether any of the cost centres still have "NewCostCentre"..
+            //
+            if (CheckForInvalidCostCentre(trvCostCentres.Nodes))
+            {
+                AVerificationResult = null;
+                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
+                return TSubmitChangesResult.scrInfoNeeded;
+            }
+
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+        }
+
+        /// <summary>
+        /// Delete the row in the editor
+        /// NOTE: Before I can delete a cost centre, I have to delete any children it might have...
+        /// </summary>
+        /// <param name="CostCentreRow">FCurrentNode, or a child node via a recursive call</param>
+        /// <returns>The node that should now be selected</returns>
+        private void DeleteDataFromSelectedRow(TreeNode CostCentreRow)
+        {
+            foreach (TreeNode ChildNode in CostCentreRow.Nodes)
+            {
+                DeleteDataFromSelectedRow(ChildNode);
+            }
+
+            ACostCentreRow SelectedRow = (ACostCentreRow)CostCentreRow.Tag;
+            SelectedRow.Delete();
         }
 
         private void GetDataFromControlsManual()
@@ -249,6 +304,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FCurrentNode != null)
             {
                 GetDetailsFromControls(GetSelectedDetailRowManual());
+
+                //
+                // If I find that theere's no data in the new node, I'll remove it right now.
+                ACostCentreRow SelectedRow = (ACostCentreRow)FCurrentNode.Tag;
+                if ((SelectedRow.CostCentreCode == "") && (SelectedRow.CostCentreName == ""))
+                {
+                     DeleteDataFromSelectedRow(FCurrentNode);
+                     TreeNode SelectThisNode = FCurrentNode.Parent;
+                     trvCostCentres.Nodes.Remove(FCurrentNode);
+                     trvCostCentres.SelectedNode = SelectThisNode;
+                }
             }
         }
 
