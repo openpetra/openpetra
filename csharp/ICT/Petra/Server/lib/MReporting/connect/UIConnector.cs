@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,20 +26,21 @@ using System.Data;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MReporting.LogicConnectors;
+using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;
+using Ict.Petra.Server.MReporting.Calculator;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
 
-namespace Ict.Petra.Server.MReporting.LogicConnectors
+namespace Ict.Petra.Server.MReporting.UIConnectors
 {
     /// <summary>
     /// the connector for the report generation
     /// </summary>
-    public class TReportGeneratorLogicConnector : TConfigurableMBRObject, IReportGeneratorLogicConnector
+    public class TReportGeneratorUIConnector : TConfigurableMBRObject, IReportingUIConnectorsReportGenerator
     {
         private TAsynchronousExecutionProgress FAsyncExecProgress;
         private TRptDataCalculator FDatacalculator;
@@ -49,7 +50,7 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
         private Boolean FSuccess;
 
         /// constructor needed for the interface
-        public TReportGeneratorLogicConnector()
+        public TReportGeneratorUIConnector()
         {
         }
 
@@ -61,7 +62,10 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
         {
             get
             {
-                return FAsyncExecProgress;
+                return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
+                    typeof(IAsynchronousExecutionProgress),
+                    typeof(TAsynchronousExecutionProgressRemote),
+                    FAsyncExecProgress);
             }
         }
 
@@ -153,45 +157,33 @@ namespace Ict.Petra.Server.MReporting.LogicConnectors
         /// <summary>
         /// get the result of the report calculation
         /// </summary>
-        public DataTable Result
+        public DataTable GetResult()
         {
-            get
-            {
-                return FResultList.ToDataTable(FParameterList);
-            }
+            return FResultList.ToDataTable(FParameterList);
         }
 
         /// <summary>
         /// get the environment variables after report calculation
         /// </summary>
-        public DataTable Parameter
+        public DataTable GetParameter()
         {
-            get
-            {
-                return FParameterList.ToDataTable();
-            }
+            return FParameterList.ToDataTable();
         }
 
         /// <summary>
         /// see if the report calculation finished successfully
         /// </summary>
-        public Boolean Success
+        public Boolean GetSuccess()
         {
-            get
-            {
-                return FSuccess;
-            }
+            return FSuccess;
         }
 
         /// <summary>
         /// error message that happened during report calculation
         /// </summary>
-        public String ErrorMessage
+        public String GetErrorMessage()
         {
-            get
-            {
-                return FErrorMessage;
-            }
+            return FErrorMessage;
         }
 
         /// <summary>

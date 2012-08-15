@@ -41,7 +41,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Logic;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -2735,10 +2735,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     switch (AUIConnectorType)
                     {
                         case TUIConnectorType.uictPartnerKey:
-                            FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey,
-                            ref FMainDS,
-                            TClientSettings.DelayedDataLoading,
-                            FInitiallySelectedTabPage);
+                            FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey);
+                            FMainDS = FPartnerEditUIConnector.GetData(TClientSettings.DelayedDataLoading, FInitiallySelectedTabPage);
                             break;
 
                         case TUIConnectorType.uictLocationKey:
@@ -2746,10 +2744,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // MessageBox.Show('Passed in FLocationKeyForSelectingPartnerLocation: ' + FLocationKeyForSelectingPartnerLocation.toString);
                             FPartnerEditUIConnector = TRemote.MPartner.Partner.UIConnectors.PartnerEdit(FPartnerKey,
                             FSiteKeyForSelectingPartnerLocation,
-                            FLocationKeyForSelectingPartnerLocation,
-                            ref FMainDS,
-                            TClientSettings.DelayedDataLoading,
-                            FInitiallySelectedTabPage);
+                            FLocationKeyForSelectingPartnerLocation);
+                            FMainDS = FPartnerEditUIConnector.GetData(TClientSettings.DelayedDataLoading, FInitiallySelectedTabPage);
                             break;
 
                         case TUIConnectorType.uictNewPartner:

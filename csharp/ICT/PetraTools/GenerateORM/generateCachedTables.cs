@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Ict.Common;
@@ -64,6 +65,8 @@ namespace Ict.Tools.CodeGeneration.CachedTables
 
                 while (subModule != null)
                 {
+                    List <string>UsingNamespaces = new List <string>();
+
                     // write the server file for each submodule
                     ProcessTemplate ServerTemplate = new ProcessTemplate(ATemplateDir + Path.DirectorySeparatorChar +
                         "ORM" + Path.DirectorySeparatorChar +
@@ -118,6 +121,8 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                                 }
 
                                 DependsOnLedger = true;
+
+                                ServerTemplate.SetCodelet("WITHLEDGER", "true");
                             }
 
                             ProcessTemplate snippetElement = SharedTemplate.GetSnippet("ENUMELEMENT");
@@ -130,16 +135,40 @@ namespace Ict.Tools.CodeGeneration.CachedTables
 
                             string Comment = TXMLParser.GetAttribute(enumElement, "Comment");
 
-                            if ((Comment.Length == 0) && (TableOrListElement.Name == "DatabaseTables"))
+                            if (TableOrListElement.Name == "DatabaseTables")
                             {
                                 TTable Table = AStore.GetTable(enumElement.Name);
+
+                                string Namespace = "Ict.Petra.Shared." + TTable.GetNamespace(Table.strGroup) + ".Data";
+
+                                if (!UsingNamespaces.Contains(Namespace))
+                                {
+                                    UsingNamespaces.Add(Namespace);
+                                }
+
+                                Namespace = "Ict.Petra.Shared." + TTable.GetNamespace(Table.strGroup) + ".Validation";
+
+                                if (!UsingNamespaces.Contains(Namespace))
+                                {
+                                    UsingNamespaces.Add(Namespace);
+                                }
+
+                                Namespace = "Ict.Petra.Server." + TTable.GetNamespace(Table.strGroup) + ".Data.Access";
+
+                                if (!UsingNamespaces.Contains(Namespace))
+                                {
+                                    UsingNamespaces.Add(Namespace);
+                                }
 
                                 if (Table == null)
                                 {
                                     throw new Exception("Error: cannot find table " + enumElement.Name + " for caching in module " + module.Name);
                                 }
 
-                                Comment = Table.strDescription;
+                                if (Comment.Length == 0)
+                                {
+                                    Comment = Table.strDescription;
+                                }
                             }
 
                             if (Comment.Length == 0)
@@ -243,16 +272,6 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                                 {
                                     ServerTemplate.InsertSnippet("LOADTABLESANDLISTS", snippetLoadList);
                                 }
-
-                                ProcessTemplate snippetManualCodeFunction = ServerTemplate.GetSnippet("GETCALCULATEDLISTFROMDB");
-
-                                if (DependsOnLedger)
-                                {
-                                    snippetManualCodeFunction = ServerTemplate.GetSnippet("GETCALCULATEDLISTLEDGERFROMDB");
-                                }
-
-                                snippetManualCodeFunction.SetCodelet("CALCULATEDLISTNAME", enumName);
-                                ServerTemplate.InsertSnippet("GETCALCULATEDLISTFROMDB", snippetManualCodeFunction);
                             }
 
                             enumElement = enumElement.NextSibling;
@@ -278,6 +297,13 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                         ServerTemplate.InsertSnippet("LEDGERSAVECACHEABLE", snippetLedgerSaveTable);
                     }
 
+                    ServerTemplate.SetCodelet("USINGNAMESPACES", string.Empty);
+
+                    foreach (string UsingNamespace in UsingNamespaces)
+                    {
+                        ServerTemplate.AddToCodelet("USINGNAMESPACES", "using " + UsingNamespace + ";" + Environment.NewLine);
+                    }
+
                     string path = ASharedPath +
                                   Path.DirectorySeparatorChar + ".." +
                                   Path.DirectorySeparatorChar + "Server" +
@@ -285,23 +311,23 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                                   Path.DirectorySeparatorChar + "M" + module.Name +
                                   Path.DirectorySeparatorChar;
 
-                    if (File.Exists(path + "Cacheable.cs"))
+                    if (File.Exists(path + "Cacheable.ManualCode.cs"))
                     {
-                        path += "Cacheable.cs";
+                        path += "Cacheable-generated.cs";
                     }
                     else
                     {
-                        if (File.Exists(path + "data" + Path.DirectorySeparatorChar + subModule.Name + "." + "Cacheable.cs"))
+                        if (File.Exists(path + "data" + Path.DirectorySeparatorChar + subModule.Name + "." + "Cacheable.ManualCode.cs"))
                         {
-                            path += "data" + Path.DirectorySeparatorChar + subModule.Name + "." + "Cacheable.cs";
+                            path += "data" + Path.DirectorySeparatorChar + subModule.Name + "." + "Cacheable-generated.cs";
                         }
-                        else if (File.Exists(path + "data" + Path.DirectorySeparatorChar + "Cacheable.cs"))
+                        else if (File.Exists(path + "data" + Path.DirectorySeparatorChar + "Cacheable.ManualCode.cs"))
                         {
-                            path += "data" + Path.DirectorySeparatorChar + "Cacheable.cs";
+                            path += "data" + Path.DirectorySeparatorChar + "Cacheable-generated.cs";
                         }
                         else
                         {
-                            path += subModule.Name + "." + "Cacheable.cs";
+                            path += subModule.Name + "." + "Cacheable-generated.cs";
                         }
                     }
 
@@ -310,14 +336,8 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                     subModule = subModule.NextSibling;
                 }
 
-//                SharedTemplate.FinishWriting(ASharedPath +
-//                    Path.DirectorySeparatorChar + "lib" +
-//                    Path.DirectorySeparatorChar + "M" + module.Name +
-//                    Path.DirectorySeparatorChar + "Cacheable.cs",
-//                    ".cs", true);
-
                 SharedTemplate.FinishWriting(ASharedPath +
-                    Path.DirectorySeparatorChar + "M" + module.Name + ".Cacheable.cs",
+                    Path.DirectorySeparatorChar + "M" + module.Name + ".Cacheable-generated.cs",
                     ".cs", true);
 
                 module = module.NextSibling;

@@ -111,60 +111,6 @@ public class CreateInterfaces : AutoGenerationWriter
     }
 
     /// <summary>
-    /// format a type name to a string.
-    /// reduce the length of the type name if the namespace is unique.
-    /// </summary>
-    /// <param name="ATypeRef"></param>
-    /// <param name="ANamespace"></param>
-    /// <returns></returns>
-    public static string TypeToString(TypeReference ATypeRef, string ANamespace)
-    {
-        string TypeAsString = ATypeRef.Type;
-
-        if (ATypeRef.GenericTypes.Count > 0)
-        {
-            TypeAsString += "<";
-
-            foreach (TypeReference tr in ATypeRef.GenericTypes)
-            {
-                if (!TypeAsString.EndsWith("<"))
-                {
-                    TypeAsString += ", ";
-                }
-
-                TypeAsString += tr.Type;
-            }
-
-            TypeAsString += ">";
-        }
-
-        if (ATypeRef.IsArrayType)
-        {
-            TypeAsString += "[]";
-        }
-
-        if (TypeAsString == "System.Void")
-        {
-            TypeAsString = "void";
-        }
-
-        // ReturnType sometimes has a very long name;
-        // shorten it for readability
-        // test whether the namespace is contained in the current namespace
-        if (TypeAsString.IndexOf(".") != -1)
-        {
-            String returnTypeNS = TypeAsString.Substring(0, TypeAsString.LastIndexOf("."));
-
-            if (ANamespace.IndexOf(returnTypeNS) == 0)
-            {
-                TypeAsString = TypeAsString.Substring(TypeAsString.LastIndexOf(".") + 1);
-            }
-        }
-
-        return TypeAsString;
-    }
-
-    /// <summary>
     /// write the interfaces for the methods that need to be reflected
     /// check connector files
     /// </summary>
@@ -184,23 +130,19 @@ public class CreateInterfaces : AutoGenerationWriter
 
             foreach (PropertyDeclaration p in CSParser.GetProperties(t))
             {
-                bool AttributeNoRemoting = false;
-
-                foreach (AttributeSection attrSection in p.Attributes)
+                if (TCollectConnectorInterfaces.IgnoreMethod(p.Attributes, p.Modifier))
                 {
-                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-                    {
-                        if (attr.Name == "NoRemoting")
-                        {
-                            AttributeNoRemoting = true;
-                        }
-                    }
+                    continue;
+                }
+
+                if (!p.GetRegion.Block.ToString().Contains("TCreateRemotableObject"))
+                {
+                    TLogging.Log("Warning: properties in UIConnectors must use the class TCreateRemotableObject: " +
+                        AServerNamespace + "." + t.Name + "." + p.Name);
                 }
 
                 // don't write namespace hierarchy here
-                if ((p.TypeReference.Type.IndexOf("Namespace") == -1)
-                    && ((p.Modifier & Modifiers.Public) != 0)
-                    && !AttributeNoRemoting)
+                if (p.TypeReference.Type.IndexOf("Namespace") == -1)
                 {
                     String returnType = TypeToString(p.TypeReference, AInterfaceNamespace);
 
@@ -226,28 +168,7 @@ public class CreateInterfaces : AutoGenerationWriter
             {
                 string MethodName = m.Name;
 
-                bool AttributeNoRemoting = false;
-
-                foreach (AttributeSection attrSection in m.Attributes)
-                {
-                    foreach (ICSharpCode.NRefactory.Ast.Attribute attr in attrSection.Attributes)
-                    {
-                        if (attr.Name == "NoRemoting")
-                        {
-                            AttributeNoRemoting = true;
-                        }
-                    }
-                }
-
-                if (MethodName.Equals("InitializeLifetimeService")
-                    || MethodName.Equals("GetLifetimeService")
-                    || MethodName.Equals("CreateObjRef")
-                    || MethodName.Equals("GetType")
-                    || MethodName.Equals("ToString")
-                    || MethodName.Equals("Equals")
-                    || MethodName.Equals("GetHashCode")
-                    || ((m.Modifier & Modifiers.Public) == 0)
-                    || AttributeNoRemoting)
+                if (TCollectConnectorInterfaces.IgnoreMethod(m.Attributes, m.Modifier))
                 {
                     continue;
                 }
@@ -315,19 +236,6 @@ public class CreateInterfaces : AutoGenerationWriter
         foreach (TypeDeclaration t in AConnectorClasses)
         {
             string ConnectorClassName = t.Name;
-            MethodDeclaration GetDataMethod = null;
-
-            foreach (MethodDeclaration m in CSParser.GetMethods(t))
-            {
-                if (m.Name == "GetData")
-                {
-                    // there might be overloads of GetData; use the method with the most parameters
-                    if ((GetDataMethod == null) || (GetDataMethod.Parameters.Count < m.Parameters.Count))
-                    {
-                        GetDataMethod = m;
-                    }
-                }
-            }
 
             // cacheable will not work yet; careful: when building MethodName, connectorName does not have a plural s
             // but that cacheable constructor is not needed anyways???
@@ -398,39 +306,6 @@ public class CreateInterfaces : AutoGenerationWriter
 
                         MethodDeclaration += ");";
                         WriteLine(MethodDeclaration);
-
-                        if (GetDataMethod != null)
-                        {
-                            WriteLine(
-                                "/// <summary>auto generated from Connector constructor and GetData (" + ServerNamespace + "." + ConnectorClassName +
-                                ")</summary>");
-                            MethodDeclaration = MethodType + " " + MethodName + "(";
-                            align = MethodDeclaration.Length;
-                            firstParameter = true;
-
-                            // first add the parameters of the constructor
-                            foreach (ParameterDeclarationExpression p in m.Parameters)
-                            {
-                                AddParameter(ref MethodDeclaration, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
-                            }
-
-                            // then add the return value of GetData as a ref parameter
-                            AddParameter(ref MethodDeclaration,
-                                ref firstParameter,
-                                align,
-                                "ADataSet",
-                                ParameterModifiers.Ref,
-                                GetDataMethod.TypeReference.Type);
-
-                            // then add the parameters of GetData, if they have not been added yet with the parameters of the constructor
-                            foreach (ParameterDeclarationExpression p in GetDataMethod.Parameters)
-                            {
-                                AddParameter(ref MethodDeclaration, ref firstParameter, align, p.ParameterName, p.ParamModifier, p.TypeReference.Type);
-                            }
-
-                            MethodDeclaration += ");";
-                            WriteLine(MethodDeclaration);
-                        }
                     }
                 }
             }
@@ -491,14 +366,14 @@ public class CreateInterfaces : AutoGenerationWriter
         string AInterfaceName,
         TNamespace tn,
         TNamespace sn,
-        List <TNamespace>children,
+        SortedList <string, TNamespace>children,
         SortedList InterfaceNames,
         List <CSParser>ACSFiles)
     {
         WriteLine("/// <summary>auto generated</summary>");
         StartBlock("public interface " + AInterfaceName + " : IInterface");
 
-        foreach (TNamespace child in children)
+        foreach (TNamespace child in children.Values)
         {
             WriteLine("/// <summary>access to sub namespace</summary>");
             StartBlock("I" + ParentInterfaceName + child.Name + "Namespace " + child.Name);
@@ -607,12 +482,11 @@ public class CreateInterfaces : AutoGenerationWriter
         String ParentInterfaceName,
         TNamespace tn,
         TNamespace sn,
-        List <TNamespace>children,
+        SortedList <string, TNamespace>children,
         SortedList InterfaceNames,
         List <CSParser>ACSFiles)
     {
         WriteLine();
-        StartBlock("namespace " + ParentNamespace);
 
         WriteInterface(ParentNamespace,
             ParentInterfaceName,
@@ -632,9 +506,7 @@ public class CreateInterfaces : AutoGenerationWriter
                 tn, sn, children, InterfaceNames, ACSFiles);
         }
 
-        EndBlock();
-
-        foreach (TNamespace child in children)
+        foreach (TNamespace child in children.Values)
         {
             WriteNamespace(ParentNamespace + "." + child.Name,
                 ParentInterfaceName + child.Name,
@@ -656,7 +528,7 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine("/// <summary>auto generated</summary>");
         StartBlock("public interface IM" + tn.Name + "Namespace : IInterface");
 
-        foreach (TNamespace sn in tn.Children)
+        foreach (TNamespace sn in tn.Children.Values)
         {
             WriteLine("/// <summary>access to sub namespace</summary>");
             StartBlock("I" + sn.Name + "Namespace " + sn.Name);
@@ -665,16 +537,20 @@ public class CreateInterfaces : AutoGenerationWriter
         }
 
         EndBlock();
-        EndBlock();
 
         // parse Instantiator source code
-        foreach (TNamespace sn in tn.Children)
+        foreach (TNamespace sn in tn.Children.Values)
         {
             WriteNamespace("Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, tn, sn, sn.Children, AInterfaceNames, ACSFiles);
         }
+
+        EndBlock();
     }
 
-    private void AddNamespacesFromYmlFile(String AOutputPath, string AModuleName)
+    /// <summary>
+    /// add using namespaces, defined in the yml file in the interface directory
+    /// </summary>
+    public static string AddNamespacesFromYmlFile(String AOutputPath, string AModuleName)
     {
         TYml2Xml reader = new TYml2Xml(AOutputPath + Path.DirectorySeparatorChar + "InterfacesUsingNamespaces.yml");
         XmlDocument doc = reader.ParseYML2XML();
@@ -683,10 +559,14 @@ public class CreateInterfaces : AutoGenerationWriter
 
         StringCollection usingNamespaces = TYml2Xml.GetElements(RootNode, AModuleName);
 
+        string result = string.Empty;
+
         foreach (string s in usingNamespaces)
         {
-            WriteLine("using " + s.Trim() + ";");
+            result += "using " + s.Trim() + ";" + Environment.NewLine;
         }
+
+        return result;
     }
 
     /// <summary>
@@ -694,8 +574,7 @@ public class CreateInterfaces : AutoGenerationWriter
     /// </summary>
     /// <param name="tn"></param>
     /// <param name="AOutputPath"></param>
-    /// <param name="AXmlFileName"></param>
-    private void WriteInterfaces(TNamespace tn, String AOutputPath, String AXmlFileName)
+    private void WriteInterfaces(TNamespace tn, String AOutputPath)
     {
         String OutputFile = AOutputPath + Path.DirectorySeparatorChar + tn.Name + ".Interfaces-generated.cs";
 
@@ -703,9 +582,8 @@ public class CreateInterfaces : AutoGenerationWriter
         Console.WriteLine("working on file " + OutputFile);
 
         OpenFile(OutputFile);
-        WriteLine("// Auto generated with nant generateGlue, based on " +
-            Path.GetFullPath(AXmlFileName).Substring(Path.GetFullPath(AXmlFileName).IndexOf("csharp")));
-        WriteLine("// and the Server c# files (eg. UIConnector implementations)");
+        WriteLine("// Auto generated with nant generateGlue");
+        WriteLine("// based on the Server c# files (eg. UIConnector implementations)");
         WriteLine("// Do not change this file manually.");
         WriteLine("//");
 
@@ -714,24 +592,17 @@ public class CreateInterfaces : AutoGenerationWriter
         WriteLine(ProcessTemplate.LoadEmptyFileComment(templateDir));
 
         WriteLine("using System;");
+        WriteLine("using System.Xml;");
         WriteLine("using System.Collections;");
+        WriteLine("using System.Collections.Specialized;");
         WriteLine("using System.Collections.Generic;");
         WriteLine("using System.Data;");
         WriteLine("using Ict.Common;");
+        WriteLine("using Ict.Common.Data;");
         WriteLine("using Ict.Common.Verification;");
         WriteLine("using Ict.Common.Remoting.Shared;");
 
-        foreach (TNamespace sn in tn.Children)
-        {
-            WriteLine("using Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name + ';');
-        }
-
-        foreach (TNamespace sn in tn.Children)
-        {
-            CommonNamespace.WriteUsingNamespace(this, "Ict.Petra.Shared.Interfaces.M" + tn.Name + "." + sn.Name, sn.Name, sn, sn.Children);
-        }
-
-        AddNamespacesFromYmlFile(AOutputPath, tn.Name);
+        WriteLine(AddNamespacesFromYmlFile(AOutputPath, tn.Name));
 
         // get all csharp files that might hold implementations of remotable classes
         List <CSParser>CSFiles = null;
@@ -758,14 +629,16 @@ public class CreateInterfaces : AutoGenerationWriter
     /// </summary>
     /// <param name="ANamespaces"></param>
     /// <param name="AOutputPath"></param>
-    /// <param name="AXmlFileName"></param>
-    public void CreateFiles(List <TNamespace>ANamespaces, String AOutputPath, String AXmlFileName)
+    public void CreateFiles(TNamespace ANamespaces, String AOutputPath)
     {
-        foreach (TNamespace tn in ANamespaces)
+        foreach (TNamespace tn in ANamespaces.Children.Values)
         {
-            // for testing
-//        if (tn.Name != "SysMan") continue;
-            WriteInterfaces(tn, AOutputPath, AXmlFileName);
+            string module = TAppSettingsManager.GetValue("module", "all");
+
+            if ((module == "all") || (tn.Name == module))
+            {
+                WriteInterfaces(tn, AOutputPath);
+            }
         }
     }
 }

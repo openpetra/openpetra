@@ -224,6 +224,8 @@ namespace Ict.Common.Remoting.Server
         /// <summary>holds reference to an instance of the ClientTasksManager</summary>
         private TClientTasksManager FClientTasksManager;
 
+        private ICrossDomainService FRemotedPollClientTaskObject;
+
         /// <summary>Random Security Token (to prevent unauthorised AppDomain shutdown)</summary>
         private String FRandomAppDomainTearDownToken;
         private System.Object FTearDownAppDomainMonitor;
@@ -290,8 +292,6 @@ namespace Ict.Common.Remoting.Server
         ///
         /// </summary>
         /// <param name="AClientID">ClientID as assigned by the ClientManager</param>
-        /// <param name="ARemotingPort">IP Port on which the .NET Remoting TCP Channel should
-        /// be set up</param>
         /// <param name="AClientServerConnectionType">Tells in which way the Client connected
         /// to the PetraServer</param>
         /// <param name="AClientManagerRef">A reference to the ClientManager object
@@ -300,7 +300,6 @@ namespace Ict.Common.Remoting.Server
         /// <param name="AUserID"></param>
         /// <returns>void</returns>
         public TClientDomainManagerBase(String AClientID,
-            String ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
             string AUserID)
@@ -323,7 +322,6 @@ namespace Ict.Common.Remoting.Server
             // Note: .NET Remoting needs to be set up separately for each AppDomain, and settings in
             // the .NET (Remoting) Configuration File are valid only for the Default AppDomain.
             //
-            Int16 RemotingPortInt = Convert.ToInt16(ARemotingPort);
             try
             {
                 // The following settings equal to a config file's
@@ -354,35 +352,6 @@ namespace Ict.Common.Remoting.Server
                     // ignore System.Runtime.Remoting.RemotingException : 'LeaseTime' can only be set once within an AppDomain.
                     // this happens in the Server NUnit test, when running several tests, therefore reconnecting with the same AppDomain.
                 }
-
-                // for NUnit Server testing, we do not need .net remoting
-                if (RemotingPortInt != -1)
-                {
-                    BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
-                    TCPSink.TypeFilterLevel = TypeFilterLevel.Full;
-                    IServerChannelSinkProvider EncryptionSink = TCPSink;
-
-                    if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
-                    {
-                        EncryptionSink = new EncryptionServerSinkProvider();
-                        EncryptionSink.Next = TCPSink;
-                    }
-
-                    Hashtable ChannelProperties = new Hashtable();
-                    ChannelProperties.Add("port", RemotingPortInt.ToString());
-                    ChannelProperties.Add("name", "TCP" + RemotingPortInt.ToString());
-                    ChannelProperties.Add("typeFilterLevel", TypeFilterLevel.Full);
-
-                    string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
-
-                    if (SpecificIPAddress.Length > 0)
-                    {
-                        ChannelProperties.Add("machineName", SpecificIPAddress);
-                    }
-
-                    FTcpChannel = new TcpChannel(ChannelProperties, null, EncryptionSink);
-                    ChannelServices.RegisterChannel(FTcpChannel, false);
-                }
             }
             catch (Exception e)
             {
@@ -393,7 +362,7 @@ namespace Ict.Common.Remoting.Server
 #if DEBUGMODE
             if (TLogging.DL >= 4)
             {
-                Console.WriteLine("Application domain: " + Thread.GetDomain().FriendlyName + " @ Port " + ARemotingPort);
+                Console.WriteLine("Application domain: " + Thread.GetDomain().FriendlyName);
                 Console.WriteLine("  for User: " + FUserID);
             }
 #endif
@@ -459,9 +428,9 @@ namespace Ict.Common.Remoting.Server
         {
             // Console.WriteLine('TClientDomainManager.InitAppDomain in AppDomain: ' + Thread.GetDomain().FriendlyName);
 
-            new TAppSettingsManager(false);
-
             new TSrvSetting(ASettings);
+            new TAppSettingsManager(TSrvSetting.ConfigurationFile);
+
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
         }
 
@@ -528,51 +497,36 @@ namespace Ict.Common.Remoting.Server
         /// </returns>
         public String GetPollClientTasksURL()
         {
-            String ReturnValue;
-            DateTime RemotingTime;
-            String RemoteAtURI;
-
-            System.Security.Cryptography.RNGCryptoServiceProvider rnd;
-            Byte[] RandomRemotingBytes = new Byte[4];
-            Byte rndbytespos;
-            String RandomRemotingString;
-            RandomRemotingString = "";
-
-            rnd = new System.Security.Cryptography.RNGCryptoServiceProvider();
-            rnd.GetBytes(RandomRemotingBytes);
-
-            for (rndbytespos = 0; rndbytespos <= 3; rndbytespos += 1)
-            {
-                RandomRemotingString = RandomRemotingString + RandomRemotingBytes[rndbytespos].ToString();
-            }
-
-            RemotingTime = DateTime.Now;
-            RemoteAtURI = FUserID + '_' + (RemotingTime.Day).ToString() + (RemotingTime.Hour).ToString() + (RemotingTime.Minute).ToString() +
-                          (RemotingTime.Second).ToString() + '_' + RandomRemotingString.ToString();
-
             // Set Parameters for TPollClientTasks Class
             new TPollClientTasksParameters(FClientTasksManager);
 
-            // Register TPollClientTasks Class as 'SingleCall' remoted Object
-            RemotingConfiguration.RegisterWellKnownServiceType(typeof(TPollClientTasks), RemoteAtURI, WellKnownObjectMode.SingleCall);
+            FRemotedPollClientTaskObject = new TPollClientTasks();
 
             // Start ClientStillAliveCheck Thread
             new ClientStillAliveCheck.TClientStillAliveCheck(FClientServerConnectionType, new TDelegateTearDownAppDomain(
                     TearDownAppDomain), FRandomAppDomainTearDownToken);
-#if DEBUGMODE
+
             if (TLogging.DL >= 5)
             {
                 Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: created TClientStillAliveCheck.");
             }
-#endif
-            ReturnValue = RemoteAtURI;
-#if DEBUGMODE
+
+            string ReturnValue = TConfigurableMBRObject.BuildRandomURI("PollClientTasks");
+
             if (TLogging.DL >= 9)
             {
-                Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: RemoteAtURI: " + RemoteAtURI);
+                Console.WriteLine("TClientDomainManager.GetPollClientTasksURL: remote at: " + ReturnValue);
             }
-#endif
+
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// get the object for remoting
+        /// </summary>
+        public ICrossDomainService GetRemotedPollClientTasksObject()
+        {
+            return FRemotedPollClientTaskObject;
         }
 
         /// <summary>

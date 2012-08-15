@@ -34,7 +34,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.MPartner;
@@ -124,7 +124,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public event System.EventHandler DisableAcceptButton;
-        
+
         private void OnPartnerInfoPaneCollapsed()
         {
             if (PartnerInfoPaneCollapsed != null)
@@ -218,7 +218,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             set
             {
-                FRunningInsideModalForm = value;               
+                FRunningInsideModalForm = value;
             }
         }
 

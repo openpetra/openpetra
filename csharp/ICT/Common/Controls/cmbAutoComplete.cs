@@ -4,7 +4,7 @@
 // @Authors:
 //       markusm, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -44,11 +44,6 @@ namespace Ict.Common.Controls
     public delegate void TAcceptNewEntryEventHandler(System.Object Sender, TAcceptNewEntryEventArgs e);
 
     /// <summary>
-    /// delegate for when the data source changes
-    /// </summary>
-    public delegate void TDataSourceChangingEventHandler(System.Object Sender, System.EventArgs e);
-
-    /// <summary>
     /// event arguments for when a new item is added
     /// </summary>
     public class TAcceptNewEntryEventArgs : System.ComponentModel.CancelEventArgs
@@ -57,22 +52,6 @@ namespace Ict.Common.Controls
         /// the new item
         /// </summary>
         public String ItemString;
-    }
-
-    /// <summary>
-    /// event arguments for the data source changing event
-    /// </summary>
-    public class TDataSourceChangingEventArgs : System.EventArgs
-    {
-        /// <summary>
-        /// the old data source
-        /// </summary>
-        public object OldDataSource;
-
-        /// <summary>
-        /// the new data source
-        /// </summary>
-        public object NewDataSource;
     }
 
     /// <summary>
@@ -169,10 +148,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This property determines which column should be sorted. This may be esential
-        /// for heirs of this class which use more the one column in the combobox. The
-        /// default value for this property is therefore NIL.
-        ///
+        /// case sensitive search
         /// </summary>
         public bool CaseSensitiveSearch
         {
@@ -188,10 +164,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This property determines which column should be sorted. This may be esential
-        /// for heirs of this class which use more the one column in the combobox. The
-        /// default value for this property is therefore NIL.
-        ///
+        /// data source
         /// </summary>
         public new object DataSource
         {
@@ -202,16 +175,6 @@ namespace Ict.Common.Controls
 
             set
             {
-                object OldDataSource = base.DataSource;
-                TDataSourceChangingEventArgs Args = new TDataSourceChangingEventArgs();
-                Args.OldDataSource = OldDataSource;
-                Args.NewDataSource = value;
-
-                if (!(DesignMode))
-                {
-                    OnDataSourceChanging(Args);
-                }
-
                 if (value == null)
                 {
                     return;
@@ -227,8 +190,8 @@ namespace Ict.Common.Controls
                 }
 
                 // problem to set it here, because the datasource is still being updated, and the indexchanged triggers give trouble
-                // this.SelectedIndex := 1;
-                // this.SelectedItem := nil;
+                this.SelectedIndex = -1;
+                this.Text = string.Empty;
             }
         }
 
@@ -255,12 +218,8 @@ namespace Ict.Common.Controls
         /// </summary>
         public event TAcceptNewEntryEventHandler AcceptNewEntries;
 
-        /// <summary>
-        /// This property manages the new entry event
-        /// </summary>
-        public event TDataSourceChangingEventHandler DataSourceChanging;
 
-        #region "Hide Some Unhelpful Parent Properties"
+        #region Hide Some Unhelpful Parent Properties
 
         /// <summary>
         /// required to be overwritten from Parent
@@ -325,6 +284,8 @@ namespace Ict.Common.Controls
         {
             this.BeginUpdate();
             this.DataSource = null;
+            this.SelectedIndex = -1;
+            this.Text = string.Empty;
 
             foreach (String s in AList)
             {
@@ -471,21 +432,6 @@ namespace Ict.Common.Controls
             }
 
             base.OnDataSourceChanged(e);
-        }
-
-        /// <summary>
-        /// This procedure is called when the value of the DataSource property is
-        /// changed on ListControl.
-        /// </summary>
-        /// <param name="e">Event Arguments.
-        /// </param>
-        /// <returns>void</returns>
-        private void OnDataSourceChanging(TDataSourceChangingEventArgs e)
-        {
-            if ((DataSourceChanging != null) && (!(DesignMode)))
-            {
-                DataSourceChanging(this, e);
-            }
         }
 
         /// <summary>
@@ -1423,22 +1369,22 @@ namespace Ict.Common.Controls
             // yield an exception.
             if ((mTestString == null) || (mSelectedIndex < 0))
             {
-                mTestString = "";
+                mTestString = string.Empty;
             }
 
             mTestString = mTestString.Trim();
 
-            if (mTestString == "")
+            if (mTestString == string.Empty)
             {
                 // It is only an empty string => ComboBox is not set to a certain item
-                this.Text = "";
+                this.Text = string.Empty;
                 this.SelectedIndex = -1;
             }
             else
             {
                 // It is a valid string => The string must be in the items collection
-                this.Text = this.UInitialString;
                 this.SelectedIndex = this.FindStringExact(this.UInitialString);
+                this.Text = this.SelectedIndex == -1 ? string.Empty : this.UInitialString;
             }
         }
     }

@@ -225,13 +225,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (result == TSubmitChangesResult.scrOK)
                 {
                     GiftBatchTDS GiftDS = NewGiftBatches.Values[batchCounter];
-                    result = TTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
+                    result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref GiftDS, out VerificationResult);
                 }
             }
 
             if (result == TSubmitChangesResult.scrOK)
             {
-                result = TTransactionWebConnector.SaveGiftBatchTDS(ref oldGiftDS, out VerificationResult);
+                result = TGiftTransactionWebConnector.SaveGiftBatchTDS(ref oldGiftDS, out VerificationResult);
 
                 if ((result == TSubmitChangesResult.scrOK) && (NewGiftBatches.Count > 0))
                 {
@@ -254,7 +254,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (!ANewGiftBatches.ContainsKey(key))
             {
-                GiftBatchTDS GiftDS = TTransactionWebConnector.CreateAGiftBatch(AOldGiftBatch.LedgerNumber, ADateCorrection,
+                GiftBatchTDS GiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AOldGiftBatch.LedgerNumber, ADateCorrection,
                     Catalog.GetString("Gift Adjustment (Field Change)"));
                 AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
                 giftbatchRow.BankCostCentre = AOldGiftBatch.BankCostCentre;

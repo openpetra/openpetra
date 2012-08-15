@@ -237,6 +237,7 @@ namespace Ict.Petra.Server.App.Core.Security
                         }
 
                         ParameterName = ParameterName.Replace("`1", string.Empty);
+                        ParameterName = ParameterName.Replace("`2", string.Empty);
                         ParameterName = ParameterName.Replace("Boolean", "bool");
                         ParameterName = ParameterName.Replace("Int32", "int");
                         ParameterName = ParameterName.Replace("Int64", "long");

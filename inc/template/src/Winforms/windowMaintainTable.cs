@@ -86,7 +86,7 @@ namespace {#NAMESPACE}
       {#INITUSERCONTROLS}
 
       Ict.Common.Data.TTypedDataTable TypedTable;
-      TRemote.MCommon.DataReader.GetData({#DETAILTABLE}Table.GetTableDBName(), ASearchCriteria, out TypedTable);
+      TRemote.MCommon.DataReader.WebConnectors.GetData({#DETAILTABLE}Table.GetTableDBName(), ASearchCriteria, out TypedTable);
       FMainDS.{#DETAILTABLE}.Merge(TypedTable);
       {#INITMANUALCODE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
@@ -296,8 +296,8 @@ namespace {#NAMESPACE}
         else
         {
             FPreviouslySelectedDetailRow = ARow;
-            {#SHOWDETAILS}
             pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            {#SHOWDETAILS}
         }
         FPetraUtilsObject.EnableDataChangedEvent();
 {#IFDEF SAVEDETAILS}
@@ -425,8 +425,8 @@ namespace {#NAMESPACE}
 	
 	            // Display the details of the currently selected Row
 	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-	            ShowDetails(FPreviouslySelectedDetailRow);
 	            pnlDetails.Enabled = true;
+	            ShowDetails(FPreviouslySelectedDetailRow);
 	    	}
 	    	else if (FDetailGridRowsChangedState == 1) //Addition
 	    	{
@@ -445,8 +445,8 @@ namespace {#NAMESPACE}
                 	// Select and display the details of the currently selected Row without causing an event
                     grdDetails.SelectRowInGrid(nextRowToSelect, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                    ShowDetails(FPreviouslySelectedDetailRow);
                     pnlDetails.Enabled = true;
+                    ShowDetails(FPreviouslySelectedDetailRow);
                 }
                 else
                 {
@@ -477,6 +477,14 @@ namespace {#NAMESPACE}
 		}
 
 		int rowIndexToDelete = grdDetails.SelectedRowIndex();
+
+        if (rowIndexToDelete == -1)
+        {
+        	MessageBox.Show(Catalog.GetString("There is no row currently selected in the grid."),
+        	               Catalog.GetString("Delete Row"));
+        	return;
+        }
+
 		{#DETAILTABLETYPE}Row rowToDelete = GetSelectedDetailRow();
 		
 		{#PREDELETEMANUAL}
@@ -496,9 +504,12 @@ namespace {#NAMESPACE}
 				deletionPerformed = true;
 {#ENDIFN DELETEROWMANUAL}				
 			
-				FPetraUtilsObject.SetChangedFlag();
-				//Select and call the event that doesn't occur automatically
-				InvokeFocusedRowChanged(rowIndexToDelete);
+				if (deletionPerformed)
+				{
+					FPetraUtilsObject.SetChangedFlag();
+					//Select and call the event that doesn't occur automatically
+					InvokeFocusedRowChanged(rowIndexToDelete);
+				}
 			}
 		}
 
@@ -745,7 +756,7 @@ namespace {#NAMESPACE}
                 // Submit changes to the PETRAServer
                 try
                 {
-                    SubmissionResult = TRemote.MCommon.DataReader.SaveData({#DETAILTABLE}Table.GetTableDBName(), ref SubmitDT, out VerificationResult);
+                    SubmissionResult = TRemote.MCommon.DataReader.WebConnectors.SaveData({#DETAILTABLE}Table.GetTableDBName(), ref SubmitDT, out VerificationResult);
                 }
                 catch (ESecurityDBTableAccessDeniedException Exp)
                 {

@@ -36,8 +36,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPersonnel;
@@ -757,7 +756,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             if (NewPersonKey != -1)
                             {
-                                OtherFamilyKey = TRemote.MPartner.Partner.ServerLookups.GetFamilyKeyForPerson(NewPersonKey);
+                                OtherFamilyKey = TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetFamilyKeyForPerson(NewPersonKey);
 
                                 if (OtherFamilyKey == GetFamilyKey())
                                 {

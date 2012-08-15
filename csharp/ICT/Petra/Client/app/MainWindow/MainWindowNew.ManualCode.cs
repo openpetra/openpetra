@@ -187,9 +187,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
 
-            if ((UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
-                || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE2))
-                || (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3)))
+            if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
             {
                 AvailableLedgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
             }

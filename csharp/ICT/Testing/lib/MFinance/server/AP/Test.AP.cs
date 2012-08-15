@@ -86,7 +86,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             decimal Amount = 399.0m;
 
             // Create an AP document for the demo supplier
-            AccountsPayableTDS MainDS = TTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_PARTNER_KEY, false);
+            AccountsPayableTDS MainDS = TAPTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_PARTNER_KEY, false);
 
             AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_PARTNER_KEY, null);
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
@@ -104,7 +104,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             MainDS.AApDocument[0].DocumentCode = "Test" + DateTime.Now.Ticks.ToString();
 
-            MainDS.Merge(TTransactionWebConnector.CreateAApDocumentDetail(
+            MainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
                     intLedgerNumber,
                     MainDS.AApDocument[0].ApDocumentId,
                     MainDS.AApSupplier[0].DefaultExpAccount,
@@ -119,7 +119,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             TVerificationResultCollection VerificationResult;
 
-            if (TTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
+            if (TAPTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
                 != TSubmitChangesResult.scrOK)
             {
                 Assert.Fail("Problems saving AP document: " +
@@ -133,7 +133,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             List <int>documentIds = new List <int>();
             documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
 
-            if (!TTransactionWebConnector.PostAPDocuments(intLedgerNumber,
+            if (!TAPTransactionWebConnector.PostAPDocuments(intLedgerNumber,
                     documentIds,
                     PeriodStartDate,
                     false, out VerificationResult))
@@ -166,7 +166,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             docPayment.PaymentNumber = payment.PaymentNumber;
             MainDS.AApDocumentPayment.Rows.Add(docPayment);
 
-            if (!TTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
+            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
             {
                 Assert.Fail("Problems paying AP document: " +
                     VerificationResult.BuildVerificationResultString());
@@ -196,7 +196,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             decimal ExchangeRatePayment = 1.1m;
 
             // Create an AP document for the demo supplier
-            AccountsPayableTDS MainDS = TTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_FOREIGN_PARTNER_KEY, false);
+            AccountsPayableTDS MainDS = TAPTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_FOREIGN_PARTNER_KEY, false);
 
             AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_FOREIGN_PARTNER_KEY, null);
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
@@ -217,7 +217,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             MainDS.AApDocument[0].DocumentCode = "Test" + DateTime.Now.Ticks.ToString();
 
-            MainDS.Merge(TTransactionWebConnector.CreateAApDocumentDetail(
+            MainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
                     intLedgerNumber,
                     MainDS.AApDocument[0].ApDocumentId,
                     MainDS.AApSupplier[0].DefaultExpAccount,
@@ -233,7 +233,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             TVerificationResultCollection VerificationResult;
 
-            if (TTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
+            if (TAPTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
                 != TSubmitChangesResult.scrOK)
             {
                 Assert.Fail("Problems saving AP document: " +
@@ -247,7 +247,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             List <int>documentIds = new List <int>();
             documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
 
-            if (!TTransactionWebConnector.PostAPDocuments(intLedgerNumber,
+            if (!TAPTransactionWebConnector.PostAPDocuments(intLedgerNumber,
                     documentIds,
                     PeriodStartDate,
                     false, out VerificationResult))
@@ -286,7 +286,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             docPayment.PaymentNumber = payment.PaymentNumber;
             MainDS.AApDocumentPayment.Rows.Add(docPayment);
 
-            if (!TTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
+            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
             {
                 Assert.Fail("Problems paying AP document: " +
                     VerificationResult.BuildVerificationResultString());
@@ -324,7 +324,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             decimal ExchangeRatePayment = 1.1m;
 
             // Create an AP document for the demo supplier
-            AccountsPayableTDS MainDS = TTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_FOREIGN_PARTNER_KEY, false);
+            AccountsPayableTDS MainDS = TAPTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_FOREIGN_PARTNER_KEY, false);
 
             AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_FOREIGN_PARTNER_KEY, null);
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
@@ -345,7 +345,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             MainDS.AApDocument[0].DocumentCode = "Test Reverse" + DateTime.Now.Ticks.ToString();
 
-            MainDS.Merge(TTransactionWebConnector.CreateAApDocumentDetail(
+            MainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
                     intLedgerNumber,
                     MainDS.AApDocument[0].ApDocumentId,
                     MainDS.AApSupplier[0].DefaultExpAccount,
@@ -361,7 +361,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             TVerificationResultCollection VerificationResult;
 
-            if (TTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
+            if (TAPTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
                 != TSubmitChangesResult.scrOK)
             {
                 Assert.Fail("Problems saving AP document: " +
@@ -375,7 +375,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             List <int>documentIds = new List <int>();
             documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
 
-            if (!TTransactionWebConnector.PostAPDocuments(intLedgerNumber,
+            if (!TAPTransactionWebConnector.PostAPDocuments(intLedgerNumber,
                     documentIds,
                     PeriodStartDate,
                     false, out VerificationResult))
@@ -420,7 +420,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             docPayment.PaymentNumber = payment.PaymentNumber;
             MainDS.AApDocumentPayment.Rows.Add(docPayment);
 
-            if (!TTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
+            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
             {
                 Assert.Fail("Problems paying AP document: " +
                     VerificationResult.BuildVerificationResultString());
@@ -455,7 +455,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             //
             // Now I'll try to immediately "un-pay" this invoice...
             //
-            if (!TTransactionWebConnector.ReversePayment(intLedgerNumber,
+            if (!TAPTransactionWebConnector.ReversePayment(intLedgerNumber,
                     docPayment.PaymentNumber,
                     PeriodEndDate,
                     out VerificationResult))
@@ -470,7 +470,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             documentIds[0] += 2; // The invoice I posted was reversed, and a duplicate now exists with an Id 2 greater than the original.
 
-            if (!TTransactionWebConnector.PostAPDocuments(intLedgerNumber,
+            if (!TAPTransactionWebConnector.PostAPDocuments(intLedgerNumber,
                     documentIds,
                     PeriodEndDate,
                     true, out VerificationResult))

@@ -967,7 +967,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             showData += "string partnerShortName;" + Environment.NewLine;
-            showData += "TRemote.MPartner.Partner.ServerLookups.GetPartnerShortName(" + Environment.NewLine;
+            showData += "TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(" + Environment.NewLine;
             showData += "    " + RowName + "." + TTable.NiceFieldName(field.strName) + "," +
                         Environment.NewLine;
             showData += "    out partnerShortName," + Environment.NewLine;

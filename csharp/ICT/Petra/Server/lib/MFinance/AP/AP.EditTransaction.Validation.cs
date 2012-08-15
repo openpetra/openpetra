@@ -33,7 +33,7 @@ using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 {
-    public partial class TTransactionWebConnector
+    public partial class TAPTransactionWebConnector
     {
         //
         // Put Methods for the validation of AP EditTransaction in this code file.

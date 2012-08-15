@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,7 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MSysMan.Maintenance.SystemDefaults;
+using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 
 namespace Ict.Petra.Client.App.Core
@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.App.Core
             String ReturnValue;
             SSystemDefaultsRow FoundSystemDefaultsRow;
 
-            SSystemDefaultsTable SystemDefaultsDT = TRemote.MSysMan.Maintenance.SystemDefaults.GetSystemDefaults();
+            SSystemDefaultsTable SystemDefaultsDT = TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefaults();
 
             // Look up the System Default
             FoundSystemDefaultsRow = (SSystemDefaultsRow)SystemDefaultsDT.Rows.Find(ASystemDefaultName);
@@ -99,13 +99,13 @@ namespace Ict.Petra.Client.App.Core
         }
 
         /// <summary>
-        ///
+        /// SetSystemDefault
         /// </summary>
         /// <param name="AKey">Name of new or existing System Default</param>
         /// <param name="AValue">String Value</param>
         public static void SetSystemDefault(String AKey, String AValue)
         {
-            TRemote.MSysMan.Maintenance.SystemDefaults.SetSystemDefault(AKey, AValue);
+            TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.SetSystemDefault(AKey, AValue);
         }
     }
 }

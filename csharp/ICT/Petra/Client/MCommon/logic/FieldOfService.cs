@@ -24,8 +24,8 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner;
-using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Common;
 using Ict.Common.DB;

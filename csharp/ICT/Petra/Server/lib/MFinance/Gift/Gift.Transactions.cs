@@ -46,13 +46,14 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Cacheable;
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
     ///<summary>
     /// This connector provides data for the finance Gift screens
     ///</summary>
-    public partial class TTransactionWebConnector
+    public partial class TGiftTransactionWebConnector
     {
         /// <summary>
         /// Create a new batch with a consecutive batch number in the ledger,
@@ -766,7 +767,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         private static GLBatchTDS CreateGLBatchAndTransactionsForPostingGifts(Int32 ALedgerNumber, ref GiftBatchTDS AGiftDataset)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+            GLBatchTDS GLDataset = TGLTransactionWebConnector.CreateABatch(ALedgerNumber);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -863,7 +864,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // adjustments and reversals must remain on the original value
             transactionForTotals.AccountCode = giftbatch.BankAccountCode;
             transactionForTotals.CostCentreCode =
-                Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                TGLTransactionWebConnector.GetStandardCostCentre(
                     ALedgerNumber);
             transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftbatch.BatchNumber.ToString();
             transactionForTotals.Reference = "GB" + giftbatch.BatchNumber.ToString();
@@ -1492,7 +1493,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ABatchRow batch = GLDataset.ABatch[0];
 
                     // save the batch
-                    if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                    if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
                             out AVerifications) == TSubmitChangesResult.scrOK)
                     {
                         GLBatchNumbers.Add(batch.BatchNumber);
@@ -1617,7 +1618,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else
             {
-                return Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
+                return TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
             }
         }
 

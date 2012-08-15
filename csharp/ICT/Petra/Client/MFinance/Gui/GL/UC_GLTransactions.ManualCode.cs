@@ -205,35 +205,38 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             foreach (GLBatchTDSATransactionRow TransactionRow in FMainDS.ATransaction.Rows)
             {
-                ((TFrmGLBatch)ParentForm).LoadAttributes(
-                    TransactionRow.LedgerNumber,
-                    TransactionRow.BatchNumber,
-                    TransactionRow.JournalNumber,
-                    TransactionRow.TransactionNumber
-                    );
-
-
-                string strAnalAttr = "";
-                FMainDS.ATransAnalAttrib.DefaultView.RowFilter =
-                    String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
-                        ATransAnalAttribTable.GetLedgerNumberDBName(), TransactionRow.LedgerNumber,
-                        ATransAnalAttribTable.GetBatchNumberDBName(), TransactionRow.BatchNumber,
-                        ATransAnalAttribTable.GetJournalNumberDBName(), TransactionRow.JournalNumber,
-                        ATransAnalAttribTable.GetTransactionNumberDBName(), TransactionRow.TransactionNumber);
-
-                foreach (DataRowView rv in FMainDS.ATransAnalAttrib.DefaultView)
+                if (TransactionRow.RowState != DataRowState.Deleted)
                 {
-                    ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
+                    ((TFrmGLBatch)ParentForm).LoadAttributes(
+                        TransactionRow.LedgerNumber,
+                        TransactionRow.BatchNumber,
+                        TransactionRow.JournalNumber,
+                        TransactionRow.TransactionNumber
+                        );
 
-                    if (strAnalAttr.Length > 0)
+
+                    string strAnalAttr = "";
+                    FMainDS.ATransAnalAttrib.DefaultView.RowFilter =
+                        String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                            ATransAnalAttribTable.GetLedgerNumberDBName(), TransactionRow.LedgerNumber,
+                            ATransAnalAttribTable.GetBatchNumberDBName(), TransactionRow.BatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(), TransactionRow.JournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(), TransactionRow.TransactionNumber);
+
+                    foreach (DataRowView rv in FMainDS.ATransAnalAttrib.DefaultView)
                     {
-                        strAnalAttr += ", ";
+                        ATransAnalAttribRow Row = (ATransAnalAttribRow)rv.Row;
+
+                        if (strAnalAttr.Length > 0)
+                        {
+                            strAnalAttr += ", ";
+                        }
+
+                        strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
                     }
 
-                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                    TransactionRow.AnalysisAttributes = strAnalAttr;
                 }
-
-                TransactionRow.AnalysisAttributes = strAnalAttr;
             }
 
             UpdateChangeableStatus();

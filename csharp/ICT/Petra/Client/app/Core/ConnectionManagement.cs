@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,13 +95,13 @@ namespace Ict.Petra.Client.App.Core
 
             Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
 
-            ((TConnector)FConnector).GetRemoteMConferenceObject(FRemotingURL_MConference, out FRemoteConferenceObjects);
-            ((TConnector)FConnector).GetRemoteMPersonnelObject(FRemotingURL_MPersonnel, out FRemotePersonnelObjects);
-            ((TConnector)FConnector).GetRemoteMCommonObject(FRemotingURL_MCommon, out FRemoteCommonObjects);
-            ((TConnector)FConnector).GetRemoteMPartnerObject(FRemotingURL_MPartner, out FRemotePartnerObjects);
-            ((TConnector)FConnector).GetRemoteMFinanceObject(FRemotingURL_MFinance, out FRemoteFinanceObjects);
-            ((TConnector)FConnector).GetRemoteMReportingObject(FRemotingURL_MReporting, out FRemoteReportingObjects);
-            ((TConnector)FConnector).GetRemoteMSysManObject(FRemotingURL_MSysMan, out FRemoteSysManObjects);
+            FRemoteConferenceObjects = (IMConferenceNamespace)FConnector.GetRemoteObject(FRemotingURL_MConference, typeof(IMConferenceNamespace));
+            FRemotePersonnelObjects = (IMPersonnelNamespace)FConnector.GetRemoteObject(FRemotingURL_MPersonnel, typeof(IMPersonnelNamespace));
+            FRemoteCommonObjects = (IMCommonNamespace)FConnector.GetRemoteObject(FRemotingURL_MCommon, typeof(IMCommonNamespace));
+            FRemotePartnerObjects = (IMPartnerNamespace)FConnector.GetRemoteObject(FRemotingURL_MPartner, typeof(IMPartnerNamespace));
+            FRemoteFinanceObjects = (IMFinanceNamespace)FConnector.GetRemoteObject(FRemotingURL_MFinance, typeof(IMFinanceNamespace));
+            FRemoteReportingObjects = (IMReportingNamespace)FConnector.GetRemoteObject(FRemotingURL_MReporting, typeof(IMReportingNamespace));
+            FRemoteSysManObjects = (IMSysManNamespace)FConnector.GetRemoteObject(FRemotingURL_MSysMan, typeof(IMSysManNamespace));
 
             //
             // initialise object that holds references to all our remote object .NET Remoting Proxies

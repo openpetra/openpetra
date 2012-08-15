@@ -4,6 +4,7 @@
 // @Authors:
 //       christiank
 //       Tim Ingham
+//       timop
 //
 // Copyright 2004-2012 by OM International
 //
@@ -24,14 +25,15 @@
 //
 using System;
 using System.Data;
+using Ict.Common;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core;
-using Ict.Common;
+using Ict.Petra.Server.App.Core.Security;
 using Ict.Common.DB;
 using Ict.Petra.Server.MSysMan.Data.Access;
 
-namespace Ict.Petra.Server.MSysMan.Maintenance
+namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
 {
     /// <summary>
     /// Reads and saves a DataTable for the System Defaults.
@@ -46,6 +48,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="ADefault">Default to use if not found</param>
         /// <returns>Value of System Default, or ADefault
         /// </returns>
+        [NoRemoting]
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
             String ReturnValue = ADefault;
@@ -66,6 +69,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="ASystemDefaultName">System Default Key</param>
         /// <returns>Value of System Default, or SYSDEFAULT_NOT_FOUND
         /// </returns>
+        [NoRemoting]
         public static String GetSystemDefault(String ASystemDefaultName)
         {
             String ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
@@ -88,6 +92,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <returns>System Defaults Typed DataTable.
         /// </returns>
+        [RequireModulePermission("NONE")]
         public static SSystemDefaultsTable GetSystemDefaults()
         {
             SSystemDefaultsTable Ret;
@@ -118,6 +123,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="AKey"></param>
         /// <param name="AValue"></param>
         /// <returns>true if the System Default was saved successfully</returns>
+        [RequireModulePermission("NONE")]
         public static Boolean SetSystemDefault(String AKey, String AValue)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);

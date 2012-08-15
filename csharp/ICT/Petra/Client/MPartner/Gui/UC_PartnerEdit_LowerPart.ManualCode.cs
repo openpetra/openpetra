@@ -29,7 +29,7 @@ using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MPartner.Logic;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 

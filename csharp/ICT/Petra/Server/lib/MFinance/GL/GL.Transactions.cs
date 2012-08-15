@@ -48,7 +48,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     ///<summary>
     /// This connector provides data for the finance GL screens
     ///</summary>
-    public class TTransactionWebConnector
+    public class TGLTransactionWebConnector
     {
         /// <summary>
         /// create a new batch with a consecutive batch number in the ledger,

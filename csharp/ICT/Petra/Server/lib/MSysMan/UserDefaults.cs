@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,8 +33,9 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MSysMan.Maintenance
+namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 {
     /// <summary>
     /// Reads and saves a DataTable for the User Defaults.
@@ -62,6 +63,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <summary>
         /// initialize some static variables
         /// </summary>
+        [NoRemoting]
         public static void InitializeUnit()
         {
             UReadWriteLock = new System.Threading.ReaderWriterLock();
@@ -80,6 +82,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <returns>true if a default with the given key already exists
         /// </returns>
+        [NoRemoting]
         public static bool HasDefault(String AKey)
         {
             return TInternal.HasUserDefault(AKey);
@@ -90,20 +93,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static bool GetBooleanDefault(String AKey, bool ADefault)
+        /// <returns>true if key does not exist</returns>
+        [NoRemoting]
+        public static bool GetBooleanDefault(String AKey, bool ADefault = true)
         {
             return Convert.ToBoolean(TInternal.GetUserDefault(AKey, ADefault.ToString()));
-        }
-
-        /// <summary>
-        /// get boolean default
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>true if key does not exist</returns>
-        public static bool GetBooleanDefault(String AKey)
-        {
-            return GetBooleanDefault(AKey, true);
         }
 
         /// <summary>
@@ -112,6 +106,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
         /// <returns></returns>
+        [NoRemoting]
         public static System.Char GetCharDefault(String AKey, System.Char ADefault)
         {
             return Convert.ToChar(TInternal.GetUserDefault(AKey, ADefault.ToString()));
@@ -122,6 +117,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <param name="AKey"></param>
         /// <returns>space if key does not exist</returns>
+        [NoRemoting]
         public static System.Char GetCharDefault(String AKey)
         {
             return GetCharDefault(AKey, ' ');
@@ -132,20 +128,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static double GetDoubleDefault(String AKey, double ADefault)
+        /// <returns>0.0 if key does not exist</returns>
+        [NoRemoting]
+        public static double GetDoubleDefault(String AKey, double ADefault = 0.0)
         {
             return Convert.ToDouble(TInternal.GetUserDefault(AKey, ADefault.ToString()));
-        }
-
-        /// <summary>
-        /// get double default
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0.0 if key does not exist</returns>
-        public static double GetDoubleDefault(String AKey)
-        {
-            return GetDoubleDefault(AKey, 0.0);
         }
 
         /// <summary>
@@ -155,20 +142,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="ADefault">The value that should be returned in case the Key is not (yet)
         /// in the User Defaults.
         /// </param>
-        /// <returns>void</returns>
-        public static System.Int16 GetInt16Default(String AKey, System.Int16 ADefault)
+        /// <returns>0 if key does not exist</returns>
+        [NoRemoting]
+        public static System.Int16 GetInt16Default(String AKey, System.Int16 ADefault = 0)
         {
             return Convert.ToInt16(TInternal.GetUserDefault(AKey, ADefault.ToString()));
-        }
-
-        /// <summary>
-        /// get int default value
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0 if key does not exist</returns>
-        public static System.Int16 GetInt16Default(String AKey)
-        {
-            return GetInt16Default(AKey, 0);
         }
 
         /// <summary>
@@ -176,8 +154,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static System.Int32 GetInt32Default(String AKey, System.Int32 ADefault)
+        /// <returns>0 if key does not exist</returns>
+        [NoRemoting]
+        public static System.Int32 GetInt32Default(String AKey, System.Int32 ADefault = 0)
         {
             return Convert.ToInt32(TInternal.GetUserDefault(AKey, ADefault.ToString()));
         }
@@ -186,52 +165,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// get int default
         /// </summary>
         /// <param name="AKey"></param>
-        /// <returns>0 if key does not exist</returns>
-        public static System.Int32 GetInt32Default(String AKey)
-        {
-            return GetInt32Default(AKey, 0);
-        }
-
-        /// <summary>
-        /// get int default
-        /// </summary>
-        /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static System.Int64 GetInt64Default(String AKey, System.Int64 ADefault)
+        /// <returns>0 if key does not exist</returns>
+        [NoRemoting]
+        public static System.Int64 GetInt64Default(String AKey, System.Int64 ADefault = 0)
         {
             return Convert.ToInt64(TInternal.GetUserDefault(AKey, ADefault.ToString()));
         }
 
         /// <summary>
-        /// get int default
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0 if key does not exist</returns>
-        public static System.Int64 GetInt64Default(String AKey)
-        {
-            return GetInt64Default(AKey, 0);
-        }
-
-        /// <summary>
         /// get string default
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public static String GetStringDefault(String AKey, String ADefault)
+        /// <returns>empty string if key does not exist</returns>
+        [NoRemoting]
+        public static String GetStringDefault(String AKey, String ADefault = "")
         {
             return TInternal.GetUserDefault(AKey, ADefault);
-        }
-
-        /// <summary>
-        /// get string default
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>empty string if key does not exist</returns>
-        public static String GetStringDefault(String AKey)
-        {
-            return GetStringDefault(AKey, "");
         }
 
         /// <summary>
@@ -245,6 +196,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// Defaults.
         /// </param>
         /// <returns>void</returns>
+        [RequireModulePermission("NONE")]
         public static void GetUserDefaults(String AUserName, out SUserDefaultsTable AUserDefaultsDataTable)
         {
 #if DEBUGMODE
@@ -329,6 +281,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="AUserDefaultsDataTable">The loaded UserDefaults DataTable</param>
         /// <returns>true if loading of UserDefaults was successful
         /// </returns>
+        [NoRemoting]
         public static Boolean LoadUserDefaultsTable(String AUserName,
             Boolean AMergeChangesToServerSideCache,
             out SUserDefaultsTable AUserDefaultsDataTable)
@@ -437,8 +390,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
 #if DEBUGMODE
             catch (Exception exp)
             {
-                Console.WriteLine("TMaintenanceUserDefaults.LoadUserDefaultsTable: Error loading UserDefaults! " + "Possible cause: " + exp.ToString());
-                throw;
+                TLogging.Log("TMaintenanceUserDefaults.LoadUserDefaultsTable: Error loading UserDefaults! " + "Possible cause: " + exp.ToString());
+                throw new Exception(exp.ToString());
             }
 #else
             catch (Exception)
@@ -462,6 +415,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="ASourceDT">UserDefaults DataTable that is the source of the merge
         /// </param>
         /// <returns>void</returns>
+        [NoRemoting]
         public static void MergeChanges(SUserDefaultsTable ADestinationDT, SUserDefaultsTable ASourceDT)
         {
             Int16 Counter;
@@ -528,12 +482,22 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         ///
         /// </summary>
         /// <param name="AUserName">User name for which the User Defaults should be read.</param>
-        /// <param name="AMergeChangesToServerSideCache">Set to true if the UserDefaults were
-        /// (re)loaded for the current user and the internal cache needs to be updated</param>
         /// <param name="AUserDefaultsDataTable">Typed DataTable that contains the User
         /// Defaults.
         /// </param>
-        /// <returns>void</returns>
+        [RequireModulePermission("NONE")]
+        public static void ReloadUserDefaults(String AUserName, out SUserDefaultsTable AUserDefaultsDataTable)
+        {
+            ReloadUserDefaults(AUserName, true, out AUserDefaultsDataTable);
+        }
+
+        /// <summary>
+        /// overload
+        /// </summary>
+        /// <param name="AUserName"></param>
+        /// <param name="AMergeChangesToServerSideCache"></param>
+        /// <param name="AUserDefaultsDataTable"></param>
+        [NoRemoting]
         public static void ReloadUserDefaults(String AUserName, Boolean AMergeChangesToServerSideCache, out SUserDefaultsTable AUserDefaultsDataTable)
         {
             LoadUserDefaultsTable(AUserName, AMergeChangesToServerSideCache, out AUserDefaultsDataTable);
@@ -555,7 +519,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// call resulted in an error. Inspect AVerificationResult to retrieve the
         /// error.
         /// </returns>
-        public static Boolean SaveUserDefaultsFromClientSide(String AUserName,
+        [RequireModulePermission("NONE")]
+        public static Boolean SaveUserDefaults(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -765,6 +730,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// call resulted in an error. Inspect AVerificationResult to retrieve the
         /// error.
         /// </returns>
+        [NoRemoting]
         public static Boolean SaveUserDefaultsTable(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
             TDBTransaction AWriteTransaction,
@@ -1012,6 +978,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// <param name="AWriteTransaction"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
+        [NoRemoting]
         public static Boolean SaveUserDefaultsTable(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
             TDBTransaction AWriteTransaction,
@@ -1034,7 +1001,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// was nothing to save. false indicates that a DB call resulted in an error.
         /// Inspect AVerificationResult to retrieve the error.
         /// </returns>
-        public static Boolean SaveUserDefaultsFromServerSide(out TVerificationResultCollection AVerificationResult, Boolean ASendUpdateInfoToClient)
+        [NoRemoting]
+        public static Boolean SaveUserDefaultsFromServerSide(
+            out TVerificationResultCollection AVerificationResult,
+            Boolean ASendUpdateInfoToClient = true)
         {
             Boolean ReturnValue;
             Boolean SubmissionOK;
@@ -1106,16 +1076,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         }
 
         /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public static Boolean SaveUserDefaultsFromServerSide(ref TVerificationResultCollection AVerificationResult)
-        {
-            return SaveUserDefaultsFromServerSide(out AVerificationResult, true);
-        }
-
-        /// <summary>
         /// Sets a User Default.
         ///
         /// </summary>
@@ -1126,19 +1086,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// change to the UserDefault (by means of sending a ClientTask)
         /// </param>
         /// <returns>void</returns>
-        public static void SetDefault(String AKey, object AValue, Boolean ASendUpdateInfoToClient)
+        [NoRemoting]
+        public static void SetDefault(String AKey, object AValue, Boolean ASendUpdateInfoToClient = true)
         {
             TInternal.SetUserDefault(AKey, AValue.ToString(), ASendUpdateInfoToClient);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="AValue"></param>
-        public static void SetDefault(String AKey, object AValue)
-        {
-            SetDefault(AKey, AValue, true);
         }
 
         /// <summary>
@@ -1162,11 +1113,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// because (potentially) several DefaultCodes have changed.
         /// </param>
         /// <returns>void</returns>
+        [NoRemoting]
         public static void UpdateUserDefaultsOnClient(String AUserName,
             String AChangedUserDefaultCode,
             String AChangedUserDefaultValue,
             String AChangedUserDefaultModId,
-            Boolean ASingleCode)
+            Boolean ASingleCode = true)
         {
             String SingleOrMultipleIndicator;
 
@@ -1230,21 +1182,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         }
 
         /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="AUserName"></param>
-        /// <param name="AChangedUserDefaultCode"></param>
-        /// <param name="AChangedUserDefaultValue"></param>
-        /// <param name="AChangedUserDefaultModId"></param>
-        public static void UpdateUserDefaultsOnClient(String AUserName,
-            String AChangedUserDefaultCode,
-            String AChangedUserDefaultValue,
-            String AChangedUserDefaultModId)
-        {
-            UpdateUserDefaultsOnClient(AUserName, AChangedUserDefaultCode, AChangedUserDefaultValue, AChangedUserDefaultModId, true);
-        }
-
-        /// <summary>
         /// Update the User Defaults on the Client side (by means of sending a
         /// ClientTask).
         ///
@@ -1254,6 +1191,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance
         /// that have changed and that should be updated on the Client side
         /// </param>
         /// <returns>void</returns>
+        [NoRemoting]
         public static void UpdateUserDefaultsOnClient(String AUserName, SUserDefaultsTable AChangedUserDefaultsDT)
         {
             String ChangedUserDefaultCodes;

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christiank, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,18 +27,19 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
+using Ict.Common;
 using Ict.Tools.CodeGeneration;
 using Ict.Common.IO;
+using ICSharpCode.NRefactory.Ast;
 
 namespace NamespaceHierarchy
 {
 /// <summary>
-/// to be parsed from xml file
+/// to be parsed from the cs files
 /// </summary>
 public class TNamespace
 {
     string name;
-    string description;
 
     /// <summary>
     /// constructor
@@ -57,17 +58,6 @@ public class TNamespace
     }
 
     /// <summary>
-    /// constructor
-    /// </summary>
-    /// <param name="AName"></param>
-    /// <param name="ADescription"></param>
-    public TNamespace(string AName, string ADescription)
-    {
-        this.name = AName;
-        this.description = ADescription;
-    }
-
-    /// <summary>
     /// name of the namespace
     /// </summary>
     public string Name
@@ -76,66 +66,66 @@ public class TNamespace
         {
             return name;
         }
-        set
-        {
-            name = value;
-        }
-    }
-
-    /// <summary>
-    /// description
-    /// </summary>
-    public string Description
-    {
-        get
-        {
-            return description;
-        }
-        set
-        {
-            description = value;
-        }
     }
 
     /// <summary>
     /// the children of this namespace
     /// </summary>
-    public List <TNamespace>Children = new List <TNamespace>();
+    public SortedList <string, TNamespace>Children = new SortedList <string, TNamespace>();
+
+    private static TNamespace FindOrCreateNamespace(TNamespace ARootNamespace, string ANamespaceName)
+    {
+        if (ANamespaceName.Contains("."))
+        {
+            TNamespace parent = FindOrCreateNamespace(ARootNamespace, ANamespaceName.Substring(0, ANamespaceName.LastIndexOf(".")));
+
+            string childName = ANamespaceName.Substring(ANamespaceName.LastIndexOf(".") + 1);
+
+            if (parent.Children.ContainsKey(childName))
+            {
+                return parent.Children[childName];
+            }
+            else
+            {
+                TNamespace Result = new TNamespace(childName);
+                parent.Children.Add(childName, Result);
+                return Result;
+            }
+        }
+        else if (!ARootNamespace.Children.ContainsKey(ANamespaceName))
+        {
+            TNamespace Result = new TNamespace(ANamespaceName);
+            ARootNamespace.Children.Add(ANamespaceName, Result);
+            return Result;
+        }
+        else
+        {
+            return ARootNamespace.Children[ANamespaceName];
+        }
+    }
 
     /// <summary>
     /// parse the namespaces from an XmlDocument
     /// </summary>
-    public static List <TNamespace>ReadFromFile(XmlDocument ADoc)
+    public static TNamespace ParseFromDirectory(string AServerLibPath)
     {
-        List <TNamespace>items = new List <TNamespace>();
-        XmlNode NamespaceHierarchyNode = ADoc.DocumentElement.FirstChild;
+        TNamespace NamespaceRoot = new TNamespace();
 
-        if (NamespaceHierarchyNode.Name != "NamespaceHierarchy")
+        List <CSParser>CSFiles = CSParser.GetCSFilesForDirectory(AServerLibPath, SearchOption.AllDirectories);
+
+        foreach (CSParser file in CSFiles)
         {
-            throw new Exception("cannot find root node NamespaceHierarchy");
+            foreach (NamespaceDeclaration namespaceDecl in file.GetNamespaces())
+            {
+                if (namespaceDecl.Name.EndsWith("Connectors"))
+                {
+                    string name = namespaceDecl.Name.Substring("Ict.Petra.Server.".Length + 1);
+                    FindOrCreateNamespace(NamespaceRoot, name);
+                }
+            }
         }
 
-        foreach (XmlNode child in NamespaceHierarchyNode.ChildNodes)
-        {
-            items.Add(TNamespace.Serialize(child));
-        }
-
-        return items;
-    }
-
-    private static TNamespace Serialize(XmlNode ANode)
-    {
-        TNamespace newNameSpace = new TNamespace();
-
-        newNameSpace.Name = TYml2Xml.GetElementName(ANode);
-        newNameSpace.Description = TXMLParser.GetAttribute(ANode, "description");
-
-        foreach (XmlNode child in ANode.ChildNodes)
-        {
-            newNameSpace.Children.Add(Serialize(child));
-        }
-
-        return newNameSpace;
+        return NamespaceRoot;
     }
 
     private static String FindModuleName = "";
@@ -166,42 +156,6 @@ public class TNamespace
         else
         {
             return false;
-        }
-    }
-}
-
-/// <summary>
-/// for generating the code
-/// </summary>
-public class CommonNamespace
-{
-    /// <summary>
-    /// write the code for the namespace; use this namespace; recursive method
-    /// </summary>
-    /// <param name="tw"></param>
-    /// <param name="ParentNamespace"></param>
-    /// <param name="ParentInterfaceName"></param>
-    /// <param name="sn"></param>
-    /// <param name="children"></param>
-    public static void WriteUsingNamespace(AutoGenerationWriter tw,
-        String ParentNamespace,
-        String ParentInterfaceName,
-        TNamespace sn,
-        List <TNamespace>children)
-    {
-        // don't automatically write the end points.
-        if (children.Count == 0)
-        {
-            return;
-        }
-
-        foreach (TNamespace child in children)
-        {
-            //        if (child.Children.Count > 0)
-            {
-                tw.WriteLine("using " + ParentNamespace + "." + child.Name + ';');
-                WriteUsingNamespace(tw, ParentNamespace + "." + child.Name, ParentInterfaceName + child.Name, child, child.Children);
-            }
         }
     }
 }

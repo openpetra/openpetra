@@ -48,12 +48,12 @@ namespace Ict.Common.Remoting.Client
         /// <summary>
         /// set to typeof(TConnector)
         /// </summary>
-        public static Type ConnectorType = typeof(TConnectorBase);
+        public static Type ConnectorType = typeof(TConnector);
 
         /// <summary>
         /// keeps the connection to the server
         /// </summary>
-        protected TConnectorBase FConnector;
+        protected TConnector FConnector;
 
         /// <summary>
         /// the client manager
@@ -62,7 +62,6 @@ namespace Ict.Common.Remoting.Client
 
         private String FClientName;
         private Int32 FClientID;
-        private Int16 FRemotingPort;
         private TExecutingOSEnum FServerOS;
         private String FRemotingURL_PollClientTasks;
         private IPollClientTasksInterface FRemotePollClientTasks;
@@ -79,6 +78,11 @@ namespace Ict.Common.Remoting.Client
         /// </summary>
         protected Hashtable FRemotingURLs;
 
+        /// <summary>
+        /// we will always contact the server on this URL
+        /// </summary>
+        protected string FCrossDomainURI;
+
         /// <summary>todoComment</summary>
         public String ClientName
         {
@@ -94,24 +98,6 @@ namespace Ict.Common.Remoting.Client
             get
             {
                 return FClientID;
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public String ServerIPAddr
-        {
-            get
-            {
-                return Get_ServerIPAddr();
-            }
-        }
-
-        /// <summary>todoComment</summary>
-        public System.Int16 ServerIPPort
-        {
-            get
-            {
-                return Get_ServerIPPort();
             }
         }
 
@@ -142,18 +128,6 @@ namespace Ict.Common.Remoting.Client
             }
         }
 
-        /// <summary>todoComment</summary>
-        public String Get_ServerIPAddr()
-        {
-            return FConnector.ServerIPAddr;
-        }
-
-        /// <summary>todoComment</summary>
-        public System.Int16 Get_ServerIPPort()
-        {
-            return FConnector.ServerIPPort;
-        }
-
         /// <summary>
         /// todoComment
         /// </summary>
@@ -170,20 +144,20 @@ namespace Ict.Common.Remoting.Client
 
             if (FConnector == null)
             {
-                FConnector = (TConnectorBase)Activator.CreateInstance(ConnectorType);
+                FConnector = (TConnector)Activator.CreateInstance(ConnectorType);
             }
 
             try
             {
-                if (TClientSettings.ConfigurationFile == "")
+                if (TAppSettingsManager.ConfigFileName.Length > 0)
                 {
                     // connect to the PetraServer's ClientManager
-                    FConnector.GetRemoteServerConnection(Environment.GetCommandLineArgs()[0] + ".config", out FClientManager);
+                    FConnector.GetRemoteServerConnection(TAppSettingsManager.ConfigFileName, out FClientManager);
                 }
                 else
                 {
                     // connect to the PetraServer's ClientManager
-                    FConnector.GetRemoteServerConnection(TClientSettings.ConfigurationFile, out FClientManager);
+                    FConnector.GetRemoteServerConnection(Environment.GetCommandLineArgs()[0] + ".config", out FClientManager);
                 }
 
                 // register Client session at the PetraServer
@@ -236,9 +210,9 @@ namespace Ict.Common.Remoting.Client
             //
             // acquire .NET Remoting Proxy objects for remoted Server objects
             //
-            FConnector.ServerIPPort = FRemotingPort;
 
-            FConnector.GetRemotePollClientTasks(FRemotingURL_PollClientTasks, out FRemotePollClientTasks);
+            FRemotePollClientTasks =
+                (IPollClientTasksInterface)FConnector.GetRemoteObject(FRemotingURL_PollClientTasks, typeof(IPollClientTasksInterface));
 
             //
             // start the KeepAlive Thread (which needs to run as long as the Client is running)
@@ -293,7 +267,7 @@ namespace Ict.Common.Remoting.Client
                     DetermineClientServerConnectionType(),
                     out FClientName,
                     out FClientID,
-                    out FRemotingPort,
+                    out FCrossDomainURI,
                     out FRemotingURLs,
                     out FServerOS,
                     out AProcessID,
@@ -305,6 +279,8 @@ namespace Ict.Common.Remoting.Client
                 {
                     FRemotingURL_PollClientTasks = (String)FRemotingURLs[RemotingConstants.REMOTINGURL_IDENTIFIER_POLLCLIENTTASKS];
                 }
+
+                FConnector.Init(FCrossDomainURI, FClientID.ToString());
 
                 return true;
             }

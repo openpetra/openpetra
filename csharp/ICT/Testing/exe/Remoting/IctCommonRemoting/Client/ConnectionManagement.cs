@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -65,7 +65,7 @@ namespace Tests.IctCommonRemoting.Client
 
             ConnectToServer(AUserName, APassword, out AProcessID, out AWelcomeMessage, out ASystemEnabled, out AError, out LocalUserInfo);
 
-            ((TConnector)FConnector).GetRemoteMyServiceObject(FRemotingURL_MyService, out FRemoteMyServiceObject);
+            FRemoteMyServiceObject = (IMyService)FConnector.GetRemoteObject(FRemotingURL_MyService, typeof(IMyService));
 
             //
             // initialise object that holds references to all our remote object .NET Remoting Proxies

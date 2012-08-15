@@ -1,4 +1,5 @@
 sqlite3.dll has been downloaded from sqlite.org
+Version 3.7.13: http://www.sqlite.org/sqlite-dll-win32-x86-3071300.zip
 
 Mono.Data.Sqlite is from C:\Program Files (x86)\Mono-2.10.6\lib\mono\2.0
 Version for .net 4.0 would not work on Windows. see also http://bugzilla.xamarin.com/show_bug.cgi?id=2148

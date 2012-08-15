@@ -89,8 +89,6 @@ namespace Ict.Petra.Server.App.Core
         ///
         /// </summary>
         /// <param name="AClientID">ClientID as assigned by the ClientManager</param>
-        /// <param name="ARemotingPort">IP Port on which the .NET Remoting TCP Channel should
-        /// be set up</param>
         /// <param name="AClientServerConnectionType">Tells in which way the Client connected
         /// to the PetraServer</param>
         /// <param name="AClientManagerRef">A reference to the ClientManager object
@@ -104,13 +102,12 @@ namespace Ict.Petra.Server.App.Core
         /// information
         /// </param>
         public TClientDomainManager(String AClientID,
-            String ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
             TSystemDefaultsCache ASystemDefaultsCacheRef,
             TCacheableTablesManager ACacheableTablesManagerRef,
             IPrincipal AUserInfo) :
-            base(AClientID, ARemotingPort,
+            base(AClientID,
                 AClientServerConnectionType, AClientManagerRef,
                 ((TPetraPrincipal)AUserInfo).UserID)
         {

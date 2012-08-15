@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common.Remoting.Shared;
 
 namespace Tests.IctCommonRemoting.Interface
 {
@@ -37,12 +38,27 @@ namespace Tests.IctCommonRemoting.Interface
     }
 
     /// a simple service for testing purposes
-    public interface IMyService
+    public interface IMyService : IInterface
     {
         /// print hello world
         string HelloWorld(string msg);
 
         /// some tests for remoting DateTime objects
         DateTime TestDateTime(DateTime date, out DateTime outDate);
+
+        /// get a subnamespace
+        IMySubNamespace SubNamespace
+        {
+            get;
+        }
+    }
+
+    /// <summary>
+    /// sub namespace
+    /// </summary>
+    public interface IMySubNamespace : IInterface
+    {
+        /// print hello sub world
+        string HelloSubWorld(string msg);
     }
 }

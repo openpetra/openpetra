@@ -14,6 +14,187 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MCommon;
+{#USINGNAMESPACES}
+
+namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
+{
+    /// <summary>
+    /// WebConnector for Cacheable
+    /// </summary>
+    public class T{#SUBMODULE}CacheableWebConnector
+    {
+        /// <summary>holds reference to the CachePopulator object (only once instantiated)</summary>
+        private static Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS} FCachePopulator = null;
+        
+        /// <summary>
+        /// init static object
+        /// </summary>
+        private static void Init()
+        {
+            if (FCachePopulator == null)
+            {
+                FCachePopulator = new Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.{#CACHEABLECLASS}();
+            }
+        }
+
+        /// <summary>
+        /// Returns the desired cacheable DataTable.
+        ///
+        /// </summary>
+        /// <param name="ACacheableTable">Used to select the desired DataTable</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>)
+        /// DataTable The desired DataTable
+        /// </returns>
+        private static DataTable GetCacheableTableInternal(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+            String AHashCode,
+            Boolean ARefreshFromDB,
+            out System.Type AType)
+        {
+            Init();
+
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(
+                ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+
+            if (ReturnValue != null)
+            {
+                if (Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable) != ReturnValue.TableName)
+                {
+                    throw new ECachedDataTableTableNameMismatchException(
+                        "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
+                        Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable) + "'");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+{#IFDEF WITHLEDGER}
+        /// <summary>
+        /// Returns the desired cacheable DataTable.
+        ///
+        /// </summary>
+        /// <param name="ACacheableTable">Used to select the desired DataTable</param>
+        /// <param name="AHashCode">Hash of the cacheable DataTable that the caller has. '' can
+        /// be specified to always get a DataTable back (see @return)</param>
+        /// <param name="ARefreshFromDB">Set to true to reload the cached DataTable from the
+        /// DB and through that refresh the Table in the Cache with what is now in the
+        /// DB (this would be done when it is known that the DB Table has changed).
+        /// The CacheableTablesManager will notify other Clients that they need to
+        /// retrieve this Cacheable DataTable anew from the PetraServer the next time
+        /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AType">The Type of the DataTable (useful in case it's a
+        /// Typed DataTable)</param>
+        /// <returns>)
+        /// DataTable The desired DataTable
+        /// </returns>
+        private static DataTable GetCacheableTableInternal(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+            String AHashCode,
+            Boolean ARefreshFromDB,
+            System.Int32 ALedgerNumber,
+            out System.Type AType)
+        {
+            Init();
+
+            DataTable ReturnValue = FCachePopulator.GetCacheableTable(
+                ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType);
+
+            if (ReturnValue != null)
+            {
+                if (Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable) != ReturnValue.TableName)
+                {
+                    throw new ECachedDataTableTableNameMismatchException(
+                        "Warning: cached table name '" + ReturnValue.TableName + "' does not match enum '" +
+                        Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable) + "'");
+                }
+            }
+
+            return ReturnValue;
+        }
+{#ENDIF WITHLEDGER}
+        
+        /// GetCacheableTable
+        [RequireModulePermission("NONE")]
+        public static System.Data.DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+                                                       System.String AHashCode,
+                                                       out System.Type AType)
+        {
+            return GetCacheableTableInternal(ACacheableTable, AHashCode, false, out AType);
+        }
+
+        /// RefreshCacheableTable
+        [RequireModulePermission("NONE")]
+        public static void RefreshCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable)
+        {
+            System.Type TmpType;
+            GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
+        }
+
+        /// RefreshCacheableTable
+        [RequireModulePermission("NONE")]
+        public static void RefreshCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+                                          out System.Data.DataTable ADataTable)
+        {
+            System.Type TmpType;
+            ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, out TmpType);
+        }
+
+        /// SaveChangedStandardCacheableTable
+        [RequireModulePermission("NONE")]
+        public static TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            Init();
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, out AVerificationResult);
+        }
+        
+{#IFDEF WITHLEDGER}
+        /// GetCacheableTable
+        [RequireModulePermission("NONE")]
+        public static System.Data.DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+                                                       System.String AHashCode,
+                                                       System.Int32 ALedgerNumber,
+                                                       out System.Type AType)
+        {
+            return GetCacheableTableInternal(ACacheableTable, AHashCode, false, ALedgerNumber, out AType);
+        }
+
+        /// RefreshCacheableTable
+        [RequireModulePermission("NONE")]
+        public static void RefreshCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+                                          System.Int32 ALedgerNumber,
+                                          out System.Data.DataTable ADataTable)
+        {
+            System.Type TmpType;
+            ADataTable = GetCacheableTableInternal(ACacheableTable, "", true, ALedgerNumber, out TmpType);
+        }
+
+        /// SaveChangedStandardCacheableTable
+        [RequireModulePermission("NONE")]
+        public static TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
+                                                                      ref TTypedDataTable ASubmitTable,
+                                                                      System.Int32 ALedgerNumber,
+                                                                      out TVerificationResultCollection AVerificationResult)
+        {
+            Init();
+            return FCachePopulator.SaveChangedStandardCacheableTable(ACacheableTable, ref ASubmitTable, ALedgerNumber, out AVerificationResult);
+        }
+{#ENDIF WITHLEDGER}
+    }
+}
 
 namespace {#NAMESPACE}
 {
@@ -107,7 +288,7 @@ namespace {#NAMESPACE}
             {
                 Boolean NewTransaction;
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    Ict.Petra.Server.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 try
@@ -221,6 +402,7 @@ namespace {#NAMESPACE}
             {
                 Type TmpType;
                 GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
+                AfterSaving(ACacheableTable);
             }
 
             if (AVerificationResult.Count > 0)
@@ -232,7 +414,9 @@ namespace {#NAMESPACE}
 
             return SubmissionResult;
         }
-        
+
+        partial void AfterSaving(TCacheable{#SUBMODULE}TablesEnum ACacheableTable);            
+
 #region Data Validation
 
     {#DATAVALIDATION}    
@@ -440,6 +624,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     {
         //FCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
         GetCacheableTable(ACacheableTable, String.Empty, true, ALedgerNumber, out TmpType);
+        AfterSaving(ACacheableTable);
     }
 
     if (AVerificationResult.Count > 0)
@@ -454,7 +639,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
 
 #region Data Validation
 
-    {#DATAVALIDATION}    
+{#DATAVALIDATION}
 
 #endregion Data Validation
 
@@ -491,18 +676,6 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     break;
 }
 
-{##GETCALCULATEDLISTFROMDB}
-
-private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction, string ATableName)
-{
-}
-
-{##GETCALCULATEDLISTLEDGERFROMDB}
-
-private DataTable Get{#CALCULATEDLISTNAME}Table(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
-{
-}
-
 {##SAVETABLE}
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     if (ASubmitTable.Rows.Count > 0) 
@@ -523,5 +696,5 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
     break;
     
 {##DATAVALIDATION}
-    partial void Validate{#ENUMNAME}Manual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
+partial void Validate{#ENUMNAME}Manual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);        
 

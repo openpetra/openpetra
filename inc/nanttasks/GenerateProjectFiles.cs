@@ -433,7 +433,7 @@ namespace Ict.Tools.NAntTasks
                     temp.Replace("${ProjectGuid}", GetProjectGUID(solutionFolderName));
 
                     string fileList = GetAdditionalSolutionFile(solutionFolderName, "CacheableTablesAndLists.yaml");
-                    fileList += GetAdditionalSolutionFile(solutionFolderName, "NamespaceHierarchy.yml");
+                    fileList += GetAdditionalSolutionFile(solutionFolderName, "InterfacesUsingNamespaces.yml");
 
                     if (ASolutionFilename != "OpenPetra.Server.sln")
                     {
@@ -442,6 +442,38 @@ namespace Ict.Tools.NAntTasks
 
                     temp.Replace("${FileList}", fileList);
                     Projects += temp.ToString();
+
+                    // Add the dataset xml files to an Datasets folder
+                    solutionFolderName = "Datasets";
+                    temp = GetTemplateFile(ATemplateDir + "template.sln.folder");
+                    temp.Replace("${FolderName}", solutionFolderName);
+                    temp.Replace("${ProjectGuid}", GetProjectGUID(solutionFolderName));
+
+                    string DatasetFilesPath = FDirProjectFiles;         // will be <branch>/delivery/projects
+                    DatasetFilesPath += "/../../csharp/ICT/Petra/Shared/lib";
+                    DatasetFilesPath = DatasetFilesPath.Replace('/', Path.DirectorySeparatorChar);
+
+                    if (Directory.Exists(DatasetFilesPath))
+                    {
+                        string[] DatasetFiles = Directory.GetFiles(DatasetFilesPath, "*.xml", SearchOption.AllDirectories);
+
+                        fileList = String.Empty;
+
+                        foreach (string filename in DatasetFiles)
+                        {
+                            string filenameWithForwardSlashes = Path.GetFullPath(filename).Replace(Path.DirectorySeparatorChar, '/');
+
+                            if (filenameWithForwardSlashes.EndsWith("/data/" + Path.GetFileName(filename)))
+                            {
+                                fileList += GetAdditionalSolutionFile(solutionFolderName,
+                                    filenameWithForwardSlashes.Substring(
+                                        filenameWithForwardSlashes.IndexOf("csharp/ICT/Petra/Shared/") + "csharp/ICT/Petra/Shared/".Length));
+                            }
+                        }
+
+                        temp.Replace("${FileList}", fileList);
+                        Projects += temp.ToString();
+                    }
 
                     if (ASolutionFilename != "OpenPetra.Client.sln")
                     {
@@ -954,6 +986,14 @@ namespace Ict.Tools.NAntTasks
                 string work = String.Format("\t\t../../../csharp/ICT/Petra/Definitions/{0} = ../../../csharp/ICT/Petra/Definitions/{0}{1}",
                     FileName, Environment.NewLine);
 
+                if (FileName == "InterfacesUsingNamespaces.yml")
+                {
+                    work = String.Format(
+                        "\t\t../../../csharp/ICT/Petra/Shared/lib/Interfaces/{0} = ../../../csharp/ICT/Petra/Shared/lib/Interfaces/{0}{1}",
+                        FileName,
+                        Environment.NewLine);
+                }
+
                 return work.Replace('/', Path.DirectorySeparatorChar);
             }
             else if (SolutionFolderName == "Database")
@@ -966,6 +1006,13 @@ namespace Ict.Tools.NAntTasks
             else if (SolutionFolderName == "SQL")
             {
                 string work = String.Format("\t\t../../../csharp/ICT/Petra/Server/sql/{0} = ../../../csharp/ICT/Petra/Server/sql/{0}{1}",
+                    FileName, Environment.NewLine);
+
+                return work.Replace('/', Path.DirectorySeparatorChar);
+            }
+            else if (SolutionFolderName == "Datasets")
+            {
+                string work = String.Format("\t\t../../../csharp/ICT/Petra/Shared/{0} = ../../../csharp/ICT/Petra/Shared/{0}{1}",
                     FileName, Environment.NewLine);
 
                 return work.Replace('/', Path.DirectorySeparatorChar);

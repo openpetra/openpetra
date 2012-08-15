@@ -33,7 +33,7 @@ using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MSysMan.Maintenance;
+using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.MPartner.Partner
 {
@@ -758,7 +758,7 @@ namespace Ict.Petra.Server.MPartner.Partner
 
                 // TODO 2 : Remove this call when 4GL does not need to read user defaults any more
                 // now save the user defaults back to the db so 4GL can get it
-                TUserDefaults.SaveUserDefaultsFromServerSide(ref SingleVerificationResultCollection);
+                TUserDefaults.SaveUserDefaultsFromServerSide(out SingleVerificationResultCollection);
 
                 // TODO 2 : Activate this call when 4GL does not need to read user defaults any more
                 // update user default values on client

@@ -30,9 +30,9 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner.Partner.DataElements.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MPersonnel.Person.DataElements.UIConnectors;
-using Ict.Petra.Shared.Interfaces.MCommon.UIConnectors;
+using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.Interfaces.MPersonnel;
+using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
@@ -523,6 +523,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
         /// <summary>
         /// get the local partner data
         /// </summary>
+        [NoRemoting]
         public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues(Int64 APartnerKey, out Boolean ALabelsAvailable,
             Boolean ACountOnly, TDBTransaction AReadTransaction)
         {

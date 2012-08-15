@@ -40,20 +40,21 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MPartner.Partner.ServerLookups;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.Interfaces.MFinance.AP.WebConnectors;
+using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MCommon.WebConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 {
     ///<summary>
     /// This connector provides data for the finance Accounts Payable screens
     ///</summary>
-    public partial class TTransactionWebConnector
+    public partial class TAPTransactionWebConnector
     {
         /// <summary>
         /// Retrieve all the information for the current Ledger
@@ -680,7 +681,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ref AccountsPayableTDS APDataset)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+            GLBatchTDS GLDataset = TGLTransactionWebConnector.CreateABatch(ALedgerNumber);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -880,7 +881,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     transaction.AmountInBaseCurrency = transaction.TransactionAmount * journal.ExchangeRateToBase;
 
                     transaction.AccountCode = document.ApAccount;
-                    transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                    transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(
                         ALedgerNumber);
                     transaction.Narrative = "AP" + document.ApNumber.ToString() + " - " + document.DocumentCode + " - " + SupplierShortName;
 
@@ -1040,7 +1041,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ABatchRow batch = GLDataset.ABatch[0];
 
             // save the batch
-            if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+            if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
                     out AVerificationResult) != TSubmitChangesResult.scrOK)
             {
                 return false;
@@ -1121,7 +1122,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         private static GLBatchTDS CreateGLBatchAndTransactionsForPaying(Int32 ALedgerNumber, DateTime APostingDate, ref AccountsPayableTDS APDataset)
         {
             // create one GL batch
-            GLBatchTDS GLDataset = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.CreateABatch(ALedgerNumber);
+            GLBatchTDS GLDataset = TGLTransactionWebConnector.CreateABatch(ALedgerNumber);
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -1245,7 +1246,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionDate);
 
                         transaction.AccountCode = payment.BankAccount;
-                        transaction.CostCentreCode = Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(
+                        transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(
                             payment.LedgerNumber);
                         transaction.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " - " +
                                                 Ict.Petra.Shared.MPartner.Calculations.FormatShortName(payment.SupplierName,
@@ -1270,7 +1271,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transactionAPAccount.TransactionDate = batch.DateEffective;
                         transactionAPAccount.AccountCode = document.ApAccount;
                         transactionAPAccount.CostCentreCode =
-                            Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.GetStandardCostCentre(payment.LedgerNumber);
+                            TGLTransactionWebConnector.GetStandardCostCentre(payment.LedgerNumber);
                         transactionAPAccount.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " AP: " +
                                                          document.ApNumber.ToString();
                         transactionAPAccount.Reference = payment.Reference;
@@ -1620,7 +1621,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 ABatchRow batch = GLDataset.ABatch[0];
 
                 // save the batch
-                if (Ict.Petra.Server.MFinance.GL.WebConnectors.TTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
                         out AVerificationResult) == TSubmitChangesResult.scrOK)
                 {
                     // post the batch

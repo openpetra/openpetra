@@ -38,10 +38,17 @@ namespace Ict.Common.Remoting.Client
     /// the Server-side .NET Remoting Sponsor and several other remoted objects from
     /// the PetraServer.
     /// </summary>
-    public class TConnectorBase
+    public class TConnector
     {
-        private String FServerIPAddr = "";
-        private System.Int16 FServerIPPort;
+        /// <summary>
+        /// the single instance for this client
+        /// </summary>
+        public static TConnector TheConnector = null;
+
+        private String FServerIPAddr = string.Empty;
+        private String FServerPort = string.Empty;
+        private String FCrossDomainURL = string.Empty;
+        private String FClientID = string.Empty;
 
         /// <summary>
         /// the minimum debuglevel which should display log messages for the connector
@@ -54,29 +61,16 @@ namespace Ict.Common.Remoting.Client
         /// </summary>
         protected Boolean FRemotingConfigurationSetup;
 
-        /// <summary>todoComment</summary>
-        public String ServerIPAddr
+        /// <summary>
+        /// initialize connection parameters
+        /// </summary>
+        public void Init(string ACrossDomainURI, string AClientID)
         {
-            get
-            {
-                return FServerIPAddr;
-            }
+            DetermineServerIPAddress();
+            FCrossDomainURL = "tcp://" + FServerIPAddr + ":" + FServerPort + "/" + ACrossDomainURI;
+            FClientID = AClientID;
+            TheConnector = this;
         }
-
-        /// <summary>todoComment</summary>
-        public System.Int16 ServerIPPort
-        {
-            get
-            {
-                return FServerIPPort;
-            }
-
-            set
-            {
-                FServerIPPort = value;
-            }
-        }
-
 
         /// <summary>
         /// Opens a .NET Remoting connection to the PetraServer's ClientManager.
@@ -95,7 +89,7 @@ namespace Ict.Common.Remoting.Client
                 {
                     FRemotingConfigurationSetup = true;
 
-                    if (TAppSettingsManager.HasValue("Remote.Port"))
+                    if (TAppSettingsManager.HasValue("Server.Port"))
                     {
                         IChannel[] regChannels = ChannelServices.RegisteredChannels;
 
@@ -113,25 +107,13 @@ namespace Ict.Common.Remoting.Client
                     }
                 }
 
-                if (TAppSettingsManager.HasValue("Remote.Port"))
-                {
-                    ARemote = (IClientManagerInterface)
-                              Activator.GetObject(typeof(Ict.Common.Remoting.Shared.IClientManagerInterface),
-                        String.Format("tcp://{0}:{1}/Clientmanager",
-                            TAppSettingsManager.GetValue("Remote.Host"),
-                            TAppSettingsManager.GetValue("Remote.Port")));
-                }
-                else
-                {
-                    ARemote = (IClientManagerInterface)
-                              TRemotingHelper.GetObject(typeof(IClientManagerInterface));
-                }
+                DetermineServerIPAddress();
 
-                if (ARemote == null)
-                {
-                    // do nothing
-                }
-                else
+                ARemote = (IClientManagerInterface)
+                          Activator.GetObject(typeof(IClientManagerInterface),
+                    String.Format("tcp://{0}:{1}/Clientmanager", FServerIPAddr, FServerPort));
+
+                if (ARemote != null)
                 {
                     if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                     {
@@ -147,74 +129,59 @@ namespace Ict.Common.Remoting.Client
         }
 
         /// <summary>
-        /// Retrieves a Remoting Proxy object for the Server-side TPollClientTasks object
-        ///
+        /// Retrieves a Remoting Proxy object for a Server-side object
         /// </summary>
-        /// <param name="RemotingURL">The Server-assigned URL for the Remoting Sponsor object</param>
-        /// <param name="ARemote">.NET Remoting Proxy object for the Remoting Sponsor object
-        /// </param>
-        /// <returns>void</returns>
-        public void GetRemotePollClientTasks(string RemotingURL, out IPollClientTasksInterface ARemote)
+        /// <param name="RemotingURL">The Server-assigned URL for the remote object</param>
+        /// <param name="ARemoteType"></param>
+        /// <returns>.NET Remoting Proxy object for the remote object</returns>
+        public IInterface GetRemoteObject(string RemotingURL, Type ARemoteType)
         {
-            string strTCP;
-            string strServer;
-
-            ARemote = null;
-            strServer = null;
-
-            if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
-            {
-                TLogging.Log("Entering GetRemotePollClientTasks()...", TLoggingType.ToLogfile);
-            }
-
             try
             {
-                strServer = DetermineServerIPAddress() + ':' + FServerIPPort.ToString();
-                strTCP = (("tcp://" + strServer) + '/' + RemotingURL);
-
                 if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                 {
-                    TLogging.Log("Connecting to: " + strTCP, TLoggingType.ToLogfile);
+                    TLogging.Log("Connecting to: " + FCrossDomainURL + ":" + RemotingURL, TLoggingType.ToLogfile);
                 }
 
-                ARemote = (IPollClientTasksInterface)RemotingServices.Connect(typeof(IPollClientTasksInterface), strTCP);
+                IInterface RemoteObject = (IInterface) new CustomProxy(FCrossDomainURL, RemotingURL, FClientID, ARemoteType).GetTransparentProxy();
 
-                if (ARemote == null)
+                if (RemoteObject == null)
                 {
-                    TLogging.Log("GetRemotePollClientTasks: Connection failed!", TLoggingType.ToLogfile);
+                    TLogging.Log("GetRemoteObject(" + RemotingURL + ", " + ARemoteType.ToString() + "): Connection failed!", TLoggingType.ToLogfile);
                 }
-                else
+                else if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
                 {
-                    if (TLogging.DebugLevel >= CONNECTOR_LOGGING)
-                    {
-                        TLogging.Log("GetRemotePollClientTasks: connected.", TLoggingType.ToLogfile);
-                    }
+                    TLogging.Log("GetRemoteObject: connected " + RemotingURL, TLoggingType.ToLogfile);
                 }
+
+                return RemoteObject;
             }
             catch (Exception exp)
             {
-                TLogging.Log("Error in GetRemotePollClientTasks(), Possible reasons :-" + exp.ToString(), TLoggingType.ToLogfile);
+                TLogging.Log(
+                    "Error in GetRemoteObject(" + RemotingURL + ", " + ARemoteType.ToString() + "), Possible reasons :-" + exp.ToString(),
+                    TLoggingType.ToLogfile);
                 throw;
             }
         }
 
         /// <summary>
-        /// Determines the PetraServer's IP Address by parsing the .NET (Remoting)
-        /// Configuration file.
-        ///
+        /// Determines the PetraServer's IP Address and port by parsing the .NET (Remoting) Configuration file.
         /// </summary>
-        /// <returns>The IP Address of the PetraServer that we connect to
-        /// </returns>
-        protected String DetermineServerIPAddress()
+        protected void DetermineServerIPAddress()
         {
             const String CLIENTMANAGERENTRY = "Ict.Common.Remoting.Shared.IClientManagerInterface";
 
-            System.Int16 strServerIPAddrStart;
-            string strServerIPAddr = "";
+            string strServerIPAddr = string.Empty;
 
-            if (TAppSettingsManager.HasValue("Remote.Host"))
+            if (TAppSettingsManager.HasValue("Server.Host"))
             {
-                FServerIPAddr = TAppSettingsManager.GetValue("Remote.Host");
+                FServerIPAddr = TAppSettingsManager.GetValue("Server.Host");
+            }
+
+            if (TAppSettingsManager.HasValue("Server.Port"))
+            {
+                FServerPort = TAppSettingsManager.GetValue("Server.Port");
             }
 
             if (FServerIPAddr == "")
@@ -225,23 +192,24 @@ namespace Ict.Common.Remoting.Client
                 {
                     if (entr.ObjectType.ToString() == CLIENTMANAGERENTRY)
                     {
-                        strServerIPAddrStart = (short)(entr.ObjectUrl.IndexOf("//") + 2);
+                        int indexServerIPAddrStart = entr.ObjectUrl.IndexOf("//") + 2;
                         strServerIPAddr =
-                            entr.ObjectUrl.Substring(strServerIPAddrStart, (entr.ObjectUrl.IndexOf(':', strServerIPAddrStart) - strServerIPAddrStart));
+                            entr.ObjectUrl.Substring(indexServerIPAddrStart, entr.ObjectUrl.IndexOf(':',
+                                    indexServerIPAddrStart) - indexServerIPAddrStart);
+                        int indexPortStart = entr.ObjectUrl.IndexOf(':', indexServerIPAddrStart) + 1;
+                        FServerPort = entr.ObjectUrl.Substring(indexPortStart, entr.ObjectUrl.IndexOf('/', indexPortStart) - indexPortStart);
                     }
                 }
 
                 FServerIPAddr = strServerIPAddr;
             }
 
-            if (FServerIPAddr == "")
+            if (FServerIPAddr.Length == 0)
             {
                 throw new ServerIPAddressNotFoundInConfigurationFileException(
                     "The IP Address of the PetraServer could " + "not be extracted from the .NET (Remoting) Configuration File (used '" +
                     CLIENTMANAGERENTRY + "' entry " + "to look for the IP Address)!");
             }
-
-            return FServerIPAddr;
         }
     }
 

@@ -36,13 +36,12 @@ namespace Tests.IctCommonRemoting.Server
         /// constructor
         /// </summary>
         public TClientDomainManager(String AClientID,
-            String ARemotingPort,
             TClientServerConnectionType AClientServerConnectionType,
             TClientManagerCallForwarder AClientManagerRef,
             ISystemDefaultsCache ASystemDefaultsCacheRef,
             ICacheableTablesManager ACacheableTablesManagerRef,
             IPrincipal AUserInfo) :
-            base(AClientID, ARemotingPort,
+            base(AClientID,
                 AClientServerConnectionType, AClientManagerRef,
                 "007")
         {

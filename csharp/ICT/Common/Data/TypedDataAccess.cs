@@ -68,6 +68,11 @@ namespace Ict.Common.Data
         /// </summary>
         public static DateTime MODIFICATION_ID_DELETEDROW_INDICATOR = DateTime.MaxValue;
 
+        /// <summary>
+        /// the max for sqlite is 500. for postgresql it could be higher.
+        /// </summary>
+        private const int MAX_SQL_PARAMETERS = 450;
+
         private static int FRowCount;
 
         /// <summary>
@@ -2175,7 +2180,7 @@ namespace Ict.Common.Data
                         }
                     }
 
-                    if (InsertParameters.Count > 1500)
+                    if (InsertParameters.Count > MAX_SQL_PARAMETERS)
                     {
                         // Inserts in one query
                         DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, false, InsertParameters.ToArray());

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -753,7 +753,17 @@ namespace Ict.Petra.Shared
 #endif
                     TmpDT = ACacheableTable.Copy();
                     TmpDT.TableName = ACacheableTableName;
-                    UDataCacheDataSet.Merge(TmpDT);
+
+                    try
+                    {
+                        UDataCacheDataSet.Merge(TmpDT);
+                    }
+                    catch (Exception)
+                    {
+                        // if the column names change, we cannot merge anymore with the table that was loaded from an old cache file
+                        UDataCacheDataSet.RemoveTable(TmpDT.TableName);
+                        UDataCacheDataSet.Merge(TmpDT);
+                    }
 
                     // Remove rows from the cached DT that are no longer present in the DB Table (DataSet.Merge doesn't do this!).
                     // Note: The Cacheable DataTable must have a Primary Key for this Method to be able to perform this!
