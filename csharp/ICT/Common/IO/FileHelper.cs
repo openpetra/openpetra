@@ -260,7 +260,7 @@ namespace Ict.Common.IO
                 // could be a symbolic link on Mono
                 try
                 {
-                    FileAttributes attr = File.GetAttributes(APath);
+                    File.GetAttributes(APath);
                 }
                 catch (Exception)
                 {
