@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -42,6 +43,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
         private Int64 FLastDonor = -1;
+        private bool FActiveOnly = true;
 
         /// <summary>
         /// load the gifts into the grid
@@ -50,19 +52,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            if ((FLedgerNumber != -1) && (FBatchNumber != -1) && (FBatchNumber == ABatchNumber))
-            {
-                GetDataFromControls();
-                return;
-            }
-
-            FLedgerNumber = ALedgerNumber;
-            FBatchNumber = ABatchNumber;
+        	bool firstLoad = (FLedgerNumber == -1);
+        	
+        	//Enable buttons accordingly
             btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
             btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
 
+            //Check if the same batch is selected, so no need to apply filter
+        	if ((FLedgerNumber != -1) && (FBatchNumber != -1) && (FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
+            {
+                //Same as previously selected
+                if (grdDetails.SelectedRowIndex() > 0)
+				{
+					GetDetailsFromControls(GetSelectedDetailRow());
+				}
+                return;
+            }
+            
+        	FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
+
+			//Apply new filter
             FPreviouslySelectedDetailRow = null;
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
             FMainDS.AGiftDetail.DefaultView.RowFilter = AGiftDetailTable.GetBatchNumberDBName() + "=" + FBatchNumber.ToString();
 
@@ -73,22 +87,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            // if this form is readonly, then we need all codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
-
-            TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, ActiveOnly);
-            TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, ActiveOnly);
-            TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, ActiveOnly);
-            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
-            TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, ActiveOnly);
-            //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
-
-            //add textxhanged event handler to Motivation group code
-            this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
-            this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
-
-            //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
-            //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+			// if this form is readonly, then we need all codes, because old codes might have been used
+            if (firstLoad || FActiveOnly != this.Enabled)
+            {
+            	FActiveOnly = this.Enabled;
+            	
+	            TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, FActiveOnly);
+	            TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, FActiveOnly);
+	            TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, FActiveOnly);
+	            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, FActiveOnly);
+	            TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, FActiveOnly);
+	            //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
+	
+	            //TODO            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false);
+	            //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+	
+	            //add textxhanged event handler to Motivation group code
+	            this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
+	            this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
+            }
 
             ShowData();
         }
@@ -565,14 +582,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     "Delete Row Error");
             }
 
-            if (!pnlDetails.Enabled)
-            {
-                ClearControls();
-            }
-
             return deleteSuccessful;
         }
 
+        private void PostDeleteManual(ref GiftBatchTDSAGiftDetailRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+        {
+            if (!pnlDetails.Enabled)
+            {
+                ClearControls();
+                UpdateTotals();
+            }
+        	
+        }
+        
         private void ClearControls()
         {
             try
