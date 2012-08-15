@@ -51,8 +51,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
-
-            btnOK.Text = "C&reate Ledger";
         }
 
         private void BtnOK_Click(System.Object sender, EventArgs e)
