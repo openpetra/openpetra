@@ -213,9 +213,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateChangeableStatus();
             FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
-            ((TFrmGiftBatch)ParentForm).LoadTransactions(
-                ARow.LedgerNumber,
-                ARow.BatchNumber);
+//            ((TFrmGiftBatch)ParentForm).LoadTransactions(
+//                ARow.LedgerNumber,
+//                ARow.BatchNumber);
             FSelectedBatchNumber = ARow.BatchNumber;
         }
 

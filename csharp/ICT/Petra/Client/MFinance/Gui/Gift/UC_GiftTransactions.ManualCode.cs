@@ -40,8 +40,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftTransactions
     {
-        private Int32 FLedgerNumber = -1;
-        private Int32 FBatchNumber = -1;
+        public Int32 FLedgerNumber = -1;
+        public Int32 FBatchNumber = -1;
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
 
@@ -106,8 +106,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 	            this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
 	            this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
             }
-
-            ShowData();
+            
+            if (firstLoad)
+            {
+            	ShowData();
+            }
+            else
+            {
+            	ShowDetails(GetSelectedDetailRow());
+            }
+            
+            pnlDetails.Enabled = PnlDetailsProtected;
+            		
         }
 
         bool FinRecipientKeyChanging = false;
@@ -365,6 +375,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 txtGiftTotal.Text = "";
                 txtBatchTotal.NumberValueDecimal = 0;
+
+				//If all details have been deleted
+                if (FLedgerNumber != -1 && grdDetails.Rows.Count == 1)
+				{
+	                AGiftBatchRow batch = GetBatchRow();
+		            batch.BatchTotal = 0;
+				}
+
                 return;
             }
 
@@ -403,8 +421,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //this is here because at the moment the generator does not generate this
             txtBatchTotal.NumberValueDecimal = sumBatch;
             //Now we look at the batch and update the batch data
-            AGiftBatchRow batch = GetBatchRow();
-            batch.BatchTotal = sumBatch;
+            AGiftBatchRow batchRow = GetBatchRow();
+            batchRow.BatchTotal = sumBatch;
         }
 
         /// reset the control
@@ -587,12 +605,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void PostDeleteManual(ref GiftBatchTDSAGiftDetailRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
         {
-            if (!pnlDetails.Enabled)
+        	MessageBox.Show(ACompletionMessage);
+        	
+        	if (!pnlDetails.Enabled)
             {
                 ClearControls();
-                UpdateTotals();
             }
-        	
         }
         
         private void ClearControls()
