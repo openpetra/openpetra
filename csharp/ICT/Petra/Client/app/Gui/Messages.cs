@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.App.Gui
 
         #region General
 
-        /// <summary>Message Number</summary>
+        // <summary>Message Number</summary>
         private static readonly string StrMessageNumber = Catalog.GetString("Message Number: ");
 
         /// <summary>Context</summary>

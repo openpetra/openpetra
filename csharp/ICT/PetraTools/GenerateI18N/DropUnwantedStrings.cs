@@ -137,7 +137,7 @@ public class TDropUnwantedStrings
 
                     while (line.StartsWith("#.") && !line.Contains("todoComment"))   //take over the comments(if they exist)
                     {
-                        string line_part1 = AdaptString(line, "/");
+                        string line_part1 = AdaptString(line, "_ ");
                         string line_part2 = AdaptString(line_part1, "<summary>");
                         string line_part3 = AdaptString(line_part2, "</summary>");
 
@@ -163,7 +163,7 @@ public class TDropUnwantedStrings
                             if (line.StartsWith("#:"))
                             {
                                 sw.WriteLine(
-                                    currentLine + " (first of several occurrences - the whole list can be found in i8n\template.pot.withallsources)");
+                                    currentLine + " (first of several occurrences - the whole list can be found in i8n\\template.pot.withallsources)");
                             }
                             else
                             {
@@ -260,7 +260,7 @@ public class TDropUnwantedStrings
             }
             else if (line == "")
             {
-                //add empty line only it the next line is not aswell an empty line
+                //add empty line only if the next line is not aswell an empty line
                 string currentLine = line;
                 line = sr.ReadLine();
 
