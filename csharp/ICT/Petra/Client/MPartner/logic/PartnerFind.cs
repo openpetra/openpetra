@@ -491,53 +491,9 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>
         /// todoComment
         /// </summary>
-        /// <param name="AOwner"></param>
-        public static void OpenDonorGiftHistory(IWin32Window AOwner)
-        {
-            throw new NotImplementedException();
-// TODO OpenDonorGiftHistory
-#if TODO
-            Int32 LedgerNumber;
-            String LedgerName;
-
-            LedgerNumber = Logic.UCmdMFinance.GetLedgerNumber(Logic.ULogic.ParentForm, out LedgerName);
-
-            // MessageBox.Show('LedgerNumber: ' + LedgerNumber.ToString + '; LedgerName: ' + LedgerName);
-            if (LedgerNumber != 0)
-            {
-                Logic.UCmdMFinance.OpenDonorGiftHistory(AOwner, LedgerNumber, Logic.ULogic.PartnerKey);
-            }
-#endif
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
         public static void OpenExtracts()
         {
 // TODO            Logic.UCmdMPartner.OpenExtractsMainScreen(Logic.ULogic.ParentForm);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="AOwner"></param>
-        public static void OpenRecipientGiftHistory(IWin32Window AOwner)
-        {
-            throw new NotImplementedException();
-// TODO OpenRecipientGiftHistory
-#if TODO
-            Int32 LedgerNumber;
-            String LedgerName;
-
-            LedgerNumber = Logic.UCmdMFinance.GetLedgerNumber(Logic.ULogic.ParentForm, out LedgerName);
-
-            // MessageBox.Show('LedgerNumber: ' + LedgerNumber.ToString + '; LedgerName: ' + LedgerName);
-            if (LedgerNumber != 0)
-            {
-                Logic.UCmdMFinance.OpenRecipientGiftHistory(AOwner, LedgerNumber, Logic.ULogic.PartnerKey);
-            }
-#endif
         }
 
         /// <summary>

@@ -738,11 +738,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainDonorHistory")
             {
-                TMenuFunctions.OpenDonorGiftHistory(this);
+//              TMenuFunctions.OpenDonorGiftHistory(this);
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",
+                    PartnerKey,
+                    FPetraUtilsObject.GetForm());
             }
             else if (ClickedMenuItemName == "mniMaintainRecipientHistory")
             {
-                TMenuFunctions.OpenRecipientGiftHistory(this);
+//              TMenuFunctions.OpenRecipientGiftHistory(this);
+                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",
+                    PartnerKey,
+                    FPetraUtilsObject.GetForm());
             }
             else if (ClickedMenuItemName == "mniMaintainFinanceReports")
             {
