@@ -915,6 +915,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("PREDELETEMANUAL", "");
             FTemplate.AddToCodelet("DELETEROWMANUAL", "");
             FTemplate.AddToCodelet("POSTDELETEMANUAL", "");
+            FTemplate.AddToCodelet("SELECTTABMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
@@ -981,6 +982,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 FTemplate.AddToCodelet("POSTDELETEMANUAL",
                     "PostDeleteManual(ref rowToDelete, allowDeletion, deletionPerformed, completionMessage);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("SelectTabManual"))
+            {
+                FTemplate.AddToCodelet("SELECTTABMANUAL",
+                    "//Call code to execute on selection of new tab" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("StoreManualCode"))
