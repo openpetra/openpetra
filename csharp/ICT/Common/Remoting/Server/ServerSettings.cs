@@ -406,8 +406,8 @@ namespace Ict.Common.Remoting.Server
                 }
             }
 
-            // Server.IPBasePort
-            FIPBasePort = TAppSettingsManager.GetInt16("Server.IPBasePort", 9000);
+            // Server.Port
+            FIPBasePort = TAppSettingsManager.GetInt16("Server.Port", 9000);
 
             FRunAsStandalone = TAppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
 
