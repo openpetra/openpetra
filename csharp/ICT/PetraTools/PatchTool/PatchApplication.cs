@@ -158,35 +158,24 @@ namespace Ict.Tools.PatchTool
         }
 
         /// <summary>
-        /// check if a process is still running with the given name;
+        /// check if the file can be renamed. if not, the program is still running.
         /// the patch cannot modify such files if the program is still running
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="APathToExeFile"></param>
         /// <returns></returns>
-        public static Boolean ProcessStillRunning(String name)
+        public static Boolean ProcessStillRunning(String APathToExeFile)
         {
-            Boolean ReturnValue;
-
-            Process[] processes;
-            ReturnValue = false;
             try
             {
-                processes = Process.GetProcessesByName(name);
+                File.Move(APathToExeFile, APathToExeFile + ".test");
+                File.Move(APathToExeFile + ".test", APathToExeFile);
             }
             catch (Exception)
             {
-                // Messagebox.show(e.Message);
-                // Message on Vista: Couldn't get process information from remote machine
-                // http:www.mombu.com/microsoft/netsecurity/tcantusegetprocessesbynamewithvista813749.html
-                processes = null;
+                return true;
             }
 
-            if ((processes != null) && (processes.Length > 0))
-            {
-                ReturnValue = true;
-            }
-
-            return ReturnValue;
+            return true;
         }
     }
 
@@ -621,11 +610,11 @@ namespace Ict.Tools.PatchTool
             PackTools.Unzip(TempPath, APatchFile);
 
             // make sure that PetraClient has been stopped
-            if (PatchApplication.ProcessStillRunning("PetraClient"))
+            if (PatchApplication.ProcessStillRunning(FBinPath + Path.DirectorySeparatorChar + "PetraClient.exe"))
             {
                 TLogging.Log("Wait for PetraClient to stop...");
 
-                while (PatchApplication.ProcessStillRunning("PetraClient"))
+                while (PatchApplication.ProcessStillRunning(FBinPath + Path.DirectorySeparatorChar + "PetraClient.exe"))
                 {
                     TLogging.Log("Wait for PetraClient to stop...");
                 }
