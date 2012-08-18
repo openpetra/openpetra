@@ -378,7 +378,12 @@ namespace Ict.Common.Remoting.Server
                     while (!sr.EndOfStream)
                     {
                         string line = sr.ReadLine();
-                        FDBPassword = line.Substring(line.LastIndexOf(':') + 1);
+
+                        if (line.StartsWith(FDatabaseHostOrFile + ":" + FDatabasePort + ":" + FDatabaseName + ":" + FDBUsername + ":"))
+                        {
+                            FDBPassword = line.Substring(line.LastIndexOf(':') + 1);
+                            break;
+                        }
                     }
                 }
             }
