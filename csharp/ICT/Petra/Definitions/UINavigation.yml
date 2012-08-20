@@ -141,12 +141,12 @@ OpenPetra:
                         #PostGiftBatch:
                     GiftReceipting:
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=TFrmGiftReceiptPrinting}
+                        DonorOrRecipientHistory: {ActionOpenScreen=TFrmDonorRecipientHistory}
                         #PrintSingleReceipt:
                     Reports:
                         RecipientGiftStatement: {ActionOpenScreen=TFrmRecipientGiftStatement}
                         DonorGiftStatement: {ActionOpenScreen=TFrmDonorGiftStatement}
                         DonorGiftsToFieldsReport: {ActionOpenScreen=TFrmDonorGiftsToFieldsReport}
-                        DonorOrRecipientHistory: {ActionOpenScreen=TFrmDonorRecipientHistory}
                     FormLetters:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=TFrmGiftNewDonorLetter}
                         PrintDonorsOfWorkersLetters: {Description:Send a letter to all donors of a specific worker, ActionOpenScreen=TFrmGiftDonorsOfWorkerLetter}
