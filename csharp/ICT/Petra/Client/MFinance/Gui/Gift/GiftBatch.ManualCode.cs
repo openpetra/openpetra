@@ -39,7 +39,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
-        private UserControl FCurrentUserControl;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -78,6 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ucoBatches.LoadBatches(FLedgerNumber);
             }
         }
+        
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
@@ -98,28 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             tabGiftBatch.SelectedIndex = standardTabIndex;
-            tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-        }
-
-        private void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
-        {
-        	FPetraUtilsObject.VerificationResultCollection.Clear();
-
-            if (tabGiftBatch.SelectedIndex == 0)
-            {
-                FCurrentUserControl = ucoTransactions;
-            }
-            else
-            {
-                FCurrentUserControl = ucoBatches;
-            }
-
-            if (!ValidateAllData(true, FCurrentUserControl))
-            {
-                e.Cancel = true;
-
-                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
-            }
+            TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
         }
 
         private void RunOnceOnActivationManual()
@@ -174,16 +153,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// find a special gift detail
-        /// </summary>
-        public void FindGiftDetail(AGiftDetailRow gdr)
-        {
-            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
-            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
-            standardTabIndex = 1;     // later we switch to the detail tab
-        }
-
-        /// <summary>
         /// directly access the transactions control
         /// </summary>
         public TUC_GiftTransactions GetTransactionsControl()
@@ -201,7 +170,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Transactions
         };
 
-        
         bool FChangeTabEventHasRun = false;
         
         private void SelectTabManual(int ASelectedTabIndex)
@@ -260,5 +228,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
         }
+
+        /// <summary>
+        /// find a special gift detail
+        /// </summary>
+        public void FindGiftDetail(AGiftDetailRow gdr)
+        {
+            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
+            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
+            standardTabIndex = 1;     // later we switch to the detail tab
+        }
+
+        
     }
 }

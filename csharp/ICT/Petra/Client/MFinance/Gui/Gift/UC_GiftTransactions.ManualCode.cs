@@ -957,13 +957,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // show cost centre
             MotivationDetailChanged(null, null);
 
-//			if (cmbMinistry.Count == 0)
-//            {
-//              cmbMinistry.SelectedIndex = -1;
-//              cmbMinistry.Text = string.Empty;
-//              cmbMinistry.SetSelectedString("", -1);
-//            }
-
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
 
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
@@ -982,17 +975,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 txtDetailCostCentreCode.Text = string.Empty;
             }
-
-//            if (ARow.IsMotivationGroupCodeNull())
-//			{
-//				cmbDetailMotivationGroupCode.SelectedIndex = -1;
-//				cmbDetailMotivationDetailCode.SelectedIndex = -1;
-//            }
-//            else
-//            {
-//              cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
-//              cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
-//            }
 
             UpdateControlsProtection(ARow);
 

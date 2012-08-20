@@ -22,9 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-
 using Ict.Common;
 using Ict.Common.Data;
+
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -45,17 +45,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// show the actual data of the database after server has changed data
+        /// </summary>
+        public void RefreshAll()
+        {
+            ucoBatches.RefreshAll();
+        }
+
         private void InitializeManualCode()
         {
             this.tpgTransactions.Enabled = false;
         }
 
+        private int standardTabIndex = 0;
+
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            tabGiftBatch.SelectedIndex = 0;
+            tabGiftBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null);
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            ucoBatches.Focus();
+            HookupAllInContainer(ucoBatches);
+            HookupAllInContainer(ucoTransactions);
         }
 
         /// <summary>
@@ -63,11 +80,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
         {
             this.tpgTransactions.Enabled = true;
             FPetraUtilsObject.DisableDataChangedEvent();
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
+            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AFromTabClick);
             FPetraUtilsObject.EnableDataChangedEvent();
         }
 
@@ -119,25 +137,64 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Transactions
         };
 
+        bool FChangeTabEventHasRun = false;
+        
+        private void SelectTabManual(int ASelectedTabIndex)
+        {
+        	if (ASelectedTabIndex == (int)eGiftTabs.Batches)
+            {
+            	SelectTab(eGiftTabs.Batches);
+            }
+            else
+            {
+            	SelectTab(eGiftTabs.Transactions);
+            }
+
+        }
+
         /// <summary>
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        public void SelectTab(eGiftTabs ATab)
+        /// <param name="AFromTabClick"></param>
+        public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
         {
-            if (ATab == eGiftTabs.Batches)
+        	if (FChangeTabEventHasRun && AFromTabClick)
+        	{
+        		FChangeTabEventHasRun = false;
+        		return;
+        	}
+        	else
+        	{
+        		FChangeTabEventHasRun = !AFromTabClick;
+        	}
+        	
+        	if (ATab == eGiftTabs.Batches)
             {
-                this.tabGiftBatch.SelectedTab = this.tpgBatches;
+                //If from grid double click then invoke tab changed event
+        		if (!AFromTabClick)
+                {
+                	this.tabGiftBatch.SelectedTab = this.tpgBatches;	
+                }
             }
             else if (ATab == eGiftTabs.Transactions)
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber);
-                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                	//ucoBatches.Controls["grdDetails"].Focus;
+                	LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
+                        ucoBatches.GetSelectedDetailRow().BatchNumber, AFromTabClick);
+	
+                	//If from grid double click then invoke tab changed event
+	                if (!AFromTabClick)
+	                {
+	                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+	                }
                 }
+                
             }
+
         }
+        
     }
 }
