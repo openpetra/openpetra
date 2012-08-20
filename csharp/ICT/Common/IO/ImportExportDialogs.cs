@@ -180,7 +180,7 @@ namespace Ict.Common.IO
                 // it seems there was a bug that only .gz was added if user did not type the extension
                 if (!filename.EndsWith(".yml.gz"))
                 {
-                    filename = Path.GetFilenameWithoutExtension() + ".yml.gz";
+                    filename = Path.GetFileNameWithoutExtension(filename) + ".yml.gz";
                 }
 
                 FileStream fs = new FileStream(filename, FileMode.Create);
