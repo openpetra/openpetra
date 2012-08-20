@@ -136,7 +136,7 @@ public class TServer
                     }
 
                     Hashtable ChannelProperties = new Hashtable();
-                    ChannelProperties.Add("port", TAppSettingsManager.GetValue("Server.IPBasePort"));
+                    ChannelProperties.Add("port", TAppSettingsManager.GetValue("Server.Port"));
 
                     string SpecificIPAddress = TAppSettingsManager.GetValue("ListenOnIPAddress", "", false);
 
