@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public Int32 FBatchNumber = -1;
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
+        private AGiftBatchRow FBatchRow = null;
 
         /// <summary>
         /// load the gifts into the grid
@@ -62,7 +63,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
         	bool firstLoad = (FLedgerNumber == -1);
         	
-            //Enable buttons accordingly
+	        //Enable buttons accordingly
             btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
             btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
@@ -85,6 +86,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         	{
 	        	FLedgerNumber = ALedgerNumber;
 	            FBatchNumber = ABatchNumber;
+		        FBatchRow = GetBatchRow();
+		        UpdateBatchStatus();
         	}
             
 			//Apply new filter
@@ -139,8 +142,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 				grdDetails.Focus();
 			}
 
-            pnlDetails.Enabled = (grdDetails.Rows.Count > 1); //this.PnlDetailsProtected;
-            
 			UpdateTotals();
 
         }
@@ -404,8 +405,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 				//If all details have been deleted
                 if (FLedgerNumber != -1 && grdDetails.Rows.Count == 1)
 				{
-	                AGiftBatchRow batch = GetBatchRow();
-		            batch.BatchTotal = 0;
+//	                AGiftBatchRow batch = GetBatchRow();
+//		            batch.BatchTotal = 0;
+                	FBatchRow.BatchTotal = 0;
 				}
 
                 return;
@@ -446,8 +448,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //this is here because at the moment the generator does not generate this
             txtBatchTotal.NumberValueDecimal = sumBatch;
             //Now we look at the batch and update the batch data
-            AGiftBatchRow batchRow = GetBatchRow();
-            batchRow.BatchTotal = sumBatch;
+//            AGiftBatchRow batchRow = GetBatchRow();
+//            batchRow.BatchTotal = sumBatch;
+			FBatchRow.BatchTotal = sumBatch;
         }
 
         /// reset the control
@@ -829,14 +832,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ValidateAllData(true, true))
             {
-                AGiftBatchRow batchRow = GetBatchRow();
+//                AGiftBatchRow FBatchRow = GetBatchRow();
 
                 AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
 
-                giftRow.LedgerNumber = batchRow.LedgerNumber;
-                giftRow.BatchNumber = batchRow.BatchNumber;
-                giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;
-                batchRow.LastGiftNumber++;
+                giftRow.LedgerNumber = FBatchRow.LedgerNumber;
+                giftRow.BatchNumber = FBatchRow.BatchNumber;
+                giftRow.GiftTransactionNumber = FBatchRow.LastGiftNumber + 1;
+				FBatchRow.LastGiftNumber++;
                 giftRow.LastDetailNumber = 1;
 
                 if (BatchHasMethodOfPayment())
@@ -847,8 +850,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.AGift.Rows.Add(giftRow);
 
                 newRow = FMainDS.AGiftDetail.NewRowTyped(true);
-                newRow.LedgerNumber = batchRow.LedgerNumber;
-                newRow.BatchNumber = batchRow.BatchNumber;
+                newRow.LedgerNumber = FBatchRow.LedgerNumber;
+                newRow.BatchNumber = FBatchRow.BatchNumber;
                 newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
                 newRow.DetailNumber = 1;
                 newRow.DateEntered = giftRow.DateEntered;
@@ -912,13 +915,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             txtBatchNumber.Text = FBatchNumber.ToString();
 
-            AGiftBatchRow batchRow = GetBatchRow();
+//            AGiftBatchRow FBatchRow = GetBatchRow();
 
-            if (batchRow != null)
+            if (FBatchRow != null)
             {
-                txtDetailGiftTransactionAmount.CurrencySymbol = batchRow.CurrencyCode;
-                txtBatchStatus.Text = batchRow.BatchStatus;
-                //pnlDetails.Enabled = (batchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+                txtDetailGiftTransactionAmount.CurrencySymbol = FBatchRow.CurrencyCode;
             }
 
             if (grdDetails.Rows.Count == 1)
@@ -931,6 +932,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftDetailRow ARow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows[0];
                 cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
                 cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
+                UpdateControlsProtection(ARow);
             }
 
             if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
@@ -1052,9 +1054,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// update the Batch Status from outside
         /// </summary>
-        public void UpdateBatchStatus(String ABatchStatus)
+        public void UpdateBatchStatus()
         {
-            txtBatchStatus.Text = ABatchStatus;
+            if (FBatchRow != null)
+            {
+            	txtBatchStatus.Text = FBatchRow.BatchStatus;
+            }
+        	
         }
 
         /// <summary>
@@ -1076,9 +1082,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
             txtDetailReference.Enabled = firstIsEnabled;
             cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
-            PnlDetailsProtected = ViewMode || ((ARow != null) && (ARow.GiftTransactionAmount < 0)
-                                               && // taken from old petra
-                                               (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0));
+            
+            if (FBatchRow == null)
+            {
+            	FBatchRow = GetBatchRow();
+            }
+            
+            if (ARow == null)
+            {
+            	PnlDetailsProtected = ViewMode;
+            }
+            else
+            {
+	            PnlDetailsProtected = (ViewMode
+	                                   || ((ARow != null) && (ARow.GiftTransactionAmount < 0) && 
+	                                    (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0))
+	                                   || FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED
+	                                  ); // taken from old petra
+            }
+            
+            pnlDetails.Enabled = !PnlDetailsProtected;
+            
         }
 
         private Boolean ViewMode

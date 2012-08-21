@@ -224,7 +224,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 	                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
 	                }
                 }
-                
             }
 
         }
