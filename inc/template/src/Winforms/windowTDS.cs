@@ -705,6 +705,12 @@ namespace {#NAMESPACE}
             
             // Ensure that a Validation ToolTip is removed when the user switches to another Tab
             FPetraUtilsObject.ValidationToolTip.RemoveAll();
+
+{#IFDEF SELECTTABMANUAL}
+			{#SELECTTABMANUAL}
+			SelectTabManual({#TABPAGECTRL}.SelectedIndex);
+{#ENDIF SELECTTABMANUAL}
+
         }
 
     {#DYNAMICTABPAGEBASICS}
