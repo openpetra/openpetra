@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ucoBatches.LoadBatches(FLedgerNumber);
             }
         }
-        
+
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
@@ -171,20 +171,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         };
 
         bool FChangeTabEventHasRun = false;
-        
+
         private void SelectTabManual(int ASelectedTabIndex)
         {
-        	if (ASelectedTabIndex == (int)eGiftTabs.Batches)
+            if (ASelectedTabIndex == (int)eGiftTabs.Batches)
             {
-            	SelectTab(eGiftTabs.Batches);
+                SelectTab(eGiftTabs.Batches);
             }
             else
             {
-            	SelectTab(eGiftTabs.Transactions);
+                SelectTab(eGiftTabs.Transactions);
             }
-
         }
-        
+
         /// <summary>
         /// Switch to the given tab
         /// </summary>
@@ -192,40 +191,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFromTabClick"></param>
         public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
         {
-        	if (FChangeTabEventHasRun && AFromTabClick)
-        	{
-        		FChangeTabEventHasRun = false;
-        		return;
-        	}
-        	else
-        	{
-        		FChangeTabEventHasRun = !AFromTabClick;
-        	}
-        	
-        	if (ATab == eGiftTabs.Batches)
+            if (FChangeTabEventHasRun && AFromTabClick)
+            {
+                FChangeTabEventHasRun = false;
+                return;
+            }
+            else
+            {
+                FChangeTabEventHasRun = !AFromTabClick;
+            }
+
+            if (ATab == eGiftTabs.Batches)
             {
                 //If from grid double click then invoke tab changed event
-        		if (!AFromTabClick)
+                if (!AFromTabClick)
                 {
-                	this.tabGiftBatch.SelectedTab = this.tpgBatches;	
+                    this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 }
             }
             else if (ATab == eGiftTabs.Transactions)
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                	//ucoBatches.Controls["grdDetails"].Focus;
-                	LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
+                    //ucoBatches.Controls["grdDetails"].Focus;
+                    LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
                         ucoBatches.GetSelectedDetailRow().BatchNumber, AFromTabClick);
-	
-                	//If from grid double click then invoke tab changed event
-	                if (!AFromTabClick)
-	                {
-	                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
-	                }
+
+                    //If from grid double click then invoke tab changed event
+                    if (!AFromTabClick)
+                    {
+                        this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                    }
                 }
             }
-
         }
 
         /// <summary>
@@ -237,7 +235,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
             standardTabIndex = 1;     // later we switch to the detail tab
         }
-
-        
     }
 }

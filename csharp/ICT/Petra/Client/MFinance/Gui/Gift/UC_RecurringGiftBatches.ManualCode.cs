@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ShowData();
         }
 
-                /// <summary>
+        /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
         public void RefreshAll()
@@ -162,9 +162,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void DeleteRow(System.Object sender, EventArgs e)
         {
-        	this.DeleteARecurringGiftBatch();
+            this.DeleteARecurringGiftBatch();
         }
-        
+
         /// <summary>
         /// Deletes the current row and optionally populates a completion message
         /// </summary>
@@ -181,9 +181,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
                     ARowToDelete.BatchNumber);
 
-				ARowToDelete.Delete();
-				
-				deletionSuccessful = true;
+                ARowToDelete.Delete();
+
+                deletionSuccessful = true;
             }
             catch (Exception ex)
             {
@@ -204,7 +204,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(ref ARecurringGiftBatchRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+        private void PostDeleteManual(ref ARecurringGiftBatchRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
         {
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
@@ -324,6 +327,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
         }
-        
     }
 }

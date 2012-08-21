@@ -207,16 +207,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
-			FLedgerNumber = ARow.LedgerNumber;
-        	FSelectedBatchNumber = ARow.BatchNumber;
-            
-        	FPetraUtilsObject.DetailProtectedMode =
+            FLedgerNumber = ARow.LedgerNumber;
+            FSelectedBatchNumber = ARow.BatchNumber;
+
+            FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
-            
-        	((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
-            
+
+            ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
+
             UpdateChangeableStatus();
-            
+
 //            FPetraUtilsObject.DetailProtectedMode =
 //                (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
 //            ((TFrmGiftBatch)ParentForm).LoadTransactions(
@@ -238,10 +238,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return ((TFrmGiftBatch)ParentForm).ViewModeTDS;
             }
         }
-        
+
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-        	((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, false);
+            ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions, false);
         }
 
         /// <summary>
