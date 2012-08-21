@@ -44,6 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FBatchNumber = -1;
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
+        private ARecurringGiftBatchRow FBatchRow = null;
 
         /// <summary>
         /// load the gifts into the grid
@@ -78,6 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         	{
 	        	FLedgerNumber = ALedgerNumber;
 	            FBatchNumber = ABatchNumber;
+		        FBatchRow = GetBatchRow();
         	}
             
 			//Apply new filter
@@ -398,8 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //this is here because at the moment the generator does not generate this
             txtBatchTotal.NumberValueDecimal = sumBatch;
             //Now we look at the batch and update the batch data
-            ARecurringGiftBatchRow batch = GetBatchRow();
-            batch.BatchTotal = sumBatch;
+            FBatchRow.BatchTotal = sumBatch;
         }
 
         /// reset the control
@@ -432,6 +433,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private ARecurringGiftRow GetGiftRow(Int32 ARecurringGiftTransactionNumber)
         {
             return (ARecurringGiftRow)FMainDS.ARecurringGift.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, ARecurringGiftTransactionNumber });
+        }
+
+        /// <summary>
+        /// get the details of the current gift
+        /// </summary>
+        /// <returns></returns>
+        private GiftBatchTDSARecurringGiftDetailRow GetGiftDetailRow(Int32 AGiftTransactionNumber, Int32 AGiftDetailNumber)
+        {
+            return (GiftBatchTDSARecurringGiftDetailRow)FMainDS.ARecurringGiftDetail.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, AGiftTransactionNumber,
+                                                                                            AGiftDetailNumber });
         }
 
         /// <summary>
@@ -705,16 +716,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private ARecurringGiftDetailRow NewGift()
         {
-            ARecurringGiftBatchRow batchRow = GetBatchRow();
-
             ARecurringGiftRow giftRow = FMainDS.ARecurringGift.NewRowTyped(true);
 
             giftRow.Active = true;
 
-            giftRow.LedgerNumber = batchRow.LedgerNumber;
-            giftRow.BatchNumber = batchRow.BatchNumber;
-            giftRow.GiftTransactionNumber = batchRow.LastGiftNumber + 1;
-            batchRow.LastGiftNumber++;
+            giftRow.LedgerNumber = FBatchRow.LedgerNumber;
+            giftRow.BatchNumber = FBatchRow.BatchNumber;
+            giftRow.GiftTransactionNumber = FBatchRow.LastGiftNumber + 1;
+            FBatchRow.LastGiftNumber++;
             giftRow.LastDetailNumber = 1;
 
             if (BatchHasMethodOfPayment())
@@ -725,8 +734,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.ARecurringGift.Rows.Add(giftRow);
 
             GiftBatchTDSARecurringGiftDetailRow newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
-            newRow.LedgerNumber = batchRow.LedgerNumber;
-            newRow.BatchNumber = batchRow.BatchNumber;
+            newRow.LedgerNumber = FBatchRow.LedgerNumber;
+            newRow.BatchNumber = FBatchRow.BatchNumber;
             newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
             newRow.DetailNumber = 1;
             //newRow.DateEntered = giftRow.DateEntered;
@@ -784,11 +793,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             txtBatchNumber.Text = FBatchNumber.ToString();
 
-            ARecurringGiftBatchRow batchRow = GetBatchRow();
-
-            if (batchRow != null)
+            if (FBatchRow != null)
             {
-                txtDetailGiftAmount.CurrencySymbol = batchRow.CurrencyCode;
+                txtDetailGiftAmount.CurrencySymbol = FBatchRow.CurrencyCode;
             }
 
             if (grdDetails.Rows.Count == 1)
@@ -952,8 +959,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GetDetailDataFromControlsManual(ARecurringGiftDetailRow ARow)
         {
-            //Not present in recurring gifts details table
-            //ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+            //ARow.CostCentreCode = txtDetailCostCentreCode.Text;  //Not present in recurring gifts details table
 
             if (ARow.DetailNumber != 1)
             {
@@ -961,7 +967,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ARecurringGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
-            giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
+
+			if (giftRow != null)
+			{
+                giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
+
+                GiftBatchTDSARecurringGiftDetailRow giftDetailRow = GetGiftDetailRow(ARow.GiftTransactionNumber, ARow.DetailNumber);
+                giftDetailRow.RecipientKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+                giftDetailRow.RecipientDescription = txtDetailRecipientKey.LabelText;
+
+                if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
+                {
+                    giftRow.SetMethodOfGivingCodeNull();
+                }
+                else
+                {
+                    giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
+                }
+
+                if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
+                {
+                    giftRow.SetMethodOfPaymentCodeNull();
+                }
+                else
+                {
+                    giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
+                }
+
+                if (txtDetailReference.Text.Length == 0)
+                {
+                    giftRow.SetReferenceNull();
+                }
+                else
+                {
+                    giftRow.Reference = txtDetailReference.Text;
+                }
+
+                if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
+                {
+                    giftRow.SetReceiptLetterCodeNull();
+                }
+                else
+                {
+                    giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+                }
+			}
+
+//			giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
             //giftRow.DateEntered = dtpDateEntered.Date.Value;
 //
 //            foreach (GiftBatchTDSARecurringGiftDetailRow giftDetail in FMainDS.ARecurringGiftDetail.Rows)
@@ -978,43 +1030,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //  join by hand
 
-            giftRow.Active = chkDetailActive.Checked;
+//            giftRow.Active = chkDetailActive.Checked;
+//
+//            if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
+//            {
+//                giftRow.SetMethodOfGivingCodeNull();
+//            }
+//            else
+//            {
+//                giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
+//            }
+//
+//            if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
+//            {
+//                giftRow.SetMethodOfPaymentCodeNull();
+//            }
+//            else
+//            {
+//                giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
+//            }
+//
+//            if (txtDetailReference.Text.Length == 0)
+//            {
+//                giftRow.SetReferenceNull();
+//            }
+//            else
+//            {
+//                giftRow.Reference = txtDetailReference.Text;
+//            }
+//
+//            if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
+//            {
+//                giftRow.SetReceiptLetterCodeNull();
+//            }
+//            else
+//            {
+//                giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+//            }
 
-            if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
-            {
-                giftRow.SetMethodOfGivingCodeNull();
-            }
-            else
-            {
-                giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
-            }
-
-            if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
-            {
-                giftRow.SetMethodOfPaymentCodeNull();
-            }
-            else
-            {
-                giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
-            }
-
-            if (txtDetailReference.Text.Length == 0)
-            {
-                giftRow.SetReferenceNull();
-            }
-            else
-            {
-                giftRow.Reference = txtDetailReference.Text;
-            }
-
-            if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
-            {
-                giftRow.SetReceiptLetterCodeNull();
-            }
-            else
-            {
-                giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
-            }
         }
+        
     }
 }
