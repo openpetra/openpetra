@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
@@ -50,7 +51,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FSelectedBatchNumber = -1;
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
-
         private DateTime DefaultDate;
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
@@ -169,9 +169,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
-                ((TFrmGLBatch)ParentForm).LoadJournals(
-                    ARow.LedgerNumber,
-                    ARow.BatchNumber);
+//                ((TFrmGLBatch)ParentForm).LoadJournals(
+//                    ARow.LedgerNumber,
+//                    ARow.BatchNumber);
 
                 FSelectedBatchNumber = ARow.BatchNumber;
             }
@@ -594,15 +594,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (radioButton.Checked)
                 {
-                    int rowIndex = CurrentRowIndex();
+                    //int rowIndex = CurrentRowIndex();
 
                     RefreshFilter(null, null);
                     // TODO Select the actual row again in updated
-                    SelectByIndex(rowIndex);
+                    //SelectByIndex(rowIndex);
                     // UpdateChangeableStatus();
 
-                    bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
-                    EnableButtonControl(enablePosting);
+                    //bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
+                    //EnableButtonControl(enablePosting);
+                    
+                    //UpdateChangeableStatus(enablePosting);
                 }
             }
         }
@@ -741,12 +743,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 btnNew.Enabled = false;
             }
 
+            FPreviouslySelectedDetailRow = null;
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+            
             FMainDS.ABatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
+            FGridFilterChanged = true;
+            
             if (grdDetails.Rows.Count < 2)
             {
-                ClearDetailControls();
+            	ClearDetailControls();
+            	pnlDetails.Enabled = false;
+            }
+            else
+            {
+            	grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+            	InvokeFocusedRowChanged(1);
+        		UpdateChangeableStatus(true);
             }
         }
 

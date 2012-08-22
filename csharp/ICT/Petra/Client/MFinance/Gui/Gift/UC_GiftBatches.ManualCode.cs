@@ -179,6 +179,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
+            FGridFilterChanged = true;
+
             if (grdDetails.Rows.Count < 2)
             {
                 ClearControls();
@@ -186,6 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+	            //FCurrentRow = 0; //necessary to force code execution in FocusRowChanged event
                 InvokeFocusedRowChanged(1);
             }
 
