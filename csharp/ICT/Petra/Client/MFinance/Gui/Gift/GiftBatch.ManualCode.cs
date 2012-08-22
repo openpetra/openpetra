@@ -113,12 +113,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="ABatchStatus"></param>
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = "unposted", bool AFromTabClick = true)
         {
             this.tpgTransactions.Enabled = true;
             FPetraUtilsObject.DisableDataChangedEvent();
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AFromTabClick);
+            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
             FPetraUtilsObject.EnableDataChangedEvent();
         }
 
@@ -215,7 +216,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     //ucoBatches.Controls["grdDetails"].Focus;
                     LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber, AFromTabClick);
+                        ucoBatches.GetSelectedDetailRow().BatchNumber, 
+                        ucoBatches.GetSelectedDetailRow().BatchStatus, AFromTabClick);
 
                     //If from grid double click then invoke tab changed event
                     if (!AFromTabClick)

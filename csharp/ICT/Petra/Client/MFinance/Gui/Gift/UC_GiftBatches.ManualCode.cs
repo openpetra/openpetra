@@ -25,6 +25,7 @@ using System;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
@@ -172,6 +173,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FStatusFilter = "1 = 1";
             }
 
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+            
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
@@ -179,6 +183,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ClearControls();
             }
+            else
+            {
+                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+                InvokeFocusedRowChanged(1);
+            }
+
+            UpdateChangeableStatus();
+
         }
 
         /// reset the control
