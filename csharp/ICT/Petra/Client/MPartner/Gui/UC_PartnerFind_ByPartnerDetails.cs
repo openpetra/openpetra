@@ -1829,7 +1829,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void OpenLastUsedPartnerEditScreen()
         {
-//#if TODO
             long MergedPartnerKey = 0;
             long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
 
@@ -1858,7 +1857,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             frmPEDS.Show();
 
             this.Cursor = Cursors.Default;
-//#endif
         }
 
         /// <summary>todoComment</summary>
