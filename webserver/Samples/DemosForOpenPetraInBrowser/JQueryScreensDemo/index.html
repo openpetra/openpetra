@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>OpenPetra</title>
+	<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/themes/pepper-grinder/jquery-ui.css" />
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="http://layout.jquery-dev.net/lib/js/jquery.layout-latest.js"></script>
+	<link rel="stylesheet" href="css/MainScreen.css">
+	<script>
+    
+    var currentRightNavigationDiv = null;
+    function LoadRightNavigation(btnClicked)
+    {
+        divToShow = $('#div' + $(btnClicked).attr('id').substring(3))
+        if (currentRightNavigationDiv != null)
+        {
+            currentRightNavigationDiv.css({"visibility":"hidden"});
+        }
+        divToShow.css({"visibility":"visible"});
+        currentRightNavigationDiv = divToShow;
+    }
+
+    // make sure we will always open a new window, even when reloading the main screen
+    var WindowCounter = new Date().getTime();
+    function LoadNewTab(btnClicked)
+    {
+        screenName = $(btnClicked).attr('id').substring(3);
+        newWin = window.open(screenName.replace(/_/g, '/') + ".html", 'OpenPetraWin' + WindowCounter++);
+    }
+    
+	$(function() {
+		$('#accordion').accordion({
+            fillSpace: true});
+        $('body').layout({ 
+            applyDefaultStyles: true, 
+            west__closable: false,
+            west__resizable: true,
+            west__minSize: 200});
+        
+        LoadRightNavigation($('#divWelcome'));
+        $('.LoadRightNavigation').click(function() {
+            LoadRightNavigation($(this));
+        });
+
+        $('.LoadNewTab').click(function() {
+            LoadNewTab($(this));
+        });
+	});
+	</script>
+</head>
+<body>
+
+<div class="ui-layout-west FillHeight">
+
+<div id="accordion" class="FillHeight">
+	<h3><a href="#">Partner</a></h3>
+	<div class="FillHeight">
+		<p>
+        <a href="#"id="btnMPartner_Partners" class="LoadRightNavigation">Partners</a><br/>
+        <a href="#"id="btnMPartner_Extracts" class="LoadRightNavigation">Extracts</a><br/>
+        <a href="#">Reports</a><br/>
+        <a href="#">Setup</a><br/>
+		</p>
+	</div>
+	<h3><a href="#">Finance</a></h3>
+	<div class="FillHeight">
+		<p>
+        <a href="#">GiftProcessing</a><br/>
+        <a href="#">AccountsPayable</a><br/>
+        <a href="#">Budgets</a><br/>
+        <a href="#">General Ledger</a><br/>
+        <a href="#">Setup</a><br/>
+		</p>
+	</div>
+	<h3><a href="#">System Manager</a></h3>
+	<div class="FillHeight">
+		<p>
+        <a href="#"id="btnMSysMan_Users" class="LoadRightNavigation">Users</a><br/>
+		</p>
+	</div>
+</div>
+
+</div><!-- End ui-layout-west -->
+
+<div class="ui-layout-center">
+<div id="divWelcome" class="RightNavigation Column">
+Welcome
+</div>
+
+<div id="divMPartner_Partners" class="RightNavigation Column">
+<h2>Partners</h2>
+<h3>New Partner</h3>
+<a href="#" id="btnMPartner_Partners_NewPerson" class="LoadNewTab">New Person</a><br/>
+<a href="#" id="btnMPartner_Partners_NewFamily" class="LoadNewTab">New Family</a><br/>
+<a href="#" id="btnMPartner_Partners_NewOrganisation" class="LoadNewTab">New Organisation</a><br/>
+<h3>Maintain Partner</h3>
+<a href="#" id="btnMPartner_Partners_FindPartner" class="LoadNewTab">Find Partner</a><br/>
+<h3>Import / Export</h3>
+<a href="#" id="btnMPartner_Partners_Import" class="LoadNewTab">Import</a><br/>
+<a href="#" id="btnMPartner_Partners_Export" class="LoadNewTab">Export</a><br/>
+
+</div>
+<div id="divMPartner_Extracts" class="RightNavigation Column">
+Extracts
+</div>
+
+<div id="divMSysMan_Users" class="RightNavigation Column">
+<h2>Users</h2>
+<h3>Manage Users</h3>
+<a href="#" id="btnMSysMan_Users_ManageUsers" class="LoadNewTab">Manage Users</a><br/>
+</div>
+
+</div><!-- End ui-layout-center -->
+
+
+</body>
+</html>
