@@ -98,12 +98,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 nodeLabel += " (" + ADetailRow.CostCentreName + ")";
             }
+
             return nodeLabel;
         }
 
         private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, ACostCentreRow ADetailRow)
         {
-
             TreeNode newNode = AParentNodes.Add(NodeLabel(ADetailRow));
 
             newNode.Tag = ADetailRow;
@@ -230,20 +230,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool CheckForInvalidCostCentre(TreeNodeCollection NodeCol)
         {
             string newName = Catalog.GetString("NewCostCentre");
+
             foreach (TreeNode ChildNode in NodeCol)
             {
-                if (CheckForInvalidCostCentre (ChildNode.Nodes))
+                if (CheckForInvalidCostCentre(ChildNode.Nodes))
                 {
                     return true;
                 }
 
                 ACostCentreRow CheckRow = (ACostCentreRow)ChildNode.Tag;
+
                 if (CheckRow.CostCentreCode.IndexOf(newName) == 0)
                 {
                     MessageBox.Show(
-                        String.Format(Catalog.GetString("{0} is not a valid cost centre code.\r\nChange the code or remove it completely."), CheckRow.CostCentreCode),
-                        Catalog.GetString("GL Cost Centre Hierarchy"), 
-                        MessageBoxButtons.OK, 
+                        String.Format(Catalog.GetString("{0} is not a valid cost centre code.\r\nChange the code or remove it completely."),
+                            CheckRow.CostCentreCode),
+                        Catalog.GetString("GL Cost Centre Hierarchy"),
+                        MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
                     trvCostCentres.SelectedNode = ChildNode;
                     return true;
@@ -252,14 +255,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (CheckRow.CostCentreCode == "")
                 {
                     MessageBox.Show(
-                        Catalog.GetString("Cost centre code is empty.\r\nSupply a valid cost centre code or also remove the Name to delete this record."),
-                        Catalog.GetString("GL Cost Centre Hierarchy"), 
-                        MessageBoxButtons.OK, 
+                        Catalog.GetString(
+                            "Cost centre code is empty.\r\nSupply a valid cost centre code or also remove the Name to delete this record."),
+                        Catalog.GetString("GL Cost Centre Hierarchy"),
+                        MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
                     trvCostCentres.SelectedNode = ChildNode;
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -308,12 +313,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 //
                 // If I find that theere's no data in the new node, I'll remove it right now.
                 ACostCentreRow SelectedRow = (ACostCentreRow)FCurrentNode.Tag;
+
                 if ((SelectedRow.CostCentreCode == "") && (SelectedRow.CostCentreName == ""))
                 {
-                     DeleteDataFromSelectedRow(FCurrentNode);
-                     TreeNode SelectThisNode = FCurrentNode.Parent;
-                     trvCostCentres.Nodes.Remove(FCurrentNode);
-                     trvCostCentres.SelectedNode = SelectThisNode;
+                    DeleteDataFromSelectedRow(FCurrentNode);
+                    TreeNode SelectThisNode = FCurrentNode.Parent;
+                    trvCostCentres.Nodes.Remove(FCurrentNode);
+                    trvCostCentres.SelectedNode = SelectThisNode;
                 }
             }
         }
@@ -332,6 +338,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FPetraUtilsObject.SetChangedFlag();
             }
         }
-
     }
 }

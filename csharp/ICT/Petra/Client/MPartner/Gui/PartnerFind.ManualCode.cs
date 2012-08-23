@@ -1169,7 +1169,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Modify auto-generated appearance of Panels
                 pnlModalButtons.Height = 33;
                 pnlAcceptCancelButtons.Location = new System.Drawing.Point(this.Width - pnlAcceptCancelButtons.Width - 10, 0);
-                
+
                 // Modify auto-generated appearance of Buttons
                 btnHelp.Location = new System.Drawing.Point(btnHelp.Location.X, 5);
                 btnAccept.Location = new System.Drawing.Point(btnAccept.Location.X, 5);
@@ -1177,7 +1177,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnHelp.Height = 23;
                 btnAccept.Height = 23;
                 btnCancel.Height = 23;
-                
+
                 // Modify automatic TabIndexes so that the Help Button comes last
                 btnHelp.TabIndex = 1;
                 pnlAcceptCancelButtons.TabIndex = 0;

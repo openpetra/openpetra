@@ -241,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 foreach (DataRowView rv in FFilteredDataView)
                 {
-                    AGiftDetailRow gdr = (AGiftDetailRow) rv.Row;
+                    AGiftDetailRow gdr = (AGiftDetailRow)rv.Row;
                     sum += gdr.GiftTransactionAmount;
                     //TODO Convert currencies
                 }
@@ -253,6 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     txtGiftTotal.CurrencySymbol = FMainDS.AGiftBatch[0].CurrencyCode;
                 }
             }
+
             txtGiftTotal.ReadOnly = true;
         }
 
