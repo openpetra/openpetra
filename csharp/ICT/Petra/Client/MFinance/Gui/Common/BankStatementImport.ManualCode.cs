@@ -107,6 +107,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 TRemote.MFinance.ImportExport.WebConnectors.GetBankStatementTransactionsAndMatches(
                     AStatementKey, FLedgerNumber));
 
+            // an old version of the CSV import plugin did not set the potential gift typecode
+            foreach (AEpTransactionRow r in FMainDS.AEpTransaction.Rows)
+            {
+                if (r.IsTransactionTypeCodeNull() && (r.TransactionAmount > 0))
+                {
+                    r.TransactionTypeCode = MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
+                }
+            }
+
             CurrentStatement = (AEpStatementRow)FMainDS.AEpStatement[0];
 
             grdAllTransactions.Columns.Clear();
@@ -963,7 +972,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             }
             else if (rbtListUnmatchedGL.Checked)
             {
-                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}' and {4} NOT LIKE '%{5}'",
+                FTransactionView.RowFilter = String.Format("{0}={1} and {2}='{3}' and ({4} NOT LIKE '%{5}' OR {4} IS NULL)",
                     AEpStatementTable.GetStatementKeyDBName(),
                     CurrentStatement.StatementKey,
                     BankImportTDSAEpTransactionTable.GetMatchActionDBName(),
