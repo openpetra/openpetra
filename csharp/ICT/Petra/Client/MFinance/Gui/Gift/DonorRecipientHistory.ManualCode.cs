@@ -39,6 +39,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public partial class TFrmDonorRecipientHistory
     {
+        private DataView FFilteredDataView = null;
+
         /// the Donor
         public long Donor
         {
@@ -61,6 +63,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void InitializeManualCode()
         {
             txtLedger.Text = "" + Ict.Petra.Client.MFinance.Logic.TLedgerSelection.DetermineDefaultLedger();
+            btnView.Enabled = false;
         }
 
         /// <summary>
@@ -99,9 +102,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMainDS != null)
             {
-                DataView myDataView = FMainDS.AGiftDetail.DefaultView;
-                myDataView.Sort = "DateEntered DESC";
-                myDataView.AllowNew = false;
+                FFilteredDataView = FMainDS.AGiftDetail.DefaultView;
+                FFilteredDataView.Sort = "DateEntered DESC";
+                FFilteredDataView.AllowNew = false;
                 RowFilter = "";
 
                 if (txtMotivationDetail.Text.Length > 0)
@@ -118,7 +121,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     if (FMainDS.AGiftDetail.Count > 0)
                     {
-                        GiftBatchTDSAGiftDetailRow gdr = (GiftBatchTDSAGiftDetailRow)myDataView[myDataView.Count - 1].Row;
+                        GiftBatchTDSAGiftDetailRow gdr = (GiftBatchTDSAGiftDetailRow)FFilteredDataView[FFilteredDataView.Count - 1].Row;
                         dtpDateFrom.Date = gdr.DateEntered;
                     }
                     else
@@ -140,11 +143,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             "DateEntered <= #{0}#", dtpDateTo.Date));
                 }
 
-                myDataView.RowFilter = RowFilter;
+                FFilteredDataView.RowFilter = RowFilter;
 
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FFilteredDataView);
                 SelectByIndex(0);
-                txtNumberOfGifts.Text = Convert.ToString(FMainDS.AGift.Count);
+                txtNumberOfGifts.Text = Convert.ToString(FFilteredDataView.Count);
                 UpdateTotals();
             }
         }
@@ -234,19 +237,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             Decimal sum = 0;
 
-            foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
+            if (FFilteredDataView != null)
             {
-                sum += gdr.GiftTransactionAmount;
-                //TODO Convert currencies
+                foreach (DataRowView rv in FFilteredDataView)
+                {
+                    AGiftDetailRow gdr = (AGiftDetailRow) rv.Row;
+                    sum += gdr.GiftTransactionAmount;
+                    //TODO Convert currencies
+                }
+
+                txtGiftTotal.NumberValueDecimal = sum;
+
+                if (FMainDS.AGiftBatch.Count > 0)
+                {
+                    txtGiftTotal.CurrencySymbol = FMainDS.AGiftBatch[0].CurrencyCode;
+                }
             }
-
-            txtGiftTotal.NumberValueDecimal = sum;
-
-            if (FMainDS.AGiftBatch.Count > 0)
-            {
-                txtGiftTotal.CurrencySymbol = FMainDS.AGiftBatch[0].CurrencyCode;
-            }
-
             txtGiftTotal.ReadOnly = true;
         }
 
@@ -266,11 +272,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 grdDetails.Selection.SelectRow(rowIndex, true);
                 FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                btnView.Enabled = true;
             }
             else
             {
                 grdDetails.Selection.ResetSelection(false);
                 FPreviouslySelectedDetailRow = null;
+                btnView.Enabled = false;
             }
         }
     }
