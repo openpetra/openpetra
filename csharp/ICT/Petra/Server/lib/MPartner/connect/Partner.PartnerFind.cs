@@ -39,6 +39,7 @@ using Ict.Petra.Server.MPartner.PartnerFind;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
