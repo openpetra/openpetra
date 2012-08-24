@@ -245,6 +245,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if (AInspectDS.ABatch != null)
             {
+                bool NewTransaction = false;
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
                 foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
                 {
                     if (batch.RowState != DataRowState.Added)
@@ -268,6 +274,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             BatchNumbersInvolved.Add(BatchNumber);
                         }
                     }
+
+                    int PeriodNumber, YearNr;
+
+                    if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
+                            batch.DateEffective,
+                            out PeriodNumber,
+                            out YearNr,
+                            Transaction))
+                    {
+                        batch.BatchYear = YearNr;
+                        batch.BatchPeriod = PeriodNumber;
+                    }
+                }
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
 
