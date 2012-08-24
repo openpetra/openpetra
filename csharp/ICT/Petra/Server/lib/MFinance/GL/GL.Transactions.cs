@@ -245,6 +245,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if (AInspectDS.ABatch != null)
             {
+                bool NewTransaction = false;
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
                 foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
                 {
                     if (batch.RowState != DataRowState.Added)
@@ -268,6 +274,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             BatchNumbersInvolved.Add(BatchNumber);
                         }
                     }
+
+                    int PeriodNumber, YearNr;
+
+                    if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
+                            batch.DateEffective,
+                            out PeriodNumber,
+                            out YearNr,
+                            Transaction))
+                    {
+                        batch.BatchYear = YearNr;
+                        batch.BatchPeriod = PeriodNumber;
+                    }
+                }
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
 
@@ -435,7 +458,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             GLPostingTDS MainDS;
             int BatchPeriod = -1;
+
+            DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
             bool success = TGLPosting.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, ref BatchPeriod);
+
+            // we do not want to actually post the batch
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
             List <TVariant>Result = new List <TVariant>();
 
@@ -477,7 +506,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                                 decimal DebitCredit = 1.0m;
 
-                                if (accRow.DebitCreditIndicator && (accRow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET))
+                                if (accRow.DebitCreditIndicator
+                                    && (accRow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET)
+                                    && (accRow.AccountType != MFinanceConstants.ACCOUNT_TYPE_EXPENSE))
                                 {
                                     DebitCredit = -1.0m;
                                 }

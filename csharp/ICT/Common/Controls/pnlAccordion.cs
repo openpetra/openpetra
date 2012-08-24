@@ -96,9 +96,7 @@ namespace Ict.Common.Controls
                 pnlModuleCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xD6, 0xE3, 0xFF);
                 pnlModuleCaption.Size = new System.Drawing.Size(this.Width, 27);
                 pnlModuleCaption.Dock = DockStyle.Top;
-#if disabled
                 pnlModuleCaption.Click += new System.EventHandler(this.CollapseModuleMenu);
-#endif
                 pnlModule.Controls.Add(pnlModuleCaption);
 
                 Label lblModule = new Label();
@@ -109,9 +107,9 @@ namespace Ict.Common.Controls
                 lblModule.Name = "lbl" + ModuleNode.Name;
                 lblModule.Size = new System.Drawing.Size(153, 23);
                 lblModule.Text = TLstFolderNavigation.GetLabel(ModuleNode);
-#if disabled
                 lblModule.Click += new System.EventHandler(this.CollapseModuleMenu);
 
+#if disabled
                 Button btnCollapse = new Button();
                 btnCollapse.Tag = pnlModule;
                 btnCollapse.Location = new System.Drawing.Point(163, 1);
@@ -239,9 +237,9 @@ namespace Ict.Common.Controls
 
         #region Private Methods
 
-#if disabled
         private void CollapseModuleMenu(object sender, EventArgs e)
         {
+#if disabled
             Button btnModuleCollapse;
             Panel pnlModule;
 
@@ -272,8 +270,8 @@ namespace Ict.Common.Controls
                 pnlModule.Height = pnlModule.Controls[0].Height;
                 btnModuleCollapse.Image = DownArrow;
             }
-        }
 #endif
+        }
 
 
         private void LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)

@@ -160,6 +160,14 @@ namespace Ict.Petra.Server.MFinance.Common
             out DateTime APeriodEndDate,
             TDBTransaction ATransaction)
         {
+            // invalid period
+            if (APeriodNumber == -1)
+            {
+                APeriodStartDate = DateTime.MinValue;
+                APeriodEndDate = DateTime.MaxValue;
+                return false;
+            }
+
             AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, ATransaction);
             AAccountingPeriodRow AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[0];
 

@@ -41,7 +41,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan.Data;
-
+using Ict.Petra.Server.MFinance.Common;
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -133,10 +133,28 @@ namespace Ict.Petra.Server.MFinance.GL
                             MainDS.ABatch.Rows.Add(NewBatch);
                             NewJournal = null;
 
-
                             NewBatch.BatchDescription = ImportString(Catalog.GetString("batch description"));
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("batch hash value"));
-                            NewBatch.DateEffective = ImportDate(Catalog.GetString("batch  effective date"));
+                            NewBatch.DateEffective = ImportDate(Catalog.GetString("batch effective date"));
+
+                            int PeriodNumber, YearNr;
+
+                            if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
+                                    NewBatch.DateEffective,
+                                    out PeriodNumber,
+                                    out YearNr,
+                                    Transaction))
+                            {
+                                NewBatch.BatchYear = YearNr;
+                                NewBatch.BatchPeriod = PeriodNumber;
+                            }
+                            else
+                            {
+                                FImportMessage = Catalog.GetString("The effective date of the imported batch is not in an open period:") + " " +
+                                                 StringHelper.DateToLocalizedString(NewBatch.DateEffective);
+                                throw new Exception();
+                            }
+
                             FImportMessage = Catalog.GetString("Saving GL batch:");
 
                             if (!ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AMessages))
@@ -426,7 +444,14 @@ namespace Ict.Petra.Server.MFinance.GL
                 return Catalog.GetString("Invalid account code");
             }
 
-            return ex.ToString();
+            TLogging.Log("Importing GL batch: " + ex.ToString());
+
+            if (TLogging.DebugLevel > 0)
+            {
+                return ex.ToString();
+            }
+
+            return String.Empty;
         }
 
         private String ImportString(String message)
