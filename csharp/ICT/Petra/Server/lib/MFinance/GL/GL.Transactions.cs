@@ -435,7 +435,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             GLPostingTDS MainDS;
             int BatchPeriod = -1;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
             bool success = TGLPosting.TestPostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications, out MainDS, ref BatchPeriod);
+
+            // we do not want to actually post the batch
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
             List <TVariant>Result = new List <TVariant>();
 
@@ -477,7 +483,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                                 decimal DebitCredit = 1.0m;
 
-                                if (accRow.DebitCreditIndicator && (accRow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET))
+                                if (accRow.DebitCreditIndicator
+                                    && (accRow.AccountType != MFinanceConstants.ACCOUNT_TYPE_ASSET)
+                                    && (accRow.AccountType != MFinanceConstants.ACCOUNT_TYPE_EXPENSE))
                                 {
                                     DebitCredit = -1.0m;
                                 }
