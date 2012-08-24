@@ -275,6 +275,7 @@ namespace Ict.Common.Controls
         }
 #endif
 
+
         private void LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
             Object tag = ((Control)sender).Tag;
