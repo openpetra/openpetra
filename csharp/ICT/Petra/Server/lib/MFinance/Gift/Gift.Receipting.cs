@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,6 +48,8 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
+using System.IO;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -68,7 +71,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             // get the local country code
-            string LocalCountryCode = TAddressTools.GetLocalCountryCode(Transaction);
+            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
 
             // first get all donors in the given date range
             string SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql");
@@ -134,8 +137,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// format the letter for the donor with all the gifts
+        /// Format the letter for the donor with all the gifts
+        /// 
+        /// Can also used for a single receipt.
         /// </summary>
+        /// <returns>One or more html documents, each in its own body tag, for printing with the HTML printer</returns>
         private static string FormatLetter(Int64 ADonorKey,
             string ADonorName,
             DataTable ADonations,
@@ -266,6 +272,201 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             msg = msg.Replace("#TOTALAMOUNTINWORDS", NumberToWords.AmountToWords(sum, "Euro", "Cent"));
 
             return msg.Replace("#ROWTEMPLATE", rowTexts);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetUnreceiptedGifts(Int32 ALedgerNumber)
+        {
+            String SqlQuery = "SELECT DISTINCT " +
+                "a_receipt_number_i AS ReceiptNumber," +
+                "a_date_entered_d AS DateEntered," +
+                "p_partner_short_name_c AS Donor," +
+                "p_donor_key_n AS DonorKey," +
+                "p_partner_class_c AS DonorClass," +
+                "PUB_a_gift.a_batch_number_i AS BatchNumber," +
+                "PUB_a_gift.a_gift_transaction_number_i AS TransactionNumber," +
+                "a_reference_c AS Reference, " +
+                "a_currency_code_c AS GiftCurrency " +
+                "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n " +
+                "LEFT JOIN PUB_a_gift_batch ON PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i " +
+                "WHERE PUB_a_gift.a_ledger_number_i=" + ALedgerNumber.ToString() + " AND a_receipt_printed_l=FALSE AND p_receipt_each_gift_l=TRUE " +
+                "ORDER BY BatchNumber";
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            DataTable GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return GiftsTbl;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AGiftTbl"></param>
+        /// <param name="AHTMLTemplateFilename"></param>
+        /// <returns>One or more HTML documents in a single string</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string PrintOrRemoveReceipts(Int32 ALedgerNumber, DataTable AGiftTbl, string AHTMLTemplateFilename)
+        {
+            string HtmlDoc = "";
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
+
+            foreach (DataRow Row in AGiftTbl.Rows)
+            {
+                if (Row["Print"].Equals(true))
+                {
+                    SortedList<string, List<string>> FormValues = new SortedList<string, List<string>>();
+
+                    // These are the fields that can be printed in the letter:
+                    FormValues.Add("AdresseeShortName", new List<string>());
+                    FormValues.Add("AdresseeTitle", new List<string>());
+                    FormValues.Add("AdresseeFirstName", new List<string>());
+                    FormValues.Add("AdresseeFamilyName", new List<string>());
+                    FormValues.Add("AdresseeStreetAddress", new List<string>());
+                    FormValues.Add("AdresseeAddress3", new List<string>());
+                    FormValues.Add("AdresseeCity", new List<string>());
+                    FormValues.Add("AdresseePostCode", new List<string>());
+                    FormValues.Add("AdresseeCountry", new List<string>());
+                    FormValues.Add("FormattedAddress", new List<string>());
+
+                    FormValues.Add("DateToday", new List<string>());
+
+                    FormValues.Add("DateEntered", new List<string>());
+                    FormValues.Add("GiftAmount", new List<string>());
+                    FormValues.Add("RecipientShortName", new List<string>());
+                    FormValues.Add("MotivationDetail", new List<string>());
+                    FormValues.Add("Reference", new List<string>());
+                    FormValues.Add("DonorComment", new List<string>());
+
+                    FormValues.Add("GiftTotalAmount", new List<string>());
+                    FormValues.Add("GiftCurrency", new List<string>());
+                    
+
+                    // Donor Name:
+                    FormValues["AdresseeShortName"].Add(Row["Donor"].ToString());
+
+                    if (Row["DonorClass"].ToString() == MPartnerConstants.PARTNERCLASS_PERSON)
+                    {
+                        PPersonTable Tbl = PPersonAccess.LoadByPrimaryKey(Convert.ToInt64(Row["DonorKey"]), Transaction);
+                        if (Tbl.Rows.Count > 0)
+                        {
+                            FormValues["AdresseeTitle"].Add(Tbl[0].Title);
+                            FormValues["AdresseeFirstName"].Add(Tbl[0].FirstName);
+                            FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
+                        }
+                    }
+                    else
+                    if (Row["DonorClass"].ToString() == MPartnerConstants.PARTNERCLASS_FAMILY)
+                    {
+                        PFamilyTable Tbl = PFamilyAccess.LoadByPrimaryKey(Convert.ToInt64(Row["DonorKey"]), Transaction);
+                        if (Tbl.Rows.Count > 0)
+                        {
+                            FormValues["AdresseeTitle"].Add(Tbl[0].Title);
+                            FormValues["AdresseeFirstName"].Add(Tbl[0].FirstName);
+                            FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
+                        }
+                    }
+
+                    FormValues["DateToday"].Add(DateTime.Now.ToString ("dd MMMM yyyy"));
+
+                    // Donor Adress:
+                    PLocationTable Location;
+                    PPartnerLocationTable PartnerLocation;
+                    string CountryName;
+                    string EmailAddress;
+
+                    if (TAddressTools.GetBestAddress(Convert.ToInt64(Row["DonorKey"]), out Location, out PartnerLocation, out CountryName, out EmailAddress, Transaction))
+                    {
+                        PLocationRow LocRow = Location[0];
+                        FormValues["AdresseeStreetAddress"].Add(LocRow.StreetName);
+                        FormValues["AdresseeAddress3"].Add(LocRow.Address3);
+                        FormValues["AdresseeCity"].Add(LocRow.City);
+                        FormValues["AdresseePostCode"].Add(LocRow.PostalCode);
+                        if (LocRow.CountryCode != LocalCountryCode)  // Don't add the Donor's country if it's also my country:
+                        {
+                            FormValues["AdresseeCountry"].Add(CountryName);
+                        }
+                        else
+                        {
+                            LocRow.CountryCode = "";
+                        }
+                        FormValues["FormattedAddress"].Add(Calculations.DetermineLocationString(LocRow,
+                                Calculations.TPartnerLocationFormatEnum.plfHtmlLineBreak));
+                    }
+
+                    // Details of gift:
+                    FormValues["DateEntered"].Add(Convert.ToDateTime(Row["DateEntered"]).ToString("dd MMM yyyy"));
+                    FormValues["Reference"].Add(Row["Reference"].ToString());
+                    AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
+                        ALedgerNumber, Convert.ToInt32(Row["BatchNumber"]), Convert.ToInt32(Row["TransactionNumber"]), Transaction);
+                    decimal GiftTotal = 0;
+                    foreach (AGiftDetailRow DetailRow in DetailTbl.Rows)
+                    {
+                        string DonorComment = "";
+                        FormValues["GiftAmount"].Add(DetailRow.GiftAmount.ToString("0.00"));
+                        FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
+                        GiftTotal += DetailRow.GiftAmount;
+
+                        // Recipient Short Name:
+                        PPartnerTable RecipientTbl = PPartnerAccess.LoadByPrimaryKey(DetailRow.RecipientKey, Transaction);
+                        if (RecipientTbl.Rows.Count > 0)
+                        {
+                            String ShortName = Calculations.FormatShortName(RecipientTbl[0].PartnerShortName, eShortNameFormat.eReverseShortname);
+                            FormValues["RecipientShortName"].Add(ShortName);
+                        }
+
+                        if (DetailRow.CommentOneType == "Donor")
+                        {
+                            DonorComment += DetailRow.GiftCommentOne;
+                        }
+
+                        if (DetailRow.CommentTwoType == "Donor")
+                        {
+                            if (DonorComment != "")
+                            {
+                                DonorComment += "\r\n";
+                            }
+                            DonorComment += DetailRow.GiftCommentTwo;
+                        }
+
+                        if (DetailRow.CommentThreeType == "Donor")
+                        {
+                            if (DonorComment != "")
+                            {
+                                DonorComment += "\r\n";
+                            }
+                            DonorComment += DetailRow.GiftCommentThree;
+                        }
+
+                        if (DonorComment != "")
+                        {
+                            DonorComment = "Comment: " + DonorComment;
+                        }
+                        FormValues["DonorComment"].Add(DonorComment);
+                    } // foreach detail
+
+                    FormValues["GiftTotalAmount"].Add(GiftTotal.ToString("0.00"));
+                    FormValues["GiftCurrency"].Add(Row["GiftCurrency"].ToString());
+
+                    string PageHtml = TFormLettersTools.PrintSimpleHTMLLetter(
+                        TAppSettingsManager.GetValue("Formletters.Path") + "\\" + AHTMLTemplateFilename, FormValues);
+
+                    if (HtmlDoc != "")
+                    {
+                        HtmlDoc += "|PageBreak|";
+                    }
+                    HtmlDoc += PageHtml;
+                }
+            }
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return HtmlDoc;
         }
     }
 }

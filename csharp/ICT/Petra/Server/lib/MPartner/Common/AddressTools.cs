@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.MPartner.Common
         {
             BestAddressTDSLocationTable ResultTable = new BestAddressTDSLocationTable();
 
-            string LocalCountryCode = TAddressTools.GetLocalCountryCode(ATransaction);
+            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(ATransaction);
 
             foreach (DataRow partnerRow in APartnerTable.Rows)
             {
@@ -244,23 +244,53 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
-        /// return the country code for this installation of OpenPetra.
+        /// Return the country code for the ledger with this key
+        /// </summary>
+        public static string GetCountryCodeFromLedger(TDBTransaction ATransaction, Int32 LedgerNumber)
+        {
+            ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey((int)(DomainManager.GSiteKey / 1000000), ATransaction);
+
+            if (ledgerTable.Rows.Count == 1)
+            {
+                return ledgerTable[0].CountryCode;
+            }
+
+            // no Ledger row for this key, so return invalid country code
+            return "99";
+        }
+
+        /// <summary>
+        /// Return the country code for this installation of OpenPetra.
         /// using the SiteKey to determine the country
         /// </summary>
-        public static string GetLocalCountryCode(TDBTransaction ATransaction)
+        public static string GetCountryCodeFromSiteLedger(TDBTransaction ATransaction)
         {
             if (DomainManager.GSiteKey > 0)
             {
-                ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey((int)(DomainManager.GSiteKey / 1000000), ATransaction);
-
-                if (ledgerTable.Rows.Count == 1)
-                {
-                    return ledgerTable[0].CountryCode;
-                }
+                Int32 LedgerNumber = (Int32)(DomainManager.GSiteKey / 1000000);
+                return GetCountryCodeFromLedger(ATransaction, LedgerNumber);
             }
+            return "99"; // Domain Manager doesn't know my site key?
 
-            // no sitekey, therefore return invalid country code
-            return "99";
+        }
+
+        /// <summary>
+        /// Get the printable name for this country
+        /// </summary>
+        /// <param name="CountryCode"></param>
+        /// <param name="ATransaction"></param>
+        /// <returns></returns>
+        public static string GetCountryName(string CountryCode, TDBTransaction ATransaction)
+        {
+            PCountryTable Tbl = PCountryAccess.LoadByPrimaryKey(CountryCode, ATransaction);
+            if (Tbl.Rows.Count > 0)
+            {
+                return Tbl[0].CountryName;
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }

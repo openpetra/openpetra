@@ -987,5 +987,27 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>the country code for this installation of OpenPetra.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static string GetCountryCodeFromSiteLedger()
+        {
+            bool NewTransaction;
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            string CountryCode = TAddressTools.GetCountryCodeFromSiteLedger(ReadTransaction);
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            return CountryCode;
+        }
+
     }
 }

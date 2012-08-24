@@ -122,7 +122,19 @@ namespace Ict.Common.Printing
                     // AResultDocument += "<div style=\"page-break-before: always;\"/>";
                     string body = ANewPage.Substring(ANewPage.IndexOf("<body"));
                     body = body.Substring(0, body.IndexOf("</html"));
-                    AResultDocument += body;
+
+                    //
+                    // Insert before the existing </html>
+
+                    Int32 CloseTagPos = AResultDocument.IndexOf("</html>");
+                    if (CloseTagPos > 0)
+                    {
+                        AResultDocument = AResultDocument.Substring(0, CloseTagPos) + body + AResultDocument.Substring(CloseTagPos);
+                    }
+                    else
+                    {
+                        AResultDocument += body;
+                    }
                 }
                 else
                 {
@@ -204,16 +216,25 @@ namespace Ict.Common.Printing
             }
 
             string styles = TXMLParser.GetAttribute(ANode, "style");
+            if (styles == "")
+            {
+                return Result;
+            }
+
             string[] namevaluepairs = styles.Split(new char[] { ',', ';' });
 
             try
             {
                 foreach (string namevaluepair in namevaluepairs)
                 {
-                    string DetailName = namevaluepair.Substring(0, namevaluepair.IndexOf(':'));
-                    string DetailValue = namevaluepair.Substring(namevaluepair.IndexOf(':') + 1);
+                    int ColonPos = namevaluepair.IndexOf(':');
+                    if (ColonPos > 0)
+                    {
+                        string DetailName = namevaluepair.Substring(0, ColonPos);
+                        string DetailValue = namevaluepair.Substring(ColonPos + 1);
 
-                    Result.Add(DetailName.Trim(), DetailValue.Trim());
+                        Result.Add(DetailName.Trim(), DetailValue.Trim());
+                    }
                 }
             }
             catch (Exception ex)
@@ -287,7 +308,7 @@ namespace Ict.Common.Printing
 
                 if (!styles.ContainsKey("margin-left"))
                 {
-                    TLogging.Log("missing margin-left for getting the unit. assuming inch for now.");
+//                  TLogging.Log("missing margin-left for getting the unit. assuming inch for now.");
                 }
                 else if (styles["margin-left"].EndsWith("cm"))
                 {
@@ -427,6 +448,10 @@ namespace Ict.Common.Printing
                     DetailHtml = detailNode.InnerXml;
                     detailNode.InnerXml = ""; // Remove the repeating Detail from the letter.
                 }
+                else
+                {
+                    DetailHtml = "";
+                }
 
                 ResultDocument =
                     "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" +
@@ -481,7 +506,14 @@ namespace Ict.Common.Printing
                         {               // This should only happen at detailLevel 0.
                             if (DetailLevel == 0)
                             {
-                                ResultDocument = ResultDocument.Replace(HashKey, AData[Key][DetailLevel]);
+                                if (AData[Key].Count > 0) // Perhaps there's no values for this Key?
+                                {
+                                    ResultDocument = ResultDocument.Replace(HashKey, AData[Key][0]);
+                                }
+                                else
+                                {
+                                    ResultDocument = ResultDocument.Replace(HashKey, "");
+                                }
                             }
                         }
                     }

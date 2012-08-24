@@ -35,6 +35,8 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using System.IO;
 using Ict.Petra.Shared.MPartner;
 using System.Threading;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -81,6 +83,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             SortedList <string, List <string>>FormValues = new SortedList <string, List <string>>();
 
             //
+            // load my own country code, so I don't print it on letters to my own country.
+            //
+            string LocalCountryCode = TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetCountryCodeFromSiteLedger();
+
+            //
             // These are the fields that I will pull out of the TDS...
             //
             FormValues.Add("SupplierName", new List <string>());
@@ -93,6 +100,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             FormValues.Add("TotalPayment", new List <string>());
 
             FormValues["SupplierName"].Add(PaymentDetails.PPartner[0].PartnerShortName);
+            if (PaymentDetails.PLocation[0].CountryCode == LocalCountryCode)
+            {
+                PaymentDetails.PLocation[0].CountryCode = ""; // Don't print country code it it's the same as my own.
+            }
             FormValues["SupplierAddress"].Add(Calculations.DetermineLocationString(PaymentDetails.PLocation[0],
                     Calculations.TPartnerLocationFormatEnum.plfHtmlLineBreak));
 
