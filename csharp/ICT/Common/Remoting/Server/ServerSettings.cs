@@ -380,7 +380,7 @@ namespace Ict.Common.Remoting.Server
                         string line = sr.ReadLine();
 
                         if (line.StartsWith(FDatabaseHostOrFile + ":" + FDatabasePort + ":" + FDatabaseName + ":" + FDBUsername + ":")
-                           || line.StartsWith("*:" + FDatabasePort + ":" + FDatabaseName + ":" + FDBUsername + ":"))
+                            || line.StartsWith("*:" + FDatabasePort + ":" + FDatabaseName + ":" + FDBUsername + ":"))
                         {
                             FDBPassword = line.Substring(line.LastIndexOf(':') + 1);
                             break;
