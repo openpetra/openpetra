@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,7 +63,6 @@ namespace Ict.Common.Controls
             this.pnlMoreButtons = new System.Windows.Forms.Panel();
             this.pnlNavigationCaption = new Ict.Common.Controls.TPnlGradient();
             this.lblNavigationCaption = new System.Windows.Forms.Label();
-            this.btnCollapseNavigation = new System.Windows.Forms.Button();
 
             this.sptNavigation.Panel1.SuspendLayout();
             this.sptNavigation.Panel2.SuspendLayout();
@@ -87,16 +86,6 @@ namespace Ict.Common.Controls
             this.lblNavigationCaption.Text = "Caption";
 
             //
-            // btnCollapseNavigation
-            //
-            this.btnCollapseNavigation.Location = new System.Drawing.Point(200 - 27, 0);
-            this.btnCollapseNavigation.Name = "btnCollapseNavigation";
-            this.btnCollapseNavigation.Size = new System.Drawing.Size(27, 27);
-            this.btnCollapseNavigation.TabIndex = 1;
-            this.btnCollapseNavigation.Text = "";
-            this.btnCollapseNavigation.UseVisualStyleBackColor = true;
-
-            //
             // pnlMoreButtons
             //
             this.pnlMoreButtons.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -114,7 +103,6 @@ namespace Ict.Common.Controls
             this.pnlNavigationCaption.Name = "pnlNavigationCaption";
             this.pnlNavigationCaption.Size = new System.Drawing.Size(200, 27);
             this.pnlNavigationCaption.TabIndex = 7;
-            this.pnlNavigationCaption.Controls.Add(this.btnCollapseNavigation);
             this.pnlNavigationCaption.Controls.Add(this.lblNavigationCaption);
 
             //
@@ -157,7 +145,6 @@ namespace Ict.Common.Controls
         }
 
         private System.Windows.Forms.Label lblNavigationCaption;
-        private System.Windows.Forms.Button btnCollapseNavigation;
         private System.Windows.Forms.SplitContainer sptNavigation;
         private Ict.Common.Controls.TPnlGradient pnlNavigationCaption;
         private System.Windows.Forms.Panel pnlMoreButtons;
