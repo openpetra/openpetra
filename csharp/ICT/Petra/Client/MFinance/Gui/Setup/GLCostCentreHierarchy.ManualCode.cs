@@ -164,43 +164,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            string newName = Catalog.GetString("NewCostCentre");
-            Int32 countNewCostCentre = 0;
-
-            if (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
+            if(ValidateAllData(true, true))
             {
-                while (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newName + countNewCostCentre.ToString() }) != null)
+                txtDetailCostCentreCode.Focus();
+                
+                string newName = Catalog.GetString("NewCostCentre");
+                Int32 countNewCostCentre = 0;
+    
+                if (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
                 {
-                    countNewCostCentre++;
+                    while (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newName + countNewCostCentre.ToString() }) != null)
+                    {
+                        countNewCostCentre++;
+                    }
+    
+                    newName += countNewCostCentre.ToString();
                 }
-
-                newName += countNewCostCentre.ToString();
+    
+                ACostCentreRow parentCostCentre =
+                    (ACostCentreRow)FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber,
+                                                                                 ((ACostCentreRow)FCurrentNode.Tag).CostCentreCode });
+    
+                ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
+                newCostCentre.CostCentreCode = newName;
+                newCostCentre.LedgerNumber = FLedgerNumber;
+                newCostCentre.CostCentreActiveFlag = true;
+                newCostCentre.CostCentreType = parentCostCentre.CostCentreType;
+                newCostCentre.PostingCostCentreFlag = true;
+                newCostCentre.CostCentreToReportTo = parentCostCentre.CostCentreCode;
+                FMainDS.ACostCentre.Rows.Add(newCostCentre);
+    
+                // TODO: what if the parent cost centre already had a posting balance? do we have to move costcentres around, insert a dummy parent?
+                parentCostCentre.PostingCostCentreFlag = false;
+    
+                trvCostCentres.BeginUpdate();
+                TreeNode newNode = FCurrentNode.Nodes.Add(newName);
+                newNode.Tag = newCostCentre;
+                trvCostCentres.EndUpdate();
+    
+                trvCostCentres.SelectedNode = newNode;
+    
+                FPetraUtilsObject.SetChangedFlag();
             }
-
-            ACostCentreRow parentCostCentre =
-                (ACostCentreRow)FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber,
-                                                                             ((ACostCentreRow)FCurrentNode.Tag).CostCentreCode });
-
-            ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
-            newCostCentre.CostCentreCode = newName;
-            newCostCentre.LedgerNumber = FLedgerNumber;
-            newCostCentre.CostCentreActiveFlag = true;
-            newCostCentre.CostCentreType = parentCostCentre.CostCentreType;
-            newCostCentre.PostingCostCentreFlag = true;
-            newCostCentre.CostCentreToReportTo = parentCostCentre.CostCentreCode;
-            FMainDS.ACostCentre.Rows.Add(newCostCentre);
-
-            // TODO: what if the parent cost centre already had a posting balance? do we have to move costcentres around, insert a dummy parent?
-            parentCostCentre.PostingCostCentreFlag = false;
-
-            trvCostCentres.BeginUpdate();
-            TreeNode newNode = FCurrentNode.Nodes.Add(newName);
-            newNode.Tag = newCostCentre;
-            trvCostCentres.EndUpdate();
-
-            trvCostCentres.SelectedNode = newNode;
-            txtDetailCostCentreCode.Focus();
-            FPetraUtilsObject.SetChangedFlag();
         }
 
         private void ExportHierarchy(object sender, EventArgs e)
