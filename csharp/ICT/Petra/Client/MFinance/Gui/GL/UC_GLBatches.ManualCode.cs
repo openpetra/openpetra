@@ -534,7 +534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     message +=
                         string.Format(
-                            Catalog.GetString("{0}/{1} ({2}/{3}) is: {4} and would be: {5}"),
+                            Catalog.GetString("{1}/{0} ({3}/{2}) is: {4} and would be: {5}"),
                             ((TVariant)compValues[0]).ToString(),
                             ((TVariant)compValues[2]).ToString(),
                             ((TVariant)compValues[1]).ToString(),
