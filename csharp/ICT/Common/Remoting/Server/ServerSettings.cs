@@ -378,7 +378,13 @@ namespace Ict.Common.Remoting.Server
                     while (!sr.EndOfStream)
                     {
                         string line = sr.ReadLine();
-                        FDBPassword = line.Substring(line.LastIndexOf(':') + 1);
+
+                        if (line.StartsWith(FDatabaseHostOrFile + ":" + FDatabasePort + ":" + FDatabaseName + ":" + FDBUsername + ":")
+                            || line.StartsWith("*:" + FDatabasePort + ":" + FDatabaseName + ":" + FDBUsername + ":"))
+                        {
+                            FDBPassword = line.Substring(line.LastIndexOf(':') + 1);
+                            break;
+                        }
                     }
                 }
             }
@@ -401,8 +407,8 @@ namespace Ict.Common.Remoting.Server
                 }
             }
 
-            // Server.IPBasePort
-            FIPBasePort = TAppSettingsManager.GetInt16("Server.IPBasePort", 9000);
+            // Server.Port
+            FIPBasePort = TAppSettingsManager.GetInt16("Server.Port", 9000);
 
             FRunAsStandalone = TAppSettingsManager.GetBoolean("Server.RunAsStandalone", false);
 

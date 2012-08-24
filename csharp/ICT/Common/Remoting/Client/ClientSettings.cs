@@ -350,10 +350,7 @@ namespace Ict.Common.Remoting.Client
             // the setup has to be run as administrator.
             // therefore the first time the user starts Petra, we need to prepare his environment
             // see also http://www.vincenzo.net/isxkb/index.php?title=Vista_considerations#Best_Practices
-            if (!Directory.Exists(result))
-            {
-                Directory.CreateDirectory(result);
-            }
+            TFileHelper.CreateDirectory(result);
 
             return Path.GetFullPath(result);
         }
@@ -375,10 +372,7 @@ namespace Ict.Common.Remoting.Client
             string ExportPath = GetUserPath("OpenPetra.PathExport",
                 GetUserPath("OpenPetra.PathTemp", "") + Path.DirectorySeparatorChar + "export");
 
-            if (!Directory.Exists(ExportPath))
-            {
-                Directory.CreateDirectory(ExportPath);
-            }
+            TFileHelper.CreateDirectory(ExportPath);
 
             return ExportPath;
         }

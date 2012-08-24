@@ -36,6 +36,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Shared.MCommon;
 
 #region ManualCode
 using Ict.Petra.Shared.MFinance;

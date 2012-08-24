@@ -99,6 +99,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 FMainDS.SUser.DefaultView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.SUser.DefaultView);
+                grdDetails.Selection.SelectRow(1, true);
             }
         }
 

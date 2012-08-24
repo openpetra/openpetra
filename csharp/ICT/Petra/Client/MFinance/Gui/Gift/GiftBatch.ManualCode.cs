@@ -39,7 +39,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
-        private UserControl FCurrentUserControl;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -78,6 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ucoBatches.LoadBatches(FLedgerNumber);
             }
         }
+
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
@@ -98,28 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             tabGiftBatch.SelectedIndex = standardTabIndex;
-            tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-        }
-
-        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
-        {
-            FPetraUtilsObject.VerificationResultCollection.Clear();
-
-            if (tabGiftBatch.SelectedIndex == 0)
-            {
-                FCurrentUserControl = ucoTransactions;
-            }
-            else
-            {
-                FCurrentUserControl = ucoBatches;
-            }
-
-            if (!ValidateAllData(true, FCurrentUserControl))
-            {
-                e.Cancel = true;
-
-                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
-            }
+            TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
         }
 
         private void RunOnceOnActivationManual()
@@ -134,11 +113,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
+        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
         {
             this.tpgTransactions.Enabled = true;
             FPetraUtilsObject.DisableDataChangedEvent();
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
+            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AFromTabClick);
             FPetraUtilsObject.EnableDataChangedEvent();
         }
 
@@ -173,16 +153,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// find a special gift detail
-        /// </summary>
-        public void FindGiftDetail(AGiftDetailRow gdr)
-        {
-            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
-            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
-            standardTabIndex = 1;     // later we switch to the detail tab
-        }
-
-        /// <summary>
         /// directly access the transactions control
         /// </summary>
         public TUC_GiftTransactions GetTransactionsControl()
@@ -200,25 +170,70 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Transactions
         };
 
+        bool FChangeTabEventHasRun = false;
+
+        private void SelectTabManual(int ASelectedTabIndex)
+        {
+            if (ASelectedTabIndex == (int)eGiftTabs.Batches)
+            {
+                SelectTab(eGiftTabs.Batches);
+            }
+            else
+            {
+                SelectTab(eGiftTabs.Transactions);
+            }
+        }
+
         /// <summary>
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        public void SelectTab(eGiftTabs ATab)
+        /// <param name="AFromTabClick"></param>
+        public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
         {
+            if (FChangeTabEventHasRun && AFromTabClick)
+            {
+                FChangeTabEventHasRun = false;
+                return;
+            }
+            else
+            {
+                FChangeTabEventHasRun = !AFromTabClick;
+            }
+
             if (ATab == eGiftTabs.Batches)
             {
-                this.tabGiftBatch.SelectedTab = this.tpgBatches;
+                //If from grid double click then invoke tab changed event
+                if (!AFromTabClick)
+                {
+                    this.tabGiftBatch.SelectedTab = this.tpgBatches;
+                }
             }
             else if (ATab == eGiftTabs.Transactions)
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    //ucoBatches.Controls["grdDetails"].Focus;
                     LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber);
-                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                        ucoBatches.GetSelectedDetailRow().BatchNumber, AFromTabClick);
+
+                    //If from grid double click then invoke tab changed event
+                    if (!AFromTabClick)
+                    {
+                        this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// find a special gift detail
+        /// </summary>
+        public void FindGiftDetail(AGiftDetailRow gdr)
+        {
+            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
+            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
+            standardTabIndex = 1;     // later we switch to the detail tab
         }
     }
 }

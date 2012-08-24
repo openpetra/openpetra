@@ -1,0 +1,36 @@
+html, body {
+  width: 100%;
+  height: 100%; 
+  padding: 0;
+  margin: 0;
+  text-align:center;
+}
+
+#toolbar {
+	text-align:left;
+}
+
+#container {
+  height: 100%;
+  width:960px;
+  margin:0 auto;
+}
+
+#pnlDetails {
+  text-align:left;
+}
+
+#grdDetails {
+  position: absolute;
+  top: 0;
+  bottom: 20;
+  left: 0;
+  right: 0;
+}
+
+#pnlGrid {
+  margin: 0;
+  padding: 0;
+}
+ 
+ 

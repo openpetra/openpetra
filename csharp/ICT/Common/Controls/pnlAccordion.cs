@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,9 +58,10 @@ namespace Ict.Common.Controls
         private int FMaxTaskWidth;
         private TExtStatusBarHelp FStatusbar = null;
 
-
+#if disabled
         static System.Drawing.Bitmap UpArrow = null;
         static System.Drawing.Bitmap DownArrow = null;
+#endif
 
         /// create an accordion with several items for the given folder, with all sub menus
         public TPnlAccordion(XmlNode AFolderNode, TDashboard ADashboard, string APanelName)
@@ -70,6 +71,7 @@ namespace Ict.Common.Controls
             this.Dock = DockStyle.Top;
             this.Height = 0;
 
+#if disabled
             if (UpArrow == null)
             {
                 UpArrow = new System.Drawing.Bitmap(TLstFolderNavigation.ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2uparrow.png");
@@ -80,6 +82,7 @@ namespace Ict.Common.Controls
                 DownArrow = new System.Drawing.Bitmap(
                     TLstFolderNavigation.ResourceDirectory + System.IO.Path.DirectorySeparatorChar + "2downarrow.png");
             }
+#endif
 
             XmlNode ModuleNode = AFolderNode.LastChild;
 
@@ -93,7 +96,9 @@ namespace Ict.Common.Controls
                 pnlModuleCaption.GradientColorBottom = System.Drawing.Color.FromArgb(0xD6, 0xE3, 0xFF);
                 pnlModuleCaption.Size = new System.Drawing.Size(this.Width, 27);
                 pnlModuleCaption.Dock = DockStyle.Top;
+#if disabled
                 pnlModuleCaption.Click += new System.EventHandler(this.CollapseModuleMenu);
+#endif
                 pnlModule.Controls.Add(pnlModuleCaption);
 
                 Label lblModule = new Label();
@@ -104,6 +109,7 @@ namespace Ict.Common.Controls
                 lblModule.Name = "lbl" + ModuleNode.Name;
                 lblModule.Size = new System.Drawing.Size(153, 23);
                 lblModule.Text = TLstFolderNavigation.GetLabel(ModuleNode);
+#if disabled
                 lblModule.Click += new System.EventHandler(this.CollapseModuleMenu);
 
                 Button btnCollapse = new Button();
@@ -114,6 +120,7 @@ namespace Ict.Common.Controls
                 btnCollapse.UseVisualStyleBackColor = true;
                 btnCollapse.Text = "";
                 btnCollapse.Click += new System.EventHandler(this.CollapseModuleMenu);
+#endif
 
                 XmlNode SubmoduleNode = ModuleNode.FirstChild;
 
@@ -153,7 +160,9 @@ namespace Ict.Common.Controls
                 pnlModule.Size = new System.Drawing.Size(this.Width, pnlModuleCaption.Height + CounterSubmodules * 20);
                 pnlModule.BackColor = System.Drawing.Color.FromArgb(0xCE, 0xDB, 0xFF);
                 pnlModuleCaption.Controls.Add(lblModule);
+#if disabled
                 pnlModuleCaption.Controls.Add(btnCollapse);
+#endif
                 this.Controls.Add(pnlModule);
                 this.Size = new System.Drawing.Size(this.Width, this.Height + pnlModule.Height);
 
@@ -230,6 +239,7 @@ namespace Ict.Common.Controls
 
         #region Private Methods
 
+#if disabled
         private void CollapseModuleMenu(object sender, EventArgs e)
         {
             Button btnModuleCollapse;
@@ -263,6 +273,7 @@ namespace Ict.Common.Controls
                 btnModuleCollapse.Image = DownArrow;
             }
         }
+#endif
 
         private void LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {

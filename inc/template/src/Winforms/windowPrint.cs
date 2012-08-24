@@ -161,32 +161,38 @@ namespace {#NAMESPACE}
 
     void PrintCurrentPage(object sender, EventArgs e)
     {
-        PrintDialog dlg = new PrintDialog();
+        if (FGfxPrinter != null)
+        {
+            PrintDialog dlg = new PrintDialog();
 
-        dlg.Document = FGfxPrinter.Document;
-        dlg.AllowCurrentPage = true;
-        dlg.AllowSomePages = true;
+            dlg.Document = FGfxPrinter.Document;
+            dlg.AllowCurrentPage = true;
+            dlg.AllowSomePages = true;
 //        dlg.PrinterSettings.PrintRange = PrintRange.SomePages;
 //        dlg.PrinterSettings.FromPage = GetRowIndex(GetSelectedRow());
 //        dlg.PrinterSettings.ToPage = dlg.PrinterSettings.FromPage;
 
 //        if (dlg.ShowDialog() == DialogResult.OK)
-        {
+//          {
 //            dlg.Document.Print();
+//          }
         }
     }
     
     void PrintAllPages(object sender, System.EventArgs e)
     {
-        PrintDialog dlg = new PrintDialog();
-
-        dlg.Document = FGfxPrinter.Document;
-        dlg.AllowCurrentPage = true;
-        dlg.AllowSomePages = true;
-
-        if (dlg.ShowDialog() == DialogResult.OK)
+        if (FGfxPrinter != null)
         {
-            dlg.Document.Print();
+            PrintDialog dlg = new PrintDialog();
+
+            dlg.Document = FGfxPrinter.Document;
+            dlg.AllowCurrentPage = true;
+            dlg.AllowSomePages = true;
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                dlg.Document.Print();
+            }
         }
     }
 

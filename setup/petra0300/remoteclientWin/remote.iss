@@ -40,6 +40,7 @@ Source: ..\..\..\csharp\ThirdParty\A1Panel\Owf.Controls.A1Panel.dll; DestDir: {u
 
 Source: ..\..\..\delivery\bin\Ict.Common*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Client*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
+Source: ..\..\..\delivery\bin\Ict.Petra.Server.*.connect.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Shared*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.ClientPlugins*.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\PetraClient.exe; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion

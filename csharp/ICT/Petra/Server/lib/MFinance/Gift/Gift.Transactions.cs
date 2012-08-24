@@ -1065,11 +1065,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             giftView.Sort = ARecurringGiftTable.GetGiftTransactionNumberDBName();
 
             // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
-            foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.ARecurringGiftDetail.Rows)
+            foreach (GiftBatchTDSARecurringGiftDetailRow giftDetail in MainDS.ARecurringGiftDetail.Rows)
             {
                 // get the gift
-                GiftBatchTDSARecurringGiftDetailRow giftRow =
-                    (GiftBatchTDSARecurringGiftDetailRow)giftView.FindRows(giftDetail.GiftTransactionNumber)[0].Row;
+                ARecurringGiftRow giftRow = (ARecurringGiftRow)giftView.FindRows(giftDetail.GiftTransactionNumber)[0].Row;
 
                 PPartnerRow DonorRow = (PPartnerRow)MainDS.DonorPartners.Rows.Find(giftRow.DonorKey);
 
@@ -1078,8 +1077,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 giftDetail.DonorClass = DonorRow.PartnerClass;
                 giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                 giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
-                giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
-                giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
+                //giftDetail.ReceiptNumber = giftRow.ReceiptNumber;
+                //giftDetail.ReceiptPrinted = giftRow.ReceiptPrinted;
 
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
@@ -1094,7 +1093,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.RecipientDescription = "INVALID";
                 }
 
-                giftDetail.DateEntered = giftRow.DateEntered;
+                //giftDetail.DateEntered = giftRow.DateEntered;
             }
 
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);

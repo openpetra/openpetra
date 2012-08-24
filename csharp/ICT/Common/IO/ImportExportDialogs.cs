@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -175,10 +175,19 @@ namespace Ict.Common.IO
 
             if (DialogSave.ShowDialog() == DialogResult.OK)
             {
-                FileStream fs = new FileStream(DialogSave.FileName, FileMode.Create);
+                string filename = DialogSave.FileName;
+
+                // it seems there was a bug that only .gz was added if user did not type the extension
+                if (!filename.EndsWith(".yml.gz"))
+                {
+                    filename = Path.GetFileNameWithoutExtension(filename) + ".yml.gz";
+                }
+
+                FileStream fs = new FileStream(filename, FileMode.Create);
                 byte[] buffer = Convert.FromBase64String(AZippedYML);
                 fs.Write(buffer, 0, buffer.Length);
                 fs.Close();
+                return true;
             }
 
             return false;
