@@ -199,6 +199,8 @@ namespace {#NAMESPACE}
     /// </summary>
     /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing 
     /// to another record, otherwise set it to false.</param>
+    /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+    /// user, otherwise set it to false.</param>
     /// <param name="AValidateSpecificControl">Pass in a Control to restrict Data Validation error checking to a 
     /// specific Control for which Data Validation errors might have been recorded. (Default=this.ActiveControl).
     /// <para>
@@ -208,7 +210,7 @@ namespace {#NAMESPACE}
     /// </para>    
     /// </param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, Control AValidateSpecificControl = null)
+    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
     {
         bool ReturnValue = false;
         Control ControlToValidate = null;
@@ -234,7 +236,6 @@ namespace {#NAMESPACE}
         if (CurrentRow != null)
         {
 {#ENDIF SHOWDETAILS}        
-{#IFNDEF SHOWDETAILS}
         if (AValidateSpecificControl != null) 
         {
             ControlToValidate = AValidateSpecificControl;
@@ -243,7 +244,7 @@ namespace {#NAMESPACE}
         {
             ControlToValidate = this.ActiveControl;
         }
-{#ENDIFN SHOWDETAILS}
+
 {#IFDEF SHOWDETAILS}
             // Validate DetailTable
 {#IFNDEF MASTERTABLE}
@@ -260,33 +261,48 @@ namespace {#NAMESPACE}
         {#USERCONTROLVALIDATION}
 {#ENDIF PERFORMUSERCONTROLVALIDATION}
 
+        if (AProcessAnyDataValidationErrors)
+        {
+            // Only process the Data Validations here if ControlToValidate is not null.
+            // It can be null if this.ActiveControl yields null - this would happen if no Control
+            // on this Form has got the Focus.
+            if (ControlToValidate != null) 
+            {
+                if(ControlToValidate.FindUserControlOrForm(false) == this)
+                {
 {#IFDEF SHOWDETAILS}
+                    if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
+                    {
+                        // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
+                        // Data Validation Errors/Warnins as something that is record-related.
+                        ARecordChangeVerification = false;
+                    }
+
+                    // Process Data Validation result(s)
+                    ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                        this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+{#IFDEF MASTERTABLE}
+            }
+            else
+            {
                 if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
                 {
                     // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
                     // Data Validation Errors/Warnins as something that is record-related.
                     ARecordChangeVerification = false;
                 }
-
+            
                 // Process Data Validation result(s)
                 ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
                     this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
-{#IFDEF MASTERTABLE}
-        }
-        else
-        {
-            if (!FPetraUtilsObject.VerificationResultCollection.Contains(FMainDS.{#DETAILTABLE})) 
-            {
-                // There isn't a Data Validation Error/Warning recorded for the Detail Table, therefore don't present the
-                // Data Validation Errors/Warnins as something that is record-related.
-                ARecordChangeVerification = false;
             }
-        
-            // Process Data Validation result(s)
-            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
-        }
 {#ENDIF MASTERTABLE}
+                }
+            }
+            else
+            {
+                ReturnValue = true;
+            }
 {#IFNDEF MASTERTABLE}
         }
         else
@@ -296,11 +312,29 @@ namespace {#NAMESPACE}
 {#ENDIFN MASTERTABLE}
 {#ENDIF SHOWDETAILS}
 {#IFNDEF SHOWDETAILS}
-        // Process Data Validation result(s)
-        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
-            this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+            // Process Data Validation result(s)
+            ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
+                this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null);
+                }
+            }
+            else
+            {
+                ReturnValue = true;
+            }
+        }
+        else
+        {
+            ReturnValue = true;
+        }
 {#ENDIFN SHOWDETAILS}
+{#IFDEF SHOWDETAILS}            
+        }
+        else
+        {
+            ReturnValue = true;
+        }
 
+{#ENDIF SHOWDETAILS}
         if(ReturnValue)
         {
             // Remove a possibly shown Validation ToolTip as the data validation succeeded
@@ -374,7 +408,7 @@ namespace {#NAMESPACE}
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
         FPetraUtilsObject.VerificationResultCollection.Clear();
 
-        if (ValidateAllData(false))
+        if (ValidateAllData(false, true))
         {
             foreach (DataTable InspectDT in FMainDS.Tables)
             {
@@ -554,7 +588,7 @@ namespace {#NAMESPACE}
     {
         TScreenVerificationResult SingleVerificationResult;
         
-        ValidateAllData(true, (Control)sender);
+        ValidateAllData(true, false, (Control)sender);
         
         FPetraUtilsObject.ValidationToolTip.RemoveAll();
         

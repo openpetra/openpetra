@@ -37,7 +37,7 @@ namespace Ict.Common.Controls
         private int FMaxTaskWidth;
         private TaskAppearance FTaskAppearance = TaskAppearance.staLargeTile;
         private bool FSingleClickExecution = false;
-        private Dictionary <string, TLstTasks>FTaskLists = new Dictionary <string, TLstTasks>();
+        private List <TLstTasks>FTaskLists = new List <TLstTasks>();
 
         /// <summary>
         /// default constructor
@@ -134,17 +134,15 @@ namespace Ict.Common.Controls
         /// <param name="ATaskList"></param>
         public void ShowTaskList(TLstTasks ATaskList)
         {
-            TLstTasks ExistingTaskList;
-
             if (ATaskList != null)
             {
-                if (FTaskLists.TryGetValue(ATaskList.Name, out ExistingTaskList))
+                if (FTaskLists.Contains(ATaskList))
                 {
 //TLogging.Log("Found TaskList '" + ATaskList.Name + "' - bringing it to front.");
-                    ExistingTaskList.MaxTaskWidth = FMaxTaskWidth;
-                    ExistingTaskList.TaskAppearance = FTaskAppearance;
-                    ExistingTaskList.SingleClickExecution = FSingleClickExecution;
-                    ExistingTaskList.BringToFront();
+                    ATaskList.MaxTaskWidth = FMaxTaskWidth;
+                    ATaskList.TaskAppearance = FTaskAppearance;
+                    ATaskList.SingleClickExecution = FSingleClickExecution;
+                    ATaskList.BringToFront();
                 }
                 else
                 {
@@ -155,7 +153,7 @@ namespace Ict.Common.Controls
                     ATaskList.SingleClickExecution = FSingleClickExecution;
                     ATaskList.BringToFront();
 
-                    FTaskLists.Add(ATaskList.Name, ATaskList);
+                    FTaskLists.Add(ATaskList);
                 }
             }
         }
