@@ -57,6 +57,8 @@ namespace Ict.Petra.ServerAdmin.App.Core
             {
                 if (TAppSettingsManager.HasValue("Server.Port"))
                 {
+                    DetermineServerIPAddress();
+
                     IClientChannelSinkProvider TCPSink = new BinaryClientFormatterSinkProvider();
 
                     if (TAppSettingsManager.HasValue("Server.ChannelEncryption.PublicKeyfile"))
@@ -74,14 +76,14 @@ namespace Ict.Petra.ServerAdmin.App.Core
 
                     RemotingConfiguration.RegisterWellKnownClientType(
                         typeof(IServerAdminInterface),
-                        String.Format("tcp://localhost:{0}/Servermanager", TAppSettingsManager.GetValue("Server.Port")));
+                        String.Format("tcp://{0}:{1}/Servermanager", FServerIPAddr, FServerPort));
                 }
                 else
                 {
                     RemotingConfiguration.Configure(ConfigFile, false);
-                }
 
-                DetermineServerIPAddress();
+                    DetermineServerIPAddress();
+                }
 
                 iRemote = (IServerAdminInterface)
                           Activator.GetObject(typeof(IServerAdminInterface),
@@ -106,6 +108,8 @@ namespace Ict.Petra.ServerAdmin.App.Core
         {
             const String SERVERMANAGERENTRY = "Ict.Common.Remoting.Shared.IServerAdminInterface";
 
+            FServerIPAddr = "localhost";
+
             if (TAppSettingsManager.HasValue("Server.Host"))
             {
                 FServerIPAddr = TAppSettingsManager.GetValue("Server.Host");
@@ -116,7 +120,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
                 FServerPort = TAppSettingsManager.GetValue("Server.Port");
             }
 
-            if (FServerIPAddr == "")
+            if (FServerPort == "")
             {
                 // find entry for ClientManagerInterface in the RegisteredWellKnownClientTypes
                 // and extract the Server IP address from it
@@ -134,7 +138,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
                 }
             }
 
-            if (FServerIPAddr.Length == 0)
+            if (FServerPort.Length == 0)
             {
                 throw new ServerIPAddressNotFoundInConfigurationFileException(
                     "The IP Address of the PetraServer could " + "not be extracted from the .NET (Remoting) Configuration File (used '" +
