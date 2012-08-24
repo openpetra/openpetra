@@ -42,6 +42,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TFrmGLCostCentreHierarchy
     {
         private Int32 FLedgerNumber;
+        private bool FIAmDeleting = false;
         private bool FIAmUpdating;
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 PopulateTreeView();
             }
         }
-
+        
         private void RunOnceOnActivationManual()
         {
             FPetraUtilsObject.UnhookControl(pnlDetails, true); // I don't want changes in these values to cause SetChangedFlag - I'll set it myself.
@@ -87,7 +88,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             trvCostCentres.EndUpdate();
 
-            this.trvCostCentres.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewAfterSelect);
+            this.trvCostCentres.BeforeSelect += new TreeViewCancelEventHandler(TreeViewBeforeSelect);
+            this.trvCostCentres.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(TreeViewAfterSelect);
+        }
+
+        void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            if (!FIAmDeleting) 
+            {
+                if (!ValidateAllData(true, true))
+                {
+                    e.Cancel = true;
+                }                
+            }
         }
 
         private static String NodeLabel(ACostCentreRow ADetailRow)
@@ -318,7 +331,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     DeleteDataFromSelectedRow(FCurrentNode);
                     TreeNode SelectThisNode = FCurrentNode.Parent;
+                    FIAmDeleting = true;
                     trvCostCentres.Nodes.Remove(FCurrentNode);
+                    FIAmDeleting = false;
                     trvCostCentres.SelectedNode = SelectThisNode;
                 }
             }
@@ -326,7 +341,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private ACostCentreRow GetSelectedDetailRowManual()
         {
-            return (ACostCentreRow)FCurrentNode.Tag;
+            if (FCurrentNode != null) 
+            {
+                return (ACostCentreRow)FCurrentNode.Tag;    
+            }
+            else
+            {
+                return null;
+            }           
         }
 
         private void UpdateOnControlChanged(Object sender, EventArgs e)
@@ -337,6 +359,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
                 FPetraUtilsObject.SetChangedFlag();
             }
-        }
+        }        
     }
 }
