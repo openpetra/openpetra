@@ -167,7 +167,7 @@ useful parameters
         depends="csharp,nanttasks,webserver" />
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
-        depends="nanttasks,generateNamespaceMap,generateProjectFiles"/>
+        depends="generateProjectFiles"/>
 
 <target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
     <call target="generateTools"/>
@@ -209,7 +209,7 @@ useful parameters
   <call target="quickCompile"/>
 </target>
 
-<target name="generateProjectFiles">
+<target name="generateProjectFiles" depends="nanttasks,generateNamespaceMap">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateProjectFiles')}"/>
   <GenerateProjectFiles 
     CodeRootDir="${dir.csharp}"

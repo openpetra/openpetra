@@ -533,6 +533,11 @@ public class TAdminConsole
             new TAppSettingsManager();
             SilentSysadm = true;
 
+            if (TAppSettingsManager.HasValue("DebugLevel"))
+            {
+                TLogging.DebugLevel = TAppSettingsManager.GetInt32("DebugLevel");
+            }
+
             if ((!TAppSettingsManager.HasValue("Command") || (TAppSettingsManager.GetValue("Command") == "Stop")))
             {
                 SilentSysadm = false;
