@@ -423,7 +423,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((dtpDetailDateEffective.Date < StartDateCurrentPeriod) || (dtpDetailDateEffective.Date > EndDateLastForwardingPeriod))
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
-                            "The Date Effective is outside the allowable period range. Enter a date betweenn {0:d} and {1:d}."),
+                            "The Date Effective is outside the periods available for posting. Enter a date between {0:d} and {1:d}."),
                         StartDateCurrentPeriod,
                         EndDateLastForwardingPeriod));
 
