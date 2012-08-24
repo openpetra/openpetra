@@ -283,6 +283,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static DataTable GetUnreceiptedGifts(Int32 ALedgerNumber)
         {
             String SqlQuery = "SELECT DISTINCT " +
+                ALedgerNumber.ToString() + " As LedgerNumber," +
                 "a_receipt_number_i AS ReceiptNumber," +
                 "a_date_entered_d AS DateEntered," +
                 "p_partner_short_name_c AS Donor," +
@@ -304,23 +305,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// 
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AGiftTbl"></param>
-        /// <param name="AHTMLTemplateFilename"></param>
+        /// <param name="AGiftTbl">Custom table from GetUnreceiptedGifts, above</param>
         /// <returns>One or more HTML documents in a single string</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static string PrintOrRemoveReceipts(Int32 ALedgerNumber, DataTable AGiftTbl, string AHTMLTemplateFilename)
+        public static string PrintReceipts(DataTable AGiftTbl)
         {
             string HtmlDoc = "";
-
+            string HTMLTemplateFilename = "GiftReceipt.html";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
 
             foreach (DataRow Row in AGiftTbl.Rows)
             {
-                if (Row["Print"].Equals(true))
+                if (Row["Selected"].Equals(true))
                 {
                     SortedList<string, List<string>> FormValues = new SortedList<string, List<string>>();
 
@@ -405,7 +403,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     FormValues["DateEntered"].Add(Convert.ToDateTime(Row["DateEntered"]).ToString("dd MMM yyyy"));
                     FormValues["Reference"].Add(Row["Reference"].ToString());
                     AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
-                        ALedgerNumber, Convert.ToInt32(Row["BatchNumber"]), Convert.ToInt32(Row["TransactionNumber"]), Transaction);
+                        Convert.ToInt32(Row["LedgerNumber"]), Convert.ToInt32(Row["BatchNumber"]), Convert.ToInt32(Row["TransactionNumber"]), Transaction);
                     decimal GiftTotal = 0;
                     foreach (AGiftDetailRow DetailRow in DetailTbl.Rows)
                     {
@@ -456,7 +454,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     FormValues["GiftCurrency"].Add(Row["GiftCurrency"].ToString());
 
                     string PageHtml = TFormLettersTools.PrintSimpleHTMLLetter(
-                        TAppSettingsManager.GetValue("Formletters.Path") + "\\" + AHTMLTemplateFilename, FormValues);
+                        TAppSettingsManager.GetValue("Formletters.Path") + "\\" + HTMLTemplateFilename, FormValues);
 
                     if (HtmlDoc != "")
                     {
@@ -467,6 +465,46 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             DBAccess.GDBAccessObj.RollbackTransaction();
             return HtmlDoc;
+        }
+
+        /// <summary>Mark selected gifts as receipted
+        /// </summary>
+        /// <param name="AGiftTbl">Custom table from GetUnreceiptedGifts, above</param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MarkReceiptsPrinted(DataTable AGiftTbl)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            AGiftTable Tbl = new AGiftTable();
+
+            foreach (DataRow Row in AGiftTbl.Rows)
+            {
+
+                if (Row["Selected"].Equals(true))
+                {
+                    Tbl.Merge(AGiftAccess.LoadByPrimaryKey(
+                        Convert.ToInt32(Row["LedgerNumber"]), 
+                        Convert.ToInt32(Row["BatchNumber"]), 
+                        Convert.ToInt32(Row["TransactionNumber"]), 
+                        Transaction));
+                }
+            }
+
+            foreach (AGiftRow Row in Tbl.Rows)
+            {
+                Row.ReceiptPrinted = true;
+            }
+            TVerificationResultCollection SubmitResults;
+
+            bool CommitRes = AGiftAccess.SubmitChanges(Tbl, Transaction, out SubmitResults);
+            if (CommitRes)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            return CommitRes;
         }
     }
 }

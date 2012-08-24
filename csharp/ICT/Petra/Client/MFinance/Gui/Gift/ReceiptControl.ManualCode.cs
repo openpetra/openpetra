@@ -68,13 +68,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FGiftTbl = TRemote.MFinance.Gift.WebConnectors.GetUnreceiptedGifts(FLedgerNumber);
             FGiftTbl.Columns.Add("Selected", typeof(bool));
-            FGiftTbl.Columns.Add("Print", typeof(bool));
-            FGiftTbl.Columns.Add("Remove", typeof(bool));
             foreach (DataRow Row in FGiftTbl.Rows)
             {
                 Row["Selected"] = false;
-                Row["Print"] = false;
-                Row["Remove"] = false;
             }
 
             BoundDataView GiftsView = new BoundDataView(FGiftTbl.DefaultView);
@@ -105,19 +101,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             LoadUnreceiptedGifts();
         }
 
+        /// <summary>
+        /// Print this HTML file on the default printer (with no UI)
+        /// </summary>
+        /// <param name="AHtmlText"></param>
+        public static void PrintSinglePageLetter(String AHtmlText)
+        {
+            System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
+            TGfxPrinter GfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
+            TPrinterHtml htmlPrinter = new TPrinterHtml(AHtmlText,
+                TAppSettingsManager.GetValue("Formletters.Path"),
+                GfxPrinter);
+            GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
+            GfxPrinter.Document.Print();
+        }
+
         private void OnBtnPrint(Object sender, EventArgs e)
         {
-            foreach (DataRow Row in FGiftTbl.Rows)
-            {
-                if (Row["Selected"].Equals(true))
-                {
-                    Row["Print"] = true;
-                }
-            }
-
-            //
-            // The HTML string returned here may be several complete HTML documents, with "|PageBreak|" between each one.
-            string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintOrRemoveReceipts(FLedgerNumber, FGiftTbl, "GiftReceipt.en-GB.html");
             System.Drawing.Printing.PrintDocument Printer = new System.Drawing.Printing.PrintDocument();
             bool printerInstalled = Printer.PrinterSettings.IsValid;
 
@@ -127,19 +127,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            //
+            // The HTML string returned here may be several complete HTML documents, with "|PageBreak|" between each one.
+            string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(FGiftTbl);
             string[] HtmlPages = HtmlDoc.Split(new string[] { "|PageBreak|" }, StringSplitOptions.None);
 
             try
             {
-                foreach (string htmlPage in HtmlPages)
+                foreach (string HtmlPage in HtmlPages)
                 {
-                    System.Drawing.Printing.PrintDocument printDocument = new System.Drawing.Printing.PrintDocument();
-                    TGfxPrinter GfxPrinter = new TGfxPrinter(printDocument, TGfxPrinter.ePrinterBehaviour.eFormLetter);
-                    TPrinterHtml htmlPrinter = new TPrinterHtml(htmlPage,
-                        TAppSettingsManager.GetValue("Formletters.Path"),
-                        GfxPrinter);
-                    GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
-                    GfxPrinter.Document.Print();
+                    PrintSinglePageLetter(HtmlPage);
                 }
 
                 if (MessageBox.Show(
@@ -153,32 +150,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //
                 // These receipts that have been printed can now be marked in the database, so that they won't be printed again..
                 //
-                foreach (DataRow Row in FGiftTbl.Rows)
-                {
-                    Row["Print"] = false;
-                }
                 OnBtnRemove(sender, e);
-
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, Catalog.GetString("Receipt Printing"));
             }
-
-            
         }
 
         private void OnBtnRemove(Object sender, EventArgs e)
         {
-             foreach (DataRow Row in FGiftTbl.Rows)
-            {
-                if (Row["Selected"].Equals(true))
-                {
-                    Row["Remove"] = true;
-                }
-            }
-            TRemote.MFinance.Gift.WebConnectors.PrintOrRemoveReceipts(FLedgerNumber, FGiftTbl, "");
-           LoadUnreceiptedGifts();
+            bool CommitRes = TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(FGiftTbl);
+            LoadUnreceiptedGifts();
         }
 
         private void OnBtnClose(Object sender, EventArgs e)
