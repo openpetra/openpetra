@@ -205,11 +205,13 @@ useful parameters
     LimitToNamespaces="Ict.Common,Ict.Common.IO,Ict.Common.DB,Ict.Tools*"/>
   <nant inheritall="false" target="compile" 
         buildfile="csharp/ThirdParty/ThirdParty.build" />
-  <call target="generateProjectFiles"/>
+  <call target="generateProjectFilesInternal"/>
   <call target="quickCompile"/>
 </target>
 
-<target name="generateProjectFiles" depends="nanttasks,generateNamespaceMap">
+<target name="generateProjectFiles" depends="nanttasks,generateNamespaceMap,generateProjectFilesInternal"/>
+
+<target name="generateProjectFilesInternal">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateProjectFiles')}"/>
   <GenerateProjectFiles 
     CodeRootDir="${dir.csharp}"
