@@ -265,15 +265,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ((TFrmGLBatch)ParentForm).DisableAttributes();
             }
-            else
-            {
-                ((TFrmGLBatch)ParentForm).LoadAttributes(
-                    ARow.LedgerNumber,
-                    ARow.BatchNumber,
-                    ARow.JournalNumber,
-                    ARow.TransactionNumber
-                    );
-            }
         }
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)

@@ -72,7 +72,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // this will load the batches from the server
             RefreshFilter(null, null);
 
-            ((TFrmGLBatch) this.ParentForm).DisableJournals();
+            if (grdDetails.Rows.Count > 1)
+            {
+            	((TFrmGLBatch) this.ParentForm).EnableJournals();
+            }
+            else
+            {
+            	((TFrmGLBatch) this.ParentForm).DisableJournals();
+            }
+            
             ((TFrmGLBatch) this.ParentForm).DisableTransactions();
             ((TFrmGLBatch) this.ParentForm).DisableAttributes();
 
@@ -169,10 +177,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
-//                ((TFrmGLBatch)ParentForm).LoadJournals(
-//                    ARow.LedgerNumber,
-//                    ARow.BatchNumber);
-
                 FSelectedBatchNumber = ARow.BatchNumber;
             }
         }
@@ -255,6 +259,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchDescription.Focus();
 
             ((TFrmGLBatch)ParentForm).SaveChanges();
+            
+            //Enable the Journals if not already enabled
+            ((TFrmGLBatch)ParentForm).EnableJournals();
         }
 
         /// <summary>
@@ -756,12 +763,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
             	ClearDetailControls();
             	pnlDetails.Enabled = false;
+            	((TFrmGLBatch)this.ParentForm).DisableJournals();
+            	((TFrmGLBatch)this.ParentForm).DisableTransactions();
+            	((TFrmGLBatch)this.ParentForm).DisableAttributes();
             }
             else
             {
             	grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
             	InvokeFocusedRowChanged(1);
         		UpdateChangeableStatus(true);
+            	((TFrmGLBatch)this.ParentForm).EnableJournals();
             }
         }
 

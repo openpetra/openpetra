@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
+        private bool FBatchLoaded = false;
 
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
@@ -110,7 +111,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
             dtpDetailGlEffectiveDate.Date = DefaultDate;
 
+            if (grdDetails.Rows.Count > 1)
+            {
+            	((TFrmGiftBatch) this.ParentForm).EnableTransactions();
+            }
+            else
+            {
+            	((TFrmGiftBatch) this.ParentForm).DisableTransactions();
+            }
+            
             ShowData();
+            
+            FBatchLoaded = true;
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -125,6 +137,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
+			else if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+			{
+				return;
+			}
 
             ClearCurrentSelection();
 
@@ -184,12 +200,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (grdDetails.Rows.Count < 2)
             {
                 ClearControls();
+                ((TFrmGiftBatch)this.ParentForm).DisableTransactions();
             }
-            else
+            else if(FBatchLoaded == true)
             {
                 grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
 	            //FCurrentRow = 0; //necessary to force code execution in FocusRowChanged event
-                InvokeFocusedRowChanged(1);
+				InvokeFocusedRowChanged(1);
             }
 
             UpdateChangeableStatus();
@@ -228,7 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
 
-            ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
+            ((TFrmGiftBatch)ParentForm).EnableTransactions();
 
             UpdateChangeableStatus();
 
@@ -390,6 +407,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 //message to user
             }
+            
+            if (grdDetails.Rows.Count > 1)
+            {
+            	((TFrmGiftBatch)ParentForm).EnableTransactions();
+            }
+            else
+            {
+            	((TFrmGiftBatch)ParentForm).DisableTransactions();
+            }
+            
         }
 
         private void ClearControls()

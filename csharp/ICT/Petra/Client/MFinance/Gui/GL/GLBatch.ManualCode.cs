@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -123,6 +124,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.tpgJournals.Enabled = false;
         }
 
+        /// <summary>
+        /// Enable the journal tab if we have an active batch
+        /// </summary>
+        public void EnableJournals()
+        {
+            if (!this.tpgJournals.Enabled)
+            {
+            	this.tpgJournals.Enabled = true;	
+            }
+        	
+        }
+
         /// this window contains 4 tabs
         public enum eGLTabs
         {
@@ -145,30 +158,92 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
-            if (ATab == eGLTabs.Batches)
+        	//Save changes before switching tab
+        	if (!SaveChanges())
+        	{
+        		MessageBox.Show("Cannot change to a different tab until changes has been saved");
+        		return;
+        	};
+        	
+        	if (ATab == eGLTabs.Batches)
             {
-                this.tabGLBatch.SelectedTab = this.tpgBatches;
+            	TLogging.Log("Batches Tab");
+
+            	this.tabGLBatch.SelectedTab = this.tpgBatches;
+                this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
+                this.tpgTransactions.Enabled = false;
+				this.tpgAttributes.Enabled = false;
             }
             else if (ATab == eGLTabs.Journals)
             {
+            	TLogging.Log("Journals Tab: Enabled=" + this.tpgJournals.Enabled.ToString());
+
                 if (this.tpgJournals.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgJournals;
+                    
+                    this.ucoJournals.LoadJournals(
+	                    FLedgerNumber,
+	                    ucoBatches.GetSelectedDetailRow().BatchNumber);
+                    
+                    this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null);
+					this.tpgAttributes.Enabled = false;
                 }
             }
             else if (ATab == eGLTabs.Transactions)
             {
-                if (this.tpgTransactions.Enabled)
+            	TLogging.Log("Transactions Tab: Enabled=" + this.tpgTransactions.Enabled.ToString());
+
+            	if (this.tpgTransactions.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgTransactions;
+	                this.tpgAttributes.Enabled = true;
+                    
+	                this.ucoTransactions.LoadTransactions(
+	                    FLedgerNumber,
+	                    ucoJournals.GetSelectedDetailRow().BatchNumber,
+	                    ucoJournals.GetSelectedDetailRow().JournalNumber,
+	                    ucoJournals.GetSelectedDetailRow().TransactionCurrency);
+
+	                this.tpgAttributes.Enabled = (ucoTransactions.GetSelectedDetailRow() != null);
                 }
             }
             else if (ATab == eGLTabs.Attributes)
             {
-                if (this.tpgAttributes.Enabled)
+            	TLogging.Log("Attributes Tab: Enabled=" + this.tpgAttributes.Enabled.ToString());
+
+            	if (this.tpgAttributes.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgAttributes;
+
+                    this.ucoAttributes.LoadAttributes(
+	                    FLedgerNumber,
+	                    ucoTransactions.GetSelectedDetailRow().BatchNumber,
+	                    ucoTransactions.GetSelectedDetailRow().JournalNumber,
+	                    ucoTransactions.GetSelectedDetailRow().TransactionNumber
+	                    );
                 }
+            }
+            
+        }
+
+        private void SelectTabManual(int ASelectedTabIndex)
+        {
+            if (ASelectedTabIndex == (int)eGLTabs.Batches)
+            {
+                SelectTab(eGLTabs.Batches);
+            }
+            else if (ASelectedTabIndex == (int)eGLTabs.Journals)
+            {
+            	SelectTab(eGLTabs.Journals);
+            }
+            else if (ASelectedTabIndex == (int)eGLTabs.Transactions)
+            {
+                SelectTab(eGLTabs.Transactions);
+            }
+            else  //eGLTabs.Attributes
+            {
+            	SelectTab(eGLTabs.Attributes);
             }
         }
 

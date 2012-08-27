@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
         public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = "unposted", bool AFromTabClick = true)
         {
-            this.tpgTransactions.Enabled = true;
+            //this.tpgTransactions.Enabled = true;
             FPetraUtilsObject.DisableDataChangedEvent();
             this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
             FPetraUtilsObject.EnableDataChangedEvent();
@@ -140,10 +140,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// enable the transaction tab page
-        public void EnableTransactionsTab()
+        public void EnableTransactions()
         {
             this.tpgTransactions.Enabled = true;
         }
+        
+		/// <summary>
+        /// disable the transactions tab if we have no active journal
+        /// </summary>
+        public void DisableTransactions()
+        {
+            this.tpgTransactions.Enabled = false;
+        }
+
 
         /// <summary>
         /// directly access the batches control
@@ -175,7 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SelectTabManual(int ASelectedTabIndex)
         {
-            if (ASelectedTabIndex == (int)eGiftTabs.Batches)
+        	if (ASelectedTabIndex == (int)eGiftTabs.Batches)
             {
                 SelectTab(eGiftTabs.Batches);
             }
@@ -192,7 +201,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFromTabClick"></param>
         public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
         {
-            if (FChangeTabEventHasRun && AFromTabClick)
+        	if (!SaveChanges())
+            {
+            	return;
+            }
+        	
+        	if (FChangeTabEventHasRun && AFromTabClick)
             {
                 FChangeTabEventHasRun = false;
                 return;
@@ -209,6 +223,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 }
+                
+                this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
             }
             else if (ATab == eGiftTabs.Transactions)
             {

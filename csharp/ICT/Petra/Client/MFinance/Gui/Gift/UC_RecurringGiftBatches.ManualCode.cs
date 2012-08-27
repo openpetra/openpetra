@@ -132,8 +132,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            this.CreateNewARecurringGiftBatch();
-            txtDetailBatchDescription.Focus();
+            if (((TFrmRecurringGiftBatch)this.ParentForm).SaveChanges())
+	        {
+				this.CreateNewARecurringGiftBatch();
+            	txtDetailBatchDescription.Focus();
+            	
+            	//Save the new record
+            	((TFrmRecurringGiftBatch)this.ParentForm).SaveChanges();
+    	    }
+
         }
 
         /// <summary>
@@ -148,13 +155,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
                 MessageBox.Show(Catalog.GetString("No recurring gift batch is selected to delete."),
-                    Catalog.GetString("Cancelling of Recurring Gift Batch"));
+                    Catalog.GetString("Deleting Recurring Gift Batch"));
                 return false;
             }
             else
             {
                 // ask if the user really wants to cancel the batch
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to cancel Recurring Gift Batch no: {0} ?"),
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring Gift Batch no: {0} ?"),
                     ARowToDelete.BatchNumber);
                 return true;
             }
@@ -178,10 +185,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             try
             {
                 //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
+                ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
                     ARowToDelete.BatchNumber);
 
                 ARowToDelete.Delete();
+                
+                //ARowToDelete = null;
 
                 deletionSuccessful = true;
             }
@@ -230,6 +239,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 //message to user
             }
+            
+            if (grdDetails.Rows.Count > 1)
+            {
+            	((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
+            }
+            else
+            {
+            	((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
+            }
+            
         }
 
         private void ClearControls()
