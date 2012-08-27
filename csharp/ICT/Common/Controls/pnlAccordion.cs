@@ -285,7 +285,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                FCurrentTaskList = new TLstTasks((XmlNode)tag);
+                FCurrentTaskList = new TLstTasks((XmlNode)tag, FDashboard.TaskAppearance);
 //TLogging.Log("LinkClicked for NEW " + FCurrentTaskList.Name);
                 ((Control)sender).Tag = FCurrentTaskList;
             }

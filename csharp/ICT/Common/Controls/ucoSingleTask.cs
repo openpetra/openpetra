@@ -44,6 +44,11 @@ namespace Ict.Common.Controls
     }
 
     /// <summary>
+    /// Request for loading of the same Icon that is currently shown as Task Image, but in a different size.
+    /// </summary>
+    public delegate Image TRequestForDifferentIconSize(string ATaskImagePath, TIconCache.TIconSize AIconSize);    
+    
+    /// <summary>
     /// Represents an individual Task (of many) in a Task List.
     /// </summary>
     public partial class TUcoSingleTask : UserControl
@@ -55,6 +60,9 @@ namespace Ict.Common.Controls
         int FMaxTaskHeight;
         TUcoTaskGroup FTaskGroup;
         TaskAppearance FSingleTaskAppearance = TaskAppearance.staLargeTile;
+        string FTaskImagePath = null;
+        Image FTaskImageSmallSizeCache = null;
+        Image FTaskImageLargeSizeCache = null;
 
         /// <summary>
         /// Constructor.
@@ -70,6 +78,9 @@ namespace Ict.Common.Controls
             FMaxTaskHeight = this.Height;
         }
 
+        /// <summary>Event that signalises that a different Icon size needs to be loaded for this Task.</summary>
+        public event TRequestForDifferentIconSize RequestForDifferentIconSize;
+        
         #region Properties
 
         /// <summary>
@@ -134,6 +145,38 @@ namespace Ict.Common.Controls
             {
                 FSingleTaskAppearance = value;
 
+                if ((TaskImage != null)
+                    && (FSingleTaskAppearance == TaskAppearance.staListEntry))
+                {
+                    if (FTaskImageSmallSizeCache == null)
+                    {
+                        if (RequestForDifferentIconSize != null) 
+                        {
+                            TaskImage = RequestForDifferentIconSize(FTaskImagePath, TIconCache.TIconSize.is16by16);    
+                        }
+                    }
+                    else
+                    {
+                        pnlBackground.Image = FTaskImageSmallSizeCache;
+                    }
+                }
+
+                if ((TaskImage != null)
+                    && (FSingleTaskAppearance == TaskAppearance.staLargeTile))
+                {
+                    if (FTaskImageLargeSizeCache == null)
+                    {
+                        if (RequestForDifferentIconSize != null) 
+                        {
+                            TaskImage = RequestForDifferentIconSize(FTaskImagePath, TIconCache.TIconSize.is32by32);
+                        }
+                    }
+                    else
+                    {
+                        pnlBackground.Image = FTaskImageLargeSizeCache;
+                    }
+                }
+                
                 UpdateTaskAppearance();
                 UpdateLayout();
             }
@@ -182,8 +225,10 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Icon to be displayed left of the Task Title LinkLabel.
+        /// Icon that is displayed left of the Task Title LinkLabel.
         /// </summary>
+        /// <remarks><em>Set <see cref="TaskAppearance" /> before assiging
+        /// this Property!</em></remarks>
         public Image TaskImage
         {
             get
@@ -193,7 +238,19 @@ namespace Ict.Common.Controls
 
             set
             {
-                pnlBackground.Image = value;
+                pnlBackground.Image = value;                
+                
+                if (value != null) 
+                {
+                    if(FSingleTaskAppearance == TaskAppearance.staListEntry)
+                    {
+                        FTaskImageSmallSizeCache = pnlBackground.Image;
+                    }
+                    else
+                    {
+                        FTaskImageLargeSizeCache = pnlBackground.Image;
+                    }
+                }
 
                 if (!FTaskIndentedIfNoTaskImage)
                 {
@@ -204,6 +261,21 @@ namespace Ict.Common.Controls
                 {
                     pnlIconSpacer.Visible = true;
                 }
+            }
+        }
+        
+        /// <summary>
+        /// File path of the Icon that is displayed left of the Task Title LinkLabel.
+        /// </summary>
+        public string TaskImagePath
+        {
+            get
+            {
+                return FTaskImagePath;
+            }
+            set
+            {
+                FTaskImagePath = value; 
             }
         }
 
@@ -413,8 +485,15 @@ namespace Ict.Common.Controls
             {
                 pnlBackground.ImageLocation = new Point(8, 11);
 
-                pnlIconSpacer.Width = pnlBackground.Image.Width + 12;
-                pnlIconSpacer.Height = pnlBackground.Image.Height + 12;
+                if (pnlBackground.Image != null) 
+                {
+                    pnlIconSpacer.Width = pnlBackground.Image.Width + 12;
+                    pnlIconSpacer.Height = pnlBackground.Image.Height + 12;                   
+                }
+                else
+                {
+                    pnlIconSpacer.Size = new Size(0,0);
+                }
 
                 llbTaskTitle.Padding = new Padding(0, 2, 0, 0);
             }
@@ -422,8 +501,15 @@ namespace Ict.Common.Controls
             {
                 pnlBackground.ImageLocation = new Point(5, 4);
 
-                pnlIconSpacer.Width = pnlBackground.Image.Width + 5;
-                pnlIconSpacer.Height = pnlBackground.Image.Height + 8;
+                if (pnlBackground.Image != null) 
+                {                
+                    pnlIconSpacer.Width = pnlBackground.Image.Width + 5;
+                    pnlIconSpacer.Height = pnlBackground.Image.Height + 8;
+                }
+                else
+                {
+                    pnlIconSpacer.Size = new Size(0,0);
+                }
 
                 llbTaskTitle.Padding = new Padding(0, 3, 0, 0);
             }
@@ -433,7 +519,7 @@ namespace Ict.Common.Controls
         {
             return TextRenderer.MeasureText(llbTaskTitle.Text, llbTaskTitle.Font);
         }
-
+ 
         void DoubleClickAnywhere(object sender, EventArgs e)
         {
             FireTaskClicked();

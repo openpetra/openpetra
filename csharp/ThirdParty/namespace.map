@@ -32,6 +32,7 @@ System.Web.Script.Services=${csharpStdLibs}/System.Web.Extensions.dll
 System.Web*=${csharpStdLibs}/System.Web.dll
 System.Windows.Forms=${csharpStdLibs}/System.Windows.Forms.dll
 System.Xml=${csharpStdLibs}/System.Xml.dll
+System.Runtime.Caching=${csharpStdLibs}/System.Runtime.Caching.dll
 Microsoft.Win32=${csharpStdLibs}/System.dll
 Microsoft.CSharp=${csharpStdLibs}/Microsoft.CSharp.dll
 # System* must always be last
