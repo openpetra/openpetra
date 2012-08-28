@@ -643,7 +643,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             TClientInfo.InitializeUnit();
             TCacheableTablesManager.InitializeUnit();
-            TIconCache Cache = new TIconCache("IconCache", new NameValueCollection());
+            new TIconCache("IconCache", new NameValueCollection());
 
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
