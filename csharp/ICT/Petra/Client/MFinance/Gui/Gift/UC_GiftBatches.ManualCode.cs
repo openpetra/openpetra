@@ -239,7 +239,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
-            FLedgerNumber = ARow.LedgerNumber;
+            if (ARow == null)
+            {
+            	return;
+            }
+            
+        	FLedgerNumber = ARow.LedgerNumber;
             FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode =
