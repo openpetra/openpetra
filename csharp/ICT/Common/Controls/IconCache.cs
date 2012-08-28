@@ -62,7 +62,7 @@ namespace Ict.Common.Controls
 
         /// <summary>True if the last requested Icon was returned from the Cache.</summary>
         private static bool FLastIconRequestedWasReturnedFromCache = false;
-        
+
         /// <summary>
         /// Constructor. Simply calls the base constructor.
         /// </summary>
@@ -83,7 +83,7 @@ namespace Ict.Common.Controls
                 return FLastIconRequestedWasReturnedFromCache;
             }
         }
-        
+
         /// <summary>
         /// Adds an Icon into the Cache.
         /// </summary>
@@ -119,12 +119,12 @@ namespace Ict.Common.Controls
         public Bitmap AddOrGetExistingIcon(string AFileName, TIconSize AIconSize)
         {
             Bitmap ReturnValue = null;
-            
+
             if (!ContainsIcon(AFileName))
             {
                 AddIcon(AFileName);
                 ReturnValue = GetIcon(AFileName, AIconSize);
-                
+
                 FLastIconRequestedWasReturnedFromCache = false;
             }
             else
@@ -158,15 +158,15 @@ namespace Ict.Common.Controls
                 if (TheItem != null)
                 {
                     TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!
-                    
+
                     FLastIconRequestedWasReturnedFromCache = true;
-                    
+
                     return new System.Drawing.Icon(TheItem, IconSize).ToBitmap();
                 }
                 else
                 {
                     FLastIconRequestedWasReturnedFromCache = false;
-                    
+
                     throw new EIconNotInCacheException(String.Format(
                             "Icon with path {0} not yet loaded into cache; add it to the cache with AddIcon Method first", AFileName));
                 }

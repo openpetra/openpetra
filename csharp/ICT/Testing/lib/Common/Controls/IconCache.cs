@@ -52,7 +52,7 @@ namespace Tests.Common.Controls
             Catalog.Init();
             new TLogging("test.log");
         }
-        
+
         /// <summary>
         /// Testing the Icon Cache Class.
         /// </summary>
@@ -60,53 +60,56 @@ namespace Tests.Common.Controls
         public void TestIconCache()
         {
             Image TestImage;
-            
+
             new TIconCache("IconCache", new NameValueCollection());
 
 
             // Icon #1 (contains both 16x16 pixel and 32x32 pixel version of the same icon)
-            Assert.IsFalse(TIconCache.IconCache.ContainsIcon(DEMOICON1_PATH), "IconCache: Must not contain Icon " + DEMOICON1_PATH);            
-            
+            Assert.IsFalse(TIconCache.IconCache.ContainsIcon(DEMOICON1_PATH), "IconCache: Must not contain Icon " + DEMOICON1_PATH);
+
             TestImage = TIconCache.IconCache.AddOrGetExistingIcon(
                 DEMOICON1_PATH, TIconCache.TIconSize.is32by32);
 
-            Assert.IsFalse(TIconCache.IconCache.LastIconRequestedWasReturnedFromCache, "IconCache: Icon must not have been returned from Cache: " + DEMOICON1_PATH);
-                           
+            Assert.IsFalse(TIconCache.IconCache.LastIconRequestedWasReturnedFromCache,
+                "IconCache: Icon must not have been returned from Cache: " + DEMOICON1_PATH);
+
             Assert.IsNotNull(TestImage, "IconCache: TestImage must be returned (#1)");
-            
+
             Assert.IsTrue((TestImage.Size.Width == 32)
                 && (TestImage.Size.Height == 32), "TestImage must be 32x32 Pixels");
-            
+
             Assert.IsTrue(TIconCache.IconCache.ContainsIcon(DEMOICON1_PATH), "IconCache: Must contain Icon " + DEMOICON1_PATH);
-            
+
             TestImage = TIconCache.IconCache.AddOrGetExistingIcon(
                 DEMOICON1_PATH, TIconCache.TIconSize.is16by16);
 
-            Assert.IsTrue(TIconCache.IconCache.LastIconRequestedWasReturnedFromCache, "IconCache: Icon must have been returned from Cache: " + DEMOICON1_PATH);
-            
+            Assert.IsTrue(TIconCache.IconCache.LastIconRequestedWasReturnedFromCache,
+                "IconCache: Icon must have been returned from Cache: " + DEMOICON1_PATH);
+
             Assert.IsTrue((TestImage.Size.Width == 16)
-                && (TestImage.Size.Height == 16), "TestImage must be 16x16 Pixels");            
-            
+                && (TestImage.Size.Height == 16), "TestImage must be 16x16 Pixels");
+
 
             // Icon #2 (contains only 16x16 pixel icon)
             Assert.IsFalse(TIconCache.IconCache.ContainsIcon(DEMOICON2_PATH), "IconCache: Must not contain Icon " + DEMOICON2_PATH);
-            
+
             TIconCache.IconCache.AddIcon(DEMOICON2_PATH);
 
             Assert.IsTrue(TIconCache.IconCache.ContainsIcon(DEMOICON2_PATH), "IconCache: Must contain Icon " + DEMOICON2_PATH);
-            
+
             TestImage = TIconCache.IconCache.GetIcon(DEMOICON2_PATH, TIconCache.TIconSize.is32by32);
-            
-            Assert.IsTrue(TIconCache.IconCache.LastIconRequestedWasReturnedFromCache, "IconCache: Icon must have been returned from Cache: " + DEMOICON2_PATH);
-            
+
+            Assert.IsTrue(TIconCache.IconCache.LastIconRequestedWasReturnedFromCache,
+                "IconCache: Icon must have been returned from Cache: " + DEMOICON2_PATH);
+
             Assert.IsNotNull(TestImage, "IconCache: TestImage must be returned (#2)");
-            
-            // Check fallback: we requested a 32x32 pixel icon, but this is not available - therefore the closest match 
+
+            // Check fallback: we requested a 32x32 pixel icon, but this is not available - therefore the closest match
             // (16x16 pixels icon) must be returned
             Assert.IsTrue((TestImage.Size.Width == 16)
                 && (TestImage.Size.Height == 16), "Check fallback: TestImage must be 16x16 Pixels");
         }
-        
+
         /// <summary>
         /// Testing the Icon Cache Class - trowing of EIconNotInCacheException.
         /// </summary>
