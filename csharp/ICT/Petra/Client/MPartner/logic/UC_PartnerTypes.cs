@@ -420,6 +420,8 @@ namespace Ict.Petra.Client.MPartner
                 /*
                  * Check if this change could be applied to Family Members
                  */
+// TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
+#if TODO               
                 if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) == TPartnerClass.FAMILY)
                 {
                     if (HasFamilyFamilyMembers())
@@ -437,6 +439,7 @@ namespace Ict.Petra.Client.MPartner
                         }
                     }
                 }
+#endif                
             }
             catch (Exception E)
             {
