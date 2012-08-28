@@ -76,7 +76,10 @@ namespace Ict.Petra.Client.MPartner
         private DataView FDataCache_PartnerTypeListDV;
         private TSgrdDataGrid FDataGrid;
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
+// TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
+#if TODO               
         private TDelegatePartnerTypePropagationSelection FDelegatePartnerTypePropagationSelection;
+#endif        
         private CustomValueChangedEvent FGridValueChangedEvent;
 
         #region Properties
@@ -587,7 +590,8 @@ namespace Ict.Petra.Client.MPartner
 
             return ReturnValue;
         }
-
+// TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
+#if TODO               
         /// <summary>
         /// todoComment
         /// </summary>
@@ -596,7 +600,7 @@ namespace Ict.Petra.Client.MPartner
         {
             FDelegatePartnerTypePropagationSelection = ADelegate;
         }
-
+#endif
         /// <summary>
         /// todoComment
         /// </summary>
