@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MPartner.Verification
                     && (AMainDS.PPartner[0].HasVersion(DataRowVersion.Original)))
                 {
                     if (AMainDS.PPartnerType != null)
-                    {                    
+                    {
                         if (AMainDS.PPartnerType.Rows.Find(new Object[] { AMainDS.PPartner[0].PartnerKey, "LEDGER" }) != null)
                         {
                             ApprovalFromIFC = MessageBox.Show(StrFundnameChange,
@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MPartner.Verification
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Question,
                                 MessageBoxDefaultButton.Button2);
-    
+
                             if (ApprovalFromIFC == System.Windows.Forms.DialogResult.No)
                             {
                                 AVerificationResult = new TVerificationResult("",
