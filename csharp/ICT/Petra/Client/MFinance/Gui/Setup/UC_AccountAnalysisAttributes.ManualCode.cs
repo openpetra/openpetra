@@ -192,53 +192,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDetailDataFromControlsManual(AAnalysisAttributeRow ARow)
         {
-/*
- * I'm no longer doing this, because the new Validation code means that I need to have sorted
- * the unique value constraint problem before I get to here. I just need to load the value from the combo.
- * 
-            // I need to check whether this row will break a DB constraint.
-
-            // The row is being edited right now, (It's in a BeginEdit ... EndEdit bracket) so it doesn't show up in the DefaultView.
-            // I need to call EndEdit, but I'll give this row a "safe" value first.
-
-            string TempEdit = ARow.AnalysisTypeCode;
-
-            ARow.AnalysisTypeCode = "temp_edit";
-            ARow.EndEdit();
-
-            string FilterString = String.Format("{0}={3} and {1}='{4}' and {2}='{5}'",
-                AAnalysisAttributeTable.GetLedgerNumberDBName(),
-                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
-                AAnalysisAttributeTable.GetAccountCodeDBName(),
-                FLedgerNumber,
-                TempEdit,
-                FAccountCode);
-            FMainDS.AAnalysisAttribute.DefaultView.RowFilter = FilterString;
-//            TLogging.Log("Check for unique TypeCode (" + TempEdit + ") : " + FMainDS.AAnalysisAttribute.DefaultView.Count + " Matches.");
-            Boolean MustReplaceName = (FMainDS.AAnalysisAttribute.DefaultView.Count > 0);
-
-            FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
-                AAnalysisAttributeTable.GetLedgerNumberDBName(),
-                FLedgerNumber,
-                AAnalysisAttributeTable.GetAccountCodeDBName(),
-                FAccountCode);
-
-            ARow.BeginEdit();
-
-            if (MustReplaceName)
-            {
-                ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
-//                TLogging.Log("Replace name: " + ARow.AnalysisTypeCode);
-            }
-            else
-            {
-                ARow.AnalysisTypeCode = TempEdit;
-//                TLogging.Log("Keep name: " + ARow.AnalysisTypeCode);
-            }
- */
             if (ARow != null) // Why would it ever be null!
             {
-                ARow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
+                // I need to check whether this row will break a DB constraint.
+
+                // The row is being edited right now, (It's in a BeginEdit ... EndEdit bracket) so it doesn't show up in the DefaultView.
+                // I need to call EndEdit, but I'll give this row a "safe" value first.
+
+                string TempEdit = cmbDetailAnalTypeCode.Text;
+                string PreviousValue = ARow.AnalysisTypeCode;
+                ARow.AnalysisTypeCode = "temp_edit";
+                ARow.EndEdit();
+
+                string FilterString = String.Format("{0}={3} and {1}='{4}' and {2}='{5}'",
+                    AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                    AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                    AAnalysisAttributeTable.GetAccountCodeDBName(),
+                    FLedgerNumber,
+                    TempEdit,
+                    FAccountCode);
+                FMainDS.AAnalysisAttribute.DefaultView.RowFilter = FilterString;
+    //            TLogging.Log("Check for unique TypeCode (" + TempEdit + ") : " + FMainDS.AAnalysisAttribute.DefaultView.Count + " Matches.");
+                Boolean MustReplaceName = (FMainDS.AAnalysisAttribute.DefaultView.Count > 0);
+
+                FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    AAnalysisAttributeTable.GetAccountCodeDBName(),
+                    FAccountCode);
+
+                ARow.BeginEdit();
+
+                if (MustReplaceName)
+                {
+                    ARow.AnalysisTypeCode = PreviousValue;
+                    cmbDetailAnalTypeCode.Text = PreviousValue;
+    //                TLogging.Log("Replace name: " + ARow.AnalysisTypeCode);
+                }
+                else
+                {
+                    ARow.AnalysisTypeCode = TempEdit;
+    //                TLogging.Log("Keep name: " + ARow.AnalysisTypeCode);
+                }
             }
         }
 

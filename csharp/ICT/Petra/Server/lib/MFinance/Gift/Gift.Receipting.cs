@@ -319,6 +319,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ALocalCountryCode">If the addressee's country is the same as this, it won't be printed on the address label.</param>
         /// <param name="ATransaction">This can be read-only - nothing is written to the DB.</param>
         /// <returns>Complete (simple) HTML file</returns>
+        [NoRemoting]
         public static string FormatHtmlReceipt(
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
