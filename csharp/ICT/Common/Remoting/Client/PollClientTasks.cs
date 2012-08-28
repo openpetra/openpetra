@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -119,7 +119,7 @@ namespace Ict.Common.Remoting.Client
                 {
                     // Make PollClientTasks call to Server to keep the Client's remoted objects
                     // and it's AppDomain alive.
-                    // The value of the AClientTasksDataTable parameter is always nil, except when
+                    // The value of the AClientTasksDataTable parameter is always null, except when
                     // the Server has a queued ClientTask that the Client needs to read.
                     // $IFDEF DEBUGMODE TLogging.Log('Calling PollClientTasks...' , [ToLogFile]); $ENDIF
                     ClientTasksDataTable = FRemotePollClientTasks.PollClientTasks();
@@ -129,7 +129,7 @@ namespace Ict.Common.Remoting.Client
                         // MessageBox.Show('Client Tasks Table has ' + (ClientTasksDataTable.Rows.Count).ToString + ' entries!');
                         // Queue new ClientTasks and execute them.
                         // This is done in a separate Thread to make sure the PollClientTasks thread can run
-                        // without the risk of beeing interrupted!
+                        // without the risk of being interrupted!
                         ClientTasksQueueInstance = new TClientTasksQueue(FClientID, ClientTasksDataTable);
                         ClientTaskQueueThread = new Thread(new ThreadStart(ClientTasksQueueInstance.QueueClientTasks));
                         ClientTaskQueueThread.Start();

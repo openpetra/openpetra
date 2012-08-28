@@ -281,7 +281,8 @@ namespace Ict.Common.Remoting.Server
                     Catalog.GetString("  ID | Client          | Status           | Computer    | IP Address      | Type") +
                     Environment.NewLine +
                     "----+-----------------+------------------+-------------+-----------------+-----" +
-                    Catalog.GetString("     | Connected since | Last activity    |             |                 |");
+                    Catalog.GetString("     | Connected since | Last activity    |             |                 |") +
+                    Environment.NewLine;
 
                 if (AListDisconnectedClients)
                 {
@@ -856,14 +857,13 @@ namespace Ict.Common.Remoting.Server
                                 && ((AppDomainEntry.AppDomainStatus == TAppDomainStatus.adsActive)
                                     || (AppDomainEntry.AppDomainStatus == TAppDomainStatus.adsIdle)))
                             {
-#if DEBUGMODE
                                 if (TLogging.DL >= 5)
                                 {
                                     Console.WriteLine(
                                         "TClientManager.QueueClientTask: queuing Task for UserID '" + AUserID + "' (ClientID: " +
                                         AppDomainEntry.ClientID.ToString());
                                 }
-#endif
+
                                 ReturnValue = QueueClientTask(AppDomainEntry.ClientID,
                                     ATaskGroup,
                                     ATaskCode,
@@ -1294,7 +1294,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// name for the cross domain url
-        public static string CROSSDOMAINURL = "services.rem";
+        public static string CROSSDOMAINURL = "services";
 
         /// <summary>
         /// Called by a Client to request connection to the Petra Server.
@@ -1348,7 +1348,6 @@ namespace Ict.Common.Remoting.Server
 
             ACrossDomainURL = CROSSDOMAINURL;
 
-#if DEBUGMODE
             if (TLogging.DL >= 10)
             {
                 TLogging.Log(
@@ -1360,7 +1359,6 @@ namespace Ict.Common.Remoting.Server
                     TLogging.Log(tmpAssembly.FullName, TLoggingType.ToConsole | TLoggingType.ToLogfile);
                 }
             }
-#endif
 
             /*
              * Every Client Connection request is coming in in a separate Thread
@@ -1373,13 +1371,12 @@ namespace Ict.Common.Remoting.Server
                 if (Monitor.TryEnter(UConnectClientMonitor, TSrvSetting.ClientConnectionTimeoutAfterXSeconds * 1000))
                 {
                     #region Logging
-#if DEBUGMODE
+
                     if (TLogging.DL >= 4)
                     {
                         Console.WriteLine(FormatClientList(false));
                         Console.WriteLine(FormatClientList(true));
                     }
-#endif
 
                     if (TLogging.DL >= 4)
                     {
@@ -1415,14 +1412,13 @@ namespace Ict.Common.Remoting.Server
                     }
 
                     #region Client Version vs. Server Version check
-#if DEBUGMODE
+
                     if (TLogging.DL >= 9)
                     {
                         Console.WriteLine(
                             "Client EXE Program Version: " + AClientExeVersion.ToString() + "; Server EXE Program Version: " +
                             TSrvSetting.ApplicationVersion.ToString());
                     }
-#endif
 
                     if (TSrvSetting.ApplicationVersion.Compare(new TFileVersionInfo(AClientExeVersion)) != 0)
                     {
@@ -1508,7 +1504,7 @@ namespace Ict.Common.Remoting.Server
                         ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsStopped;
                         throw;
                     }
-#if DEBUGMODE
+
                     if (TLogging.DL >= 10)
                     {
                         TLogging.Log(
@@ -1520,7 +1516,7 @@ namespace Ict.Common.Remoting.Server
                             TLogging.Log(tmpAssembly.FullName, TLoggingType.ToConsole | TLoggingType.ToLogfile);
                         }
                     }
-#endif
+
                     #region Create new AppDomain for Client, load ClientDomain DLL into it, initialise AppDomain
                     try
                     {
@@ -1529,7 +1525,7 @@ namespace Ict.Common.Remoting.Server
                             // The following statement creates a new AppDomain for the connecting
                             // Client and remotes an instance of TRemoteLoader into it.
                             ClientDomainManager = UClientDomainManager.CreateAppDomain(AClientName);
-#if DEBUGMODE
+
                             if (TLogging.DL >= 10)
                             {
                                 TLogging.Log(
@@ -1542,8 +1538,6 @@ namespace Ict.Common.Remoting.Server
                                     TLogging.Log(tmpAssembly.FullName, TLoggingType.ToConsole | TLoggingType.ToLogfile);
                                 }
                             }
-                            // Console.ReadLine;
-#endif
 
                             // The following statement loads the ClientDomain DLL into the Client's
                             // AppDomain, instantiates the main Class and initialises the AppDomain
@@ -1591,7 +1585,7 @@ namespace Ict.Common.Remoting.Server
                         throw;
                     }
                     #endregion
-#if DEBUGMODE
+
                     if (TLogging.DL >= 10)
                     {
                         TLogging.Log(
@@ -1604,7 +1598,7 @@ namespace Ict.Common.Remoting.Server
                             TLogging.Log(tmpAssembly.FullName, TLoggingType.ToConsole | TLoggingType.ToLogfile);
                         }
                     }
-#endif
+
                     ((TRunningAppDomain)UClientObjects[(object)AClientID]).PassInClientRemotingInfo(RemotingURL_RemotedObject,
                         ClientDomainManager);
                     ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsConnectingAppDomainSetupOK;
@@ -1699,12 +1693,11 @@ namespace Ict.Common.Remoting.Server
 
             ACantDisconnectReason = "";
 
-#if DEBUGMODE
             if (TLogging.DL >= 4)
             {
                 TLogging.Log("Trying to disconnect client (ClientID: " + AClientID.ToString() + ") for the reason: " + AReason);
             }
-#endif
+
             AppDomainEntry = (TRunningAppDomain)UClientObjects[(object)AClientID];
 
             if (AppDomainEntry == null)
