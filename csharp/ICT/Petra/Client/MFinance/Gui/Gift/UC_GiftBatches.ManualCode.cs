@@ -494,24 +494,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
                 //Select unposted batch row in same index position as batch just posted
-                if (grdDetails.Rows.Count > 1)
-                {
-                    //If last row just deleted, select row at old position - 1
-                    if (newCurrentRowPos == grdDetails.Rows.Count)
-                    {
-                        newCurrentRowPos--;
-                    }
+                InvokeFocusedRowChanged(newCurrentRowPos);
 
-                    grdDetails.Selection.ResetSelection(false);
-                    grdDetails.SelectRowInGrid(newCurrentRowPos);
-                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-                    ShowDetails(FPreviouslySelectedDetailRow);
-                }
-                else
+				if (grdDetails.Rows.Count < 2)
                 {
-                    FPreviouslySelectedDetailRow = null;
                     ClearControls();
+                    ((TFrmGiftBatch)this.ParentForm).DisableTransactions();
                 }
             }
         }
