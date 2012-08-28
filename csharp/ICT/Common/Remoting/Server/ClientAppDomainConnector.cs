@@ -542,7 +542,7 @@ namespace Ict.Common.Remoting.Server
         /// <param name="ACacheableTablesManagerRef"></param>
         /// <param name="AUserInfo">An instantiated PetraPrincipal Object, containing User
         /// information</param>
-        /// <param name="ARemotingURLPollClientTasks">he .NET Remoting URL of the
+        /// <param name="ARemotingURLPollClientTasks">the .NET Remoting URL of the
         /// TPollClientTasks Class which the Client needs to calls to retrieve
         /// ClientTasks.</param>
         /// <returns>void</returns>

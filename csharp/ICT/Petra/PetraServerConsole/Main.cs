@@ -59,7 +59,6 @@ public class TServer
     }
 
     private TServerManager TheServerManager;
-    private TCrossDomainMarshaller TheCrossDomainMarshaller;
 
     /// <summary>
     /// Starts the Petra Server.
@@ -113,9 +112,6 @@ public class TServer
                 throw;
             }
 
-            TheCrossDomainMarshaller = new TCrossDomainMarshaller();
-            RemotingServices.Marshal(TheCrossDomainMarshaller, TClientManager.CROSSDOMAINURL);
-
             //
             // Remote the remoteable objects
             //
@@ -152,6 +148,8 @@ public class TServer
                         "Servermanager", WellKnownObjectMode.Singleton);
                     RemotingConfiguration.RegisterWellKnownServiceType(typeof(Ict.Common.Remoting.Server.TClientManager),
                         "Clientmanager", WellKnownObjectMode.Singleton);
+                    RemotingConfiguration.RegisterWellKnownServiceType(typeof(TCrossDomainMarshaller),
+                        TClientManager.CROSSDOMAINURL, WellKnownObjectMode.Singleton);
 
                     LifetimeServices.LeaseTime = TimeSpan.FromSeconds(TAppSettingsManager.GetDouble("LifetimeServices.LeaseTimeInSeconds", 5.0f));
                     LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(TAppSettingsManager.GetDouble("LifetimeServices.RenewOnCallTime", 5.0f));
@@ -170,6 +168,9 @@ public class TServer
                     {
                         RemotingConfiguration.Configure(TheServerManager.ConfigurationFileName, false);
                     }
+
+                    RemotingConfiguration.RegisterWellKnownServiceType(typeof(TCrossDomainMarshaller),
+                        TClientManager.CROSSDOMAINURL, WellKnownObjectMode.Singleton);
                 }
             }
             catch (RemotingException rex)
@@ -177,7 +178,7 @@ public class TServer
                 if (rex.Message.IndexOf("SocketException") > 1)
                 {
                     TLogging.Log("A SocketException has been thrown.");
-                    TLogging.Log("Most probably problem is that the adress port is used twice!");
+                    TLogging.Log("Most probably problem is that the address port is used twice!");
                     throw new ApplicationException();
                 }
                 else
@@ -202,17 +203,13 @@ public class TServer
             // menu commands...
             //
 
-#if  RUNWITHOUTMENU
-            bool RunWithoutMenu = true;
-#else
-            bool RunWithoutMenu = TAppSettingsManager.ToBoolean(TAppSettingsManager.GetValue("RunWithoutMenu", "false"), false);
+            bool RunWithoutMenu = TAppSettingsManager.GetBoolean("RunWithoutMenu", false);
 
             if ((!RunWithoutMenu))
             {
                 Console.WriteLine(Environment.NewLine + Catalog.GetString("-> Press \"m\" for menu."));
                 WriteServerPrompt();
             }
-#endif
 
             // All exceptions that are raised from various parts of the Server are handled below.
             // Note: The Server stops after handling these exceptions!!!

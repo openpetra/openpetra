@@ -175,7 +175,7 @@ namespace Ict.Tools.PatchTool
                 return true;
             }
 
-            return true;
+            return false;
         }
     }
 

@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -75,6 +75,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             string strContent = CommonNUnitFunctions.LoadCSVFileToString("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
                 "test-csv\\glbatch-import.csv");
+
+            strContent = strContent.Replace("31/07/2010", "31/07/" + DateTime.Now.Year.ToString());
+            strContent = strContent.Replace("02/07/2010", "02/07/" + DateTime.Now.Year.ToString());
 
             // Console.WriteLine(strContent);
             TVerificationResultCollection verificationResult;

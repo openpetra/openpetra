@@ -32,6 +32,7 @@ using Tests.IctCommonRemoting.Interface;
 using Tests.IctCommonRemoting.Server;
 using Ict.Common;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Remoting.Sinks.Encryption;
 
 namespace Ict.Testing.IctCommonRemoting.Server
 {
@@ -106,11 +107,18 @@ namespace Ict.Testing.IctCommonRemoting.Server
             {
                 BinaryServerFormatterSinkProvider TCPSink = new BinaryServerFormatterSinkProvider();
                 TCPSink.TypeFilterLevel = TypeFilterLevel.Low;
+                IServerChannelSinkProvider EncryptionSink = TCPSink;
+
+                if (TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile", "", false).Length > 0)
+                {
+                    EncryptionSink = new EncryptionServerSinkProvider();
+                    EncryptionSink.Next = TCPSink;
+                }
 
                 Hashtable ChannelProperties = new Hashtable();
                 ChannelProperties.Add("port", TSrvSetting.IPBasePort);
 
-                TcpChannel Channel = new TcpChannel(ChannelProperties, null, TCPSink);
+                TcpChannel Channel = new TcpChannel(ChannelProperties, null, EncryptionSink);
                 ChannelServices.RegisterChannel(Channel, false);
 
                 RemotingConfiguration.RegisterWellKnownServiceType(typeof(Tests.IctCommonRemoting.Server.TServerManager),
@@ -128,7 +136,7 @@ namespace Ict.Testing.IctCommonRemoting.Server
                 if (rex.Message.IndexOf("SocketException") > 1)
                 {
                     TLogging.Log("A SocketException has been thrown.");
-                    TLogging.Log("Most probably problem is that the adress port is used twice!");
+                    TLogging.Log("Most probably problem is that the address port is used twice!");
                     throw new ApplicationException();
                 }
                 else

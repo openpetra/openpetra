@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Messaging;
@@ -35,7 +37,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
     /// </summary>
     public class EncryptionServerSink : BaseChannelSinkWithProperties, IServerChannelSink
     {
-        private byte[] FEncryptionKey = null;
+        private SortedList <string, byte[]>FEncryptionKeys = new SortedList <string, byte[]>();
         private RSAParameters FPrivateKey;
         private IServerChannelSink FNextSink;
 
@@ -65,11 +67,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         public void AsyncProcessResponse(IServerResponseChannelSinkStack sinkStack,
             object state, IMessage msg, ITransportHeaders headers, Stream stream)
         {
-            // process response
-            ProcessResponse(msg, headers, ref stream, state);
-
-            // forward to the next
-            sinkStack.AsyncProcessResponse(msg, headers, stream);
+            throw new Exception("EncryptionServerSink does not support AsyncProcessResponse");
         }
 
         /// <summary>
@@ -94,7 +92,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
             // process request
             object state = null;
 
-            ProcessRequest(requestMsg, requestHeaders, ref requestStream, ref state);
+            string ClientGuid = ProcessRequest(requestMsg, requestHeaders, ref requestStream, ref state);
 
             sinkStack.Push(this, state);
 
@@ -104,7 +102,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
 
             if (processing == ServerProcessing.Complete)
             {
-                ProcessResponse(responseMsg, responseHeaders, ref responseStream, state);
+                ProcessResponse(responseMsg, responseHeaders, ref responseStream, state, ClientGuid);
             }
 
             return processing;
@@ -113,34 +111,50 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         /// <summary>
         /// decrypt the request
         /// </summary>
-        protected void ProcessRequest(IMessage message, ITransportHeaders headers, ref Stream stream, ref object state)
+        protected string ProcessRequest(IMessage message, ITransportHeaders headers, ref Stream stream, ref object state)
         {
             if (headers[EncryptionRijndael.GetEncryptionName()] != null)
             {
+                string ClientGuid = headers["ClientGuid"].ToString();
+
                 if (headers[EncryptionRijndael.GetEncryptionName() + "KEY"] != null)
                 {
                     // read the symmetric key, which has been encrypted with our public key
                     RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
                     RSA.ImportParameters(FPrivateKey);
-                    FEncryptionKey = RSA.Decrypt(
+                    // this can overwrite the encryption key of another connection?
+                    byte[] EncryptionKey = RSA.Decrypt(
                         Convert.FromBase64String((String)headers[EncryptionRijndael.GetEncryptionName() + "KEY"]), false);
+
+                    if (!FEncryptionKeys.ContainsKey(ClientGuid))
+                    {
+                        FEncryptionKeys.Add(ClientGuid, EncryptionKey);
+                    }
+                    else
+                    {
+                        FEncryptionKeys[ClientGuid] = EncryptionKey;
+                    }
                 }
 
                 byte[] EncryptionIV = Convert.FromBase64String((String)headers[EncryptionRijndael.GetEncryptionName() + "IV"]);
-                stream = EncryptionRijndael.Decrypt(FEncryptionKey, stream, EncryptionIV);
+                stream = EncryptionRijndael.Decrypt(FEncryptionKeys[ClientGuid], stream, EncryptionIV);
                 state = true;
+
+                return ClientGuid;
             }
+
+            return string.Empty;
         }
 
         /// <summary>
         /// encrypt the response
         /// </summary>
-        protected void ProcessResponse(IMessage message, ITransportHeaders headers, ref Stream stream, object state)
+        protected void ProcessResponse(IMessage message, ITransportHeaders headers, ref Stream stream, object state, string AClientGuid)
         {
             if (state != null)
             {
                 byte[] EncryptionIV;
-                stream = EncryptionRijndael.Encrypt(FEncryptionKey, stream, out EncryptionIV);
+                stream = EncryptionRijndael.Encrypt(FEncryptionKeys[AClientGuid], stream, out EncryptionIV);
                 headers[EncryptionRijndael.GetEncryptionName()] = "Yes";
 
                 // the initialisation vector is no secret, but we need to generate it for each encryption, and it is needed for decryption
