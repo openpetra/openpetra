@@ -68,13 +68,14 @@ namespace Ict.Common.Controls
         /// Constructor. Generates several Groups of Tasks from an xml document.
         /// </summary>
         /// <param name="ATaskGroups"></param>
-        public TLstTasks(XmlNode ATaskGroups)
+        /// <param name="ATaskAppearance" >Initial appearance of the Tasks.</param>
+        public TLstTasks(XmlNode ATaskGroups, TaskAppearance ATaskAppearance)
         {
             this.SuspendLayout();
 
             this.Name = "lstTasks" + ATaskGroups.Name;
             this.AutoScroll = true;
-//            this.HorizontalScroll.Enabled = true;
+            //            this.HorizontalScroll.Enabled = true;
             this.Resize += new EventHandler(ListResize);
 
             XmlNode TaskGroupNode = ATaskGroups.FirstChild;
@@ -103,6 +104,13 @@ namespace Ict.Common.Controls
                         SingleTask.Name = TaskGroupNode.Name;
                         SingleTask.TaskGroup = TaskGroup;
                         SingleTask.Tag = TaskGroupNode;
+                        SingleTask.TaskAppearance = ATaskAppearance;
+                        SingleTask.TaskImagePath = DetermineIconForTask(TaskGroupNode);
+                        SingleTask.TaskImage = TIconCache.IconCache.AddOrGetExistingIcon(
+                            SingleTask.TaskImagePath,
+                            ATaskAppearance ==
+                            TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16);
+                        SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
 
                         if (!FHasAccessPermission(TaskGroupNode, FUserId))
                         {
@@ -124,6 +132,13 @@ namespace Ict.Common.Controls
                             SingleTask.Name = TaskNode.Name;
                             SingleTask.TaskGroup = TaskGroup;
                             SingleTask.Tag = TaskNode;
+                            SingleTask.TaskAppearance = ATaskAppearance;
+                            SingleTask.TaskImagePath = DetermineIconForTask(TaskNode);
+                            SingleTask.TaskImage = TIconCache.IconCache.AddOrGetExistingIcon(
+                                SingleTask.TaskImagePath,
+                                ATaskAppearance ==
+                                TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16);
+                            SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
 
                             if (!FHasAccessPermission(TaskNode, FUserId))
                             {
@@ -161,6 +176,41 @@ namespace Ict.Common.Controls
             }
 
             this.ResumeLayout();
+        }
+
+        private Image SingleTask_RequestForDifferentIconSize(string ATaskImagePath, TIconCache.TIconSize AIconSize)
+        {
+            return TIconCache.IconCache.AddOrGetExistingIcon(ATaskImagePath, AIconSize);
+        }
+
+        private string DetermineIconForTask(XmlNode TaskNode)
+        {
+            string ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
+            string PathStr = null;
+
+            // Determine Icon path, starting at the Task level and going up the Navigation hierarchy
+            if (TYml2Xml.HasAttribute(TaskNode, "Icon"))
+            {
+                PathStr = ResourceDirectory + System.IO.Path.DirectorySeparatorChar +
+                          TYml2Xml.GetAttribute(TaskNode, "Icon");
+            }
+            else if (TYml2Xml.HasAttribute(TaskNode.ParentNode.ParentNode, "Icon"))
+            {
+                PathStr = ResourceDirectory + System.IO.Path.DirectorySeparatorChar +
+                          TYml2Xml.GetAttribute(TaskNode.ParentNode.ParentNode, "Icon");
+            }
+            else if (TYml2Xml.HasAttribute(TaskNode.ParentNode.ParentNode.ParentNode, "Icon"))
+            {
+                PathStr = ResourceDirectory + System.IO.Path.DirectorySeparatorChar +
+                          TYml2Xml.GetAttribute(TaskNode.ParentNode.ParentNode.ParentNode, "Icon");
+            }
+            else if (TYml2Xml.HasAttribute(TaskNode.ParentNode.ParentNode.ParentNode.ParentNode, "Icon"))
+            {
+                PathStr = ResourceDirectory + System.IO.Path.DirectorySeparatorChar +
+                          TYml2Xml.GetAttribute(TaskNode.ParentNode.ParentNode.ParentNode.ParentNode, "Icon");
+            }
+
+            return PathStr;
         }
 
         #endregion
@@ -528,27 +578,27 @@ namespace Ict.Common.Controls
 
 //		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
 //		{
-//            // Set a fixed width for the control.
-//            // ADD AN EXTRA HEIGHT VALIDATION TO AVOID INITIALIZATION PROBLEMS
-//            // BITWISE 'AND' OPERATION: IF ZERO THEN HEIGHT IS NOT INVOLVED IN THIS OPERATION
-//            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)
-//            {
-//                  if (width < MaxTaskWidth)
-//                  {
-////TLogging.Log("SetBoundsCore: Before setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
-//                    base.SetBoundsCore(x, y, MaxTaskWidth, height, specified);
-////TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
-//                }
+        //            // Set a fixed width for the control.
+        //            // ADD AN EXTRA HEIGHT VALIDATION TO AVOID INITIALIZATION PROBLEMS
+        //            // BITWISE 'AND' OPERATION: IF ZERO THEN HEIGHT IS NOT INVOLVED IN THIS OPERATION
+        //            if ((specified&BoundsSpecified.Width) == 0 || width == MaxTaskWidth)
+        //            {
+        //                  if (width < MaxTaskWidth)
+        //                  {
+        ////TLogging.Log("SetBoundsCore: Before setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
+        //                    base.SetBoundsCore(x, y, MaxTaskWidth, height, specified);
+        ////TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
+        //                }
 //		    }
-//            else if ((specified&BoundsSpecified.Height) == 0)
-//            {
-//                base.SetBoundsCore(x, y, width, this.Height, specified);
-//            }
+        //            else if ((specified&BoundsSpecified.Height) == 0)
+        //            {
+        //                base.SetBoundsCore(x, y, width, this.Height, specified);
+        //            }
 //		    else
 //		    {
-//                return;
+        //                return;
 //		    }
-//TLogging.Log("SetBoundsCore: TLstTask " + Name + "'s size: " + Size.ToString());
+        //TLogging.Log("SetBoundsCore: TLstTask " + Name + "'s size: " + Size.ToString());
 //		}
 
         #endregion

@@ -200,12 +200,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 btnGetSetExchangeRate.Enabled = (ARow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
-
-                ((TFrmGLBatch)ParentForm).LoadTransactions(
-                    ARow.LedgerNumber,
-                    ARow.BatchNumber,
-                    ARow.JournalNumber,
-                    ARow.TransactionCurrency);
             }
         }
 

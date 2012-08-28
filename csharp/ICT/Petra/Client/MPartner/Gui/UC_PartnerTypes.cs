@@ -178,7 +178,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             FLogic.MultiTableDS = (PartnerEditTDS)FMainDS;
             FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
             FLogic.PetraUtilsObject = FPetraUtilsObject;
+// TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
+#if TODO                          
             FLogic.InitialiseDelegatePartnerTypePropagationSelection(@OpenPartnerTypePropagationSelection);
+#endif            
             FLogic.DataGrid = grdPartnerTypes;
             FLogic.LoadTypes();
             FLogic.LoadDataOnDemand();

@@ -311,6 +311,7 @@ namespace {#NAMESPACE}
 
     private bool FInitialFocusEventCompleted = false;
     private bool FNewFocusEvent = false;
+    private bool FGridFilterChanged = false;
     private bool FRepeatLeaveEventDetected = false;
     private int FDetailGridRowsCountPrevious = 0;
     private int FDetailGridRowsCountCurrent = 0;
@@ -414,8 +415,11 @@ namespace {#NAMESPACE}
 	    	}
 	    	
 	        //Only allow, row change, add or delete, not repeat events from grid changing focus
-	    	if(e.Row != FCurrentRow && FDetailGridRowsChangedState == 0)
-	        {
+            // check also if it is a filter change
+            if((e.Row != FCurrentRow && FDetailGridRowsChangedState == 0)
+              || FGridFilterChanged)
+            {
+                FGridFilterChanged = false;
 {#IFDEF SAVEDETAILS}
 	    		// Transfer data from Controls into the DataTable
 	            if (FPreviouslySelectedDetailRow != null)

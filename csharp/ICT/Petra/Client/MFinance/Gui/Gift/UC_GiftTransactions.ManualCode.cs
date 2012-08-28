@@ -49,6 +49,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// The current Batch number
         /// </summary>
         public Int32 FBatchNumber = -1;
+
+        private string FBatchStatus = string.Empty;
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
         private AGiftBatchRow FBatchRow = null;
@@ -58,8 +60,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
+        /// <param name="ABatchStatus"></param>
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
+        public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = "unposted", bool AFromTabClick = true)
         {
             bool firstLoad = (FLedgerNumber == -1);
 
@@ -69,7 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
 
             //Check if the same batch is selected, so no need to apply filter
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
             {
                 //Same as previously selected
                 if (grdDetails.SelectedRowIndex() > 0)
@@ -88,6 +91,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = ALedgerNumber;
                 FBatchNumber = ABatchNumber;
+                FBatchStatus = ABatchStatus;
                 FBatchRow = GetBatchRow();
                 UpdateBatchStatus();
             }
@@ -1058,10 +1062,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateBatchStatus()
         {
-            if (FBatchRow != null)
-            {
-                txtBatchStatus.Text = FBatchRow.BatchStatus;
-            }
+            txtBatchStatus.Text = FBatchStatus;
         }
 
         /// <summary>

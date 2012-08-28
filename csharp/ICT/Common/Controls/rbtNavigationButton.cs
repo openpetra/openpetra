@@ -140,7 +140,7 @@ namespace Ict.Common.Controls
         {
             set
             {
-                pbxIcon.Image = (new System.Drawing.Icon(value)).ToBitmap();
+                pbxIcon.Image = (new System.Drawing.Icon(value, 16, 16)).ToBitmap();
             }
         }
 
