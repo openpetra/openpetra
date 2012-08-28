@@ -74,13 +74,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (grdDetails.Rows.Count > 1)
             {
-            	((TFrmGLBatch) this.ParentForm).EnableJournals();
+                ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
             else
             {
-            	((TFrmGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
             }
-            
+
             ((TFrmGLBatch) this.ParentForm).DisableTransactions();
             ((TFrmGLBatch) this.ParentForm).DisableAttributes();
 
@@ -259,7 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchDescription.Focus();
 
             ((TFrmGLBatch)ParentForm).SaveChanges();
-            
+
             //Enable the Journals if not already enabled
             ((TFrmGLBatch)ParentForm).EnableJournals();
         }
@@ -610,7 +610,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     //bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
                     //EnableButtonControl(enablePosting);
-                    
+
                     //UpdateChangeableStatus(enablePosting);
                 }
             }
@@ -753,26 +753,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-            
+
             FMainDS.ABatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
             FGridFilterChanged = true;
-            
+
             if (grdDetails.Rows.Count < 2)
             {
-            	ClearDetailControls();
-            	pnlDetails.Enabled = false;
-            	((TFrmGLBatch)this.ParentForm).DisableJournals();
-            	((TFrmGLBatch)this.ParentForm).DisableTransactions();
-            	((TFrmGLBatch)this.ParentForm).DisableAttributes();
+                ClearDetailControls();
+                pnlDetails.Enabled = false;
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+                ((TFrmGLBatch) this.ParentForm).DisableAttributes();
             }
             else
             {
-            	grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-            	InvokeFocusedRowChanged(1);
-        		UpdateChangeableStatus(true);
-            	((TFrmGLBatch)this.ParentForm).EnableJournals();
+                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+                InvokeFocusedRowChanged(1);
+                UpdateChangeableStatus(true);
+                ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
         }
 

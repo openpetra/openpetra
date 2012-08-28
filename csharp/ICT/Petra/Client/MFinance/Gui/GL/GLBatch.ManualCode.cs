@@ -131,9 +131,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (!this.tpgJournals.Enabled)
             {
-            	this.tpgJournals.Enabled = true;	
+                this.tpgJournals.Enabled = true;
             }
-        	
         }
 
         /// this window contains 4 tabs
@@ -158,65 +157,66 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
-        	//Save changes before switching tab
-        	if (!SaveChanges())
-        	{
-        		MessageBox.Show("Cannot change to a different tab until changes has been saved");
-        		return;
-        	};
-        	
-        	if (ATab == eGLTabs.Batches)
+            //Save changes before switching tab
+            if (!SaveChanges())
             {
-            	this.tabGLBatch.SelectedTab = this.tpgBatches;
+                MessageBox.Show("Cannot change to a different tab until changes has been saved");
+                return;
+            }
+
+            ;
+
+            if (ATab == eGLTabs.Batches)
+            {
+                this.tabGLBatch.SelectedTab = this.tpgBatches;
                 this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.tpgTransactions.Enabled = false;
-				this.tpgAttributes.Enabled = false;
+                this.tpgAttributes.Enabled = false;
             }
             else if (ATab == eGLTabs.Journals)
             {
                 if (this.tpgJournals.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgJournals;
-                    
+
                     this.ucoJournals.LoadJournals(
-	                    FLedgerNumber,
-	                    ucoBatches.GetSelectedDetailRow().BatchNumber);
-                    
+                        FLedgerNumber,
+                        ucoBatches.GetSelectedDetailRow().BatchNumber);
+
                     this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null);
-					this.tpgAttributes.Enabled = false;
+                    this.tpgAttributes.Enabled = false;
                 }
             }
             else if (ATab == eGLTabs.Transactions)
             {
-            	if (this.tpgTransactions.Enabled)
+                if (this.tpgTransactions.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgTransactions;
-	                this.tpgAttributes.Enabled = true;
-                    
-	                this.ucoTransactions.LoadTransactions(
-	                    FLedgerNumber,
-	                    ucoJournals.GetSelectedDetailRow().BatchNumber,
-	                    ucoJournals.GetSelectedDetailRow().JournalNumber,
-	                    ucoJournals.GetSelectedDetailRow().TransactionCurrency);
+                    this.tpgAttributes.Enabled = true;
 
-	                this.tpgAttributes.Enabled = (ucoTransactions.GetSelectedDetailRow() != null);
+                    this.ucoTransactions.LoadTransactions(
+                        FLedgerNumber,
+                        ucoJournals.GetSelectedDetailRow().BatchNumber,
+                        ucoJournals.GetSelectedDetailRow().JournalNumber,
+                        ucoJournals.GetSelectedDetailRow().TransactionCurrency);
+
+                    this.tpgAttributes.Enabled = (ucoTransactions.GetSelectedDetailRow() != null);
                 }
             }
             else if (ATab == eGLTabs.Attributes)
             {
-            	if (this.tpgAttributes.Enabled)
+                if (this.tpgAttributes.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgAttributes;
 
                     this.ucoAttributes.LoadAttributes(
-	                    FLedgerNumber,
-	                    ucoTransactions.GetSelectedDetailRow().BatchNumber,
-	                    ucoTransactions.GetSelectedDetailRow().JournalNumber,
-	                    ucoTransactions.GetSelectedDetailRow().TransactionNumber
-	                    );
+                        FLedgerNumber,
+                        ucoTransactions.GetSelectedDetailRow().BatchNumber,
+                        ucoTransactions.GetSelectedDetailRow().JournalNumber,
+                        ucoTransactions.GetSelectedDetailRow().TransactionNumber
+                        );
                 }
             }
-            
         }
 
         private void SelectTabManual(int ASelectedTabIndex)
@@ -227,7 +227,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (ASelectedTabIndex == (int)eGLTabs.Journals)
             {
-            	SelectTab(eGLTabs.Journals);
+                SelectTab(eGLTabs.Journals);
             }
             else if (ASelectedTabIndex == (int)eGLTabs.Transactions)
             {
@@ -235,7 +235,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else  //eGLTabs.Attributes
             {
-            	SelectTab(eGLTabs.Attributes);
+                SelectTab(eGLTabs.Attributes);
             }
         }
 

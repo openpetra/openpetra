@@ -113,15 +113,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (grdDetails.Rows.Count > 1)
             {
-            	((TFrmGiftBatch) this.ParentForm).EnableTransactions();
+                ((TFrmGiftBatch) this.ParentForm).EnableTransactions();
             }
             else
             {
-            	((TFrmGiftBatch) this.ParentForm).DisableTransactions();
+                ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
             }
-            
+
             ShowData();
-            
+
             FBatchLoaded = true;
         }
 
@@ -137,10 +137,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
-			else if (!((TFrmGiftBatch)ParentForm).SaveChanges())
-			{
-				return;
-			}
+            else if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            {
+                return;
+            }
 
             ClearCurrentSelection();
 
@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
-            
+
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
@@ -200,17 +200,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (grdDetails.Rows.Count < 2)
             {
                 ClearControls();
-                ((TFrmGiftBatch)this.ParentForm).DisableTransactions();
+                ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
             }
-            else if(FBatchLoaded == true)
+            else if (FBatchLoaded == true)
             {
                 grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-	            //FCurrentRow = 0; //necessary to force code execution in FocusRowChanged event
-				InvokeFocusedRowChanged(1);
+                //FCurrentRow = 0; //necessary to force code execution in FocusRowChanged event
+                InvokeFocusedRowChanged(1);
             }
 
             UpdateChangeableStatus();
-
         }
 
         /// reset the control
@@ -241,10 +240,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ARow == null)
             {
-            	return;
+                return;
             }
-            
-        	FLedgerNumber = ARow.LedgerNumber;
+
+            FLedgerNumber = ARow.LedgerNumber;
             FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode =
@@ -412,16 +411,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 //message to user
             }
-            
+
             if (grdDetails.Rows.Count > 1)
             {
-            	((TFrmGiftBatch)ParentForm).EnableTransactions();
+                ((TFrmGiftBatch)ParentForm).EnableTransactions();
             }
             else
             {
-            	((TFrmGiftBatch)ParentForm).DisableTransactions();
+                ((TFrmGiftBatch)ParentForm).DisableTransactions();
             }
-            
         }
 
         private void ClearControls()

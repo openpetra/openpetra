@@ -132,15 +132,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            if (((TFrmRecurringGiftBatch)this.ParentForm).SaveChanges())
-	        {
-				this.CreateNewARecurringGiftBatch();
-            	txtDetailBatchDescription.Focus();
-            	
-            	//Save the new record
-            	((TFrmRecurringGiftBatch)this.ParentForm).SaveChanges();
-    	    }
+            if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+            {
+                this.CreateNewARecurringGiftBatch();
+                txtDetailBatchDescription.Focus();
 
+                //Save the new record
+                ((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges();
+            }
         }
 
         /// <summary>
@@ -189,7 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ARowToDelete.BatchNumber);
 
                 ARowToDelete.Delete();
-                
+
                 //ARowToDelete = null;
 
                 deletionSuccessful = true;
@@ -239,16 +238,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 //message to user
             }
-            
+
             if (grdDetails.Rows.Count > 1)
             {
-            	((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
+                ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
             }
             else
             {
-            	((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
+                ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
             }
-            
         }
 
         private void ClearControls()

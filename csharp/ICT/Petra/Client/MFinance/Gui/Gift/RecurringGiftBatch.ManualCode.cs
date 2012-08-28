@@ -164,12 +164,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFromTabClick"></param>
         public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
         {
-        	if (!SaveChanges())
+            if (!SaveChanges())
             {
-            	return;
+                return;
             }
-        	
-        	if (FChangeTabEventHasRun && AFromTabClick)
+
+            if (FChangeTabEventHasRun && AFromTabClick)
             {
                 FChangeTabEventHasRun = false;
                 return;
@@ -186,7 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 }
-                
+
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
             }
             else if (ATab == eGiftTabs.Transactions)

@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             bool firstRun = (FLedgerNumber != ALedgerNumber) || (FTransactionCurrency != AForeignCurrencyName);
-            
+
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
             FJournalNumber = AJournalNumber;
@@ -81,11 +81,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
             FTransactionCurrency = AForeignCurrencyName;
+
             if (firstRun)
             {
-	            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-	                true, false, ActiveOnly, false, AForeignCurrencyName);
-	            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+                TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
+                    true, false, ActiveOnly, false, AForeignCurrencyName);
+                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
             }
 
             ShowData();
@@ -271,7 +272,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             UpdateTotals();
-
         }
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)
