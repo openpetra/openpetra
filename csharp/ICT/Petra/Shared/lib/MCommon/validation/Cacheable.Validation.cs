@@ -1032,6 +1032,35 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+            
+            // 'Document Category' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PmDocumentTypeTable.ColumnDocCategoryId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PmDocumentCategoryTable DocumentCategoryTable;
+                PmDocumentCategoryRow DocumentCategoryRow;
+
+                VerificationResult = null;
+
+                DocumentCategoryTable = (PmDocumentCategoryTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
+                    TCacheablePersonTablesEnum.DocumentTypeCategoryList);
+                DocumentCategoryRow = (PmDocumentCategoryRow)DocumentCategoryTable.Rows.Find(new object[] { ARow.DocCategory });
+
+                // 'Document Category' must not be unassignable
+                if ((DocumentCategoryRow != null)
+                    && DocumentCategoryRow.UnassignableFlag
+                    && (DocumentCategoryRow.IsUnassignableDateNull()
+                        || (DocumentCategoryRow.UnassignableDate <= DateTime.Today)))
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.DocCategory })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }            
         }
 
         /// <summary>
