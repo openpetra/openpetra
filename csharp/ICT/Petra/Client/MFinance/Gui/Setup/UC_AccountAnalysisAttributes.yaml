@@ -29,10 +29,9 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [cmbDetailAnalysisTypeCode]
+                Row0: [cmbDetailAnalTypeCode]
                 Row1: [chkDetailActive]
-        cmbDetailAnalysisTypeCode:
-            List:   AnalysisTypeList
+        cmbDetailAnalTypeCode:
             OnChange: OnDetailAnalysisTypeCodeChange
         chkDetailActive: {Label=Active}
     Toolbar:

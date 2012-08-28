@@ -50,6 +50,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
+        /// Loads all the currently assigned AnalTypeCodes into the Combo -
+        /// Even where some of these may not be valid DB values...
+        /// </summary>
+        private void LoadCmbAnalType()
+        {
+            cmbDetailAnalTypeCode.Items.Clear();
+            foreach (AAnalysisAttributeRow Row in FMainDS.AAnalysisAttribute.Rows)
+            {
+                if (Row.RowState != DataRowState.Deleted)
+                {
+                    if (!cmbDetailAnalTypeCode.Items.Contains(Row.AnalysisTypeCode))
+                    {
+                        cmbDetailAnalTypeCode.Items.Add(Row.AnalysisTypeCode);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// we are editing this account
         /// </summary>
         public string AccountCode
@@ -62,22 +81,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FLedgerNumber,
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
                     FAccountCode);
+
+                LoadCmbAnalType();
             }
         }
 
         private void NewRow(System.Object sender, EventArgs e)
         {
-            // reload analysis types from cache table
-            cmbDetailAnalysisTypeCode.InitialiseUserControl();
-
-            if (cmbDetailAnalysisTypeCode.Count == 0)
+            /*
+                        // reload analysis types from cache table
+                        cmbDetailAnalTypeCode.InitialiseUserControl();
+            */
+            if (cmbDetailAnalTypeCode.Items.Count == 0)
             {
                 MessageBox.Show(Catalog.GetString("Please create an analysis type first"), Catalog.GetString("Error"),
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            GetDataFromControls();
+//          GetDataFromControls();
             this.CreateNewAAnalysisAttribute();
             pnlDetails.Enabled = true;
         }
@@ -108,13 +130,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return NewTypeCode;
         }
 
+        private void ShowDetailsManual(AAnalysisAttributeRow ARow)
+        {
+            if (ARow != null)  // How can ARow ever be null!!
+            {
+                LoadCmbAnalType();
+                cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
+            }
+        }
+
         private void NewRowManual(ref AAnalysisAttributeRow ARow)
         {
             ARow.LedgerNumber = FLedgerNumber;
             ARow.Active = true;
             ARow.AccountCode = FAccountCode;
 
-            cmbDetailAnalysisTypeCode.SelectedIndex = 0;
+            //            cmbDetailAnalTypeCode.SelectedIndex = 0; // I'm not convinced about this...
 
             ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
         }
@@ -161,6 +192,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDetailDataFromControlsManual(AAnalysisAttributeRow ARow)
         {
+/*
+ * I'm no longer doing this, because the new Validation code means that I need to have sorted
+ * the unique value constraint problem before I get to here. I just need to load the value from the combo.
+ * 
             // I need to check whether this row will break a DB constraint.
 
             // The row is being edited right now, (It's in a BeginEdit ... EndEdit bracket) so it doesn't show up in the DefaultView.
@@ -199,6 +234,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 ARow.AnalysisTypeCode = TempEdit;
 //                TLogging.Log("Keep name: " + ARow.AnalysisTypeCode);
+            }
+ */
+            if (ARow != null) // Why would it ever be null!
+            {
+                ARow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
             }
         }
 

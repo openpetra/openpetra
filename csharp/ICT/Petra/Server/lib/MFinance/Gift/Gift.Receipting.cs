@@ -305,6 +305,173 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Produce a single page HTML letter to receipt a gift
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ATransactionNumber"></param>
+        /// <param name="ADonorShortName"></param>
+        /// <param name="ADonorKey"></param>
+        /// <param name="ADonorClass"></param>
+        /// <param name="AReference"></param>
+        /// <param name="AGiftCurrency"></param>
+        /// <param name="ADateEntered"></param>
+        /// <param name="ALocalCountryCode">If the addressee's country is the same as this, it won't be printed on the address label.</param>
+        /// <param name="ATransaction">This can be read-only - nothing is written to the DB.</param>
+        /// <returns>Complete (simple) HTML file</returns>
+        public static string FormatHtmlReceipt(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 ATransactionNumber,
+            String ADonorShortName,
+            Int64 ADonorKey,
+            String ADonorClass,
+            String AReference,
+            String AGiftCurrency,
+            DateTime ADateEntered,
+            string ALocalCountryCode,
+            TDBTransaction ATransaction)
+        {
+
+            SortedList<string, List<string>> FormValues = new SortedList<string, List<string>>();
+
+            // These are the fields that can be printed in the letter:
+            FormValues.Add("AdresseeShortName", new List<string>());
+            FormValues.Add("AdresseeTitle", new List<string>());
+            FormValues.Add("AdresseeFirstName", new List<string>());
+            FormValues.Add("AdresseeFamilyName", new List<string>());
+            FormValues.Add("AdresseeStreetAddress", new List<string>());
+            FormValues.Add("AdresseeAddress3", new List<string>());
+            FormValues.Add("AdresseeCity", new List<string>());
+            FormValues.Add("AdresseePostCode", new List<string>());
+            FormValues.Add("AdresseeCountry", new List<string>());
+            FormValues.Add("FormattedAddress", new List<string>());
+
+            FormValues.Add("DateToday", new List<string>());
+
+            FormValues.Add("DateEntered", new List<string>());
+            FormValues.Add("GiftAmount", new List<string>());
+            FormValues.Add("RecipientShortName", new List<string>());
+            FormValues.Add("MotivationDetail", new List<string>());
+            FormValues.Add("Reference", new List<string>());
+            FormValues.Add("DonorComment", new List<string>());
+
+            FormValues.Add("GiftTotalAmount", new List<string>());
+            FormValues.Add("GiftCurrency", new List<string>());
+
+
+            // Donor Name:
+            FormValues["AdresseeShortName"].Add(ADonorShortName);
+
+            if (ADonorClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            {
+                PPersonTable Tbl = PPersonAccess.LoadByPrimaryKey(ADonorKey, ATransaction);
+                if (Tbl.Rows.Count > 0)
+                {
+                    FormValues["AdresseeTitle"].Add(Tbl[0].Title);
+                    FormValues["AdresseeFirstName"].Add(Tbl[0].FirstName);
+                    FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
+                }
+            }
+            else
+                if (ADonorClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                {
+                    PFamilyTable Tbl = PFamilyAccess.LoadByPrimaryKey(ADonorKey, ATransaction);
+                    if (Tbl.Rows.Count > 0)
+                    {
+                        FormValues["AdresseeTitle"].Add(Tbl[0].Title);
+                        FormValues["AdresseeFirstName"].Add(Tbl[0].FirstName);
+                        FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
+                    }
+                }
+
+            FormValues["DateToday"].Add(DateTime.Now.ToString("dd MMMM yyyy"));
+
+            // Donor Adress:
+            PLocationTable Location;
+            PPartnerLocationTable PartnerLocation;
+            string CountryName;
+            string EmailAddress;
+
+            if (TAddressTools.GetBestAddress(ADonorKey, out Location, out PartnerLocation, out CountryName, out EmailAddress, ATransaction))
+            {
+                PLocationRow LocRow = Location[0];
+                FormValues["AdresseeStreetAddress"].Add(LocRow.StreetName);
+                FormValues["AdresseeAddress3"].Add(LocRow.Address3);
+                FormValues["AdresseeCity"].Add(LocRow.City);
+                FormValues["AdresseePostCode"].Add(LocRow.PostalCode);
+                if (LocRow.CountryCode != ALocalCountryCode)  // Don't add the Donor's country if it's also my country:
+                {
+                    FormValues["AdresseeCountry"].Add(CountryName);
+                }
+                else
+                {
+                    LocRow.CountryCode = "";
+                }
+                FormValues["FormattedAddress"].Add(Calculations.DetermineLocationString(LocRow,
+                        Calculations.TPartnerLocationFormatEnum.plfHtmlLineBreak));
+            }
+
+            // Details of gift:
+            FormValues["DateEntered"].Add(ADateEntered.ToString("dd MMM yyyy"));
+            FormValues["Reference"].Add(AReference);
+            AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
+                ALedgerNumber, ABatchNumber,ATransactionNumber, ATransaction);
+            decimal GiftTotal = 0;
+            foreach (AGiftDetailRow DetailRow in DetailTbl.Rows)
+            {
+                string DonorComment = "";
+                FormValues["GiftAmount"].Add(DetailRow.GiftAmount.ToString("0.00"));
+                FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
+                GiftTotal += DetailRow.GiftAmount;
+
+                // Recipient Short Name:
+                PPartnerTable RecipientTbl = PPartnerAccess.LoadByPrimaryKey(DetailRow.RecipientKey, ATransaction);
+                if (RecipientTbl.Rows.Count > 0)
+                {
+                    String ShortName = Calculations.FormatShortName(RecipientTbl[0].PartnerShortName, eShortNameFormat.eReverseShortname);
+                    FormValues["RecipientShortName"].Add(ShortName);
+                }
+
+                if (DetailRow.CommentOneType == "Donor")
+                {
+                    DonorComment += DetailRow.GiftCommentOne;
+                }
+
+                if (DetailRow.CommentTwoType == "Donor")
+                {
+                    if (DonorComment != "")
+                    {
+                        DonorComment += "\r\n";
+                    }
+                    DonorComment += DetailRow.GiftCommentTwo;
+                }
+
+                if (DetailRow.CommentThreeType == "Donor")
+                {
+                    if (DonorComment != "")
+                    {
+                        DonorComment += "\r\n";
+                    }
+                    DonorComment += DetailRow.GiftCommentThree;
+                }
+
+                if (DonorComment != "")
+                {
+                    DonorComment = "Comment: " + DonorComment;
+                }
+                FormValues["DonorComment"].Add(DonorComment);
+            } // foreach detail
+
+            FormValues["GiftTotalAmount"].Add(GiftTotal.ToString("0.00"));
+            FormValues["GiftCurrency"].Add(AGiftCurrency);
+
+            string PageHtml = TFormLettersTools.PrintSimpleHTMLLetter(
+                TAppSettingsManager.GetValue("Formletters.Path") + "\\GiftReceipt.html", FormValues);
+            return PageHtml;
+        }
+
+        /// <summary>
         /// </summary>
         /// <param name="AGiftTbl">Custom table from GetUnreceiptedGifts, above</param>
         /// <returns>One or more HTML documents in a single string</returns>
@@ -312,7 +479,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static string PrintReceipts(DataTable AGiftTbl)
         {
             string HtmlDoc = "";
-            string HTMLTemplateFilename = "GiftReceipt.html";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
 
@@ -320,156 +486,33 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if (Row["Selected"].Equals(true))
                 {
-                    SortedList<string, List<string>> FormValues = new SortedList<string, List<string>>();
-
-                    // These are the fields that can be printed in the letter:
-                    FormValues.Add("AdresseeShortName", new List<string>());
-                    FormValues.Add("AdresseeTitle", new List<string>());
-                    FormValues.Add("AdresseeFirstName", new List<string>());
-                    FormValues.Add("AdresseeFamilyName", new List<string>());
-                    FormValues.Add("AdresseeStreetAddress", new List<string>());
-                    FormValues.Add("AdresseeAddress3", new List<string>());
-                    FormValues.Add("AdresseeCity", new List<string>());
-                    FormValues.Add("AdresseePostCode", new List<string>());
-                    FormValues.Add("AdresseeCountry", new List<string>());
-                    FormValues.Add("FormattedAddress", new List<string>());
-
-                    FormValues.Add("DateToday", new List<string>());
-
-                    FormValues.Add("DateEntered", new List<string>());
-                    FormValues.Add("GiftAmount", new List<string>());
-                    FormValues.Add("RecipientShortName", new List<string>());
-                    FormValues.Add("MotivationDetail", new List<string>());
-                    FormValues.Add("Reference", new List<string>());
-                    FormValues.Add("DonorComment", new List<string>());
-
-                    FormValues.Add("GiftTotalAmount", new List<string>());
-                    FormValues.Add("GiftCurrency", new List<string>());
-                    
-
-                    // Donor Name:
-                    FormValues["AdresseeShortName"].Add(Row["Donor"].ToString());
-
-                    if (Row["DonorClass"].ToString() == MPartnerConstants.PARTNERCLASS_PERSON)
-                    {
-                        PPersonTable Tbl = PPersonAccess.LoadByPrimaryKey(Convert.ToInt64(Row["DonorKey"]), Transaction);
-                        if (Tbl.Rows.Count > 0)
-                        {
-                            FormValues["AdresseeTitle"].Add(Tbl[0].Title);
-                            FormValues["AdresseeFirstName"].Add(Tbl[0].FirstName);
-                            FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
-                        }
-                    }
-                    else
-                    if (Row["DonorClass"].ToString() == MPartnerConstants.PARTNERCLASS_FAMILY)
-                    {
-                        PFamilyTable Tbl = PFamilyAccess.LoadByPrimaryKey(Convert.ToInt64(Row["DonorKey"]), Transaction);
-                        if (Tbl.Rows.Count > 0)
-                        {
-                            FormValues["AdresseeTitle"].Add(Tbl[0].Title);
-                            FormValues["AdresseeFirstName"].Add(Tbl[0].FirstName);
-                            FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
-                        }
-                    }
-
-                    FormValues["DateToday"].Add(DateTime.Now.ToString ("dd MMMM yyyy"));
-
-                    // Donor Adress:
-                    PLocationTable Location;
-                    PPartnerLocationTable PartnerLocation;
-                    string CountryName;
-                    string EmailAddress;
-
-                    if (TAddressTools.GetBestAddress(Convert.ToInt64(Row["DonorKey"]), out Location, out PartnerLocation, out CountryName, out EmailAddress, Transaction))
-                    {
-                        PLocationRow LocRow = Location[0];
-                        FormValues["AdresseeStreetAddress"].Add(LocRow.StreetName);
-                        FormValues["AdresseeAddress3"].Add(LocRow.Address3);
-                        FormValues["AdresseeCity"].Add(LocRow.City);
-                        FormValues["AdresseePostCode"].Add(LocRow.PostalCode);
-                        if (LocRow.CountryCode != LocalCountryCode)  // Don't add the Donor's country if it's also my country:
-                        {
-                            FormValues["AdresseeCountry"].Add(CountryName);
-                        }
-                        else
-                        {
-                            LocRow.CountryCode = "";
-                        }
-                        FormValues["FormattedAddress"].Add(Calculations.DetermineLocationString(LocRow,
-                                Calculations.TPartnerLocationFormatEnum.plfHtmlLineBreak));
-                    }
-
-                    // Details of gift:
-                    FormValues["DateEntered"].Add(Convert.ToDateTime(Row["DateEntered"]).ToString("dd MMM yyyy"));
-                    FormValues["Reference"].Add(Row["Reference"].ToString());
-                    AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
-                        Convert.ToInt32(Row["LedgerNumber"]), Convert.ToInt32(Row["BatchNumber"]), Convert.ToInt32(Row["TransactionNumber"]), Transaction);
-                    decimal GiftTotal = 0;
-                    foreach (AGiftDetailRow DetailRow in DetailTbl.Rows)
-                    {
-                        string DonorComment = "";
-                        FormValues["GiftAmount"].Add(DetailRow.GiftAmount.ToString("0.00"));
-                        FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
-                        GiftTotal += DetailRow.GiftAmount;
-
-                        // Recipient Short Name:
-                        PPartnerTable RecipientTbl = PPartnerAccess.LoadByPrimaryKey(DetailRow.RecipientKey, Transaction);
-                        if (RecipientTbl.Rows.Count > 0)
-                        {
-                            String ShortName = Calculations.FormatShortName(RecipientTbl[0].PartnerShortName, eShortNameFormat.eReverseShortname);
-                            FormValues["RecipientShortName"].Add(ShortName);
-                        }
-
-                        if (DetailRow.CommentOneType == "Donor")
-                        {
-                            DonorComment += DetailRow.GiftCommentOne;
-                        }
-
-                        if (DetailRow.CommentTwoType == "Donor")
-                        {
-                            if (DonorComment != "")
-                            {
-                                DonorComment += "\r\n";
-                            }
-                            DonorComment += DetailRow.GiftCommentTwo;
-                        }
-
-                        if (DetailRow.CommentThreeType == "Donor")
-                        {
-                            if (DonorComment != "")
-                            {
-                                DonorComment += "\r\n";
-                            }
-                            DonorComment += DetailRow.GiftCommentThree;
-                        }
-
-                        if (DonorComment != "")
-                        {
-                            DonorComment = "Comment: " + DonorComment;
-                        }
-                        FormValues["DonorComment"].Add(DonorComment);
-                    } // foreach detail
-
-                    FormValues["GiftTotalAmount"].Add(GiftTotal.ToString("0.00"));
-                    FormValues["GiftCurrency"].Add(Row["GiftCurrency"].ToString());
-
-                    string PageHtml = TFormLettersTools.PrintSimpleHTMLLetter(
-                        TAppSettingsManager.GetValue("Formletters.Path") + "\\" + HTMLTemplateFilename, FormValues);
+                    string PageHtml = FormatHtmlReceipt(
+                        Convert.ToInt32(Row["LedgerNumber"]), 
+                        Convert.ToInt32(Row["BatchNumber"]), 
+                        Convert.ToInt32(Row["TransactionNumber"]),
+                        Row["Donor"].ToString(),
+                        Convert.ToInt64(Row["DonorKey"]),
+                        Row["DonorClass"].ToString(),
+                        Row["Reference"].ToString(),
+                        Row["GiftCurrency"].ToString(),
+                        Convert.ToDateTime(Row["DateEntered"]),
+                        LocalCountryCode,
+                        Transaction);
 
                     if (HtmlDoc != "")
                     {
                         HtmlDoc += "|PageBreak|";
                     }
                     HtmlDoc += PageHtml;
-                }
-            }
+                } // if selected
+            } // foreach row
             DBAccess.GDBAccessObj.RollbackTransaction();
             return HtmlDoc;
         }
 
-        /// <summary>Mark selected gifts as receipted
-        /// </summary>
-        /// <param name="AGiftTbl">Custom table from GetUnreceiptedGifts, above</param>
+        /// <summary>Mark selected gifts as receipted in the AGift table.</summary>
+        /// <param name="AGiftTbl">Custom DataTable from GetUnreceiptedGifts, above. 
+        /// For this method, only {bool}Selected, LedgerNumber, BatchNumber and TransactionNumber fields are needed.</param>
         [RequireModulePermission("FINANCE-1")]
         public static bool MarkReceiptsPrinted(DataTable AGiftTbl)
         {
