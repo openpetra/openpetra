@@ -22,16 +22,20 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Specialized;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
+using System.Runtime.Caching;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Windows.Forms;
 using System.Globalization;
+
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
@@ -639,6 +643,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             TClientInfo.InitializeUnit();
             TCacheableTablesManager.InitializeUnit();
+            new TIconCache("IconCache", new NameValueCollection());
 
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;

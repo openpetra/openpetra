@@ -222,7 +222,6 @@ namespace Ict.Petra.Client.App.PetraClient
 
             lstFolders.Dashboard = this.dsbContent;
             lstFolders.Statusbar = this.stbMain;
-            lstFolders.SelectFirstAvailableFolder();
 
             SetTaskTileSize(TUserDefaults.GetInt16Default(TUserDefaults.MAINMENU_VIEWOPTIONS_TILESIZE, 2));
 
@@ -236,6 +235,8 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 ViewTasksAsList(this, null);
             }
+
+            lstFolders.SelectFirstAvailableFolder();
         }
 
         private void ExitManualCode()

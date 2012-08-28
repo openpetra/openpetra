@@ -25,6 +25,7 @@ using System;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
@@ -45,6 +46,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
+        private bool FBatchLoaded = false;
 
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
@@ -109,7 +111,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
             dtpDetailGlEffectiveDate.Date = DefaultDate;
 
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmGiftBatch) this.ParentForm).EnableTransactions();
+            }
+            else
+            {
+                ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
+            }
+
             ShowData();
+
+            FBatchLoaded = true;
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -121,6 +134,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         void RefreshFilter(Object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
+            {
+                return;
+            }
+            else if (!((TFrmGiftBatch)ParentForm).SaveChanges())
             {
                 return;
             }
@@ -172,13 +189,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FStatusFilter = "1 = 1";
             }
 
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+
+            FGridFilterChanged = true;
 
             if (grdDetails.Rows.Count < 2)
             {
                 ClearControls();
+                ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
             }
+            else if (FBatchLoaded == true)
+            {
+                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+                //FCurrentRow = 0; //necessary to force code execution in FocusRowChanged event
+                InvokeFocusedRowChanged(1);
+            }
+
+            UpdateChangeableStatus();
         }
 
         /// reset the control
@@ -207,13 +238,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
+            if (ARow == null)
+            {
+                return;
+            }
+
             FLedgerNumber = ARow.LedgerNumber;
             FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
 
-            ((TFrmGiftBatch)ParentForm).EnableTransactionsTab();
+            ((TFrmGiftBatch)ParentForm).EnableTransactions();
 
             UpdateChangeableStatus();
 
@@ -374,6 +410,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (!ADeletionPerformed)
             {
                 //message to user
+            }
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmGiftBatch)ParentForm).EnableTransactions();
+            }
+            else
+            {
+                ((TFrmGiftBatch)ParentForm).DisableTransactions();
             }
         }
 

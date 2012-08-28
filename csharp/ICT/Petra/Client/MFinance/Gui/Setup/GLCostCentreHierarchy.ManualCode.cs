@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 PopulateTreeView();
             }
         }
-        
+
         private void RunOnceOnActivationManual()
         {
             FPetraUtilsObject.UnhookControl(pnlDetails, true); // I don't want changes in these values to cause SetChangedFlag - I'll set it myself.
@@ -94,12 +94,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
-            if (!FIAmDeleting) 
+            if (!FIAmDeleting)
             {
                 if (!ValidateAllData(true, true))
                 {
                     e.Cancel = true;
-                }                
+                }
             }
         }
 
@@ -164,27 +164,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if(ValidateAllData(true, true))
+            if (ValidateAllData(true, true))
             {
                 txtDetailCostCentreCode.Focus();
-                
+
                 string newName = Catalog.GetString("NewCostCentre");
                 Int32 countNewCostCentre = 0;
-    
+
                 if (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
                 {
                     while (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newName + countNewCostCentre.ToString() }) != null)
                     {
                         countNewCostCentre++;
                     }
-    
+
                     newName += countNewCostCentre.ToString();
                 }
-    
+
                 ACostCentreRow parentCostCentre =
                     (ACostCentreRow)FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber,
                                                                                  ((ACostCentreRow)FCurrentNode.Tag).CostCentreCode });
-    
+
                 ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
                 newCostCentre.CostCentreCode = newName;
                 newCostCentre.LedgerNumber = FLedgerNumber;
@@ -193,17 +193,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 newCostCentre.PostingCostCentreFlag = true;
                 newCostCentre.CostCentreToReportTo = parentCostCentre.CostCentreCode;
                 FMainDS.ACostCentre.Rows.Add(newCostCentre);
-    
+
                 // TODO: what if the parent cost centre already had a posting balance? do we have to move costcentres around, insert a dummy parent?
                 parentCostCentre.PostingCostCentreFlag = false;
-    
+
                 trvCostCentres.BeginUpdate();
                 TreeNode newNode = FCurrentNode.Nodes.Add(newName);
                 newNode.Tag = newCostCentre;
                 trvCostCentres.EndUpdate();
-    
+
                 trvCostCentres.SelectedNode = newNode;
-    
+
                 FPetraUtilsObject.SetChangedFlag();
             }
         }
@@ -346,14 +346,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private ACostCentreRow GetSelectedDetailRowManual()
         {
-            if (FCurrentNode != null) 
+            if (FCurrentNode != null)
             {
-                return (ACostCentreRow)FCurrentNode.Tag;    
+                return (ACostCentreRow)FCurrentNode.Tag;
             }
             else
             {
                 return null;
-            }           
+            }
         }
 
         private void UpdateOnControlChanged(Object sender, EventArgs e)
@@ -364,6 +364,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
                 FPetraUtilsObject.SetChangedFlag();
             }
-        }        
+        }
     }
 }

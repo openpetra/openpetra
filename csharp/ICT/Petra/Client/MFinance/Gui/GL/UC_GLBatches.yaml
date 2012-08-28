@@ -66,12 +66,12 @@ RootNode:
             Label: &Batch
             mniPostBatch:
             mniTestPostBatch:
-            mniImportFromSpreadSheet:
+            #mniImportFromSpreadSheet:
             mniImportBatches:
             mniExportBatches:
     Toolbar:
         tbbTestPostBatch:
         tbbPostBatch:
-        tbbImportFromSpreadSheet:
+        #tbbImportFromSpreadSheet:
         tbbImportBatches:
         tbbExportBatches:

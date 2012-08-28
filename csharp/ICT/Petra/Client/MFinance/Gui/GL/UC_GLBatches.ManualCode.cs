@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
@@ -50,7 +51,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FSelectedBatchNumber = -1;
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
-
         private DateTime DefaultDate;
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
@@ -72,7 +72,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // this will load the batches from the server
             RefreshFilter(null, null);
 
-            ((TFrmGLBatch) this.ParentForm).DisableJournals();
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmGLBatch) this.ParentForm).EnableJournals();
+            }
+            else
+            {
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+            }
+
             ((TFrmGLBatch) this.ParentForm).DisableTransactions();
             ((TFrmGLBatch) this.ParentForm).DisableAttributes();
 
@@ -169,10 +177,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
-                ((TFrmGLBatch)ParentForm).LoadJournals(
-                    ARow.LedgerNumber,
-                    ARow.BatchNumber);
-
                 FSelectedBatchNumber = ARow.BatchNumber;
             }
         }
@@ -255,6 +259,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchDescription.Focus();
 
             ((TFrmGLBatch)ParentForm).SaveChanges();
+
+            //Enable the Journals if not already enabled
+            ((TFrmGLBatch)ParentForm).EnableJournals();
         }
 
         /// <summary>
@@ -423,7 +430,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((dtpDetailDateEffective.Date < StartDateCurrentPeriod) || (dtpDetailDateEffective.Date > EndDateLastForwardingPeriod))
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
-                            "The Date Effective is outside the allowable period range. Enter a date betweenn {0:d} and {1:d}."),
+                            "The Date Effective is outside the periods available for posting. Enter a date between {0:d} and {1:d}."),
                         StartDateCurrentPeriod,
                         EndDateLastForwardingPeriod));
 
@@ -534,7 +541,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     message +=
                         string.Format(
-                            Catalog.GetString("{0}/{1} ({2}/{3}) is: {4} and would be: {5}"),
+                            Catalog.GetString("{1}/{0} ({3}/{2}) is: {4} and would be: {5}"),
                             ((TVariant)compValues[0]).ToString(),
                             ((TVariant)compValues[2]).ToString(),
                             ((TVariant)compValues[1]).ToString(),
@@ -594,15 +601,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (radioButton.Checked)
                 {
-                    int rowIndex = CurrentRowIndex();
+                    //int rowIndex = CurrentRowIndex();
 
                     RefreshFilter(null, null);
                     // TODO Select the actual row again in updated
-                    SelectByIndex(rowIndex);
+                    //SelectByIndex(rowIndex);
                     // UpdateChangeableStatus();
 
-                    bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
-                    EnableButtonControl(enablePosting);
+                    //bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
+                    //EnableButtonControl(enablePosting);
+
+                    //UpdateChangeableStatus(enablePosting);
                 }
             }
         }
@@ -741,12 +750,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 btnNew.Enabled = false;
             }
 
+            FPreviouslySelectedDetailRow = null;
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
             FMainDS.ABatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+
+            FGridFilterChanged = true;
 
             if (grdDetails.Rows.Count < 2)
             {
                 ClearDetailControls();
+                pnlDetails.Enabled = false;
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+                ((TFrmGLBatch) this.ParentForm).DisableAttributes();
+            }
+            else
+            {
+                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
+                InvokeFocusedRowChanged(1);
+                UpdateChangeableStatus(true);
+                ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
         }
 
