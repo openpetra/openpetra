@@ -271,7 +271,6 @@ namespace Ict.Common.Remoting.Server
         {
             String ClientLines;
             ArrayList ClientsArrayList;
-            Int16 PaddingFirstColumn;
 
             ClientsArrayList = TClientManager.ClientList(AListDisconnectedClients);
 
@@ -280,7 +279,7 @@ namespace Ict.Common.Remoting.Server
                 ClientLines =
                     Catalog.GetString("  ID | Client          | Status           | Computer    | IP Address      | Type") +
                     Environment.NewLine +
-                    "----+-----------------+------------------+-------------+-----------------+-----" +
+                    "----+-----------------+------------------+-------------+-----------------+-----" + Environment.NewLine +
                     Catalog.GetString("     | Connected since | Last activity    |             |                 |") +
                     Environment.NewLine;
 
@@ -294,22 +293,8 @@ namespace Ict.Common.Remoting.Server
 
                 foreach (string[] currentClient in ClientsArrayList)
                 {
-                    /*
-                     * The following code is needed because the header lines go until column
-                     * #80 of the Console, and this causes the first Client line to be shifted
-                     * two characters to the right...
-                     */
-                    if (ClientLine == 1)
-                    {
-                        PaddingFirstColumn = 2;
-                    }
-                    else
-                    {
-                        PaddingFirstColumn = 4;
-                    }
-
                     ClientLines = ClientLines +
-                                  ValueOrEmpty(currentClient[0]).PadLeft(PaddingFirstColumn) + " | " +
+                                  ValueOrEmpty(currentClient[0]).PadLeft(4) + " | " +
                                   ValueOrEmpty(currentClient[1]).PadRight(15) + " | " +
                                   ValueOrEmpty(currentClient[2]).PadRight(16) + " | " +
                                   ValueOrEmpty(currentClient[5]).PadRight(11) + " | " +
