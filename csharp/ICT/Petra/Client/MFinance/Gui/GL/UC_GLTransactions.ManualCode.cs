@@ -56,6 +56,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetDataFromControls();
             }
 
+            bool firstRun = (FLedgerNumber != ALedgerNumber) || (FTransactionCurrency != AForeignCurrencyName);
+
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
             FJournalNumber = AJournalNumber;
@@ -79,9 +81,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
             FTransactionCurrency = AForeignCurrencyName;
-            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-                true, false, ActiveOnly, false, AForeignCurrencyName);
-            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+
+            if (firstRun)
+            {
+                TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
+                    true, false, ActiveOnly, false, AForeignCurrencyName);
+                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+            }
 
             ShowData();
         }
@@ -244,6 +250,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ATransactionRow ARow)
         {
+            if (ARow == null)
+            {
+                ((TFrmGLBatch)ParentForm).DisableAttributes();
+                return;
+            }
+
             if (ARow.DebitCreditIndicator)
             {
                 txtDebitAmountBase.NumberValueDecimal = ARow.AmountInBaseCurrency;
@@ -260,20 +272,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             UpdateTotals();
-
-            if (ARow == null)
-            {
-                ((TFrmGLBatch)ParentForm).DisableAttributes();
-            }
-            else
-            {
-                ((TFrmGLBatch)ParentForm).LoadAttributes(
-                    ARow.LedgerNumber,
-                    ARow.BatchNumber,
-                    ARow.JournalNumber,
-                    ARow.TransactionNumber
-                    );
-            }
         }
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)

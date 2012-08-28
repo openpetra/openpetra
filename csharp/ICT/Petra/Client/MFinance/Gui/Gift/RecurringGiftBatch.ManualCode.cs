@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
         public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
         {
-            this.tpgTransactions.Enabled = true;
+            //this.tpgTransactions.Enabled = true;
             FPetraUtilsObject.DisableDataChangedEvent();
             this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AFromTabClick);
             FPetraUtilsObject.EnableDataChangedEvent();
@@ -109,6 +109,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void EnableTransactionsTab()
         {
             this.tpgTransactions.Enabled = true;
+        }
+
+        /// enable the transaction tab page
+        public void DisableTransactionsTab()
+        {
+            this.tpgTransactions.Enabled = false;
         }
 
         /// <summary>
@@ -158,6 +164,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFromTabClick"></param>
         public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
         {
+            if (!SaveChanges())
+            {
+                return;
+            }
+
             if (FChangeTabEventHasRun && AFromTabClick)
             {
                 FChangeTabEventHasRun = false;
@@ -175,6 +186,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 }
+
+                this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
             }
             else if (ATab == eGiftTabs.Transactions)
             {
