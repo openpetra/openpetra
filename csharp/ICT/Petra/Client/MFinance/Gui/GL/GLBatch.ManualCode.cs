@@ -167,8 +167,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         	
         	if (ATab == eGLTabs.Batches)
             {
-            	TLogging.Log("Batches Tab");
-
             	this.tabGLBatch.SelectedTab = this.tpgBatches;
                 this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.tpgTransactions.Enabled = false;
@@ -176,8 +174,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (ATab == eGLTabs.Journals)
             {
-            	TLogging.Log("Journals Tab: Enabled=" + this.tpgJournals.Enabled.ToString());
-
                 if (this.tpgJournals.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgJournals;
@@ -192,8 +188,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (ATab == eGLTabs.Transactions)
             {
-            	TLogging.Log("Transactions Tab: Enabled=" + this.tpgTransactions.Enabled.ToString());
-
             	if (this.tpgTransactions.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgTransactions;
@@ -210,8 +204,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (ATab == eGLTabs.Attributes)
             {
-            	TLogging.Log("Attributes Tab: Enabled=" + this.tpgAttributes.Enabled.ToString());
-
             	if (this.tpgAttributes.Enabled)
                 {
                     this.tabGLBatch.SelectedTab = this.tpgAttributes;
