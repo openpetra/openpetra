@@ -46,8 +46,8 @@ namespace Ict.Common.Controls
     /// <summary>
     /// Request for loading of the same Icon that is currently shown as Task Image, but in a different size.
     /// </summary>
-    public delegate Image TRequestForDifferentIconSize(string ATaskImagePath, TIconCache.TIconSize AIconSize);    
-    
+    public delegate Image TRequestForDifferentIconSize(string ATaskImagePath, TIconCache.TIconSize AIconSize);
+
     /// <summary>
     /// Represents an individual Task (of many) in a Task List.
     /// </summary>
@@ -80,7 +80,7 @@ namespace Ict.Common.Controls
 
         /// <summary>Event that signalises that a different Icon size needs to be loaded for this Task.</summary>
         public event TRequestForDifferentIconSize RequestForDifferentIconSize;
-        
+
         #region Properties
 
         /// <summary>
@@ -150,9 +150,9 @@ namespace Ict.Common.Controls
                 {
                     if (FTaskImageSmallSizeCache == null)
                     {
-                        if (RequestForDifferentIconSize != null) 
+                        if (RequestForDifferentIconSize != null)
                         {
-                            TaskImage = RequestForDifferentIconSize(FTaskImagePath, TIconCache.TIconSize.is16by16);    
+                            TaskImage = RequestForDifferentIconSize(FTaskImagePath, TIconCache.TIconSize.is16by16);
                         }
                     }
                     else
@@ -166,7 +166,7 @@ namespace Ict.Common.Controls
                 {
                     if (FTaskImageLargeSizeCache == null)
                     {
-                        if (RequestForDifferentIconSize != null) 
+                        if (RequestForDifferentIconSize != null)
                         {
                             TaskImage = RequestForDifferentIconSize(FTaskImagePath, TIconCache.TIconSize.is32by32);
                         }
@@ -176,7 +176,7 @@ namespace Ict.Common.Controls
                         pnlBackground.Image = FTaskImageLargeSizeCache;
                     }
                 }
-                
+
                 UpdateTaskAppearance();
                 UpdateLayout();
             }
@@ -238,11 +238,11 @@ namespace Ict.Common.Controls
 
             set
             {
-                pnlBackground.Image = value;                
-                
-                if (value != null) 
+                pnlBackground.Image = value;
+
+                if (value != null)
                 {
-                    if(FSingleTaskAppearance == TaskAppearance.staListEntry)
+                    if (FSingleTaskAppearance == TaskAppearance.staListEntry)
                     {
                         FTaskImageSmallSizeCache = pnlBackground.Image;
                     }
@@ -263,7 +263,7 @@ namespace Ict.Common.Controls
                 }
             }
         }
-        
+
         /// <summary>
         /// File path of the Icon that is displayed left of the Task Title LinkLabel.
         /// </summary>
@@ -275,7 +275,7 @@ namespace Ict.Common.Controls
             }
             set
             {
-                FTaskImagePath = value; 
+                FTaskImagePath = value;
             }
         }
 
@@ -485,14 +485,14 @@ namespace Ict.Common.Controls
             {
                 pnlBackground.ImageLocation = new Point(8, 11);
 
-                if (pnlBackground.Image != null) 
+                if (pnlBackground.Image != null)
                 {
                     pnlIconSpacer.Width = pnlBackground.Image.Width + 12;
-                    pnlIconSpacer.Height = pnlBackground.Image.Height + 12;                   
+                    pnlIconSpacer.Height = pnlBackground.Image.Height + 12;
                 }
                 else
                 {
-                    pnlIconSpacer.Size = new Size(0,0);
+                    pnlIconSpacer.Size = new Size(0, 0);
                 }
 
                 llbTaskTitle.Padding = new Padding(0, 2, 0, 0);
@@ -501,14 +501,14 @@ namespace Ict.Common.Controls
             {
                 pnlBackground.ImageLocation = new Point(5, 4);
 
-                if (pnlBackground.Image != null) 
-                {                
+                if (pnlBackground.Image != null)
+                {
                     pnlIconSpacer.Width = pnlBackground.Image.Width + 5;
                     pnlIconSpacer.Height = pnlBackground.Image.Height + 8;
                 }
                 else
                 {
-                    pnlIconSpacer.Size = new Size(0,0);
+                    pnlIconSpacer.Size = new Size(0, 0);
                 }
 
                 llbTaskTitle.Padding = new Padding(0, 3, 0, 0);
@@ -519,7 +519,7 @@ namespace Ict.Common.Controls
         {
             return TextRenderer.MeasureText(llbTaskTitle.Text, llbTaskTitle.Font);
         }
- 
+
         void DoubleClickAnywhere(object sender, EventArgs e)
         {
             FireTaskClicked();

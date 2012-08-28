@@ -32,7 +32,7 @@ namespace Ict.Common.Controls
     /// <summary>
     /// Provides a Cache for storing Icons.
     /// </summary>
-    /// <remarks>A single Icon file can hold an Icon in multiple sizes (e.g. 16x16 pixels 
+    /// <remarks>A single Icon file can hold an Icon in multiple sizes (e.g. 16x16 pixels
     /// and 32x32 pixels) and this Cache can return the Icon in the desired sizes from the Cache.</remarks>
     public class TIconCache : MemoryCache
     {
@@ -43,7 +43,7 @@ namespace Ict.Common.Controls
         {
             /// <summary>Icon with a size of 16x16 pixels</summary>
             is16by16,
-            
+
             /// <summary>Icon with a size of 24x24 pixels</summary>
             is24by24,
 
@@ -53,23 +53,23 @@ namespace Ict.Common.Controls
             /// <summary>Icon with a size of 48x48 pixels</summary>
             is48by48
         }
-        
+
         /// <summary>
         /// Single instance of TIconCache (created once on application startup).
         /// </summary>
         /// <remarks>Use this instance to access the Cache!</remarks>
         public static TIconCache IconCache;
-        
+
         /// <summary>
         /// Constructor. Simply calls the base constructor.
         /// </summary>
         /// <param name="AName"></param>
         /// <param name="AConfig"></param>
-        public TIconCache(string AName, NameValueCollection AConfig): base(AName, AConfig)
+        public TIconCache(string AName, NameValueCollection AConfig) : base(AName, AConfig)
         {
             IconCache = this;
         }
-        
+
         /// <summary>
         /// Adds an Icon into the Cache.
         /// </summary>
@@ -78,24 +78,24 @@ namespace Ict.Common.Controls
         {
             MemoryStream ms;
 
-            if (AFileName == null) 
+            if (AFileName == null)
             {
                 return;
             }
-            
+
             ms = new MemoryStream();
-            
-            using(FileStream  
-                  IconFile = new FileStream(AFileName, FileMode.Open))
+
+            using (FileStream
+                   IconFile = new FileStream(AFileName, FileMode.Open))
             {
                 IconFile.CopyTo(ms);
                 this.Set(AFileName, ms, new CacheItemPolicy());
             }
         }
-        
+
         /// <summary>
         /// Adds an Icon into the Cache if it isn't yet in the Cache. Returns the
-        /// Icon of the specified size, no matter if it was found in the Cache or 
+        /// Icon of the specified size, no matter if it was found in the Cache or
         /// whether it needed to be loaded from file first.
         /// </summary>
         /// <param name="AFileName">File name of the Icon incl. full path</param>
@@ -108,10 +108,10 @@ namespace Ict.Common.Controls
             {
                 AddIcon(AFileName);
             }
-            
+
             return GetIcon(AFileName, AIconSize);
         }
-        
+
         /// <summary>
         /// Returns the Icon of the specified size from the Cache.
         /// </summary>
@@ -121,29 +121,30 @@ namespace Ict.Common.Controls
         /// <returns>Icon of the specified size or the closest matching size.</returns>
         public Bitmap GetIcon(string AFileName, TIconSize AIconSize)
         {
-            MemoryStream TheItem;            
+            MemoryStream TheItem;
             Size IconSize = GetIconSize(AIconSize);
 
-            if (AFileName == null) 
+            if (AFileName == null)
             {
                 return null;
             }
             else
             {
-                TheItem = (MemoryStream)this[AFileName];
-                
-                if (TheItem != null) 
+                TheItem = (MemoryStream) this[AFileName];
+
+                if (TheItem != null)
                 {
-                    TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!                
+                    TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!
                     return new System.Drawing.Icon(TheItem, IconSize).ToBitmap();
                 }
                 else
                 {
-                    throw new EIconNotInCacheException(String.Format("Icon with path {0} not yet loaded into cache; add it to the cache with AddIcon Method first", AFileName));
+                    throw new EIconNotInCacheException(String.Format(
+                            "Icon with path {0} not yet loaded into cache; add it to the cache with AddIcon Method first", AFileName));
                 }
             }
         }
-        
+
         /// <summary>
         /// Determines whether an Icon exists in the Cache.
         /// </summary>
@@ -151,7 +152,7 @@ namespace Ict.Common.Controls
         /// <returns>True if the icon exists in the Cache, otherwise false.</returns>
         public bool ContainsIcon(string AFileName)
         {
-            if (AFileName == null) 
+            if (AFileName == null)
             {
                 return false;
             }
@@ -160,7 +161,7 @@ namespace Ict.Common.Controls
                 return Contains(AFileName, null);
             }
         }
-        
+
         /// <summary>
         /// Returns the Size of an Icon in pixels that is specified with a <see cref="TIconSize" /> enum value.
         /// </summary>
@@ -168,7 +169,7 @@ namespace Ict.Common.Controls
         /// <returns>Size of an Icon in pixels for enum value specified with <paramref name="AIconSize"/></returns>
         private Size GetIconSize(TIconSize AIconSize)
         {
-            switch(AIconSize)
+            switch (AIconSize)
             {
                 case TIconSize.is16by16:
                     return new Size(16, 16);
@@ -181,14 +182,14 @@ namespace Ict.Common.Controls
 
                 case TIconSize.is48by48:
                     return new Size(48, 48);
-                    
+
                 default:
                     // Fallback
                     return new Size(16, 16);
             }
         }
     }
-    
+
     /// <summary>
     /// Thrown if an attempt is made to access an Icon in the Cache, but the Icon
     /// does not exist in the Cache.

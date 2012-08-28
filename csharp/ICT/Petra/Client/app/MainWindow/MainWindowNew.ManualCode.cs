@@ -235,8 +235,8 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 ViewTasksAsList(this, null);
             }
-            
-            lstFolders.SelectFirstAvailableFolder();            
+
+            lstFolders.SelectFirstAvailableFolder();
         }
 
         private void ExitManualCode()
