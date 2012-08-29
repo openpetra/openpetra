@@ -64,17 +64,17 @@ namespace Ict.Tools.NAntTasks
             if (!PlatformHelper.IsWindows)
             {
                 // use the existing NUnit2 task
-                NUnit2Task task = new NUnit2Task();
-                this.CopyTo(task);
+                NUnit2Task origTask = new NUnit2Task();
+                this.CopyTo(origTask);
 
                 NUnit2Test test = new NUnit2Test();
                 FormatterElement formatter = new FormatterElement();
                 formatter.Type = FormatterType.Plain;
-                task.FormatterElements.Add(formatter);
+                origTask.FormatterElements.Add(formatter);
                 test.AssemblyFile = new FileInfo(FAssemblyName);
-                task.Tests.Add(test);
+                origTask.Tests.Add(test);
 
-                task.Execute();
+                origTask.Execute();
 
                 return;
             }
@@ -92,7 +92,7 @@ namespace Ict.Tools.NAntTasks
                 exeName = exeName.Replace("nunit-console-x86.exe", "nunit-console.exe");
             }
 
-            process.StartInfo.FileName = exeName;
+            process.StartInfo.FileName = "\"" + exeName + "\"";
 
             process.StartInfo.Arguments = FAssemblyName;
             process.StartInfo.WorkingDirectory = Path.GetDirectoryName(FAssemblyName);
