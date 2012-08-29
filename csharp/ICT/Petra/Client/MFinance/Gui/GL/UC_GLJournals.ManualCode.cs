@@ -44,6 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
+        private string FBatchStatus = string.Empty;
 
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
@@ -52,18 +53,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="ABatchStatus"></param>
+        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
-            if (FBatchNumber != -1)
+        	if (FLedgerNumber == ALedgerNumber && FBatchNumber == ABatchNumber && FBatchStatus == ABatchStatus)
             {
-                GetDataFromControls();
+                //Same as previously selected
+                if (grdDetails.SelectedRowIndex() > 0)
+                {
+                    GetDetailsFromControls(GetSelectedDetailRow());
+                }
+
+                return;
             }
 
-            FLedgerNumber = ALedgerNumber;
+        	bool firstLoad = (FLedgerNumber == -1);
+        	
+        	FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
+            FBatchStatus = ABatchStatus;
 
+            txtBatchNumber.Text = FBatchNumber.ToString();
+            
             FPreviouslySelectedDetailRow = null;
 
+            grdDetails.DataSource = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AJournal.DefaultView);
+            
             FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
                 AJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
@@ -74,10 +90,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber));
             }
+            
+            if (grdDetails.Rows.Count < 2)
+            {
+            	ClearControls();
+            }
 
-            ShowData();
-
+          	ShowData();
+           	ShowDetails(GetSelectedDetailRow());
+           	
+//            if (firstLoad)
+//            {
+//            	ShowData();
+//            }
+//            else
+//            {
+//            	ShowDetails(GetSelectedDetailRow());
+//            }
+            
             txtDetailExchangeRateToBase.Enabled = false;
+
         }
 
         private void RefreshCurrencyAndExchangeRate()
@@ -200,7 +232,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 btnGetSetExchangeRate.Enabled = (ARow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+                
+                //Can't cancel an already cancelled row
+                btnCancel.Enabled = (ARow.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
             }
+            
         }
 
         private ABatchRow GetBatchRow()
@@ -216,6 +252,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewAJournal();
+            
+            if (grdDetails.Rows.Count > 1)
+            {
+            	((TFrmGLBatch)this.ParentForm).EnableAttributes();
+            }
+            
         }
 
         /// <summary>
@@ -289,6 +331,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            int currentRowIndex = grdDetails.SelectedRowIndex();
+            
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
                                 "You have chosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
@@ -314,12 +358,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     transaction.Delete();
                 }
 
+                InvokeFocusedRowChanged(currentRowIndex);
+                
                 ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SetChangedFlag();
                 UpdateChangeableStatus();
+                
+                if (grdDetails.Rows.Count < 2)
+                {
+                	ClearControls();
+                }
             }
         }
 
+        private void ClearControls()
+        {
+        	txtDetailJournalDescription.Clear();
+        	cmbDetailTransactionTypeCode.SelectedIndex = -1;
+        	cmbDetailTransactionCurrency.SelectedIndex = -1;
+        }
+        
         private decimal GetActualExchangeRateForeign()
         {
             return Convert.ToDecimal(txtDetailExchangeRateToBase.Text);

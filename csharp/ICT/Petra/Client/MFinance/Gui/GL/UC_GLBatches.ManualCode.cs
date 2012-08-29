@@ -334,27 +334,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         transactionDV[0].Delete();
                     }
 
+                    //Select and call the event that doesn't occur automatically
+                    InvokeFocusedRowChanged(newCurrentRowPos);
+
                     //If some row(s) still exist after deletion
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                        //If last row just deleted, select row at old position - 1
-                        if (newCurrentRowPos == grdDetails.Rows.Count)
-                        {
-                            newCurrentRowPos--;
-                        }
-                    }
-                    else
+                    if (grdDetails.Rows.Count < 2)
                     {
                         EnableButtonControl(false);
                         ClearDetailControls();
-
-                        newCurrentRowPos = 0;
+                        
+                        ((TFrmGLBatch)ParentForm).DisableJournals();
+						((TFrmGLBatch)ParentForm).DisableTransactions();
+						((TFrmGLBatch)ParentForm).DisableAttributes();
                     }
-
-                    //Select and call the event that doesn't occur automatically
-                    InvokeFocusedRowChanged(newCurrentRowPos);
-                    //!!DO NOT USE THIS: grdDetails.Selection.FocusRow(0);
-
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
