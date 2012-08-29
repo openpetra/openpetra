@@ -183,6 +183,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 	                return;
 	            }
             }
+            else
+            {
+            	FPetraUtilsObject.HasChanges = false;
+            }
 
             if (ATab == eGLTabs.Batches)
             {

@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -60,7 +61,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber) && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus))
             {
                 //Same as previously selected
-                if (grdDetails.SelectedRowIndex() > 0)
+                if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED && grdDetails.SelectedRowIndex() > 0)
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
@@ -109,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
             	ShowDetails(GetSelectedDetailRow());
-            	//UpdateChangeableStatus();
+            	UpdateChangeableStatus();
             }
 
             btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
@@ -120,6 +121,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             	ClearControls();
             	pnlDetails.Enabled = false;
             }
+            else
+            {
+				int selectedRowIndex = grdDetails.SelectedRowIndex();
+				
+            	if (selectedRowIndex == -1)
+            	{
+            		grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);	
+            		InvokeFocusedRowChanged(1);
+            	}
+            	else
+            	{
+            		grdDetails.SelectRowInGrid(selectedRowIndex, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);	
+            		InvokeFocusedRowChanged(selectedRowIndex);
+            	}
+            }
+            
+            UpdateTotals();
 
         }
 
@@ -144,19 +162,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)this.ParentForm).SaveChanges())
+            {
+            	return;
+            }
+            
             this.CreateNewATransaction();
             ProcessAnalysisAttributes();
             
-            //((TFrmGLBatch)this.ParentForm).SaveChanges();
-            
+	    	if (pnlDetails.Enabled == false)
+	        {
+	        	pnlDetails.Enabled = true;
+	        }
+	
         	((TFrmGLBatch)this.ParentForm).EnableAttributes();
 
-        	if (pnlDetails.Enabled == false)
-            {
-            	pnlDetails.Enabled = true;
-            }
-
-			cmbDetailCostCentreCode.Focus();
+        	cmbDetailCostCentreCode.Focus();
+                        
         }
 
         /// <summary>
@@ -205,28 +227,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ANewRow.DebitCreditIndicator = Difference < 0;
                 }
             }
-            else
-            {
-            	if (cmbDetailCostCentreCode.Count > 1)
-            	{
-            		cmbDetailCostCentreCode.SelectedIndex = 1;
-            	}
-            	else
-            	{
-            		cmbDetailCostCentreCode.SelectedIndex = -1;
-            	}
-            	
-            	if (cmbDetailAccountCode.Count > 1)
-            	{
-            		cmbDetailAccountCode.SelectedIndex = 1;
-            	}
-            	else
-            	{
-            		cmbDetailAccountCode.SelectedIndex = -1;
-            	}
 
-            }
-            
+			if (grdDetails.Rows.Count == 2)
+			{
+				if (cmbDetailCostCentreCode.Count > 1)
+	        	{
+	        		cmbDetailCostCentreCode.SelectedIndex = 1;
+	        	}
+	        	else
+	        	{
+	        		cmbDetailCostCentreCode.SelectedIndex = -1;
+	        	}
+	        	
+	        	if (cmbDetailAccountCode.Count > 1)
+	        	{
+	        		cmbDetailAccountCode.SelectedIndex = 1;
+	        	}
+	        	else
+	        	{
+	        		cmbDetailAccountCode.SelectedIndex = -1;
+	        	}
+			}
             
         }
 
@@ -314,7 +335,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ATransactionRow ARow)
         {
-            if (ARow == null)
+            txtJournalNumber.Text = FJournalNumber.ToString();
+
+        	if (ARow == null)
             {
                 ((TFrmGLBatch)ParentForm).DisableAttributes();
                 return;
@@ -336,6 +359,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             UpdateTotals();
+            
+			if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+            	FPetraUtilsObject.DisableSaveButton();
+            }
+
         }
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)
@@ -444,6 +473,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             	
                 ((TFrmGLBatch)ParentForm).GetAttributesControl().DeleteTransactionAttributes(FPreviouslySelectedDetailRow);
                 FPreviouslySelectedDetailRow.Delete();
+                
+                FPreviouslySelectedDetailRow = null;
+                
                 UpdateTotals();
                 FPetraUtilsObject.SetChangedFlag();
 

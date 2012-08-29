@@ -86,14 +86,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
 
-            //TODO: not necessary for posted batches
-            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
-                out StartDateCurrentPeriod,
-                out EndDateLastForwardingPeriod,
-                out DefaultDate);
-            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
-                StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
+            //not necessary for posted batches
+//            if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+//            {
+	            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
+	                out StartDateCurrentPeriod,
+	                out EndDateLastForwardingPeriod,
+	                out DefaultDate);
+	            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+	                StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
+	                StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
+//            }
+
             //dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
             //dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
             //txtDetailBatchControlTotal.Enabled = false;
@@ -228,6 +232,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (!rbtEditing.Checked)
             {
                 rbtEditing.Checked = true;
+            }
+            
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)this.ParentForm).SaveChanges())
+            {
+            	return;
             }
 
             ClearDetailControls();
@@ -376,8 +385,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateTotals()
         {
-            txtDetailBatchControlTotal.NumberValueDecimal =
-                FPreviouslySelectedDetailRow.BatchRunningTotal;
+            //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+                //FPreviouslySelectedDetailRow.BatchRunningTotal;
         }
 
         private bool SaveBatchForPosting()
@@ -686,6 +695,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
+            }
+
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)this.ParentForm).SaveChanges())
+            {
+            	return;
             }
 
             ClearCurrentSelection();
