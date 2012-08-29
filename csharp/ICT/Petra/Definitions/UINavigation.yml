@@ -21,7 +21,7 @@ OpenPetra:
             Label: Search for Task
     MainMenu:
         # Department
-        Partner: {Label=Pa&rtner, Icon=partner_multires.ico, PermissionsRequired=PTNRUSER}
+        Partner: {Label=Pa&rtner, Icon=partner.ico, PermissionsRequired=PTNRUSER}
             # Module
             Main:
                 # Sub Module
@@ -63,7 +63,7 @@ OpenPetra:
                         DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFrmFinanceMain.DonorByMotivationExtract}
                         DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFrmFinanceMain.DonorByAmountExtract}
                         DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFrmFinanceMain.DonorByMiscellaneousExtract}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, Icon=Print.ico}
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner}  # Icon=Print.ico
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
@@ -127,7 +127,7 @@ OpenPetra:
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
-        Finance: {Icon=accounts_small.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
+        Finance: {Icon=accounts.ico, Label=Ledger {0} {1}, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
             Finance:
                 GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift}
                     SearchBoxes: [Donor, Recipient]
@@ -147,7 +147,7 @@ OpenPetra:
                     FormLetters:
                         PrintNewDonorSubscriptionLetters: {Description:Send a letter to new donors that will get subscribed to our publication, ActionOpenScreen=TFrmGiftNewDonorLetter}
                         PrintDonorsOfWorkersLetters: {Description:Send a letter to all donors of a specific worker, ActionOpenScreen=TFrmGiftDonorsOfWorkerLetter}
-                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, Icon=Print.ico}
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         RecipientGiftStatement: {ActionOpenScreen=TFrmRecipientGiftStatement}
                         DonorGiftStatement: {ActionOpenScreen=TFrmDonorGiftStatement}
                         DonorGiftsToFieldsReport: {ActionOpenScreen=TFrmDonorGiftsToFieldsReport}
@@ -159,7 +159,7 @@ OpenPetra:
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
                 AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
-                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, Icon=Print.ico}
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
                         AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
                         CurrentAccountsPayable: {Description:"Invoices payable today, or on a specified date", ActionOpenScreen=TFrmAP_CurrentPayable}
@@ -171,7 +171,7 @@ OpenPetra:
                         AutoGenerateBudget: {ActionOpenScreen=TFrmAutoGenerateBudget}
                         ConsolidateBudgets: {ActionClick=TConsolidateBudgets.ConsolidateBudgets}
                         ExportBudget: {ActionOpenScreen=TFrmExportBudget}
-                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, Icon=Print.ico}
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                         IncomeExpenseStatementMultiPeriod: {ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
@@ -192,7 +192,7 @@ OpenPetra:
                         YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
                     ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
                         ICHStewardshipCalculation: {ActionOpenScreen=TFrmReportingPeriodSelectionDialog, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
-                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, Icon=Print.ico}
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
                         AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
                         TrialBalance: {ActionOpenScreen=TFrmTrialBalance}
@@ -244,7 +244,7 @@ OpenPetra:
                         MotivationGroup: {Description=Maintain Motivation Groups, ActionOpenScreen=Gift.TFrmMotivationGroupSetup}
                         SetupAdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
                         SetupAdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
-        CrossLedgerSetup: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
+        CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
             CrossLedgerSetup: {Label="Finance Setup"}
                 General:
                     Ledger:
@@ -258,7 +258,7 @@ OpenPetra:
                     ExchangeRates: {Label="Exchange Rates (Cross-Ledger)"}
                         SetupCorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
                         SetupDailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
-        Personnel: {Icon=personel_small.ico, PermissionsRequired=PERSONNEL}
+        Personnel: {Icon=personel.ico, PermissionsRequired=PERSONNEL}
             # Module
             Main:
                 # Sub Module
@@ -271,7 +271,7 @@ OpenPetra:
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TFrmPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TFrmPersonnelMain.PartnerByFieldExtract}
 
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel, Icon=Print.ico}
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel}  # Icon=Print.ico
                     PersonnelReports:
                         ProgressReport: {ActionOpenScreen=TFrmProgressReport}
                         PreviousExperienceReport: {ActionOpenScreen=TFrmPreviousExperienceReport}
@@ -327,11 +327,11 @@ OpenPetra:
                         #LocalDataFieldOrderShortTermApp: {Label=Setup Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
                         LocalDataFieldOrderPersonnel: {Label=Setup Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
                         
-        ConferenceManagement: {Icon=conference_small.ico, PermissionsRequired=CONFERENCE}
+        ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE}
             Main:
                 Find: {Namespace=Ict.Petra.Client.MConference.Gui}
                     FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, Icon=Print.ico}
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference}  # Icon=Print.ico
                     Reports:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
                         AccommodationReport: {ActionOpenScreen=TFrmAccommodationReport}
@@ -359,8 +359,8 @@ OpenPetra:
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup}
                     General:
                         ConferenceCostType: {Label= Setup Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
-        FinancialDevelopment: {Icon=develope_small.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true, PermissionsRequired=DEVUSER}
-            Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev, Icon=Print.ico}
+        FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=FinDev {0} {1}, DependsOnLedger=true, PermissionsRequired=DEVUSER}
+            Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}  # Icon=Print.ico
                 GeneralReports:
                     IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
                     LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
@@ -375,7 +375,7 @@ OpenPetra:
                     SYBUNTReport: {ActionOpenScreen=TFrmSYBUNTReport}
                     NewDonorReport: {ActionOpenScreen=TFrmNewDonorReport}
                         TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
-        Settings: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
+        Settings: {Icon=settings.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main:
                 Main:
                     Safety:
@@ -385,7 +385,7 @@ OpenPetra:
                     Export:
                         ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
 
-        SystemManager: {Icon=sysman_small.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
+        SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN}
             Security:
                 Users:
                     Maintenance:
