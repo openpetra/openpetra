@@ -24,6 +24,8 @@
 using NAnt.Core;
 using NAnt.Core.Attributes;
 using NAnt.NUnit2;
+using NAnt.NUnit2.Tasks;
+using NAnt.NUnit2.Types;
 using NAnt.NUnit.Types;
 using System;
 using System.IO;
@@ -62,10 +64,10 @@ namespace Ict.Tools.NAntTasks
             if (!PlatformHelper.IsWindows)
             {
                 // use the existing NUnit2 task
-                NAnt.NUnit2.Tasks.NUnit2Task NUnit2 = new NAnt.NUnit2.Tasks.NUnit2Task();
+                NUnit2Task NUnit2 = new NUnit2Task();
                 this.CopyTo(NUnit2);
 
-                NAnt.NUnit2.Types.NUnit2Test test = new NAnt.NUnit2.Types.NUnit2Test();
+                NUnit2Test test = new NUnit2Test();
                 FormatterElement formatter = new FormatterElement();
                 formatter.Type = FormatterType.Plain;
                 NUnit2.FormatterElements.Add(formatter);
