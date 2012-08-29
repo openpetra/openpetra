@@ -26,7 +26,6 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
 using System.Drawing;
-using System.Runtime.Caching;
 using System.Windows.Forms;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -61,7 +60,7 @@ namespace Tests.Common.Controls
         {
             Image TestImage;
 
-            new TIconCache("IconCache", new NameValueCollection());
+            new TIconCache();
 
 
             // Icon #1 (contains both 16x16 pixel and 32x32 pixel version of the same icon)

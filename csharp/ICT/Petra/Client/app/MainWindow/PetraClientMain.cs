@@ -26,7 +26,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Threading;
 using System.Diagnostics;
-using System.Runtime.Caching;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -643,7 +642,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             TClientInfo.InitializeUnit();
             TCacheableTablesManager.InitializeUnit();
-            new TIconCache("IconCache", new NameValueCollection());
+            new TIconCache();
 
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;

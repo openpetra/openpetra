@@ -22,10 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Runtime.Caching;
 
 namespace Ict.Common.Controls
 {
@@ -34,7 +33,7 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <remarks>A single Icon file can hold an Icon in multiple sizes (e.g. 16x16 pixels
     /// and 32x32 pixels) and this Cache can return the Icon in the desired sizes from the Cache.</remarks>
-    public class TIconCache : MemoryCache
+    public class TIconCache
     {
         /// <summary>
         /// Size of Icon.
@@ -63,12 +62,12 @@ namespace Ict.Common.Controls
         /// <summary>True if the last requested Icon was returned from the Cache.</summary>
         private static bool FLastIconRequestedWasReturnedFromCache = false;
 
+        private SortedList <string, MemoryStream>CachedIcons = new SortedList <string, MemoryStream>();
+
         /// <summary>
-        /// Constructor. Simply calls the base constructor.
+        /// Constructor
         /// </summary>
-        /// <param name="AName"></param>
-        /// <param name="AConfig"></param>
-        public TIconCache(string AName, NameValueCollection AConfig) : base(AName, AConfig)
+        public TIconCache()
         {
             IconCache = this;
         }
@@ -103,7 +102,15 @@ namespace Ict.Common.Controls
                    IconFile = new FileStream(AFileName, FileMode.Open))
             {
                 IconFile.CopyTo(ms);
-                this.Set(AFileName, ms, new CacheItemPolicy());
+
+                if (CachedIcons.ContainsKey(AFileName))
+                {
+                    CachedIcons[AFileName] = ms;
+                }
+                else
+                {
+                    CachedIcons.Add(AFileName, ms);
+                }
             }
         }
 
@@ -151,25 +158,22 @@ namespace Ict.Common.Controls
             {
                 return null;
             }
+            else if (!CachedIcons.ContainsKey(AFileName))
+            {
+                FLastIconRequestedWasReturnedFromCache = false;
+
+                throw new EIconNotInCacheException(String.Format(
+                        "Icon with path {0} not yet loaded into cache; add it to the cache with AddIcon Method first", AFileName));
+            }
             else
             {
-                TheItem = (MemoryStream) this[AFileName];
+                TheItem = CachedIcons[AFileName];
 
-                if (TheItem != null)
-                {
-                    TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!
+                TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!
 
-                    FLastIconRequestedWasReturnedFromCache = true;
+                FLastIconRequestedWasReturnedFromCache = true;
 
-                    return new System.Drawing.Icon(TheItem, IconSize).ToBitmap();
-                }
-                else
-                {
-                    FLastIconRequestedWasReturnedFromCache = false;
-
-                    throw new EIconNotInCacheException(String.Format(
-                            "Icon with path {0} not yet loaded into cache; add it to the cache with AddIcon Method first", AFileName));
-                }
+                return new System.Drawing.Icon(TheItem, IconSize).ToBitmap();
             }
         }
 
@@ -186,7 +190,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                return Contains(AFileName, null);
+                return CachedIcons.ContainsKey(AFileName);
             }
         }
 
