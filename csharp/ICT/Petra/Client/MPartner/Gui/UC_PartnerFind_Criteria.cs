@@ -85,6 +85,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FCriteriaSetupMode;
         private TSelectedCriteriaPanel FSelectedPanel;
         private DataTable FPartnerClassDataTable;
+        private DataSet FFindCriteriaDataSet = new DataSet();
         private Boolean FWorkerFamOnly;
         private string[] FRestrictedParterClasses;
         private String FDefaultPartnerClass;
@@ -1239,6 +1240,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPartnerClassDataTable.Rows.Clear();
 
+                // This needs to be re-assigned again after the .Clear() call - not really sure why this is necessary, 
+                // but if this is not done then SingleDataRow["PartnerClass"] is ""...
+                SingleDataRow["PartnerClass"] = FDefaultPartnerClass;
+
                 if ((FRestrictedParterClasses == null)
                     || ((FRestrictedParterClasses.Length) == 0))
                 {
@@ -1513,6 +1518,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // FFindCriteriaDataTable := new DataTable('FindCriteria');
             FFindCriteriaDataTable.ColumnChanging += new DataColumnChangeEventHandler(this.OnCriteriaChanging);
 
+            FFindCriteriaDataSet.DataSetName = "FindCriteriaDataSet";
+            FFindCriteriaDataSet.Tables.AddRange(new System.Data.DataTable[] { this.FFindCriteriaDataTable });
+            
             // Set status bar texts
             FPetraUtilsObject.SetStatusBarText(txtPartnerName, StrPartnerNameFindHelptext);
             FPetraUtilsObject.SetStatusBarText(txtPersonalName, StrPersonalNameFindHelpText);
