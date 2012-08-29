@@ -34,6 +34,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.MConference.Validation;
 
 namespace Ict.Petra.Client.MConference.Gui.Setup
 {
@@ -76,5 +77,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 dtpDetailUnassignableDate.Date = DateTime.Now.Date;
             }
         }
+        
+        private void ValidateDataDetailsManual(PcCostTypeRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedValidation_CacheableDataTables.ValidateConferenceCostType(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+        }        
     }
 }

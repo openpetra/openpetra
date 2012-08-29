@@ -39,7 +39,7 @@ RootNode:
         txtDetailCostTypeCode: {Label=Cost Type Code, CharacterCasing=Upper, Width=160}
         txtDetailCostTypeDescription: {Label=Description, Width=315}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
-        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false}
+        dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
     Toolbar:
         tbbNew:
