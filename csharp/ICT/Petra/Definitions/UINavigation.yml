@@ -27,16 +27,17 @@ OpenPetra:
                 # Sub Module
                 Partners: {Namespace=Ict.Petra.Client.MPartner.Gui}
                     SearchBoxes: [Partner]
-                    NewPartner:
-                        AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner}
-                        AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson}
-                        AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation}
-                    MaintainPartner:
+                    MaintainPartners:
                         #ChangeAddress:
                         #MergePartners:
-                        FindPartner: {ActionClick=TFrmPartnerMain.FindPartner}
+                        FindPartners: {ActionClick=TFrmPartnerMain.FindPartner, Description=Search for and work with Partners}
+                        WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TFrmPartnerMain.OpenLastUsedPartnerEditScreen}
+                    CreatePartner:
+                        AddNewFamily: {ActionClick=TFrmPartnerMain.NewPartner, Description=Create a new Partner of Class FAMILY}
+                        AddNewPerson: {ActionClick=TFrmPartnerMain.NewPerson, Description=Create a new Partner of Class PERSON}
+                        AddNewOrganisation: {ActionClick=TFrmPartnerMain.NewOrganisation, Description=Create a new Partner of Class ORGANISATION}
                     Contacts:
-                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts}
+                        FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Partner Contacts}
                     ImportExport: {Label=Import and Export}
                         ExportPartners: {ActionClick=TFrmPartnerMain.ExportPartners, Description="Export to YAML file for importing into other OpenPetra database"}
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from file or satellite database}
