@@ -50,7 +50,7 @@ namespace Tests.Common.Controls
         public void Init()
         {
             Catalog.Init();
-            new TLogging("test.log");
+            new TLogging("TestCommonControls.log");
         }
 
         /// <summary>
