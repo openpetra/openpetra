@@ -64,17 +64,17 @@ namespace Ict.Tools.NAntTasks
             if (!PlatformHelper.IsWindows)
             {
                 // use the existing NUnit2 task
-                NUnit2Task NUnit2 = new NUnit2Task();
-                this.CopyTo(NUnit2);
+                NUnit2Task task = new NUnit2Task();
+                this.CopyTo(task);
 
                 NUnit2Test test = new NUnit2Test();
                 FormatterElement formatter = new FormatterElement();
                 formatter.Type = FormatterType.Plain;
-                NUnit2.FormatterElements.Add(formatter);
+                task.FormatterElements.Add(formatter);
                 test.AssemblyFile = new FileInfo(FAssemblyName);
-                NUnit2.Tests.Add(test);
+                task.Tests.Add(test);
 
-                NUnit2.Execute();
+                task.Execute();
 
                 return;
             }
