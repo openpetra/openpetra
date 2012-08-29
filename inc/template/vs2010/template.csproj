@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>${ProjectGuid}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>${OutputType}</OutputType>
     <RootNamespace>${Namespace}</RootNamespace>
     <AssemblyName>${Namespace}</AssemblyName>
@@ -15,7 +15,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -24,7 +24,7 @@
     <StartArguments>${DebugStartArguments}</StartArguments>
     <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <DefineConstants>TRACE</DefineConstants>

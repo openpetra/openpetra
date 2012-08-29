@@ -3,7 +3,7 @@
   <PropertyGroup>
     <ProjectGuid>${ProjectGuid}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>${OutputType}</OutputType>
     <RootNamespace>${Namespace}</RootNamespace>
     <AssemblyName>${Namespace}</AssemblyName>
@@ -17,8 +17,8 @@
     <Optimize>False</Optimize>
     <StartArguments>${DebugStartArguments}</StartArguments>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>True</DebugSymbols>
