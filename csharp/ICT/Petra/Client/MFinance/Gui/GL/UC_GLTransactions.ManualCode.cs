@@ -376,7 +376,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateTotals()
         {
-            if ((FJournalNumber != -1) && !pnlDetailsProtected)
+        	if ((FJournalNumber != -1)) // && !pnlDetailsProtected)
             {
                 GLBatchTDSAJournalRow journal = GetJournalRow();
 
