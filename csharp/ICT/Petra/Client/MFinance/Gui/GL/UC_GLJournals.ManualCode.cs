@@ -92,15 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber));
             }
             
-            if (firstLoad)
-            {
-                ShowData();
-            }
-            else
-            {
-				UpdateChangeableStatus();
-            }
-
+            ShowData();
             ShowDetails(GetSelectedDetailRow());
            	
             txtDetailExchangeRateToBase.Enabled = false;
@@ -109,26 +101,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
             	ClearControls();
             }
-            else
-            {
-				int selectedRowIndex = grdDetails.SelectedRowIndex();
-				
-            	if (selectedRowIndex == -1)
-            	{
-            		grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);	
-            		InvokeFocusedRowChanged(1);
-            	}
-            	else
-            	{
-            		grdDetails.SelectRowInGrid(selectedRowIndex, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);	
-            		InvokeFocusedRowChanged(selectedRowIndex);
-            	}
-            	
-            	((TFrmGLBatch)this.ParentForm).EnableTransactions();
-			}
 
-            UpdateTotals(GetBatchRow());
-            FPetraUtilsObject.HasChanges = false;
+			UpdateTotals(GetBatchRow());
 
         }
 
@@ -255,16 +229,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                btnGetSetExchangeRate.Enabled = (ARow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+                ((TFrmGLBatch)ParentForm).EnableTransactions();
+            	
+            	btnGetSetExchangeRate.Enabled = (ARow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
                 
                 //Can't cancel an already cancelled row
                 btnCancel.Enabled = (ARow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
                 ((TFrmGLBatch)ParentForm).EnableTransactions();
-            }
-            
-            if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-            {
-            	FPetraUtilsObject.DisableSaveButton();
+
+                if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+	            {
+	            	FPetraUtilsObject.DisableSaveButton();
+	            }
+  
+                UpdateChangeableStatus();
             }
             
         }
@@ -348,9 +326,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                  && GetBatchRow() != null
                                  && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            this.btnCancel.Enabled = changeable;
+            Boolean journalUpdatable = (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
+            
+            this.btnCancel.Enabled = changeable && journalUpdatable;
             this.btnAdd.Enabled = changeable;
-            pnlDetails.Enabled = changeable;
+            pnlDetails.Enabled = changeable && journalUpdatable;
             pnlDetailsProtected = !changeable;
         }
 

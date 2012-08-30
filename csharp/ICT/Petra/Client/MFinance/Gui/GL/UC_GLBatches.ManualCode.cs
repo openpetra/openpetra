@@ -317,9 +317,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 else
                 {
                     FMainDS.Merge(mergeDS);
-                    GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-                    //FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-                    grdDetails.Refresh();
+                    //GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                    FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                    //grdDetails.Refresh();
 
                     foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                     {

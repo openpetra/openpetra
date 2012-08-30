@@ -104,40 +104,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
                     true, false, ActiveOnly, false, AForeignCurrencyName);
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+            }
 
-                ShowData();
-            }
-            else
-            {
-            	ShowDetails(GetSelectedDetailRow());
-            	UpdateChangeableStatus();
-            }
+            ShowData();
+        	ShowDetails(GetSelectedDetailRow());
 
             btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
             btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
+
+            UpdateTotals();
 
             if (grdDetails.Rows.Count < 2)
             {
             	ClearControls();
             	pnlDetails.Enabled = false;
             }
-            else
-            {
-				int selectedRowIndex = grdDetails.SelectedRowIndex();
-				
-            	if (selectedRowIndex == -1)
-            	{
-            		grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);	
-            		InvokeFocusedRowChanged(1);
-            	}
-            	else
-            	{
-            		grdDetails.SelectRowInGrid(selectedRowIndex, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);	
-            		InvokeFocusedRowChanged(selectedRowIndex);
-            	}
-            }
-            
-            UpdateTotals();
 
         }
 
