@@ -98,7 +98,7 @@ namespace Ict.Common.Controls
             ms = new MemoryStream();
 
             using (FileStream
-                   IconFile = new FileStream(AFileName, FileMode.Open))
+                   IconFile = new FileStream(AFileName, FileMode.Open, FileAccess.Read))
             {
                 IconFile.CopyTo(ms);
                 this.AddOrUpdate(AFileName, ms, (AKey, AExistingValue) =>
