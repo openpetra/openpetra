@@ -22,10 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections.Specialized;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.IO;
-using System.Runtime.Caching;
 
 namespace Ict.Common.Controls
 {
@@ -34,7 +34,7 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <remarks>A single Icon file can hold an Icon in multiple sizes (e.g. 16x16 pixels
     /// and 32x32 pixels) and this Cache can return the Icon in the desired sizes from the Cache.</remarks>
-    public class TIconCache : MemoryCache
+    public class TIconCache : ConcurrentDictionary<string, MemoryStream>
     {
         /// <summary>
         /// Size of Icon.
@@ -66,9 +66,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Constructor. Simply calls the base constructor.
         /// </summary>
-        /// <param name="AName"></param>
-        /// <param name="AConfig"></param>
-        public TIconCache(string AName, NameValueCollection AConfig) : base(AName, AConfig)
+        public TIconCache() : base()
         {
             IconCache = this;
         }
@@ -103,7 +101,17 @@ namespace Ict.Common.Controls
                    IconFile = new FileStream(AFileName, FileMode.Open))
             {
                 IconFile.CopyTo(ms);
-                this.Set(AFileName, ms, new CacheItemPolicy());
+                this.AddOrUpdate(AFileName, ms, (AKey, AExistingValue) =>
+                    { 
+                        // If this delegate is invoked, then the key already exists. 
+                        // Here we make sure the MemoryStream really is the same MemoryStream we already have. 
+                        if (ms != AExistingValue)
+                            throw new ArgumentException("Duplicate MemoryStream names are not allowed: {0}.", AFileName);
+                        
+                        // The only updatable fields are the temerature array and lastQueryDate.
+                        AExistingValue = ms;
+                        return AExistingValue;
+                    });
             }
         }
 
@@ -153,23 +161,22 @@ namespace Ict.Common.Controls
             }
             else
             {
-                TheItem = (MemoryStream) this[AFileName];
-
-                if (TheItem != null)
+                try 
                 {
-                    TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!
-
-                    FLastIconRequestedWasReturnedFromCache = true;
-
-                    return new System.Drawing.Icon(TheItem, IconSize).ToBitmap();
-                }
-                else
+                    TheItem = (MemoryStream) this[AFileName];    
+                } catch (KeyNotFoundException) 
                 {
                     FLastIconRequestedWasReturnedFromCache = false;
 
                     throw new EIconNotInCacheException(String.Format(
                             "Icon with path {0} not yet loaded into cache; add it to the cache with AddIcon Method first", AFileName));
-                }
+                }               
+
+                TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!
+
+                FLastIconRequestedWasReturnedFromCache = true;
+
+                return new System.Drawing.Icon(TheItem, IconSize).ToBitmap();
             }
         }
 
@@ -186,7 +193,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                return Contains(AFileName, null);
+                return ContainsKey(AFileName);
             }
         }
 

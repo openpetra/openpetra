@@ -61,7 +61,7 @@ namespace Tests.Common.Controls
         {
             Image TestImage;
 
-            new TIconCache("IconCache", new NameValueCollection());
+            new TIconCache();
 
 
             // Icon #1 (contains both 16x16 pixel and 32x32 pixel version of the same icon)
