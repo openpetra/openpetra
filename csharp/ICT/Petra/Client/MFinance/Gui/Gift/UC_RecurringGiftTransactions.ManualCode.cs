@@ -77,15 +77,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 return;
             }
-            else
-            {
-                FLedgerNumber = ALedgerNumber;
-                FBatchNumber = ABatchNumber;
-                FBatchRow = GetBatchRow();
-            }
+
+            FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
+            FBatchRow = GetBatchRow();
 
             //Apply new filter
-            //FPreviouslySelectedDetailRow = null;
+            FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
 
@@ -114,14 +112,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            if (firstLoad)
-            {
-                ShowData();
-            }
-            else
-            {
-                ShowDetails(GetSelectedDetailRow());
-            }
+            ShowData();
+            ShowDetails(GetSelectedDetailRow());
 
             if (AFromTabClick)
             {
