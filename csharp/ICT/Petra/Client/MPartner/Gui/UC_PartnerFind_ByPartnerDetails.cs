@@ -694,7 +694,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 throw new NotImplementedException();
             }
-            else if (ClickedMenuItemName == MPartnerResourcestrings.StrFamilyMembersMenuItemText)
+            else if (ClickedMenuItemName == "mniMaintainFamilyMembers")
             {
                 OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpFamilyMembers);
             }
