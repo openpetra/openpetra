@@ -494,20 +494,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
                 //Select unposted batch row in same index position as batch just posted
-	            grdDetails.DataSource = null;
-	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
 
-	            if (grdDetails.Rows.Count > 1)
+                if (grdDetails.Rows.Count > 1)
                 {
-		            //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-		            // such that a removal of a row is not detected
-	            	FDetailGridRowsCountPrevious++;
-	            	InvokeFocusedRowChanged(newCurrentRowPos);
-				}
-				else 
-				{
+                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    // such that a removal of a row is not detected
+                    FDetailGridRowsCountPrevious++;
+                    InvokeFocusedRowChanged(newCurrentRowPos);
+                }
+                else
+                {
                     ClearControls();
-                    ((TFrmGiftBatch)this.ParentForm).DisableTransactions();
+                    ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
                 }
             }
         }

@@ -55,13 +55,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AForeignCurrencyName"></param>
         /// <param name="ABatchStatus"></param>
         /// <param name="AJournalStatus"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, string AForeignCurrencyName, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED, string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED)
+        public void LoadTransactions(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            string AForeignCurrencyName,
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
+            string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
             //Check if the same batch is selected, so no need to apply filter
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber) && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
+                && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus))
             {
                 //Same as previously selected
-                if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED && grdDetails.SelectedRowIndex() > 0)
+                if ((GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
@@ -82,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
-            
+
             // only load from server if there are no transactions loaded yet for this journal
             // otherwise we would overwrite transactions that have already been modified
             FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
@@ -107,7 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
-        	ShowDetails(GetSelectedDetailRow());
+            ShowDetails(GetSelectedDetailRow());
 
             btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
             btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
@@ -116,10 +122,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (grdDetails.Rows.Count < 2)
             {
-            	ClearControls();
-            	pnlDetails.Enabled = false;
+                ClearControls();
+                pnlDetails.Enabled = false;
             }
-
         }
 
         /// <summary>
@@ -143,23 +148,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)this.ParentForm).SaveChanges())
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
-            	return;
+                return;
             }
-            
+
             this.CreateNewATransaction();
             ProcessAnalysisAttributes();
-            
-	    	if (pnlDetails.Enabled == false)
-	        {
-	        	pnlDetails.Enabled = true;
-	        }
-	
-        	((TFrmGLBatch)this.ParentForm).EnableAttributes();
 
-        	cmbDetailCostCentreCode.Focus();
-                        
+            if (pnlDetails.Enabled == false)
+            {
+                pnlDetails.Enabled = true;
+            }
+
+            ((TFrmGLBatch) this.ParentForm).EnableAttributes();
+
+            cmbDetailCostCentreCode.Focus();
         }
 
         /// <summary>
@@ -168,8 +172,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void NewRowManual(ref GLBatchTDSATransactionRow ANewRow)
         {
-        	NewRowManual(ref ANewRow, null);
-
+            NewRowManual(ref ANewRow, null);
         }
 
         /// <summary>
@@ -209,27 +212,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-			if (grdDetails.Rows.Count == 2)
-			{
-				if (cmbDetailCostCentreCode.Count > 1)
-	        	{
-	        		cmbDetailCostCentreCode.SelectedIndex = 1;
-	        	}
-	        	else
-	        	{
-	        		cmbDetailCostCentreCode.SelectedIndex = -1;
-	        	}
-	        	
-	        	if (cmbDetailAccountCode.Count > 1)
-	        	{
-	        		cmbDetailAccountCode.SelectedIndex = 1;
-	        	}
-	        	else
-	        	{
-	        		cmbDetailAccountCode.SelectedIndex = -1;
-	        	}
-			}
-            
+            if (grdDetails.Rows.Count == 2)
+            {
+                if (cmbDetailCostCentreCode.Count > 1)
+                {
+                    cmbDetailCostCentreCode.SelectedIndex = 1;
+                }
+                else
+                {
+                    cmbDetailCostCentreCode.SelectedIndex = -1;
+                }
+
+                if (cmbDetailAccountCode.Count > 1)
+                {
+                    cmbDetailAccountCode.SelectedIndex = 1;
+                }
+                else
+                {
+                    cmbDetailAccountCode.SelectedIndex = -1;
+                }
+            }
         }
 
         /// <summary>
@@ -318,7 +320,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             txtJournalNumber.Text = FJournalNumber.ToString();
 
-        	if (ARow == null)
+            if (ARow == null)
             {
                 ((TFrmGLBatch)ParentForm).DisableAttributes();
                 return;
@@ -340,12 +342,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             UpdateTotals();
-            
-			if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-            {
-            	FPetraUtilsObject.DisableSaveButton();
-            }
 
+            if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
         }
 
         private void GetDetailDataFromControlsManual(ATransactionRow ARow)
@@ -376,7 +377,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateTotals()
         {
-        	if ((FJournalNumber != -1)) // && !pnlDetailsProtected)
+            if ((FJournalNumber != -1))     // && !pnlDetailsProtected)
             {
                 GLBatchTDSAJournalRow journal = GetJournalRow();
 
@@ -422,9 +423,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UpdateChangeableStatus()
         {
             Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
-            	&& (GetBatchRow() != null)
-            	&& (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-            	&& (GetJournalRow().JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
+                                 && (GetBatchRow() != null)
+                                 && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                                 && (GetJournalRow().JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             this.btnRemove.Enabled = changeable;
             this.btnNew.Enabled = changeable;
@@ -450,23 +451,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             FPreviouslySelectedDetailRow.TransactionNumber), Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
-            	int rowIndex = grdDetails.SelectedRowIndex();
-            	
+                int rowIndex = grdDetails.SelectedRowIndex();
+
                 ((TFrmGLBatch)ParentForm).GetAttributesControl().DeleteTransactionAttributes(FPreviouslySelectedDetailRow);
                 FPreviouslySelectedDetailRow.Delete();
-                
+
                 FPreviouslySelectedDetailRow = null;
-                
+
                 UpdateTotals();
                 FPetraUtilsObject.SetChangedFlag();
 
                 InvokeFocusedRowChanged(rowIndex);
-                
+
                 if (grdDetails.Rows.Count < 2)
                 {
-                	ClearControls();
-                	((TFrmGLBatch)ParentForm).DisableAttributes();
-                	pnlDetails.Enabled = false;
+                    ClearControls();
+                    ((TFrmGLBatch)ParentForm).DisableAttributes();
+                    pnlDetails.Enabled = false;
                 }
             }
         }
@@ -481,19 +482,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearControls()
         {
-        	cmbDetailAccountCode.SelectedIndex = -1;
-        	cmbDetailCostCentreCode.SelectedIndex = -1;
-        	cmbDetailKeyMinistryKey.SelectedIndex = -1;
-        	txtDetailNarrative.Clear();
-        	txtDetailReference.Clear();
-        	txtDebitAmount.NumberValueDecimal = 0;
-        	txtDebitAmountBase.NumberValueDecimal = 0;
-        	txtCreditAmount.NumberValueDecimal = 0;
-        	txtCreditAmountBase.NumberValueDecimal = 0;
-        	
-        	UpdateTotals();
+            cmbDetailAccountCode.SelectedIndex = -1;
+            cmbDetailCostCentreCode.SelectedIndex = -1;
+            cmbDetailKeyMinistryKey.SelectedIndex = -1;
+            txtDetailNarrative.Clear();
+            txtDetailReference.Clear();
+            txtDebitAmount.NumberValueDecimal = 0;
+            txtDebitAmountBase.NumberValueDecimal = 0;
+            txtCreditAmount.NumberValueDecimal = 0;
+            txtCreditAmountBase.NumberValueDecimal = 0;
+
+            UpdateTotals();
         }
-        
+
         /// <summary>
         /// if the account code changes, analysis types/attributes  have to be updated
         /// </summary>

@@ -1396,7 +1396,7 @@ namespace Ict.Common.Controls
                     break;
 
                 case TInvokeGridFocusEventEnum.FocusedRowChangedEvent:  //Invoke FocusedRowChanged event
-                    
+
                     SelectRowInGrid(ARowNumberInGrid, false);
                     break;
 
@@ -1408,14 +1408,14 @@ namespace Ict.Common.Controls
                     {
                         return;
                     }
-                    
+
                     if (ARowNumberInGrid < 1)
                     {
                         ARowNumberInGrid = 1;
                     }
                     else if (ARowNumberInGrid >= NumRows)
                     {
-                    	ARowNumberInGrid = NumRows - 1;
+                        ARowNumberInGrid = NumRows - 1;
                     }
 
                     //Select and show specified row

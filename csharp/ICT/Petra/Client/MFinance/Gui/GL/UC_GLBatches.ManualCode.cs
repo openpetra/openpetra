@@ -89,13 +89,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //not necessary for posted batches
 //            if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
 //            {
-	            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
-	                out StartDateCurrentPeriod,
-	                out EndDateLastForwardingPeriod,
-	                out DefaultDate);
-	            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-	                StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
-	                StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
+            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
+                out StartDateCurrentPeriod,
+                out EndDateLastForwardingPeriod,
+                out DefaultDate);
+            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+                StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
+                StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
 //            }
 
             //dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
@@ -233,10 +233,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 rbtEditing.Checked = true;
             }
-            
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)this.ParentForm).SaveChanges())
+
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
-            	return;
+                return;
             }
 
             ClearDetailControls();
@@ -351,10 +351,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         EnableButtonControl(false);
                         ClearDetailControls();
-                        
+
                         ((TFrmGLBatch)ParentForm).DisableJournals();
-						((TFrmGLBatch)ParentForm).DisableTransactions();
-						((TFrmGLBatch)ParentForm).DisableAttributes();
+                        ((TFrmGLBatch)ParentForm).DisableTransactions();
+                        ((TFrmGLBatch)ParentForm).DisableAttributes();
                     }
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
@@ -386,7 +386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UpdateTotals()
         {
             //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
-                //FPreviouslySelectedDetailRow.BatchRunningTotal;
+            //FPreviouslySelectedDetailRow.BatchRunningTotal;
         }
 
         private bool SaveBatchForPosting()
@@ -697,9 +697,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)this.ParentForm).SaveChanges())
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
-            	return;
+                return;
             }
 
             ClearCurrentSelection();

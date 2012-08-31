@@ -174,23 +174,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
-        	//Save changes before switching tab
-            if (ucoBatches.GetSelectedDetailRow() != null && ucoBatches.GetSelectedDetailRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+            //Save changes before switching tab
+            if ((ucoBatches.GetSelectedDetailRow() != null) && (ucoBatches.GetSelectedDetailRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-	            if (FPetraUtilsObject.HasChanges && !SaveChanges())
-	            {
-	            	MessageBox.Show(Catalog.GetString("Cannot change to a different tab until changes have been validated and saved."));
-	                return;
-	            }
-	            else if(!FPetraUtilsObject.HasChanges)
-	            {
-	            	FPetraUtilsObject.DisableSaveButton();
-	            }
-	            	
+                if (FPetraUtilsObject.HasChanges && !SaveChanges())
+                {
+                    MessageBox.Show(Catalog.GetString("Cannot change to a different tab until changes have been validated and saved."));
+                    return;
+                }
+                else if (!FPetraUtilsObject.HasChanges)
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
             }
             else
             {
-            	FPetraUtilsObject.HasChanges = false;
+                FPetraUtilsObject.HasChanges = false;
             }
 
             if (ATab == eGLTabs.Batches)

@@ -62,7 +62,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED, bool AFromTabClick = true)
+        public void LoadGifts(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
+            bool AFromTabClick = true)
         {
             bool firstLoad = (FLedgerNumber == -1);
 
@@ -75,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
             {
                 //Same as previously selected
-                if (ABatchStatus == MFinanceConstants.BATCH_UNPOSTED && grdDetails.SelectedRowIndex() > 0)
+                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
 
@@ -140,7 +143,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             UpdateTotals();
-            
         }
 
         bool FinRecipientKeyChanging = false;
