@@ -10937,10 +10937,10 @@
                 initial="0"/>
     <tablefield name="a_batch_status_c"
                 type="varchar"
-                descr="Status of a gift batch: unposted, posted, cancelled."
+                descr="Status of a gift batch: Unposted, Posted, Cancelled."
                 format="X(8)"
                 label="Batch Status"
-                help="Status of a gift batch: unposted, posted, cancelled."
+                help="Status of a gift batch: Unposted, Posted, Cancelled."
                 initial="Unposted"/>
     <tablefield name="a_batch_period_i"
                 type="integer"

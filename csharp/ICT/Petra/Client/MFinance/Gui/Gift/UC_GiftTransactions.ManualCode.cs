@@ -62,7 +62,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = "unposted", bool AFromTabClick = true)
+        public void LoadGifts(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
+            bool AFromTabClick = true)
         {
             bool firstLoad = (FLedgerNumber == -1);
 
@@ -75,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
             {
                 //Same as previously selected
-                if (grdDetails.SelectedRowIndex() > 0)
+                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
 
@@ -87,17 +90,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 return;
             }
-            else
-            {
-                FLedgerNumber = ALedgerNumber;
-                FBatchNumber = ABatchNumber;
-                FBatchStatus = ABatchStatus;
-                FBatchRow = GetBatchRow();
-                UpdateBatchStatus();
-            }
+
+            FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
+            FBatchStatus = ABatchStatus;
+            FBatchRow = GetBatchRow();
+            UpdateBatchStatus();
 
             //Apply new filter
-            //FPreviouslySelectedDetailRow = null;
+            FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
@@ -126,14 +127,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            if (firstLoad)
-            {
-                ShowData();
-            }
-            else
-            {
-                ShowDetails(GetSelectedDetailRow());
-            }
+            ShowData();
+            ShowDetails(GetSelectedDetailRow());
 
 //            if (AFromTabClick && (firstLoad || FActiveOnly != this.Enabled))
 //            {
