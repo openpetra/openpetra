@@ -457,7 +457,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            //Read current rows position
+            //Read current rows position ready to reposition after removal of posted row from grid
             int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
@@ -494,10 +494,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
                 //Select unposted batch row in same index position as batch just posted
-                InvokeFocusedRowChanged(newCurrentRowPos);
+	            grdDetails.DataSource = null;
+	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
 
-				if (grdDetails.Rows.Count < 2)
+	            if (grdDetails.Rows.Count > 1)
                 {
+		            //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+		            // such that a removal of a row is not detected
+	            	FDetailGridRowsCountPrevious++;
+	            	InvokeFocusedRowChanged(newCurrentRowPos);
+				}
+				else 
+				{
                     ClearControls();
                     ((TFrmGiftBatch)this.ParentForm).DisableTransactions();
                 }
