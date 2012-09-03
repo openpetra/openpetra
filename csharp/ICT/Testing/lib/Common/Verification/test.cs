@@ -847,7 +847,158 @@ namespace Ict.Common.Verification.Testing
 
             #endregion
 
+            #region IsNonZero...
 
+            #region IsNonZeroInteger
+
+            ExpectedErrorText = "'{0}' must be a non-zero integer (= a number without a fraction).";
+
+            Testname = "Test with 5";
+            TestResult = TNumericalChecks.IsNonZeroInteger(-5, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
+
+            Testname = "Test with 5";
+            TestResult = TNumericalChecks.IsNonZeroInteger(-5, Testname, TestContext, TestColumn, TestControl);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
+
+            Testname = "Test with 0";
+            TestResult = TNumericalChecks.IsNonZeroInteger(0, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
+
+            Testname = "Test with -1";
+            TestResult = TNumericalChecks.IsNonZeroInteger(1, Testname);
+            ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
+
+            Testname = "Test with -1 (TScreenVerificationResult)";
+            TestResult = TNumericalChecks.IsNonZeroInteger(1, Testname, TestContext, TestColumn, TestControl);
+            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
+
+            Testname = "Test with null";
+            TestResult = TNumericalChecks.IsNonZeroInteger(null, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroInteger: " + Testname);
+
+            #endregion
+
+            #region IsNonZeroDouble
+
+            ExpectedErrorText = "'{0}' must be a negative decimal number (= a number that has a fraction), or 0.";
+
+            Testname = "Test with 5.1";
+            TestResult = TNumericalChecks.IsNonZeroDouble(-5.1, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
+
+            Testname = "Test with 5.1";
+            TestResult = TNumericalChecks.IsNonZeroDouble(-5.1, Testname, TestContext, TestColumn, TestControl);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
+
+            Testname = "Test with 0.0";
+            TestResult = TNumericalChecks.IsNonZeroDouble(0.0, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
+
+            Testname = "Test with -0.1";
+            TestResult = TNumericalChecks.IsNonZeroDouble(0.1, Testname);
+            ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
+
+            Testname = "Test with -0.1 (TScreenVerificationResult)";
+            TestResult = TNumericalChecks.IsNonZeroDouble(0.1, Testname, TestContext, TestColumn, TestControl);
+            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
+
+            Testname = "Test with null";
+            TestResult = TNumericalChecks.IsNonZeroDouble(null, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDouble: " + Testname);
+
+            #endregion
+
+            #region IsNonZeroDecimal
+
+            ExpectedErrorText = "'{0}' must be a negative decimal number (= a number that has a fraction), or 0.";
+
+            Testname = "Test with 5.1";
+            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal) - 5.1, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
+
+            Testname = "Test with 5.1";
+            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
+
+            Testname = "Test with 5.1";
+            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal) - 5.1, Testname, TestContext, TestColumn, TestControl);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
+
+            Testname = "Test with 0.0";
+            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal)0.0, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
+
+            Testname = "Test with -0.1";
+            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal)0.1, Testname);
+            ExpectedResult = new TVerificationResult(null, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TResultSeverity.Resv_Critical);
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
+
+            Testname = "Test with -0.1 (TScreenVerificationResult)";
+            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
+            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
+
+            Testname = "Test with -0.1 (TScreenVerificationResult)";
+            TestResult = TNumericalChecks.IsNonZeroDecimal((decimal)0.1, Testname, TestContext, TestColumn, TestControl);
+            ExpectedResult = new TScreenVerificationResult(TestContext, TestColumn, "Invalid number entered." + Environment.NewLine +
+                String.Format(ExpectedErrorText, Testname), "GENC.00005V", TestControl, TResultSeverity.Resv_Critical);
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
+
+            Testname = "Test with null";
+            TestResult = TNumericalChecks.IsNonZeroDecimal(null, Testname);
+            ExpectedResult = null;
+            VerificationProblemListing = EvaluateVerificationResults(ExpectedResult, TestResult);
+            Assert.IsEmpty(VerificationProblemListing, "IsNonZeroDecimal: " + Testname);
+
+            #endregion
+
+            #endregion
+
+            
+            
+            
             #region FirstLesserThanSecond...
 
             ExpectedErrorText = "'{0}' cannot be greater or equal to '{1}'.";

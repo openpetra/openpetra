@@ -29,12 +29,14 @@ using System.Collections.Specialized;
 
 
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -1064,5 +1066,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 //                giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
 //            }
         }
+        
+        private void ValidateDataDetailsManual(ARecurringGiftDetailRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_Gift.ValidateRecurringGiftDetailManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
+        
     }
 }

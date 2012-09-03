@@ -344,5 +344,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
         }
+        
+        private void ValidateDataDetailsManual(ARecurringGiftBatchRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
+
+        
+        
+        
     }
 }

@@ -106,7 +106,7 @@ RootNode:
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbMinistry: {Label=Key Ministry, ColSpan=2, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
-        txtDetailGiftTransactionAmount: {Label=Amount,Format=Currency, OnChange=GiftDetailAmountChanged}
+        txtDetailGiftTransactionAmount: {Label=Amount,Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}
         txtDetailGiftCommentOne: {Label=Comment 1,Width=250, Validation=true}
