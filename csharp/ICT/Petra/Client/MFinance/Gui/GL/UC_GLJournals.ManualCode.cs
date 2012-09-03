@@ -68,8 +68,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            bool firstLoad = (FLedgerNumber == -1);
-
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
             FBatchStatus = ABatchStatus;
