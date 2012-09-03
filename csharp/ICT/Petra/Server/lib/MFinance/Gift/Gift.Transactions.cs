@@ -1370,6 +1370,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         TResultSeverity.Resv_Critical));
                 return null;
             }
+            else if (MainDS.AGiftBatch[0].HashTotal != 0 && MainDS.AGiftBatch[0].BatchTotal != MainDS.AGiftBatch[0].HashTotal)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting Gift Batch",
+                        String.Format("The gift batch total ({0}) does not equal the hash total ({1}).",
+                                      MainDS.AGiftBatch[0].BatchTotal.ToString("C"),
+                                      MainDS.AGiftBatch[0].HashTotal.ToString("C")),
+                        TResultSeverity.Resv_Critical));
+                return null;
+            }
 
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {

@@ -476,29 +476,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                     LoadBatches(FLedgerNumber);
 
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                        //If last row just deleted, select row at old position - 1
-                        if (newCurrentRowPos == grdDetails.Rows.Count)
-                        {
-                            newCurrentRowPos--;
-                        }
-
-                        grdDetails.Selection.ResetSelection(false);
-                        grdDetails.SelectRowInGrid(newCurrentRowPos);
-                        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-                        ShowDetails(FPreviouslySelectedDetailRow);
-                    }
-                    else
-                    {
-                        FPreviouslySelectedDetailRow = null;
+                    //Select unposted batch row in same index position as batch just posted
+	                grdDetails.DataSource = null;
+	                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+	
+	                if (grdDetails.Rows.Count > 1)
+	                {
+	                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+	                    // such that a removal of a row is not detected
+	                    FDetailGridRowsCountPrevious++;
+	                    InvokeFocusedRowChanged(newCurrentRowPos);
+	                }
+	                else
+	                {
                         EnableButtonControl(false);
                         ClearDetailControls();
                         pnlDetails.Enabled = false;
-                    }
+	                }
                 }
             }
+            
         }
 
         /// <summary>
