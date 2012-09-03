@@ -232,6 +232,25 @@ namespace Ict.Petra.Client.App.Core
                 // Update the cached DataTable file
                 TDataCache.SaveCacheableDataTableToFile(TmpDT);
             }
+            
+            /**
+             * Tells the PetraServer to reload the cacheable DataTable from the DB,
+             * refreshes the DataTable in the client-side Cache and saves it to a file.
+             *
+             * @param ACacheableTable The cached DataTable that should be reloaded from DB.
+             *
+             */
+            public static void RefreshCacheablePartnerTable(TCacheablePartnerTablesEnum ACacheableTable)
+            {
+                DataTable TmpDT;
+
+                // Refresh the Cacheble DataTable on the Serverside and return it
+                TRemote.MPartner.Partner.Cacheable.WebConnectors.RefreshCacheableTable(ACacheableTable, out TmpDT);
+                UCacheableTablesManager.AddOrRefreshCachedTable(TmpDT, -1);
+
+                // Update the cached DataTable file
+                TDataCache.SaveCacheableDataTableToFile(TmpDT);
+            }
         }
 
         #endregion
@@ -925,7 +944,7 @@ namespace Ict.Petra.Client.App.Core
 
             System.Type TmpType;
             DataRow[] FilteredRows = null;
-
+                
             ADataTableType = null;
 
             /*
@@ -942,7 +961,7 @@ namespace Ict.Petra.Client.App.Core
                 {
                     // Cacheable DataTable is in Clientside Cache
                     CacheableDataTableFromCache = UCacheableTablesManager.GetCachedDataTable(ACacheableTableName, out ADataTableType);
-
+            
                     if (AFilterCriteriaString != "")
                     {
                         /*
