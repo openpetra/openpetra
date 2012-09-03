@@ -147,7 +147,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return FamilyKey;
         }
-        
+
         /// <summary>
         /// Opens the partner edit screen with the last partner worked on.
         /// Checks if the partner is merged.
@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             AParentForm.Cursor = Cursors.Default;
         }
-        
+
         /// <summary>
         /// Checks if the the partner is merged. If so then show a dialog where the user can
         /// choose to work with the current partner or the merged partner.
@@ -245,6 +245,5 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
             return ReturnValue;
         }
-        
     }
 }

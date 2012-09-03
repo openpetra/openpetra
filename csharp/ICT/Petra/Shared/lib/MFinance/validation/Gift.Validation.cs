@@ -110,9 +110,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // 'Gift amount must be non-zero
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnGiftTransactionAmountId];
             ValidationContext = String.Format("Batch Number {0} (transaction:{1} detail:{2})",
-                                             ARow.BatchNumber,
-                                             ARow.GiftTransactionNumber,
-                                             ARow.DetailNumber);
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
@@ -129,9 +129,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             return VerifResultCollAddedCount == 0;
         }
-        
-        
-                /// <summary>
+
+        /// <summary>
         /// Validates the Recurring Gift Batch data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
@@ -204,9 +203,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // 'Gift amount must be non-zero
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnGiftAmountId];
             ValidationContext = String.Format("Batch Number {0} (transaction:{1} detail:{2})",
-                                             ARow.BatchNumber,
-                                             ARow.GiftTransactionNumber,
-                                             ARow.DetailNumber);
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
@@ -223,6 +222,5 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             return VerifResultCollAddedCount == 0;
         }
-        
     }
 }

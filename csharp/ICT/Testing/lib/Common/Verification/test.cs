@@ -996,9 +996,7 @@ namespace Ict.Common.Verification.Testing
 
             #endregion
 
-            
-            
-            
+
             #region FirstLesserThanSecond...
 
             ExpectedErrorText = "'{0}' cannot be greater or equal to '{1}'.";

@@ -1066,7 +1066,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 //                giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
 //            }
         }
-        
+
         private void ValidateDataDetailsManual(ARecurringGiftDetailRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -1074,6 +1074,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TSharedFinanceValidation_Gift.ValidateRecurringGiftDetailManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
-        
     }
 }

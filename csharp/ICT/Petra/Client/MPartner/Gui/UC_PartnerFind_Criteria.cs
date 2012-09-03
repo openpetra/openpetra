@@ -1240,7 +1240,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPartnerClassDataTable.Rows.Clear();
 
-                // This needs to be re-assigned again after the .Clear() call - not really sure why this is necessary, 
+                // This needs to be re-assigned again after the .Clear() call - not really sure why this is necessary,
                 // but if this is not done then SingleDataRow["PartnerClass"] is ""...
                 SingleDataRow["PartnerClass"] = FDefaultPartnerClass;
 
@@ -1520,7 +1520,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FFindCriteriaDataSet.DataSetName = "FindCriteriaDataSet";
             FFindCriteriaDataSet.Tables.AddRange(new System.Data.DataTable[] { this.FFindCriteriaDataTable });
-            
+
             // Set status bar texts
             FPetraUtilsObject.SetStatusBarText(txtPartnerName, StrPartnerNameFindHelptext);
             FPetraUtilsObject.SetStatusBarText(txtPersonalName, StrPersonalNameFindHelpText);

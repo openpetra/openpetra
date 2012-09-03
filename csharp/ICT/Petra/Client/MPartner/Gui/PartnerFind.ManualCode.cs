@@ -592,7 +592,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             {
                                 if (IndividualMenuItem.Text == MPartnerResourcestrings.StrFamilyMenuItemText)
                                 {
-                                    IndividualMenuItem.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText ;
+                                    IndividualMenuItem.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
                                     IndividualMenuItem.Enabled = false;
                                 }
                                 else

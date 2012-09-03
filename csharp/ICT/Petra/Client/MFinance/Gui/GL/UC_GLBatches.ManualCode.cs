@@ -477,25 +477,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     LoadBatches(FLedgerNumber);
 
                     //Select unposted batch row in same index position as batch just posted
-	                grdDetails.DataSource = null;
-	                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-	
-	                if (grdDetails.Rows.Count > 1)
-	                {
-	                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-	                    // such that a removal of a row is not detected
-	                    FDetailGridRowsCountPrevious++;
-	                    InvokeFocusedRowChanged(newCurrentRowPos);
-	                }
-	                else
-	                {
+                    grdDetails.DataSource = null;
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
+                    if (grdDetails.Rows.Count > 1)
+                    {
+                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                        // such that a removal of a row is not detected
+                        FDetailGridRowsCountPrevious++;
+                        InvokeFocusedRowChanged(newCurrentRowPos);
+                    }
+                    else
+                    {
                         EnableButtonControl(false);
                         ClearDetailControls();
                         pnlDetails.Enabled = false;
-	                }
+                    }
                 }
             }
-            
         }
 
         /// <summary>

@@ -684,7 +684,7 @@ namespace Ict.Common.Verification
 
         #endregion
 
-        
+
         #region IsNonZero...
 
         /// <summary>
@@ -803,10 +803,10 @@ namespace Ict.Common.Verification
 
             return ReturnValue;
         }
-        
+
         #endregion
 
-        
+
         #region FirstLesserThanSecond...
 
         /// <summary>
