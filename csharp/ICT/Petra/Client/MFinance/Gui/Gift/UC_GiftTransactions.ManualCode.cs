@@ -1054,39 +1054,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateMethodOfPayment()
         {
-        	if (!((TFrmGiftBatch)this.ParentForm).GetBatchControl().FBatchLoaded)
-        	{
-        		return;
-        	}
+            if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
+            {
+                return;
+            }
 
-        	FBatchRow = GetBatchRow();
-        	
-        	if (FBatchRow == null)
-        	{
-        		FBatchRow = ((TFrmGiftBatch)this.ParentForm).GetBatchControl().GetSelectedDetailRow();
-        	}
-        	
-        	FBatchMethodOfPayment = ((TFrmGiftBatch)this.ParentForm).GetBatchControl().FSelectedBatchMethodOfPayment;
-			
-        	Int32 ledgerNumber = FBatchRow.LedgerNumber;
-        	Int32 batchNumber = FBatchRow.BatchNumber;
-        	
-        	txtDetailMethodOfPaymentCode.Text = FBatchMethodOfPayment;
-			
-			if (FMainDS.AGift.Rows.Count == 0)
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
+            {
+                FBatchRow = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
+            }
+
+            FBatchMethodOfPayment = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().FSelectedBatchMethodOfPayment;
+
+            if (FBatchMethodOfPayment == FBatchRow.MethodOfPaymentCode)
+            {
+                return;
+            }
+
+            Int32 ledgerNumber = FBatchRow.LedgerNumber;
+            Int32 batchNumber = FBatchRow.BatchNumber;
+
+            txtDetailMethodOfPaymentCode.Text = FBatchMethodOfPayment;
+
+            if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
             }
-        	
-        	//Update all transactions
-			foreach (AGiftRow giftRow in FMainDS.AGift.Rows)
-			{
-				if (giftRow.BatchNumber.Equals(batchNumber) && giftRow.LedgerNumber.Equals(ledgerNumber) && giftRow.MethodOfPaymentCode != FBatchMethodOfPayment)
-				{
-					giftRow.MethodOfPaymentCode = FBatchMethodOfPayment;
-				}
-			}
-			
+
+            //Update all transactions
+            foreach (AGiftRow giftRow in FMainDS.AGift.Rows)
+            {
+                if (giftRow.BatchNumber.Equals(batchNumber) && giftRow.LedgerNumber.Equals(ledgerNumber)
+                    && (giftRow.MethodOfPaymentCode != FBatchMethodOfPayment))
+                {
+                    giftRow.MethodOfPaymentCode = FBatchMethodOfPayment;
+                }
+            }
         }
 
         /// <summary>
