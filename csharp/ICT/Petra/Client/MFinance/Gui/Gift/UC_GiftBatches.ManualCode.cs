@@ -46,7 +46,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
-        private bool FBatchLoaded = false;
+        
+        /// <summary>
+        /// Flags whether all the gift batch rows for this form have finished loading
+        /// </summary>
+        public bool FBatchLoaded = false;
+        
+        /// <summary>
+        /// Stores the current batch's method of payment
+        /// </summary>//
+        public string FSelectedBatchMethodOfPayment = String.Empty;
 
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
@@ -123,6 +132,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ShowData();
 
             FBatchLoaded = true;
+
+            ShowDetails(GetCurrentBatchRow());
+
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -210,6 +222,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             UpdateChangeableStatus();
+        }
+
+        /// <summary>
+        /// get the row of the current batch
+        /// </summary>
+        /// <returns>AGiftBatchRow</returns>
+        public AGiftBatchRow GetCurrentBatchRow()
+        {
+            if (FBatchLoaded && FPreviouslySelectedDetailRow != null)
+            {
+            	return (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber });
+            }
+            else
+            {
+            	return null;
+            }
+        	
         }
 
         /// reset the control
@@ -560,9 +589,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return cmbDetailMethodOfPaymentCode.GetSelectedString();
             }
         }
+        
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateControlsProtection();
+        	FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
+        	((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment();
         }
 
         private void CurrencyChanged(object sender, EventArgs e)
