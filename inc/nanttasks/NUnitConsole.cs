@@ -94,8 +94,8 @@ namespace Ict.Tools.NAntTasks
 
             process.StartInfo.FileName = "\"" + exeName + "\"";
 
-            process.StartInfo.Arguments = FAssemblyName;
-            process.StartInfo.WorkingDirectory = Path.GetDirectoryName(FAssemblyName);
+            process.StartInfo.Arguments = "\"" + FAssemblyName + "\"";
+            process.StartInfo.WorkingDirectory = "\"" + Path.GetDirectoryName(FAssemblyName) + "\"";
 
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.StartInfo.UseShellExecute = false;
