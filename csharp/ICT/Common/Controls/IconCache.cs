@@ -34,7 +34,7 @@ namespace Ict.Common.Controls
     /// </summary>
     /// <remarks>A single Icon file can hold an Icon in multiple sizes (e.g. 16x16 pixels
     /// and 32x32 pixels) and this Cache can return the Icon in the desired sizes from the Cache.</remarks>
-    public class TIconCache : ConcurrentDictionary<string, MemoryStream>
+    public class TIconCache : ConcurrentDictionary <string, MemoryStream>
     {
         /// <summary>
         /// Size of Icon.
@@ -102,12 +102,14 @@ namespace Ict.Common.Controls
             {
                 IconFile.CopyTo(ms);
                 this.AddOrUpdate(AFileName, ms, (AKey, AExistingValue) =>
-                    { 
-                        // If this delegate is invoked, then the key already exists. 
-                        // Here we make sure the MemoryStream really is the same MemoryStream we already have. 
+                    {
+                        // If this delegate is invoked, then the key already exists.
+                        // Here we make sure the MemoryStream really is the same MemoryStream we already have.
                         if (ms != AExistingValue)
+                        {
                             throw new ArgumentException("Duplicate MemoryStream names are not allowed: {0}.", AFileName);
-                        
+                        }
+
                         // The only updatable fields are the temerature array and lastQueryDate.
                         AExistingValue = ms;
                         return AExistingValue;
@@ -161,16 +163,17 @@ namespace Ict.Common.Controls
             }
             else
             {
-                try 
+                try
                 {
-                    TheItem = (MemoryStream) this[AFileName];    
-                } catch (KeyNotFoundException) 
+                    TheItem = (MemoryStream) this[AFileName];
+                }
+                catch (KeyNotFoundException)
                 {
                     FLastIconRequestedWasReturnedFromCache = false;
 
                     throw new EIconNotInCacheException(String.Format(
                             "Icon with path {0} not yet loaded into cache; add it to the cache with AddIcon Method first", AFileName));
-                }               
+                }
 
                 TheItem.Position = 0;  // ALL IMPORTANT - without that, the creation of the Icon from the Stream fails!
 

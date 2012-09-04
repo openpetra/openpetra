@@ -77,13 +77,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 dtpDetailUnassignableDate.Date = DateTime.Now.Date;
             }
         }
-        
+
         private void ValidateDataDetailsManual(PcCostTypeRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedValidation_CacheableDataTables.ValidateConferenceCostType(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
-        }        
+        }
     }
 }

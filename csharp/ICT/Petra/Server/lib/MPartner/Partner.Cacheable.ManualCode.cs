@@ -180,7 +180,9 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             DataColumn PKColumn = new DataColumn(PARTNERCLASSCOL, System.Type.GetType("System.String"));
             TmpTable.Columns.Add(PKColumn);
             TmpTable.Columns.Add(new DataColumn(DLAVAILCOL, System.Type.GetType("System.Boolean")));
-            TmpTable.PrimaryKey = new DataColumn[] { PKColumn };
+            TmpTable.PrimaryKey = new DataColumn[] {
+                PKColumn
+            };
 
             /*
              * Create an Instance of TOfficeSpecificDataLabelsUIConnector - PartnerKey and DataLabelUse are not important here

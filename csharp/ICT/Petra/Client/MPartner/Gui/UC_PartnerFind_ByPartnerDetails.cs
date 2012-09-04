@@ -1438,7 +1438,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             return FLogic.CanAccessPartner(APartnerKey);
         }
 
-
         /// <summary>
         /// Enables and disables the UI. Invokes setting up of the Grid after a
         /// successful search operation.

@@ -316,16 +316,16 @@ namespace Ict.Common.Controls
             get
             {
                 string CleanedfromNonNumeralChars;
-                
+
                 if (!DesignMode)
                 {
                     if (this.Text != String.Empty)
                     {
                         CleanedfromNonNumeralChars = RemoveNonNumeralChars();
-                       
-                        if (CleanedfromNonNumeralChars != "-") 
+
+                        if (CleanedfromNonNumeralChars != "-")
                         {
-                            return Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);   
+                            return Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
                         }
                         else
                         {
