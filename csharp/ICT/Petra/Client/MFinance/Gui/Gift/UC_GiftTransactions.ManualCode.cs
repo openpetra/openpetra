@@ -89,6 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
+                UpdateControlsProtection();
+
                 return;
             }
 
@@ -113,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, FActiveOnly);
                 TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, FActiveOnly);
                 TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, FActiveOnly);
-                //now a textbox - TFinanceControls.InitialiseMethodOfPaymentCodeList(ref txtDetailMethodOfPaymentCode, FActiveOnly);
+                TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, FActiveOnly);
                 TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, FActiveOnly);
                 //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
 
@@ -131,19 +133,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ShowData();
             ShowDetails(GetSelectedDetailRow());
 
-//            if (AFromTabClick && (firstLoad || FActiveOnly != this.Enabled))
-//            {
-//	            //add textxhanged event handler to Motivation group code
-//	            this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
-//	            this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
-//            }
-
             if (AFromTabClick)
             {
                 grdDetails.Focus();
             }
 
-            UpdateMethodOfPayment();
+            UpdateControlsProtection();
             UpdateTotals();
         }
 
@@ -662,7 +657,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailGiftCommentOne.Clear();
                 txtDetailGiftCommentTwo.Clear();
                 txtDetailGiftCommentThree.Clear();
-                txtDetailMethodOfPaymentCode.Clear();
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
                 cmbDetailReceiptLetterCode.SelectedIndex = -1;
                 cmbDetailMotivationGroupCode.SelectedIndex = -1;
                 cmbDetailMotivationDetailCode.SelectedIndex = -1;
@@ -836,8 +831,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ValidateAllData(true, true))
             {
-//                AGiftBatchRow FBatchRow = GetBatchRow();
-
                 AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
 
                 giftRow.LedgerNumber = FBatchRow.LedgerNumber;
@@ -846,11 +839,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 giftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
                 FBatchRow.LastGiftNumber++;
                 giftRow.LastDetailNumber = 1;
-
-//                if (BatchHasMethodOfPayment())
-//                {
-//                    giftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;  //GetMethodOfPaymentFromBatch();
-//                }
 
                 FMainDS.AGift.Rows.Add(giftRow);
 
@@ -948,7 +936,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
-            FPetraUtilsObject.SetStatusBarText(txtDetailMethodOfPaymentCode, Catalog.GetString("Enter the method of payment"));
+            FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfPaymentCode, Catalog.GetString("Enter the method of payment"));
             FPetraUtilsObject.SetStatusBarText(txtDetailReference, Catalog.GetString("Enter a reference code."));
             FPetraUtilsObject.SetStatusBarText(cmbDetailReceiptLetterCode, Catalog.GetString("Select the receipt letter code"));
         }
@@ -970,6 +958,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             dtpDateEntered.Date = giftRow.DateEntered;
+
+            cmbDetailMethodOfPaymentCode.SetSelectedString(giftRow.MethodOfPaymentCode);
 
             if (((GiftBatchTDSAGiftDetailRow)ARow).IsDonorKeyNull())
             {
@@ -1012,11 +1002,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftRow.IsMethodOfPaymentCodeNull())
             {
-                txtDetailMethodOfPaymentCode.Text = String.Empty;
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
             }
             else
             {
-                txtDetailMethodOfPaymentCode.Text = giftRow.MethodOfPaymentCode;
+                cmbDetailMethodOfPaymentCode.SetSelectedString(giftRow.MethodOfPaymentCode);
             }
 
             if (giftRow.IsReferenceNull())
@@ -1052,8 +1042,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// update the transaction method payment from outside
         /// </summary>
-        public void UpdateMethodOfPayment()
+        public void UpdateMethodOfPayment(bool ACalledLocally)
         {
+            Int32 ledgerNumber;
+            Int32 batchNumber;
+
+            if (ACalledLocally)
+            {
+                cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment);
+                return;
+            }
+
             if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
             {
                 return;
@@ -1068,19 +1067,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FBatchMethodOfPayment = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().FSelectedBatchMethodOfPayment;
 
-            if (FBatchMethodOfPayment == FBatchRow.MethodOfPaymentCode)
-            {
-                return;
-            }
-
-            Int32 ledgerNumber = FBatchRow.LedgerNumber;
-            Int32 batchNumber = FBatchRow.BatchNumber;
-
-            txtDetailMethodOfPaymentCode.Text = FBatchMethodOfPayment;
+            ledgerNumber = FBatchRow.LedgerNumber;
+            batchNumber = FBatchRow.BatchNumber;
 
             if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+            }
+            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+            {
+                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    FPreviouslySelectedDetailRow.MethodOfPaymentCode = FBatchMethodOfPayment;
+                    cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment);
+                }
             }
 
             //Update all transactions
@@ -1126,7 +1127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailDonorKey.Enabled = firstIsEnabled;
             cmbDetailMethodOfGivingCode.Enabled = firstIsEnabled;
 
-            //txtDetailMethodOfPaymentCode.Enabled = false; //firstIsEnabled && !BatchHasMethodOfPayment();
+            cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
             txtDetailReference.Enabled = firstIsEnabled;
             cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
 
@@ -1160,8 +1161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
         private Boolean BatchHasMethodOfPayment()
         {
-            String batchMop =
-                GetMethodOfPaymentFromBatch();
+            String batchMop = GetMethodOfPaymentFromBatch();
 
             return batchMop != null && batchMop.Length > 0;
         }
@@ -1200,13 +1200,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
                 }
 
-                if (txtDetailMethodOfPaymentCode.Text.Length == 0)
+                if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
                 {
                     giftRow.SetMethodOfPaymentCodeNull();
                 }
                 else
                 {
-                    giftRow.MethodOfPaymentCode = txtDetailMethodOfPaymentCode.Text;
+                    giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
                 }
 
                 if (txtDetailReference.Text.Length == 0)

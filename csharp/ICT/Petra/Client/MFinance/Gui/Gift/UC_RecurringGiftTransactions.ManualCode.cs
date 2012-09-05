@@ -44,6 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
+        private string FBatchMethodOfPayment = string.Empty;
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
         private ARecurringGiftBatchRow FBatchRow = null;
@@ -76,6 +77,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         grdDetails.Focus();
                     }
                 }
+
+                UpdateControlsProtection();
 
                 return;
             }
@@ -124,6 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             pnlDetails.Enabled = (grdDetails.Rows.Count > 1); //this.PnlDetailsProtected;
 
+            UpdateControlsProtection();
             UpdateTotals();
         }
 
@@ -915,6 +919,62 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// update the transaction method payment from outside
+        /// </summary>
+        public void UpdateMethodOfPayment(bool ACalledLocally)
+        {
+            Int32 ledgerNumber;
+            Int32 batchNumber;
+
+            if (ACalledLocally)
+            {
+                cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment);
+                return;
+            }
+
+            if (!((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
+            {
+                return;
+            }
+
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
+            {
+                FBatchRow = ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
+            }
+
+            FBatchMethodOfPayment = ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().FSelectedBatchMethodOfPayment;
+
+            ledgerNumber = FBatchRow.LedgerNumber;
+            batchNumber = FBatchRow.BatchNumber;
+
+            if (FMainDS.ARecurringGift.Rows.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(ledgerNumber, batchNumber));
+            }
+            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+            {
+                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    FPreviouslySelectedDetailRow.MethodOfPaymentCode = FBatchMethodOfPayment;
+                    cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment);
+                }
+            }
+
+            //Update all transactions
+            foreach (ARecurringGiftRow recurringGiftRow in FMainDS.ARecurringGift.Rows)
+            {
+                if (recurringGiftRow.BatchNumber.Equals(batchNumber) && recurringGiftRow.LedgerNumber.Equals(ledgerNumber)
+                    && (recurringGiftRow.MethodOfPaymentCode != FBatchMethodOfPayment))
+                {
+                    recurringGiftRow.MethodOfPaymentCode = FBatchMethodOfPayment;
+                }
+            }
+        }
+
+        /// <summary>
         /// set the Hash Total symbols for the currency field from outside
         /// </summary>
         public void UpdateHashTotal(Decimal AHashTotal)
@@ -940,12 +1000,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.Enabled = firstIsEnabled && !BatchHasMethodOfPayment();
             txtDetailReference.Enabled = firstIsEnabled;
             cmbDetailReceiptLetterCode.Enabled = firstIsEnabled;
+
+            if (FBatchRow == null)
+            {
+                FBatchRow = GetBatchRow();
+            }
         }
 
         private Boolean BatchHasMethodOfPayment()
         {
-            String batchMop =
-                GetMethodOfPaymentFromBatch();
+            String batchMop = GetMethodOfPaymentFromBatch();
 
             return batchMop != null && batchMop.Length > 0;
         }

@@ -155,28 +155,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            // '' must be positive or 0
-//            ValidationColumn = ARow.Table.Columns[ARecurringGiftBatchTable.ColumnHashTotalId];
-//            ValidationContext = ARow.BatchNumber;
-//
-//            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-//            {
-//                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.HashTotal,
-//                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
-//                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-//
-//                // Handle addition/removal to/from TVerificationResultCollection
-//                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-//                {
-//                    VerifResultCollAddedCount++;
-//                }
-//            }
+            //No checks as yet
 
             return VerifResultCollAddedCount == 0;
         }
 
         /// <summary>
-        /// Validates the Gift Detail data.
+        /// Validates the Recurring Gift Detail data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>

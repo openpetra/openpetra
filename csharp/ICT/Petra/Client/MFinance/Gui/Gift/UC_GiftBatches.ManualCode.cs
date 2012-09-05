@@ -591,7 +591,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
             FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment();
+
+            if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
+            {
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment(false);
+            }
         }
 
         private void CurrencyChanged(object sender, EventArgs e)

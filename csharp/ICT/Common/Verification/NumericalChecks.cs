@@ -715,7 +715,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeNegativeIntegerOr0, new string[] { Description }));
+                        StrNumberMustBeNonZero, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {
@@ -754,7 +754,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
-                        StrNumberMustBeNegativeDecimalOr0, new string[] { Description }));
+                        StrNumberMustBeNonZero, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {
