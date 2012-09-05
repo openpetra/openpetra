@@ -42,6 +42,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
 
         /// <summary>
+        /// Stores the current batch's method of payment
+        /// </summary>//
+        public string FSelectedBatchMethodOfPayment = String.Empty;
+
+        /// <summary>
+        /// Flags whether all the gift batch rows for this form have finished loading
+        /// </summary>
+        public bool FBatchLoaded = false;
+
+        /// <summary>
         /// load the batches into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -71,8 +81,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
 
-
             ShowData();
+
+            FBatchLoaded = true;
+
+            ShowDetails(GetCurrentRecurringBatchRow());
+        }
+
+        /// <summary>
+        /// get the row of the current batch
+        /// </summary>
+        /// <returns>AGiftBatchRow</returns>
+        public ARecurringGiftBatchRow GetCurrentRecurringBatchRow()
+        {
+            if (FBatchLoaded && (FPreviouslySelectedDetailRow != null))
+            {
+                return (ARecurringGiftBatchRow)FMainDS.ARecurringGiftBatch.Rows.Find(new object[] { FLedgerNumber,
+                                                                                                    FPreviouslySelectedDetailRow.BatchNumber });
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -318,7 +348,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
-            ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateControlsProtection();
+            FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
+
+            if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
+            {
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment(false);
+            }
         }
 
         private void CurrencyChanged(object sender, EventArgs e)
@@ -343,6 +378,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     t.UpdateHashTotal(HashTotal);
                 }
             }
+        }
+
+        private void ValidateDataDetailsManual(ARecurringGiftBatchRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
         }
     }
 }

@@ -354,6 +354,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Decimal oldTransactionAmount = ARow.TransactionAmount;
             bool oldDebitCreditIndicator = ARow.DebitCreditIndicator;
 
+            if (txtDebitAmount.Text.Length == 0)
+            {
+                txtDebitAmount.NumberValueDecimal = 0;
+            }
+
+            if (txtCreditAmount.Text.Length == 0)
+            {
+                txtCreditAmount.NumberValueDecimal = 0;
+            }
+
             ARow.DebitCreditIndicator = (txtDebitAmount.NumberValueDecimal.Value > 0);
 
             if (ARow.DebitCreditIndicator)
