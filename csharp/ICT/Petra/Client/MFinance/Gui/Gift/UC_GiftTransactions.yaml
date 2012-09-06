@@ -110,18 +110,21 @@ RootNode:
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}
         txtDetailGiftCommentOne: {Label=Comment 1,Width=250, Validation=true}
-        txtDetailGiftCommentTwo: {Label=Comment 2,Width=250}
-        txtDetailGiftCommentThree: {Label=Comment 3,Width=250}
+        txtDetailGiftCommentTwo: {Label=Comment 2,Width=250, Validation=true}
+        txtDetailGiftCommentThree: {Label=Comment 3,Width=250, Validation=true}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]
+            OnLeave: DetailCommentTypeChanged
         cmbDetailCommentTwoType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]
+            OnLeave: DetailCommentTypeChanged
         cmbDetailCommentThreeType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]
+            OnLeave: DetailCommentTypeChanged
         tbrTabPage:
         mnuTabPage:
     Menu:

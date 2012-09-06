@@ -236,6 +236,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        
+        private void DetailCommentTypeChanged(object sender, EventArgs e)
+        {
+        	if (FPreviouslySelectedDetailRow == null)
+        	{
+        		return;
+        	}
+        	
+        	TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
+        	
+        	string cmbValue = cmb.GetSelectedString();
+        	
+        	if (cmbValue == String.Empty)
+        	{
+	        	if (cmb.Name.Contains("One"))
+	        	{
+	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentOneType)
+		        	{
+	        			FPetraUtilsObject.SetChangedFlag();
+		        	}
+	        	}
+	        	else if (cmb.Name.Contains("Two"))
+	        	{
+	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentTwoType)
+		        	{
+	        			FPetraUtilsObject.SetChangedFlag();
+		        	}
+	        	}
+	        	else if (cmb.Name.Contains("Three"))
+	        	{
+	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentThreeType)
+		        	{
+	        			FPetraUtilsObject.SetChangedFlag();
+		        	}
+	        	}
+        	}
+        	
+        }
+        
         bool FInKeyMinistryChanging = false;
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
