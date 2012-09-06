@@ -239,6 +239,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         
         private void DetailCommentTypeChanged(object sender, EventArgs e)
         {
+        	//TODO This code is called from the OnLeave event because the underlying
+        	//    combo control does not detect a value changed when the user tabs to
+        	//    and clears out the contents. AWAITING FIX to remove this code
+        	
         	if (FPreviouslySelectedDetailRow == null)
         	{
         		return;

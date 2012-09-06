@@ -29,6 +29,7 @@ using System.Collections.Specialized;
 
 
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -251,6 +252,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 RetrieveMotivationDetailCostCentreCode();
             }
+        }
+
+        private void DetailCommentTypeChanged(object sender, EventArgs e)
+        {
+        	//TODO This code is called from the OnLeave event because the underlying
+        	//    combo control does not detect a value changed when the user tabs to
+        	//    and clears out the contents. AWAITING FIX to remove this code
+        	
+        	if (FPreviouslySelectedDetailRow == null)
+        	{
+        		return;
+        	}
+        	
+        	TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
+        	
+        	string cmbValue = cmb.GetSelectedString();
+        	
+        	if (cmbValue == String.Empty)
+        	{
+	        	if (cmb.Name.Contains("One"))
+	        	{
+	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentOneType)
+		        	{
+	        			FPetraUtilsObject.SetChangedFlag();
+		        	}
+	        	}
+	        	else if (cmb.Name.Contains("Two"))
+	        	{
+	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentTwoType)
+		        	{
+	        			FPetraUtilsObject.SetChangedFlag();
+		        	}
+	        	}
+	        	else if (cmb.Name.Contains("Three"))
+	        	{
+	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentThreeType)
+		        	{
+	        			FPetraUtilsObject.SetChangedFlag();
+		        	}
+	        	}
+        	}
+        	
         }
 
         private void MotivationGroupCodeChanged(object sender, EventArgs e)
