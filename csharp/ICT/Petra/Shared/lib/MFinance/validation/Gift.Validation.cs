@@ -277,7 +277,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // Detail comments type 1 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentOneTypeId];
-            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+            ValidationContext = String.Format("(recurring batch:{0} transaction:{1} detail:{2})",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
@@ -300,7 +300,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // Detail comments type 2 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentTwoTypeId];
-            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+            ValidationContext = String.Format("(recurring batch:{0} transaction:{1} detail:{2})",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
@@ -324,7 +324,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             
             // Detail comments type 3 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentThreeTypeId];
-            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+            ValidationContext = String.Format("(recurring batch:{0} transaction:{1} detail:{2})",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
