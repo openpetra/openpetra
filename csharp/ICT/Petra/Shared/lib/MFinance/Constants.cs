@@ -57,6 +57,15 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>GL Batch</summary>
         public const String BATCH_CANCELLED = "Cancelled";
 
+		/// <summary>Gift Batch View Options</summary>
+        public const String GIFT_BATCH_VIEW_EDITING = "Editing";
+
+		/// <summary>Gift Batch View Options</summary>
+        public const String GIFT_BATCH_VIEW_POSTED = "Posted";
+
+		/// <summary>Gift Batch View Options</summary>
+        public const String GIFT_BATCH_VIEW_ALL = "All";
+
         /// <summary>Subsystem and Transaction Types</summary>
         public const String GENERAL_LEDGER = "GL";
 
