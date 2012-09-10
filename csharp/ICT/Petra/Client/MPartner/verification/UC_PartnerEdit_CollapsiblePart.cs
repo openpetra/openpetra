@@ -109,21 +109,24 @@ namespace Ict.Petra.Client.MPartner.Verification
                 if ((SharedTypes.PartnerClassStringToEnum(AMainDS.PPartner[0].PartnerClass) == TPartnerClass.UNIT)
                     && (AMainDS.PPartner[0].HasVersion(DataRowVersion.Original)))
                 {
-                    if (AMainDS.PPartnerType.Rows.Find(new Object[] { AMainDS.PPartner[0].PartnerKey, "LEDGER" }) != null)
+                    if (AMainDS.PPartnerType != null)
                     {
-                        ApprovalFromIFC = MessageBox.Show(StrFundnameChange,
-                            StrFundNameChangeTitle,
-                            MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Question,
-                            MessageBoxDefaultButton.Button2);
-
-                        if (ApprovalFromIFC == System.Windows.Forms.DialogResult.No)
+                        if (AMainDS.PPartnerType.Rows.Find(new Object[] { AMainDS.PPartner[0].PartnerKey, "LEDGER" }) != null)
                         {
-                            AVerificationResult = new TVerificationResult("",
-                                StrFundNameChangeUndone,
-                                StrFundNameChangeUndoneTitle,
-                                PetraErrorCodes.ERR_UNITNAMECHANGEUNDONE,
-                                TResultSeverity.Resv_Noncritical);
+                            ApprovalFromIFC = MessageBox.Show(StrFundnameChange,
+                                StrFundNameChangeTitle,
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question,
+                                MessageBoxDefaultButton.Button2);
+
+                            if (ApprovalFromIFC == System.Windows.Forms.DialogResult.No)
+                            {
+                                AVerificationResult = new TVerificationResult("",
+                                    StrFundNameChangeUndone,
+                                    StrFundNameChangeUndoneTitle,
+                                    PetraErrorCodes.ERR_UNITNAMECHANGEUNDONE,
+                                    TResultSeverity.Resv_Noncritical);
+                            }
                         }
                     }
                 }

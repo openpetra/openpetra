@@ -315,11 +315,22 @@ namespace Ict.Common.Controls
         {
             get
             {
+                string CleanedfromNonNumeralChars;
+
                 if (!DesignMode)
                 {
                     if (this.Text != String.Empty)
                     {
-                        return Convert.ToDecimal(RemoveNonNumeralChars(), FCurrentCulture);
+                        CleanedfromNonNumeralChars = RemoveNonNumeralChars();
+
+                        if (CleanedfromNonNumeralChars != "-")
+                        {
+                            return Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
+                        }
+                        else
+                        {
+                            return 0;
+                        }
                     }
                     else
                     {

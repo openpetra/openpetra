@@ -54,12 +54,10 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         public TPollClientTasks() : base()
         {
-#if DEBUGMODE
             if (TLogging.DL >= 10)
             {
                 Console.WriteLine("{0} TPollClientTasks created", DateTime.Now);
             }
-#endif
         }
 
         /**
@@ -77,37 +75,34 @@ namespace Ict.Common.Remoting.Server
         {
             DataTable ReturnValue;
 
-#if DEBUGMODE
             if (TLogging.DL >= 10)
             {
                 Console.WriteLine("{0} TPollClientTasks: PollClientTasks called", DateTime.Now);
             }
-#endif
+
             ULastPollingTime = DateTime.Now;
 
             // Check whether new ClientTasks should be transferred to the Client
             if (UClientTasksManager.ClientTasksNewDataTableEmpty)
             {
-                // This argument is set to nil instead of transfering an empty DataTable to
+                // This argument is set to null instead of transfering an empty DataTable to
                 // reduce the number of bytes that are transfered to the Client!
                 ReturnValue = null;
-#if DEBUGMODE
+
                 if (TLogging.DL > 9)
                 {
                     Console.WriteLine("{0} TPollClientTasks: Client Tasks Table is empty!", DateTime.Now);
                 }
-#endif
             }
             else
             {
                 // Retrieve new ClientTasks DataTable and pass it on the the Client
                 ReturnValue = UClientTasksManager.ClientTasksNewDataTable;
-#if DEBUGMODE
+
                 if (TLogging.DL >= 9)
                 {
                     Console.WriteLine("TPollClientTasks: Client Tasks Table has " + (ReturnValue.Rows.Count).ToString() + " entries!");
                 }
-#endif
             }
 
             return ReturnValue;
@@ -129,12 +124,11 @@ namespace Ict.Common.Remoting.Server
         /// <param name="AClientTasksManager"></param>
         public TPollClientTasksParameters(TClientTasksManager AClientTasksManager)
         {
-#if DEBUGMODE
             if (TLogging.DL >= 10)
             {
                 Console.WriteLine("{0} TPollClientTasksParameters created", DateTime.Now);
             }
-#endif
+
             TPollClientTasks.UClientTasksManager = AClientTasksManager;
             TPollClientTasks.ULastPollingTime = DateTime.Now;
         }

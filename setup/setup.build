@@ -367,6 +367,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <if test="${BuildArchive == 'client'}">
     <delete>
       <fileset>
+        <exclude name="${setupDir}/bin30/Ict.Petra.Server*.connect.dll" />
         <include name="${setupDir}/bin30/Ict.Petra.Server*" />
         <include name="${setupDir}/bin30/PetraServer*" />
         <include name="${setupDir}/*.sh" />

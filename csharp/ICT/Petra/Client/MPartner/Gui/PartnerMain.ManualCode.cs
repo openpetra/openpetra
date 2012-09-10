@@ -147,5 +147,103 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return FamilyKey;
         }
+
+        /// <summary>
+        /// Opens the partner edit screen with the last partner worked on.
+        /// Checks if the partner is merged.
+        /// </summary>
+        public static void OpenLastUsedPartnerEditScreen(Form AParentForm)
+        {
+            long MergedPartnerKey = 0;
+            long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
+
+            // we don't need to validate the partner key
+            // because it's done in the mnuFile_Popup function.
+            // If we don't have a valid partner key, this code can't be called from the file menu.
+
+            if (MergedPartnerHandling(LastPartnerKey, out MergedPartnerKey))
+            {
+                // work with the merged partner
+                LastPartnerKey = MergedPartnerKey;
+            }
+            else if (MergedPartnerKey > 0)
+            {
+                // The partner is merged but user cancelled the action
+                return;
+            }
+
+            // Open the Partner Edit screen
+            TFrmPartnerEdit frmPEDS;
+
+            AParentForm.Cursor = Cursors.WaitCursor;
+
+            frmPEDS = new TFrmPartnerEdit(AParentForm);
+            frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
+            frmPEDS.Show();
+
+            AParentForm.Cursor = Cursors.Default;
+        }
+
+        /// <summary>
+        /// Checks if the the partner is merged. If so then show a dialog where the user can
+        /// choose to work with the current partner or the merged partner.
+        /// </summary>
+        /// <param name="APartnerKey">The current partner to be checked</param>
+        /// <param name="AMergedIntoPartnerKey">If the partner is merged the merged partner key.
+        /// If the partner is not merged: -1</param>
+        /// <returns>True if the user wants to work with the merged partner, otherwise false.</returns>
+        public static bool MergedPartnerHandling(Int64 APartnerKey,
+            out Int64 AMergedIntoPartnerKey)
+        {
+            bool ReturnValue = false;
+
+            AMergedIntoPartnerKey = -1;
+
+// TODO MergedPartnerHandling
+#if TODO
+            bool IsMergedPartner;
+            string MergedPartnerPartnerShortName;
+            string MergedIntoPartnerShortName;
+            TPartnerClass MergedPartnerPartnerClass;
+            TPartnerClass MergedIntoPartnerClass;
+            string MergedBy;
+            DateTime MergeDate;
+
+            IsMergedPartner = TServerLookup.TMPartner.MergedPartnerDetails(APartnerKey,
+                out MergedPartnerPartnerShortName,
+                out MergedPartnerPartnerClass,
+                out AMergedIntoPartnerKey,
+                out MergedIntoPartnerShortName,
+                out MergedIntoPartnerClass,
+                out MergedBy,
+                out MergeDate);
+
+            if (IsMergedPartner)
+            {
+                // Open the 'Merged Partner Info' Dialog
+                using (TPartnerMergedPartnerInfoDialog MergedPartnerInfoDialog = new TPartnerMergedPartnerInfoDialog())
+                {
+                    MergedPartnerInfoDialog.SetParameters(APartnerKey,
+                        MergedPartnerPartnerShortName,
+                        MergedPartnerPartnerClass,
+                        AMergedIntoPartnerKey,
+                        MergedIntoPartnerShortName,
+                        MergedIntoPartnerClass,
+                        MergedBy,
+                        MergeDate);
+
+                    if (MergedPartnerInfoDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        ReturnValue = true;
+                    }
+                    else
+                    {
+                        ReturnValue = false;
+                    }
+                }
+            }
+#endif
+            return ReturnValue;
+        }
     }
 }

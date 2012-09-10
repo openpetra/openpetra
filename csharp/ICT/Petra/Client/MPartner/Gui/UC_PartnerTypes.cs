@@ -179,9 +179,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             FLogic.PartnerEditUIConnector = FPartnerEditUIConnector;
             FLogic.PetraUtilsObject = FPetraUtilsObject;
 // TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
-#if TODO                          
+#if TODO
             FLogic.InitialiseDelegatePartnerTypePropagationSelection(@OpenPartnerTypePropagationSelection);
-#endif            
+#endif
             FLogic.DataGrid = grdPartnerTypes;
             FLogic.LoadTypes();
             FLogic.LoadDataOnDemand();

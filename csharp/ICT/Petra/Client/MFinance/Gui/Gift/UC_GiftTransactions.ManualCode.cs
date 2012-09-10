@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public Int32 FBatchNumber = -1;
 
         private string FBatchStatus = string.Empty;
+        private string FBatchMethodOfPayment = string.Empty;
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
         private AGiftBatchRow FBatchRow = null;
@@ -62,7 +63,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
         /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = "unposted", bool AFromTabClick = true)
+        public void LoadGifts(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
+            bool AFromTabClick = true)
         {
             bool firstLoad = (FLedgerNumber == -1);
 
@@ -75,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
             {
                 //Same as previously selected
-                if (grdDetails.SelectedRowIndex() > 0)
+                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
 
@@ -85,19 +89,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
+                UpdateControlsProtection();
+
                 return;
             }
-            else
-            {
-                FLedgerNumber = ALedgerNumber;
-                FBatchNumber = ABatchNumber;
-                FBatchStatus = ABatchStatus;
-                FBatchRow = GetBatchRow();
-                UpdateBatchStatus();
-            }
+
+            FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
+            FBatchStatus = ABatchStatus;
+            FBatchRow = GetBatchRow();
+            UpdateBatchStatus();
 
             //Apply new filter
-            //FPreviouslySelectedDetailRow = null;
+            FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
@@ -126,27 +130,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            if (firstLoad)
-            {
-                ShowData();
-            }
-            else
-            {
-                ShowDetails(GetSelectedDetailRow());
-            }
-
-//            if (AFromTabClick && (firstLoad || FActiveOnly != this.Enabled))
-//            {
-//	            //add textxhanged event handler to Motivation group code
-//	            this.cmbDetailMotivationGroupCode.TextChanged += new EventHandler(this.MotivationGroupCodeChanged);
-//	            this.cmbDetailMotivationDetailCode.TextChanged += new EventHandler(this.MotivationDetailCodeChanged);
-//            }
+            ShowData();
+            ShowDetails(GetSelectedDetailRow());
 
             if (AFromTabClick)
             {
                 grdDetails.Focus();
             }
 
+            UpdateControlsProtection();
             UpdateTotals();
         }
 
@@ -665,6 +657,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailGiftCommentOne.Clear();
                 txtDetailGiftCommentTwo.Clear();
                 txtDetailGiftCommentThree.Clear();
+                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
                 cmbDetailReceiptLetterCode.SelectedIndex = -1;
                 cmbDetailMotivationGroupCode.SelectedIndex = -1;
                 cmbDetailMotivationDetailCode.SelectedIndex = -1;
@@ -673,7 +666,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailCommentThreeType.SelectedIndex = -1;
                 cmbDetailMailingCode.SelectedIndex = -1;
                 cmbDetailMethodOfGivingCode.SelectedIndex = -1;
-                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
                 cmbMinistry.SelectedIndex = -1;
                 txtDetailCostCentreCode.Text = string.Empty;
 
@@ -839,20 +831,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ValidateAllData(true, true))
             {
-//                AGiftBatchRow FBatchRow = GetBatchRow();
-
                 AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
 
                 giftRow.LedgerNumber = FBatchRow.LedgerNumber;
                 giftRow.BatchNumber = FBatchRow.BatchNumber;
                 giftRow.GiftTransactionNumber = FBatchRow.LastGiftNumber + 1;
+                giftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
                 FBatchRow.LastGiftNumber++;
                 giftRow.LastDetailNumber = 1;
-
-                if (BatchHasMethodOfPayment())
-                {
-                    giftRow.MethodOfPaymentCode = GetMethodOfPaymentFromBatch();
-                }
 
                 FMainDS.AGift.Rows.Add(giftRow);
 
@@ -899,6 +885,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.BatchNumber = giftRow.BatchNumber;
                 newRow.GiftTransactionNumber = giftRow.GiftTransactionNumber;
                 newRow.DetailNumber = giftRow.LastDetailNumber;
+                newRow.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
+                newRow.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                 newRow.DonorKey = ACurrentRow.DonorKey;
                 newRow.DonorName = ACurrentRow.DonorName;
                 newRow.DateEntered = ACurrentRow.DateEntered;
@@ -970,6 +958,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             dtpDateEntered.Date = giftRow.DateEntered;
+
+            cmbDetailMethodOfPaymentCode.SetSelectedString(giftRow.MethodOfPaymentCode);
 
             if (((GiftBatchTDSAGiftDetailRow)ARow).IsDonorKeyNull())
             {
@@ -1050,6 +1040,62 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// update the transaction method payment from outside
+        /// </summary>
+        public void UpdateMethodOfPayment(bool ACalledLocally)
+        {
+            Int32 ledgerNumber;
+            Int32 batchNumber;
+
+            if (ACalledLocally)
+            {
+                cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment);
+                return;
+            }
+
+            if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
+            {
+                return;
+            }
+
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
+            {
+                FBatchRow = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
+            }
+
+            FBatchMethodOfPayment = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().FSelectedBatchMethodOfPayment;
+
+            ledgerNumber = FBatchRow.LedgerNumber;
+            batchNumber = FBatchRow.BatchNumber;
+
+            if (FMainDS.AGift.Rows.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+            }
+            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+            {
+                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    FPreviouslySelectedDetailRow.MethodOfPaymentCode = FBatchMethodOfPayment;
+                    cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment);
+                }
+            }
+
+            //Update all transactions
+            foreach (AGiftRow giftRow in FMainDS.AGift.Rows)
+            {
+                if (giftRow.BatchNumber.Equals(batchNumber) && giftRow.LedgerNumber.Equals(ledgerNumber)
+                    && (giftRow.MethodOfPaymentCode != FBatchMethodOfPayment))
+                {
+                    giftRow.MethodOfPaymentCode = FBatchMethodOfPayment;
+                }
+            }
+        }
+
+        /// <summary>
         /// set the Hash Total symbols for the currency field from outside
         /// </summary>
         public void UpdateHashTotal(Decimal AHashTotal)
@@ -1115,8 +1161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
         private Boolean BatchHasMethodOfPayment()
         {
-            String batchMop =
-                GetMethodOfPaymentFromBatch();
+            String batchMop = GetMethodOfPaymentFromBatch();
 
             return batchMop != null && batchMop.Length > 0;
         }

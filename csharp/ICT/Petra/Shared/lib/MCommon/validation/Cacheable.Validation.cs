@@ -1032,7 +1032,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
+
             // 'Document Category' must not be unassignable
             ValidationColumn = ARow.Table.Columns[PmDocumentTypeTable.ColumnDocCategoryId];
 
@@ -1060,7 +1060,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }            
+            }
         }
 
         /// <summary>

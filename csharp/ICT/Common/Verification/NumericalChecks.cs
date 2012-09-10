@@ -56,6 +56,8 @@ namespace Ict.Common.Verification
             "{0} must be a negative integer (= a number without a fraction), or 0.");
         private static readonly string StrNumberMustBeNegativeDecimalOr0 = Catalog.GetString(
             "{0} must be a negative decimal number (= a number that has a fraction), or 0.");
+        private static readonly string StrNumberMustBeNonZero = Catalog.GetString(
+            "{0} must be a positive or negative number but not zero.");
         private static readonly string StrNumberCannotBeGreaterThan = Catalog.GetString("{0} cannot be greater than {1}.");
         private static readonly string StrNumberCannotBeGreaterOrEqualTo = Catalog.GetString("{0} cannot be greater or equal to {1}.");
         private static readonly string StrNumberNeedsToBeInRange = Catalog.GetString("{0} needs to be between {1} and {2}.");
@@ -670,6 +672,128 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
                         StrNumberMustBeNegativeDecimalOr0, new string[] { Description }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
+
+        #region IsNonZero...
+
+        /// <summary>
+        /// Checks whether an integer is non-zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Integer number.</param>
+        /// <param name="ADescription">Description what the integer number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid integer number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNonZeroInteger(Int64? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (AValue.Value == 0)
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNonZero, new string[] { Description }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether a double or single number is non-zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Double or single number.</param>
+        /// <param name="ADescription">Description what the double or single number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid double or single number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNonZeroDouble(double? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (AValue.Value == 0)
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNonZero, new string[] { Description }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether a decimal number is non-zero. A null value is accepted.
+        /// </summary>
+        /// <param name="AValue">Decimal number.</param>
+        /// <param name="ADescription">Description what the decimal number is about (for the error
+        /// message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> contains a valid decimal number or is null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that contains details about the problem,
+        /// with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult IsNonZeroDecimal(decimal? AValue, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!AValue.HasValue)
+            {
+                return null;
+            }
+
+            // Check
+            if (AValue.Value == 0)
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDNUMBER, CommonResourcestrings.StrInvalidNumberEntered + Environment.NewLine +
+                        StrNumberMustBeNonZero, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {

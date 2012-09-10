@@ -132,7 +132,6 @@ namespace Ict.Common.Remoting.Server
             object ATaskParameter4,
             Int16 ATaskPriority)
         {
-            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
             return UClientManagerCallForwarderRef.QueueClientTaskFromClient(AClientID,
                 ATaskGroup,
                 ATaskCode,
@@ -178,7 +177,6 @@ namespace Ict.Common.Remoting.Server
             object ATaskParameter4,
             Int16 ATaskPriority)
         {
-            // $IFDEF DEBUGMODE if TLogging.DL >= 7 then Console.WriteLine('ClientTaskAddToOtherClient: calling UClientManagerRef.QueueClientTaskFromClient...'); $ENDIF
             return UClientManagerCallForwarderRef.QueueClientTaskFromClient(AUserID,
                 ATaskGroup,
                 ATaskCode,
@@ -337,15 +335,9 @@ namespace Ict.Common.Remoting.Server
                 // TODO 1 ochristiank cRemoting : .NET Remoting LifetimeSettings should be flexible instead hardcoded in the future!
                 try
                 {
-#if DEBUGMODE
-                    LifetimeServices.LeaseTime = TimeSpan.FromSeconds(20);
-                    LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(20);
-                    LifetimeServices.LeaseManagerPollTime = TimeSpan.FromSeconds(1);
-#else
                     LifetimeServices.LeaseTime = TimeSpan.FromSeconds(60);
                     LifetimeServices.RenewOnCallTime = TimeSpan.FromSeconds(60);
                     LifetimeServices.LeaseManagerPollTime = TimeSpan.FromSeconds(5);
-#endif
                 }
                 catch (RemotingException)
                 {
@@ -359,13 +351,11 @@ namespace Ict.Common.Remoting.Server
                 throw;
             }
 
-#if DEBUGMODE
             if (TLogging.DL >= 4)
             {
                 Console.WriteLine("Application domain: " + Thread.GetDomain().FriendlyName);
                 Console.WriteLine("  for User: " + FUserID);
             }
-#endif
         }
 
         /// <summary>
@@ -383,7 +373,6 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         public void StopClientAppDomain()
         {
-            // TODO 1 oChristianK cLogging (Console) : Put the following debug messages again in a DEBUGMODE conditional compilation directive and raise the DL to >=9; this was removed to trace problems in on live installations!
             if (TLogging.DL >= 5)
             {
                 TLogging.Log("TClientDomainManager.StopClientAppDomain: calling StopClientStillAliveCheckThread...",
@@ -463,12 +452,10 @@ namespace Ict.Common.Remoting.Server
                     // prevent unauthorised tearing down of AppDomain by comparing security token
                     if (AToken == FRandomAppDomainTearDownToken)
                     {
-#if DEBUGMODE
                         if (TLogging.DL >= 9)
                         {
                             Console.WriteLine("TearDownAppDomain: Tearing down ClientDomain!!! Reason: " + AReason);
                         }
-#endif
 
                         // The AppDomain and all the objects that are instantiated in it cease
                         // to exist after the following call!!!

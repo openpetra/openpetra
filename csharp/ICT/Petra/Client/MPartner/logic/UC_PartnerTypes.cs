@@ -77,9 +77,9 @@ namespace Ict.Petra.Client.MPartner
         private TSgrdDataGrid FDataGrid;
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 // TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
-#if TODO               
+#if TODO
         private TDelegatePartnerTypePropagationSelection FDelegatePartnerTypePropagationSelection;
-#endif        
+#endif
         private CustomValueChangedEvent FGridValueChangedEvent;
 
         #region Properties
@@ -424,7 +424,7 @@ namespace Ict.Petra.Client.MPartner
                  * Check if this change could be applied to Family Members
                  */
 // TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
-#if TODO               
+#if TODO
                 if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) == TPartnerClass.FAMILY)
                 {
                     if (HasFamilyFamilyMembers())
@@ -442,7 +442,7 @@ namespace Ict.Petra.Client.MPartner
                         }
                     }
                 }
-#endif                
+#endif
             }
             catch (Exception E)
             {
@@ -590,8 +590,9 @@ namespace Ict.Petra.Client.MPartner
 
             return ReturnValue;
         }
+
 // TODO PartnerTypeFamilyMembersPropagationSelectionWinForm Dialog still missing
-#if TODO               
+#if TODO
         /// <summary>
         /// todoComment
         /// </summary>
@@ -601,6 +602,9 @@ namespace Ict.Petra.Client.MPartner
             FDelegatePartnerTypePropagationSelection = ADelegate;
         }
 #endif
+
+
+
         /// <summary>
         /// todoComment
         /// </summary>

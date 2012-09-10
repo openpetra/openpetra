@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -114,6 +114,8 @@ namespace Ict.Common.Remoting.Sinks.Encryption
             ProcessResponse(null, responseHeaders, ref responseStream, state);
         }
 
+        public string CurrentClientGuid = Guid.NewGuid().ToString();
+
         /// <summary>
         /// encrypt the request
         /// </summary>
@@ -139,6 +141,8 @@ namespace Ict.Common.Remoting.Sinks.Encryption
                 headers[EncryptionRijndael.GetEncryptionName() + "KEY"] = encryptedSymmetricKey;
                 SendKeyAgain = false;
             }
+
+            headers["ClientGuid"] = CurrentClientGuid;
 
             byte[] EncryptionIV;
             stream = EncryptionRijndael.Encrypt(FEncryptionKey, stream, out EncryptionIV);

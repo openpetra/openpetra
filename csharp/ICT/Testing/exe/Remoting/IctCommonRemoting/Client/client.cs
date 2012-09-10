@@ -45,6 +45,8 @@ namespace Ict.Testing.IctCommonRemoting.Client
 
                 TLogging.DebugLevel = Convert.ToInt32(TAppSettingsManager.GetValue("Client.DebugLevel", "0"));
 
+                new TClientSettings();
+
                 // initialize the client
                 TConnectionManagementBase.ConnectorType = typeof(TConnector);
                 TConnectionManagementBase.GConnectionManagement = new TConnectionManagement();

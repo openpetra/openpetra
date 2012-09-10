@@ -86,7 +86,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
 
-            //TODO: not necessary for posted batches
+            //not necessary for posted batches
+//            if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+//            {
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod,
@@ -94,6 +96,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
+//            }
+
             //dtpDetailDateEffective.SetMaximalDate(EndDateLastForwardingPeriod);
             //dtpDetailDateEffective.SetMinimalDate(StartDateCurrentPeriod);
             //txtDetailBatchControlTotal.Enabled = false;
@@ -230,6 +234,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 rbtEditing.Checked = true;
             }
 
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            {
+                return;
+            }
+
             ClearDetailControls();
             EnableButtonControl(true);
 
@@ -308,9 +317,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 else
                 {
                     FMainDS.Merge(mergeDS);
-                    GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-                    //FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-                    grdDetails.Refresh();
+                    //GetSelectedDetailRow().BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                    FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                    //grdDetails.Refresh();
 
                     foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                     {
@@ -334,27 +343,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         transactionDV[0].Delete();
                     }
 
+                    //Select and call the event that doesn't occur automatically
+                    InvokeFocusedRowChanged(newCurrentRowPos);
+
                     //If some row(s) still exist after deletion
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                        //If last row just deleted, select row at old position - 1
-                        if (newCurrentRowPos == grdDetails.Rows.Count)
-                        {
-                            newCurrentRowPos--;
-                        }
-                    }
-                    else
+                    if (grdDetails.Rows.Count < 2)
                     {
                         EnableButtonControl(false);
                         ClearDetailControls();
 
-                        newCurrentRowPos = 0;
+                        ((TFrmGLBatch)ParentForm).DisableJournals();
+                        ((TFrmGLBatch)ParentForm).DisableTransactions();
+                        ((TFrmGLBatch)ParentForm).DisableAttributes();
                     }
-
-                    //Select and call the event that doesn't occur automatically
-                    InvokeFocusedRowChanged(newCurrentRowPos);
-                    //!!DO NOT USE THIS: grdDetails.Selection.FocusRow(0);
-
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     FPetraUtilsObject.SetChangedFlag();
@@ -384,8 +385,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateTotals()
         {
-            txtDetailBatchControlTotal.NumberValueDecimal =
-                FPreviouslySelectedDetailRow.BatchRunningTotal;
+            //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
+            //FPreviouslySelectedDetailRow.BatchRunningTotal;
         }
 
         private bool SaveBatchForPosting()
@@ -475,23 +476,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                     LoadBatches(FLedgerNumber);
 
+                    //Select unposted batch row in same index position as batch just posted
+                    grdDetails.DataSource = null;
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
                     if (grdDetails.Rows.Count > 1)
                     {
-                        //If last row just deleted, select row at old position - 1
-                        if (newCurrentRowPos == grdDetails.Rows.Count)
-                        {
-                            newCurrentRowPos--;
-                        }
-
-                        grdDetails.Selection.ResetSelection(false);
-                        grdDetails.SelectRowInGrid(newCurrentRowPos);
-                        FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-                        ShowDetails(FPreviouslySelectedDetailRow);
+                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                        // such that a removal of a row is not detected
+                        FDetailGridRowsCountPrevious++;
+                        InvokeFocusedRowChanged(newCurrentRowPos);
                     }
                     else
                     {
-                        FPreviouslySelectedDetailRow = null;
                         EnableButtonControl(false);
                         ClearDetailControls();
                         pnlDetails.Enabled = false;
@@ -692,6 +689,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         void RefreshFilter(Object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
+            {
+                return;
+            }
+
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
                 return;
             }

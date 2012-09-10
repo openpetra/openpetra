@@ -103,64 +103,58 @@ namespace Ict.Petra.Server.App.Core
             // Load SYSMAN Module assembly (always loaded)
             LoadPetraModuleAssembly(AClientID, MSYSMAN_DLLNAME, MSYSMAN_CLASSNAME, out RemotingURL_MSysMan);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MSYSMAN, RemotingURL_MSysMan);
-#if DEBUGMODE
+
             if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMSysMan instantiated. Remoting URL: " + RemotingURL_MSysMan);
             }
-#endif
 
             // Load COMMON Module assembly (always loaded)
             LoadPetraModuleAssembly(AClientID, MCOMMON_DLLNAME, MCOMMON_CLASSNAME, out RemotingURL_MCommon);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCOMMON, RemotingURL_MCommon);
-#if DEBUGMODE
+
             if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMCommon instantiated. Remoting URL: " + RemotingURL_MCommon);
             }
-#endif
 
             // Load CONFERENCE Module assembly (always loaded)
             LoadPetraModuleAssembly(AClientID, MCONFERENCE_DLLNAME, MCONFERENCE_CLASSNAME, out RemotingURL_MConference);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MCONFERENCE, RemotingURL_MConference);
-#if DEBUGMODE
+
             if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMConference instantiated. Remoting URL: " + RemotingURL_MConference);
             }
-#endif
 
             // Load PARTNER Module assembly (always loaded)
             LoadPetraModuleAssembly(AClientID, MPARTNER_DLLNAME, MPARTNER_CLASSNAME, out RemotingURL_MPartner);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MPARTNER, RemotingURL_MPartner);
-#if DEBUGMODE
+
             if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMPartner instantiated. Remoting URL: " + RemotingURL_MPartner);
             }
-#endif
 
             // Load REPORTING Module assembly (always loaded)
             LoadPetraModuleAssembly(AClientID, MREPORTING_DLLNAME, MREPORTING_CLASSNAME, out RemotingURL_MReporting);
             ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MREPORTING, RemotingURL_MReporting);
-#if DEBUGMODE
+
             if (TLogging.DL >= 5)
             {
                 Console.WriteLine("  TMReporting instantiated. Remoting URL: " + RemotingURL_MReporting);
             }
-#endif
 
             // Load PERSONNEL Module assembly (loaded only for users that have personnel privileges)
             if (UserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL))
             {
                 LoadPetraModuleAssembly(AClientID, MPERSONNEL_DLLNAME, MPERSONNEL_CLASSNAME, out RemotingURL_MPersonnel);
                 ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MPERSONNEL, RemotingURL_MPersonnel);
-#if DEBUGMODE
+
                 if (TLogging.DL >= 5)
                 {
                     Console.WriteLine("  TMPersonnel instantiated. Remoting URL: " + RemotingURL_MPersonnel);
                 }
-#endif
             }
 
             // Load FINANCE Module assembly (loaded only for users that have finance privileges)
@@ -169,12 +163,11 @@ namespace Ict.Petra.Server.App.Core
             {
                 LoadPetraModuleAssembly(AClientID, MFINANCE_DLLNAME, MFINANCE_CLASSNAME, out RemotingURL_MFinance);
                 ARemotingURLs.Add(SharedConstants.REMOTINGURL_IDENTIFIER_MFINANCE, RemotingURL_MFinance);
-#if DEBUGMODE
+
                 if (TLogging.DL >= 5)
                 {
                     Console.WriteLine("  TMFinance instantiated. Remoting URL: " + RemotingURL_MFinance);
                 }
-#endif
             }
         }
     }

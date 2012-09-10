@@ -46,7 +46,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
-        private bool FBatchLoaded = false;
+
+        /// <summary>
+        /// Flags whether all the gift batch rows for this form have finished loading
+        /// </summary>
+        public bool FBatchLoaded = false;
+
+        /// <summary>
+        /// Stores the current batch's method of payment
+        /// </summary>//
+        public string FSelectedBatchMethodOfPayment = String.Empty;
 
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
@@ -123,6 +132,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ShowData();
 
             FBatchLoaded = true;
+
+            ShowDetails(GetCurrentBatchRow());
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -210,6 +221,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             UpdateChangeableStatus();
+        }
+
+        /// <summary>
+        /// get the row of the current batch
+        /// </summary>
+        /// <returns>AGiftBatchRow</returns>
+        public AGiftBatchRow GetCurrentBatchRow()
+        {
+            if (FBatchLoaded && (FPreviouslySelectedDetailRow != null))
+            {
+                return (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber });
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// reset the control
@@ -457,7 +484,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            //Read current rows position
+            //Read current rows position ready to reposition after removal of posted row from grid
             int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
@@ -494,24 +521,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
                 //Select unposted batch row in same index position as batch just posted
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
+
                 if (grdDetails.Rows.Count > 1)
                 {
-                    //If last row just deleted, select row at old position - 1
-                    if (newCurrentRowPos == grdDetails.Rows.Count)
-                    {
-                        newCurrentRowPos--;
-                    }
-
-                    grdDetails.Selection.ResetSelection(false);
-                    grdDetails.SelectRowInGrid(newCurrentRowPos);
-                    FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-                    ShowDetails(FPreviouslySelectedDetailRow);
+                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    // such that a removal of a row is not detected
+                    FDetailGridRowsCountPrevious++;
+                    InvokeFocusedRowChanged(newCurrentRowPos);
                 }
                 else
                 {
-                    FPreviouslySelectedDetailRow = null;
                     ClearControls();
+                    ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
                 }
             }
         }
@@ -564,9 +587,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return cmbDetailMethodOfPaymentCode.GetSelectedString();
             }
         }
+
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateControlsProtection();
+            FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
+
+            if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
+            {
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment(false);
+            }
         }
 
         private void CurrencyChanged(object sender, EventArgs e)

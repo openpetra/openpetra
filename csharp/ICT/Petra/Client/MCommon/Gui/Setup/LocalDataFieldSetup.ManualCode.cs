@@ -774,6 +774,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     // need to accept the new modification ID
                     FExtraDS.PDataLabelUse.AcceptChanges();
 
+                    // need to refresh the cacheable DataTable 'DataLabelsForPartnerClassesList' (used by Partner Find's Maintain Menu)
+                    TDataCache.TMPartner.RefreshCacheablePartnerTable(TCacheablePartnerTablesEnum.DataLabelsForPartnerClassesList);
+
                     return;
 
                 case TSubmitChangesResult.scrNothingToBeSaved:
