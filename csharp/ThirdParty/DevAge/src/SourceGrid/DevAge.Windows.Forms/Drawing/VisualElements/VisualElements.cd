@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="8.25" />
+  <Class Name="DevAge.Drawing.VisualElements.VisualElementBase" Collapsed="true">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\VisualElementBase.cs</FileName>
+      <HashCode>gAAAAEAIAAAAAwAAAABAAAAgAAAAAAAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.TextGDI" Collapsed="true">
+    <Position X="4.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\TextGDI.cs</FileName>
+      <HashCode>AAIAgAAAAAAAAAAAAGBAAAAgAAAAAAAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.Text" Collapsed="true">
+    <Position X="5.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\Text.cs</FileName>
+      <HashCode>AAAgAQBEAACAAIAAAABAAAAgAACEAAAAAAAgAAACABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.Image" Collapsed="true">
+    <Position X="3.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\Image.cs</FileName>
+      <HashCode>AAAAAAAEAAAAAIAAAABAAAAgAAAEAAAAAAAgAAAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.Icon" Collapsed="true">
+    <Position X="7.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\Icon.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAgAAAEAAAAAAAgAAAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.ContainerBase" Collapsed="true">
+    <Position X="17.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ContainerBase.cs</FileName>
+      <HashCode>AQAAAAAEgAIAQwAAAEhAgEAgAQABAAAAACKhAAEAAAg=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.BackgroundSolid" Collapsed="true">
+    <Position X="13.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\BackgroundSolid.cs</FileName>
+      <HashCode>AAAAAAAEAAAAAAAAAABAAAAgAAAAAAAAAAACAAABABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.BackgroundLinearGradient" Collapsed="true">
+    <Position X="15.25" Y="2" Width="2" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\BackgroundLinearGradient.cs</FileName>
+      <HashCode>AIAQAgACAAAAIBCAAABAAACgAQAAIAAAAEAAgAACAFA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.ColumnHeader" Collapsed="true">
+    <Position X="6" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ColumnHeader.cs</FileName>
+      <HashCode>AAAAAAAAAAAACACAAUBAAEAAAAAAAAAABAAAAAABABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.ColumnHeaderBase" Collapsed="true">
+    <Position X="7.5" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ColumnHeaderBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.ColumnHeaderThemed" Collapsed="true">
+    <Position X="7.75" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ColumnHeaderThemed.cs</FileName>
+      <HashCode>AAAAAAAAAAAABACAAQBAAAAEAAAAACAABAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.SortIndicator" Collapsed="true">
+    <Position X="7.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\SortIndicator.cs</FileName>
+      <HashCode>AAAAAAAAIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.SortIndicatorThemed" Collapsed="true">
+    <Position X="7.5" Y="4.25" Width="2" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\SortIndicatorThemed.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAgAAAAICAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.TextRenderer" Collapsed="true">
+    <Position X="6" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\TextRenderer.cs</FileName>
+      <HashCode>gAAAAAAQAAAAAAAAAAhAAAAgAAAAAAAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.Button" Collapsed="true">
+    <Position X="11.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\Button.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAACAAQBAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.ButtonBase" Collapsed="true">
+    <Position X="13" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ButtonBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAABAQAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.ButtonThemed" Collapsed="true">
+    <Position X="13" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ButtonThemed.cs</FileName>
+      <HashCode>AAAAAAAAAAAABASAAQBAAAAAAAAAACAABAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.CheckBox" Collapsed="true">
+    <Position X="2.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\CheckBox.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAgAAAAAAAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.CheckBoxBase" Collapsed="true">
+    <Position X="1.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\CheckBoxBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAIAAAgAAAAAABARAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.CheckBoxThemed" Collapsed="true">
+    <Position X="0.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\CheckBoxThemed.cs</FileName>
+      <HashCode>AAAAEAAAAAAABAAAAABAAAAgAAAAACAABABAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.DropDownButton" Collapsed="true">
+    <Position X="15" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\DropDownButton.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAACAAQBAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.DropDownButtonBase" Collapsed="true">
+    <Position X="14.75" Y="4.5" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\DropDownButtonBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.DropDownButtonThemed" Collapsed="true">
+    <Position X="12.75" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\DropDownButtonThemed.cs</FileName>
+      <HashCode>AAAAAAAAAAAABASAAQBAAAAAAAAAACAABAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.EditablePanel" Collapsed="true">
+    <Position X="16.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\EditablePanel.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAgAAAAAAAAAAAQAAAAAQAAAAAAMAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.EditablePanelBase" Collapsed="true">
+    <Position X="16.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\EditablePanelBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAgAAAAAEAAAAASAAAAAQCAAAAAEAABA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.EditablePanelThemed" Collapsed="true">
+    <Position X="18.5" Y="5.75" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Drawing\EditablePanelThemed.cs</FileName>
+      <HashCode>AAAAAAAAAABABgAAAAAEAAAAAQAAACAQAAAAAAMAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.Header" Collapsed="true">
+    <Position X="5.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\Header.cs</FileName>
+      <HashCode>EAAAAAAEgAAACACABUBAAEAAAAAAAgEAAACAAAABABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.HeaderBase" Collapsed="true">
+    <Position X="9.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\HeaderBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAAAAABAQAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.HeaderThemed" Collapsed="true">
+    <Position X="4" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\HeaderThemed.cs</FileName>
+      <HashCode>AAAAAAAAAAAABACAAQBAAAAEAAAAACAABAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.RowHeader" Collapsed="true">
+    <Position X="11.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\RowHeader.cs</FileName>
+      <HashCode>AAAAAAAAAAAACACAAUBAAEAAAAAAAAAABAAAAAABABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.RowHeaderBase" Collapsed="true">
+    <Position X="10.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\RowHeaderBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.RowHeaderThemed" Collapsed="true">
+    <Position X="9.75" Y="7" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\RowHeaderThemed.cs</FileName>
+      <HashCode>IAAAAAAAAAAABACAAYhAAAAAAAAAECAABAAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.BackgroundBase" Collapsed="true">
+    <Position X="11.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\BackgroundBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAACAAQBAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DevAge.Drawing.VisualElements.Container" Collapsed="true">
+    <Position X="17.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\Container.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAQAAAAAQAAAAAAABAAAAAQAAAAAAABA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="DevAge.Drawing.VisualElements.IVisualElement" Collapsed="true">
+    <Position X="4.5" Y="9" Width="1.75" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\VisualElementBase.cs</FileName>
+      <HashCode>gAAAAEAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.IButton" Collapsed="true">
+    <Position X="1.75" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ButtonBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.ICheckBox" Collapsed="true">
+    <Position X="7.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\CheckBoxBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABABAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.IColumnHeader" Collapsed="true">
+    <Position X="4" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ColumnHeaderBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.IDropDownButton" Collapsed="true">
+    <Position X="1.75" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\DropDownButtonBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.IEditablePanel" Collapsed="true">
+    <Position X="3.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\EditablePanelBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.IHeader" Collapsed="true">
+    <Position X="5.25" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\HeaderBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.IRowHeader" Collapsed="true">
+    <Position X="6.25" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\RowHeaderBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.ISortIndicator" Collapsed="true">
+    <Position X="5.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\SortIndicator.cs</FileName>
+      <HashCode>AAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.IBackground" Collapsed="true">
+    <Position X="3.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\BackgroundBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAACAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="DevAge.Drawing.VisualElements.IContainer" Collapsed="true">
+    <Position X="9.75" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>Drawing\VisualElements\ContainerBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAQAAAEAAAAAAAQABAAAAAAIgAAEAAAA=</HashCode>
+    </TypeIdentifier>
+  </Interface>
+</ClassDiagram>
