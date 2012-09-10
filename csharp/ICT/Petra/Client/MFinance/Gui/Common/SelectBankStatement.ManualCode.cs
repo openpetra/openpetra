@@ -114,6 +114,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             stmts.DefaultView.Sort = AEpStatementTable.GetDateDBName() + " desc";
             grdSelectStatement.DataSource = new DevAge.ComponentModel.BoundDataView(stmts.DefaultView);
 
+            grdSelectStatement.AutoSizeCells();
+
             RunningPopulateStatementGrid = false;
         }
 

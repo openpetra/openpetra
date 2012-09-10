@@ -145,57 +145,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         void RefreshFilter(Object sender, EventArgs e)
         {
-        	TLogging.Log("Filter Changed-Enter-" + FCurrentBatchViewOption);
-        	
-        	bool senderIsRadioButton = (sender is RadioButton);
-        	
-        	if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
+            TLogging.Log("Filter Changed-Enter-" + FCurrentBatchViewOption);
+
+            bool senderIsRadioButton = (sender is RadioButton);
+
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
-	        	TLogging.Log("Filter Changed-Immediate Exit");
+                TLogging.Log("Filter Changed-Immediate Exit");
                 return;
             }
-        	else if (sender != null && senderIsRadioButton)
-        	{
-        		//Avoid repeat events
-        		RadioButton rbt = (RadioButton)sender;
-        		if (rbt.Name.Contains(FCurrentBatchViewOption))
-	        	{
-		        	TLogging.Log("Filter Changed-Same Option Selected-" + FCurrentBatchViewOption);
-	        		return;
-	        	}
-        	}
-            
-        	if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            else if ((sender != null) && senderIsRadioButton)
             {
-	        	TLogging.Log("Filter Changed-Save Failed");
-            	
-	        	if (senderIsRadioButton)
-	        	{
-		        	//Need to cancel the change of option button
-	            	if (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_EDITING && rbtEditing.Checked == false)
-	            	{
-	            		ToggleOptionButtonCheckedEvent(false);
-						rbtEditing.Checked = true;
-	            		ToggleOptionButtonCheckedEvent(true);
-	            	}
-	            	else if (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL && rbtAll.Checked == false)
-	            	{
-	            		ToggleOptionButtonCheckedEvent(false);
-						rbtAll.Checked = true;
-	            		ToggleOptionButtonCheckedEvent(true);
-	            	}
-	            	else  if (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_POSTED && rbtPosted.Checked == false)
-	            	{
-	            		ToggleOptionButtonCheckedEvent(false);
-						rbtPosted.Checked = true;
-	            		ToggleOptionButtonCheckedEvent(true);
-	            	}
-	        	}
-	        	else
-	        	{
-	        		//TODO Reset combo filter value
-	        	}
-            	return;
+                //Avoid repeat events
+                RadioButton rbt = (RadioButton)sender;
+
+                if (rbt.Name.Contains(FCurrentBatchViewOption))
+                {
+                    TLogging.Log("Filter Changed-Same Option Selected-" + FCurrentBatchViewOption);
+                    return;
+                }
+            }
+
+            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            {
+                TLogging.Log("Filter Changed-Save Failed");
+
+                if (senderIsRadioButton)
+                {
+                    //Need to cancel the change of option button
+                    if ((FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_EDITING) && (rbtEditing.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtEditing.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL) && (rbtAll.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtAll.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_POSTED) && (rbtPosted.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtPosted.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                }
+                else
+                {
+                    //TODO Reset combo filter value
+                }
+
+                return;
             }
 
             ClearCurrentSelection();
@@ -226,8 +228,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (rbtEditing.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
-                
-            	FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, SelectedYear,
+
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, SelectedYear,
                         SelectedPeriod));
                 FStatusFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
@@ -236,7 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (rbtPosted.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_POSTED;
-                
+
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, SelectedYear,
                         SelectedPeriod));
                 FStatusFilter = String.Format("{0} = '{1}'",
@@ -246,7 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_ALL;
-                
+
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, SelectedYear, SelectedPeriod));
                 FStatusFilter = "1 = 1";
             }
@@ -272,27 +274,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             UpdateChangeableStatus();
-        	TLogging.Log("Filter Changed-Exit-" + FCurrentBatchViewOption);
+            TLogging.Log("Filter Changed-Exit-" + FCurrentBatchViewOption);
         }
-
 
         private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
         {
-			if (AToggleOn)
-			{
-				rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-				rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-				rbtPosted.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-			}
-			else
-			{
-	        	rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-				rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-				rbtPosted.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-			}
-
+            if (AToggleOn)
+            {
+                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtPosted.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+            }
+            else
+            {
+                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtPosted.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+            }
         }
-
 
         /// <summary>
         /// get the row of the current batch

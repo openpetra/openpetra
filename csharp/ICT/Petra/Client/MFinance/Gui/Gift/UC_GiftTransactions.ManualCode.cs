@@ -138,8 +138,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.Focus();
             }
 
-            UpdateControlsProtection();
             UpdateTotals();
+            UpdateControlsProtection();
         }
 
         bool FinRecipientKeyChanging = false;
@@ -236,49 +236,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        
         private void DetailCommentTypeChanged(object sender, EventArgs e)
         {
-        	//TODO This code is called from the OnLeave event because the underlying
-        	//    combo control does not detect a value changed when the user tabs to
-        	//    and clears out the contents. AWAITING FIX to remove this code
-        	
-        	if (FPreviouslySelectedDetailRow == null)
-        	{
-        		return;
-        	}
-        	
-        	TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
-        	
-        	string cmbValue = cmb.GetSelectedString();
-        	
-        	if (cmbValue == String.Empty)
-        	{
-	        	if (cmb.Name.Contains("One"))
-	        	{
-	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentOneType)
-		        	{
-	        			FPetraUtilsObject.SetChangedFlag();
-		        	}
-	        	}
-	        	else if (cmb.Name.Contains("Two"))
-	        	{
-	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentTwoType)
-		        	{
-	        			FPetraUtilsObject.SetChangedFlag();
-		        	}
-	        	}
-	        	else if (cmb.Name.Contains("Three"))
-	        	{
-	        		if (cmbValue != FPreviouslySelectedDetailRow.CommentThreeType)
-		        	{
-	        			FPetraUtilsObject.SetChangedFlag();
-		        	}
-	        	}
-        	}
-        	
+            //TODO This code is called from the OnLeave event because the underlying
+            //    combo control does not detect a value changed when the user tabs to
+            //    and clears out the contents. AWAITING FIX to remove this code
+
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
+
+            string cmbValue = cmb.GetSelectedString();
+
+            if (cmbValue == String.Empty)
+            {
+                if (cmb.Name.Contains("One"))
+                {
+                    if (cmbValue != FPreviouslySelectedDetailRow.CommentOneType)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+                }
+                else if (cmb.Name.Contains("Two"))
+                {
+                    if (cmbValue != FPreviouslySelectedDetailRow.CommentTwoType)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+                }
+                else if (cmb.Name.Contains("Three"))
+                {
+                    if (cmbValue != FPreviouslySelectedDetailRow.CommentThreeType)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+                }
+            }
         }
-        
+
         bool FInKeyMinistryChanging = false;
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
@@ -1181,7 +1179,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARow == null)
             {
-                PnlDetailsProtected = ViewMode;
+                PnlDetailsProtected = true; //ViewMode;
             }
             else
             {

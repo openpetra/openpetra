@@ -80,8 +80,8 @@ namespace Ict.Common.Verification
         }
 
         #endregion
-        
-        
+
+
         #region ValueMustNotBeNullOrEmptyString
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Ict.Common.Verification
             String Description = THelper.NiceValueDescription(ADescription);
 
             // Check
-            if (AValue == null || AValue.ToString() == String.Empty)
+            if ((AValue == null) || (AValue.ToString() == String.Empty))
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NONULL, StrValueMustNotBeNullOrEmptyString, new string[] { Description }));
@@ -118,6 +118,5 @@ namespace Ict.Common.Verification
         }
 
         #endregion
-
     }
 }

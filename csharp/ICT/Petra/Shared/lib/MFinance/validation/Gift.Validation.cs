@@ -136,18 +136,18 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	if (!ARow.IsGiftCommentOneNull() && ARow.GiftCommentOne != String.Empty)
+                if (!ARow.IsGiftCommentOneNull() && (ARow.GiftCommentOne != String.Empty))
                 {
-	                VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
-	                    "Comment 1 type " + ValidationContext,
-	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
+                        "Comment 1 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-	                // Handle addition/removal to/from TVerificationResultCollection
-	                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-	                {
-	                    VerifResultCollAddedCount++;
-	                }
-            	}
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
             }
 
             // Detail comments type 2 must not be null if associated comment is not null
@@ -159,21 +159,20 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	if (!ARow.IsGiftCommentTwoNull() && ARow.GiftCommentTwo != String.Empty)
+                if (!ARow.IsGiftCommentTwoNull() && (ARow.GiftCommentTwo != String.Empty))
                 {
-	            	VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
-	                    "Comment 2 type " + ValidationContext,
-	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
+                        "Comment 2 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-	                // Handle addition/removal to/from TVerificationResultCollection
-	                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-	                {
-	                    VerifResultCollAddedCount++;
-	                }
-            	}
-
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
             }
-            
+
             // Detail comments type 3 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCommentThreeTypeId];
             ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
@@ -183,18 +182,18 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	if (!ARow.IsGiftCommentThreeNull() && ARow.GiftCommentThree != String.Empty)
+                if (!ARow.IsGiftCommentThreeNull() && (ARow.GiftCommentThree != String.Empty))
                 {
-	                VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
-	                    "Comment 3 type " + ValidationContext,
-	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
+                        "Comment 3 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-	                // Handle addition/removal to/from TVerificationResultCollection
-	                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-	                {
-	                    VerifResultCollAddedCount++;
-	                }
-            	}
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
             }
 
             return VerifResultCollAddedCount == 0;
@@ -284,18 +283,18 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	if (!ARow.IsGiftCommentOneNull() && ARow.GiftCommentOne != String.Empty)
+                if (!ARow.IsGiftCommentOneNull() && (ARow.GiftCommentOne != String.Empty))
                 {
-	                VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
-	                    "Comment 1 type " + ValidationContext,
-	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
+                        "Comment 1 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-	                // Handle addition/removal to/from TVerificationResultCollection
-	                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-	                {
-	                    VerifResultCollAddedCount++;
-	                }
-            	}
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
             }
 
             // Detail comments type 2 must not be null if associated comment is not null
@@ -307,21 +306,20 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	if (!ARow.IsGiftCommentTwoNull() && ARow.GiftCommentTwo != String.Empty)
+                if (!ARow.IsGiftCommentTwoNull() && (ARow.GiftCommentTwo != String.Empty))
                 {
-	            	VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
-	                    "Comment 2 type " + ValidationContext,
-	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
+                        "Comment 2 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-	                // Handle addition/removal to/from TVerificationResultCollection
-	                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-	                {
-	                    VerifResultCollAddedCount++;
-	                }
-            	}
-
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
             }
-            
+
             // Detail comments type 3 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentThreeTypeId];
             ValidationContext = String.Format("(recurring batch:{0} transaction:{1} detail:{2})",
@@ -331,22 +329,21 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	if (!ARow.IsGiftCommentThreeNull() && ARow.GiftCommentThree != String.Empty)
+                if (!ARow.IsGiftCommentThreeNull() && (ARow.GiftCommentThree != String.Empty))
                 {
-	                VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
-	                    "Comment 3 type " + ValidationContext,
-	                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
+                        "Comment 3 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-	                // Handle addition/removal to/from TVerificationResultCollection
-	                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-	                {
-	                    VerifResultCollAddedCount++;
-	                }
-            	}
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
             }
 
             return VerifResultCollAddedCount == 0;
-            
         }
     }
 }
