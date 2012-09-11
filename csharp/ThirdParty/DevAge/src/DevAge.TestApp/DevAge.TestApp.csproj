@@ -1,0 +1,238 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{37864E0C-D32E-40A1-B6A8-5B84741681EF}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DevAge.TestApp</RootNamespace>
+    <AssemblyName>DevAge.TestApp</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\darius.damalakas.DLC\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>TestApp</AssemblyName>
+    <RootNamespace>TestApp</RootNamespace>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>TestApp</AssemblyName>
+    <DebugSymbols>true</DebugSymbols>
+    <RootNamespace>TestApp</RootNamespace>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GenericTest.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="MainForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample30.resx">
+      <DependentUpon>frmSample30.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample31.resx">
+      <DependentUpon>frmSample31.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample32.resx">
+      <DependentUpon>frmSample32.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample33.resx">
+      <DependentUpon>frmSample33.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample34.resx">
+      <DependentUpon>frmSample34.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample35.resx">
+      <DependentUpon>frmSample35.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample36.resx">
+      <DependentUpon>frmSample36.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample37.resx">
+      <DependentUpon>frmSample37.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample38.resx">
+      <DependentUpon>frmSample38.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample39.resx">
+      <DependentUpon>frmSample39.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Samples\frmSample40.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmSample40.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Samples\TypedDatasetSample.xsc">
+      <DependentUpon>TypedDatasetSample.xsd</DependentUpon>
+    </None>
+    <None Include="Samples\TypedDatasetSample.xss">
+      <DependentUpon>TypedDatasetSample.xsd</DependentUpon>
+    </None>
+    <None Include="Samples\TypedDatasetSample.xsx">
+      <DependentUpon>TypedDatasetSample.xsd</DependentUpon>
+    </None>
+    <None Include="Resources\SampleSmall1.gif" />
+    <None Include="Resources\Sample4.gif" />
+    <None Include="Resources\Sample3.gif" />
+    <None Include="Resources\Sample2.gif" />
+    <None Include="Resources\Sample1.gif" />
+    <Content Include="Samples\TypedDatasetSample.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>TypedDatasetSample.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="SampleAttribute.cs" />
+    <Compile Include="Samples\frmSample30.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample31.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample32.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample33.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample34.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample35.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample35.Designer.cs">
+      <DependentUpon>frmSample35.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\frmSample36.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample36.Designer.cs">
+      <DependentUpon>frmSample36.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\frmSample37.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample38.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample38.Designer.cs">
+      <DependentUpon>frmSample38.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\frmSample39.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample39.Designer.cs">
+      <DependentUpon>frmSample39.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\frmSample40.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Samples\frmSample40.Designer.cs">
+      <DependentUpon>frmSample40.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Samples\TypedDatasetSample.Designer.cs">
+      <DependentUpon>TypedDatasetSample.xsd</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SourceGrid\SourceGrid.csproj">
+      <Project>{2A5A1657-DBA8-4117-8E2A-9F1236ACE9E2}</Project>
+      <Name>SourceGrid</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

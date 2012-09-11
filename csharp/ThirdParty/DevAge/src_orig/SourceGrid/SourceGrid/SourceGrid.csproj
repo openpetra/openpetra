@@ -1,0 +1,380 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DA47B108-21C8-4293-8D4E-56FFF1ED45A5}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>SourceGrid</AssemblyName>
+    <AssemblyOriginatorKeyFile>SourceGrid.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SourceGrid</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SignAssembly>true</SignAssembly>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\darius.damalakas.DLC\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>Full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <OutputType>Library</OutputType>
+    <AssemblyName>SourceGrid</AssemblyName>
+    <RootNamespace>SourceGrid</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\SourceGrid.xml</DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <OutputType>Library</OutputType>
+    <AssemblyName>SourceGrid</AssemblyName>
+    <RootNamespace>SourceGrid</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\References\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SourceGridAssemblyInfo.cs">
+      <Link>SourceGridAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Cells\Button.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Cell.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\CellCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\CellContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\CellControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\CellVirtual.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\CheckBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\ColumnHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\BindProperty.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\Button.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\CellEventDispatcher.cs" />
+    <Compile Include="Cells\Controllers\MouseSelection.cs" />
+    <Compile Include="Cells\Controllers\StandardBehavior.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\CheckBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\ControllerBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\ControllerContainer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\CustomEvents.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\IController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\MouseCursor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\MouseInvalidate.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\Resizable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\SortableHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\ToolTipText.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Controllers\Unselectable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Editors\ComboBox.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\DateTimePicker.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\EditorBase.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\EditorControlBase.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\Factory.cs" />
+    <Compile Include="Cells\Editors\ImagePicker.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\NumericUpDown.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\TextBox.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\TextBoxButton.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\TextBoxCurrency.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\TextBoxNumeric.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\TextBoxUITypeEditor.cs">
+    </Compile>
+    <Compile Include="Cells\Editors\TimePicker.cs">
+    </Compile>
+    <Compile Include="Cells\Header.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\ICell.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\ICellVirtual.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Image.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Link.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Models\ICheckBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Models\IImage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Models\IModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Models\ISortableHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Models\IToolTipText.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Models\IValueModel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Models\ModelContainer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Models\Real\Models.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\RowHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\Button.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\Cell.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\CheckBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\ColumnHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\ComboBox.cs" />
+    <Compile Include="Cells\Views\Header.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\IView.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\Link.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\MultiImages.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\RowHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Cells\Views\ViewBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\ColumnInfo.cs" />
+    <Compile Include="Common\ColumnInfoCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\ColumnsBase.cs" />
+    <Compile Include="Common\ColumnsSimpleBase.cs" />
+    <Compile Include="Common\CustomScrollControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Common\Enums.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Events.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\LinkedControlsList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Position.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\PositionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Range.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\RangeCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\RangeData.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\RangeRegion.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Rows.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Utilities.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Decorators\DecoratorList.cs" />
+    <Compile Include="Decorators\DecoratorSelection.cs" />
+    <Compile Include="Decorators\DecoratorBase.cs" />
+    <Compile Include="Decorators\DecoratorHighlight.cs" />
+    <Compile Include="Exporter\CSV.cs" />
+    <Compile Include="Exporter\HTML.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Exporter\Image.cs" />
+    <Compile Include="Exporter\GridPrintDocument.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Grids\Grid.Columns.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Grids\Grid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Grids\Grid.Rows.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Grids\GridVirtual.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Selection\ColumnSelection.cs" />
+    <Compile Include="Selection\FreeSelection.cs" />
+    <Compile Include="Selection\RangeComparerByRows.cs" />
+    <Compile Include="Selection\RowSelection.cs" />
+    <Compile Include="Selection\RangeMergerByRows.cs" />
+    <Compile Include="Selection\SelectionBase.cs" />
+    <EmbeddedResource Include="Grid.bmp" />
+    <EmbeddedResource Include="GridVirtual.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SourceGrid.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DevAgeSourcePack4\DevAge.Core\DevAge.Core.csproj">
+      <Project>{3EB346D6-5AE2-42BE-98F9-BFAC1C2C719C}</Project>
+      <Name>DevAge.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DevAgeSourcePack4\DevAge.Windows.Forms\DevAge.Windows.Forms.csproj">
+      <Project>{3DF8B880-8A23-4F10-9EAB-D72EF0672C3E}</Project>
+      <Name>DevAge.Windows.Forms</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+    <ProjectGuid>{DA47B108-21C8-4293-8D4E-56FFF1ED45A5}</ProjectGuid>
+    <RootNamespace>SourceGrid</RootNamespace>
+  </PropertyGroup>
+</Project>
