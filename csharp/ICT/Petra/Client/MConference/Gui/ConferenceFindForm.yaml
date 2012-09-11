@@ -40,7 +40,6 @@ RootNode:
                 PartnerShortName: {Label=Conference Name}
                 ConferenceKey: {Label=Conference Key}
                 OutreachPrefix: {Label=Outreach Code Prefix}
-            ActionDoubleClick: actAccept
             Width: 500
             Height: 200
         pnlButtons:
