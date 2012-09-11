@@ -72,8 +72,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FBatchNumber = ABatchNumber;
             FBatchStatus = ABatchStatus;
 
-            txtBatchNumber.Text = FBatchNumber.ToString();
-
             FPreviouslySelectedDetailRow = null;
 
             grdDetails.DataSource = null;
@@ -100,7 +98,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ClearControls();
             }
 
+            txtBatchNumber.Text = FBatchNumber.ToString();
+
+            //This will update Batch totals
             UpdateTotals(GetBatchRow());
+            ((TFrmGLBatch)ParentForm).SaveChanges();
         }
 
         private void RefreshCurrencyAndExchangeRate()
@@ -191,8 +193,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// update the journal header fields from a batch
         /// </summary>
-        /// <param name="batch"></param>
-        public void UpdateTotals(ABatchRow batch)
+        /// <param name="ABatch"></param>
+        public void UpdateTotals(ABatchRow ABatch)
         {
             decimal sumDebits = 0.0M;
             decimal sumCredits = 0.0M;
@@ -205,18 +207,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 sumDebits += r.JournalDebitTotal;
             }
 
-            if (batch.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+           	if (ABatch.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
-                batch.BatchCreditTotal = sumCredits;
-                batch.BatchDebitTotal = sumDebits;
-                batch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+                ABatch.BatchCreditTotal = sumCredits;
+                ABatch.BatchDebitTotal = sumDebits;
+                ABatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
             }
 
-            txtCurrentPeriod.Text = batch.BatchPeriod.ToString();
-            txtDebit.NumberValueDecimal = sumDebits; //batch.BatchDebitTotal;
-            txtCredit.NumberValueDecimal = sumCredits; //batch.BatchCreditTotal;
-            //txtControl.NumberValueDecimal = batch.BatchRunningTotal;
-            txtControl.NumberValueDecimal = batch.BatchControlTotal;
+           	txtCurrentPeriod.Text = ABatch.BatchPeriod.ToString();
+            txtDebit.NumberValueDecimal = sumDebits;
+            txtCredit.NumberValueDecimal = sumCredits;
+            txtControl.NumberValueDecimal = ABatch.BatchControlTotal;
+
         }
 
         private void ShowDetailsManual(AJournalRow ARow)

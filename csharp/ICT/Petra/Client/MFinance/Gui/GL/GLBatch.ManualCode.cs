@@ -24,6 +24,7 @@
 using System;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Remoting.Client;
@@ -57,6 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void InitializeManualCode()
         {
+            tabGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
             this.tpgAttributes.Enabled = false;
@@ -174,24 +176,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
-            //Save changes before switching tab
-            if ((ucoBatches.GetSelectedDetailRow() != null) && (ucoBatches.GetSelectedDetailRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
-            {
-                if (FPetraUtilsObject.HasChanges && !SaveChanges())
-                {
-                    MessageBox.Show(Catalog.GetString("Cannot change to a different tab until changes have been validated and saved."));
-                    return;
-                }
-                else if (!FPetraUtilsObject.HasChanges)
-                {
-                    FPetraUtilsObject.DisableSaveButton();
-                }
-            }
-            else
-            {
-                FPetraUtilsObject.HasChanges = false;
-            }
-
             if (ATab == eGLTabs.Batches)
             {
                 this.tabGLBatch.SelectedTab = this.tpgBatches;
@@ -246,6 +230,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         );
                 }
             }
+        }
+
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+        	TTabVersatile tb = (TTabVersatile)sender;
+
+        	FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (!SaveChanges())
+            {
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }
+            
         }
 
         private void SelectTabManual(int ASelectedTabIndex)

@@ -118,13 +118,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
             btnRemove.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
 
+            //This will update Batch and journal totals
             UpdateTotals();
+            ((TFrmGLBatch)ParentForm).SaveChanges();
 
             if (grdDetails.Rows.Count < 2)
             {
                 ClearControls();
                 pnlDetails.Enabled = false;
             }
+
         }
 
         /// <summary>
@@ -212,6 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            //If first row added
             if (grdDetails.Rows.Count == 2)
             {
                 if (cmbDetailCostCentreCode.Count > 1)
@@ -341,11 +345,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditAmount.NumberValueDecimal = ARow.TransactionAmount;
             }
 
-            UpdateTotals();
-
-            if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            if (FPetraUtilsObject.HasChanges && GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
-                FPetraUtilsObject.DisableSaveButton();
+            	UpdateTotals();
+            }	
+            else if (FPetraUtilsObject.HasChanges && GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+            	FPetraUtilsObject.DisableSaveButton();
+            	FPetraUtilsObject.HasChanges = false;
             }
         }
 
@@ -404,6 +411,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmGLBatch)ParentForm).GetJournalsControl().UpdateTotals(GetBatchRow());
                 ((TFrmGLBatch)ParentForm).GetBatchControl().UpdateTotals();
             }
+            
         }
 
         /// <summary>
@@ -468,7 +476,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPreviouslySelectedDetailRow = null;
 
-                UpdateTotals();
                 FPetraUtilsObject.SetChangedFlag();
 
                 InvokeFocusedRowChanged(rowIndex);
@@ -479,7 +486,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ((TFrmGLBatch)ParentForm).DisableAttributes();
                     pnlDetails.Enabled = false;
                 }
+                
+				UpdateTotals();
             }
+            
         }
 
         /// <summary>
@@ -492,17 +502,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearControls()
         {
-            cmbDetailAccountCode.SelectedIndex = -1;
+			//Stop data change detection
+        	FPetraUtilsObject.DisableDataChangedEvent();
+
+        	//Clear combos
+        	cmbDetailAccountCode.SelectedIndex = -1;
             cmbDetailCostCentreCode.SelectedIndex = -1;
             cmbDetailKeyMinistryKey.SelectedIndex = -1;
+			//Clear Textboxes
             txtDetailNarrative.Clear();
             txtDetailReference.Clear();
+			//Clear Numeric Textboxes
             txtDebitAmount.NumberValueDecimal = 0;
             txtDebitAmountBase.NumberValueDecimal = 0;
             txtCreditAmount.NumberValueDecimal = 0;
             txtCreditAmountBase.NumberValueDecimal = 0;
 
-            UpdateTotals();
+			//Enable data change detection
+            FPetraUtilsObject.EnableDataChangedEvent();
+
         }
 
         /// <summary>

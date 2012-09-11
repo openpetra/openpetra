@@ -28,7 +28,7 @@ RootNode:
             ControlsOrientation: horizontal
             SuppressChangeDetection: true
             OptionalValues: [Posting, =Editing, All]
-            OnChange: ChangeBatchFilter
+            OnChange: RefreshFilter
         cmbYearFilter: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
         cmbPeriodFilter: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
         pnlPeriodFilter:

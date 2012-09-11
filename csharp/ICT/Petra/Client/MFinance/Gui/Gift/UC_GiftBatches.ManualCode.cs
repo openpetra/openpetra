@@ -145,13 +145,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         void RefreshFilter(Object sender, EventArgs e)
         {
-            TLogging.Log("Filter Changed-Enter-" + FCurrentBatchViewOption);
-
             bool senderIsRadioButton = (sender is RadioButton);
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
-                TLogging.Log("Filter Changed-Immediate Exit");
                 return;
             }
             else if ((sender != null) && senderIsRadioButton)
@@ -161,15 +158,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (rbt.Name.Contains(FCurrentBatchViewOption))
                 {
-                    TLogging.Log("Filter Changed-Same Option Selected-" + FCurrentBatchViewOption);
                     return;
                 }
             }
 
-            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            if (FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).SaveChanges())
             {
-                TLogging.Log("Filter Changed-Save Failed");
-
                 if (senderIsRadioButton)
                 {
                     //Need to cancel the change of option button

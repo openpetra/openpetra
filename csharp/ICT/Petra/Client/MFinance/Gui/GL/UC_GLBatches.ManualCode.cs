@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private DateTime DefaultDate;
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
+        private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
 
         /// <summary>
         /// load the batches into the grid
@@ -583,36 +584,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        ///  The changes of the radio button are handled.
-        /// </summary>
-        /// <param name="sender">It should be a radio button</param>
-        /// <param name="e"></param>
-        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
-        {
-            // Each radio button click invokes this routine twice, on run is done for the
-            // unchecked button an one is done for the checked one.
-            RadioButton radioButton = sender as RadioButton;
-
-            if (radioButton != null)
-            {
-                if (radioButton.Checked)
-                {
-                    //int rowIndex = CurrentRowIndex();
-
-                    RefreshFilter(null, null);
-                    // TODO Select the actual row again in updated
-                    //SelectByIndex(rowIndex);
-                    // UpdateChangeableStatus();
-
-                    //bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
-                    //EnableButtonControl(enablePosting);
-
-                    //UpdateChangeableStatus(enablePosting);
-                }
-            }
-        }
-
         private int CurrentRowIndex()
         {
             int rowIndex = -1;
@@ -686,15 +657,70 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 //            ;
 //        }
 
+        private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
+        {
+            if (AToggleOn)
+            {
+                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+            }
+            else
+            {
+                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+            }
+        }
+
         void RefreshFilter(Object sender, EventArgs e)
         {
+            bool senderIsRadioButton = (sender is RadioButton);
+
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
+            else if ((sender != null) && senderIsRadioButton)
+            {
+                //Avoid repeat events
+                RadioButton rbt = (RadioButton)sender;
+
+                if (rbt.Name.Contains(FCurrentBatchViewOption))
+                {
+                    return;
+                }
+            }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
+                if (senderIsRadioButton)
+                {
+                    //Need to cancel the change of option button
+                    if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_EDITING) && (rbtEditing.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtEditing.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL) && (rbtAll.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtAll.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_POSTING) && (rbtPosting.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtPosting.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                }
+                else
+                {
+                    //TODO Reset combo filter value
+                }
+
                 return;
             }
 
@@ -725,6 +751,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (rbtEditing.Checked)
             {
+            	FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
+            	
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, SelectedYear,
                         SelectedPeriod));
                 FStatusFilter = String.Format("{0} = '{1}'",
@@ -734,13 +762,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (rbtAll.Checked)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, SelectedYear,
+            	FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_ALL;
+
+            	FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, SelectedYear,
                         SelectedPeriod));
                 FStatusFilter = "1 = 1";
                 btnNew.Enabled = true;
             }
             else //(rbtPosting.Checked)
             {
+            	FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_POSTING;
+            	
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting, SelectedYear,
                         SelectedPeriod));
                 FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2} ))",
