@@ -35,6 +35,8 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
+using System.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -459,6 +461,61 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
         }
 
+        /// <summary>
+        /// Print a receipt for each gift (ideally each donor) in the batch
+        /// </summary>
+        /// <param name="AgiftBatchRow"></param>
+        private void PrintGiftBatchReceipts(AGiftBatchRow AgiftBatchRow)
+        {
+            FMainDS.AGift.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                AGiftTable.GetLedgerNumberDBName(),AgiftBatchRow.LedgerNumber,
+                AGiftTable.GetBatchNumberDBName(),AgiftBatchRow.BatchNumber);
+            foreach (DataRowView rv in FMainDS.AGift.DefaultView)
+            {
+                AGiftRow GiftRow = (AGiftRow)rv.Row;
+                bool ReceiptEachGift;
+                String ReceiptLetterFrequency;
+                bool EmailGiftStatement;
+                bool AnonymousDonor;
+
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerReceiptingInfo(
+                    GiftRow.DonorKey,
+                    out ReceiptEachGift,
+                    out ReceiptLetterFrequency,
+                    out EmailGiftStatement,
+                    out AnonymousDonor);
+
+                String DonorShortName;
+                TPartnerClass DonorClass;
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(GiftRow.DonorKey, out DonorShortName, out DonorClass);
+
+                if (ReceiptEachGift)
+                {
+                    string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintGiftReceipt(
+                                AgiftBatchRow.LedgerNumber,
+                                AgiftBatchRow.BatchNumber,
+                                GiftRow.GiftTransactionNumber,
+                                DonorShortName,
+                                GiftRow.DonorKey,
+                                DonorClass,
+                                GiftRow.Reference,
+                                AgiftBatchRow.CurrencyCode,
+                                AgiftBatchRow.DateCreated.Value);
+                    TFrmReceiptControl.PrintSinglePageLetter(HtmlDoc);
+                    if (MessageBox.Show(
+                        String.Format(Catalog.GetString("Please check that the receipt to {0} printed correctly.\r\nThe gift will be marked as receipted."), DonorShortName),
+                        Catalog.GetString("Receipt Printing"),
+                        MessageBoxButtons.OKCancel) == DialogResult.OK)
+                    {
+                        TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(
+                                AgiftBatchRow.LedgerNumber,
+                                AgiftBatchRow.BatchNumber,
+                                GiftRow.GiftTransactionNumber);
+                    }
+                }
+            }
+        }
+
         private void PostBatch(System.Object sender, EventArgs e)
         {
             // TODO: show VerificationResult
@@ -502,10 +559,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
 
                 AGiftBatchRow giftBatchRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FSelectedBatchNumber });
+
+                // TODO: print reports on successfully posted batch
+                PrintGiftBatchReceipts(giftBatchRow);
                 giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
                 giftBatchRow.AcceptChanges();
 

@@ -663,6 +663,50 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             return ReturnValue;
         }
 
+        /// <summary>Retrieves receipting fields from a partner key.</summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AReceiptEachGift"></param>
+        /// <param name="AReceiptLetterFrequency"></param>
+        /// <param name="AEmailGiftStatement"></param>
+        /// <param name="AAnonymousDonor"></param>
+        [RequireModulePermission("FINANCE-2")]
+        public static bool GetPartnerReceiptingInfo (
+            Int64 APartnerKey, 
+            out bool AReceiptEachGift, 
+            out String AReceiptLetterFrequency,
+            out bool AEmailGiftStatement, 
+            out bool AAnonymousDonor)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+            PPartnerTable PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            if (PartnerTbl.Rows.Count > 0)
+            {
+                PPartnerRow Row = PartnerTbl[0];
+                AReceiptEachGift = Row.ReceiptEachGift;
+                AReceiptLetterFrequency = Row.ReceiptLetterFrequency;
+                AEmailGiftStatement = Row.EmailGiftStatement;
+                AAnonymousDonor = Row.AnonymousDonor;
+                return true;
+            }
+            else
+            {
+                AReceiptEachGift = false;
+                AReceiptLetterFrequency = "";
+                AEmailGiftStatement = false;
+                AAnonymousDonor = false;
+                return false;
+            }
+        }
+
         /// <summary>
         /// Retrieves the description of an extract.
         /// </summary>

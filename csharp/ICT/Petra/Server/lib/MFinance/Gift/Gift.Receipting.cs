@@ -326,7 +326,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ATransactionNumber,
             String ADonorShortName,
             Int64 ADonorKey,
-            String ADonorClass,
+            TPartnerClass ADonorClass,
             String AReference,
             String AGiftCurrency,
             DateTime ADateEntered,
@@ -364,7 +364,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // Donor Name:
             FormValues["AdresseeShortName"].Add(ADonorShortName);
 
-            if (ADonorClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            if (ADonorClass == TPartnerClass.PERSON)
             {
                 PPersonTable Tbl = PPersonAccess.LoadByPrimaryKey(ADonorKey, ATransaction);
                 if (Tbl.Rows.Count > 0)
@@ -375,7 +375,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
             else
-                if (ADonorClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                if (ADonorClass == TPartnerClass.FAMILY)
                 {
                     PFamilyTable Tbl = PFamilyAccess.LoadByPrimaryKey(ADonorKey, ATransaction);
                     if (Tbl.Rows.Count > 0)
@@ -472,6 +472,39 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return PageHtml;
         }
 
+
+        /// <summary></summary>
+        /// <returns>A Receipt formatted with HTML</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string PrintGiftReceipt(
+            Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 ATransactionNumber,
+            String ADonorShortName,
+            Int64 ADonorKey,
+            TPartnerClass ADonorClass,
+            String AReference,
+            String AGiftCurrency,
+            DateTime ADateEntered
+            )
+
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
+            string HtmlDoc = FormatHtmlReceipt(ALedgerNumber,
+                        ABatchNumber,
+                        ATransactionNumber,
+                        ADonorShortName,
+                        ADonorKey,
+                        ADonorClass,
+                        AReference,
+                        AGiftCurrency,
+                        ADateEntered,
+                        LocalCountryCode,
+                        Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return HtmlDoc;
+        }
         /// <summary>
         /// </summary>
         /// <param name="AGiftTbl">Custom table from GetUnreceiptedGifts, above</param>
@@ -493,7 +526,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         Convert.ToInt32(Row["TransactionNumber"]),
                         Row["Donor"].ToString(),
                         Convert.ToInt64(Row["DonorKey"]),
-                        Row["DonorClass"].ToString(),
+                        SharedTypes.PartnerClassStringToEnum(Row["DonorClass"].ToString()),
                         Row["Reference"].ToString(),
                         Row["GiftCurrency"].ToString(),
                         Convert.ToDateTime(Row["DateEntered"]),
@@ -509,6 +542,34 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             } // foreach row
             DBAccess.GDBAccessObj.RollbackTransaction();
             return HtmlDoc;
+        }
+
+        /// <summary>Mark a gift as receipted in the AGift table.</summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ATransactionNumber"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool MarkReceiptsPrinted(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ATransactionNumber)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            AGiftTable Tbl = new AGiftTable();
+            Tbl.Merge(AGiftAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, ATransactionNumber, Transaction));
+            foreach (AGiftRow Row in Tbl.Rows)
+            {
+                Row.ReceiptPrinted = true;
+            }
+            TVerificationResultCollection SubmitResults;
+
+            bool CommitRes = AGiftAccess.SubmitChanges(Tbl, Transaction, out SubmitResults);
+            if (CommitRes)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            else
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            return CommitRes;
         }
 
         /// <summary>Mark selected gifts as receipted in the AGift table.</summary>
