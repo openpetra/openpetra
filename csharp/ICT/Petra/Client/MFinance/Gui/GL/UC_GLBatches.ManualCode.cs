@@ -42,6 +42,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -168,6 +169,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ABatchRow ARow)
         {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GL.ValidateGLBatchManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
         }
 
         private void ShowDetailsManual(ABatchRow ARow)
@@ -1071,5 +1076,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             gl.MainDS = FMainDS;
             gl.Show();
         }
+        
     }
 }

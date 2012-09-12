@@ -59,6 +59,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public string FSelectedBatchMethodOfPayment = String.Empty;
 
         /// <summary>
+        /// Stores the current ledger's posting start date
+        /// </summary>//
+        public DateTime FStartDateCurrentPeriod;
+
+        /// <summary>
+        /// Stores the current ledger's posting end date
+        /// </summary>//
+        public DateTime FEndDateLastForwardingPeriod;
+
+        /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
         public void RefreshAll()
@@ -113,12 +123,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
 
-            DateTime StartDateCurrentPeriod;
-            DateTime EndDateLastForwardingPeriod;
             DateTime DefaultDate;
-            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod, out DefaultDate);
+            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out FStartDateCurrentPeriod, out FEndDateLastForwardingPeriod, out DefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
+                FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
             dtpDetailGlEffectiveDate.Date = DefaultDate;
 
             if (grdDetails.Rows.Count > 1)

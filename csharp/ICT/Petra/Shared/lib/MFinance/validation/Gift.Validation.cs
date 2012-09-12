@@ -52,7 +52,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
+            TScreenVerificationResult VerificationResult;
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
@@ -68,11 +68,33 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
+            	VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
                     ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // 'Effective From Date' must be valid
+            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnGlEffectiveDateId];
+            ValidationContext = ARow.BatchNumber;
+
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+            bool datesIsOK = TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod);
+            
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+            	VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.GlEffectiveDate, StartDateCurrentPeriod, EndDateLastForwardingPeriod,
+                							ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
+                							TDateBetweenDatesCheckType.dbdctUnspecific, TDateBetweenDatesCheckType.dbdctUnspecific, AContext,
+                							ValidationColumn, ValidationControlsData.ValidationControl);
+
+            	// Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
