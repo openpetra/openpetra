@@ -149,9 +149,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+
+        /// <summary>If this is a foreign currency supplier, it must be linked to accounts in that currency. 
+        /// (And if it's not, it mustn't be!)</summary>
+        /// <param name="AccountRef"></param>
+        /// <param name="AccountType"></param>
+        /// <returns>true if the default back account is OK.</returns>
         private bool ValidateAccountCurrency(string AccountRef, string AccountType)
         {
             bool CurrencyIsOk = true;
+            if (AccountRef == "") // I've not been given a default bank account. Perhaps this is OK?
+            {
+                return CurrencyIsOk;
+            }
             AAccountTable AccountList = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
                 FLedgerNumber);
 
