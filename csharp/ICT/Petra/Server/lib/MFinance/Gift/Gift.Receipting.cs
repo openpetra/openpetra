@@ -352,12 +352,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             FormValues.Add("DateEntered", new List<string>());
             FormValues.Add("GiftAmount", new List<string>());
+            FormValues.Add("GiftTxd", new List<string>());
             FormValues.Add("RecipientShortName", new List<string>());
             FormValues.Add("MotivationDetail", new List<string>());
             FormValues.Add("Reference", new List<string>());
             FormValues.Add("DonorComment", new List<string>());
 
             FormValues.Add("GiftTotalAmount", new List<string>());
+            FormValues.Add("TxdTotal", new List<string>());
+            FormValues.Add("NonTxdTotal", new List<string>());
             FormValues.Add("GiftCurrency", new List<string>());
 
 
@@ -418,13 +421,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             FormValues["Reference"].Add(AReference);
             AGiftDetailTable DetailTbl = AGiftDetailAccess.LoadViaAGift(
                 ALedgerNumber, ABatchNumber,ATransactionNumber, ATransaction);
+
             decimal GiftTotal = 0;
+            decimal TxdTotal = 0;
+            decimal NonTxdTotal = 0;
             foreach (AGiftDetailRow DetailRow in DetailTbl.Rows)
             {
                 string DonorComment = "";
                 FormValues["GiftAmount"].Add(DetailRow.GiftAmount.ToString("0.00"));
                 FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
                 GiftTotal += DetailRow.GiftAmount;
+                if (DetailRow.TaxDeductable)
+                {
+                    FormValues["GiftTxd"].Add("Y");
+                    TxdTotal += DetailRow.GiftAmount;
+                }
+                else
+                {
+                    FormValues["GiftTxd"].Add(" ");
+                    NonTxdTotal += DetailRow.GiftAmount;
+                }
 
                 // Recipient Short Name:
                 PPartnerTable RecipientTbl = PPartnerAccess.LoadByPrimaryKey(DetailRow.RecipientKey, ATransaction);
@@ -465,6 +481,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             } // foreach detail
 
             FormValues["GiftTotalAmount"].Add(GiftTotal.ToString("0.00"));
+            FormValues["TxdTotal"].Add(TxdTotal.ToString("0.00"));
+            FormValues["NonTxdTotal"].Add(NonTxdTotal.ToString("0.00"));
             FormValues["GiftCurrency"].Add(AGiftCurrency);
 
             string PageHtml = TFormLettersTools.PrintSimpleHTMLLetter(
