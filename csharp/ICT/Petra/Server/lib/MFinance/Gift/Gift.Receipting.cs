@@ -629,5 +629,45 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             return CommitRes;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Int32 GetLastReceiptNumber(Int32 ALedgerNumber)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (LedgerTbl.Rows.Count > 0)
+            {
+                return LedgerTbl[0].LastHeaderRNumber;
+            }
+            else
+            {
+                return 0; // This is obviously the wrong answer, but I judge it to be unlikely.
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static void SetLastReceiptNumber(Int32 ALedgerNumber, Int32 AReceiptNumber)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            TVerificationResultCollection Results;
+
+            if (LedgerTbl.Rows.Count > 0)
+            {
+                LedgerTbl[0].LastHeaderRNumber = AReceiptNumber;
+                ALedgerAccess.SubmitChanges(LedgerTbl,Transaction, out Results);
+            }
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
     }
 }

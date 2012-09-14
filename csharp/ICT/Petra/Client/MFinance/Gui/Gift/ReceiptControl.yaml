@@ -18,11 +18,13 @@ RootNode:
             Dock: Fill
         pnlBtns:
             Controls:
-                Row0: [btnPrint, btnRemove, btnCloseForm]
+                Row0: [btnPrint, btnRemove, btnRcptNumber, btnCloseForm]
         btnPrint:
             ActionClick:OnBtnPrint
         btnRemove:
             ActionClick:OnBtnRemove
+        btnRcptNumber:
+            ActionClick:OnBtnRcptNumber
         btnCloseForm:
             ActionClick:OnBtnClose
             Label:Close

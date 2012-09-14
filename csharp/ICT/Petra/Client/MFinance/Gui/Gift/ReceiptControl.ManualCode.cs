@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using DevAge.ComponentModel;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -164,9 +165,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             LoadUnreceiptedGifts();
         }
 
+        private void OnBtnRcptNumber(Object sender, EventArgs e)
+        {
+            Boolean IntFormatIsOk = false;
+            Int32 ReceiptNum;
+            Int32 NewReceiptNum = 0;
+            do {
+                ReceiptNum = TRemote.MFinance.Gift.WebConnectors.GetLastReceiptNumber(FLedgerNumber);
+                String ReceiptNumString = (ReceiptNum + 1).ToString();
+                PetraInputBox input = new PetraInputBox(
+                    Catalog.GetString("Receipt Numbers"),
+                    Catalog.GetString("The next Gift Receipt will have this number:"),
+                    ReceiptNumString, false);
+                input.ShowDialog();
+                if (input.DialogResult == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    return;
+                }
+
+                ReceiptNumString = input.GetAnswer();
+                try
+                {
+                    NewReceiptNum = Convert.ToInt32(ReceiptNumString) - 1;
+                    IntFormatIsOk = true;
+                }
+                catch (FormatException)
+                {
+                    MessageBox.Show(
+                        Catalog.GetString("Please enter an integer."),
+                        Catalog.GetString("Format Problem")
+                        );
+                }
+            }
+            while (!IntFormatIsOk);
+            if (NewReceiptNum < ReceiptNum)
+            {
+                MessageBox.Show(
+                    Catalog.GetString("WARNING - new Receipt Number is less than previous number.\r\nDuplicate Receipt Numbers might be printed."),
+                    Catalog.GetString("Receipt Numbers"),
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Warning
+                    );
+            }
+            TRemote.MFinance.Gift.WebConnectors.SetLastReceiptNumber(FLedgerNumber, NewReceiptNum);
+        }
+
         private void OnBtnClose(Object sender, EventArgs e)
         {
             this.Close();
         }
     }
 }
+
+  
