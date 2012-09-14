@@ -26,7 +26,7 @@ RootNode:
             Label: Show batches
             ControlsOrientation: horizontal
             SuppressChangeDetection: true
-            OptionalValues: [Posted, =Editing, All]
+            OptionalValues: [Posting, =Editing, All]
             OnChange: RefreshFilter
         cmbYear: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
         cmbPeriod: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}

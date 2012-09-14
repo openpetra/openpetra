@@ -70,7 +70,7 @@ namespace Ict.Petra.Shared.MFinance
         public const String GIFT_BATCH_VIEW_EDITING = "Editing";
 
         /// <summary>Gift Batch View Options</summary>
-        public const String GIFT_BATCH_VIEW_POSTED = "Posted";
+        public const String GIFT_BATCH_VIEW_POSTING = "Posting";
 
         /// <summary>Gift Batch View Options</summary>
         public const String GIFT_BATCH_VIEW_ALL = "All";

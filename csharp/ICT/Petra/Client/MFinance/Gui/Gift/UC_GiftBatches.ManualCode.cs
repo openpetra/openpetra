@@ -187,10 +187,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         rbtAll.Checked = true;
                         ToggleOptionButtonCheckedEvent(true);
                     }
-                    else if ((FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_POSTED) && (rbtPosted.Checked == false))
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_POSTING) && (rbtPosting.Checked == false))
                     {
                         ToggleOptionButtonCheckedEvent(false);
-                        rbtPosted.Checked = true;
+                        rbtPosting.Checked = true;
                         ToggleOptionButtonCheckedEvent(true);
                     }
                 }
@@ -237,15 +237,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
             }
-            else if (rbtPosted.Checked)
+            else if (rbtPosting.Checked)
             {
-                FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_POSTED;
+                FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_POSTING;
 
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, SelectedYear,
                         SelectedPeriod));
-                FStatusFilter = String.Format("{0} = '{1}'",
+                FStatusFilter = String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
                     AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED);
+                    MFinanceConstants.BATCH_UNPOSTED,
+                    AGiftBatchTable.GetBatchTotalDBName(),
+                    AGiftBatchTable.GetHashTotalDBName());
             }
             else
             {
@@ -285,13 +287,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
                 rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                rbtPosted.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
             }
             else
             {
                 rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
                 rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                rbtPosted.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
             }
         }
 
