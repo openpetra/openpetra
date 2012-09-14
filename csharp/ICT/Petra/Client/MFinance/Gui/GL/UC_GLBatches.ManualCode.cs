@@ -43,6 +43,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -298,7 +299,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || FPreviouslySelectedDetailRow == null)
+			if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || FPreviouslySelectedDetailRow == null)
             {
                 return;
             }
@@ -311,11 +312,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
 				if (DateTime.TryParse(aDate, out dateValue))
 				{
-					periodNumber = dateValue.Month;
+					Int32 yearNumber = 0;
 					
-					if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+					if (TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
 					{
-						FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+					    if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+						{
+							FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+						}
 					}
 				}
 			}
