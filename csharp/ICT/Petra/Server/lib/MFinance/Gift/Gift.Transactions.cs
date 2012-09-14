@@ -975,8 +975,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AGiftDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
         }
 
+        /// <summary>
         /// create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
-        private static GiftBatchTDS LoadGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             bool NewTransaction = false;
 
@@ -1481,7 +1487,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AVerifications = new TVerificationResultCollection();
 
             bool NewTransaction;
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             List <Int32>GLBatchNumbers = new List <int>();
 
@@ -1507,6 +1513,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             out AVerifications) == TSubmitChangesResult.scrOK)
                     {
                         GLBatchNumbers.Add(batch.BatchNumber);
+
+                        //
+                        //                     Assign ReceiptNumbers to Gifts
+                        //
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        Int32 LastReceiptNumber = MainDS.ALedger[0].LastHeaderRNumber;
+                        foreach (AGiftRow GiftRow in MainDS.AGift.Rows)
+                        {
+                            LastReceiptNumber++;
+                            GiftRow.ReceiptNumber = LastReceiptNumber;
+                        }
+                        MainDS.ALedger[0].LastHeaderRNumber = LastReceiptNumber;
+                    
 
                         MainDS.ThrowAwayAfterSubmitChanges = true;
 

@@ -64,6 +64,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
+            if ((FMainDS != null) && (FMainDS.AGiftBatch != null))
+            {
+                FMainDS.AGiftBatch.Rows.Clear();
+            }
             FPetraUtilsObject.DisableDataChangedEvent();
             LoadBatches(FLedgerNumber);
             FPetraUtilsObject.EnableDataChangedEvent();
@@ -465,12 +469,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Print a receipt for each gift (ideally each donor) in the batch
         /// </summary>
         /// <param name="AgiftBatchRow"></param>
-        private void PrintGiftBatchReceipts(AGiftBatchRow AgiftBatchRow)
+        private void PrintGiftBatchReceipts(GiftBatchTDS AGiftTDS)
         {
-            FMainDS.AGift.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
-                AGiftTable.GetLedgerNumberDBName(),AgiftBatchRow.LedgerNumber,
-                AGiftTable.GetBatchNumberDBName(),AgiftBatchRow.BatchNumber);
-            foreach (DataRowView rv in FMainDS.AGift.DefaultView)
+            AGiftBatchRow GiftBatchRow = AGiftTDS.AGiftBatch[0];
+            AGiftTDS.AGift.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                AGiftTable.GetLedgerNumberDBName(),GiftBatchRow.LedgerNumber,
+                AGiftTable.GetBatchNumberDBName(),GiftBatchRow.BatchNumber);
+
+            foreach (DataRowView rv in AGiftTDS.AGift.DefaultView)
             {
                 AGiftRow GiftRow = (AGiftRow)rv.Row;
                 bool ReceiptEachGift;
@@ -492,15 +498,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (ReceiptEachGift)
                 {
                     string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintGiftReceipt(
-                                AgiftBatchRow.LedgerNumber,
-                                AgiftBatchRow.BatchNumber,
+                                GiftBatchRow.LedgerNumber,
+                                GiftBatchRow.BatchNumber,
                                 GiftRow.GiftTransactionNumber,
                                 DonorShortName,
                                 GiftRow.DonorKey,
                                 DonorClass,
                                 GiftRow.Reference,
-                                AgiftBatchRow.CurrencyCode,
-                                AgiftBatchRow.DateCreated.Value);
+                                GiftBatchRow.CurrencyCode,
+                                GiftBatchRow.DateCreated.Value);
                     TFrmReceiptControl.PrintSinglePageLetter(HtmlDoc);
                     if (MessageBox.Show(
                         String.Format(Catalog.GetString("Please check that the receipt to {0} printed correctly.\r\nThe gift will be marked as receipted."), DonorShortName),
@@ -508,8 +514,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBoxButtons.OKCancel) == DialogResult.OK)
                     {
                         TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(
-                                AgiftBatchRow.LedgerNumber,
-                                AgiftBatchRow.BatchNumber,
+                                GiftBatchRow.LedgerNumber,
+                                GiftBatchRow.BatchNumber,
                                 GiftRow.GiftTransactionNumber);
                     }
                 }
@@ -563,8 +569,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 AGiftBatchRow giftBatchRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FSelectedBatchNumber });
 
-                // TODO: print reports on successfully posted batch
-                PrintGiftBatchReceipts(giftBatchRow);
+                // print reports on successfully posted batch.
+
+                // I need to retrieve the Gift Batch Row, which now has modified fields because it's been posted.
+                //
+
+                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(giftBatchRow.LedgerNumber, giftBatchRow.BatchNumber);
+                PrintGiftBatchReceipts(PostedGiftTDS);
+
+                // I don't like these lines - I'll re-load the control instead..
+/*
                 giftBatchRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
                 giftBatchRow.AcceptChanges();
 
@@ -585,7 +599,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (grdDetails.Rows.Count > 1)
                 {
-                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    // Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
                     // such that a removal of a row is not detected
                     FDetailGridRowsCountPrevious++;
                     InvokeFocusedRowChanged(newCurrentRowPos);
@@ -595,6 +609,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ClearControls();
                     ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
                 }
+ */
+                RefreshAll();
             }
         }
 
