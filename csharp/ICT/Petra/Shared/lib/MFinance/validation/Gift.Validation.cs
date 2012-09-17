@@ -68,7 +68,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
+                VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
                     ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
@@ -85,16 +85,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
-            bool datesIsOK = TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod);
-            
+            bool datesIsOK = TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+                out StartDateCurrentPeriod,
+                out EndDateLastForwardingPeriod);
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.GlEffectiveDate, StartDateCurrentPeriod, EndDateLastForwardingPeriod,
-                							ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
-                							TDateBetweenDatesCheckType.dbdctUnspecific, TDateBetweenDatesCheckType.dbdctUnspecific, AContext,
-                							ValidationColumn, ValidationControlsData.ValidationControl);
+                VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.GlEffectiveDate,
+                    StartDateCurrentPeriod,
+                    EndDateLastForwardingPeriod,
+                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
+                    TDateBetweenDatesCheckType.dbdctUnspecific,
+                    TDateBetweenDatesCheckType.dbdctUnspecific,
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
 
-            	// Handle addition/removal to/from TVerificationResultCollection
+                // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;

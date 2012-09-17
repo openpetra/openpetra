@@ -87,9 +87,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
-            bool newTransaction = false; 
-            
-        	TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
+            bool newTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
             AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
@@ -105,7 +105,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if (newTransaction)
             {
-            	DBAccess.GDBAccessObj.RollbackTransaction();
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return true;
@@ -277,132 +277,134 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return true;
         }
 
-		/// <summary>
-		/// Get the accounting year for the given date
-		/// </summary>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="ADate"></param>
-		/// <param name="AYearNumber"></param>
-		/// <returns></returns>
+        /// <summary>
+        /// Get the accounting year for the given date
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADate"></param>
+        /// <param name="AYearNumber"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool GetAccountingYearByDate(Int32 ALedgerNumber,
-			DateTime ADate,
+            DateTime ADate,
             out Int32 AYearNumber)
         {
-			//Set the year to return
-			AYearNumber = FindFinancialYearByDate(ALedgerNumber, ADate);
+            //Set the year to return
+            AYearNumber = FindFinancialYearByDate(ALedgerNumber, ADate);
 
-			if (AYearNumber != 99)
-			{
-				return true;
-			}
-			else
-			{
-				AYearNumber = 0;
-				return false;
-			}
+            if (AYearNumber != 99)
+            {
+                return true;
+            }
+            else
+            {
+                AYearNumber = 0;
+                return false;
+            }
         }
 
         private static Int32 FindFinancialYearByDate(Int32 ALedgerNumber,
-			DateTime ADate)
+            DateTime ADate)
         {
             Int32 yearDateBelongsTo;
-			DateTime yearStartDate = DateTime.Today;
-			bool newTransaction = false;
+            DateTime yearStartDate = DateTime.Today;
+            bool newTransaction = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            
-			if (LedgerTable == null || LedgerTable.Count == 0)
-			{
-				if (newTransaction)
-	            {
-	            	DBAccess.GDBAccessObj.RollbackTransaction();
-	            }
-				return 99;	
-			}			
-    
-			ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-			yearDateBelongsTo = LedgerRow.CurrentFinancialYear;
 
-			AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, Transaction);
-			
-			if (AccPeriodTable == null || AccPeriodTable.Count == 0)
-			{
-	            if (newTransaction)
-	            {
-	            	DBAccess.GDBAccessObj.RollbackTransaction();
-	            }
-				return 99;
-			}
-			
-			//Find earliest start date (don't assume PK order)
-			AAccountingPeriodRow AccPeriodRow = null;
-			
-			for (int i = 0; i < AccPeriodTable.Count; i++)
-			{
-				DateTime currentStartDate;
-				
-				AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[i];
-				currentStartDate = AccPeriodRow.PeriodStartDate;
-
-				if (i > 0)
-				{
-					if (yearStartDate > currentStartDate)
-					{
-						yearStartDate = currentStartDate;
-					}
-				}
-				else
-				{
-					yearStartDate = currentStartDate;	
-				}
-			}
-			
-			//Find the correct year
-			while (ADate < yearStartDate)
-			{
-				ADate = ADate.AddYears(1);
-				yearDateBelongsTo--;
-			}
-			
-			if (newTransaction)
+            if ((LedgerTable == null) || (LedgerTable.Count == 0))
             {
-            	DBAccess.GDBAccessObj.RollbackTransaction();
+                if (newTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                return 99;
             }
 
-			//Set the year to return
-			return yearDateBelongsTo;
+            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+            yearDateBelongsTo = LedgerRow.CurrentFinancialYear;
 
+            AAccountingPeriodTable AccPeriodTable = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, Transaction);
+
+            if ((AccPeriodTable == null) || (AccPeriodTable.Count == 0))
+            {
+                if (newTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                return 99;
+            }
+
+            //Find earliest start date (don't assume PK order)
+            AAccountingPeriodRow AccPeriodRow = null;
+
+            for (int i = 0; i < AccPeriodTable.Count; i++)
+            {
+                DateTime currentStartDate;
+
+                AccPeriodRow = (AAccountingPeriodRow)AccPeriodTable.Rows[i];
+                currentStartDate = AccPeriodRow.PeriodStartDate;
+
+                if (i > 0)
+                {
+                    if (yearStartDate > currentStartDate)
+                    {
+                        yearStartDate = currentStartDate;
+                    }
+                }
+                else
+                {
+                    yearStartDate = currentStartDate;
+                }
+            }
+
+            //Find the correct year
+            while (ADate < yearStartDate)
+            {
+                ADate = ADate.AddYears(1);
+                yearDateBelongsTo--;
+            }
+
+            if (newTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            //Set the year to return
+            return yearDateBelongsTo;
         }
-        
-		/// <summary>
-		/// Get the azccounting year and period for a given date
-		/// </summary>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="ADate"></param>
-		/// <param name="AYearNumber"></param>
-		/// <param name="APeriodNumber"></param>
-		/// <returns></returns>
+
+        /// <summary>
+        /// Get the azccounting year and period for a given date
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADate"></param>
+        /// <param name="AYearNumber"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber,
-			DateTime ADate,
-			out Int32 AYearNumber,
+            DateTime ADate,
+            out Int32 AYearNumber,
             out Int32 APeriodNumber)
         {
             bool newTransaction;
-        	//Set the year to return
-			AYearNumber = FindFinancialYearByDate(ALedgerNumber, ADate);
-			
-			if (AYearNumber == 99)
-			{
-				AYearNumber = 0;
-				APeriodNumber = 0;
-				return false;
-			}
-        	
-			TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
+
+            //Set the year to return
+            AYearNumber = FindFinancialYearByDate(ALedgerNumber, ADate);
+
+            if (AYearNumber == 99)
+            {
+                AYearNumber = 0;
+                APeriodNumber = 0;
+                return false;
+            }
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
 
             AAccountingPeriodTable AccPeriodTableTmp = new AAccountingPeriodTable();
             AAccountingPeriodRow TemplateRow = AccPeriodTableTmp.NewRowTyped(false);
@@ -418,28 +420,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 null,
                 Transaction);
 
-            if (AccountingPeriodTable == null || AccountingPeriodTable.Count == 0)
+            if ((AccountingPeriodTable == null) || (AccountingPeriodTable.Count == 0))
             {
-	            if (newTransaction)
-	            {
-	            	DBAccess.GDBAccessObj.RollbackTransaction();
-	            }
-            	APeriodNumber = 0;
-            	return false;
+                if (newTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                APeriodNumber = 0;
+                return false;
             }
-            
+
             AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
-			APeriodNumber = AccountingPeriodRow.AccountingPeriodNumber;
-			
+            APeriodNumber = AccountingPeriodRow.AccountingPeriodNumber;
+
             if (newTransaction)
             {
-            	DBAccess.GDBAccessObj.RollbackTransaction();
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return true;
         }
-        
+
         /// <summary>
         /// Loads all available years with GL data into a table
         /// To be used by a combobox to select the financial year

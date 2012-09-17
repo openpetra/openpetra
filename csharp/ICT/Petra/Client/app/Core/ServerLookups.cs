@@ -311,17 +311,21 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public class TMFinance
         {
-        	/// <summary>
-        	/// Get the current posting date range for the specified ledger
-        	/// </summary>
-        	/// <param name="ALedgerNumber"></param>
-        	/// <param name="AStartDateCurrentPeriod"></param>
-        	/// <param name="AEndDateLastForwardingPeriod"></param>
-        	/// <returns></returns>
-        	public static Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber, out DateTime AStartDateCurrentPeriod, out DateTime AEndDateLastForwardingPeriod)
-        	{
-        		return TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(ALedgerNumber, out AStartDateCurrentPeriod, out AEndDateLastForwardingPeriod);
-        	}
+            /// <summary>
+            /// Get the current posting date range for the specified ledger
+            /// </summary>
+            /// <param name="ALedgerNumber"></param>
+            /// <param name="AStartDateCurrentPeriod"></param>
+            /// <param name="AEndDateLastForwardingPeriod"></param>
+            /// <returns></returns>
+            public static Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
+                out DateTime AStartDateCurrentPeriod,
+                out DateTime AEndDateLastForwardingPeriod)
+            {
+                return TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(ALedgerNumber,
+                    out AStartDateCurrentPeriod,
+                    out AEndDateLastForwardingPeriod);
+            }
         }
 
         /// <summary>

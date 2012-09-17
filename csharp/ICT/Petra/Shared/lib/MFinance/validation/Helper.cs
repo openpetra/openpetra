@@ -40,7 +40,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <summary>
         /// Delegate for invoking the process of finding the valid start and end dates for the specified Ledger.
         /// </summary>
-        public delegate bool TGetValidPostingDateRange(Int32 ALedgerNumber, out DateTime AStartDateCurrentPeriod, out DateTime AEndDateLastForwardingPeriod);
+        public delegate bool TGetValidPostingDateRange(Int32 ALedgerNumber,
+            out DateTime AStartDateCurrentPeriod,
+            out DateTime AEndDateLastForwardingPeriod);
 
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Finance.
@@ -64,14 +66,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
         }
 
-		/// <summary>
-		/// Get the valid posting date range for the specified ledger
-		/// </summary>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="AStartDateCurrentPeriod"></param>
-		/// <param name="AEndDateLastForwardingPeriod"></param>
-		/// <returns>true if dates are returned OK</returns>
-        public static bool GetValidPostingDateRange(Int32 ALedgerNumber, out DateTime AStartDateCurrentPeriod, out DateTime AEndDateLastForwardingPeriod)
+        /// <summary>
+        /// Get the valid posting date range for the specified ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AStartDateCurrentPeriod"></param>
+        /// <param name="AEndDateLastForwardingPeriod"></param>
+        /// <returns>true if dates are returned OK</returns>
+        public static bool GetValidPostingDateRange(Int32 ALedgerNumber,
+            out DateTime AStartDateCurrentPeriod,
+            out DateTime AEndDateLastForwardingPeriod)
         {
             if (FDelegateGetValidPostingDateRange != null)
             {

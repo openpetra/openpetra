@@ -234,9 +234,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
         {
-        	TTabVersatile tb = (TTabVersatile)sender;
+            TTabVersatile tb = (TTabVersatile)sender;
 
-        	FPetraUtilsObject.VerificationResultCollection.Clear();
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
             if (!SaveChanges())
             {
@@ -244,7 +244,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
-            
         }
 
         private void SelectTabManual(int ASelectedTabIndex)

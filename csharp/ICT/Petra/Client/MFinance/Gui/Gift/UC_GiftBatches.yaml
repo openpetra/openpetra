@@ -63,7 +63,7 @@ RootNode:
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
-        dtpDetailGlEffectiveDate: {Label=GL Effective Date}
+        dtpDetailGlEffectiveDate: {Label=GL Effective Date, OnChange=UpdateBatchPeriod, Validation = true}
         lblValidDateRange:
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}

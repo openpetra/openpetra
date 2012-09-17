@@ -49,14 +49,14 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
     /// </summary>
     public class TFinanceServerLookups
     {
-		/// <summary>
-		/// Returns starting and ending posting dates for the ledger
-		/// </summary>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="AStartDateCurrentPeriod"></param>
-		/// <param name="AEndDateLastForwardingPeriod"></param>
-		/// <returns></returns>
-    	[RequireModulePermission("FINANCE-1")]
+        /// <summary>
+        /// Returns starting and ending posting dates for the ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AStartDateCurrentPeriod"></param>
+        /// <param name="AEndDateLastForwardingPeriod"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
         public static Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
@@ -79,6 +79,5 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             return true;
         }
-
     }
 }

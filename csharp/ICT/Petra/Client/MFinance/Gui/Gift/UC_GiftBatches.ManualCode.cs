@@ -47,6 +47,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
         private string FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
+        private Int32 FSelectedYear;
+        private Int32 FSelectedPeriod;
+        private DateTime FStartDateCurrentPeriod;
+        private DateTime FEndDateLastForwardingPeriod;
+        private DateTime FDefaultDate;
 
         /// <summary>
         /// Flags whether all the gift batch rows for this form have finished loading
@@ -57,16 +62,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Stores the current batch's method of payment
         /// </summary>//
         public string FSelectedBatchMethodOfPayment = String.Empty;
-
-        /// <summary>
-        /// Stores the current ledger's posting start date
-        /// </summary>//
-        public DateTime FStartDateCurrentPeriod;
-
-        /// <summary>
-        /// Stores the current ledger's posting end date
-        /// </summary>//
-        public DateTime FEndDateLastForwardingPeriod;
 
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
@@ -123,11 +118,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
 
-            DateTime DefaultDate;
-            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out FStartDateCurrentPeriod, out FEndDateLastForwardingPeriod, out DefaultDate);
+            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
+                out FStartDateCurrentPeriod,
+                out FEndDateLastForwardingPeriod,
+                out FDefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
-            dtpDetailGlEffectiveDate.Date = DefaultDate;
+            dtpDetailGlEffectiveDate.Date = FDefaultDate;
 
             if (grdDetails.Rows.Count > 1)
             {
@@ -196,7 +193,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    //TODO Reset combo filter value
+                    //Reset the combos
+                    FPetraUtilsObject.DisableDataChangedEvent();
+                    cmbYear.SetSelectedInt32(FSelectedYear);
+                    cmbPeriod.SetSelectedInt32(FSelectedPeriod);
+                    FPetraUtilsObject.EnableDataChangedEvent();
                 }
 
                 return;
@@ -204,14 +205,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ClearCurrentSelection();
 
-            Int32 SelectedYear = cmbYear.GetSelectedInt32();
-            Int32 SelectedPeriod = cmbPeriod.GetSelectedInt32();
+            FSelectedYear = cmbYear.GetSelectedInt32();
+            FSelectedPeriod = cmbPeriod.GetSelectedInt32();
 
             FPeriodFilter = String.Format(
                 "{0} = {1} AND ",
-                AGiftBatchTable.GetBatchYearDBName(), SelectedYear);
+                AGiftBatchTable.GetBatchYearDBName(), FSelectedYear);
 
-            if (SelectedPeriod == 0)
+            if (FSelectedPeriod == 0)
             {
                 ALedgerRow Ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
@@ -224,15 +225,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPeriodFilter += String.Format(
                     "{0} = {1}",
-                    AGiftBatchTable.GetBatchPeriodDBName(), SelectedPeriod);
+                    AGiftBatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
             }
 
             if (rbtEditing.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, SelectedYear,
-                        SelectedPeriod));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, FSelectedYear,
+                        FSelectedPeriod));
                 FStatusFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
@@ -241,8 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_POSTING;
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, SelectedYear,
-                        SelectedPeriod));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, FSelectedYear,
+                        FSelectedPeriod));
                 FStatusFilter = String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED,
@@ -253,10 +254,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_ALL;
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, SelectedYear, SelectedPeriod));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, FSelectedYear,
+                        FSelectedPeriod));
                 FStatusFilter = "1 = 1";
             }
 
+            FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
 
@@ -273,12 +276,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FBatchLoaded == true)
             {
                 grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-                //FCurrentRow = 0; //necessary to force code execution in FocusRowChanged event
                 InvokeFocusedRowChanged(1);
             }
 
             UpdateChangeableStatus();
-            TLogging.Log("Filter Changed-Exit-" + FCurrentBatchViewOption);
+        }
+
+        private void UpdateBatchPeriod(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                Int32 periodNumber = 0;
+                Int32 yearNumber = 0;
+                DateTime dateValue;
+
+                string aDate = dtpDetailGlEffectiveDate.Date.ToString();
+
+                if (DateTime.TryParse(aDate, out dateValue))
+                {
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    {
+                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        {
+                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                //Leave BatchPeriod as it is
+            }
+        }
+
+        private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
+        {
+            return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
         }
 
         private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
@@ -352,6 +390,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ((TFrmGiftBatch)ParentForm).EnableTransactions();
 
+            //Update the batch period if necessary
+            UpdateBatchPeriod(null, null);
+
             UpdateChangeableStatus();
 
 //            FPetraUtilsObject.DetailProtectedMode =
@@ -388,18 +429,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            Int32 yearNumber = 0;
+            Int32 periodNumber = 0;
+
             //If viewing posted batches only, show list of editing batches
             //  instead before adding a new batch
             if (!rbtEditing.Checked)
             {
                 rbtEditing.Checked = true;
             }
+            else if (FPetraUtilsObject.HasChanges && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
+            {
+                return;
+            }
+
+            //Set year and period to correct value
+            if (cmbYear.GetSelectedInt32() != 0)
+            {
+                cmbYear.SelectedIndex = 0;
+            }
+            else if (cmbPeriod.GetSelectedInt32() != 0)
+            {
+                cmbPeriod.SelectedIndex = 0;
+            }
 
             pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
             txtDetailBatchDescription.Focus();
 
-            dtpDetailGlEffectiveDate.Date = DateTime.Today;
+            dtpDetailGlEffectiveDate.Date = FDefaultDate;
+
+            if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
+            {
+                FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+            }
+
             ((TFrmGiftBatch)ParentForm).SaveChanges();
         }
 
