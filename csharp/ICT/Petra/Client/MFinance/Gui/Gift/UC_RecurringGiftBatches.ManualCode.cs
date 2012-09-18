@@ -40,6 +40,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TUC_RecurringGiftBatches
     {
         private Int32 FLedgerNumber;
+        private Int32 FSelectedBatchNumber;
 
         /// <summary>
         /// Stores the current batch's method of payment
@@ -80,6 +81,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, ActiveOnly, true);
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmRecurringGiftBatch) this.ParentForm).EnableTransactionsTab();
+            }
+            else
+            {
+                ((TFrmRecurringGiftBatch) this.ParentForm).DisableTransactionsTab();
+            }
 
             ShowData();
 
@@ -139,13 +149,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(ARecurringGiftBatchRow ARow)
         {
+            if (ARow == null)
+            {
+                return;
+            }
+
+            FLedgerNumber = ARow.LedgerNumber;
+            FSelectedBatchNumber = ARow.BatchNumber;
+
             FPetraUtilsObject.DetailProtectedMode = false;
+
             ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
+
             UpdateChangeableStatus();
-            FPetraUtilsObject.DetailProtectedMode = false;
-            ((TFrmRecurringGiftBatch)ParentForm).LoadTransactions(
-                ARow.LedgerNumber,
-                ARow.BatchNumber);
+
+//            FPetraUtilsObject.DetailProtectedMode = false;
+//            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
+//            UpdateChangeableStatus();
+//            FPetraUtilsObject.DetailProtectedMode = false;
+//            ((TFrmRecurringGiftBatch)ParentForm).LoadTransactions(
+//                ARow.LedgerNumber,
+//                ARow.BatchNumber);
 
             // FSelectedBatchNumber = ARow.BatchNumber;
         }
@@ -330,7 +354,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void UpdateChangeableStatus()
         {
             Boolean changeable = (FPreviouslySelectedDetailRow != null);
-
 
             this.btnDelete.Enabled = changeable;
             pnlDetails.Enabled = changeable;

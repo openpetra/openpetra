@@ -236,6 +236,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        private void DetailCommentChanged(object sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            TextBox txt = (TextBox)sender;
+
+            string txtValue = txt.Text;
+            
+            if (txtValue == String.Empty)
+            {
+                if (txt.Name.Contains("One"))
+                {
+                    if (cmbDetailCommentOneType.SelectedIndex >= 0)
+                    {
+                        cmbDetailCommentOneType.SelectedIndex = -1;
+                    }
+                }
+                else if (txt.Name.Contains("Two"))
+                {
+                    if (cmbDetailCommentTwoType.SelectedIndex >= 0)
+                    {
+                        cmbDetailCommentTwoType.SelectedIndex = -1;
+                    }
+                }
+                else if (txt.Name.Contains("Three"))
+                {
+                    if (cmbDetailCommentThreeType.SelectedIndex >= 0)
+                    {
+                        cmbDetailCommentThreeType.SelectedIndex = -1;
+                    }
+                }
+            }
+            
+        }
+        
+        
         private void DetailCommentTypeChanged(object sender, EventArgs e)
         {
             //TODO This code is called from the OnLeave event because the underlying

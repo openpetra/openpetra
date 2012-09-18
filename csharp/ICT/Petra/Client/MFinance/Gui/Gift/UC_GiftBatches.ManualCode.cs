@@ -41,8 +41,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TUC_GiftBatches
     {
         private Int32 FLedgerNumber;
-        private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
+        private Int32 FSelectedBatchNumber;
         private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
-            FDateEffective = DateTime.Today;
+            FDateEffective = FDefaultDate;
 
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 

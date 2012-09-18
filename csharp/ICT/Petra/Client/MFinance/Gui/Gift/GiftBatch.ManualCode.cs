@@ -237,7 +237,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    //ucoBatches.Controls["grdDetails"].Focus;
                     LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
                         ucoBatches.GetSelectedDetailRow().BatchNumber,
                         ucoBatches.GetSelectedDetailRow().BatchStatus, AFromTabClick);
