@@ -246,7 +246,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TextBox txt = (TextBox)sender;
 
             string txtValue = txt.Text;
-            
+
             if (txtValue == String.Empty)
             {
                 if (txt.Name.Contains("One"))
@@ -271,10 +271,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
             }
-            
         }
-        
-        
+
         private void DetailCommentTypeChanged(object sender, EventArgs e)
         {
             //TODO This code is called from the OnLeave event because the underlying
@@ -314,6 +312,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
             }
+
         }
 
         bool FInKeyMinistryChanging = false;
