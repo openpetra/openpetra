@@ -91,6 +91,7 @@ namespace Ict.Petra.Client.MPartner
             Boolean ReturnValue;
             DataColumn ForeignTableColumn;
             PRelationTable relationTable;
+            Boolean NoAcceptChangesNeeded = false;
 
             // Load Partner Types, if not already loaded
             try
@@ -101,13 +102,26 @@ namespace Ict.Petra.Client.MPartner
                     FMainDS.Tables.Add(new PartnerEditTDSPPartnerRelationshipTable());
                     FMainDS.InitVars();
                 }
+                else
+                {
+                    // special case: if there are already relations on the client before server data is 
+                    // loaded then don't call AcceptChanges later. This is the case for a newly created
+                    // Person record when a relation to the Family record is automatically created but 
+                    // not yet saved to the database (therefore it appears in the local data sets but not
+                    // the one's retrieved from the database)
+                    if (FMainDS.PPartnerRelationship.Rows.Count > 0)
+                    {
+                        NoAcceptChangesNeeded = true;
+                    }
+                }
 
                 if (TClientSettings.DelayedDataLoading)
                 {
                     FMainDS.Merge(FPartnerEditUIConnector.GetDataPartnerRelationships());
 
                     // Make DataRows unchanged
-                    if (FMainDS.PPartnerRelationship.Rows.Count > 0)
+                    if (   FMainDS.PPartnerRelationship.Rows.Count > 0
+                        && !NoAcceptChangesNeeded)
                     {
                         FMainDS.PPartnerRelationship.AcceptChanges();
                     }

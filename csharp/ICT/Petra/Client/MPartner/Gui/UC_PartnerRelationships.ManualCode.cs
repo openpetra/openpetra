@@ -421,10 +421,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ValidateDataDetailsManual(PPartnerRelationshipRow ARow)
         {
+            bool NewPartner = (FMainDS.PPartner.Rows[0].RowState == DataRowState.Added);
+            
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPartnerValidation_Partner.ValidateRelationshipManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
+                FValidationControlsDict, NewPartner, ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey);
         }
 
         #endregion
