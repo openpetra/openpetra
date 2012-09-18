@@ -540,6 +540,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
+            //Read current rows position ready to reposition after removal of posted row from grid
+            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+            if (newCurrentRowPos < 0)
+            {
+                return; // Oops - there's no selected row.
+            }
+
             // ask if the user really wants to post the batch
             if (MessageBox.Show(Catalog.GetString("Do you really want to post this gift batch?"), Catalog.GetString("Confirm posting of Gift Batch"),
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
@@ -547,8 +554,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            //Read current rows position ready to reposition after removal of posted row from grid
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
 
             if (!TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications))
             {

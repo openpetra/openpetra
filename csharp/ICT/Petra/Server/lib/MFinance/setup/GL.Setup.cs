@@ -49,6 +49,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -862,6 +863,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 return false;
             }
 
+            Int64 PartnerKey = Convert.ToInt64(ANewLedgerNumber) * 1000000L;
             GLSetupTDS MainDS = new GLSetupTDS();
 
             ALedgerRow ledgerRow = MainDS.ALedger.NewRowTyped();
@@ -876,26 +878,42 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ledgerRow.GiftDataRetention = 5;
             ledgerRow.CountryCode = ACountryCode;
             ledgerRow.ForexGainsLossesAccount = "5003";
+            ledgerRow.PartnerKey = PartnerKey;
             MainDS.ALedger.Rows.Add(ledgerRow);
 
-            Int64 PartnerKey = Convert.ToInt64(ANewLedgerNumber) * 1000000L;
 
-            PPartnerRow partnerRow = MainDS.PPartner.NewRowTyped();
-            ledgerRow.PartnerKey = PartnerKey;
-            partnerRow.PartnerKey = PartnerKey;
-            partnerRow.PartnerShortName = ALedgerName;
-            partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
-            partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
-            MainDS.PPartner.Rows.Add(partnerRow);
+            if (!PPartnerAccess.Exists(PartnerKey, null))
+            {
+                PPartnerRow partnerRow = MainDS.PPartner.NewRowTyped();
+                ledgerRow.PartnerKey = PartnerKey;
+                partnerRow.PartnerKey = PartnerKey;
+                partnerRow.PartnerShortName = ALedgerName;
+                partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+                partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
+                MainDS.PPartner.Rows.Add(partnerRow);
+            }
 
-            PPartnerTypeRow partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
-            partnerTypeRow.PartnerKey = PartnerKey;
-            partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
-            MainDS.PPartnerType.Rows.Add(partnerTypeRow);
+            PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, null);
+            PPartnerTypeRow partnerTypeRow;
+            if (MainDS.PPartnerType.Rows.Count > 0)
+            {
+                partnerTypeRow = MainDS.PPartnerType[0];
+                partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
+            }
+            else
+            {
+                partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
+                partnerTypeRow.PartnerKey = PartnerKey;
+                partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
+                MainDS.PPartnerType.Rows.Add(partnerTypeRow);
+            }
 
-            PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
-            unitRow.PartnerKey = PartnerKey;
-            MainDS.PUnit.Rows.Add(unitRow);
+            if (!PUnitAccess.Exists(PartnerKey, null))
+            {
+                PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
+                unitRow.PartnerKey = PartnerKey;
+                MainDS.PUnit.Rows.Add(unitRow);
+            }
 
             PLocationRow locationRow = MainDS.PLocation.NewRowTyped();
             locationRow.SiteKey = PartnerKey;
@@ -915,10 +933,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             partnerLedgerRow.LastPartnerId = 5000;
             MainDS.PPartnerLedger.Rows.Add(partnerLedgerRow);
 
-            SModuleRow moduleRow = MainDS.SModule.NewRowTyped();
-            moduleRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
-            moduleRow.ModuleName = moduleRow.ModuleId;
-            MainDS.SModule.Rows.Add(moduleRow);
+            String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
+            if (!SModuleAccess.Exists(ModuleId, null))
+            {
+                SModuleRow moduleRow = MainDS.SModule.NewRowTyped();
+                moduleRow.ModuleId = ModuleId;
+                moduleRow.ModuleName = moduleRow.ModuleId;
+                MainDS.SModule.Rows.Add(moduleRow);
+            }
 
             // if this is the first ledger, make it the default site
             SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", null);
