@@ -29,6 +29,7 @@ using System.Collections.Specialized;
 
 
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -125,10 +126,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.Focus();
             }
 
-            pnlDetails.Enabled = (grdDetails.Rows.Count > 1); //this.PnlDetailsProtected;
+            //pnlDetails.Enabled = (grdDetails.Rows.Count > 1); //this.PnlDetailsProtected;
 
-            UpdateControlsProtection();
             UpdateTotals();
+            UpdateControlsProtection();
         }
 
         bool FinRecipientKeyChanging = false;
@@ -250,6 +251,84 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
             {
                 RetrieveMotivationDetailCostCentreCode();
+            }
+        }
+
+        private void DetailCommentChanged(object sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            TextBox txt = (TextBox)sender;
+
+            string txtValue = txt.Text;
+
+            if (txtValue == String.Empty)
+            {
+                if (txt.Name.Contains("One"))
+                {
+                    if (cmbDetailCommentOneType.SelectedIndex >= 0)
+                    {
+                        cmbDetailCommentOneType.SelectedIndex = -1;
+                    }
+                }
+                else if (txt.Name.Contains("Two"))
+                {
+                    if (cmbDetailCommentTwoType.SelectedIndex >= 0)
+                    {
+                        cmbDetailCommentTwoType.SelectedIndex = -1;
+                    }
+                }
+                else if (txt.Name.Contains("Three"))
+                {
+                    if (cmbDetailCommentThreeType.SelectedIndex >= 0)
+                    {
+                        cmbDetailCommentThreeType.SelectedIndex = -1;
+                    }
+                }
+            }
+        }
+
+        private void DetailCommentTypeChanged(object sender, EventArgs e)
+        {
+            //TODO This code is called from the OnLeave event because the underlying
+            //    combo control does not detect a value changed when the user tabs to
+            //    and clears out the contents. AWAITING FIX to remove this code
+
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
+
+            string cmbValue = cmb.GetSelectedString();
+
+            if (cmbValue == String.Empty)
+            {
+                if (cmb.Name.Contains("One"))
+                {
+                    if (cmbValue != FPreviouslySelectedDetailRow.CommentOneType)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+                }
+                else if (cmb.Name.Contains("Two"))
+                {
+                    if (cmbValue != FPreviouslySelectedDetailRow.CommentTwoType)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+                }
+                else if (cmb.Name.Contains("Three"))
+                {
+                    if (cmbValue != FPreviouslySelectedDetailRow.CommentThreeType)
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+                }
             }
         }
 
@@ -709,7 +788,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SelectDetailRowByDataTableIndex(newRowIndex);
 
                 RetrieveMotivationDetailAccountCode();
-                txtGiftTotal.Focus();
+                txtDetailGiftAmount.Focus();
             }
         }
 
@@ -1005,6 +1084,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FBatchRow = GetBatchRow();
             }
+
+            pnlDetails.Enabled = (ARow != null);
         }
 
         private Boolean BatchHasMethodOfPayment()

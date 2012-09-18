@@ -42,6 +42,8 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -51,9 +53,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FSelectedBatchNumber = -1;
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
-        private DateTime DefaultDate;
         private DateTime StartDateCurrentPeriod;
         private DateTime EndDateLastForwardingPeriod;
+        private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
+        private Int32 FSelectedYear;
+        private Int32 FSelectedPeriod;
+        private DateTime FDefaultDate;
 
         /// <summary>
         /// load the batches into the grid
@@ -66,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             rbtEditing.Checked = true;
 
             FPetraUtilsObject.DisableDataChangedEvent();
-            TFinanceControls.InitialiseAvailableGiftYearsList(ref cmbYearFilter, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbYearFilter, FLedgerNumber); //.InitialiseAvailableGiftYearsList(ref cmbYearFilter, FLedgerNumber);
             FPetraUtilsObject.EnableDataChangedEvent();
 
             // this will load the batches from the server
@@ -92,7 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod,
-                out DefaultDate);
+                out FDefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
@@ -161,12 +166,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void ValidateDataManual(ABatchRow ARow)
-        {
-        }
-
         private void ValidateDataDetailsManual(ABatchRow ARow)
         {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GL.ValidateGLBatchManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
         }
 
         private void ShowDetailsManual(ABatchRow ARow)
@@ -182,6 +187,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
                 FSelectedBatchNumber = ARow.BatchNumber;
+
+                //Update the batch period if necessary
+                UpdateBatchPeriod(null, null);
             }
         }
 
@@ -229,14 +237,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            Int32 yearNumber = 0;
+            Int32 periodNumber = 0;
+
             if (!rbtEditing.Checked)
             {
                 rbtEditing.Checked = true;
             }
-
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            else if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
                 return;
+            }
+
+            //Set year and period to correct value
+            if (cmbYearFilter.GetSelectedInt32() != 0)
+            {
+                cmbYearFilter.SelectedIndex = 0;
+            }
+            else if (cmbPeriodFilter.GetSelectedInt32() != 0)
+            {
+                cmbPeriodFilter.SelectedIndex = 0;
             }
 
             ClearDetailControls();
@@ -246,7 +266,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
-            ((ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1]).DateEffective = DefaultDate;
+            ABatchRow newBatchRow = (ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1];
+
+            newBatchRow.DateEffective = FDefaultDate;
+
+            if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
+            {
+                newBatchRow.BatchPeriod = periodNumber;
+            }
 
             FPetraUtilsObject.SetChangedFlag();
 
@@ -255,7 +282,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-            //grdDetails.Refresh();
             SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
             InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
@@ -271,6 +297,43 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Enable the Journals if not already enabled
             ((TFrmGLBatch)ParentForm).EnableJournals();
+        }
+
+        private void UpdateBatchPeriod(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                Int32 periodNumber = 0;
+                Int32 yearNumber = 0;
+                DateTime dateValue;
+
+                string aDate = dtpDetailDateEffective.Date.ToString();
+
+                if (DateTime.TryParse(aDate, out dateValue))
+                {
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    {
+                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        {
+                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                //Leave BatchPeriod as it is
+            }
+        }
+
+        private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
+        {
+            return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
         }
 
         /// <summary>
@@ -583,36 +646,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        ///  The changes of the radio button are handled.
-        /// </summary>
-        /// <param name="sender">It should be a radio button</param>
-        /// <param name="e"></param>
-        private void ChangeBatchFilter(System.Object sender, System.EventArgs e)
-        {
-            // Each radio button click invokes this routine twice, on run is done for the
-            // unchecked button an one is done for the checked one.
-            RadioButton radioButton = sender as RadioButton;
-
-            if (radioButton != null)
-            {
-                if (radioButton.Checked)
-                {
-                    //int rowIndex = CurrentRowIndex();
-
-                    RefreshFilter(null, null);
-                    // TODO Select the actual row again in updated
-                    //SelectByIndex(rowIndex);
-                    // UpdateChangeableStatus();
-
-                    //bool enablePosting = (radioButton.Text == "Editing" && grdDetails.Rows.Count > 1);
-                    //EnableButtonControl(enablePosting);
-
-                    //UpdateChangeableStatus(enablePosting);
-                }
-            }
-        }
-
         private int CurrentRowIndex()
         {
             int rowIndex = -1;
@@ -656,58 +689,87 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-//        / <summary>
-//        / This routine is invoked if no Batch-Row has been selected. The idea was to
-//        / select the "old row again" defined by row index but in this case
-//        / the list of batches ist filtered. So the row must not exist any more.
-//        / </summary>
-//        / <param name="rowIndex">Index of a previosly selected row and -1 defines no row.</param>
-//        private void SelectByIndex(int rowIndex)
-//        {
-//            // In the very first call FPetraUtilsObject does not exists
-//            // Thererfore try-catch ..
-//            try
-//            {
-//                FPetraUtilsObject.DisableDataChangedEvent();
-//                txtDetailBatchControlTotal.Text = "";
-//                txtDetailBatchDescription.Text = "";
-//                dtpDetailDateEffective.Text = "";
-//                UpdateChangeableStatus(false);
-//                FPetraUtilsObject.EnableDataChangedEvent();
-////                if (rowIndex >=   grdDetails.Rows)
-////                {
-////                    rowIndex = rowIndex--;
-////                }
-//                grdDetails.Selection.SelectRow(rowIndex,true);
-//            }
-//            catch (Exception)
-//            {
-//            }
-//            ;
-//        }
+        private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
+        {
+            if (AToggleOn)
+            {
+                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+            }
+            else
+            {
+                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+            }
+        }
 
         void RefreshFilter(Object sender, EventArgs e)
         {
+            bool senderIsRadioButton = (sender is RadioButton);
+
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
+            else if ((sender != null) && senderIsRadioButton)
+            {
+                //Avoid repeat events
+                RadioButton rbt = (RadioButton)sender;
+
+                if (rbt.Name.Contains(FCurrentBatchViewOption))
+                {
+                    return;
+                }
+            }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
+                if (senderIsRadioButton)
+                {
+                    //Need to cancel the change of option button
+                    if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_EDITING) && (rbtEditing.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtEditing.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL) && (rbtAll.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtAll.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_POSTING) && (rbtPosting.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtPosting.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                }
+                else
+                {
+                    //Reset the combos
+                    FPetraUtilsObject.DisableDataChangedEvent();
+                    cmbYearFilter.SetSelectedInt32(FSelectedYear);
+                    cmbPeriodFilter.SetSelectedInt32(FSelectedPeriod);
+                    FPetraUtilsObject.EnableDataChangedEvent();
+                }
+
                 return;
             }
 
             ClearCurrentSelection();
 
-            Int32 SelectedYear = cmbYearFilter.GetSelectedInt32();
-            Int32 SelectedPeriod = cmbPeriodFilter.GetSelectedInt32();
+            FSelectedYear = cmbYearFilter.GetSelectedInt32();
+            FSelectedPeriod = cmbPeriodFilter.GetSelectedInt32();
 
             FPeriodFilter = String.Format(
                 "{0} = {1} AND ",
-                ABatchTable.GetBatchYearDBName(), SelectedYear);
+                ABatchTable.GetBatchYearDBName(), FSelectedYear);
 
-            if (SelectedPeriod == 0)
+            if (FSelectedPeriod == 0)
             {
                 ALedgerRow Ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
@@ -720,36 +782,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FPeriodFilter += String.Format(
                     "{0} = {1}",
-                    ABatchTable.GetBatchPeriodDBName(), SelectedPeriod);
+                    ABatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
             }
 
             if (rbtEditing.Checked)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, SelectedYear,
-                        SelectedPeriod));
+                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
+
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
+                        FSelectedPeriod));
                 FStatusFilter = String.Format("{0} = '{1}'",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
                 btnNew.Enabled = true;
             }
-            else if (rbtAll.Checked)
+            else if (rbtPosting.Checked)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, SelectedYear,
-                        SelectedPeriod));
-                FStatusFilter = "1 = 1";
-                btnNew.Enabled = true;
-            }
-            else //(rbtPosting.Checked)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting, SelectedYear,
-                        SelectedPeriod));
-                FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2} ))",
+                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_POSTING;
+
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting, FSelectedYear,
+                        FSelectedPeriod));
+                FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED,
                     ABatchTable.GetBatchCreditTotalDBName(),
                     ABatchTable.GetBatchDebitTotalDBName(),
                     ABatchTable.GetBatchControlTotalDBName());
-                btnNew.Enabled = false;
+            }
+            else //(rbtAll.Checked)
+            {
+                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_ALL;
+
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
+                        FSelectedPeriod));
+                FStatusFilter = "1 = 1";
+                btnNew.Enabled = true;
             }
 
             FPreviouslySelectedDetailRow = null;

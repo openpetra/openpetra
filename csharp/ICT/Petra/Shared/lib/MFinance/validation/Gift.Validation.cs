@@ -52,7 +52,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
+            TScreenVerificationResult VerificationResult;
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
@@ -68,9 +68,38 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
+                VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
                     ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // 'Effective From Date' must be valid
+            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnGlEffectiveDateId];
+            ValidationContext = ARow.BatchNumber;
+
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+            bool datesIsOK = TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+                out StartDateCurrentPeriod,
+                out EndDateLastForwardingPeriod);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.GlEffectiveDate,
+                    StartDateCurrentPeriod,
+                    EndDateLastForwardingPeriod,
+                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
+                    TDateBetweenDatesCheckType.dbdctUnspecific,
+                    TDateBetweenDatesCheckType.dbdctUnspecific,
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
@@ -97,7 +126,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
+            TVerificationResult VerificationResult = null;
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
@@ -124,6 +153,75 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
+                }
+            }
+
+            // Detail comments type 1 must not be null if associated comment is not null
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCommentOneTypeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsGiftCommentOneNull() && (ARow.GiftCommentOne != String.Empty))
+                {
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
+                        "Comment 1 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Detail comments type 2 must not be null if associated comment is not null
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCommentTwoTypeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsGiftCommentTwoNull() && (ARow.GiftCommentTwo != String.Empty))
+                {
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
+                        "Comment 2 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Detail comments type 3 must not be null if associated comment is not null
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCommentThreeTypeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsGiftCommentThreeNull() && (ARow.GiftCommentThree != String.Empty))
+                {
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
+                        "Comment 3 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
                 }
             }
 
@@ -202,6 +300,75 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
+                }
+            }
+
+            // Detail comments type 1 must not be null if associated comment is not null
+            ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentOneTypeId];
+            ValidationContext = String.Format("(recurring batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsGiftCommentOneNull() && (ARow.GiftCommentOne != String.Empty))
+                {
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
+                        "Comment 1 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Detail comments type 2 must not be null if associated comment is not null
+            ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentTwoTypeId];
+            ValidationContext = String.Format("(recurring batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsGiftCommentTwoNull() && (ARow.GiftCommentTwo != String.Empty))
+                {
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
+                        "Comment 2 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Detail comments type 3 must not be null if associated comment is not null
+            ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentThreeTypeId];
+            ValidationContext = String.Format("(recurring batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsGiftCommentThreeNull() && (ARow.GiftCommentThree != String.Empty))
+                {
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
+                        "Comment 3 type " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
                 }
             }
 

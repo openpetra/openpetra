@@ -96,19 +96,22 @@ RootNode:
         txtDetailGiftAmount: {Label=Amount,Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
         chkDetailTaxDeductable: {Label=Tax deductable?}
-        txtDetailGiftCommentOne: {Label=Comment 1,Width=250}
-        txtDetailGiftCommentTwo: {Label=Comment 2,Width=250}
-        txtDetailGiftCommentThree: {Label=Comment 3,Width=250}
+        txtDetailGiftCommentOne: {Label=Comment 1,Width=250, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment 2,Width=250, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment 3,Width=250, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]
+            OnLeave: DetailCommentTypeChanged
         cmbDetailCommentTwoType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office] 
+            OnLeave: DetailCommentTypeChanged
         cmbDetailCommentThreeType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]   
+            OnLeave: DetailCommentTypeChanged
 
    
                    
