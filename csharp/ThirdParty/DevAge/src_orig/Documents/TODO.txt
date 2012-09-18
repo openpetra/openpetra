@@ -1,0 +1,57 @@
+
+-Inserire gestione print come nella mail "i add printview for your DevAge.SourceGri d3 project". La cosa interessante che ha usato 3 griglie: una per il footer, per l'header e una per i dati.
+
+-Gestione di VS 2005:
+	-Gestione delle nuove properties della classe ToolTip (Icon, IsBallon)
+	-Gestione BindingSource per l'aggancio alla DataGrid
+
+-Funzionalità RightToLeft non ancora terminata. L aproperty Mirrored disegna le cose nel modo corretto ma c'è qualche problema sull'Invalidate delle celle. Probabilmente legato al fatto che la regione che viene Invalidata non tiene conto del RightToLeft essendo richiamata dai Panels. 
+
+-Gestione delle celle selezionate in caso di delete di righe o eventi simili.
+
+-Gestire bene lo spostamento trmite tasto tab su altri controlli, focus su celle, focus iniziale delle griglia e varie altre cose di questo tipo, vedi anche mail di christian.kendel@ict.om.org del 9/3
+
+-Centralizzare la logica con cui le classi View verificano se la cella è Pressed, Hot, Normal. Probabilmente con un metodo della grid che data una position restituisce lo stato (questo perchè bisogna controllare anche eventuali RowSpan, ColSpan, ...)
+
+-Spostare logica di selezione delle celle tramite mouse in classe apposite, o probabilmente nella classe Selection.
+
+- Aggiungere qualche meccanismo per usare eventi come OnEditStart(), OnEditEnd(), & OnToolTip in maniera semplice
+
+-Ripensare a meccanismo per l'utilizzo degli stili, forse usarli solo nel costruttore delle  celle. Questo ad esempio per evitare che anche solo durante il sort vengano riapplicati con la conseguente perdita di informazioni.
+
+-Forse si potrebbe pensare ad un componente tipo quelli XSD che permette di definire le celle da utilizzare, e crea il codice appropriato. A questo punto l'utente non dovrebbe fare altro che creare le giuste istanze delle celle.
+
+-Problema GiveFeedback
+
+-Gestione di un modo comodo per ordinare (magari come metodo statico della classe che si occupa del sort), per verificare lo stato di sort e per riapplicare il sort corrente
+
+- Una cella con stile progressbar
+- Drag&Drop delle colonne per riordinarle
+
+-Gestione del fatto che gli editor cambino direttamente il valore della cella quando modificati.
+
+-Vedere se si riesce ad ottimizzare un po' perchè rispetto alla SourceGrid2 è più lenta
+
+-Vedere se si riesce a semplificare il metodo di aggancio ad un evento della cella
+
+-Bisognerebbe fare in maniera tale da permettere di deselezionare (otre a selezionare) le celle nel caso in cui sia premuto il tasto Ctrl.
+ Vedi anche : http://www.codeproject.com/cs/miscctrl/csharpgridcontrol.asp?msg=1004946#xx1004946xx
+
+-Problema nel caso si abilita il new nella DataGrid ma è presente un sort, in questo caso la nuova riga viene spostata secondo l'ordinamento.
+ Inoltre sarebbe meglio aggiungere la riga solo nel caso venga cambiato la riga selezionata e non alla fine dell'edit.
+
+-I would like to do following thing: if user enters first several letters in combo, rest of string from list should be entered automatically. Is there a way to do this automaticaly, or should I write code for this?
+
+-Second, is there a way to show a list (drop-down) using a keyboard (like alt+downarrow in standard windows combo)?
+
+-Third, I have a column in a grid which is entire made of combo boxes, and their items are filled from a database. Is there a way to link this somehow, or I have to put data to array and then attach it?
+
+-Gestire le modalità di selezione FullColumns e FullRows come oggetti Selection a parte. QUindi ci sarà un'interfaccia ISelection specializzata in SelectionCells, SelectionRows, e SelectionColumns. Questo si aper velocizzare la gestione delle selezioni sia per maggiore coerenza e robustezza.
+
+-Gestione migliore per i font, con possibilità di cambiarli anche per header e altri tipi di celle.
+
+-Gestione di checkbox con Image
+
+-Aggiunta di un nuovo editor di default che internamente crea un altro editor in base al tipo di cella, da usare poi come default in molti casi. Questo permetterebbe anche di poter cambiare l'editor di una cella senza cambiare l'instanza, per utilizzi come Excel....
+
+-Verificare sull'end edit di muovere il valore solo se effettivamente cambiato (vedi ApplyEdit)

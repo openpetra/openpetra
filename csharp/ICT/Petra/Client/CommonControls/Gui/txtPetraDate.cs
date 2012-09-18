@@ -298,27 +298,14 @@ namespace Ict.Petra.Client.CommonControls
             LeavingOnFailedValidationOK = true;
         }
 
+        /// <summary>
+        /// Selects all text in the TextBox on mouse double-click.
+        /// </summary>
+        /// <param name="sender">Passed in by WinForms.</param>
+        /// <param name="e">Passed in by WinForms.</param>
         void TtxtPetraDate_DoubleClick(object sender, EventArgs e)
         {
-            DialogResult ReplaceExistingDate;
-
-            if (FDate == null)
-            {
-                this.Date = DateTime.Today;
-            }
-            else
-            {
-                ReplaceExistingDate =
-                    MessageBox.Show(Catalog.GetString(
-                            "The date is not empty. By double-clicking it you would set the date to today's date.\r\n\r\nAre you sure you want to set the date to today's date?"),
-                        Catalog.GetString("Replace Date With Today's Date?"), MessageBoxButtons.YesNoCancel,
-                        MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-
-                if (ReplaceExistingDate == DialogResult.Yes)
-                {
-                    this.Date = DateTime.Today;
-                }
-            }
+            this.SelectAll();
         }
 
         /// <summary>

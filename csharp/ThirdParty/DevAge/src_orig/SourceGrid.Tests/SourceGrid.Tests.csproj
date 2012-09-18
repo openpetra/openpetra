@@ -1,0 +1,129 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E9C1C112-7618-4815-8E4F-BA6D833EB73E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SourceGrid.Tests</RootNamespace>
+    <AssemblyName>SourceGrid.Tests</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\dark\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputType>Library</OutputType>
+    <AssemblyName>SourceGrid.Tests</AssemblyName>
+    <RootNamespace>SourceGrid.Tests</RootNamespace>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputType>Library</OutputType>
+    <AssemblyName>SourceGrid.Tests</AssemblyName>
+    <DebugSymbols>true</DebugSymbols>
+    <RootNamespace>SourceGrid.Tests</RootNamespace>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\libs\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cells\Models\TestModelContainer.cs" />
+    <Compile Include="Cells\Models\TestValueModel.cs" />
+    <Compile Include="Cells\Models\TestValueModel_ValueChange_Events.cs" />
+    <Compile Include="ClipBoard\TestClipboard.cs" />
+    <Compile Include="Extensions\PingGrids\TestGrid_Span.cs" />
+    <Compile Include="net_2_0\CustomClasses.cs" />
+    <Compile Include="net_2_0\TestOverride_With_New.cs" />
+    <Compile Include="Performance\RangeCreator.cs" />
+    <Compile Include="Performance\RangeGetter.cs" />
+    <Compile Include="Performance\TestDataSetPerformance.cs" />
+    <Compile Include="Performance\TestQuadTree.cs" />
+    <Compile Include="Performance\TestRangeRegion_Performance.cs" />
+    <Compile Include="Performance\TestSpannedCellRanges_Performance.cs" />
+    <Compile Include="QuadTrees\TestProportioanteSizeNodeDivider.cs" />
+    <Compile Include="Rows\TestStandardHiddenRowCoordinator.cs" />
+    <Compile Include="Selection\TestSelectionEvents.cs" />
+    <Compile Include="TestGridVirtual_Clipboard.cs" />
+    <Compile Include="Performance\TestRowSelection_Performance.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RangeRegionTestFixute.cs" />
+    <Compile Include="Rows\TestRowsBase.cs" />
+    <Compile Include="Selection\TestRangeMergerByCells.cs" />
+    <Compile Include="Selection\TestRangeMergerByRows.cs" />
+    <Compile Include="Selection\TestRowSelection.cs" />
+    <Compile Include="Selection\TestRowSelectionHelper.cs" />
+    <Compile Include="TestDataGrid_PositionToCellRange.cs" />
+    <Compile Include="TestGird_ColumnSpan.cs" />
+    <Compile Include="TestGridVirtual_PositionToRectangle.cs" />
+    <Compile Include="TestGrid_Sorting.cs" />
+    <Compile Include="TestGrid_Span.cs" />
+    <Compile Include="TestGrid_Span_AddRows.cs" />
+    <Compile Include="TestGrid_Span_RemoveRows.cs" />
+    <Compile Include="TestValueCellComparer.cs" />
+    <None Include="app.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Cells" />
+    <Folder Include="Cells\Models" />
+    <Folder Include="Extensions\PingGrids" />
+    <Folder Include="net_2_0" />
+    <Folder Include="ClipBoard" />
+    <Folder Include="Extensions" />
+    <Folder Include="QuadTrees" />
+    <Folder Include="Rows" />
+    <Folder Include="Selection" />
+    <Folder Include="Performance" />
+    <ProjectReference Include="..\SourceGrid\SourceGrid.csproj">
+      <Project>{2A5A1657-DBA8-4117-8E2A-9F1236ACE9E2}</Project>
+      <Name>SourceGrid</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
