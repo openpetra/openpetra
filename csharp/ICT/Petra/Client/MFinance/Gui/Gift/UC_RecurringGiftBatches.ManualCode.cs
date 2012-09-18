@@ -40,7 +40,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TUC_RecurringGiftBatches
     {
         private Int32 FLedgerNumber;
-        private Int32 FSelectedBatchNumber;
+//        private Int32 FSelectedBatchNumber;
 
         /// <summary>
         /// Stores the current batch's method of payment
@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FLedgerNumber = ARow.LedgerNumber;
-            FSelectedBatchNumber = ARow.BatchNumber;
+//            FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode = false;
 

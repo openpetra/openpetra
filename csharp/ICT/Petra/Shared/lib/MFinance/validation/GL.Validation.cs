@@ -69,7 +69,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
-            bool datesIsOK = TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+            TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod);
 

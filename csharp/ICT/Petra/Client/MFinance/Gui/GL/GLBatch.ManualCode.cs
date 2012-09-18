@@ -234,8 +234,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
         {
-            TTabVersatile tb = (TTabVersatile)sender;
-
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
             if (!SaveChanges())
