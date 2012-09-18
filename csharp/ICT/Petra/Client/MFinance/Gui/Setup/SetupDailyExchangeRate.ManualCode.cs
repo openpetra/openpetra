@@ -695,7 +695,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tInverseItem item = lstInverses[i];
 
                 // Does the item exist already?
-                dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}='{5}' AND {6}={7}",
+                dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}={7}",
                     ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
                     item.FromCurrencyCode,
                     ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
