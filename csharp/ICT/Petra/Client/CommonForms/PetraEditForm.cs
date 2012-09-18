@@ -566,11 +566,14 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// todoComment
+        /// Enables the 'Save' ToolBarButton and the 'File->Save' MenuItem and sets the Form in a state where it contains changes
+        /// (<see cref="HasChanges" />).
         /// </summary>
+        /// <remarks>Useful when manual code needs to do these actions (that are normally automatically handled in a Form).</remarks>
         public void SetChangedFlag()
         {
             EnableAction("actSave", true);
+            
             FHasChanges = true;
         }
 
@@ -583,11 +586,14 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// todoComment
+        /// Disanables the 'Save' ToolBarButton and the 'File->Save' MenuItem and sets the Form in a state where it doesn't contains changes
+        /// (<see cref="HasChanges" />).
         /// </summary>
+        /// <remarks>Useful when manual code needs to do these actions (that are normally automatically handled in a Form).</remarks>        
         public void DisableSaveButton()
         {
             EnableAction("actSave", false);
+            
             FHasChanges = false;
         }
 
