@@ -39,6 +39,7 @@ namespace Ict.Common.Verification
         #region Resourcestrings
 
         private static readonly string StrValueMustNotBeNull = Catalog.GetString("A value must be entered for {0}.");
+        private static readonly string StrValueMustNotBeNullOrEmptyString = Catalog.GetString("A value must be entered for {0}.");
 
         #endregion
 
@@ -68,6 +69,44 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NONULL, StrValueMustNotBeNull, new string[] { Description }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
+
+        #region ValueMustNotBeNullOrEmptyString
+
+        /// <summary>
+        /// Checks whether an Object is null value or empty string.
+        /// </summary>
+        /// <param name="AValue">The Object to check.</param>
+        /// <param name="ADescription">Description what the value is about (for the
+        /// error message).</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control " /> is involved (can be null).</param>
+        /// <returns>Null if <paramref name="AValue" /> is not null,
+        /// otherwise a <see cref="TVerificationResult" /> is returned that
+        /// contains details about the problem, with a message that uses <paramref name="ADescription" />.</returns>
+        public static TVerificationResult ValueMustNotBeNullOrEmptyString(object AValue, string ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            // Check
+            if ((AValue == null) || (AValue.ToString() == String.Empty))
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NONULL, StrValueMustNotBeNullOrEmptyString, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {

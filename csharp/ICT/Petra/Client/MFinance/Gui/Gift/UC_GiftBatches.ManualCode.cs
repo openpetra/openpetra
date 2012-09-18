@@ -43,11 +43,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TUC_GiftBatches
     {
         private Int32 FLedgerNumber;
-        private Int32 FSelectedBatchNumber;
         private DateTime FDateEffective;
+        private Int32 FSelectedBatchNumber;
         private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
+        private string FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
+        private Int32 FSelectedYear;
+        private Int32 FSelectedPeriod;
+        private DateTime FStartDateCurrentPeriod;
+        private DateTime FEndDateLastForwardingPeriod;
+        private DateTime FDefaultDate;
 
         /// <summary>
         /// Flags whether all the gift batch rows for this form have finished loading
@@ -80,7 +86,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
-            FDateEffective = DateTime.Today;
+            FDateEffective = FDefaultDate;
 
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
@@ -118,13 +124,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
 
-            DateTime StartDateCurrentPeriod;
-            DateTime EndDateLastForwardingPeriod;
-            DateTime DefaultDate;
-            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod, out DefaultDate);
+            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
+                out FStartDateCurrentPeriod,
+                out FEndDateLastForwardingPeriod,
+                out FDefaultDate);
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                StartDateCurrentPeriod.ToShortDateString(), EndDateLastForwardingPeriod.ToShortDateString());
-            dtpDetailGlEffectiveDate.Date = DefaultDate;
+                FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
+            dtpDetailGlEffectiveDate.Date = FDefaultDate;
 
             if (grdDetails.Rows.Count > 1)
             {
@@ -150,25 +156,69 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         void RefreshFilter(Object sender, EventArgs e)
         {
+            bool senderIsRadioButton = (sender is RadioButton);
+
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
             }
-            else if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            else if ((sender != null) && senderIsRadioButton)
             {
+                //Avoid repeat events
+                RadioButton rbt = (RadioButton)sender;
+
+                if (rbt.Name.Contains(FCurrentBatchViewOption))
+                {
+                    return;
+                }
+            }
+
+            if (FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).SaveChanges())
+            {
+                if (senderIsRadioButton)
+                {
+                    //Need to cancel the change of option button
+                    if ((FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_EDITING) && (rbtEditing.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtEditing.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL) && (rbtAll.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtAll.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                    else if ((FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_POSTING) && (rbtPosting.Checked == false))
+                    {
+                        ToggleOptionButtonCheckedEvent(false);
+                        rbtPosting.Checked = true;
+                        ToggleOptionButtonCheckedEvent(true);
+                    }
+                }
+                else
+                {
+                    //Reset the combos
+                    FPetraUtilsObject.DisableDataChangedEvent();
+                    cmbYear.SetSelectedInt32(FSelectedYear);
+                    cmbPeriod.SetSelectedInt32(FSelectedPeriod);
+                    FPetraUtilsObject.EnableDataChangedEvent();
+                }
+
                 return;
             }
 
             ClearCurrentSelection();
 
-            Int32 SelectedYear = cmbYear.GetSelectedInt32();
-            Int32 SelectedPeriod = cmbPeriod.GetSelectedInt32();
+            FSelectedYear = cmbYear.GetSelectedInt32();
+            FSelectedPeriod = cmbPeriod.GetSelectedInt32();
 
             FPeriodFilter = String.Format(
                 "{0} = {1} AND ",
-                AGiftBatchTable.GetBatchYearDBName(), SelectedYear);
+                AGiftBatchTable.GetBatchYearDBName(), FSelectedYear);
 
-            if (SelectedPeriod == 0)
+            if (FSelectedPeriod == 0)
             {
                 ALedgerRow Ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
@@ -181,31 +231,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPeriodFilter += String.Format(
                     "{0} = {1}",
-                    AGiftBatchTable.GetBatchPeriodDBName(), SelectedPeriod);
+                    AGiftBatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
             }
 
             if (rbtEditing.Checked)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, SelectedYear,
-                        SelectedPeriod));
+                FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
+
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, FSelectedYear,
+                        FSelectedPeriod));
                 FStatusFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
             }
-            else if (rbtPosted.Checked)
+            else if (rbtPosting.Checked)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, SelectedYear,
-                        SelectedPeriod));
-                FStatusFilter = String.Format("{0} = '{1}'",
+                FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_POSTING;
+
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, FSelectedYear,
+                        FSelectedPeriod));
+                FStatusFilter = String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
                     AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_POSTED);
+                    MFinanceConstants.BATCH_UNPOSTED,
+                    AGiftBatchTable.GetBatchTotalDBName(),
+                    AGiftBatchTable.GetHashTotalDBName());
             }
             else
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, SelectedYear, SelectedPeriod));
+                FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_ALL;
+
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, FSelectedYear,
+                        FSelectedPeriod));
                 FStatusFilter = "1 = 1";
             }
 
+            FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftBatch.DefaultView);
 
@@ -222,11 +282,63 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FBatchLoaded == true)
             {
                 grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-                //FCurrentRow = 0; //necessary to force code execution in FocusRowChanged event
                 InvokeFocusedRowChanged(1);
             }
 
             UpdateChangeableStatus();
+        }
+
+        private void UpdateBatchPeriod(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                Int32 periodNumber = 0;
+                Int32 yearNumber = 0;
+                DateTime dateValue;
+
+                string aDate = dtpDetailGlEffectiveDate.Date.ToString();
+
+                if (DateTime.TryParse(aDate, out dateValue))
+                {
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    {
+                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        {
+                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                //Leave BatchPeriod as it is
+            }
+        }
+
+        private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
+        {
+            return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
+        }
+
+        private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
+        {
+            if (AToggleOn)
+            {
+                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+            }
+            else
+            {
+                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+            }
         }
 
         /// <summary>
@@ -284,6 +396,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ((TFrmGiftBatch)ParentForm).EnableTransactions();
 
+            //Update the batch period if necessary
+            UpdateBatchPeriod(null, null);
+
             UpdateChangeableStatus();
 
 //            FPetraUtilsObject.DetailProtectedMode =
@@ -320,18 +435,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            Int32 yearNumber = 0;
+            Int32 periodNumber = 0;
+
             //If viewing posted batches only, show list of editing batches
             //  instead before adding a new batch
             if (!rbtEditing.Checked)
             {
                 rbtEditing.Checked = true;
             }
+            else if (FPetraUtilsObject.HasChanges && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
+            {
+                return;
+            }
+
+            //Set year and period to correct value
+            if (cmbYear.GetSelectedInt32() != 0)
+            {
+                cmbYear.SelectedIndex = 0;
+            }
+            else if (cmbPeriod.GetSelectedInt32() != 0)
+            {
+                cmbPeriod.SelectedIndex = 0;
+            }
 
             pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
             txtDetailBatchDescription.Focus();
 
-            dtpDetailGlEffectiveDate.Date = DateTime.Today;
+            dtpDetailGlEffectiveDate.Date = FDefaultDate;
+
+            if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
+            {
+                FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+            }
+
             ((TFrmGiftBatch)ParentForm).SaveChanges();
         }
 
