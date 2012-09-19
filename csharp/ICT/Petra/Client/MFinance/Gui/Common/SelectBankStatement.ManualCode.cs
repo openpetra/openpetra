@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
             grdSelectStatement.DataSource = new DevAge.ComponentModel.BoundDataView(stmts.DefaultView);
 
             grdSelectStatement.AutoSizeCells();
- 
+
             RunningPopulateStatementGrid = false;
         }
 

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 
@@ -55,6 +56,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
+            tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgTransactions.Enabled = false;
         }
 
@@ -143,6 +145,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Transactions
         };
 
+        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
+        {
+            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+            if (!SaveChanges())
+            {
+                e.Cancel = true;
+
+                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+            }
+        }
+
         bool FChangeTabEventHasRun = false;
 
         private void SelectTabManual(int ASelectedTabIndex)
@@ -164,11 +178,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AFromTabClick"></param>
         public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
         {
-            if (!SaveChanges())
-            {
-                return;
-            }
-
             if (FChangeTabEventHasRun && AFromTabClick)
             {
                 FChangeTabEventHasRun = false;
