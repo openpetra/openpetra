@@ -22,32 +22,69 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Xml;
 using System.Windows.Forms;
-using System.Collections;
-using System.Collections.Generic;
-using GNU.Gettext;
-using Ict.Common;
-using Ict.Common.IO;
-using Ict.Common.Verification;
-using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Gui;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MReporting.Gui.MPartner;
-//using Ict.Petra.Client.MReporting.Gui.MPersonnel;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
-using System.Collections.Specialized;
-using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Common.IO;
+using Ict.Common;
+using System.Xml;
+using System.Collections.Generic;
+using System.Collections;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
-    /// the manually written part of TFrmPartnerMain
+    /// Methods previously in TFrmPartnerMain that don't have any other home
     /// </summary>
-    public partial class TFrmPartnerMain
+    public class TPartnerMain
     {
+        /// <summary>
+        /// Makes a server call to get the key of the last used family
+        /// <returns>FamilyKey of the last accessed family</returns>
+        /// </summary>
+        private static System.Int64 GetLastUsedFamilyKey()
+        {
+            bool LastFamilyFound = false;
+
+            System.Int64 FamilyKey = 0000000000;
+            Dictionary <long, string>RecentlyUsedPartners;
+            ArrayList PartnerClasses = new ArrayList();
+
+            PartnerClasses.Add("*");
+
+            int MaxPartnersCount = 7;
+            TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
+
+            foreach (KeyValuePair <long, string>CurrentEntry in RecentlyUsedPartners)
+            {
+                //search for the last FamilyKey
+                //assign it only to FamilyKey if there hasn't been yet found another Family
+
+                //fe. CurrentEntry.Key= 43005007 CurrentEntry.Value= Test, alex (type PERSON)
+                //TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
+                if (CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
+                {
+                    FamilyKey = CurrentEntry.Key;
+                    LastFamilyFound = true;
+                }
+            }
+            return FamilyKey;
+        }
+
+
+        /// <summary>
+        /// open partner find screen
+        /// </summary>
+        public static void FindPartner(Form AParentForm)
+        {
+            TPartnerFindScreen frm = new TPartnerFindScreen(AParentForm);
+
+            frm.SetParameters(false, -1);
+            frm.Show();
+        }
+
         /// <summary>
         /// create a new partner (default to family ie. household)
         /// </summary>
@@ -104,87 +141,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// open partner find screen
-        /// </summary>
-        public static void FindPartner(Form AParentForm)
-        {
-            TPartnerFindScreen frm = new TPartnerFindScreen(AParentForm);
-
-            frm.SetParameters(false, -1);
-            frm.Show();
-        }
-
-        /// <summary>
-        /// Makes a server call to get the key of the last used family
-        /// <returns>FamilyKey of the last accessed family</returns>
-        /// </summary>
-        private static System.Int64 GetLastUsedFamilyKey()
-        {
-            bool LastFamilyFound = false;
-
-            System.Int64 FamilyKey = 0000000000;
-            Dictionary <long, string>RecentlyUsedPartners;
-            ArrayList PartnerClasses = new ArrayList();
-
-            PartnerClasses.Add("*");
-
-            int MaxPartnersCount = 7;
-            TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
-
-            foreach (KeyValuePair <long, string>CurrentEntry in RecentlyUsedPartners)
-            {
-                //search for the last FamilyKey
-                //assign it only to FamilyKey if there hasn't been yet found another Family
-
-                //fe. CurrentEntry.Key= 43005007 CurrentEntry.Value= Test, alex (type PERSON)
-                //TLogging.Log("CurrentEntry.Key= " + CurrentEntry.Key + " CurrentEntry.Value= " + CurrentEntry.Value);
-                if (CurrentEntry.Value.Contains("FAMILY") && !LastFamilyFound)
-                {
-                    FamilyKey = CurrentEntry.Key;
-                    LastFamilyFound = true;
-                }
-            }
-
-            return FamilyKey;
-        }
-
-        /// <summary>
-        /// Opens the partner edit screen with the last partner worked on.
-        /// Checks if the partner is merged.
-        /// </summary>
-        public static void OpenLastUsedPartnerEditScreen(Form AParentForm)
-        {
-            long MergedPartnerKey = 0;
-            long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
-
-            // we don't need to validate the partner key
-            // because it's done in the mnuFile_Popup function.
-            // If we don't have a valid partner key, this code can't be called from the file menu.
-
-            if (MergedPartnerHandling(LastPartnerKey, out MergedPartnerKey))
-            {
-                // work with the merged partner
-                LastPartnerKey = MergedPartnerKey;
-            }
-            else if (MergedPartnerKey > 0)
-            {
-                // The partner is merged but user cancelled the action
-                return;
-            }
-
-            // Open the Partner Edit screen
-            TFrmPartnerEdit frmPEDS;
-
-            AParentForm.Cursor = Cursors.WaitCursor;
-
-            frmPEDS = new TFrmPartnerEdit(AParentForm);
-            frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
-            frmPEDS.Show();
-
-            AParentForm.Cursor = Cursors.Default;
-        }
-
-        /// <summary>
         /// Checks if the the partner is merged. If so then show a dialog where the user can
         /// choose to work with the current partner or the merged partner.
         /// </summary>
@@ -199,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             AMergedIntoPartnerKey = -1;
 
-// TODO MergedPartnerHandling
+            // TODO MergedPartnerHandling
 #if TODO
             bool IsMergedPartner;
             string MergedPartnerPartnerShortName;
@@ -245,5 +201,45 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
             return ReturnValue;
         }
+
+
+        /// <summary>
+        /// Opens the partner edit screen with the last partner worked on.
+        /// Checks if the partner is merged.
+        /// </summary>
+        public static void OpenLastUsedPartnerEditScreen(Form AParentForm)
+        {
+            long MergedPartnerKey = 0;
+            long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
+
+            // we don't need to validate the partner key
+            // because it's done in the mnuFile_Popup function.
+            // If we don't have a valid partner key, this code can't be called from the file menu.
+
+            if (MergedPartnerHandling(LastPartnerKey, out MergedPartnerKey))
+            {
+                // work with the merged partner
+                LastPartnerKey = MergedPartnerKey;
+            }
+            else if (MergedPartnerKey > 0)
+            {
+                // The partner is merged but user cancelled the action
+                return;
+            }
+
+            // Open the Partner Edit screen
+            TFrmPartnerEdit frmPEDS;
+
+            AParentForm.Cursor = Cursors.WaitCursor;
+
+            frmPEDS = new TFrmPartnerEdit(AParentForm);
+            frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
+            frmPEDS.Show();
+
+            AParentForm.Cursor = Cursors.Default;
+        }
+
+
     }
 }
+

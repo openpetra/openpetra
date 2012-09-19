@@ -606,7 +606,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Print a receipt for each gift (ideally each donor) in the batch
         /// </summary>
-        /// <param name="AgiftBatchRow"></param>
+        /// <param name="AGiftTDS"></param>
         private void PrintGiftBatchReceipts(GiftBatchTDS AGiftTDS)
         {
             AGiftBatchRow GiftBatchRow = AGiftTDS.AGiftBatch[0];
