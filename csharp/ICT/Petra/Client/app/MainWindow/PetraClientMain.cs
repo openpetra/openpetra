@@ -43,6 +43,7 @@ using Ict.Petra.Shared.MPartner; // Implicit reference
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
@@ -654,6 +655,7 @@ namespace Ict.Petra.Client.App.PetraClient
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TServerLookup.TMPartner.VerifyPartner;
+            TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TServerLookup.TMFinance.GetCurrentPostingRangeDates;
 
             // Set up Delegates for retrieval of cacheable tables when called from Shared directories on client side
             TSharedDataCache.TMCommon.GetCacheableCommonTableDelegate = @TDataCache.TMCommon.GetCacheableCommonTable;
