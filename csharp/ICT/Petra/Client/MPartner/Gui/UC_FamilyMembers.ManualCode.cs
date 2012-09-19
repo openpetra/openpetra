@@ -1705,7 +1705,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                  Convert.ToString(FamilyIDint +
                                      1) + "\r\n" + "    " + PersonName2.ToString() + StrFamilyIDChangeDoneWasChangedFrom + NextFamilyID.ToString() +
                                  StrFamilyIDChangeDoneTo + FamilyID.ToString()), StrFamilyIDChangeDoneTitle);
-                
+
                 FPetraUtilsObject.SetChangedFlag();
             }
             else
@@ -1820,7 +1820,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                  PersonName2.ToString() +
                                  StrFamilyIDChangeDoneWasChangedFrom + PreviousFamilyID.ToString() + StrFamilyIDChangeDoneTo +
                                  Convert.ToString(Convert.ToInt32(PreviousFamilyID) + 1)), "Family ID Change Done");
-                
+
                 FPetraUtilsObject.SetChangedFlag();
             }
             else

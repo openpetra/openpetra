@@ -443,10 +443,10 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = null;
-                
-                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.DateOfIssue, ValidationControlsData.ValidationControlLabel, 
-                                                                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                                                
+
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.DateOfIssue, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -639,8 +639,8 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             {
                 VerificationResult = null;
 
-                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.StartDate, ValidationControlsData.ValidationControlLabel, 
-                                                                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.StartDate, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -653,9 +653,9 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             {
                 VerificationResult = null;
 
-                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.EndDate, ValidationControlsData.ValidationControlLabel, 
-                                                                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.EndDate, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
@@ -874,8 +874,8 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             {
                 VerificationResult = null;
 
-                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.GenAppRecvgFldAccept, ValidationControlsData.ValidationControlLabel, 
-                                                                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.GenAppRecvgFldAccept, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);

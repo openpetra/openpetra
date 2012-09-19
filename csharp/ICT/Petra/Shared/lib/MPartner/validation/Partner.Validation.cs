@@ -249,15 +249,15 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = null;
-                
+
                 // don't complain if this is done for a new partner record (partner key not yet saved in db)
                 if (!(AValidateForNewPartner
-                      && APartnerKey == ARow.PartnerKey))
+                      && (APartnerKey == ARow.PartnerKey)))
                 {
                     VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                         ARow.PartnerKey, new TPartnerClass[] { }, false, "",
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-        
+
                     // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
                     // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
                     // ResultText!
@@ -290,12 +290,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
             {
                 // don't complain if this is done for a new partner record (partner key not yet saved in db)
                 if (!(AValidateForNewPartner
-                      && APartnerKey == ARow.RelationKey))
+                      && (APartnerKey == ARow.RelationKey)))
                 {
                     VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                         ARow.RelationKey, new TPartnerClass[] { }, false, "",
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-    
+
                     // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
                     // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
                     // ResultText!
