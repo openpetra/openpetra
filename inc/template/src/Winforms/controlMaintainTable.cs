@@ -124,42 +124,42 @@ namespace {#NAMESPACE}
 
             FPetraUtilsObject.SetChangedFlag();
 
-			grdDetails.DataSource = null;
+            grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
 
             int newRowIndex = FMainDS.{#DETAILTABLE}.Rows.Count - 1;
-			SelectDetailRowByDataTableIndex(newRowIndex);
+            SelectDetailRowByDataTableIndex(newRowIndex);
             InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
 
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
             ShowDetails(FPreviouslySelectedDetailRow);
-			
+            
             Control[] pnl = this.Controls.Find("pnlDetails", true);
             if (pnl.Length > 0)
             {
-	            //Look for Key & Description fields
-	            bool keyFieldFound = false;
-	            foreach (Control detailsCtrl in pnl[0].Controls)
-	            {
-	                if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
-	                {
-	                    keyFieldFound = true;
-	                    detailsCtrl.Focus();
-	                }
-	
-	                if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
-	                {
-	                    detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
-	                    break;
-	                }
-	            }
+                //Look for Key & Description fields
+                bool keyFieldFound = false;
+                foreach (Control detailsCtrl in pnl[0].Controls)
+                {
+                    if (!keyFieldFound && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+                    {
+                        keyFieldFound = true;
+                        detailsCtrl.Focus();
+                    }
+    
+                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
+                    {
+                        detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+                        break;
+                    }
+                }
 
-				GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
+                GetDetailsFromControls(FPreviouslySelectedDetailRow, true);
 
                 //Need to redo this just in case the sorting is not on primary key
-	            SelectDetailRowByDataTableIndex(newRowIndex);
+                SelectDetailRowByDataTableIndex(newRowIndex);
             }
-			
+            
             return true;
         }
         else
@@ -192,44 +192,51 @@ namespace {#NAMESPACE}
 
         grdDetails.SelectRowInGrid(RowNumberGrid, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
     }
-	
+    
     private int GetDetailGridRowDataTableIndex()
     {
-    	Int32 RowNumberInData = -1;
-    	
-    	int gridRowIndex = grdDetails.SelectedRowIndex();
-    	
-    	if (gridRowIndex > 0 && FPreviouslySelectedDetailRow != null)
-    	{
-    	    	
-	    	int dataRowIndex = 0;
-	    	
-	    	foreach ({#DETAILTABLE}Row myRow in FMainDS.{#DETAILTABLE}.Rows)
-	        {
-	    		bool found = true;
-	            foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
-	            {
-	                string value1 = myRow[myColumn].ToString();
-	                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[gridRowIndex - 1][myColumn.Ordinal].ToString();
-	                if (value1 != value2)
-	                {
-	                    found = false;
-	                }
-	            }
-	            
-	            if (found)
-	            {
-	                RowNumberInData = dataRowIndex;
-	                break;
-	            }
-	            
-	            dataRowIndex++;
-	        }
-    	}
-    	
-    	return RowNumberInData;
+        Int32 RowNumberInData = -1;
+        
+        int gridRowIndex = grdDetails.SelectedRowIndex();
+        
+        if (gridRowIndex > 0 && FPreviouslySelectedDetailRow != null)
+        {
+                
+            int dataRowIndex = 0;
+            
+            foreach ({#DETAILTABLE}Row myRow in FMainDS.{#DETAILTABLE}.Rows)
+            {
+                bool found = true;
+                foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
+                {
+                    if (myRow.RowState != DataRowState.Deleted)
+                    {
+                        string value1 = myRow[myColumn].ToString();
+                        string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[gridRowIndex - 1][myColumn.Ordinal].ToString();
+                        if (value1 != value2)
+                        {
+                            found = false;
+                        }
+                    }
+                    else
+                    {
+                        found = false;
+                    }
+                }
+                
+                if (found)
+                {
+                    RowNumberInData = dataRowIndex;
+                    break;
+                }
+                
+                dataRowIndex++;
+            }
+        }
+        
+        return RowNumberInData;
     }
-	
+    
 {#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// return the selected row
@@ -274,7 +281,7 @@ namespace {#NAMESPACE}
             if (myDataView.Count > 0)
             {
                 grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-	            InvokeFocusedRowChanged(1);
+                InvokeFocusedRowChanged(1);
                 pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
             }
         }
@@ -319,69 +326,69 @@ namespace {#NAMESPACE}
 
     private void FocusPreparation(bool AIsLeaveEvent)
     {
-    	if (FRepeatLeaveEventDetected)
-    	{
-    		return;
-    	}
-    	
-    	FDetailGridRowsCountCurrent = grdDetails.Rows.Count;
-
-		//first run only
-    	if (!FInitialFocusEventCompleted)
-    	{
-    		FInitialFocusEventCompleted = true;
-    		FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
-    	}
-    	
-    	//Specify if it is a row change, add or delete
-    	if (FDetailGridRowsCountPrevious == FDetailGridRowsCountCurrent)
-    	{
-    		FDetailGridRowsChangedState = 0;
-    	}
-    	else if (FDetailGridRowsCountPrevious > FDetailGridRowsCountCurrent)
+        if (FRepeatLeaveEventDetected)
         {
-        	FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
-        	FDetailGridRowsChangedState = -1;
+            return;
         }
-    	else if (FDetailGridRowsCountPrevious < FDetailGridRowsCountCurrent)
-    	{
-        	FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
-        	FDetailGridRowsChangedState = 1;
-    	}
-    	
+        
+        FDetailGridRowsCountCurrent = grdDetails.Rows.Count;
+
+        //first run only
+        if (!FInitialFocusEventCompleted)
+        {
+            FInitialFocusEventCompleted = true;
+            FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
+        }
+        
+        //Specify if it is a row change, add or delete
+        if (FDetailGridRowsCountPrevious == FDetailGridRowsCountCurrent)
+        {
+            FDetailGridRowsChangedState = 0;
+        }
+        else if (FDetailGridRowsCountPrevious > FDetailGridRowsCountCurrent)
+        {
+            FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
+            FDetailGridRowsChangedState = -1;
+        }
+        else if (FDetailGridRowsCountPrevious < FDetailGridRowsCountCurrent)
+        {
+            FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent;
+            FDetailGridRowsChangedState = 1;
+        }
+        
     }
     
     private void InvokeFocusedRowChanged(int AGridRowNumber)
     {
-		SourceGrid.RowEventArgs rowArgs  = new SourceGrid.RowEventArgs(AGridRowNumber);
-		FocusedRowChanged(grdDetails, rowArgs);
+        SourceGrid.RowEventArgs rowArgs  = new SourceGrid.RowEventArgs(AGridRowNumber);
+        FocusedRowChanged(grdDetails, rowArgs);
     }
 {#IFDEF SAVEDETAILS}
 
     private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
     {        
-		//Ignore this event if currently sorting
-    	if (grdDetails.Sorting)
-    	{
-    		FNewFocusEvent = false;
-    		return;
-    	}    	
-    	
-    	if (FNewFocusEvent == false)
-    	{
-    		FNewFocusEvent = true;
-    	}
-
-    	FocusPreparation(true);
-
-    	if (!FRepeatLeaveEventDetected)
+        //Ignore this event if currently sorting
+        if (grdDetails.Sorting)
         {
-	    	FRepeatLeaveEventDetected = true;
-	    	
+            FNewFocusEvent = false;
+            return;
+        }       
+        
+        if (FNewFocusEvent == false)
+        {
+            FNewFocusEvent = true;
+        }
+
+        FocusPreparation(true);
+
+        if (!FRepeatLeaveEventDetected)
+        {
+            FRepeatLeaveEventDetected = true;
+            
             if (FDetailGridRowsChangedState == -1 || FDetailGridRowsCountCurrent == 2)  //do not run validation if cancelling current row
-																	// OR only 1 row present so no rowleaving event possible
+                                                                    // OR only 1 row present so no rowleaving event possible
             {
-            	e.Cancel = true;
+                e.Cancel = true;
             }
             
             Console.WriteLine("FocusRowLeaving");
@@ -394,7 +401,7 @@ namespace {#NAMESPACE}
         else
         {
             // Reset flag
-	    	FRepeatLeaveEventDetected = false;
+            FRepeatLeaveEventDetected = false;
             e.Cancel = true;
         }
     }
@@ -406,48 +413,48 @@ namespace {#NAMESPACE}
 
         if (!grdDetails.Sorting)
         {
-	    	//Sometimes, FocusedRowChanged get called without FocusRowLeaving
-	    	//  so need to handle that
-	    	if (!FNewFocusEvent)
-	    	{
-	    		//This implies start of a new event chain without a previous FocusRowLeaving
-	    		FocusPreparation(false);
-	    	}
-	    	
-	        //Only allow, row change, add or delete, not repeat events from grid changing focus
+            //Sometimes, FocusedRowChanged get called without FocusRowLeaving
+            //  so need to handle that
+            if (!FNewFocusEvent)
+            {
+                //This implies start of a new event chain without a previous FocusRowLeaving
+                FocusPreparation(false);
+            }
+            
+            //Only allow, row change, add or delete, not repeat events from grid changing focus
             // check also if it is a filter change
             if((e.Row != FCurrentRow && FDetailGridRowsChangedState == 0)
               || FGridFilterChanged)
             {
                 FGridFilterChanged = false;
 {#IFDEF SAVEDETAILS}
-	    		// Transfer data from Controls into the DataTable
-	            if (FPreviouslySelectedDetailRow != null)
-	            {
-	                GetDetailsFromControls(FPreviouslySelectedDetailRow);
-	            }
+                // Transfer data from Controls into the DataTable
+                if (FPreviouslySelectedDetailRow != null)
+                {
+                    GetDetailsFromControls(FPreviouslySelectedDetailRow);
+                }
 {#ENDIF SAVEDETAILS}
-	
-	            // Display the details of the currently selected Row
-	            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-	            //pnlDetails.Enabled = true;
-	            ShowDetails(FPreviouslySelectedDetailRow);
-	    	}
-	    	else if (FDetailGridRowsChangedState == 1) //Addition
-	    	{
-	    		
-	    	}
-	    	else if (FDetailGridRowsChangedState == -1) //Deletion
-	    	{
+    
+                // Display the details of the currently selected Row
+                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+                //pnlDetails.Enabled = true;
+                ShowDetails(FPreviouslySelectedDetailRow);
+            }
+            else if (FDetailGridRowsChangedState == 1) //Addition
+            {
+                
+            }
+            else if (FDetailGridRowsChangedState == -1) //Deletion
+            {
                 if (FDetailGridRowsCountCurrent > 1) //Implies at least one record still left
                 {
                     int nextRowToSelect = e.Row;
                     //If last row deleted, subtract row index to select by 1
                     if (nextRowToSelect == FDetailGridRowsCountCurrent)
                     {
-                    	nextRowToSelect--;
+                        nextRowToSelect--;
                     }
-                	// Select and display the details of the currently selected Row without causing an event
+                    // Select and display the details of the currently selected Row without causing an event
                     grdDetails.SelectRowInGrid(nextRowToSelect, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
                     FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                     //pnlDetails.Enabled = true;
@@ -456,101 +463,101 @@ namespace {#NAMESPACE}
                 else
                 {
                     e.Row = 0;
-                	FPreviouslySelectedDetailRow = null;
+                    FPreviouslySelectedDetailRow = null;
                     pnlDetails.Enabled = false;
                 }
-	    	}
+            }
         }
         
-    	FCurrentRow = e.Row;
-	    
-	    //Event chain tidy-up
-		FDetailGridRowsChangedState = 0;
-	    FNewFocusEvent = false;
-	}
+        FCurrentRow = e.Row;
+        
+        //Event chain tidy-up
+        FDetailGridRowsChangedState = 0;
+        FNewFocusEvent = false;
+    }
 
     private void Delete{#DETAILTABLE}()
     {
-		bool allowDeletion = true;
-		bool deletionPerformed = false;
-		string deletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
-		string completionMessage = string.Empty;
-		
-		if (FPreviouslySelectedDetailRow == null)
-		{
-			return;
-		}
+        bool allowDeletion = true;
+        bool deletionPerformed = false;
+        string deletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+        string completionMessage = string.Empty;
+        
+        if (FPreviouslySelectedDetailRow == null)
+        {
+            return;
+        }
 
-		int rowIndexToDelete = grdDetails.SelectedRowIndex();
+        int rowIndexToDelete = grdDetails.SelectedRowIndex();
 
         if (rowIndexToDelete == -1)
         {
-        	MessageBox.Show(Catalog.GetString("There is no row currently selected in the grid."),
-        	               Catalog.GetString("Delete Row"));
-        	return;
+            MessageBox.Show(Catalog.GetString("There is no row currently selected in the grid."),
+                           Catalog.GetString("Delete Row"));
+            return;
         }
 
-		{#DETAILTABLETYPE}Row rowToDelete = GetSelectedDetailRow();
-		
-		{#PREDELETEMANUAL}
-		
-		if(allowDeletion)
-		{
-        	if ((MessageBox.Show(deletionQuestion,
-					 Catalog.GetString("Confirm Delete"),
+        {#DETAILTABLETYPE}Row rowToDelete = GetSelectedDetailRow();
+        
+        {#PREDELETEMANUAL}
+        
+        if(allowDeletion)
+        {
+            if ((MessageBox.Show(deletionQuestion,
+                     Catalog.GetString("Confirm Delete"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
-			{
+            {
 {#IFDEF DELETEROWMANUAL}
-				{#DELETEROWMANUAL}
+                {#DELETEROWMANUAL}
 {#ENDIF DELETEROWMANUAL}
-{#IFNDEF DELETEROWMANUAL}				
-				rowToDelete.Delete();
-				deletionPerformed = true;
-{#ENDIFN DELETEROWMANUAL}	
-			
-				if (deletionPerformed)
-				{
-					FPetraUtilsObject.SetChangedFlag();
-					//Select and call the event that doesn't occur automatically
-					InvokeFocusedRowChanged(rowIndexToDelete);
-				}
-			}
-		}
+{#IFNDEF DELETEROWMANUAL}               
+                rowToDelete.Delete();
+                deletionPerformed = true;
+{#ENDIFN DELETEROWMANUAL}   
+            
+                if (deletionPerformed)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
+                    //Select and call the event that doesn't occur automatically
+                    InvokeFocusedRowChanged(rowIndexToDelete);
+                }
+            }
+        }
 
 {#IFDEF POSTDELETEMANUAL}
-		{#POSTDELETEMANUAL}
+        {#POSTDELETEMANUAL}
 {#ENDIF POSTDELETEMANUAL}
 {#IFNDEF POSTDELETEMANUAL}
-		if(deletionPerformed && completionMessage.Length > 0)
-		{
-			MessageBox.Show(completionMessage,
-							 Catalog.GetString("Deletion Completed"));
-		}
+        if(deletionPerformed && completionMessage.Length > 0)
+        {
+            MessageBox.Show(completionMessage,
+                             Catalog.GetString("Deletion Completed"));
+        }
 {#ENDIFN POSTDELETEMANUAL}
 
     }
-	
+    
     private void ResetGridFocus(int ADataRowPosition)
     {
-    	int selectedRowIndex = grdDetails.SelectedRowIndex();
-    	
-    	if (selectedRowIndex > 0 && !grdDetails.Sorting)
-    	{
-    		if (ADataRowPosition != GetDetailGridRowDataTableIndex())
-	        {
-	            grdDetails.DataSource = null;
-	            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
-	        	SelectDetailRowByDataTableIndex(ADataRowPosition);
-	        	InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
-	        }
-    	}
+        int selectedRowIndex = grdDetails.SelectedRowIndex();
+        
+        if (selectedRowIndex > 0 && !grdDetails.Sorting)
+        {
+            if (ADataRowPosition != GetDetailGridRowDataTableIndex())
+            {
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
+                SelectDetailRowByDataTableIndex(ADataRowPosition);
+                InvokeFocusedRowChanged(grdDetails.SelectedRowIndex());
+            }
+        }
 
     }
 {#ENDIF SHOWDETAILS}
 {#IFDEF MASTERTABLE}
 
-	/// get the data from the controls and store in the currently selected detail row
+    /// get the data from the controls and store in the currently selected detail row
     public void GetDataFromControls({#MASTERTABLETYPE}Row ARow, Control AControl=null)
     {
 {#IFDEF SAVEDATA}
@@ -577,13 +584,13 @@ namespace {#NAMESPACE}
         {
             if (AIsNewRow)
             {
-				{#SAVEDETAILS}
+                {#SAVEDETAILS}
             }
             else
             {
-				ARow.BeginEdit();
-				{#SAVEDETAILS}
-				ARow.EndEdit();
+                ARow.BeginEdit();
+                {#SAVEDETAILS}
+                ARow.EndEdit();
             }
         }
     }
@@ -773,8 +780,8 @@ namespace {#NAMESPACE}
     
     private void ControlValidatedHandler(object sender, EventArgs e)
     {
-    	int dataRowIndex = GetDetailGridRowDataTableIndex();
-    	
+        int dataRowIndex = GetDetailGridRowDataTableIndex();
+        
         TScreenVerificationResult SingleVerificationResult;
         
         ValidateAllData(true, false, (Control)sender, false);
