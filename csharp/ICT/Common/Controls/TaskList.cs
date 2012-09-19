@@ -4,6 +4,7 @@
 // @Authors:
 //		 chadds
 //		 ashleyc
+//       sethb
 //
 // Copyright 2004-2011 by OM International
 //
@@ -31,17 +32,23 @@ using System.Data;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Globalization;
+using System.Reflection;
 using System.Xml;
 using System.Text.RegularExpressions;
 using Ict.Common;
+using Ict.Common.IO;
 
 namespace Ict.Common.Controls
 {
+
     /// <summary>
     /// GUI element that shows a stylized list of items built from an XmlNode
     /// </summary>
     public partial class TTaskList : UserControl
     {
+
+        #region global settings
+
         /// <summary>
         /// Height of a TaskList Item
         /// Used for spacing purposes
@@ -80,6 +87,46 @@ namespace Ict.Common.Controls
         /// Private variable that holds the MasterXmlNode for the TTaskList
         /// </summary>
         private XmlNode InternalMasterXmlNode;
+
+        /// <summary/>
+        private const TVisualStylesEnum DEFAULT_STYLE = TVisualStylesEnum.vsShepherd;
+
+        #endregion
+
+        #region Events (and related methods)
+
+        /// <summary>
+        /// </summary>
+        public class ItemActivationEventArgs : EventArgs
+        {
+            /// <summary/>
+            public XmlNode TaskListNodeClicked;
+            /// <summary/>
+            public LinkLabel TaskListLabelClicked;
+
+            /// <summary/>
+            public ItemActivationEventArgs(XmlNode ATaskListNodeClicked, LinkLabel ATaskListLabelClicked)
+            {
+                this.TaskListNodeClicked = ATaskListNodeClicked;
+                this.TaskListLabelClicked = ATaskListLabelClicked;
+            }
+        }
+
+        /// TODO: document the EventArgs passed.
+        /// <summary></summary>
+        public event System.EventHandler ItemActivation;
+
+        private void OnItemActivation(XmlNode ATaskListNode, LinkLabel AItemClicked)
+        {
+            if(ItemActivation != null)
+            {
+                ItemActivation(this, new ItemActivationEventArgs(ATaskListNode, AItemClicked));
+            }
+        }
+
+        #endregion
+
+        #region Properties (and related functions)
 
         /// <summary>
         /// Root Node for the Task List
@@ -137,11 +184,11 @@ namespace Ict.Common.Controls
         private void ChangeVisualStyle()
         {
             //Sets Title Text
-            //TODO: Collapsible panel team needs to put in TitleText, TitleTextColour, HoverTitleTextColour, and TitleHeight
+            //TODO: Collapsible panel team needs to put in TitleFont, TitleFontColour, HoverTitleFontColour, and TitleHeight
 
-            //Sets Content Text
-            this.Font = InternalVisualStyle.ContentText;
-            this.ForeColor = InternalVisualStyle.ContentTextColour;
+            //Sets Content Font
+            this.Font = InternalVisualStyle.ContentFont;
+            this.ForeColor = InternalVisualStyle.ContentFontColour;
 
             //Sets Automatic Numbers & Task Indentation
             this.InternalAutomaticNumbering = InternalVisualStyle.AutomaticNumbering;
@@ -161,6 +208,55 @@ namespace Ict.Common.Controls
                 this.tPnlGradient1.GradientMode = System.Drawing.Drawing2D.LinearGradientMode.BackwardDiagonal;
             }
         }
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Default constructor necessary for TTaskList to work with the GUI designer
+        /// Once the control is on a form, the designer should convert this constructor to the parameterized constructor.
+        ///
+        /// Will provide defaults:
+        ///   default xmlnode is an empty list
+        ///   default style is defined in global settings section.
+        /// </summary>
+        public TTaskList()
+            : this(TYml2Xml.CreateXmlDocument(), DEFAULT_STYLE)
+        {
+        }
+
+        /// <summary>
+        /// Will provide defaults:
+        ///   default style is defined in global settings section.
+        /// </summary>
+        public TTaskList(XmlNode AXmlnode)
+            : this(AXmlnode, DEFAULT_STYLE)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for creating an object with a MasterNode and setting the Visual Style
+        /// </summary>
+        /// <param name="MasterNode">Base Node for the TaskList</param>
+        /// <param name="Style">A TVisualStylesEnum value that specifies the visual style which should be used</param>
+        public TTaskList(XmlNode MasterNode, TVisualStylesEnum Style)
+        {
+            //
+            // The InitializeComponent() call is required for Windows Forms designer support.
+            //
+            InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #endregion
+            this.VisualStyle = new Ict.Common.Controls.TVisualStyles(Style);
+            this.MasterXmlNode = MasterNode;
+        }
+
+        #endregion
+
+        #region LoadTaskItems
 
         /// <summary>
         /// Default method to load task items
@@ -199,14 +295,13 @@ namespace Ict.Common.Controls
                 if (TaskRegex.IsMatch(TaskNode.Name))
                 {
                     LinkLabel lblTaskItem = new LinkLabel();
-                    lblTaskItem.VisitedLinkColor = InternalVisualStyle.ContentActivatedTextColour;
-                    lblTaskItem.LinkColor = VisualStyle.ContentTextColour;
-                    //lblTaskItem.ActiveLinkColor = VisualStyle.ContentHoverTextColour;
+                    lblTaskItem.VisitedLinkColor = InternalVisualStyle.ContentActivatedFontColour;
+                    lblTaskItem.LinkColor = VisualStyle.ContentFontColour;
+                    //lblTaskItem.ActiveLinkColor = VisualStyle.ContentHoverFontColour;
                     lblTaskItem.Name = TaskNode.Name;
                     lblTaskItem.BackColor = Color.Transparent;
-                    lblTaskItem.Name = TaskNode.Name;
                     lblTaskItem.AutoSize = true;
-                    lblTaskItem.Font = VisualStyle.ContentText;
+                    lblTaskItem.Font = VisualStyle.ContentFont;
                     lblTaskItem.LinkBehavior = LinkBehavior.HoverUnderline;
 
                     //@TODO: This line specifies the indentation by setting the location, however each level is indented the same amount
@@ -216,37 +311,43 @@ namespace Ict.Common.Controls
                     //@TODO: Implement Hovering Behavior for links
                     //Includes changing Link Color
                     //Background color for hovering is already implemented
-                    //@TODO: Implement Active Behavior for links
+
+                    //@TODO: Implement Standard Active Behavior for links
                     //Includes adding or removing underline, changing link color
                     //Background color for link is already implemented
+
+
+                    lblTaskItem.Click += delegate
+                    {
+                        this.OnItemActivation(TaskNode, lblTaskItem);
+                    };
+
+
                     if (VisualStyle.UseContentBackgroundColours)
                     {
                         lblTaskItem.MouseEnter += new System.EventHandler(this.LinkLabelMouseEnter);
                         lblTaskItem.MouseLeave += new System.EventHandler(this.LinkLabelMouseLeave);
-                        lblTaskItem.Click += new System.EventHandler(this.LinkLabelClicked);
+                        lblTaskItem.Click += new System.EventHandler(this.ActivateClickedTaskItem);
 
-                        if ((TaskNode.Attributes["Active"] != null) && TrueRegex.IsMatch(TaskNode.Attributes["Active"].Value))
+                        if (this.IsActive(TaskNode))
                         {
                             lblTaskItem.BackColor = this.VisualStyle.ContentActivatedBackgroundColour;
                         }
                     }
 
-                    if ((TaskNode.Attributes["Active"] != null) && TrueRegex.IsMatch(TaskNode.Attributes["Active"].Value))
+                    if (this.IsActive(TaskNode))
                     {
-                        lblTaskItem.LinkColor = VisualStyle.ContentActivatedTextColour;
+                        lblTaskItem.LinkColor = VisualStyle.ContentActivatedFontColour;
                     }
                     else
                     {
-                        lblTaskItem.LinkColor = VisualStyle.ContentTextColour;
+                        lblTaskItem.LinkColor = VisualStyle.ContentFontColour;
                     }
 
-                    if (TaskNode.Attributes["Enabled"] != null)
-                    {
-                        lblTaskItem.Enabled = TrueRegex.IsMatch(TaskNode.Attributes["Enabled"].Value);
-                    }
+                    lblTaskItem.Enabled = IsActive(TaskNode);
 
-                    //If the task has an attribute of hidden, don't add it to the panel or count it in Num Tasks
-                    if ((TaskNode.Attributes["Hidden"] == null) || !(TrueRegex.IsMatch(TaskNode.Attributes["Hidden"].Value)))
+
+                    if (! this.IsHidden(TaskNode))
                     {
                         //Automatic Numbering
                         String NumberText = ParentNumberText + (CurrentNumbering).ToString() + ".";
@@ -276,136 +377,9 @@ namespace Ict.Common.Controls
             }
         }
 
-        /// <summary>
-        /// Default constructor necessary for TTaskList to work with the GUI designer
-        /// Once the control is on a form, the designer should convert this constructor to the parameterized constructor
-        /// </summary>
-        public TTaskList()
-        {
-        }
-
-        /// <summary>
-        /// Constructor for creating an object with a MasterNode and setting the Visual Style
-        /// </summary>
-        /// <param name="MasterNode">Base Node for the TaskList</param>
-        /// <param name="Style">A TVisualStylesEnum value that specifies the visual style which should be used</param>
-        public TTaskList(XmlNode MasterNode, TVisualStylesEnum Style)
-        {
-            //
-            // The InitializeComponent() call is required for Windows Forms designer support.
-            //
-            InitializeComponent();
-            #region CATALOGI18N
-
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             #endregion
-            this.VisualStyle = new Ict.Common.Controls.TVisualStyles(Style);
-            this.MasterXmlNode = MasterNode;
-        }
 
-        /// <summary>
-        /// Returns whether given Xml Node has the attribute hidden set to true
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns>Boolean whether given Xml Node has the attribute hidden set to true</returns>
-        public bool IsHidden(XmlNode node)
-        {
-            return (node.Attributes["Hidden"] != null) && TrueRegex.IsMatch(node.Attributes["Hidden"].Value);
-        }
-
-        /// <summary>
-        /// Returns boolean whether given XmlNode has the attribute Enabled set to false
-        /// </summary>
-        /// <param name="node"></param>
-        /// <returns>Boolean whether given Xml Node has the attribute enabled set to false</returns>
-        public bool IsDisabled(XmlNode node)
-        {
-            return (node.Attributes["Enabled"] != null) && !(TrueRegex.IsMatch(node.Attributes["Enabled"].Value));
-        }
-
-        /// <summary>
-        /// Method to hide a task item, given an XmlNode Object
-        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
-        /// </summary>
-        /// <param name="node"></param>
-        public void HideTaskItem(XmlNode node)
-        {
-            if (node.Attributes["Hidden"] != null)
-            {
-                node.Attributes["Hidden"].Value = "True";
-            }
-            else
-            {
-                XmlAttribute HiddenElement = node.OwnerDocument.CreateAttribute("Hidden");
-                HiddenElement.Value = "True";
-                node.Attributes.Append(HiddenElement);
-            }
-
-            LoadTaskItems();
-        }
-
-        /// <summary>
-        /// Method to hide a task item, given an XmlNode Object
-        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
-        /// </summary>
-        /// <param name="node"></param>
-        public void ShowTaskItem(XmlNode node)
-        {
-            if (node.Attributes["Hidden"] != null)
-            {
-                node.Attributes["Hidden"].Value = "False";
-            }
-            else
-            {
-                XmlAttribute HiddenElement = node.OwnerDocument.CreateAttribute("Hidden");
-                HiddenElement.Value = "False";
-                node.Attributes.Append(HiddenElement);
-            }
-
-            LoadTaskItems();
-        }
-
-        /// <summary>
-        /// Method to hide a task item, given an XmlNode Object
-        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
-        /// </summary>
-        /// <param name="node"></param>
-        public void DisableTaskItem(XmlNode node)
-        {
-            if (node.Attributes["Enabled"] != null)
-            {
-                node.Attributes["Enabled"].Value = "False";
-            }
-            else
-            {
-                XmlAttribute EnableAttribute = node.OwnerDocument.CreateAttribute("Enabled");
-                EnableAttribute.Value = "False";
-                node.Attributes.Append(EnableAttribute);
-            }
-
-            LoadTaskItems();
-        }
-
-        /// <summary>
-        /// Method to hide a task item, given an XmlNode Object
-        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
-        /// </summary>
-        /// <param name="node"></param>
-        public void EnableTaskItem(XmlNode node)
-        {
-            if (node.Attributes["Enabled"] != null)
-            {
-                node.Attributes["Enabled"].Value = "True";
-            }
-            else
-            {
-                XmlAttribute EnableAttribute = node.OwnerDocument.CreateAttribute("Enabled");
-                EnableAttribute.Value = "True";
-                node.Attributes.Append(EnableAttribute);
-            }
-
-            LoadTaskItems();
-        }
+        #region GetTaskBy* functions
 
         /// <summary>
         /// Method to retrieve a TaskNode based on a position in the MasterXmlNode for this TTaskList
@@ -532,6 +506,65 @@ namespace Ict.Common.Controls
             return null;
         }
 
+        #endregion
+    
+        #region get/set Attributes of task items
+
+        /// <summary>
+        /// Method to get the attribute of a tasklist node.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="attr"></param>
+        /// <returns>string attribute, or empty string if attribute is null.</returns>
+        public string GetAttribute(XmlNode node, string attr)
+        {
+            if( node.Attributes[attr] != null)
+            {
+                return node.Attributes[attr].Value;
+            }
+            else return "";
+        }
+
+        /// <summary>
+        /// Method to test if an attribute of XmlNode is true.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="attr"></param>
+        /// <returns>Boolean whether given Xml Node has the passed attribute set to true</returns>
+        public bool AttributeTrue(XmlNode node, string attr)
+        {
+            return (node.Attributes[attr] != null) && TrueRegex.IsMatch(node.Attributes[attr].Value);
+        }
+
+        /// <summary>
+        /// Returns whether given Xml Node has the attribute hidden set to true
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>Boolean whether given Xml Node has the attribute hidden set to true</returns>
+        public bool IsHidden(XmlNode node)
+        {
+            return AttributeTrue(node, "Hidden");
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>Boolean whether given Xml Node has the attribute Active set to false</returns>
+        public bool IsActive(XmlNode node)
+        {
+            return AttributeTrue(node, "Active");
+        }
+
+        /// <summary>
+        /// Returns boolean whether given XmlNode has the attribute Enabled set to false
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns>Boolean whether given Xml Node has the attribute enabled set to false</returns>
+        public bool IsDisabled(XmlNode node)
+        {
+            return AttributeTrue(node, "Enabled");
+        }
+
         /// <summary>
         /// Clears all attributes of a certain type for all descendents of the specified node
         /// </summary>
@@ -565,6 +598,93 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Method to change the attribute of a tasklist node, and create the attribute if it's null.
+        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="attr"></param>
+        /// <param name="setting"></param>
+        /// <param name="load">determines if the `LoadTaskItems` function is called at the end</param>
+        public void ChangeAttribute(XmlNode node, string attr, string setting, bool load)
+        {
+            if (node.Attributes[attr] != null)
+            {
+                node.Attributes[attr].Value = setting;
+            }
+            else
+            {
+                XmlAttribute xmlAttr = node.OwnerDocument.CreateAttribute(attr);
+                xmlAttr.Value = setting;
+                node.Attributes.Append(xmlAttr);
+            }
+
+            if(load)
+            {
+                LoadTaskItems();
+            }
+        }
+
+        /// <summary>
+        /// Method to hide a task item, given an XmlNode Object
+        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+        /// </summary>
+        /// <param name="node"></param>
+        public void HideTaskItem(XmlNode node)
+        {
+            ChangeAttribute(node, "Hidden", "False", true);
+        }
+
+        /// <summary>
+        /// Method to hide a task item, given an XmlNode Object
+        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+        /// </summary>
+        /// <param name="node"></param>
+        public void ShowTaskItem(XmlNode node)
+        {
+            ChangeAttribute(node, "Hidden", "True", true);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="node"></param>
+        public void ActivateTaskItem(XmlNode node)
+        {
+            ChangeAttribute(node, "Active", "True", true);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="node"></param>
+        public void DeactivateTaskItem(XmlNode node)
+        {
+            ChangeAttribute(node, "Active", "False", true);
+        }
+
+        /// <summary>
+        /// Method to hide a task item, given an XmlNode Object
+        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+        /// </summary>
+        /// <param name="node"></param>
+        public void DisableTaskItem(XmlNode node)
+        {
+            ChangeAttribute(node, "Enabled", "False", true);
+        }
+
+        /// <summary>
+        /// Method to hide a task item, given an XmlNode Object
+        /// Doesn't handle possible case of the node not being a descendent of the masterNode for this list
+        /// </summary>
+        /// <param name="node"></param>
+        public void EnableTaskItem(XmlNode node)
+        {
+            ChangeAttribute(node, "Enabled", "True", true);
+        }
+
+        #endregion
+
+        #region Event listeners/Handlers
+
         //Event Listeners for MouseHover on LinkLabel
         /// <summary>
         /// Event Listener for changing a TaskList item when the mouse hovers
@@ -581,7 +701,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                lbl.LinkColor = this.VisualStyle.ContentHoverTextColour;
+                lbl.LinkColor = this.VisualStyle.ContentHoverFontColour;
             }
         }
 
@@ -602,7 +722,7 @@ namespace Ict.Common.Controls
                     lbl.BackColor = this.VisualStyle.ContentActivatedBackgroundColour;
                 }
 
-                lbl.LinkColor = this.VisualStyle.ContentHoverTextColour;
+                lbl.LinkColor = this.VisualStyle.ContentHoverFontColour;
             }
             else
             {
@@ -611,7 +731,7 @@ namespace Ict.Common.Controls
                     lbl.BackColor = Color.Transparent;
                 }
 
-                lbl.LinkColor = this.VisualStyle.ContentTextColour;
+                lbl.LinkColor = this.VisualStyle.ContentFontColour;
             }
         }
 
@@ -620,25 +740,29 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void LinkLabelClicked(object sender, EventArgs e)
+        void ActivateClickedTaskItem(object sender, EventArgs e)
         {
             LinkLabel lbl = (LinkLabel)sender;
 
             ClearAllAttributeOfType("Active", this.MasterXmlNode);
+            //TODO: there has got to be a non-ambiguous way to link labels with their respective node. ~~sethb
             XmlNode node = this.GetTaskByName(lbl.Name);
 
-            if (node.Attributes["Active"] != null)
-            {
-                node.Attributes["Active"].Value = "True";
-            }
-            else
-            {
-                XmlAttribute ActiveAttribute = node.OwnerDocument.CreateAttribute("Active");
-                ActiveAttribute.Value = "True";
-                node.Attributes.Append(ActiveAttribute);
-            }
-
-            this.LoadTaskItems();            //@HACK: This runs a lot of unnessecary code: just need to clear background colors for all link labels
+            //TODO: passing `true` to run `LoadTaskItems` runs a lot of unnessecary code: just need to clear background colors for all link labels
+            //TODO: should find manual way to clear bg colorus for all link labels; then pass `false` below and call manual method afterwards.
+            ChangeAttribute(node, "Active", "True", true);  
         }
+
+        /// <summary>
+        /// Event listener to call delegates when TaskList item is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void TaskItemActivated(object sender, EventArgs e)
+        {
+            LinkLabel lbl = (LinkLabel)sender;
+        }
+
+        #endregion
     }
 }

@@ -21,7 +21,7 @@ namespace ControlTestBench
 public partial class ShepherdTest : Form
 {
     /// <summary>
-    /// constructor
+    /// Constructor.
     /// </summary>
     public ShepherdTest()
     {
@@ -32,7 +32,7 @@ public partial class ShepherdTest : Form
     }
 
     /// <summary>
-    /// constructor
+    /// Constructor.
     /// </summary>
     /// <param name="AXmlNode"></param>
     public ShepherdTest(XmlNode AXmlNode)

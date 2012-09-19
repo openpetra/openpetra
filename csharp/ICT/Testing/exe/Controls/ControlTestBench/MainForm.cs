@@ -32,7 +32,7 @@ namespace Ict.Testing.ControlTestBench
     public partial class MainForm : Form
     {
         /// <summary>
-        /// constructor
+        /// Constructor.
         /// </summary>
         public MainForm()
         {

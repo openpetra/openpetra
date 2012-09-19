@@ -49,60 +49,61 @@ namespace Ict.Common.Controls
     /// </summary>
     public class TVisualStyles
     {
-        //Text Variables
-        private Font InternalTitleText;
-        /// <summary>The TitleText property gets the value of InternalTitleText</summary>
-        /// <value>The TitleText Property represents the Font type of the Title Text of the user control.</value>
-        public Font TitleText {
+        //Font Variables
+        private Font InternalTitleFont;
+        /// <summary>The TitleFont property gets the value of InternalTitleFont</summary>
+        /// <value>The TitleFont Property represents the Font type of the Title Font of the user control.</value>
+        public Font TitleFont {
             get
             {
-                return InternalTitleText;
+                return InternalTitleFont;
             }
         }
 
-        private Font InternalContentText;
-        /// <summary>The ContentText property gets the value of InternalContentText</summary>
-        /// <value>The ContentText property represents the Font specifications of the ContentText of the user control</value>
-        public Font ContentText {
+        private Font InternalContentFont;
+        /// <summary>The ContentFont property gets the value of InternalContentFont</summary>
+        /// <value>The ContentFont property represents the Font specifications of the ContentFont of the user control</value>
+        public Font ContentFont {
             get
             {
-                return InternalContentText;
+                return InternalContentFont;
             }
         }
 
-        private Color InternalTitleTextColour;
-        /// <summary>The TitleTextxColour gets the value of the InternalTitleTextColour </summary>
-        /// <value> The TItleTextColour property represents the Colour specification of the TitleText of the user control</value>
-        public Color TitleTextColour {
+        private Color InternalTitleFontColour;
+        /// <summary>The TitleFontxColour gets the value of the InternalTitleFontColour </summary>
+        /// <value> The TItleFontColour property represents the Colour specification of the TitleFont of the user control</value>
+        public Color TitleFontColour {
             get
             {
-                return InternalTitleTextColour;
+                return InternalTitleFontColour;
             }
         }
 
-        private Color InternalContentTextColour;
-        /// <summary>The HoverTitleTextColour property gets the value of the InternalHoverTitleTextColour</summary>
-        /// <value> The HoverTitleTextColour property represents the Colour specification of the title text when the mouse hovers over the title </value>
-        public Color ContentTextColour {
+        private Color InternalContentFontColour;
+        /// <summary>The HoverTitleFontColour property gets the value of the InternalHoverTitleFontColour</summary>
+        /// <value> The HoverTitleFontColour property represents the Colour specification of the title text when the mouse hovers over the title </value>
+        public Color ContentFontColour {
             get
             {
-                return InternalContentTextColour;
+                return InternalContentFontColour;
             }
         }
 
-        private Color InternalHoverTitleTextColour;
-        /// <summary>The HoverTitleTextColour property gets the value of the InternalHoverTitleTextColour</summary>
-        /// <value> The HoverTitleTextColour property represents the Colour specification of the title text when the mouse hovers over the title </value>
-        public Color HoverTitleTextColour {
+        private Color InternalHoverTitleFontColour;
+        /// <summary>The HoverTitleFontColour property gets the value of the InternalHoverTitleFontColour</summary>
+        /// <value> The HoverTitleFontColour property represents the Colour specification of the title text when the mouse hovers over the title </value>
+        public Color HoverTitleFontColour {
             get
             {
-                return InternalHoverTitleTextColour;
+                return InternalHoverTitleFontColour;
             }
         }
 
         private int InternalTitleHeight;
         /// <summary>The TitleHeight property gets the value of the InternalTitleHeight</summary>
-        /// <value> The TitleHeight property represents the height of the TitleText</value>
+        /// <value> The TitleHeight property represents the height of the TitleFont</value>
+        //TODO: why height?? the functional definition of the height is font.height. The philosophy puts height under Font.
         public int TitleHeight {
             get
             {
@@ -110,23 +111,23 @@ namespace Ict.Common.Controls
             }
         }
 
-        private Color InternalContentActivatedTextColour;
-        /// <summary>The ContentActivatedTextColour property gets the value of the InternalContentActivatedTextColour</summary>
-        /// <value> The ContentActivatedTextColour property represents the colour of activated content text</value>
-        public Color ContentActivatedTextColour {
+        private Color InternalContentActivatedFontColour;
+        /// <summary>The ContentActivatedFontColour property gets the value of the InternalContentActivatedFontColour</summary>
+        /// <value> The ContentActivatedFontColour property represents the colour of activated content text</value>
+        public Color ContentActivatedFontColour {
             get
             {
-                return InternalContentActivatedTextColour;
+                return InternalContentActivatedFontColour;
             }
         }
 
-        private Color InternalContentHoverTextColour;
-        /// <summary>The ContentHoverTextColour property gets the value of the InternalContentHoverTextColour</summary>
-        /// <value> The ContentHOverTextColour property represents the colour of the content text when the mouse hovers over it</value>
-        public Color ContentHoverTextColour {
+        private Color InternalContentHoverFontColour;
+        /// <summary>The ContentHoverFontColour property gets the value of the InternalContentHoverFontColour</summary>
+        /// <value> The ContentHOverFontColour property represents the colour of the content text when the mouse hovers over it</value>
+        public Color ContentHoverFontColour {
             get
             {
-                return InternalContentHoverTextColour;
+                return InternalContentHoverFontColour;
             }
         }
 
@@ -279,18 +280,18 @@ namespace Ict.Common.Controls
             switch (style)
             {
                 case TVisualStylesEnum.vsAccordionPanel:
-                    //TitleText Variables
-                    InternalTitleText = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
-                    InternalTitleTextColour = Color.FromArgb(89, 101, 165);
-                    InternalHoverTitleTextColour = Color.FromArgb(20, 65, 142);
+                    //TitleFont Variables
+                    InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(89, 101, 165);
+                    InternalHoverTitleFontColour = Color.FromArgb(20, 65, 142);
                     InternalTitleHeight = 100;
 
-                    //ContentText Variables
+                    //ContentFont Variables
                     //underline hover is default
-                    InternalContentText = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
-                    InternalContentTextColour = Color.FromArgb(89, 101, 165);
-                    InternalContentHoverTextColour = Color.FromArgb(37, 101, 212);
-                    InternalContentActivatedTextColour = InternalContentHoverTextColour;
+                    InternalContentFont = new System.Drawing.Font("Tahoma", 8, System.Drawing.FontStyle.Bold);
+                    InternalContentFontColour = Color.FromArgb(89, 101, 165);
+                    InternalContentHoverFontColour = Color.FromArgb(37, 101, 212);
+                    InternalContentActivatedFontColour = InternalContentHoverFontColour;
 
                     //Gradient Variables
                     InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
@@ -311,18 +312,18 @@ namespace Ict.Common.Controls
                     break;
 
                 case TVisualStylesEnum.vsTaskPanel:
-                    //TitleText Variables
-                    InternalTitleText = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
-                    InternalTitleTextColour = Color.FromArgb(30, 92, 196);
-                    InternalHoverTitleTextColour = Color.FromArgb(102, 134, 181);
+                    //TitleFont Variables
+                    InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(30, 92, 196);
+                    InternalHoverTitleFontColour = Color.FromArgb(102, 134, 181);
                     InternalTitleHeight = 100;
 
-                    //ContentText Variables
+                    //ContentFont Variables
                     //underline hover is default
-                    InternalContentText = new System.Drawing.Font("Verdana", 7);
-                    InternalContentTextColour = Color.FromArgb(62, 117, 225);
-                    InternalContentHoverTextColour = Color.FromArgb(90, 155, 252);
-                    InternalContentActivatedTextColour = InternalContentTextColour;
+                    InternalContentFont = new System.Drawing.Font("Verdana", 7);
+                    InternalContentFontColour = Color.FromArgb(62, 117, 225);
+                    InternalContentHoverFontColour = Color.FromArgb(90, 155, 252);
+                    InternalContentActivatedFontColour = InternalContentFontColour;
 
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);
@@ -344,13 +345,13 @@ namespace Ict.Common.Controls
                     break;
 
                 case TVisualStylesEnum.vsDashboard:
-                    //TitleText Variables
-                    InternalTitleText = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
-                    InternalTitleTextColour = Color.FromArgb(30, 92, 196);
-                    InternalHoverTitleTextColour = Color.FromArgb(102, 134, 181);
+                    //TitleFont Variables
+                    InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(30, 92, 196);
+                    InternalHoverTitleFontColour = Color.FromArgb(102, 134, 181);
                     InternalTitleHeight = 100;
 
-                    //ContentText Variables
+                    //ContentFont Variables
 
 
                     //BackgroundVariables
@@ -374,18 +375,18 @@ namespace Ict.Common.Controls
                     break;
 
                 case TVisualStylesEnum.vsShepherd:
-                    //TitleText Variables
-                    InternalTitleText = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
-                    InternalTitleTextColour = Color.FromArgb(0, 0, 0);
-                    InternalHoverTitleTextColour = Color.FromArgb(60, 60, 60);
+                    //TitleFont Variables
+                    InternalTitleFont = new System.Drawing.Font("Verdana", 8, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(0, 0, 0);
+                    InternalHoverTitleFontColour = Color.FromArgb(60, 60, 60);
                     InternalTitleHeight = 100;
 
-                    //ContentText Variables
+                    //ContentFont Variables
                     //underline hover is default
-                    InternalContentText = new System.Drawing.Font("Verdana", 8);
-                    InternalContentTextColour = Color.FromArgb(0, 0, 0);
-                    InternalContentHoverTextColour = Color.FromArgb(60, 60, 60);
-                    InternalContentActivatedTextColour = Color.FromArgb(255, 255, 255);
+                    InternalContentFont = new System.Drawing.Font("Verdana", 8);
+                    InternalContentFontColour = Color.FromArgb(0, 0, 0);
+                    InternalContentHoverFontColour = Color.FromArgb(60, 60, 60);
+                    InternalContentActivatedFontColour = Color.FromArgb(255, 255, 255);
 
                     //Gradient Variables
                     InternalPanelGradientStart = Color.FromArgb(255, 255, 255);
@@ -410,13 +411,13 @@ namespace Ict.Common.Controls
                     break;
 
                 case TVisualStylesEnum.vsHorizontalCollapse:
-                    //TitleText Variables
-                    InternalTitleText = new System.Drawing.Font("Tahoma", 13, System.Drawing.FontStyle.Bold);
-                    InternalTitleTextColour = Color.FromArgb(20, 65, 142);
-                    InternalHoverTitleTextColour = InternalTitleTextColour;
+                    //TitleFont Variables
+                    InternalTitleFont = new System.Drawing.Font("Tahoma", 13, System.Drawing.FontStyle.Bold);
+                    InternalTitleFontColour = Color.FromArgb(20, 65, 142);
+                    InternalHoverTitleFontColour = InternalTitleFontColour;
                     InternalTitleHeight = 100;
 
-                    //ContentText Variables
+                    //ContentFont Variables
 
                     //BackgroundVariables
                     InternalContentBackgroundColour = Color.FromArgb(212, 221, 249);

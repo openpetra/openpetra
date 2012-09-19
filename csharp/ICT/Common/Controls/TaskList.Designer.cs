@@ -4,6 +4,7 @@
 // @Authors:
 //		 chadds
 //		 ashleyc
+//       sethb
 //
 // Copyright 2004-2010 by OM International
 //

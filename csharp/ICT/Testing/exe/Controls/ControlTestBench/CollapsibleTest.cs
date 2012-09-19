@@ -1,0 +1,174 @@
+﻿/*
+ * Created by SharpDevelop.
+ * User: sbird
+ * Date: 7/1/2011
+ * Time: 10:02 AM
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Xml;
+using Ict.Common.Controls;
+using Ict.Common.IO;
+
+namespace ControlTestBench
+{
+    /// <summary>
+    /// </summary>
+    public partial class CollapsibleTest : Form
+    {
+        private Ict.Common.Controls.TPnlCollapsible FPnl;
+        private Ict.Common.Controls.TPnlCollapsible FPnl2;
+        
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public CollapsibleTest()
+        {
+            InitializeComponent();
+            FPnl = new TPnlCollapsible();
+            this.Controls.Add(FPnl);
+        }
+
+
+        private void TestEmptyConstructor(object sender, EventArgs e)
+        {
+            this.Controls.Remove(this.FPnl);
+
+            this.FPnl = new TPnlCollapsible();
+            this.Controls.Add(this.FPnl);
+        }
+        private void TestTaskListVerticalConstructor(object sender, EventArgs e)
+        {
+            this.Controls.Remove(this.FPnl);
+
+
+            String yamlFile = "testYaml.yaml";
+            TYml2Xml parser = new TYml2Xml(yamlFile);
+            XmlDocument UINavigation = parser.ParseYML2XML();            
+            XmlNode localXmlNode = UINavigation.FirstChild.NextSibling.FirstChild;
+            
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, UINavigation, TCollapseDirection.cdVertical);
+            this.Controls.Add(this.FPnl);
+        }
+        private void TestUserControlVerticalConstructor(object sender, EventArgs e)
+        {
+            this.Controls.Remove(this.FPnl);
+
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckUserControl, "Ict.Petra.Client.MPartner.Gui.TUC_PartnerInfo", TCollapseDirection.cdVertical);
+            this.Controls.Add(this.FPnl);
+        }
+        private void TestTaskListHorizontalConstructor(object sender, EventArgs e)
+        {
+            this.Controls.Remove(this.FPnl);
+
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TYml2Xml.CreateXmlDocument(), TCollapseDirection.cdHorizontal);
+            this.FPnl.CollapseDirection = TCollapseDirection.cdHorizontal;
+            this.Controls.Add(this.FPnl);
+        }
+        private void TestTaskListExpandedConstructor(object sender, EventArgs e)
+        {
+            this.Controls.Remove(this.FPnl);
+
+            this.FPnl = new TPnlCollapsible(THostedControlKind.hckTaskList, TCollapseDirection.cdVertical, false);
+            this.Controls.Add(this.FPnl);
+        }
+        private void TestFullConstructor(object sender, EventArgs e)
+        {
+            this.Controls.Remove(this.FPnl);
+
+            String yamlFile = "testYaml.yaml";
+            TYml2Xml parser = new TYml2Xml(yamlFile);
+            XmlDocument UINavigation = parser.ParseYML2XML();            
+            XmlNode localXmlNode = UINavigation.FirstChild.NextSibling.FirstChild;
+
+            this.FPnl = new TPnlCollapsible(localXmlNode, THostedControlKind.hckUserControl, "Foo.Bar", TVisualStylesEnum.vsHorizontalCollapse, TCollapseDirection.cdHorizontal, true);
+            this.Controls.Add(this.FPnl);
+        }
+        private void TestStacked(object sender, EventArgs e)
+        {
+            this.Controls.Remove(this.FPnl);
+            this.Controls.Remove(this.FPnl2);
+
+            this.FPnl = new TPnlCollapsible();
+            this.FPnl2 = new TPnlCollapsible();
+            this.Controls.Add(this.FPnl);
+            this.Controls.Add(this.FPnl2);
+        }
+
+        
+        private void ChangeWidth(object sender, EventArgs e)
+        {
+            this.FPnl.ExpandedSize = int.Parse(txtChangeExpandedSize.Text);
+        }
+        private void ChangeText(object sender, EventArgs e)
+        {
+            this.FPnl.Text = txtChangeText.Text;
+        }
+        
+        private void ChangeCollapseDirection(object sender, EventArgs e)
+        {
+            switch( cboChangeCollapseDirection.Text )
+            {
+                case "Vertical":
+                    this.FPnl.CollapseDirection = TCollapseDirection.cdVertical;
+                    break;
+                case "Horizontal":
+                    this.FPnl.CollapseDirection = TCollapseDirection.cdHorizontal;
+                    break;
+            }
+        }
+        
+        private void ChangeHostedControlKind(object sender, EventArgs e)
+        {
+            switch( cboChangeHostedControlKind.Text )
+            {
+                case "UserControl":
+                    this.FPnl.HostedControlKind = THostedControlKind.hckUserControl;
+                    break;
+                case "Task List":
+                    this.FPnl.HostedControlKind = THostedControlKind.hckTaskList;
+                    break;
+            }
+        }
+        
+        private void ChangeUserControlString(object sender, EventArgs e)
+        {
+            this.FPnl.UserControlString = txtChangeUserControlString.Text;
+
+            //Won't test the Namespace and class properties because the are implicitely tested by this one.
+        }
+        
+        private void ChangeTaskListNode(object sender, EventArgs e)
+        {
+            TYml2Xml parser = new TYml2Xml( rtbChangeTaskListNode.Lines );
+            XmlDocument xmldoc = parser.ParseYML2XML();
+            this.FPnl.TaskListNode = xmldoc.FirstChild.NextSibling.FirstChild;
+        }
+        
+        private void ChangeVisualStyle(object sender, EventArgs e)
+        {
+            switch ( cboChangeVisualStyle.Text )
+            {
+                case "vsAccordionPanel":
+                    this.FPnl.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel;
+                    break;
+                case "vsTaskPanel":
+                    this.FPnl.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsTaskPanel;
+                    break;
+                case "vsDashboard":
+                    this.FPnl.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsDashboard;
+                    break;
+                case "vsShepherd":
+                    this.FPnl.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+                    break;
+                case "vsHorizontalCollapse":
+                    this.FPnl.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsHorizontalCollapse;
+                    break;
+            }
+        }
+        
+    }
+}

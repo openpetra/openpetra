@@ -70,7 +70,7 @@ namespace Ict.Common.Controls
             // pnlTitle
             //
             this.pnlTitle.AutoSize = true;
-//            this.pnlTitle.BackColor = System.Drawing.Color.Red;
+            this.pnlTitle.BackColor = System.Drawing.Color.Red;
             this.pnlTitle.Controls.Add(this.pnlTitleText);
             this.pnlTitle.Controls.Add(this.pnlContent);
             this.pnlTitle.Dock = System.Windows.Forms.DockStyle.Fill;

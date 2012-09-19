@@ -60,7 +60,7 @@ partial class ShepherdTest
         this.tPnlCollapsible1.TaskListNode = null;
         this.tPnlCollapsible1.UserControlClass = "";
         this.tPnlCollapsible1.UserControlNamespace = "";
-        this.tPnlCollapsible1.VisualStyle = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
+        this.tPnlCollapsible1.VisualStyleEnum = Ict.Common.Controls.TVisualStylesEnum.vsShepherd;
         //
         // ShepherdTest
         //
