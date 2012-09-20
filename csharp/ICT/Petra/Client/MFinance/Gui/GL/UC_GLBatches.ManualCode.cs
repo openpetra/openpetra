@@ -225,9 +225,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearDetailControls()
         {
-            txtDetailBatchDescription.Text = string.Empty;
+        	FPetraUtilsObject.DisableDataChangedEvent();
+        	txtDetailBatchDescription.Text = string.Empty;
             txtDetailBatchControlTotal.NumberValueDecimal = 0;
-            dtpDetailDateEffective.Date = DateTime.Today;
+            dtpDetailDateEffective.Date = FDefaultDate;
+        	FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         /// <summary>
@@ -863,6 +865,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 UpdateChangeableStatus(true);
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
+            
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)
