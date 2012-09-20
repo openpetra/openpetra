@@ -312,7 +312,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
             }
-
         }
 
         bool FInKeyMinistryChanging = false;

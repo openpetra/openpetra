@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private String baseCurrencyOfLedger;
 
-        private Decimal ModalFormReturnValue;
+        private Decimal ModalFormReturnExchangeRate;
 
         private String strCurrencyToDefault;
         private DateTime dateTimeDefault;
@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             mniImport.Enabled = true;           // Allow imports
             tbbImport.Enabled = true;
             blnIsInModalMode = false;
-            ModalFormReturnValue = 1.0m;        // Not really used when MODELESS
+            ModalFormReturnExchangeRate = 1.0m;        // Not really used when MODELESS
         }
 
         private void RunOnceOnActivationManual()
@@ -214,18 +214,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string filter =
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + baseCurrencyOfLedger + "' and " +
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + strCurrencyTo + "' and " +
-                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < '" + strDteEnd + "'";
+                ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " < #" + strDteEnd + "#";
 
             if (dteStart > DateTime.MinValue)
             {
-                filter += (" and " + ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > '" + strDteStart + "'");
+                filter += (" and " + ADailyExchangeRateTable.GetDateEffectiveFromDBName() + " > #" + strDteStart + "#");
             }
 
             DataView myDataView = FMainDS.ADailyExchangeRate.DefaultView;
             myDataView.RowFilter = filter;
             myDataView.Sort = SortByDateDescending;
 
-            ModalFormReturnValue = ExchangeDefault;
+            ModalFormReturnExchangeRate = ExchangeDefault;
             strCurrencyToDefault = strCurrencyTo;
             dateTimeDefault = dteEnd;
 
@@ -311,7 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             get
             {
-                return ModalFormReturnValue;
+                return ModalFormReturnExchangeRate;
             }
         }
 
@@ -329,7 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     if (txtDetailRateOfExchange.NumberValueDecimal.HasValue)
                     {
-                        ModalFormReturnValue = txtDetailRateOfExchange.NumberValueDecimal.Value;
+                        ModalFormReturnExchangeRate = txtDetailRateOfExchange.NumberValueDecimal.Value;
                     }
 
                     blnUseDateTimeDefault = false;

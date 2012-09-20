@@ -74,6 +74,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>dictionary of validation controls in case it is needed for parent control</summary>
+        public TValidationControlsDict ValidationControlsDict
+        {
+            get
+            {
+                return FValidationControlsDict;
+            }
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -156,7 +165,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public void SpecialInitUserControl()
         {
-            BuildValidationControlsDict();
+            if (FValidationControlsDict.Count == 0)
+            {
+                BuildValidationControlsDict();
+            }
         }
 
         /// <summary>

@@ -225,9 +225,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearDetailControls()
         {
-            txtDetailBatchDescription.Text = string.Empty;
+        	FPetraUtilsObject.DisableDataChangedEvent();
+        	txtDetailBatchDescription.Text = string.Empty;
             txtDetailBatchControlTotal.NumberValueDecimal = 0;
-            dtpDetailDateEffective.Date = DateTime.Today;
+            dtpDetailDateEffective.Date = FDefaultDate;
+        	FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         /// <summary>
@@ -299,6 +301,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).EnableJournals();
         }
 
+        private void UpdateJournalEffectiveDate()
+        {
+            //Load Journals in the background
+            ((TFrmGLBatch) this.ParentForm).LoadJournals();
+
+            foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+            {
+                AJournalRow r = (AJournalRow)v.Row;
+
+                r.DateEffective = (DateTime)dtpDetailDateEffective.Date;
+            }
+        }
+
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
@@ -313,6 +328,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 DateTime dateValue;
 
                 string aDate = dtpDetailDateEffective.Date.ToString();
+
+                //If the effective date has changed, then update all journals
+                if (FPreviouslySelectedDetailRow.DateEffective != dtpDetailDateEffective.Date)
+                {
+                    FPreviouslySelectedDetailRow.DateEffective = dtpDetailDateEffective.Date.Value;
+                    UpdateJournalEffectiveDate();
+                }
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
@@ -448,8 +470,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateTotals()
         {
+            //Below not needed as yet
             //txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
-            //FPreviouslySelectedDetailRow.BatchRunningTotal;
         }
 
         private bool SaveBatchForPosting()
@@ -843,6 +865,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 UpdateChangeableStatus(true);
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
             }
+            
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)

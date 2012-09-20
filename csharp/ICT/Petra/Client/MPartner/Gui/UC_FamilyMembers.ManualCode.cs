@@ -76,7 +76,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>isEdited: Boolean;</summary>
         private Boolean FGridEdited;
-        private object PreviousPartnerMemory;
 
         private Boolean FDeadlineEditMode;
 
@@ -1656,7 +1655,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            // Executes this loop, if Family ID to be promoted is not 1.
+            // Executes this loop, if user wants to promote Family ID
             if (buttonvalue != 1)
             {
                 Counter2ToMax = 100;
@@ -1671,10 +1670,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (Convert.ToInt32(FFamilyMembersDV[Counter2].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()].ToString())
                             == FamilyIDint + Counter1)
                         {
-                            // saves the FamilyIF just found
+                            // saves the FamilyID just found
+                            PersonName2 = FFamilyMembersDV[Counter2].Row[PartnerEditTDSFamilyMembersTable.GetPartnerShortNameDBName()];
                             NextFamilyID = FFamilyMembersDV[Counter2].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()];
                             FFamilyMembersDV[Counter2].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()] = FamilyID;
-                            PersonName2 = FFamilyMembersDV[Counter2].Row[PartnerEditTDSFamilyMembersTable.GetPartnerShortNameDBName()];
                             MemberFind = false;
                             break;
                         }
@@ -1706,6 +1705,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                                  Convert.ToString(FamilyIDint +
                                      1) + "\r\n" + "    " + PersonName2.ToString() + StrFamilyIDChangeDoneWasChangedFrom + NextFamilyID.ToString() +
                                  StrFamilyIDChangeDoneTo + FamilyID.ToString()), StrFamilyIDChangeDoneTitle);
+
+                FPetraUtilsObject.SetChangedFlag();
             }
             else
             {
@@ -1785,15 +1786,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                             (FamilyIDint - CounterToMax))
                         {
                             // saves the found FamilyID
+                            PersonName2 = FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetPartnerShortNameDBName()];
                             PreviousFamilyID = FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()];
                             FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()] =
                                 (object)(Convert.ToInt32(PreviousFamilyID) + 1);
-                            PersonName2 = FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetPartnerShortNameDBName()];
-
-                            if (PersonName2 == PersonName1)
-                            {
-                                PersonName1 = PreviousPartnerMemory;
-                            }
 
                             MemberFind = false;
                             break;
@@ -1824,7 +1820,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                                  PersonName2.ToString() +
                                  StrFamilyIDChangeDoneWasChangedFrom + PreviousFamilyID.ToString() + StrFamilyIDChangeDoneTo +
                                  Convert.ToString(Convert.ToInt32(PreviousFamilyID) + 1)), "Family ID Change Done");
-                PreviousPartnerMemory = PersonName1;
+
+                FPetraUtilsObject.SetChangedFlag();
             }
             else
             {
