@@ -266,8 +266,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.AGiftBatch.DefaultView.RowFilter =
                 String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
-            FGridFilterChanged = true;
-
             if (grdDetails.Rows.Count < 2)
             {
                 ClearControls();
@@ -275,8 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FBatchLoaded == true)
             {
-                grdDetails.SelectRowInGrid(1, TSgrdDataGrid.TInvokeGridFocusEventEnum.NoFocusEvent);
-                InvokeFocusedRowChanged(1);
+                SelectRowInGrid(1, true);
             }
 
             UpdateChangeableStatus();
@@ -484,7 +481,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to be deleted</param>
         /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
         /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ref AGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
+        private bool PreDeleteManual(AGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
         {
             if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
             {
@@ -507,7 +504,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ref AGiftBatchRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(AGiftBatchRow ARowToDelete, out string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
@@ -553,7 +550,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(ref AGiftBatchRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+        private void PostDeleteManual(AGiftBatchRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
         {
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
@@ -666,8 +663,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
                     // such that a removal of a row is not detected
-                    FDetailGridRowsCountPrevious++;
-                    InvokeFocusedRowChanged(newCurrentRowPos);
+                    SelectRowInGrid(newCurrentRowPos, true);
                 }
                 else
                 {
