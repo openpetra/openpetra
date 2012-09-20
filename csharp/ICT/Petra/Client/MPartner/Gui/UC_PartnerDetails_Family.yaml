@@ -30,7 +30,6 @@ RootNode:
                 Row3: [txtMaritalStatusComment]
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
-            ColWidths: [0=Fixed:140]
             
         cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
         dtpMaritalStatusSince:

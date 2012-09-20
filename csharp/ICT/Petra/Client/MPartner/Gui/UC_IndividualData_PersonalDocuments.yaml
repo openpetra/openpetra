@@ -66,14 +66,17 @@ RootNode:
         dtpDateOfIssue:
             Label: Date of Issue
             DataField: PmDocument.DateOfIssue
+            Validation: true
         
         dtpDateOfStart:
             Label: Start Date
             DataField: PmDocument.DateOfStart
+            Validation: true
         dtpDateOfExpiry:
             Label: Expiration Date
             DataField: PmDocument.DateOfExpiration
-        
+            Validation: Pair(dtpDateOfStart)
+            
         txtContact:
             Type: PartnerKey
             ColSpan: 2
