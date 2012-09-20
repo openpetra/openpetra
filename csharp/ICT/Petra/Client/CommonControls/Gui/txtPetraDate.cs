@@ -110,8 +110,10 @@ namespace Ict.Petra.Client.CommonControls
                 TPetraDateChangedEventArgs DateChangeArgs;
 
                 // MessageBox.Show('Entering TtxtPetraDate.Set_Date...');
-                this.Text = value.ToString();
-
+                if (value.HasValue)
+                {
+                    this.Text = DataBinding.DateTimeToLongDateString2(value.Value);
+                }
                 // MessageBox.Show('this.Text: ' + this.Text);
                 try
                 {
