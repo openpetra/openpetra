@@ -75,13 +75,13 @@ namespace Ict.Petra.Client.MConference.Gui
         private void InitGridManually()
         {
             LoadDataGrid(true);
-            
+
             grdConferences.DoubleClickCell += new TDoubleClickCellEventHandler(grdConferences_DoubleClickCell);
         }
 
         void grdConferences_DoubleClickCell(object Sender, SourceGrid.CellContextEventArgs e)
         {
-            Accept(e, null);           
+            Accept(e, null);
         }
 
         private void Accept(System.Object sender, EventArgs e)
